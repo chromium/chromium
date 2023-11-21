@@ -147,8 +147,8 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   std::string js_command_line_flag =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           blink::switches::kJavaScriptFlags);
-  V8Initializer::InitializeMainThread(V8ContextSnapshot::GetReferenceTable(),
-                                      js_command_line_flag);
+  blink::V8Initializer::InitializeIsolateHolder(
+      blink::V8ContextSnapshot::GetReferenceTable(), js_command_line_flag);
 
   GetBlinkInitializer().RegisterInterfaces(*binders);
 
@@ -160,6 +160,11 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
 
   // Initialize performance manager.
   RendererResourceCoordinatorImpl::MaybeInitialize();
+
+  // The ArrayBuffer partition is placed inside V8's virtual memory cage if it
+  // is enabled. For that reason, the partition can only be initialized after V8
+  // has been initialized.
+  WTF::Partitions::InitializeArrayBufferPartition();
 }
 
 }  // namespace
@@ -171,6 +176,7 @@ void Initialize(Platform* platform,
   DCHECK(binders);
   Platform::InitializeMainThread(platform, main_thread_scheduler);
   InitializeCommon(platform, binders);
+  V8Initializer::InitializeMainThread();
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
@@ -179,6 +185,19 @@ void CreateMainThreadAndInitialize(Platform* platform,
   DCHECK(binders);
   Platform::CreateMainThreadAndInitialize(platform);
   InitializeCommon(platform, binders);
+  V8Initializer::InitializeMainThread();
+}
+
+void InitializeWithoutIsolateForTesting(
+    Platform* platform,
+    mojo::BinderMap* binders,
+    scheduler::WebThreadScheduler* main_thread_scheduler) {
+  Platform::InitializeMainThread(platform, main_thread_scheduler);
+  InitializeCommon(platform, binders);
+}
+
+v8::Isolate* CreateMainThreadIsolate() {
+  return V8Initializer::InitializeMainThread();
 }
 
 // Function defined in third_party/blink/public/web/blink.h.

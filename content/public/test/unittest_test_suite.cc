@@ -11,6 +11,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/rand_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/null_task_runner.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -208,13 +210,29 @@ UnitTestTestSuite::CreateTestEventListener() {
 void UnitTestTestSuite::OnFirstTestStartComplete() {
   // At this point ContentClient and ResourceBundle will be initialized, which
   // this needs.
-  blink_test_support_ = std::make_unique<TestBlinkWebUnitTestSupport>();
+  blink_test_support_ = std::make_unique<TestBlinkWebUnitTestSupport>(
+      TestBlinkWebUnitTestSupport::SchedulerType::kMockScheduler,
+      " --single-threaded");
+
+  // Dummy task runner is initialized because blink::CreateMainThreadIsolate
+  // needs the current task runner handle and TestBlinkWebUnitTestSupport
+  // initialized with kMockScheduler doesn't provide one. There should be no
+  // task posted to this task runner. The message loop is not created before
+  // this initialization because some tests need specific kinds of message
+  // loops, and their types are not known upfront. Some tests also create their
+  // own thread bundles or message loops, and doing the same in
+  // TestBlinkWebUnitTestSupport would introduce a conflict.
+  auto dummy_task_runner = base::MakeRefCounted<base::NullTaskRunner>();
+  auto dummy_task_runner_handle =
+      std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+          dummy_task_runner);
+  isolate_ = blink::CreateMainThreadIsolate();
 }
 
 v8::Isolate* UnitTestTestSuite::MainThreadIsolateForUnitTestSuite() {
   CHECK(g_test_suite);
   CHECK(g_test_suite->blink_test_support_);
-  return g_test_suite->blink_test_support_->MainThreadIsolate();
+  return g_test_suite->isolate_.get();
 }
 
 }  // namespace content

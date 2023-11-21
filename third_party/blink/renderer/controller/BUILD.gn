@@ -139,7 +139,10 @@ group("webkit_unit_tests") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ "*" ]
   testonly = true
-  deps = [ ":blink_unittests" ]
+  deps = [
+    ":blink_unittests",
+    ":blink_unittests_v2",
+  ]
 }
 
 test("blink_unittests") {
@@ -197,7 +200,10 @@ source_set("blink_perf_tests_sources") {
   visibility = [ "*" ]
   testonly = true
 
-  sources = [ "tests/run_all_perftests.cc" ]
+  sources = [
+    "tests/run_all_perftests.cc",
+    "tests/thread_state_test_environment.h",
+  ]
 
   deps = [
     ":controller",
@@ -247,6 +253,7 @@ source_set("blink_unittests_sources") {
     "performance_manager/v8_detailed_memory_reporter_impl_test.cc",
     "performance_manager/v8_worker_memory_reporter_test.cc",
     "tests/run_all_tests.cc",
+    "tests/thread_state_test_environment.h",
   ]
   if (is_linux || is_chromeos) {
     sources += [ "memory_usage_monitor_posix_test.cc" ]
@@ -308,4 +315,27 @@ if (is_ios) {
     sources = [ "$root_out_dir/content_shell.pak" ]
     outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
   }
+}
+
+test("blink_unittests_v2") {
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "*" ]
+  testonly = true
+
+  sources = [
+    "tests/run_all_tests_v2.cc",
+    "tests/thread_state_test_environment.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/platform",
+    "//v8",
+  ]
 }

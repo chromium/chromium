@@ -305,7 +305,9 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
                                           sanitize_script_errors);
 }
 
-static void PromiseRejectHandlerInMainThread(v8::PromiseRejectMessage data) {
+// static
+void V8Initializer::PromiseRejectHandlerInMainThread(
+    v8::PromiseRejectMessage data) {
   DCHECK(IsMainThread());
 
   v8::Local<v8::Promise> promise = data.GetPromise();
@@ -351,9 +353,11 @@ static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {
                        script_state);
 }
 
-static void FailedAccessCheckCallbackInMainThread(v8::Local<v8::Object> holder,
-                                                  v8::AccessType type,
-                                                  v8::Local<v8::Value> data) {
+// static
+void V8Initializer::FailedAccessCheckCallbackInMainThread(
+    v8::Local<v8::Object> holder,
+    v8::AccessType type,
+    v8::Local<v8::Value> data) {
   // FIXME: This is the access check callback of last resort. We should modify
   // V8 to pass in more contextual information, so that we can build a full
   // ExceptionState.
@@ -430,10 +434,12 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
   return {true, V8String(context->GetIsolate(), stringified_source)};
 }
 
-static v8::ModifyCodeGenerationFromStringsResult
-CodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
-                                        v8::Local<v8::Value> source,
-                                        bool is_code_like) {
+// static
+v8::ModifyCodeGenerationFromStringsResult
+V8Initializer::CodeGenerationCheckCallbackInMainThread(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> source,
+    bool is_code_like) {
   // The TC39 "Dynamic Code Brand Check" feature is currently behind a flag.
   if (!RuntimeEnabledFeatures::TrustedTypesUseCodeLikeEnabled())
     is_code_like = false;
@@ -712,7 +718,26 @@ void HostGetImportMetaProperties(v8::Local<v8::Context> context,
   meta->CreateDataProperty(context, resolve_key, resolve_value).ToChecked();
 }
 
-void InitializeV8Common(v8::Isolate* isolate) {
+struct PrintV8OOM {
+  const char* location;
+  const v8::OOMDetails& details;
+};
+
+std::ostream& operator<<(std::ostream& os, const PrintV8OOM& oom_details) {
+  const auto [location, details] = oom_details;
+  os << "V8 " << (details.is_heap_oom ? "javascript" : "process") << " OOM ("
+     << location;
+  if (details.detail) {
+    os << "; detail: " << details.detail;
+  }
+  os << ").";
+  return os;
+}
+
+}  // namespace
+
+// static
+void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   // Set up garbage collection before setting up anything else as V8 may trigger
   // GCs during Blink setup.
   V8PerIsolateData::From(isolate)->SetGCCallbacks(
@@ -751,23 +776,6 @@ void InitializeV8Common(v8::Isolate* isolate) {
         V8GCController::DetachednessFromWrapper, nullptr);
   }
 }
-
-struct PrintV8OOM {
-  const char* location;
-  const v8::OOMDetails& details;
-};
-
-std::ostream& operator<<(std::ostream& os, const PrintV8OOM& oom_details) {
-  const auto [location, details] = oom_details;
-  os << "V8 " << (details.is_heap_oom ? "javascript" : "process") << " OOM ("
-     << location;
-  if (details.detail) {
-    os << "; detail: " << details.detail;
-  }
-  os << ").";
-  return os;
-}
-}  // namespace
 
 // Callback functions called when V8 encounters a fatal or OOM error.
 // Keep them outside the anonymous namespace such that ChromeCrash recognizes
@@ -865,17 +873,18 @@ V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
 
 }  // namespace
 
-void V8Initializer::InitializeMainThread(
+void V8Initializer::InitializeIsolateHolder(
     const intptr_t* reference_table,
     const std::string js_command_line_flags) {
-  DCHECK(IsMainThread());
-
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
                                  &array_buffer_allocator, reference_table,
                                  js_command_line_flags, ReportV8FatalError,
                                  ReportV8OOMError);
+}
 
+v8::Isolate* V8Initializer::InitializeMainThread() {
+  DCHECK(IsMainThread());
   ThreadScheduler* scheduler = ThreadScheduler::Current();
 
   V8PerIsolateData::V8ContextSnapshotMode snapshot_mode =
@@ -905,7 +914,7 @@ void V8Initializer::InitializeMainThread(
           v8::Isolate::kMessageInfo | v8::Isolate::kMessageDebug |
           v8::Isolate::kMessageLog);
   isolate->SetFailedAccessCheckCallbackFunction(
-      FailedAccessCheckCallbackInMainThread);
+      V8Initializer::FailedAccessCheckCallbackInMainThread);
   isolate->SetModifyCodeGenerationFromStringsCallback(
       CodeGenerationCheckCallbackInMainThread);
   isolate->SetAllowWasmCodeGenerationCallback(
@@ -921,13 +930,10 @@ void V8Initializer::InitializeMainThread(
   V8PerIsolateData::From(isolate)->SetThreadDebugger(
       std::make_unique<MainThreadDebugger>(isolate));
 
-  // The ArrayBuffer partition is placed inside V8's virtual memory cage if it
-  // is enabled. For that reason, the partition can only be initialized after V8
-  // has been initialized.
-  WTF::Partitions::InitializeArrayBufferPartition();
-
   isolate->SetHostCreateShadowRealmContextCallback(
       OnCreateShadowRealmV8Context);
+
+  return isolate;
 }
 
 // Stack size for workers is limited to 500KB because default stack size for

@@ -38,7 +38,8 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   };
 
   explicit TestBlinkWebUnitTestSupport(
-      SchedulerType scheduler_type = SchedulerType::kMockScheduler);
+      SchedulerType scheduler_type,
+      std::string additional_v8_flags = std::string());
 
   TestBlinkWebUnitTestSupport(const TestBlinkWebUnitTestSupport&) = delete;
   TestBlinkWebUnitTestSupport& operator=(const TestBlinkWebUnitTestSupport&) =
@@ -64,9 +65,6 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   // The original value should be restored before ending a test to avoid
   // cross-test side effects.
   static bool SetThreadedAnimationEnabled(bool enabled);
-
-  // Returns the main thread isolate created for this test environment.
-  v8::Isolate* MainThreadIsolate();
 
  private:
   void BindClipboardHost(mojo::ScopedMessagePipeHandle handle);

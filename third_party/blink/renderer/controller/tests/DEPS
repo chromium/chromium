@@ -1,10 +1,5 @@
 include_rules = [
     "+base",
     "+mojo/public/cpp/bindings",
+    "+content/public/test/blink_test_environment.h",
 ]
-
-specific_include_rules = {
-    'blink_test_suite\.h': [
-        "+content/public/test/blink_test_environment.h",
-    ],
-}

@@ -74,7 +74,8 @@ content::TestBlinkWebUnitTestSupport* g_test_platform = nullptr;
 namespace content {
 
 TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
-    TestBlinkWebUnitTestSupport::SchedulerType scheduler_type) {
+    SchedulerType scheduler_type,
+    std::string additional_v8_flags) {
 #if BUILDFLAG(IS_APPLE)
   base::apple::ScopedNSAutoreleasePool autorelease_pool;
 #endif
@@ -86,6 +87,7 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
   // Test shell always exposes the GC, and some tests need to modify flags so do
   // not freeze them on initialization.
   std::string v8_flags("--expose-gc --no-freeze-flags-after-init");
+  v8_flags += additional_v8_flags;
 
   blink::Platform::InitializeBlink();
   scoped_refptr<base::SingleThreadTaskRunner> dummy_task_runner;
@@ -105,8 +107,6 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     dummy_task_runner_handle =
         std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
             dummy_task_runner);
-    // Force V8 to run single threaded.
-    v8_flags += " --single-threaded";
   } else {
     DCHECK_EQ(scheduler_type, SchedulerType::kRealScheduler);
     main_thread_scheduler_ =
@@ -124,7 +124,8 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
   blink::WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(false);
 
   mojo::BinderMap binders;
-  blink::Initialize(this, &binders, main_thread_scheduler_.get());
+  blink::InitializeWithoutIsolateForTesting(this, &binders,
+                                            main_thread_scheduler_.get());
   g_test_platform = this;
   blink::SetWebTestMode(true);
   blink::WebRuntimeFeatures::EnableNotifications(true);
@@ -230,12 +231,6 @@ bool TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(bool enabled) {
   bool old = g_test_platform->threaded_animation_;
   g_test_platform->threaded_animation_ = enabled;
   return old;
-}
-
-v8::Isolate* TestBlinkWebUnitTestSupport::MainThreadIsolate() {
-  // TODO(dtapuska): When multiple main thread isolates are available, have this
-  // test support class allocate the isolate itself.
-  return blink::MainThreadIsolate();
 }
 
 }  // namespace content
