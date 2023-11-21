@@ -87,6 +87,10 @@ class WebStateList {
   // pinned, and any tabs whose index is greater or equal is not pinned.
   int pinned_tabs_count() const { return pinned_tabs_count_; }
 
+  // Returns the number of regular tabs (i.e. the number of tabs that are
+  // not pinned).
+  int regular_tabs_count() const { return count() - pinned_tabs_count(); }
+
   // Returns the index of the currently active WebState, or kInvalidIndex if
   // there are no active WebState.
   int active_index() const { return active_index_; }

@@ -346,7 +346,7 @@ void WebStateList::CloseAllNonPinnedWebStates(int close_flags) {
 
 void WebStateList::ActivateWebStateAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ContainsIndex(index));
+  DCHECK(ContainsIndex(index) || index == kInvalidIndex);
   auto lock = LockForMutation();
   return ActivateWebStateAtImpl(index);
 }
