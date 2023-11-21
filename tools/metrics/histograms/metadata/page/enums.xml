@@ -297,7 +297,7 @@ chromium-metrics-reviews@google.com.
              Policy: CookiesAllowedForUrls, UserBypass)"/>
   <int value="2"
       label="Allow by global 3p cookie setting setting (e.g. Enterprise
-             Policy: BlockThirdPartyCookies, UX)"/>
+             Policy: BlockThirdPartyCookies, UX, Default allow)"/>
   <int value="3"
       label="Allow by 3PCD metadata grants content settings (Global
              Allowlist)"/>
