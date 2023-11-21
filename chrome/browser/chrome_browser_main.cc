@@ -352,7 +352,26 @@
 #include "components/spellcheck/common/spellcheck_features.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#include "sql/database.h"
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
 namespace {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+constexpr base::FilePath::CharType kMediaHistoryDatabaseName[] =
+    FILE_PATH_LITERAL("Media History");
+
+void DeleteMediaHistoryDatabase(const base::FilePath& profile_path) {
+  auto db_path = profile_path.Append(kMediaHistoryDatabaseName);
+  base::UmaHistogramBoolean("Media.MediaHistory.DatabaseExists",
+                            base::PathExists(db_path));
+  sql::Database::Delete(db_path);
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Initialized in PreMainMessageLoopRun() and handed off to content:: in
@@ -1296,6 +1315,18 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
   }
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  // Delete the media history database if it still exists.
+  // TODO(crbug.com/1198344): Remove this.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&DeleteMediaHistoryDatabase, profile->GetPath()));
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldInstallSodaDuringPostProfileInit(

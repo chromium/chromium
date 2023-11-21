@@ -3880,6 +3880,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaHistory.DatabaseExists" enum="Boolean"
+    expires_after="M125">
+  <owner>evliu@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not the media history database exists. Called on the
+    initialization of the profile.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaKeysListener.RegisterHotKeyResult"
     enum="BooleanSuccess" expires_after="M82">
   <owner>steimel@chromium.org</owner>
