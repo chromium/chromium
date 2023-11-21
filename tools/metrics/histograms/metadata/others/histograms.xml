@@ -8238,12 +8238,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="RecoveryComponent.Event" enum="RecoveryComponentEvent"
-    expires_after="M77">
-  <owner>robertshield@chromium.org</owner>
-  <summary>Log each stage of a recovery component event.</summary>
-</histogram>
-
 <histogram name="ReduceAcceptLanguage.AcceptLanguageNegotiationRestart"
     enum="AcceptLanguageNegotiationRestart" expires_after="2024-04-28">
   <owner>awillia@chromium.org</owner>
