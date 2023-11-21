@@ -82,7 +82,7 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 
 }  // namespace
 
-FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
+FeatureTile::FeatureTile(PressedCallback callback,
                          bool is_togglable,
                          TileType type)
     : Button(callback),

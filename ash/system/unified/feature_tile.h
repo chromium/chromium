@@ -64,7 +64,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // with the main part of the button, which accounts for the whole tile.
   // If the icon is not separately clickable (the default), `callback` will
   // also be called when clicking on the icon.
-  explicit FeatureTile(base::RepeatingCallback<void()> callback,
+  explicit FeatureTile(PressedCallback callback,
                        bool is_togglable = true,
                        TileType type = TileType::kPrimary);
   FeatureTile(const FeatureTile&) = delete;

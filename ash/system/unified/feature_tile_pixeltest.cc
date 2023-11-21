@@ -71,9 +71,10 @@ class FeatureTilePixelTest : public AshTestBase {
 };
 
 TEST_F(FeatureTilePixelTest, PrimaryTile) {
-  auto* tile = widget_->GetContentsView()->AddChildView(
-      std::make_unique<FeatureTile>(base::DoNothing(), /*is_togglable=*/true,
-                                    FeatureTile::TileType::kPrimary));
+  auto* tile =
+      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
+          views::Button::PressedCallback(), /*is_togglable=*/true,
+          FeatureTile::TileType::kPrimary));
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -104,9 +105,10 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
 }
 
 TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
-  auto* tile = widget_->GetContentsView()->AddChildView(
-      std::make_unique<FeatureTile>(base::DoNothing(), /*is_togglable=*/true,
-                                    FeatureTile::TileType::kPrimary));
+  auto* tile =
+      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
+          views::Button::PressedCallback(), /*is_togglable=*/true,
+          FeatureTile::TileType::kPrimary));
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -141,9 +143,10 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(base::i18n::IsRTL());
 
-  auto* tile = widget_->GetContentsView()->AddChildView(
-      std::make_unique<FeatureTile>(base::DoNothing(), /*is_togglable=*/true,
-                                    FeatureTile::TileType::kPrimary));
+  auto* tile =
+      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
+          views::Button::PressedCallback(), /*is_togglable=*/true,
+          FeatureTile::TileType::kPrimary));
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -158,9 +161,10 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
 }
 
 TEST_F(FeatureTilePixelTest, CompactTile) {
-  auto* tile = widget_->GetContentsView()->AddChildView(
-      std::make_unique<FeatureTile>(base::DoNothing(), /*is_togglable=*/true,
-                                    FeatureTile::TileType::kCompact));
+  auto* tile =
+      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
+          views::Button::PressedCallback(), /*is_togglable=*/true,
+          FeatureTile::TileType::kCompact));
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Multi-line label");
   // Needed for accessibility paint checks.

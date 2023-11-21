@@ -301,7 +301,7 @@ TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDecorativeDrillIn) {
 }
 
 TEST_F(FeatureTileTest, PrimaryTile_WithSubLabel) {
-  FeatureTile primary_tile_with_sub_label(base::DoNothing(),
+  FeatureTile primary_tile_with_sub_label(views::Button::PressedCallback(),
                                           /*is_togglable=*/true,
                                           FeatureTile::TileType::kPrimary);
   primary_tile_with_sub_label.SetLabel(u"Button label");
@@ -340,7 +340,7 @@ TEST_F(FeatureTileTest, PrimaryTile_UpdatedCornerRadius) {
 TEST_F(FeatureTileTest, CompactTile_AddedAndRemoveSubLabel) {
   // Create initial compact `FeatureTile` without a sub-label and verify default
   // parameters.
-  FeatureTile compact_tile_with_sub_label(base::DoNothing(),
+  FeatureTile compact_tile_with_sub_label(views::Button::PressedCallback(),
                                           /*is_togglable=*/true,
                                           FeatureTile::TileType::kCompact);
   compact_tile_with_sub_label.SetLabel(u"Button label");
@@ -414,7 +414,7 @@ TEST_F(FeatureTileTest, CompactTile_Toggle) {
 
 TEST_F(FeatureTileTest, TogglingTileUpdatesInkDropColor) {
   auto* tile = widget_->SetContentsView(
-      std::make_unique<FeatureTile>(base::DoNothing()));
+      std::make_unique<FeatureTile>(views::Button::PressedCallback()));
   auto* color_provider = tile->GetColorProvider();
 
   tile->SetToggled(true);
@@ -441,7 +441,8 @@ TEST_F(FeatureTileTest, TogglingTileHidesInkDrop) {
 
 TEST_F(FeatureTileTest, AccessibilityRoles) {
   // Togglable feature tiles (like Do Not Disturb) have role "toggle button".
-  FeatureTile togglable_tile(base::DoNothing(), /*is_togglable=*/true);
+  FeatureTile togglable_tile(views::Button::PressedCallback(),
+                             /*is_togglable=*/true);
   togglable_tile.SetToggled(true);
   ui::AXNodeData node_data;
   togglable_tile.GetAccessibleNodeData(&node_data);
@@ -463,7 +464,8 @@ TEST_F(FeatureTileTest, AccessibilityRoles) {
   EXPECT_EQ(node_data3.role, ax::mojom::Role::kButton);
 
   // Non-togglable feature tiles are just buttons.
-  FeatureTile non_togglable_tile(base::DoNothing(), /*is_togglable=*/false);
+  FeatureTile non_togglable_tile(views::Button::PressedCallback(),
+                                 /*is_togglable=*/false);
   ui::AXNodeData node_data4;
   non_togglable_tile.GetAccessibleNodeData(&node_data4);
   EXPECT_EQ(node_data4.role, ax::mojom::Role::kButton);
