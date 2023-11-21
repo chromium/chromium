@@ -74,9 +74,10 @@ class CONTENT_EXPORT StorageInterestGroups
 
  private:
   friend class RefCounted<StorageInterestGroups>;
+  friend class InterestGroupCachingStorage;
   ~StorageInterestGroups();
 
-  const std::vector<StorageInterestGroup> storage_interest_groups_;
+  std::vector<StorageInterestGroup> storage_interest_groups_;
   base::Time expiry_;
   base::WeakPtrFactory<StorageInterestGroups> weak_ptr_factory_{this};
 };

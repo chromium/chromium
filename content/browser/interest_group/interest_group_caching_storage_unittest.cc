@@ -288,16 +288,17 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
 
+  // RecordInterestGroupBids updates the in-memory object instead of
+  // invalidating the cache.
   caching_storage->RecordInterestGroupBids(
       blink::InterestGroupSet({blink::InterestGroupKey(owner, "name2")}));
   task_environment().FastForwardBy(base::Minutes(1));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get()->size(), 1u);
-  ASSERT_NE(loaded_igs->get(), previously_loaded_igs->get());
   ASSERT_EQ(previously_loaded_igs->get()
                 ->GetInterestGroups()[0]
                 ->bidding_browser_signals->bid_count,
-            0);
+            1);
   ASSERT_EQ(loaded_igs->get()
                 ->GetInterestGroups()[0]
                 ->bidding_browser_signals->bid_count,

@@ -96,7 +96,7 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
   // If there is a cache hit, use the in-memory object.
   auto cached_groups_it = cached_interest_groups_.find(owner);
   if (cached_groups_it != cached_interest_groups_.end() &&
-      cached_groups_it->second.MaybeValid() &&
+      cached_groups_it->second.get() &&
       !cached_groups_it->second->IsExpired()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
@@ -200,9 +200,31 @@ void InterestGroupCachingStorage::ReportUpdateFailed(
 
 void InterestGroupCachingStorage::RecordInterestGroupBids(
     const blink::InterestGroupSet& groups) {
+  // Update the cached objects with the new bid counts instead of invalidating
+  // the cache.
+  std::set<url::Origin> bidding_owners;
   for (const blink::InterestGroupKey& group_key : groups) {
-    InvalidateCachedInterestGroupsForOwner(group_key.owner);
+    bidding_owners.emplace(group_key.owner);
   }
+  for (const url::Origin& owner : bidding_owners) {
+    if (outstanding_interest_groups_for_owner_callbacks_.find(owner) !=
+        outstanding_interest_groups_for_owner_callbacks_.end()) {
+      outdated_outstanding_interest_group_loads_.emplace(owner);
+    }
+    auto cached_groups_it = cached_interest_groups_.find(owner);
+    if (cached_groups_it == cached_interest_groups_.end() ||
+        !cached_groups_it->second.get()) {
+      continue;
+    }
+    for (StorageInterestGroup& cached_group :
+         cached_groups_it->second->storage_interest_groups_) {
+      if (groups.contains(blink::InterestGroupKey(
+              owner, cached_group.interest_group.name))) {
+        cached_group.bidding_browser_signals->bid_count += 1;
+      }
+    }
+  }
+
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::RecordInterestGroupBids)
       .WithArgs(groups);
