@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
@@ -177,6 +178,9 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
           features::kAutofillTrackProfileTokenQuality)) {
     return;
   }
+
+  autofill_metrics::LogObservationCountBeforeSubmissionMetric(form_structure,
+                                                              pdm);
 
   std::set<std::string> guids_seen;
   for (const std::unique_ptr<AutofillField>& field : form_structure) {

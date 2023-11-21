@@ -4,15 +4,19 @@
 
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 
+#include <set>
 #include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -24,18 +28,25 @@ constexpr std::string_view kHistogramPrefix = "Autofill.ProfileTokenQuality.";
 
 using ObservationType = ProfileTokenQuality::ObservationType;
 
-// Emits Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile, which
-// counts the total number of observations over all `types`.
-void LogStoredObservationCount(const AutofillProfile& profile,
-                               const ServerFieldTypeSet& types) {
+// Gets all types of the `profile` that are relevant for ProfileTokenQuality
+// metrics. This excludes additional supported types, since no observations
+// are tracked for them.
+ServerFieldTypeSet GetMetricRelevantTypes(const AutofillProfile& profile) {
+  ServerFieldTypeSet relevant_types;
+  profile.GetSupportedTypes(&relevant_types);
+  relevant_types.intersect(GetDatabaseStoredTypesOfAutofillProfile());
+  return relevant_types;
+}
+
+// Returns the total number of observations for all `types`.
+size_t GetTotalObservationCount(const AutofillProfile& profile,
+                                const ServerFieldTypeSet& types) {
   size_t total_observations = 0;
   for (ServerFieldType type : types) {
     total_observations +=
         profile.token_quality().GetObservationTypesForFieldType(type).size();
   }
-  base::UmaHistogramCounts1000(
-      base::StrCat({kHistogramPrefix, "StoredObservationsCount.PerProfile"}),
-      total_observations);
+  return total_observations;
 }
 
 // Emits Autofill.ProfileTokenQuality.StoredObservationTypes.{Type}, for every
@@ -119,17 +130,43 @@ void LogStoredProfileTokenQualityMetrics(
     return;
   }
   for (const AutofillProfile* profile : profiles) {
-    // Observations are only stored for `stored_types`. Additional supported
-    // types default to their corresponding storeable type. Since some
-    // `stored_types` are only supported in profiles of certain countries,
-    // intersect the two sets.
-    ServerFieldTypeSet relevant_types;
-    profile->GetSupportedTypes(&relevant_types);
-    relevant_types.intersect(GetDatabaseStoredTypesOfAutofillProfile());
-
-    LogStoredObservationCount(*profile, relevant_types);
+    ServerFieldTypeSet relevant_types = GetMetricRelevantTypes(*profile);
+    base::UmaHistogramCounts1000(
+        base::StrCat({kHistogramPrefix, "StoredObservationsCount.PerProfile"}),
+        GetTotalObservationCount(*profile, relevant_types));
     LogStoredObservationsPerType(*profile, relevant_types);
     LogStoredTokenQuality(*profile, relevant_types);
+  }
+}
+
+void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
+                                               const PersonalDataManager& pdm) {
+  std::set<AutofillProfile*> profiles_used;
+  // Emit per-type metrics for all autofilled fields.
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    if (!field->autofill_source_profile_guid()) {
+      // The field was not autofilled.
+      continue;
+    }
+    if (AutofillProfile* profile =
+            pdm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
+      profiles_used.insert(profile);
+      ServerFieldType field_type = field->Type().GetStorableType();
+      base::UmaHistogramExactLinear(
+          base::StrCat({kHistogramPrefix, "ObservationCountBeforeSubmission.",
+                        FieldTypeToStringView(field_type)}),
+          profile->token_quality()
+              .GetObservationTypesForFieldType(field_type)
+              .size(),
+          ProfileTokenQuality::kMaxObservationsPerToken + 1);
+    }
+  }
+  // Emit the total observation counts for all `profiles_used`.
+  for (const AutofillProfile* profile : profiles_used) {
+    base::UmaHistogramCounts1000(
+        base::StrCat(
+            {kHistogramPrefix, "ObservationCountBeforeSubmission.PerProfile"}),
+        GetTotalObservationCount(*profile, GetMetricRelevantTypes(*profile)));
   }
 }
 

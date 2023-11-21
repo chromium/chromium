@@ -9,9 +9,13 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -90,6 +94,37 @@ TEST_F(ProfileTokenQualityMetricsTest, LogStoredTokenQuality) {
   // ADDRESS_HOME_STREET_ADDRESS observations, they are not double counted.
   histogram_tester.ExpectUniqueSample("Autofill.ProfileTokenQuality.PerProfile",
                                       33, 1);
+}
+
+TEST_F(ProfileTokenQualityMetricsTest,
+       LogObservationCountBeforeSubmissionMetric) {
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST, ObservationType::kAccepted);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_LAST, ObservationType::kAccepted);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_LAST, ObservationType::kEditedFallback);
+  TestPersonalDataManager test_pdm;
+  test_pdm.AddProfile(profile);
+
+  // Create a dummy FormStructure and simulate that the first two fields were
+  // filled.
+  FormData form_data;
+  form_data.fields.resize(3);
+  FormStructure form(form_data);
+  test_api(form).SetFieldTypes({NAME_FIRST, NAME_LAST, ADDRESS_HOME_CITY});
+  form.field(0)->set_autofill_source_profile_guid(profile.guid());
+  form.field(1)->set_autofill_source_profile_guid(profile.guid());
+
+  base::HistogramTester histogram_tester;
+  LogObservationCountBeforeSubmissionMetric(form, test_pdm);
+  const std::string kBaseMetricName =
+      "Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.";
+  histogram_tester.ExpectUniqueSample(kBaseMetricName + "NAME_FIRST", 1, 1);
+  histogram_tester.ExpectUniqueSample(kBaseMetricName + "NAME_LAST", 2, 1);
+  histogram_tester.ExpectTotalCount(kBaseMetricName + "ADDRESS_HOME_CITY", 0);
+  histogram_tester.ExpectUniqueSample(kBaseMetricName + "PerProfile", 3, 1);
 }
 
 }  // namespace
