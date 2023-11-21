@@ -14,6 +14,18 @@ enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
 
 enum MLAutoPad { "explicit", "same-upper", "same-lower" };
 
+// A spec file was issued for WG discussion:
+// https://github.com/webmachinelearning/webnn/issues/481.
+// TODO(crbug.com/1502361): Revisit whether the scale and bias operands
+// should be required inputs based on WG's consensus.
+dictionary MLBatchNormalizationOptions {
+  MLOperand scale;
+  MLOperand bias;
+  [EnforceRange] unsigned long axis = 1;
+  float epsilon = 1e-5;
+  MLActivation activation;
+};
+
 dictionary MLConv2dOptions {
   sequence<[EnforceRange] unsigned long> padding;
   sequence<[EnforceRange] unsigned long> strides;
@@ -120,6 +132,8 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
 
   [RaisesException] MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
+
+  [RaisesException] MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance, optional MLBatchNormalizationOptions options = {});
 
   [RaisesException] MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
   [RaisesException] MLActivation clamp(optional MLClampOptions options = {});

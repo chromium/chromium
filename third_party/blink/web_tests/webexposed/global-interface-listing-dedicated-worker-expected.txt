@@ -1177,6 +1177,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method abs
 [Worker]     method add
 [Worker]     method averagePool2d
+[Worker]     method batchNormalization
 [Worker]     method buildSync
 [Worker]     method ceil
 [Worker]     method clamp

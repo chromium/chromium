@@ -21,6 +21,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
+    kBatchNormalization,
     kClamp,
     kConcat,
     kConv2d,

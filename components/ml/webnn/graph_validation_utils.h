@@ -122,6 +122,27 @@ struct Padding2d {
   Size2d<uint32_t> ending;
 };
 
+// Contains the attributes of batchNormalization operator.
+struct BatchNormalizationAttributes {
+  BatchNormalizationAttributes();
+  ~BatchNormalizationAttributes();
+
+  BatchNormalizationAttributes(BatchNormalizationAttributes&& other);
+  BatchNormalizationAttributes& operator=(BatchNormalizationAttributes&& other);
+
+  BatchNormalizationAttributes(const BatchNormalizationAttributes&) = delete;
+  BatchNormalizationAttributes& operator=(const BatchNormalizationAttributes&) =
+      delete;
+
+  // The 1-D tensor of the scaling values.
+  absl::optional<Operand> scale;
+  // The 1-D tensor of the bias values.
+  absl::optional<Operand> bias;
+  // The number which specifies the index to the feature count dimension of the
+  // input shape for which the mean and variance values are.
+  uint32_t axis = 1;
+};
+
 // Contains the attributes of conv2d operator.
 struct Conv2dAttributesBase {
   Conv2dAttributesBase();
@@ -274,6 +295,14 @@ struct SplitAttribute {
 base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
     const Operand& input,
     const SplitAttribute& attributes);
+
+// Validate and infer output information of batchNormalization operator defined
+// in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-batchnorm.
+base::expected<Operand, std::string> ValidateBatchNormalizationAndInferOutput(
+    const Operand& input,
+    const Operand& mean,
+    const Operand& variance,
+    const BatchNormalizationAttributes& attributes);
 
 // Validate and infer output information of 2-D convolution operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d

@@ -12,6 +12,8 @@ namespace blink {
 // static
 String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
   switch (kind) {
+    case MLOperator::OperatorKind::kBatchNormalization:
+      return "batchNormalization";
     case MLOperator::OperatorKind::kClamp:
       return "clamp";
     case MLOperator::OperatorKind::kConcat:

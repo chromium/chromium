@@ -434,6 +434,98 @@ base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
   return outputs;
 }
 
+// This helper method is intended to validate mean, variance, scale and bias
+// operands of batchNormalization against the input operand. These operands
+// share the same constraint.
+base::expected<void, std::string>
+ValidateBatchNormalizationOperandIsCompatibleWithInput(
+    const Operand& operand,
+    const Operand::DataType input_data_type,
+    size_t input_size_on_axis) {
+  if (operand.data_type != input_data_type) {
+    return base::unexpected("the data type doesn't match the input data type.");
+  }
+  if (operand.dimensions.size() != 1) {
+    return base::unexpected("the operand should be a 1-D tensor.");
+  }
+
+  if (operand.dimensions[0] != input_size_on_axis) {
+    return base::unexpected(
+        "the size of operand must be equal to the size of the input dimension "
+        "denoted by axis.");
+  }
+
+  return base::ok();
+}
+
+BatchNormalizationAttributes::BatchNormalizationAttributes() = default;
+BatchNormalizationAttributes::~BatchNormalizationAttributes() = default;
+
+BatchNormalizationAttributes::BatchNormalizationAttributes(
+    BatchNormalizationAttributes&& other) = default;
+BatchNormalizationAttributes& BatchNormalizationAttributes::operator=(
+    BatchNormalizationAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateBatchNormalizationAndInferOutput(
+    const Operand& input,
+    const Operand& mean,
+    const Operand& variance,
+    const BatchNormalizationAttributes& attributes) {
+  // Validate input type.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The input type must be one of the floating point types.");
+  }
+  if (base::MakeStrictNum(attributes.axis) >= input.dimensions.size()) {
+    return base::unexpected(
+        "The value of axis must be in the range [0, N-1] where N is the rank "
+        "of the input tensor.");
+  }
+
+  auto input_size_on_axis = input.dimensions[attributes.axis];
+  auto input_data_type = input.data_type;
+  // Validate mean operand.
+  const auto validation_mean =
+      ValidateBatchNormalizationOperandIsCompatibleWithInput(
+          mean, input_data_type, input_size_on_axis);
+  if (!validation_mean.has_value()) {
+    return base::unexpected("For mean operand: " + validation_mean.error());
+  }
+
+  // Validate variance operand.
+  const auto validation_variance =
+      ValidateBatchNormalizationOperandIsCompatibleWithInput(
+          variance, input_data_type, input_size_on_axis);
+  if (!validation_variance.has_value()) {
+    return base::unexpected("For variance operand: " +
+                            validation_variance.error());
+  }
+
+  // Validate scale operand.
+  if (attributes.scale) {
+    const auto validation_scale =
+        ValidateBatchNormalizationOperandIsCompatibleWithInput(
+            attributes.scale.value(), input_data_type, input_size_on_axis);
+    if (!validation_scale.has_value()) {
+      return base::unexpected("For scale operand: " + validation_scale.error());
+    }
+  }
+
+  // Validate bias operand.
+  if (attributes.bias) {
+    const auto validation_bias =
+        ValidateBatchNormalizationOperandIsCompatibleWithInput(
+            attributes.bias.value(), input_data_type, input_size_on_axis);
+    if (!validation_bias.has_value()) {
+      return base::unexpected("For bias operand: " + validation_bias.error());
+    }
+  }
+
+  // The output tensor of batchNormalization is the same shape as the input
+  // tensor.
+  return Operand(input_data_type, std::move(input.dimensions));
+}
+
 Conv2dAttributesBase::Conv2dAttributesBase() = default;
 Conv2dAttributesBase::~Conv2dAttributesBase() = default;
 

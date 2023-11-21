@@ -5621,6 +5621,7 @@ interface MLGraphBuilder
     method abs
     method add
     method averagePool2d
+    method batchNormalization
     method build
     method ceil
     method clamp

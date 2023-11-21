@@ -10,6 +10,7 @@
 #include "components/ml/webnn/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
@@ -171,6 +172,20 @@ webnn::ReduceKind BlinkReduceKindToComponent(
     default:
       NOTREACHED_NORETURN();
   }
+}
+
+webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
+    const blink::MLBatchNormalizationOptions* options) {
+  CHECK(options);
+  webnn::BatchNormalizationAttributes attributes;
+  if (options->hasScale()) {
+    attributes.scale = ConvertToComponentOperand(options->scale());
+  }
+  if (options->hasBias()) {
+    attributes.bias = ConvertToComponentOperand(options->bias());
+  }
+  attributes.axis = options->axis();
+  return attributes;
 }
 
 template <typename MLConv2dOptionsType, typename Conv2dAttributesType>
@@ -544,6 +559,49 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
     return nullptr;
   }
   return constant_operand.value();
+}
+
+MLOperand* MLGraphBuilder::batchNormalization(
+    const MLOperand* input,
+    const MLOperand* mean,
+    const MLOperand* variance,
+    const MLBatchNormalizationOptions* options,
+    ExceptionState& exception_state) {
+  const auto validated_output = webnn::ValidateBatchNormalizationAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(mean),
+      ConvertToComponentOperand(variance),
+      ConvertToBatchNormalizationAttributes(options));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+
+  // Create batchNormalization operator and its output operand. Connect the
+  // batchNormalization operator to its input and output operands.
+  auto* batch_normalization = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kBatchNormalization, options);
+  HeapVector<Member<const MLOperand>> inputs = {input, mean, variance};
+  // Adding the optional operands into inputs ensures the graph traversal
+  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
+  // optional operands should be retrieved from the options instead of inputs.
+  if (options->hasScale()) {
+    inputs.push_back(options->scale());
+  }
+  if (options->hasBias()) {
+    inputs.push_back(options->bias());
+  }
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), batch_normalization);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  batch_normalization->Connect(std::move(inputs), {output.value()});
+  return output.value();
 }
 
 MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
