@@ -97,6 +97,12 @@ void UpdateWindowBoundsForTablet(
   // `TabletModeWindowState::UpdateWindowPosition`.)
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(AppType::ARC_APP)) {
+    // If any animation is requested, it will directly animate the
+    // client-controlled windows for a rich animation. The client bounds change
+    // will follow.
+    if (animation_type != WindowState::BoundsChangeAnimationType::kNone) {
+      TabletModeWindowState::UpdateWindowPosition(window_state, animation_type);
+    }
     const SetBoundsWMEvent event(
         TabletModeWindowState::GetBoundsInTabletMode(window_state),
         /*animate=*/animation_type !=
