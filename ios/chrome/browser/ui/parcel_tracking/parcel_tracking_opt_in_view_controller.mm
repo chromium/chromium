@@ -97,8 +97,10 @@ CGFloat const kRadioButtonSize = 20;
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
     NSParagraphStyleAttributeName : paragraphStyle,
   };
-  NSDictionary* linkAttributes =
-      @{NSLinkAttributeName : net::NSURLWithGURL(GURL("chrome://settings"))};
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : net::NSURLWithGURL(GURL("chrome://settings")),
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
+  };
   subtitle.attributedText = AttributedStringFromStringWithLink(
       l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE),
       textAttributes, linkAttributes);
