@@ -767,10 +767,6 @@
 	path = third_party/khronos_glcts
 	url = https://chrome-internal.googlesource.com/chrome/deps/khronos_glcts
 	gclient-condition = checkout_src_internal
-[submodule "third_party/ml"]
-	path = third_party/ml
-	url = https://chrome-internal.googlesource.com/chrome/third_party/ml
-	gclient-condition = checkout_third_party_ml
 [submodule "third_party/widevine/cdm/chromeos"]
 	path = third_party/widevine/cdm/chromeos
 	url = https://chrome-internal.googlesource.com/chrome/deps/widevine/cdm/chromeos
