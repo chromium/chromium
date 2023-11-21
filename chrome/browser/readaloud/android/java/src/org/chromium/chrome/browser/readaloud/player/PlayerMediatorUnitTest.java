@@ -360,6 +360,19 @@ public class PlayerMediatorUnitTest {
         assertEquals("b", mModel.get(PlayerProperties.SELECTED_VOICE_ID));
     }
 
+    @Test
+    public void testPreviewVoice() {
+        var voice = new PlaybackVoice("en", "a", "");
+        mMediator.onPreviewVoiceClick(voice);
+        verify(mDelegate).previewVoice(eq(voice));
+    }
+
+    @Test
+    public void testVoiceMenuClosed() {
+        mMediator.onVoiceMenuClosed();
+        verify(mPlayerCoordinator).voiceMenuClosed();
+    }
+
     private void resetPlayback() {
         reset(mPlayback);
         doReturn(mPlaybackMetadata).when(mPlayback).getMetadata();

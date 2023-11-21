@@ -216,6 +216,13 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testVoiceMenuClosed() {
+        mPlayerCoordinator.addObserver(mObserver);
+        mPlayerCoordinator.voiceMenuClosed();
+        verify(mObserver).onVoiceMenuClosed();
+    }
+
+    @Test
     public void testDestroy() {
         mPlayerCoordinator.addObserver(mObserver);
         // Show mini player

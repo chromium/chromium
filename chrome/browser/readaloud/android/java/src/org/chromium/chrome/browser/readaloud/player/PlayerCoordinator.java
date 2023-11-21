@@ -141,6 +141,12 @@ public class PlayerCoordinator implements Player {
         }
     }
 
+    void voiceMenuClosed() {
+        for (Observer o : mObserverList) {
+            o.onVoiceMenuClosed();
+        }
+    }
+
     private boolean shouldAnimateMiniPlayer() {
         // If the expanded player is definitely covering the mini player, we can skip
         // animating the mini player show and hide.

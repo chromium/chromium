@@ -104,8 +104,11 @@ class OptionsMenuSheetContent extends MenuSheetContent {
     }
 
     @Override
-    public void notifySheetClosed() {
-        super.notifySheetClosed();
+    public void notifySheetClosed(BottomSheetContent closingContent) {
+        super.notifySheetClosed(closingContent);
+        if (closingContent == mVoiceSheet && mHandler != null) {
+            mHandler.onVoiceMenuClosed();
+        }
     }
 
     @Nullable

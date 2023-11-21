@@ -44,7 +44,8 @@ public class ExpandedPlayerCoordinator {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
                     if (mSheetContent != null) {
-                        mSheetContent.notifySheetClosed();
+                        mSheetContent.notifySheetClosed(
+                                mDelegate.getBottomSheetController().getCurrentSheetContent());
                     }
                 }
             };

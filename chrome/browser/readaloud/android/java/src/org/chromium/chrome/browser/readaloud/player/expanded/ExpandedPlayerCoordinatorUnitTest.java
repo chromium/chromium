@@ -105,8 +105,9 @@ public class ExpandedPlayerCoordinatorUnitTest {
 
     @Test
     public void testOnSheetClosed() {
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         mBottomSheetObserver.onSheetClosed(StateChangeReason.NAVIGATION);
-        verify(mSheetContent).notifySheetClosed();
+        verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
     }
 
     @Test

@@ -98,4 +98,27 @@ public class OptionsMenuSheetContentUnitTest {
         mMenu.getItem(Item.HIGHLIGHT).setValue(false);
         verify(mHandler).onHighlightingChange(false);
     }
+
+    @Test
+    public void testCloseVoiceMenu() {
+        // Show the voice menu.
+        doReturn(List.of(new PlaybackVoice("en", "a", "description")))
+                .when(mModel)
+                .get(eq(PlayerProperties.VOICES_LIST));
+        doReturn("a").when(mModel).get(eq(PlayerProperties.SELECTED_VOICE_ID));
+
+        assertNull(mContent.getVoiceMenu());
+
+        ((Menu) mContent.getContentView())
+                .getItem(OptionsMenuSheetContent.Item.VOICE)
+                .getChildAt(0)
+                .performClick();
+        assertNotNull(mContent.getVoiceMenu());
+
+        // Close.
+        mContent.setInteractionHandler(mHandler);
+        mContent.notifySheetClosed(mContent.getVoiceMenu());
+
+        verify(mHandler).onVoiceMenuClosed();
+    }
 }

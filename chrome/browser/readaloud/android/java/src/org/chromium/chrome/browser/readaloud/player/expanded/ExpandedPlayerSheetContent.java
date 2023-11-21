@@ -216,8 +216,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         return mOptionsMenu.getVoiceMenu();
     }
 
-    public void notifySheetClosed() {
-        mOptionsMenu.notifySheetClosed();
+    public void notifySheetClosed(BottomSheetContent contentClosed) {
+        mOptionsMenu.notifySheetClosed(contentClosed);
     }
 
     public void showSpeedMenu() {

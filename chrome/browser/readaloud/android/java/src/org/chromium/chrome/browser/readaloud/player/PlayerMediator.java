@@ -157,7 +157,14 @@ class PlayerMediator implements InteractionHandler {
     }
 
     @Override
-    public void onPreviewVoiceClick(PlaybackVoice voice) {}
+    public void onPreviewVoiceClick(PlaybackVoice voice) {
+        mDelegate.previewVoice(voice);
+    }
+
+    @Override
+    public void onVoiceMenuClosed() {
+        mCoordinator.voiceMenuClosed();
+    }
 
     @Override
     public void onHighlightingChange(boolean enabled) {

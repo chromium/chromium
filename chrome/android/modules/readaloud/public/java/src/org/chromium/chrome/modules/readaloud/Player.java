@@ -70,6 +70,9 @@ public interface Player {
          * then calling dismissPlayers().
          */
         void onRequestClosePlayers();
+
+        /** Called when the user closes the voice menu. */
+        void onVoiceMenuClosed();
     }
 
     /**
