@@ -1264,6 +1264,7 @@
                "wpt_internal/portals" ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=Portals,PortalsCrossOrigin",
+             "--disable-features=DeprecateUnload",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
