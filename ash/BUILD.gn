@@ -3295,6 +3295,7 @@ test("ash_unittests") {
     "glanceables/classroom/glanceables_classroom_item_view_unittest.cc",
     "glanceables/post_login_glanceables_metrics_recorder_unittest.cc",
     "glanceables/tasks/glanceables_task_view_unittest.cc",
+    "glanceables/tasks/glanceables_tasks_view_unittest.cc",
     "host/ash_window_tree_host_platform_unittest.cc",
     "host/ash_window_tree_host_unified_unittest.cc",
     "ime/ime_controller_impl_unittest.cc",

@@ -59,6 +59,12 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   // Runs `pending_get_task_lists_callbacks_` and returns their number.
   size_t RunPendingGetTaskListsCallbacks();
 
+  // Runs `pending_add_task_callbacks_` and returns their number.
+  size_t RunPendingAddTaskCallbacks();
+
+  // Runs `pending_update_task_callbacks_` and returns their number.
+  size_t RunPendingUpdateTaskCallbacks();
+
   void set_paused(bool paused) { paused_ = paused; }
 
   ui::ListModel<TaskList>* task_lists() { return task_lists_.get(); }
@@ -87,6 +93,8 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   bool paused_ = false;
   std::list<base::OnceClosure> pending_get_tasks_callbacks_;
   std::list<base::OnceClosure> pending_get_task_lists_callbacks_;
+  std::list<base::OnceClosure> pending_add_task_callbacks_;
+  std::list<base::OnceClosure> pending_update_task_callbacks_;
 };
 
 }  // namespace ash::api

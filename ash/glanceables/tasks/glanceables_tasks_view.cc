@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/api/tasks/tasks_client.h"
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -328,16 +329,32 @@ void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
       task_list_id, task_id, completed);
 }
 
-void GlanceablesTasksView::SaveTask(const std::string& task_list_id,
-                                    const std::string& task_id,
-                                    const std::string& title) {
-  // TODO(b/301253574): show/hide `progress_bar_` and/or an error message.
+void GlanceablesTasksView::SaveTask(
+    const std::string& task_list_id,
+    const std::string& task_id,
+    const std::string& title,
+    api::TasksClient::OnTaskSavedCallback callback) {
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
+
   auto* const client = Shell::Get()->glanceables_controller()->GetTasksClient();
+  auto on_task_saved =
+      base::BindOnce(&GlanceablesTasksView::OnTaskSaved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   if (task_id.empty()) {
-    client->AddTask(task_list_id, title, base::DoNothing());
+    client->AddTask(task_list_id, title, std::move(on_task_saved));
   } else {
-    client->UpdateTask(task_list_id, task_id, title, base::DoNothing());
+    client->UpdateTask(task_list_id, task_id, title, std::move(on_task_saved));
   }
+}
+
+void GlanceablesTasksView::OnTaskSaved(
+    api::TasksClient::OnTaskSavedCallback callback,
+    const api::Task* task) {
+  if (!task) {
+    // TODO(b/301253574): show error message.
+  }
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
+  std::move(callback).Run(task);
 }
 
 BEGIN_METADATA(GlanceablesTasksView, views::View)

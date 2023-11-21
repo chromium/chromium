@@ -35,8 +35,10 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
@@ -476,6 +478,84 @@ class GlanceablesWithAddEditBrowserTest : public GlanceablesBrowserTest {
   base::test::ScopedFeatureList features_{
       features::kGlanceablesTimeManagementStableLaunch};
 };
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, AddTaskItem) {
+  ASSERT_TRUE(glanceables_controller()->GetTasksClient());
+  EXPECT_FALSE(GetGlanceableTrayBubble());
+
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+  ASSERT_TRUE(GetTasksView());
+
+  // Check that the tasks glanceable is completely shown on the primary screen.
+  GetTasksView()->ScrollViewToVisible();
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetTasksView()->GetBoundsInScreen()));
+
+  const auto* const add_task_button =
+      views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
+  ASSERT_TRUE(add_task_button);
+
+  const auto* const task_items_container = GetTasksItemContainerView();
+  ASSERT_TRUE(task_items_container);
+
+  // Click on `add_task_button` and verify that `task_items_container` has the
+  // new "pending" item.
+  EXPECT_EQ(task_items_container->children().size(), 2u);
+  GetEventGenerator()->MoveMouseTo(
+      add_task_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(task_items_container->children().size(), 3u);
+
+  const auto* const pending_task_view = GetTaskItemView(0);
+
+  {
+    const auto* const title_label =
+        views::AsViewClass<views::Label>(pending_task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+    const auto* const title_text_field =
+        views::AsViewClass<views::Textfield>(pending_task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+
+    // Check that the view is in "edit" mode (the text field is displayed).
+    ASSERT_FALSE(title_label);
+    ASSERT_TRUE(title_text_field);
+    EXPECT_TRUE(title_text_field->GetText().empty());
+
+    // Append "New task" text.
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_E);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_W);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_SPACE);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_T);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_A);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_S);
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_K);
+
+    // Finish editing by pressing Esc key.
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  }
+
+  {
+    const auto* const title_label =
+        views::AsViewClass<views::Label>(pending_task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+    const auto* const title_text_field =
+        views::AsViewClass<views::Textfield>(pending_task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+
+    // Check that the view is in "view" mode with the expected label
+    ASSERT_TRUE(title_label);
+    ASSERT_FALSE(title_text_field);
+    EXPECT_EQ(title_label->GetText(), u"New task");
+  }
+}
 
 IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {
   ASSERT_TRUE(glanceables_controller()->GetTasksClient());

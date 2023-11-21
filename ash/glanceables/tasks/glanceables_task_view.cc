@@ -406,7 +406,19 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
 void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
   task_title_ = title;
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
-  save_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_));
+  save_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_),
+                     base::BindOnce(&GlanceablesTaskView::OnSaved,
+                                    weak_ptr_factory_.GetWeakPtr()));
+  // TODO(b/301253574): introduce "disabled" state for this view to prevent
+  // editing / marking as complete while the task is not fully created yet and
+  // race conditions while editing the same task.
+}
+
+void GlanceablesTaskView::OnSaved(const api::Task* task) {
+  if (!task) {
+    return;
+  }
+  task_id_ = task->id;
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)

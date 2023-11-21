@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
@@ -95,9 +96,18 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
                            bool completed);
 
   // Saves the task (either creates or updates the existing one).
+  // `callback` - done callback passed from an individual task view.
   void SaveTask(const std::string& task_list_id,
                 const std::string& task_id,
-                const std::string& title);
+                const std::string& title,
+                api::TasksClient::OnTaskSavedCallback callback);
+
+  // Handles completion of `SaveTask`.
+  // `callback` - callback passed from an individual task view via `SaveTask`.
+  // `task`     - newly created or edited task if the request completes
+  //              successfully, `nullptr` otherwise.
+  void OnTaskSaved(api::TasksClient::OnTaskSavedCallback callback,
+                   const api::Task* task);
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;

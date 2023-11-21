@@ -5,6 +5,7 @@
 #include "ash/api/tasks/fake_tasks_client.h"
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "ash/api/tasks/tasks_client.h"
@@ -14,8 +15,23 @@
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
+#include "base/uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::api {
+namespace {
+
+size_t RunPendingCallbacks(std::list<base::OnceClosure>& pending_callbacks) {
+  std::list<base::OnceClosure> callbacks;
+  pending_callbacks.swap(callbacks);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
+  return callbacks.size();
+}
+
+}  // namespace
 
 FakeTasksClient::FakeTasksClient(base::Time tasks_due_time) {
   PopulateTasks(tasks_due_time);
@@ -68,14 +84,59 @@ void FakeTasksClient::MarkAsCompleted(const std::string& task_list_id,
 void FakeTasksClient::AddTask(const std::string& task_list_id,
                               const std::string& title,
                               TasksClient::OnTaskSavedCallback callback) {
-  NOTIMPLEMENTED();
+  auto task_list_iter = tasks_in_task_lists_.find(task_list_id);
+  CHECK(task_list_iter != tasks_in_task_lists_.end());
+
+  auto pending_task = std::make_unique<Task>(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), title,
+      /*completed=*/false,
+      /*due=*/absl::nullopt,
+      /*has_subtasks=*/false, /*has_email_link=*/false,
+      /*has_notes=*/false,
+      /*updated=*/base::Time::Now());
+
+  auto pending_callback = base::BindOnce(
+      [](ui::ListModel<Task>* tasks, std::unique_ptr<Task> pending_task,
+         TasksClient::OnTaskSavedCallback callback) {
+        const auto* const task = tasks->AddAt(
+            /*index=*/0, std::move(pending_task));
+        std::move(callback).Run(task);
+      },
+      task_list_iter->second.get(), std::move(pending_task),
+      std::move(callback));
+
+  if (paused_) {
+    pending_add_task_callbacks_.push_back(std::move(pending_callback));
+  } else {
+    std::move(pending_callback).Run();
+  }
 }
 
 void FakeTasksClient::UpdateTask(const std::string& task_list_id,
                                  const std::string& task_id,
                                  const std::string& title,
                                  TasksClient::OnTaskSavedCallback callback) {
-  NOTIMPLEMENTED();
+  auto task_list_iter = tasks_in_task_lists_.find(task_list_id);
+  CHECK(task_list_iter != tasks_in_task_lists_.end());
+
+  const auto task_iter = std::find_if(
+      task_list_iter->second->begin(), task_list_iter->second->end(),
+      [&task_id](const auto& task) { return task->id == task_id; });
+  CHECK(task_iter != task_list_iter->second->end());
+
+  auto pending_callback = base::BindOnce(
+      [](Task* task, const std::string& title,
+         TasksClient::OnTaskSavedCallback callback) {
+        task->title = title;
+        std::move(callback).Run(task);
+      },
+      task_iter->get(), title, std::move(callback));
+
+  if (paused_) {
+    pending_update_task_callbacks_.push_back(std::move(pending_callback));
+  } else {
+    std::move(pending_callback).Run();
+  }
 }
 
 void FakeTasksClient::OnGlanceablesBubbleClosed(
@@ -83,6 +144,8 @@ void FakeTasksClient::OnGlanceablesBubbleClosed(
   ++bubble_closed_count_;
   RunPendingGetTaskListsCallbacks();
   RunPendingGetTasksCallbacks();
+  RunPendingAddTaskCallbacks();
+  RunPendingUpdateTaskCallbacks();
   completed_tasks_ += pending_completed_tasks_.size();
   pending_completed_tasks_.clear();
   std::move(callback).Run();
@@ -95,21 +158,19 @@ int FakeTasksClient::GetAndResetBubbleClosedCount() {
 }
 
 size_t FakeTasksClient::RunPendingGetTasksCallbacks() {
-  std::list<base::OnceClosure> callbacks;
-  pending_get_tasks_callbacks_.swap(callbacks);
-  for (auto& callback : callbacks) {
-    std::move(callback).Run();
-  }
-  return callbacks.size();
+  return RunPendingCallbacks(pending_get_tasks_callbacks_);
 }
 
 size_t FakeTasksClient::RunPendingGetTaskListsCallbacks() {
-  std::list<base::OnceClosure> callbacks;
-  pending_get_task_lists_callbacks_.swap(callbacks);
-  for (auto& callback : callbacks) {
-    std::move(callback).Run();
-  }
-  return callbacks.size();
+  return RunPendingCallbacks(pending_get_task_lists_callbacks_);
+}
+
+size_t FakeTasksClient::RunPendingAddTaskCallbacks() {
+  return RunPendingCallbacks(pending_add_task_callbacks_);
+}
+
+size_t FakeTasksClient::RunPendingUpdateTaskCallbacks() {
+  return RunPendingCallbacks(pending_update_task_callbacks_);
 }
 
 void FakeTasksClient::PopulateTasks(base::Time tasks_due_time) {
