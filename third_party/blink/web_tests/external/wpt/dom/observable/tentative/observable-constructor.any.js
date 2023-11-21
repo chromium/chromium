@@ -186,7 +186,7 @@ test(t => {
     initialSignalAborted = subscriber.signal.aborted;
   });
 
-  source.subscribe({signal: AbortSignal.abort('Initially aborted')});
+  source.subscribe({}, {signal: AbortSignal.abort('Initially aborted')});
   assert_false(initialActivity);
   assert_true(initialSignalAborted);
   assert_equals(innerSubscriber.signal.reason, 'Initially aborted');
@@ -198,7 +198,7 @@ test(() => {
   const source = new Observable(subscriber => outerSubscriber = subscriber);
 
   const controller = new AbortController();
-  source.subscribe({signal: controller.signal});
+  source.subscribe({}, {signal: controller.signal});
 
   assert_not_equals(controller.signal, outerSubscriber.signal);
 }, "Subscriber#signal is not the same AbortSignal as the one passed into `subscribe()`");
@@ -555,9 +555,8 @@ test(() => {
   source.subscribe({
     // This should never get called. If it is, the array assertion below will fail.
     next: (x) => results.push(x),
-    complete: () => results.push('complete()'),
-    signal: ac.signal,
-  });
+    complete: () => results.push('complete()')
+  }, {signal: ac.signal});
 
   ac.signal.addEventListener('abort', () => {
     results.push('outer abort handler');
@@ -596,9 +595,8 @@ test(t => {
       }
     },
     error: () => results.push('error'),
-    complete: () => results.push('complete'),
-    signal: ac.signal,
-  });
+    complete: () => results.push('complete')
+  }, {signal: ac.signal});
 
   assert_array_equals(
     results,
@@ -665,9 +663,7 @@ test(() => {
   });
 
   const ac = new AbortController();
-  source.subscribe({
-    signal: ac.signal,
-  });
+  source.subscribe({}, {signal: ac.signal});
 
   assert_false(addTeardownCalled, "Teardown is not be called upon subscription");
   ac.abort();
@@ -809,9 +805,8 @@ test(() => {
   source.subscribe({
     next: (x) => results.push(x),
     error: (error) => results.push(error),
-    complete: () => results.push('complete'),
-    signal: ac.signal,
-  });
+    complete: () => results.push('complete')
+  }, {signal: ac.signal});
 
   assert_array_equals(results, []);
   assert_true(firstTeardownInvokedSynchronously, "First teardown callback is invoked during addTeardown()");

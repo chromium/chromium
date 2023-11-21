@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -58,7 +59,8 @@ class Subscriber::CloseSubscriptionAlgorithm final
 
 Subscriber::Subscriber(base::PassKey<Observable>,
                        ScriptState* script_state,
-                       Observer* observer)
+                       Observer* observer,
+                       SubscribeOptions* options)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
       next_(observer->hasNext() ? observer->next() : nullptr),
       complete_(observer->hasComplete() ? observer->complete() : nullptr),
@@ -88,8 +90,8 @@ Subscriber::Subscriber(base::PassKey<Observable>,
   // info on the dependent signal infrastructure.
   HeapVector<Member<AbortSignal>> signals;
   signals.push_back(complete_or_error_controller_->signal());
-  if (observer->hasSignal()) {
-    signals.push_back(observer->signal());
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
   }
   signal_ = MakeGarbageCollected<AbortSignal>(script_state, signals);
 

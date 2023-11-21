@@ -12,12 +12,15 @@ dictionary Observer {
   ObserverCallback next;
   ObserverCompleteCallback complete;
   ObserverCallback error;
+};
+
+dictionary SubscribeOptions {
   AbortSignal signal;
 };
 
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Observable {
     [CallWith=ScriptState, MeasureAs=ObservableConstructor] constructor(SubscribeCallback callback);
-    [CallWith=ScriptState] void subscribe(optional Observer observer = {});
+    [CallWith=ScriptState] void subscribe(optional Observer observer = {}, optional SubscribeOptions options = {});
 };
 

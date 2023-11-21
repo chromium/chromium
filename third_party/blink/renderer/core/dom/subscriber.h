@@ -20,6 +20,7 @@ class AbortController;
 class Observable;
 class Observer;
 class ScriptState;
+class SubscribeOptions;
 class V8ObserverCallback;
 class V8ObserverCompleteCallback;
 class V8VoidFunction;
@@ -29,7 +30,10 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Subscriber(base::PassKey<Observable>, ScriptState*, Observer*);
+  Subscriber(base::PassKey<Observable>,
+             ScriptState*,
+             Observer*,
+             SubscribeOptions*);
 
   // API methods.
   void next(ScriptValue);
