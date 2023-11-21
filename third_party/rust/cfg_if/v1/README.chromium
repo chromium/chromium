@@ -5,8 +5,8 @@ parameters. Structured like an if-else chain, the first matching branch is the
 item that gets emitted.
 
 Version: 1.0.0
-Security Critical: no
-Shipped: no
+Security Critical: yes
+Shipped: yes
 License: Apache 2.0
 License File: rust/chromium_crates_io/vendor/cfg-if-1.0.0/LICENSE-APACHE
 Revision: e60fa1efeab0ec6e90c50d93ec526e1410459c23

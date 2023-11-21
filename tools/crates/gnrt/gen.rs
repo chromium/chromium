@@ -111,7 +111,8 @@ fn generate_for_std(
         )?,
         Some(vec![config.resolve.root.clone()]),
         None,
-    );
+        &config,
+    )?;
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
@@ -214,7 +215,7 @@ fn generate_for_std(
         &config,
         gn::NameLibStyle::PackageName,
         |crate_id| crate_inputs.get(crate_id).unwrap(),
-    );
+    )?;
 
     if args.get_flag("dump-template-input") {
         return serde_json::to_writer_pretty(
@@ -262,7 +263,8 @@ fn generate_for_third_party(
         )?,
         Some(vec![config.resolve.root.clone()]),
         None,
-    );
+        &config,
+    )?;
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
@@ -333,7 +335,7 @@ fn generate_for_third_party(
                 // TODO(danakj): Change to PackageName for consistency?
                 gn::NameLibStyle::LibLiteral,
                 |crate_id| crate_inputs.get(crate_id).unwrap(),
-            );
+            )?;
             let path = paths
                 .third_party
                 // TODO(danakj): Generate into `safe`, `sandbox`, or `test` directories here.

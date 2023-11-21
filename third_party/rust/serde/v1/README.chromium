@@ -2,8 +2,8 @@ Name: serde
 URL: https://crates.io/crates/serde
 Description: A generic serialization/deserialization framework
 Version: 1.0.192
-Security Critical: no
-Shipped: no
+Security Critical: yes
+Shipped: yes
 License: Apache 2.0
 License File: rust/chromium_crates_io/vendor/serde-1.0.192/LICENSE-APACHE
 Revision: 4676abdc9e6bbbddfb33a00ce8d7e81e92f01120

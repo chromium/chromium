@@ -4,7 +4,7 @@ Description: Determine displayed width of `char` and `str` types
 according to Unicode Standard Annex #11 rules.
 
 Version: 0.1.11
-Security Critical: no
+Security Critical: yes
 Shipped: no
 License: Apache 2.0
 License File: rust/chromium_crates_io/vendor/unicode-width-0.1.11/LICENSE-APACHE

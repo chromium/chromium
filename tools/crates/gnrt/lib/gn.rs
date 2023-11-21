@@ -8,11 +8,13 @@ use crate::config::BuildConfig;
 use crate::crates::CrateFiles;
 use crate::crates::{Epoch, NormalizedName, VendoredCrate, Visibility};
 use crate::deps::{self, DepOfDep};
+use crate::group::Group;
 use crate::paths;
 use crate::platforms;
 
 use std::collections::HashMap;
 
+use anyhow::Result;
 use serde::Serialize;
 
 /// Describes a BUILD.gn file for a single crate epoch. Each file may have
@@ -136,21 +138,23 @@ pub fn build_file_from_std_deps<'a, 'b, Iter, GetFiles>(
     extra_config: &'b BuildConfig,
     name_lib_style: NameLibStyle,
     get_files: GetFiles,
-) -> BuildFile
+) -> Result<BuildFile>
 where
     Iter: IntoIterator<Item = &'a deps::Package>,
     GetFiles: Fn(&VendoredCrate) -> &'b CrateFiles,
 {
-    let rules = deps
-        .into_iter()
-        .map(|dep| {
-            let crate_id = dep.crate_id();
-            build_rule_from_std_dep(dep, paths, get_files(&crate_id), extra_config, name_lib_style)
-        })
-        .flatten()
-        .collect();
-
-    BuildFile { rules }
+    let mut b = BuildFile { rules: Vec::new() };
+    for dep in deps {
+        let crate_id = dep.crate_id();
+        b.rules.extend(build_rule_from_std_dep(
+            dep,
+            paths,
+            get_files(&crate_id),
+            extra_config,
+            name_lib_style,
+        )?)
+    }
+    Ok(b)
 }
 
 pub fn build_rule_from_std_dep(
@@ -159,7 +163,7 @@ pub fn build_rule_from_std_dep(
     details: &CrateFiles,
     extra_config: &BuildConfig,
     name_lib_style: NameLibStyle,
-) -> Vec<Rule> {
+) -> Result<Vec<Rule>> {
     let cargo_pkg_authors =
         if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
     let per_crate_config = extra_config.per_crate_config.get(&*dep.package_name);
@@ -184,21 +188,6 @@ pub fn build_rule_from_std_dep(
     let allow_first_party_usage = match extra_kv.get("allow_first_party_usage") {
         Some(serde_json::Value::Bool(b)) => *b,
         _ => dep.is_toplevel_dep,
-    };
-    #[derive(Debug, PartialEq, Eq)]
-    enum Group {
-        Safe,
-        Sandbox,
-        Test,
-    }
-    let group = match per_crate_config.map(|config| config.group.as_ref()).flatten() {
-        Some(s) if s == "safe" => Some(Group::Safe),
-        Some(s) if s == "sandbox" => Some(Group::Sandbox),
-        Some(s) if s == "test" => Some(Group::Test),
-        Some(s) => {
-            panic!("invalid group '{}' in config for crate {}", s, dep.package_name)
-        }
-        None => None,
     };
 
     let mut detail_template = CrateDetail {
@@ -342,7 +331,7 @@ pub fn build_rule_from_std_dep(
 
         rules.push(Rule {
             name: NormalizedName::from_crate_name(&bin_target.name).to_string(),
-            gn_visibility: GnVisibility { testonly: false, public: true },
+            gn_visibility: GnVisibility { testonly: dep.group == Group::Test, public: true },
             detail: RuleDetail::Crate(bin_detail),
         });
     }
@@ -401,7 +390,7 @@ pub fn build_rule_from_std_dep(
                 _ => unreachable!(), // The for loop here is over [Normal, Build].
             };
 
-            let testonly = group == Some(Group::Test);
+            let testonly = dep.group == Group::Test;
             rules.push(Rule {
                 name: lib_rule_name.clone(),
                 gn_visibility: GnVisibility {
@@ -427,7 +416,7 @@ pub fn build_rule_from_std_dep(
         }
     }
 
-    rules
+    Ok(rules)
 }
 
 /// Group dependencies by condition, with unconditional deps first.

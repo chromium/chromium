@@ -2,7 +2,7 @@ Name: anstyle
 URL: https://crates.io/crates/anstyle
 Description: ANSI text styling
 Version: 1.0.4
-Security Critical: no
+Security Critical: yes
 Shipped: no
 License: Apache 2.0
 License File: rust/chromium_crates_io/vendor/anstyle-1.0.4/LICENSE-APACHE

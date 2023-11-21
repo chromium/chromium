@@ -32,4 +32,5 @@ cargo_crate("buildrs_support") {
   # Only for usage from third-party crates. Add the crate to
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
+  testonly = true
 }

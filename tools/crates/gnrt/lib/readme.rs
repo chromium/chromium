@@ -4,6 +4,7 @@
 
 use crate::config::BuildConfig;
 use crate::crates;
+use crate::group::Group;
 use crate::paths;
 use anyhow::{format_err, Result};
 use semver::Version;
@@ -32,13 +33,21 @@ pub fn readme_files_from_packages<'a>(
     deps: impl IntoIterator<Item = &'a cargo_metadata::Package>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Result<String>,
+    mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Result<Group>,
+    mut find_security_critical: impl FnMut(&'a cargo_metadata::PackageId) -> Result<Option<bool>>,
+    mut find_shipped: impl FnMut(&'a cargo_metadata::PackageId) -> Result<Option<bool>>,
 ) -> Result<HashMap<PathBuf, ReadmeFile>> {
     let mut map = HashMap::new();
 
     for package in deps {
-        let (dir, readme) =
-            readme_file_from_package(package, paths, extra_config, &mut find_group)?;
+        let (dir, readme) = readme_file_from_package(
+            package,
+            paths,
+            extra_config,
+            &mut find_group,
+            &mut find_security_critical,
+            &mut find_shipped,
+        )?;
         map.insert(dir, readme);
     }
 
@@ -49,7 +58,9 @@ pub fn readme_file_from_package<'a>(
     package: &'a cargo_metadata::Package,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    find_group: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Result<String>,
+    find_group: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Result<Group>,
+    find_security_critical: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Result<Option<bool>>,
+    find_shipped: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Result<Option<bool>>,
 ) -> Result<(PathBuf, ReadmeFile)> {
     let epoch = crates::Epoch::from_version(&package.version);
     let dir = paths
@@ -64,21 +75,15 @@ pub fn readme_file_from_package<'a>(
         .join(format!("{}-{}", package.name, package.version));
     let group = find_group(&package.id)?;
 
-    let security_critical = crate_config
-        .and_then(|config| config.security_critical)
-        .unwrap_or_else(|| match group.as_ref() {
-            "safe" | "sandbox" => true,
-            "test" => false,
-            _ => unreachable!(),
-        });
+    let security_critical = find_security_critical(&package.id)?.unwrap_or_else(|| match group {
+        Group::Safe | Group::Sandbox => true,
+        Group::Test => false,
+    });
 
-    let shipped = crate_config
-        .and_then(|config| config.shipped) //
-        .unwrap_or_else(|| match group.as_ref() {
-            "safe" | "sandbox" => true,
-            "test" => false,
-            _ => unreachable!(),
-        });
+    let shipped = find_shipped(&package.id)?.unwrap_or_else(|| match group {
+        Group::Safe | Group::Sandbox => true,
+        Group::Test => false,
+    });
 
     let license = {
         if let Some(config_license) = crate_config.and_then(|config| config.license.clone()) {

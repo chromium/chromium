@@ -2,7 +2,7 @@ Name: clap_builder
 URL: https://crates.io/crates/clap_builder
 Description: A simple to use, efficient, and full-featured Command Line Argument Parser
 Version: 4.4.8
-Security Critical: no
+Security Critical: yes
 Shipped: no
 License: Apache 2.0
 License File: rust/chromium_crates_io/vendor/clap_builder-4.4.8/LICENSE-APACHE

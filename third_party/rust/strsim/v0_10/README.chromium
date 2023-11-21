@@ -4,7 +4,7 @@ Description: Implementations of string similarity metrics. Includes Hamming, Lev
 OSA, Damerau-Levenshtein, Jaro, Jaro-Winkler, and Sørensen-Dice.
 
 Version: 0.10.0
-Security Critical: no
+Security Critical: yes
 Shipped: no
 License: MIT
 License File: rust/chromium_crates_io/vendor/strsim-0.10.0/LICENSE

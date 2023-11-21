@@ -72,7 +72,7 @@ remove_deps = ['cc', 'link-cplusplus']
 remove_build_rs = true
 
 [crate.cxxbridge-cmd]
-group = 'test'
+shipped = false
 
 [crate.hex]
 group = 'test'

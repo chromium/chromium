@@ -4,7 +4,10 @@
 
 use crate::config;
 use crate::crates;
-use crate::group::Group;
+use crate::inherit::{
+    find_inherited_privilege_group, find_inherited_security_critical_flag,
+    find_inherited_shipped_flag,
+};
 use crate::paths;
 use crate::readme;
 use crate::util::{
@@ -12,7 +15,6 @@ use crate::util::{
     without_cargo_config_toml,
 };
 use anyhow::{format_err, Context, Result};
-use cargo_metadata::{Node, Package, PackageId};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
@@ -70,7 +72,7 @@ fn vendor_impl(
                 metadata.root_package().unwrap().id != package.id
             })
             // Key off the package id.
-            .map(|p| (p.id.clone(), p))
+            .map(|p| (&p.id, p))
             .collect();
 
         // If there are multiple crates with the same epoch, this is unexpected.
@@ -91,14 +93,8 @@ fn vendor_impl(
 
         packages
     };
-    let nodes: HashMap<_, _> = metadata
-        .resolve
-        .as_ref()
-        .unwrap()
-        .nodes
-        .iter()
-        .map(|node| (node.id.clone(), node))
-        .collect();
+    let nodes: HashMap<_, _> =
+        metadata.resolve.as_ref().unwrap().nodes.iter().map(|node| (&node.id, node)).collect();
 
     {
         let package_names = packages.values().map(|p| &p.name).collect::<HashSet<_>>();
@@ -140,7 +136,11 @@ fn vendor_impl(
             .with_context(|| format!("removing {}", d))?
     }
 
-    let find_group = |id| find_least_privilege_group(id, &packages, &nodes, &config);
+    let root = metadata.resolve.as_ref().unwrap().root.as_ref().unwrap();
+    let find_group = |id| find_inherited_privilege_group(id, root, &packages, &nodes, &config);
+    let find_security_critical =
+        |id| find_inherited_security_critical_flag(id, root, &packages, &nodes, &config);
+    let find_shipped = |id| find_inherited_shipped_flag(id, root, &packages, &nodes, &config);
 
     let all_readme_files: HashMap<PathBuf, readme::ReadmeFile> =
         readme::readme_files_from_packages(
@@ -152,6 +152,8 @@ fn vendor_impl(
             paths,
             &config,
             find_group,
+            find_security_critical,
+            find_shipped,
         )?;
 
     for (dir, _) in &all_readme_files {
@@ -182,57 +184,6 @@ fn vendor_impl(
             .with_context(|| format!("{}", file_path.to_string_lossy()))?;
     }
     Ok(())
-}
-
-fn is_ancestor(
-    ancestor_id: &PackageId,
-    id: &PackageId,
-    packages: &HashMap<PackageId, &Package>,
-    nodes: &HashMap<PackageId, &Node>,
-) -> bool {
-    if id == ancestor_id {
-        return true;
-    }
-    for dep in &nodes[ancestor_id].dependencies {
-        if dep == id || is_ancestor(dep, id, packages, nodes) {
-            return true;
-        }
-    }
-    false
-}
-
-fn find_least_privilege_group(
-    id: &PackageId,
-    packages: &HashMap<PackageId, &Package>,
-    nodes: &HashMap<PackageId, &Node>,
-    config: &config::BuildConfig,
-) -> Result<String> {
-    // Find all ancestors that define a group.
-    let mut ancestor_groups = Vec::<Group>::new();
-    for (each_id, _) in packages {
-        if is_ancestor(each_id, id, packages, nodes) {
-            let group = config
-                .per_crate_config
-                .get(&packages[each_id].name)
-                .and_then(|config| config.group.as_ref());
-            match group {
-                Some(x) => {
-                    ancestor_groups.push(Group::new_from_str(x).with_context(||format!(
-                        "Invalid config: group {} for crate {} should be one of safe|sandbox|text",
-                        x,
-                        packages[id].name,
-                    ) )?);
-                }
-                None => (),
-            };
-        }
-    }
-
-    let least_privilege = ancestor_groups
-        .into_iter()
-        .fold(None, |init, g| Some(init.map(|old| std::cmp::min(old, g)).unwrap_or(g)));
-    // TODO: Default should be sandbox??
-    Ok(least_privilege.unwrap_or(Group::Safe).to_string())
 }
 
 fn download_crate(
