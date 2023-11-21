@@ -7131,3 +7131,6 @@ crbug.com/1503067 [ Linux ] virtual/pna-iframes-warning/external/wpt/fetch/priva
 crbug.com/1503067 [ Linux ] virtual/pna-iframes-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Failure Pass ]
 crbug.com/1503086 [ Linux ] external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Failure Pass ]
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
+
+# Gerdener 2023-11-21
+crbug.com/1504071 [ Mac ] http/tests/navigation/ping-cross-origin-from-https.html [ Failure Pass ]
