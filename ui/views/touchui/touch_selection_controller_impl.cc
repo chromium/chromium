@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/aura/client/cursor_client.h"
@@ -457,7 +456,6 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
     : client_view_(client_view) {
   DCHECK(client_view_);
   CreateHandleWidgets();
-  selection_start_time_ = base::TimeTicks::Now();
   aura::Window* client_window = client_view_->GetNativeView();
   client_widget_ = Widget::GetTopLevelWidgetForNativeView(client_window);
   // Observe client widget moves and resizes to update the selection handles.
@@ -680,11 +678,6 @@ bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id) const {
 
 void TouchSelectionControllerImpl::ExecuteCommand(int command_id,
                                                   int event_flags) {
-  base::TimeDelta duration = base::TimeTicks::Now() - selection_start_time_;
-  // Note that we only log the duration stats for the 'successful' selections,
-  // i.e. selections ending with the execution of a command.
-  UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.Duration", duration,
-                             base::Milliseconds(500), base::Seconds(60), 60);
   client_view_->ExecuteCommand(command_id, event_flags);
 }
 

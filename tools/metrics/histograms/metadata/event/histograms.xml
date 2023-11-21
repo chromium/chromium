@@ -1188,16 +1188,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.TouchSelection.Duration" units="ms" expires_after="M77">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Duration of touch selection sequence which finished with the user selecting
-    one of the text manipulation actions, such as copy, cut, or paste. The
-    duration is measured from the moment the text selection handles are shown,
-    and until the action is executed.
-  </summary>
-</histogram>
-
 <histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
     enum="UserActivationTriggerEnum" expires_after="2023-09-30">
   <owner>mustaq@chromium.org</owner>

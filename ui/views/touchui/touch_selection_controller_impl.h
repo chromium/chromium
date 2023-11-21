@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/events/event_observer.h"
@@ -147,8 +146,6 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
 
   // Magnifier which is shown when touch dragging to adjust the selection.
   std::unique_ptr<ui::TouchSelectionMagnifierAura> touch_selection_magnifier_;
-
-  base::TimeTicks selection_start_time_;
 
   // Whether to enable toggling the menu by tapping the cursor or cursor handle.
   // If enabled, the menu defaults to being hidden when the cursor handle is
