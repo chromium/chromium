@@ -1,6 +1,0 @@
-CONSOLE ERROR: line 24: Uncaught ReferenceError: OSC is not defined
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x8
-  LayoutBlockFlow {HTML} at (0,0) size 800x8
-    LayoutBlockFlow {BODY} at (8,8) size 784x0

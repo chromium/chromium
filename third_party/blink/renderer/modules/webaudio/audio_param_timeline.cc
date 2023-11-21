@@ -1631,21 +1631,18 @@ std::tuple<size_t, float, unsigned> AudioParamTimeline::ProcessExponentialRamp(
     //   m = (v2/v1)^(1/(F*(t2-t1)))
 
     // Compute the per-sample multiplier.
-    float multiplier = fdlibm::powf(value2 / value1, 1 / num_sample_frames);
+    double multiplier = fdlibm::pow(value2 / value1, 1.0 / num_sample_frames);
     // Set the starting value of the exponential ramp.  Do not attempt
     // to optimize pow to powf.  See crbug.com/771306.
     value = value1 *
             fdlibm::pow(value2 / static_cast<double>(value1),
                         (current_frame / sample_rate - time1) / delta_time);
-    for (; write_index < fill_to_frame; ++write_index) {
+    for (double accumulator = value; write_index < fill_to_frame;
+         ++write_index) {
+      value = accumulator;
       values[write_index] = value;
-      value *= multiplier;
+      accumulator *= multiplier;
       ++current_frame;
-    }
-    // `value` got updated one extra time in the above loop.  Restore it to
-    // the last computed value.
-    if (write_index >= 1) {
-      value /= multiplier;
     }
 
     // Due to roundoff it's possible that value exceeds value2.  Clip value
