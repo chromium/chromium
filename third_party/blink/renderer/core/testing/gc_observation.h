@@ -41,7 +41,7 @@ class GCObservation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit GCObservation(v8::Local<v8::Value>);
+  explicit GCObservation(v8::Isolate* isolate, v8::Local<v8::Value>);
 
   // Caution: It is only feasible to determine whether an object was
   // "near death"; it may have been kept alive through a weak

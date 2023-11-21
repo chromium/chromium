@@ -304,7 +304,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
     Holder()->GetProperty()->Resolve(Holder());
 
     observation = MakeGarbageCollected<GCObservation>(
-        Promise(DOMWrapperWorld::MainWorld()).V8Value());
+        GetIsolate(), Promise(DOMWrapperWorld::MainWorld()).V8Value());
   }
 
   Gc();

@@ -743,7 +743,8 @@ GCObservation* Internals::observeGC(ScriptValue script_value,
     return nullptr;
   }
 
-  return MakeGarbageCollected<GCObservation>(observed_value);
+  return MakeGarbageCollected<GCObservation>(script_value.GetIsolate(),
+                                             observed_value);
 }
 
 unsigned Internals::updateStyleAndReturnAffectedElementCount(
