@@ -179,8 +179,11 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isOSSettings", true);
 
   // Add app-wide feature flags
-  html_source->AddBoolean("isRevampWayfindingEnabled",
-                          ash::features::IsOsSettingsRevampWayfindingEnabled());
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+  html_source->AddBoolean("isRevampWayfindingEnabled", kIsRevampEnabled);
+  html_source->AddString("chromeRefresh2023Attribute",
+                         kIsRevampEnabled ? "chrome-refresh-2023" : "");
 
   html_source->AddBoolean("isGuest", IsGuestModeActive());
   html_source->AddBoolean(
@@ -199,10 +202,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddInteger(
       "entryPointEnumSize",
       static_cast<int>(PersonalizationEntryPoint::kMaxValue) + 1);
-
-  html_source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsOsSettingsTestChromeRefresh() ? "chrome-refresh-2023" : "");
 
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);
