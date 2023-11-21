@@ -12,22 +12,6 @@
 namespace save_address_profile_infobar_modal_responses {
 
 // Response info used to create dispatched OverlayResponses once the user
-// presses "Save" action on the Edit Modal.
-class LegacyEditedProfileSaveAction
-    : public OverlayResponseInfo<LegacyEditedProfileSaveAction> {
- public:
-  ~LegacyEditedProfileSaveAction() override;
-
-  NSDictionary* profile_data() const { return profile_data_; }
-
- private:
-  OVERLAY_USER_DATA_SETUP(LegacyEditedProfileSaveAction);
-  LegacyEditedProfileSaveAction(NSDictionary* profileData);
-
-  NSDictionary* profile_data_;
-};
-
-// Response info used to create dispatched OverlayResponses once the user
 // presses "Save/Update" action on the Edit Modal.
 class EditedProfileSaveAction
     : public OverlayResponseInfo<EditedProfileSaveAction> {

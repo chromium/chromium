@@ -12,9 +12,6 @@ source_set("modals") {
     "infobar_save_address_profile_modal_delegate.h",
     "infobar_save_address_profile_table_view_controller.h",
     "infobar_save_address_profile_table_view_controller.mm",
-    "legacy_infobar_edit_address_profile_modal_delegate.h",
-    "legacy_infobar_edit_address_profile_table_view_controller.h",
-    "legacy_infobar_edit_address_profile_table_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -43,7 +40,6 @@ source_set("unit_tests") {
   sources = [
     "infobar_edit_address_profile_table_view_controller_unittest.mm",
     "infobar_save_address_profile_table_view_controller_unittest.mm",
-    "legacy_infobar_edit_address_profile_table_view_controller_unittest.mm",
   ]
   deps = [
     ":modals",

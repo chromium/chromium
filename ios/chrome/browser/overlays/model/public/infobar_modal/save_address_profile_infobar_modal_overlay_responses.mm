@@ -6,16 +6,6 @@
 
 namespace save_address_profile_infobar_modal_responses {
 
-#pragma mark - LegacyEditedProfileSaveAction
-
-OVERLAY_USER_DATA_SETUP_IMPL(LegacyEditedProfileSaveAction);
-
-LegacyEditedProfileSaveAction::LegacyEditedProfileSaveAction(
-    NSDictionary* profileData)
-    : profile_data_(profileData) {}
-
-LegacyEditedProfileSaveAction::~LegacyEditedProfileSaveAction() = default;
-
 #pragma mark - EditedProfileSaveAction
 
 OVERLAY_USER_DATA_SETUP_IMPL(EditedProfileSaveAction);

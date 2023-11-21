@@ -30,8 +30,6 @@ using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
 using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
-using save_address_profile_infobar_modal_responses::
-    LegacyEditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 // Test fixture for
