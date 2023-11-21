@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,15 +19,19 @@ constexpr char kTrialName3[] = "trial3";
 constexpr char kGroupName[] = "Default";
 
 void CreateAndActivateFieldTrial(const std::string& trial_name,
-                                 const std::string& group_name) {
-  base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();
+                                 const std::string& group_name,
+                                 bool is_overridden) {
+  base::FieldTrialList::CreateFieldTrial(
+      trial_name, group_name, /*is_low_anonymity=*/false, is_overridden)
+      ->Activate();
 }
 
 void VerifyFieldTrial(const mojom::FieldTrialGroupInfoPtr& info,
                       const std::string& trial_name,
-                      const std::string& group_name) {
-  EXPECT_EQ(trial_name, info->trial_name);
-  EXPECT_EQ(group_name, info->group_name);
+                      const std::string& group_name,
+                      bool is_overridden) {
+  EXPECT_EQ(std::tie(trial_name, group_name, is_overridden),
+            std::tie(info->trial_name, info->group_name, info->is_overridden));
 }
 
 class TestFieldTrialObserver : public mojom::FieldTrialObserver {
@@ -64,24 +69,31 @@ class FieldTrialServiceAshTest : public testing::Test {
   FieldTrialServiceAshTest& operator=(const FieldTrialServiceAshTest&) = delete;
   ~FieldTrialServiceAshTest() override = default;
 
+  void SetUp() override {
+    scoped_features_.InitWithEmptyFeatureAndFieldTrialLists();
+  }
+
  protected:
   TestFieldTrialObserver observer_;
 
  private:
   content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 TEST_F(FieldTrialServiceAshTest, SendInitialFieldTrialsAndUpdate) {
-  CreateAndActivateFieldTrial(kTrialName1, kGroupName);
-  CreateAndActivateFieldTrial(kTrialName2, kGroupName);
+  CreateAndActivateFieldTrial(kTrialName1, kGroupName, /*is_overridden=*/true);
+  CreateAndActivateFieldTrial(kTrialName2, kGroupName, /*is_overridden=*/false);
 
   // Send initial field trials.
   base::RunLoop run_loop1;
   observer_.set_on_activate(base::BindLambdaForTesting(
       [&](const std::vector<mojom::FieldTrialGroupInfoPtr>& infos) {
         ASSERT_EQ(2u, infos.size());
-        VerifyFieldTrial(infos[0], kTrialName1, kGroupName);
-        VerifyFieldTrial(infos[1], kTrialName2, kGroupName);
+        VerifyFieldTrial(infos[0], kTrialName1, kGroupName,
+                         /*is_overridden=*/true);
+        VerifyFieldTrial(infos[1], kTrialName2, kGroupName,
+                         /*is_overridden=*/false);
         run_loop1.Quit();
         // Test won't proceed until this is called.
       }));
@@ -90,12 +102,13 @@ TEST_F(FieldTrialServiceAshTest, SendInitialFieldTrialsAndUpdate) {
   run_loop1.Run();
 
   // Send field trial updates.
-  CreateAndActivateFieldTrial(kTrialName3, kGroupName);
+  CreateAndActivateFieldTrial(kTrialName3, kGroupName, /*is_overridden=*/false);
   base::RunLoop run_loop2;
   observer_.set_on_activate(base::BindLambdaForTesting(
       [&](const std::vector<mojom::FieldTrialGroupInfoPtr>& infos) {
         EXPECT_EQ(1u, infos.size());
-        VerifyFieldTrial(infos[0], kTrialName3, kGroupName);
+        VerifyFieldTrial(infos[0], kTrialName3, kGroupName,
+                         /*is_overridden=*/false);
         run_loop2.Quit();
         // Test won't exit until this is called.
       }));

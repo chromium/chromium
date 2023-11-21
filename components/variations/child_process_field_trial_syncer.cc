@@ -98,12 +98,12 @@ void ChildProcessFieldTrialSyncer::SetFieldTrialGroupFromBrowser(
 }
 
 void ChildProcessFieldTrialSyncer::OnFieldTrialGroupFinalized(
-    const std::string& trial_name,
+    const base::FieldTrial& trial,
     const std::string& group_name) {
   // It is not necessary to notify the browser if this is invoked from
   // SetFieldTrialGroupFromBrowser().
   if (!in_set_field_trial_group_from_browser) {
-    activated_callback_.Run(trial_name);
+    activated_callback_.Run(trial.trial_name());
   }
 }
 

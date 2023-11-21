@@ -89,7 +89,7 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
   ~VariationsCrashKeys() override;
 
   // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
+  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
                                   const std::string& group_name) override;
 
   // Notifies the object that the list of synthetic field trial groups has
@@ -106,10 +106,15 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
   // updating crash keys. Returns true if it was successfully added. Returns
   // false otherwise (i.e., the trial was already added previously).
   bool AppendFieldTrial(const std::string& trial_name,
-                        const std::string& group_name);
+                        const std::string& group_name,
+                        bool is_overridden);
 
   // Updates crash keys based on internal state.
   void UpdateCrashKeys();
+
+  void AppendFieldTrialAndUpdateCrashKeys(const std::string& trial_name,
+                                          const std::string& group_name,
+                                          bool is_overridden);
 
   // List of active trials, used to prevent duplicates from being appended to
   // |variations_string_|.
@@ -161,7 +166,7 @@ VariationsCrashKeys::VariationsCrashKeys() {
   base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
       &active_groups);
   for (const auto& entry : active_groups) {
-    AppendFieldTrial(entry.trial_name, entry.group_name);
+    AppendFieldTrial(entry.trial_name, entry.group_name, entry.is_overridden);
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   background_thread_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -179,7 +184,7 @@ VariationsCrashKeys::~VariationsCrashKeys() {
 }
 
 void VariationsCrashKeys::OnFieldTrialGroupFinalized(
-    const std::string& trial_name,
+    const base::FieldTrial& trial,
     const std::string& group_name) {
   // If this is called on a different thread, post it back to the UI thread.
   // Note: This is safe to do because in production, this object is never
@@ -188,34 +193,44 @@ void VariationsCrashKeys::OnFieldTrialGroupFinalized(
   if (!ui_thread_task_runner_->RunsTasksInCurrentSequence()) {
     ui_thread_task_runner_->PostTask(
         FROM_HERE,
-        BindOnce(&VariationsCrashKeys::OnFieldTrialGroupFinalized,
+        BindOnce(&VariationsCrashKeys::AppendFieldTrialAndUpdateCrashKeys,
                  // base::Unretained() is safe here because this object is
                  // never deleted in production.
-                 base::Unretained(this), trial_name, group_name));
+                 base::Unretained(this), trial.trial_name(), group_name,
+                 trial.IsOverridden()));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (AppendFieldTrial(trial_name, group_name)) {
-    UpdateCrashKeys();
-  }
+  AppendFieldTrialAndUpdateCrashKeys(trial.trial_name(), group_name,
+                                     trial.IsOverridden());
 }
 
 bool VariationsCrashKeys::AppendFieldTrial(const std::string& trial_name,
-                                           const std::string& group_name) {
+                                           const std::string& group_name,
+                                           bool is_overridden) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!active_trials_.insert(trial_name).second) {
     return false;
   }
 
-  auto active_group_id = MakeActiveGroupId(trial_name, group_name);
+  auto active_group_id =
+      MakeActiveGroupId(trial_name, group_name, is_overridden);
   auto variation = ActiveGroupToString(active_group_id);
 
   variations_string_ += variation;
 
   return true;
+}
+
+void VariationsCrashKeys::AppendFieldTrialAndUpdateCrashKeys(
+    const std::string& trial_name,
+    const std::string& group_name,
+    bool is_overridden) {
+  if (AppendFieldTrial(trial_name, group_name, is_overridden)) {
+    UpdateCrashKeys();
+  }
 }
 
 ExperimentListInfo VariationsCrashKeys::GetExperimentListInfo() {

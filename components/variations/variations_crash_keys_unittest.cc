@@ -146,4 +146,18 @@ TEST_F(VariationsCrashKeysTest, SeedVersionFromCommandLineSwitch) {
   EXPECT_EQ("version-456", GetVariationsSeedVersionCrashKey());
 }
 
+TEST_F(VariationsCrashKeysTest, OverriddenFieldTrial) {
+  base::FieldTrialList::CreateFieldTrial("Trial1", "Group1",
+                                         /*is_low_anonymity=*/false,
+                                         /*is_overridden=*/true)
+      ->Activate();
+
+  InitCrashKeys();
+
+  // Because the trial is overridden, it has a different group variation ID.
+  EXPECT_EQ("1", GetNumExperimentsCrashKey());
+  EXPECT_EQ("2a140065", HashNameAsHexString("Group1_MANUALLY_FORCED"));
+  EXPECT_EQ("8e7abfb0-2a140065,", GetVariationsCrashKey());
+}
+
 }  // namespace variations

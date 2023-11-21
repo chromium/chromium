@@ -111,7 +111,7 @@ class FieldTrialListObserverBridge : public base::FieldTrialList::Observer {
       delete;
 
   // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
+  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
                                   const std::string& group_name) override {
     dispatch_async(dispatch_get_main_queue(), ^{
       variations::ExperimentListInfo info = variations::GetExperimentListInfo();
