@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -23,6 +24,11 @@
 namespace ash {
 
 namespace calendar_utils {
+
+bool IsForGlanceablesV2() {
+  return features::AreGlanceablesV2Enabled() &&
+         features::IsGlanceablesV2CalendarViewEnabled();
+}
 
 bool IsToday(const base::Time selected_date) {
   return IsTheSameDay(selected_date, base::Time::Now());

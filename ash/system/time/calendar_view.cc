@@ -87,6 +87,17 @@ constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
 constexpr int kTitleLeftPadding = 8;
 
+// For `calendar_header_view`.
+constexpr int kButtonInBetweenPadding = 12;
+constexpr int kHeaderViewHeight = 32;
+constexpr auto kHeaderIconButtonMargin =
+    gfx::Insets::TLBR(0, 0, 0, kButtonInBetweenPadding);
+constexpr auto kHeaderLabelBorder = gfx::Insets::VH(4, 10);
+constexpr auto kHeaderViewMargin = gfx::Insets::TLBR(16, 16, 0, 16);
+
+// For GlanceablesV2: the border of `MonthHeaderView`.
+constexpr auto kMonthHeaderBorder = gfx::Insets::TLBR(14, 0, 2, 0);
+
 // Adds a gap between the bottom visible row in the scrollview and the top of
 // the event list view when open.
 constexpr int kCalendarEventListViewOpenMargin = 8;
@@ -292,7 +303,9 @@ class MonthHeaderView : public views::View {
               .Build();
       label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
       label->SetBorder((views::CreateEmptyBorder(
-          gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
+          calendar_utils::IsForGlanceablesV2()
+              ? kMonthHeaderBorder
+              : gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
 
@@ -492,7 +505,18 @@ CalendarView::CalendarView(bool for_glanceables_container)
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kPane);
   GetViewAccessibility().OverrideName(GetClassName());
 
-  CreateCalendarTitleRow(IDS_ASH_CALENDAR_TITLE);
+  views::View* calendar_header_view = nullptr;
+  if (calendar_utils::IsForGlanceablesV2()) {
+    calendar_header_view = CreateCalendarHeaderRow();
+  } else {
+    CreateCalendarTitleRow(IDS_ASH_CALENDAR_TITLE);
+  }
+
+  // Adds an empty view as a placeholder so that the views below won't move up
+  // when the `progress_bar_` becomes invisible.
+  auto buffer_view = std::make_unique<views::View>();
+  buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
+  AddChildViewAt(std::move(buffer_view), kTitleRowProgressBarIndex);
 
   // Adds the progress bar to layout when initialization to avoid changing the
   // layout while reading the bounds of it.
@@ -500,58 +524,23 @@ CalendarView::CalendarView(bool for_glanceables_container)
                                  kTitleRowProgressBarIndex + 1);
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  // Add the header. The `temp_header_` only shows up during the header
-  // animation.
-  auto* header_container = new views::View();
-  header_container->SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto header = std::make_unique<CalendarHeaderView>(
-      calendar_view_controller_->GetOnScreenMonthName(),
-      calendar_utils::GetYear(
-          calendar_view_controller_->currently_shown_date()));
-  auto temp_header = std::make_unique<CalendarHeaderView>(
-      calendar_view_controller_->GetPreviousMonthName(),
-      calendar_utils::GetYear(
-          calendar_view_controller_->currently_shown_date()));
-  temp_header->SetVisible(false);
-  header_ = header_container->AddChildView(std::move(header));
-  temp_header_ = header_container->AddChildView(std::move(temp_header));
-
-  TriView* tri_view =
-      TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false);
-  tri_view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kLabelVerticalPadding, kContentHorizontalPadding, 0,
-                        kContentHorizontalPadding - kChevronPadding)));
-  tri_view->AddView(TriView::Container::START, header_container);
-
-  auto* button_container = new views::View();
-  const int horizontal_padding = kWeekRowHorizontalPadding;
-  views::BoxLayout* button_container_layout =
-      button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  button_container_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-  // Aligns button with the calendar dates in the `TableLayout`.
-  button_container_layout->set_between_child_spacing(kChevronInBetweenPadding);
-
-  up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
-                          base::Unretained(this), /*up=*/true),
-      IconButton::Type::kMediumFloating, &vector_icons::kCaretUpIcon,
-      IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
-
-  down_button_ = button_container->AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
-                          base::Unretained(this), /*up=*/false),
-      IconButton::Type::kMediumFloating, &vector_icons::kCaretDownIcon,
-      IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
-
-  tri_view->AddView(TriView::Container::END, button_container);
-  AddChildView(tri_view);
+  // Adds the calendar month header view and up/down buttons after the progress
+  // bar for non-Glanceables calendar view.
+  if (!calendar_utils::IsForGlanceablesV2()) {
+    TriView* tri_view =
+        TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false);
+    tri_view->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kLabelVerticalPadding, kContentHorizontalPadding, 0,
+                          kContentHorizontalPadding - kChevronPadding)));
+    tri_view->AddView(TriView::Container::START, CreateMonthHeaderContainer());
+    tri_view->AddView(TriView::Container::END, CreateButtonContainer());
+    AddChildView(tri_view);
+  }
 
   // Add month header.
   auto month_header = std::make_unique<MonthHeaderView>();
-  month_header->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, horizontal_padding, 0, horizontal_padding)));
+  month_header->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(0, kWeekRowHorizontalPadding)));
   AddChildView(std::move(month_header));
 
   // Add scroll view.
@@ -575,8 +564,7 @@ CalendarView::CalendarView(bool for_glanceables_container)
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   content_view_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kContentVerticalPadding, horizontal_padding,
-                        kContentVerticalPadding, horizontal_padding)));
+      gfx::Insets::VH(kContentVerticalPadding, kWeekRowHorizontalPadding)));
 
   // Focusable nodes must have an accessible name and valid role.
   // TODO(crbug.com/1348930): Review the accessible name and role.
@@ -603,7 +591,8 @@ CalendarView::CalendarView(bool for_glanceables_container)
   // Override the default focus order so the calendar contents (which contains
   // the current date view) and the UI within calendar sliding surfaces get
   // focused before the "Today" button in the calendar view header.
-  scroll_view_->InsertBeforeInFocusList(tri_view_);
+  scroll_view_->InsertBeforeInFocusList(
+      calendar_utils::IsForGlanceablesV2() ? calendar_header_view : tri_view_);
   calendar_sliding_surface_->InsertAfterInFocusList(scroll_view_);
 
   scoped_calendar_model_observer_.Observe(calendar_model_.get());
@@ -637,6 +626,41 @@ CalendarView::~CalendarView() {
   RemoveUpNextView();
   up_next_view_ = nullptr;
   content_view_->RemoveAllChildViews();
+}
+
+views::View* CalendarView::CreateCalendarHeaderRow() {
+  auto* calendar_header_view =
+      TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false);
+  calendar_header_view->SetBorder(views::CreateEmptyBorder(kHeaderViewMargin));
+
+  calendar_header_view->AddView(TriView::Container::START,
+                                CreateMonthHeaderContainer());
+
+  auto* today_button = new IconButton(
+      base::BindRepeating(&CalendarView::ResetToTodayWithAnimation,
+                          base::Unretained(this)),
+      IconButton::Type::kMedium, &kGlanceablesCalendarTodayIcon,
+      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
+  today_button->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
+  today_button->SetProperty(views::kMarginsKey, kHeaderIconButtonMargin);
+  today_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
+      calendar_utils::GetMonthDayYear(base::Time::Now())));
+  today_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_TODAY_BUTTON_TOOLTIP));
+
+  calendar_header_view->AddView(TriView::Container::END, today_button);
+  calendar_header_view->AddView(TriView::Container::END,
+                                CreateButtonContainer());
+
+  // Resets the insets of `calendar_header_view` since it has a default value
+  // when constructed.
+  calendar_header_view->SetInsets(gfx::Insets(0));
+
+  calendar_header_view->SetContainerBorder(
+      TriView::Container::START, views::CreateEmptyBorder(kHeaderLabelBorder));
+  calendar_header_view->SetMinHeight(kHeaderViewHeight);
+  return AddChildView(calendar_header_view);
 }
 
 void CalendarView::CreateCalendarTitleRow(int string_id) {
@@ -704,13 +728,54 @@ void CalendarView::CreateCalendarTitleRow(int string_id) {
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_SETTINGS_TOOLTIP));
   tri_view_->AddView(TriView::Container::END, settings_button_);
 
-  // Adds an empty view as a placeholder so that the views below won't move up
-  // when the `progress_bar_` becomes invisible.
-  auto buffer_view = std::make_unique<views::View>();
-  buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
-  AddChildViewAt(std::move(buffer_view), kTitleRowProgressBarIndex);
-
   Layout();
+}
+
+views::View* CalendarView::CreateMonthHeaderContainer() {
+  auto* header_container = new views::View();
+  header_container->SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  header_ = header_container->AddChildView(std::make_unique<CalendarHeaderView>(
+      calendar_view_controller_->GetOnScreenMonthName(),
+      calendar_utils::GetYear(
+          calendar_view_controller_->currently_shown_date())));
+  temp_header_ =
+      header_container->AddChildView(std::make_unique<CalendarHeaderView>(
+          calendar_view_controller_->GetPreviousMonthName(),
+          calendar_utils::GetYear(
+              calendar_view_controller_->currently_shown_date())));
+
+  // The `temp_header_` only shows up during the header animation.
+  temp_header_->SetVisible(false);
+
+  return header_container;
+}
+
+views::View* CalendarView::CreateButtonContainer() {
+  auto* button_container = new views::View();
+  views::BoxLayout* button_container_layout =
+      button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  button_container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  // Aligns button with the calendar dates in the `TableLayout`.
+  button_container_layout->set_between_child_spacing(
+      calendar_utils::IsForGlanceablesV2() ? kButtonInBetweenPadding
+                                           : kChevronInBetweenPadding);
+
+  up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
+      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
+                          base::Unretained(this), /*up=*/true),
+      IconButton::Type::kMediumFloating, &vector_icons::kCaretUpIcon,
+      IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
+
+  down_button_ = button_container->AddChildView(std::make_unique<IconButton>(
+      base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
+                          base::Unretained(this), /*up=*/false),
+      IconButton::Type::kMediumFloating, &vector_icons::kCaretDownIcon,
+      IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
+
+  return button_container;
 }
 
 void CalendarView::SetMonthViews() {

@@ -129,6 +129,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "gd_settings.icon",
     "gd_toolbar.icon",
     "gif.icon",
+    "glanceables_calendar_today.icon",
     "glanceables_classroom.icon",
     "glanceables_classroom_assignment.icon",
     "glanceables_subtask.icon",

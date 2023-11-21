@@ -95,6 +95,10 @@ constexpr int kUpNextBetweenChildSpacing = 8;
 // between the bottom and top of the 'nub'.
 constexpr int kUpNextOverlapInPx = 12;
 
+// Returns if CalendarView is for GlanceablesV2 based on whether the features
+// are enabled.
+bool IsForGlanceablesV2();
+
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);
 

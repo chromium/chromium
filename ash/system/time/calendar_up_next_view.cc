@@ -175,7 +175,9 @@ CalendarUpNextView::CalendarUpNextView(
       content_view_(scroll_view_->SetContents(std::make_unique<views::View>())),
       bounds_animator_(this) {
   SetBackground(std::make_unique<CalendarUpNextViewBackground>(
-      cros_tokens::kCrosSysSystemOnBaseOpaque));
+      calendar_utils::IsForGlanceablesV2()
+          ? cros_tokens::kCrosSysSystemOnBase
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kContainerInsets, 0));
   SetPaintToLayer();

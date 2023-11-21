@@ -59,6 +59,9 @@ constexpr float kEventsPresentRoundedRadius = 1.f;
 // The gap padding between the date and the indicator.
 constexpr int kGapBetweenDateAndIndicator = 1;
 
+// For GlanceablesV2: the insets within the date cell.
+constexpr auto kDateCellInsetsGlanceables = gfx::Insets::VH(10, 16);
+
 // Move to the next day. Both the column and the current date are moved to the
 // next one.
 void MoveToNextDay(int& column,
@@ -101,7 +104,9 @@ CalendarDateCellView::CalendarDateCellView(
       time_difference_(time_difference),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
+  SetBorder(views::CreateEmptyBorder(calendar_utils::IsForGlanceablesV2()
+                                         ? kDateCellInsetsGlanceables
+                                         : calendar_utils::kDateCellInsets));
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetSubpixelRenderingEnabled(false);
   if (is_today_) {

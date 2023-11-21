@@ -192,9 +192,21 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   friend class CalendarViewPixelTest;
   friend class CalendarViewAnimationTest;
 
+  // For GlanceablesV2: Creates the new header of the calendar view, which
+  // includes a `CalendarHeaderView`, a reset to today button, and up/down
+  // buttons.
+  views::View* CreateCalendarHeaderRow();
+
   // Creates the calendar view title that includes a label,
   // `reset_to_today_button_`, and a `settings_button_`.
   void CreateCalendarTitleRow(int string_id);
+
+  // Creates the `CalendarHeaderView`s container that contains `header_` and
+  // `temp_header_`.
+  views::View* CreateMonthHeaderContainer();
+
+  // Creates the button container that contains `up_button_` and `down_button_`.
+  views::View* CreateButtonContainer();
 
   // Assigns month views and labels based on the current date on screen.
   void SetMonthViews();
