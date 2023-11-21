@@ -272,6 +272,10 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
                                service_worker_version_id, thread_id});
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, process_host);
+
+  if (g_test_observer) {
+    g_test_observer->DidInitializeServiceWorkerContext(extension_id);
+  }
 }
 
 void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(

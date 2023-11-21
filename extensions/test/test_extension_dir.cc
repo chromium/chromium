@@ -58,11 +58,11 @@ void TestExtensionDir::CopyFileTo(
       << "Failed to copy file from " << from_path << " to " << local_filename;
 }
 
-base::FilePath TestExtensionDir::Pack() {
+base::FilePath TestExtensionDir::Pack(base::StringPiece custom_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ExtensionCreator creator;
-  base::FilePath crx_path =
-      crx_dir_.GetPath().Append(FILE_PATH_LITERAL("ext.crx"));
+  base::FilePath crx_path = crx_dir_.GetPath().AppendASCII(
+      custom_path.empty() ? "ext.crx" : custom_path);
   base::FilePath pem_path =
       crx_dir_.GetPath().Append(FILE_PATH_LITERAL("ext.pem"));
   base::FilePath pem_in_path, pem_out_path;
