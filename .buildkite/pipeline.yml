@@ -113,6 +113,7 @@ steps:
       - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
   - label: "Metabase Test Suite"
+    key: "metabase-test-suite"
     depends_on: "build-chromium-linux-x86_64"
     if: build.branch == "master"
     agents:
