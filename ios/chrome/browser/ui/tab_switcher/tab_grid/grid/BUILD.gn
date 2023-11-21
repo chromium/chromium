@@ -46,6 +46,7 @@ source_set("grid") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
