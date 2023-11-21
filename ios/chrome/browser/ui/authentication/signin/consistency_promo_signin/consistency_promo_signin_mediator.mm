@@ -183,8 +183,13 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   DCHECK(_authenticationFlow);
   _authenticationFlow = nil;
   if (!success) {
-    [self cancelSigninWithError:
-              ConsistencyPromoSigninMediatorErrorFailedToSignin];
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            IOS_AUTH_FLOW_CANCELLED_OR_FAILED,
+        _accessPoint);
+    // The error handling and sign-out should be already done in the
+    // authentication flow.
+    [self.delegate consistencyPromoSigninMediatorSignInCancelled:self];
     return;
   }
   if (_accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
@@ -219,11 +224,6 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     case ConsistencyPromoSigninMediatorErrorGeneric:
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN,
-          _accessPoint);
-      break;
-    case ConsistencyPromoSigninMediatorErrorFailedToSignin:
-      RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::SIGN_IN_FAILED,
           _accessPoint);
       break;
   }

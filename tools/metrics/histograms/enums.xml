@@ -1405,7 +1405,9 @@ Unknown properties are collapsed to zero. -->
   <int value="18" label="SuppressedAlreadySignedIn">
     The web sign-in is not shown because the user is already signed in.
   </int>
-  <int value="19" label="SigninFailed">Sign-in failed.</int>
+  <int value="19" label="IOSAuthFlowCancelledOrFailed">
+    The sign-in is cancelled or failed on iOS.
+  </int>
   <int value="20" label="ShownWithNoDeviceAccount">
     The promo was shown to a user without an existing on-device account.
   </int>

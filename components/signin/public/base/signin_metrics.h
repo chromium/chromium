@@ -313,8 +313,8 @@ enum class AccountConsistencyPromoAction : int {
   TIMEOUT_ERROR_SHOWN = 17,
   // The web sign-in is not shown because the user is already signed in.
   SUPPRESSED_ALREADY_SIGNED_IN = 18,
-  // AuthenticationFlow failed to sign-in.
-  SIGN_IN_FAILED = 19,
+  // AuthenticationFlow on iOS is cancelled or failed to sign-in.
+  IOS_AUTH_FLOW_CANCELLED_OR_FAILED = 19,
   // The promo was shown to the user, with no existing on-device account. (i.e.
   // the no-account menu was shown)
   SHOWN_WITH_NO_DEVICE_ACCOUNT = 20,

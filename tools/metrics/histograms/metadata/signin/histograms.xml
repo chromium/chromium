@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
         summary="User has selected one of the non default accounts and signed
                  in with it."/>
     <variant name="SignInFailed"
-        summary="AuthenticationFlow failed to sign-in."/>
+        summary="AuthenticationFlow on iOS is cancelled or failed to sign-in."/>
     <variant name="SuppressedAlreadySignedIn"
         summary="The web sign-in is not shown because the user is already
                  signed in."/>

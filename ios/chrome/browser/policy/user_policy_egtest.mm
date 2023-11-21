@@ -593,6 +593,57 @@ void WaitForVisibleChromeManagementURL() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
 }
 
+// Tests that when user policies are enabled, in the sign-in without
+// sync flow, sign-in error popup isn't shown after cancelling the
+// managed accout confirmation dialog.
+- (void)
+    testCancelSigninFlowConfirmationDialogWhenUserPolicyAndSigninWithoutSync {
+  AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
+  // Enable User Policy for sign-in consent level exclusively.
+  config.features_enabled.push_back(
+      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
+  // Enable UNO to enable confirmation dialog for sign-in consent level.
+  config.features_enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+
+  [SigninEarlGrey addFakeIdentity:fakeManagedIdentity];
+
+  [self startSigninFlowUpToConfirmationDialogWithIdentity:fakeManagedIdentity
+                                              withoutSync:YES];
+
+  // Disable egtest synchronization to avoid infinite spinner loop.
+  ScopedSynchronizationDisabler disabler;
+
+  // Cancel the sign-in flow by tapping on the cancel button.
+  id<GREYMatcher> cancelButton = grey_allOf(
+      grey_accessibilityID(@"CancelAlertAction"),
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:IDS_CANCEL],
+      grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForMatcher:cancelButton];
+  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+
+  // Verify that the confirmation dialog was dismissed.
+  NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
+  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify that no sign-in error alert action is shown.
+  [ChromeEarlGrey
+      waitForMatcher:chrome_test_util::WebSigninPrimaryButtonMatcher()];
+  NSString* errorTitle = l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TITLE);
+  [[EarlGrey selectElementWithMatcher:grey_text(errorTitle)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify that the flow was cancelled by validating that the account is
+  // not signed in after accepting from the confirmation dialog.
+  [SigninEarlGrey verifySignedOut];
+}
+
 // Tests that the managed accout confirmation dialog is shown in the
 // legacy sign-in+sync flow with its contextual and specific content when user
 // policies are disabled.
