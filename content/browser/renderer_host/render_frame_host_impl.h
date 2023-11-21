@@ -724,11 +724,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // successively.
   void OnAudibleStateChanged(bool is_audible);
 
-  // Called when this render frame starts or stops capturing a video capture
-  // stream. This should only be called from VideoCaptureHost (or internally,
-  // during clean up).
-  void OnVideoStreamAdded();
-  void OnVideoStreamRemoved();
+  // Called when this render frame starts or stops capturing a media stream
+  // (audio or video). This should only be called from VideoCaptureHost or
+  // AudioStreamBroker (or internally, during clean up).
+  void OnMediaStreamAdded();
+  void OnMediaStreamRemoved();
 
   // Called when this frame has added a child. This is a continuation of an IPC
   // that was partially handled on the IO thread (to allocate |new_routing_id|,
@@ -4510,8 +4510,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // audio streams).
   bool is_audible_ = false;
 
-  // Indicates the number of video streams this frame is capturing.
-  int video_stream_count_ = 0;
+  // Indicates the number of media streams (audio or video) this frame is
+  // capturing.
+  int media_stream_count_ = 0;
 
   // If true, then this RenderFrameHost is waiting to update its
   // LifecycleStateImpl. Happens when the old RenderFrameHost is waiting to

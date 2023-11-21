@@ -73,7 +73,7 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                          RenderFrameHostImpl* host =
                              RenderFrameHostImpl::FromID(render_frame_host_id);
                          if (host) {
-                           host->OnVideoStreamAdded();
+                           host->OnMediaStreamAdded();
                          }
                        },
                        render_frame_host_id_));
@@ -87,7 +87,7 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                          RenderFrameHostImpl* host =
                              RenderFrameHostImpl::FromID(render_frame_host_id);
                          if (host) {
-                           host->OnVideoStreamRemoved();
+                           host->OnMediaStreamRemoved();
                          }
                        },
                        render_frame_host_id_));

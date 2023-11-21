@@ -9776,12 +9776,12 @@ void WebContentsImpl::OnFrameVisibilityChanged(
                              host, visibility);
 }
 
-void WebContentsImpl::OnFrameIsCapturingVideoStreamChanged(
+void WebContentsImpl::OnFrameIsCapturingMediaStreamChanged(
     RenderFrameHostImpl* host,
-    bool is_capturing_video_stream) {
+    bool is_capturing_media_stream) {
   observers_.NotifyObservers(
-      &WebContentsObserver::OnFrameIsCapturingVideoStreamChanged, host,
-      is_capturing_video_stream);
+      &WebContentsObserver::OnFrameIsCapturingMediaStreamChanged, host,
+      is_capturing_media_stream);
 }
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback

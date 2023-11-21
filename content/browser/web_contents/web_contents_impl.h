@@ -743,9 +743,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnFrameVisibilityChanged(
       RenderFrameHostImpl* host,
       blink::mojom::FrameVisibility visibility) override;
-  void OnFrameIsCapturingVideoStreamChanged(
+  void OnFrameIsCapturingMediaStreamChanged(
       RenderFrameHostImpl* host,
-      bool is_capturing_video_stream) override;
+      bool is_capturing_media_stream) override;
   media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
   GetRecordAggregateWatchTimeCallback(
       const GURL& page_main_frame_last_committed_url) override;

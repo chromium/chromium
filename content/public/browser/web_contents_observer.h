@@ -693,11 +693,13 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
       RenderFrameHost* rfh,
       blink::mojom::FrameVisibility visibility) {}
 
-  // Called when an individual frame starts/stops capturing at least one video
-  // stream. An example is capturing another window using getDisplayMedia().
-  virtual void OnFrameIsCapturingVideoStreamChanged(
+  // Called when an individual frame starts/stops capturing at least one media
+  // stream (audio or video). For example, the frame could be capturing audio
+  // from the microphone using getUserMedia(), or it could be capturing another
+  // window using getDisplayMedia().
+  virtual void OnFrameIsCapturingMediaStreamChanged(
       RenderFrameHost* rfh,
-      bool is_capturing_video_stream) {}
+      bool is_capturing_media_stream) {}
 
   // Called when the connected to USB device state changes.
   virtual void OnIsConnectedToUsbDeviceChanged(

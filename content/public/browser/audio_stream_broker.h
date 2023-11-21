@@ -70,12 +70,12 @@ class CONTENT_EXPORT AudioStreamBroker {
 
   virtual void CreateStream(media::mojom::AudioStreamFactory* factory) = 0;
 
-  // Thread-safe utility that notifies the process host identified by
-  // |render_process_id| of a started stream to ensure that the renderer is not
-  // backgrounded. Must be paired with a later call to
-  // NotifyRenderProcessOfStoppedStream()
-  static void NotifyProcessHostOfStartedStream(int render_process_id);
-  static void NotifyProcessHostOfStoppedStream(int render_process_id);
+  // Thread-safe utility that notifies the RenderFrameHost identified by
+  // `render_process_id()` and `render_frame_host()` of a started stream to
+  // ensure that the renderer is not backgrounded. Must be paired with a later
+  // call to NotifyHostOfStoppedStream().
+  void NotifyHostOfStartedStream();
+  void NotifyHostOfStoppedStream();
 
   int render_process_id() const { return render_process_id_; }
   int render_frame_id() const { return render_frame_id_; }

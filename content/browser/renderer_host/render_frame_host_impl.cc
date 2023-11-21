@@ -1767,8 +1767,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     OnAudibleStateChanged(false);
   }
 
-  while (video_stream_count_) {
-    OnVideoStreamRemoved();
+  while (media_stream_count_) {
+    OnMediaStreamRemoved();
   }
 
   auto* process = GetProcess();
@@ -3168,8 +3168,8 @@ void RenderFrameHostImpl::RenderProcessGone(
   // During fast-shutdown, avoid cleanup as the VideoCaptureHost will still send
   // removal notifications after this function ends.
   if (!GetProcess()->FastShutdownStarted()) {
-    while (video_stream_count_) {
-      OnVideoStreamRemoved();
+    while (media_stream_count_) {
+      OnMediaStreamRemoved();
     }
   }
 
@@ -3690,28 +3690,28 @@ void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
   delegate_->OnFrameAudioStateChanged(this, is_audible_);
 }
 
-void RenderFrameHostImpl::OnVideoStreamAdded() {
-  CHECK_NE(video_stream_count_, std::numeric_limits<int>::max());
-  ++video_stream_count_;
+void RenderFrameHostImpl::OnMediaStreamAdded() {
+  CHECK_NE(media_stream_count_, std::numeric_limits<int>::max());
+  ++media_stream_count_;
 
-  // Only notify on the first video stream, as both the RenderProcessHost and
+  // Only notify on the first media stream, as both the RenderProcessHost and
   // the delegate only care about the existence of at least 1 stream, but not
   // the exact count.
-  if (video_stream_count_ == 1) {
+  if (media_stream_count_ == 1) {
     GetProcess()->OnMediaStreamAdded();
-    delegate_->OnFrameIsCapturingVideoStreamChanged(this, true);
+    delegate_->OnFrameIsCapturingMediaStreamChanged(this, true);
   }
 }
 
-void RenderFrameHostImpl::OnVideoStreamRemoved() {
-  CHECK(video_stream_count_);
-  --video_stream_count_;
+void RenderFrameHostImpl::OnMediaStreamRemoved() {
+  CHECK(media_stream_count_);
+  --media_stream_count_;
 
-  // Only notify the delegate if this is the last video stream that was removed
-  // to match the behavior in `OnVideoStreamAdded`.
-  if (video_stream_count_ == 0) {
+  // Only notify the delegate if this is the last media stream that was removed
+  // to match the behavior in `OnMediaStreamAdded`.
+  if (media_stream_count_ == 0) {
     GetProcess()->OnMediaStreamRemoved();
-    delegate_->OnFrameIsCapturingVideoStreamChanged(this, false);
+    delegate_->OnFrameIsCapturingMediaStreamChanged(this, false);
   }
 }
 

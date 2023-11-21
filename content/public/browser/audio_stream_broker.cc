@@ -8,9 +8,9 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
 
 namespace content {
 
@@ -25,26 +25,26 @@ AudioStreamBroker::AudioStreamBroker(int render_process_id, int render_frame_id)
       render_frame_id_(render_frame_id) {}
 AudioStreamBroker::~AudioStreamBroker() = default;
 
-// static
-void AudioStreamBroker::NotifyProcessHostOfStartedStream(
-    int render_process_id) {
-  auto impl = [](int id) {
-    if (auto* process_host = RenderProcessHost::FromID(id))
-      process_host->OnMediaStreamAdded();
+void AudioStreamBroker::NotifyHostOfStartedStream() {
+  auto impl = [](int render_process_id, int render_frame_id) {
+    if (auto* host =
+            RenderFrameHostImpl::FromID(render_process_id, render_frame_id)) {
+      host->OnMediaStreamAdded();
+    }
   };
-  GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                      base::BindOnce(impl, render_process_id));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(impl, render_process_id(), render_frame_id()));
 }
 
-// static
-void AudioStreamBroker::NotifyProcessHostOfStoppedStream(
-    int render_process_id) {
-  auto impl = [](int id) {
-    if (auto* process_host = RenderProcessHost::FromID(id))
-      process_host->OnMediaStreamRemoved();
+void AudioStreamBroker::NotifyHostOfStoppedStream() {
+  auto impl = [](int render_process_id, int render_frame_id) {
+    if (auto* host =
+            RenderFrameHostImpl::FromID(render_process_id, render_frame_id)) {
+      host->OnMediaStreamRemoved();
+    }
   };
-  GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                      base::BindOnce(impl, render_process_id));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(impl, render_process_id(), render_frame_id()));
 }
 
 AudioStreamBrokerFactory::AudioStreamBrokerFactory() = default;

@@ -505,11 +505,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* host,
       blink::mojom::FrameVisibility visibility) {}
 
-  // Notifies observers if the frame has started/stopped capturing a video
-  // stream.
-  virtual void OnFrameIsCapturingVideoStreamChanged(
+  // Notifies observers if the frame has started/stopped capturing a media
+  // stream (audio or video).
+  virtual void OnFrameIsCapturingMediaStreamChanged(
       RenderFrameHostImpl* host,
-      bool is_capturing_video_stream) {}
+      bool is_capturing_media_stream) {}
 
   // Returns FrameTreeNodes that are logically owned by another frame even
   // though this relationship is not yet reflected in their frame trees. This

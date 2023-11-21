@@ -48,7 +48,7 @@ AudioLoopbackStreamBroker::AudioLoopbackStreamBroker(
   // Notify the source that we are capturing from it.
   source_->AddLoopbackSink(this);
 
-  NotifyProcessHostOfStartedStream(render_process_id);
+  NotifyHostOfStartedStream();
 }
 
 AudioLoopbackStreamBroker::~AudioLoopbackStreamBroker() {
@@ -57,7 +57,7 @@ AudioLoopbackStreamBroker::~AudioLoopbackStreamBroker() {
   if (source_)
     source_->RemoveLoopbackSink(this);
 
-  NotifyProcessHostOfStoppedStream(render_process_id());
+  NotifyHostOfStoppedStream();
 }
 
 void AudioLoopbackStreamBroker::CreateStream(
