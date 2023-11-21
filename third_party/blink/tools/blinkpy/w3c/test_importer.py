@@ -19,7 +19,6 @@ import re
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
-from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import read_credentials, is_testharness_baseline, is_file_exportable, WPT_GH_URL
@@ -43,7 +42,7 @@ RUBBER_STAMPER_BOT = 'rubber-stamper@appspot.gserviceaccount.com'
 _log = logging.getLogger(__file__)
 
 
-class TestImporter(object):
+class TestImporter:
     def __init__(self, host, github=None, wpt_manifests=None):
         self.host = host
         self.github = github
@@ -189,14 +188,16 @@ class TestImporter(object):
         self._upload_cl()
         _log.info('Issue: %s', self.git_cl.run(['issue']).strip())
 
-        if not self.update_expectations_for_cl():
-            return 1
-
-        if not options.auto_update:
-            return 0
-
-        if not self.run_commit_queue_for_cl():
-            return 1
+        try:
+            if not self.update_expectations_for_cl():
+                return 1
+            if not options.auto_update:
+                return 0
+            if not self.run_commit_queue_for_cl():
+                return 1
+        finally:
+            if self.git_cl.get_cl_status().lower() != 'closed':
+                self.git_cl.close()
 
         if not self.send_notifications(local_wpt, options.auto_file_bugs,
                                        options.monorail_auth_json):
@@ -233,7 +234,6 @@ class TestImporter(object):
             try_job_results = self.git_cl.latest_try_jobs(issue_number,
                                                           cq_only=False)
             self.log_try_job_results(try_job_results)
-            self.git_cl.run(['set-close'])
             return False
 
         if cl_status.status == 'closed':
@@ -278,7 +278,6 @@ class TestImporter(object):
             cq_only=True)
 
         if not cl_status:
-            self.git_cl.run(['set-close'])
             _log.error('Timed out waiting for CQ; aborting.')
             return False
 
@@ -291,12 +290,10 @@ class TestImporter(object):
 
         if not cq_try_results:
             _log.error('No CQ try results found in try results')
-            self.git_cl.run(['set-close'])
             return False
 
         if not self.git_cl.all_success(cq_try_results):
             _log.error('CQ appears to have failed; aborting.')
-            self.git_cl.run(['set-close'])
             return False
 
         # `--send-mail` is required to take the CL out of WIP mode.
@@ -333,14 +330,6 @@ class TestImporter(object):
             return True
 
         _log.error('Cannot submit CL; aborting.')
-        try:
-            self.git_cl.run(['set-close'])
-        except ScriptError as e:
-            if e.output and 'Conflict: change is merged' in e.output:
-                _log.error('CL is already merged; treating as success.')
-                return True
-            else:
-                raise e
         return False
 
     def parse_args(self, argv):
