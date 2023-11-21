@@ -686,6 +686,12 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.empty');
       assertEquals(historyTiles.length, 2);
       assertEquals(historyEmptyTiles.length, 4);
+      assertEquals(
+          (historyTiles[0]! as HTMLElement).getAttribute('aria-label'),
+          'Recent theme 1');
+      assertEquals(
+          (historyTiles[1]! as HTMLElement).getAttribute('aria-label'),
+          'Recent theme 2');
     });
   });
 });

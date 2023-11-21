@@ -143,6 +143,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"tryAgain", IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA},
       {"wallpaperSearchHeader", IDS_NTP_WALLPAPER_SEARCH_HEADER},
       {"wallpaperSearchHistoryHeader", IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER},
+      {"wallpaperSearchHistoryTileTitle",
+       IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE},
       {"wallpaperSearchSubmitBtn", IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT},
       {"wallpaperSearchSubmitAgainBtn",
        IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT},

@@ -299,6 +299,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
                                                      'cr:expand-more';
   }
 
+  private getHistoryTileTitle_(index: number): string {
+    return loadTimeData.getStringF(
+        'wallpaperSearchHistoryTileTitle', index + 1);
+  }
+
   private isBackgroundSelected_(id: Token): boolean {
     return !!(
         this.theme_ && this.theme_.backgroundImage &&
