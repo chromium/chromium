@@ -120,7 +120,9 @@ SiteInstanceGroup* SiteInstanceGroup::CreateForTesting(
       new BrowsingInstance(browser_context,
                            WebExposedIsolationInfo::CreateNonIsolated(),
                            /*is_guest=*/false,
-                           /*is_fenced=*/false, /*coop_related_group=*/nullptr,
+                           /*is_fenced=*/false,
+                           /*is_fixed_storage_partition=*/false,
+                           /*coop_related_group=*/nullptr,
                            /*common_coop_origin=*/absl::nullopt),
       process);
 }

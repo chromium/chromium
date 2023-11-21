@@ -3082,9 +3082,11 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
     UrlInfo url_info(UrlInfoInit(foo.GetURL())
                          .WithOriginIsolationRequest(origin_isolation_request));
     scoped_refptr<SiteInstanceImpl> foo_instance =
-        SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
-                                           /*is_guest=*/false,
-                                           /*is_fenced=*/false);
+        SiteInstanceImpl::CreateForUrlInfo(
+            &context, url_info,
+            /*is_guest=*/false,
+            /*is_fenced=*/false,
+            /*is_fixed_storage_partition=*/false);
 
     p->Add(kRendererID, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
@@ -3140,9 +3142,11 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
 
     UrlInfo url_info(UrlInfoInit(foo.GetURL()));
     scoped_refptr<SiteInstanceImpl> foo_instance =
-        SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
-                                           /*is_guest=*/false,
-                                           /*is_fenced=*/false);
+        SiteInstanceImpl::CreateForUrlInfo(
+            &context, url_info,
+            /*is_guest=*/false,
+            /*is_fenced=*/false,
+            /*is_fixed_storage_partition=*/false);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
                    /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));

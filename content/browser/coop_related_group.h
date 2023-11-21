@@ -68,7 +68,8 @@ class CONTENT_EXPORT CoopRelatedGroup final
 
   explicit CoopRelatedGroup(BrowserContext* browser_context,
                             bool is_guest,
-                            bool is_fenced);
+                            bool is_fenced,
+                            bool is_fixed_storage_partition);
   ~CoopRelatedGroup();
 
   // Returns the token uniquely identifying this CoopRelatedGroup.
@@ -129,6 +130,13 @@ class CONTENT_EXPORT CoopRelatedGroup final
   // Whether all the documents presented in this CoopRelatedGroup are for a
   // fenced frame.
   bool is_fenced_;
+
+  // Whether all the documents presented in this CoopRelatedGroup have fixed
+  // storage partition config.
+  //
+  // TODO(crbug.com/1503007): We actually always want this behavior. Remove this
+  // bit when we are ready.
+  bool is_fixed_storage_partition_;
 
   // All the BrowsingInstances belonging to this CoopRelatedGroup. They are not
   // owned by this group, but collectively own it instead. To keep track of the

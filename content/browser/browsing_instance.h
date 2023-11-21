@@ -102,8 +102,12 @@ class CONTENT_EXPORT BrowsingInstance final
   //
   // `is_guest` specifies whether this BrowsingInstance will
   // be used in a <webview> guest; `is_fenced` specifies whether this
-  // BrowsingInstance is used inside a fenced frame. Note that both `is_guest`
-  // and `is_fenced` cannot change over the lifetime of the BrowsingInstance.
+  // BrowsingInstance is used inside a fenced frame.
+  // `is_fixed_storage_partition` indicates whether the current
+  // StoragePartition will apply to future navigations. It must be set to true
+  // if `is_guest` is true. Note that `is_guest`, `is_fenced`, and
+  // `is_fixed_storage_partition` cannot change over the lifetime of the
+  // BrowsingInstance.
   //
   // `coop_related_group` represents the CoopRelatedGroup to which this
   // BrowsingInstance belongs. Pages that live in BrowsingInstances in the same
@@ -118,6 +122,7 @@ class CONTENT_EXPORT BrowsingInstance final
       const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool is_guest,
       bool is_fenced,
+      bool is_fixed_storage_partition,
       const scoped_refptr<CoopRelatedGroup>& coop_related_group,
       absl::optional<url::Origin> common_coop_origin);
 
@@ -130,6 +135,11 @@ class CONTENT_EXPORT BrowsingInstance final
   // be used to track this BrowsingInstance in other areas of the code, along
   // with any other state needed to make isolation decisions.
   const IsolationContext& isolation_context() { return isolation_context_; }
+
+  // Return true if the StoragePartition should be preserved across future
+  // navigations in the frames belonging to this BrowsingInstance. For <webview>
+  // tags, this always returns true.
+  bool is_fixed_storage_partition() { return is_fixed_storage_partition_; }
 
   // Get the SiteInstanceGroupManager that controls all of the SiteInstance
   // groups associated with this BrowsingInstance.
@@ -345,6 +355,14 @@ class CONTENT_EXPORT BrowsingInstance final
   // cross-origin iframes are opened with no-opener. Once COOP inheritance for
   // those cases is figured out, change the mentions of origin to "COOP origin".
   absl::optional<url::Origin> common_coop_origin_;
+
+  // Set to true if the StoragePartition should be preserved across future
+  // navigations in the frames belonging to this BrowsingInstance. For <webview>
+  // tags, this is always true.
+  //
+  // TODO(crbug.com/1503007): We actually always want this behavior. Remove this
+  // bit when we are ready.
+  const bool is_fixed_storage_partition_;
 
   // A token uniquely identifying this BrowsingInstance. This is used in case we
   // need this information available in the renderer process, rather than

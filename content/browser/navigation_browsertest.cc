@@ -31,6 +31,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
@@ -48,6 +49,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -7707,6 +7709,94 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // The top frame is indeed navigated successfully.
   observer.Wait();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), destination);
+}
+
+// Test navigation with site instances whose storage partitions are fixed.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FixedStoragePartition) {
+  auto* browser_context = shell()->web_contents()->GetBrowserContext();
+  auto storage_partition_config = StoragePartitionConfig::Create(
+      browser_context, "NavigationBrowserTest", "FixedStoragePartition", true);
+  auto url = embedded_test_server()->GetURL("/");
+  auto* shell = Shell::CreateNewWindow(
+      browser_context, url,
+      SiteInstanceImpl::CreateForFixedStoragePartition(
+          browser_context, url, storage_partition_config),
+      gfx::Size());
+
+  auto GetSiteInstance = [](Shell* shell) {
+    return static_cast<SiteInstanceImpl*>(
+        shell->web_contents()->GetSiteInstance());
+  };
+
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+
+  // Check navigation.
+  ASSERT_TRUE(
+      NavigateToURL(shell, embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+
+  // Check opening a window. The new window should stay in the same
+  // BrowsingInstance and StoragePartition.
+  {
+    ShellAddedObserver observer;
+    auto destination = embedded_test_server()->GetURL("a.com", "/title1.html");
+    EXPECT_TRUE(ExecJs(shell, JsReplace("window.open($1)", destination),
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    auto* popup = observer.GetShell();
+    EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+    EXPECT_EQ(popup->web_contents()->GetLastCommittedURL(), destination);
+    EXPECT_EQ(GetSiteInstance(popup)->GetBrowsingInstanceId(),
+              GetSiteInstance(shell)->GetBrowsingInstanceId());
+    EXPECT_EQ(GetSiteInstance(popup)->GetStoragePartitionConfig(),
+              storage_partition_config);
+    EXPECT_TRUE(GetSiteInstance(popup)->IsFixedStoragePartition());
+  }
+
+  // Check opening a window with about:blank at the beginning, and then navigate
+  // it. It should stay in the same BrowsingInstance and StoragePartition.
+  {
+    ShellAddedObserver observer;
+    EXPECT_TRUE(ExecJs(shell, "newWindow = window.open()",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    auto* popup = observer.GetShell();
+    EXPECT_EQ(GetSiteInstance(popup)->GetStoragePartitionConfig(),
+              storage_partition_config);
+    EXPECT_TRUE(GetSiteInstance(popup)->IsFixedStoragePartition());
+
+    auto destination = embedded_test_server()->GetURL("a.com", "/title1.html");
+    EXPECT_TRUE(ExecJs(shell,
+                       JsReplace("newWindow.location.href = $1", destination),
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+    EXPECT_EQ(popup->web_contents()->GetLastCommittedURL(), destination);
+    EXPECT_EQ(GetSiteInstance(popup)->GetBrowsingInstanceId(),
+              GetSiteInstance(shell)->GetBrowsingInstanceId());
+    EXPECT_EQ(GetSiteInstance(popup)->GetStoragePartitionConfig(),
+              storage_partition_config);
+    EXPECT_TRUE(GetSiteInstance(popup)->IsFixedStoragePartition());
+  }
+
+  // Check navigation again.
+  ASSERT_TRUE(
+      NavigateToURL(shell, embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+
+  // Check navigation that triggers a BrowsingInstance swap, and the storage
+  // partition config should also be preserved.
+  auto browsing_instance_id = GetSiteInstance(shell)->GetBrowsingInstanceId();
+  ASSERT_TRUE(NavigateToURL(
+      shell, embedded_test_server()->GetURL("c.com", "/title2.html")));
+  EXPECT_NE(GetSiteInstance(shell)->GetBrowsingInstanceId(),
+            browsing_instance_id);
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
 }
 
 }  // namespace content

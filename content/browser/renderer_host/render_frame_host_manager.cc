@@ -3330,11 +3330,11 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
 
   // At this point we know an unrelated site instance must be returned.
 
-  // If the current SiteInstance is for a guest, the new unrelated
-  // SiteInstance must also be for a guest and must stay in the same
+  // If the current SiteInstance has fixed storage partition (e.g. <webview>
+  // tags), the new unrelated SiteInstance must also stay in the same
   // StoragePartition.
   UrlInfo dest_url_info = descriptor.dest_url_info;
-  if (current_instance->IsGuest()) {
+  if (current_instance->IsFixedStoragePartition()) {
     dest_url_info.storage_partition_config =
         current_instance->GetSiteInfo().storage_partition_config();
   }
@@ -3353,7 +3353,8 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
   return SiteInstanceImpl::CreateForUrlInfo(
       GetNavigationController().GetBrowserContext(), dest_url_info,
       current_instance->IsGuest(),
-      current_instance->GetIsolationContext().is_fenced());
+      current_instance->GetIsolationContext().is_fenced(),
+      current_instance->IsFixedStoragePartition());
 }
 
 bool RenderFrameHostManager::CanUseSourceSiteInstance(

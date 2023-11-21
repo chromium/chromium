@@ -236,6 +236,14 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
       BrowserContext* browser_context,
       const StoragePartitionConfig& partition_config);
 
+  // Factory method to create a SiteInstance in a new BrowsingInstance with a
+  // custom StoragePartition that is preserved across navigations.
+  // `partition_config` needs to be for a non-default StoragePartition.
+  static scoped_refptr<SiteInstance> CreateForFixedStoragePartition(
+      BrowserContext* browser_context,
+      const GURL& url,
+      const StoragePartitionConfig& partition_config);
+
   // Determine if a URL should "use up" a site.  URLs such as about:blank or
   // chrome-native:// leave the site unassigned.
   //

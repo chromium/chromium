@@ -67,6 +67,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -576,11 +577,11 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
         /*partition_domain=*/kExperimentalWebAppStorageParitionDomain,
         /*partition_name=*/app_id, /*in_memory=*/false);
 
-    auto guest_site_instance = content::SiteInstance::CreateForGuest(
-        nav_params.browser->profile(), partition_config);
+    auto site_instance = content::SiteInstance::CreateForFixedStoragePartition(
+        nav_params.browser->profile(), nav_params.url, partition_config);
 
     content::WebContents::CreateParams params(nav_params.browser->profile(),
-                                              std::move(guest_site_instance));
+                                              std::move(site_instance));
     std::unique_ptr<content::WebContents> new_contents =
         content::WebContents::Create(params);
     content::NavigationController::LoadURLParams load_url_params(

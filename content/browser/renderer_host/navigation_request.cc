@@ -3824,11 +3824,11 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     url_info_init.WithCommonCoopOrigin(common_coop_origin.value());
   }
 
-  // Navigations within guests should always stay in the guest's
-  // StoragePartition.
+  // Navigations with SiteInstances which have fixed storage partition (e.g.
+  // <webview> tags) should always stay in the current StoragePartition.
   SiteInstanceImpl* current_instance =
       frame_tree_node_->current_frame_host()->GetSiteInstance();
-  if (current_instance->IsGuest()) {
+  if (current_instance->IsFixedStoragePartition()) {
     url_info_init.WithStoragePartitionConfig(
         current_instance->GetStoragePartitionConfig());
   }
