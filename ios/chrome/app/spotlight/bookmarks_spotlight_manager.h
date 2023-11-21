@@ -28,10 +28,12 @@ class BookmarkModel;
 @interface BookmarksSpotlightManager : BaseSpotlightManager
 
 - (instancetype)
-    initWithLargeIconService:(favicon::LargeIconService*)largeIconService
-               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-          spotlightInterface:(SpotlightInterface*)spotlightInterface
-       searchableItemFactory:(SearchableItemFactory*)searchableItemFactory;
+        initWithLargeIconService:(favicon::LargeIconService*)largeIconService
+    localOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+              spotlightInterface:(SpotlightInterface*)spotlightInterface
+           searchableItemFactory:(SearchableItemFactory*)searchableItemFactory;
 
 /// Number of pending large icon tasks.
 @property(nonatomic, assign) NSUInteger pendingLargeIconTasksCount;

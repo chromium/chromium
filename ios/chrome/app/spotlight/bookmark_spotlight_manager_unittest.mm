@@ -19,12 +19,12 @@
 #import "ios/chrome/app/spotlight/fake_spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/skia/include/core/SkBitmap.h"
@@ -56,10 +56,9 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w, int h) {
 
 }  // namespace
 
-class BookmarkSpotlightManagerTest : public PlatformTest {
+class BookmarkSpotlightManagerTest : public BookmarkIOSUnitTestSupport {
  public:
   BookmarkSpotlightManagerTest() {
-    bookmarkModel_ = bookmarks::TestBookmarkClient::CreateModel();
     CreateMockLargeIconService();
     spotlightInterface_ = [[FakeSpotlightInterface alloc] init];
     searchableItemFactory_ = [[FakeSearchableItemFactory alloc]
@@ -86,12 +85,9 @@ class BookmarkSpotlightManagerTest : public PlatformTest {
         });
   }
 
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   base::CancelableTaskTracker cancelable_task_tracker_;
-  std::unique_ptr<bookmarks::BookmarkModel> bookmarkModel_;
   FakeSpotlightInterface* spotlightInterface_;
   FakeSearchableItemFactory* searchableItemFactory_;
 };
@@ -99,18 +95,20 @@ class BookmarkSpotlightManagerTest : public PlatformTest {
 /// Tests that clearAndReindexModel actually clears all bookmarks items and
 /// attempt to reindex the existing items in bookmark.
 TEST_F(BookmarkSpotlightManagerTest, testClearAndReindexModel) {
-  const std::u16string title(u"foo");
-  const GURL url("http://foo.com");
-  bookmarkModel_->AddURL(bookmarkModel_->bookmark_bar_node(), 0, title, url);
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"foo1",
+              GURL("http://foo1.com"));
+  AddBookmark(account_bookmark_model_->mobile_node(), u"foo2",
+              GURL("http://foo2.com"));
 
   FakeSpotlightInterface* fakeSpotlightInterface =
       [[FakeSpotlightInterface alloc] init];
 
   BookmarksSpotlightManager* manager = [[BookmarksSpotlightManager alloc]
-      initWithLargeIconService:large_icon_service_.get()
-                 bookmarkModel:bookmarkModel_.get()
-            spotlightInterface:fakeSpotlightInterface
-         searchableItemFactory:searchableItemFactory_];
+          initWithLargeIconService:large_icon_service_.get()
+      localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
+              accountBookmarkModel:account_bookmark_model_
+                spotlightInterface:fakeSpotlightInterface
+             searchableItemFactory:searchableItemFactory_];
 
   NSUInteger initialIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
@@ -123,9 +121,9 @@ TEST_F(BookmarkSpotlightManagerTest, testClearAndReindexModel) {
             1u);
 
   // We expect that we will reindex the only existing item in bookmark, thus the
-  // +1 for the count.
+  // +2 for the count.
   EXPECT_EQ(fakeSpotlightInterface.indexSearchableItemsCallsCount,
-            initialIndexedItemCount + 1);
+            initialIndexedItemCount + 2);
 
   [manager shutdown];
 }
@@ -134,15 +132,17 @@ TEST_F(BookmarkSpotlightManagerTest, testClearAndReindexModel) {
 /// returns an array of its ancestor folder names
 TEST_F(BookmarkSpotlightManagerTest, testParentFolderNamesForNode) {
   BookmarksSpotlightManager* manager = [[BookmarksSpotlightManager alloc]
-      initWithLargeIconService:large_icon_service_.get()
-                 bookmarkModel:bookmarkModel_.get()
-            spotlightInterface:spotlightInterface_
-         searchableItemFactory:searchableItemFactory_];
+          initWithLargeIconService:large_icon_service_.get()
+      localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
+              accountBookmarkModel:account_bookmark_model_
+                spotlightInterface:spotlightInterface_
+             searchableItemFactory:searchableItemFactory_];
 
-  const bookmarks::BookmarkNode* root = bookmarkModel_->bookmark_bar_node();
-  static const std::string model_string("a 1:[ b c ] d 2:[ 21:[ e ] f g ] h");
-  bookmarks::test::AddNodesFromModelString(bookmarkModel_.get(), root,
-                                           model_string);
+  const bookmarks::BookmarkNode* root =
+      local_or_syncable_bookmark_model_->mobile_node();
+  static const std::string model_string("a 1:[ b c ] d 2:[ 21:[ e ] f g ] h ");
+  bookmarks::test::AddNodesFromModelString(local_or_syncable_bookmark_model_,
+                                           root, model_string);
   const bookmarks::BookmarkNode* eNode =
       root->children()[3]->children().front()->children().front().get();
   NSMutableArray* folderNames = [manager parentFolderNamesForNode:eNode];
@@ -161,23 +161,24 @@ TEST_F(BookmarkSpotlightManagerTest, testRefreshItemWithURL) {
       [[FakeSpotlightInterface alloc] init];
 
   BookmarksSpotlightManager* manager = [[BookmarksSpotlightManager alloc]
-      initWithLargeIconService:large_icon_service_.get()
-                 bookmarkModel:bookmarkModel_.get()
-            spotlightInterface:fakeSpotlightInterface
-         searchableItemFactory:searchableItemFactory_];
+          initWithLargeIconService:large_icon_service_.get()
+      localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
+              accountBookmarkModel:account_bookmark_model_
+                spotlightInterface:fakeSpotlightInterface
+             searchableItemFactory:searchableItemFactory_];
 
   NSUInteger initialIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
 
-  const std::u16string title(u"foo");
-  const GURL url("http://foo.com");
-
-  bookmarkModel_->AddURL(bookmarkModel_->bookmark_bar_node(), 0, title, url);
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"foo1",
+              GURL("http://foo1.com"));
+  AddBookmark(account_bookmark_model_->mobile_node(), u"foo2",
+              GURL("http://foo2.com"));
 
   // We expect to call indexSearchableItems api method to add the new added
-  // bookmark item.
+  // bookmark items.
   EXPECT_EQ(fakeSpotlightInterface.indexSearchableItemsCallsCount,
-            initialIndexedItemCount + 1);
+            initialIndexedItemCount + 2);
 
   [manager shutdown];
 }
@@ -189,39 +190,44 @@ TEST_F(BookmarkSpotlightManagerTest, testUpdateBookmarkItem) {
       [[FakeSpotlightInterface alloc] init];
 
   BookmarksSpotlightManager* manager = [[BookmarksSpotlightManager alloc]
-      initWithLargeIconService:large_icon_service_.get()
-                 bookmarkModel:bookmarkModel_.get()
-            spotlightInterface:fakeSpotlightInterface
-         searchableItemFactory:searchableItemFactory_];
+          initWithLargeIconService:large_icon_service_.get()
+      localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
+              accountBookmarkModel:account_bookmark_model_
+                spotlightInterface:fakeSpotlightInterface
+             searchableItemFactory:searchableItemFactory_];
 
   NSUInteger currentIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
 
-  const std::u16string title(u"foo");
-  const GURL url("http://foo.com");
-
-  const bookmarks::BookmarkNode* addedNode = bookmarkModel_->AddURL(
-      bookmarkModel_->bookmark_bar_node(), 0, title, url);
+  const bookmarks::BookmarkNode* addedNode1 =
+      AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"foo1",
+                  GURL("http://foo1.com"));
+  const bookmarks::BookmarkNode* addedNode2 = AddBookmark(
+      account_bookmark_model_->mobile_node(), u"foo2", GURL("http://foo2.com"));
 
   // We expect to call indexSearchableItems api method to add the new added
   // bookmark item.
   EXPECT_EQ(fakeSpotlightInterface.indexSearchableItemsCallsCount,
-            currentIndexedItemCount + 1);
+            currentIndexedItemCount + 2);
 
   currentIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
 
-  bookmarkModel_->SetTitle(addedNode, u"new title",
-                           bookmarks::metrics::BookmarkEditSource::kOther);
+  local_or_syncable_bookmark_model_->SetTitle(
+      addedNode1, u"new title 1",
+      bookmarks::metrics::BookmarkEditSource::kOther);
+  account_bookmark_model_->SetTitle(
+      addedNode2, u"new title 2",
+      bookmarks::metrics::BookmarkEditSource::kOther);
 
   // We expect to delete the modified item using its identifier.
   EXPECT_EQ(
       fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,
-      1u);
+      2u);
 
   // We expect reindexing it with the new details.
   EXPECT_EQ(fakeSpotlightInterface.indexSearchableItemsCallsCount,
-            currentIndexedItemCount + 1);
+            currentIndexedItemCount + 2);
 
   [manager shutdown];
 }
