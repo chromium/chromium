@@ -267,6 +267,9 @@ crbug.com/627953 [ Mac ] virtual/text-antialias/symbol-cmap.html [ Skip ]
 # these tests can still be run manually with --skipped=ignore.
 webaudio/codec-tests/aac/* [ Skip ]
 
+# PPAPI is disabled on everything but ChromeOS will run via --test-list flag
+ppapi/* [ Skip ]
+
 # WPT for CSS cascade
 crbug.com/763610 external/wpt/css/CSS2/cascade/* [ Skip ]
 
