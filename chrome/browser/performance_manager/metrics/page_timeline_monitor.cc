@@ -200,6 +200,7 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
           base::Hours(24), 50);
       log_cpu_on_delay_timer_.AbandonAndStop();
       time_of_last_cpu_threshold_exceeded_ = absl::nullopt;
+      delayed_system_cpu_probe_.reset();
     }
   }
 #endif
