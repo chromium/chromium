@@ -170,6 +170,10 @@ void AdSamplerTrigger::CreateAdSampleReport() {
                             MAX_ACTIONS);
 }
 
+size_t AdSamplerTrigger::GetSamplerFrequencyDenominatorForTest() {
+  return GetSamplerFrequencyDenominator();
+}
+
 void AdSamplerTrigger::SetSamplerFrequencyForTest(size_t denominator) {
   sampler_frequency_denominator_ = denominator;
 }

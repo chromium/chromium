@@ -220,12 +220,8 @@ TEST(AdSamplerTriggerTestFinch, FrequencyDenominatorFeature) {
   // Make sure that setting the frequency denominator via Finch params works as
   // expected, and that the default frequency is used when no Finch config is
   // given.
-  content::BrowserTaskEnvironment task_environment;
-  AdSamplerTrigger trigger_default(nullptr, nullptr, nullptr, nullptr, nullptr,
-                                   nullptr);
-
   EXPECT_EQ(kAdSamplerDefaultFrequency,
-            trigger_default.sampler_frequency_denominator_);
+            AdSamplerTrigger::GetSamplerFrequencyDenominatorForTest());
 
   const size_t kDenominatorInt = 12345;
 
@@ -237,8 +233,7 @@ TEST(AdSamplerTriggerTestFinch, FrequencyDenominatorFeature) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       safe_browsing::kAdSamplerTriggerFeature, feature_params);
 
-  AdSamplerTrigger trigger_finch(nullptr, nullptr, nullptr, nullptr, nullptr,
-                                 nullptr);
-  EXPECT_EQ(kDenominatorInt, trigger_finch.sampler_frequency_denominator_);
+  EXPECT_EQ(kDenominatorInt,
+            AdSamplerTrigger::GetSamplerFrequencyDenominatorForTest());
 }
 }  // namespace safe_browsing
