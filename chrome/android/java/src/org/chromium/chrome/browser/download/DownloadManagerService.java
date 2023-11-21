@@ -822,7 +822,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     // Deprecated after new download backend.
     @Override
-    public void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
+    public void resumeDownload(ContentId id, DownloadItem item) {
         DownloadProgress progress = mDownloadProgressMap.get(item.getId());
         if (progress != null && progress.mDownloadStatus == DownloadStatus.IN_PROGRESS
                 && !progress.mDownloadItem.getDownloadInfo().isPaused()) {
@@ -839,36 +839,28 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             updateDownloadProgress(item, DownloadStatus.IN_PROGRESS);
             progress = mDownloadProgressMap.get(item.getId());
         }
-        if (hasUserGesture) {
-            // If user manually resumes a download, update the connection type that the download
-            // can start. If the previous connection type is metered, manually resuming on an
-            // unmetered network should not affect the original connection type.
-            if (!progress.mCanDownloadWhileMetered) {
-                progress.mCanDownloadWhileMetered =
-                        isActiveNetworkMetered(ContextUtils.getApplicationContext());
-            }
-            incrementDownloadRetryCount(item.getId(), true);
-            clearDownloadRetryCount(item.getId(), true);
-        } else {
-            // TODO(qinmin): Consolidate this logic with the logic in notification service that
-            // throttles browser restarts.
-            SharedPreferences sharedPrefs = getAutoRetryCountSharedPreference();
-            int count = sharedPrefs.getInt(item.getId(), 0);
-            if (count >= getAutoResumptionLimit()) {
-                removeAutoResumableDownload(item.getId());
-                onDownloadInterrupted(item.getDownloadInfo(), false);
-                return;
-            }
-            incrementDownloadRetryCount(item.getId(), false);
+
+        // If user manually resumes a download, update the connection type that the download
+        // can start. If the previous connection type is metered, manually resuming on an
+        // unmetered network should not affect the original connection type.
+        if (!progress.mCanDownloadWhileMetered) {
+            progress.mCanDownloadWhileMetered =
+                    isActiveNetworkMetered(ContextUtils.getApplicationContext());
         }
+        incrementDownloadRetryCount(item.getId(), true);
+        clearDownloadRetryCount(item.getId(), true);
 
         // Downloads started from incognito mode should not be resumed in reduced mode.
         if (!ProfileManager.isInitialized() && item.getDownloadInfo().isOffTheRecord()) return;
 
         OTRProfileID otrProfileID = item.getDownloadInfo().getOTRProfileId();
-        DownloadManagerServiceJni.get().resumeDownload(getNativeDownloadManagerService(),
-                DownloadManagerService.this, item.getId(),
-                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), hasUserGesture);
+        DownloadManagerServiceJni.get()
+                .resumeDownload(
+                        getNativeDownloadManagerService(),
+                        DownloadManagerService.this,
+                        item.getId(),
+                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID),
+                        true);
     }
 
     /**

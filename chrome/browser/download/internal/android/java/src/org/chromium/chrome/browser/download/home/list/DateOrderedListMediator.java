@@ -330,7 +330,7 @@ class DateOrderedListMediator implements BackPressHandler {
     }
 
     private void onResumeItem(OfflineItem item) {
-        mProvider.resumeDownload(item.id, true /* hasUserGesture */);
+        mProvider.resumeDownload(item.id);
     }
 
     private void onCancelItem(OfflineItem item) {

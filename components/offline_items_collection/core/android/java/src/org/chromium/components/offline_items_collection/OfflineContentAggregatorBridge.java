@@ -66,11 +66,15 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
     }
 
     @Override
-    public void resumeDownload(ContentId id, boolean hasUserGesture) {
+    public void resumeDownload(ContentId id) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
-        OfflineContentAggregatorBridgeJni.get().resumeDownload(
-                mNativeOfflineContentAggregatorBridge, OfflineContentAggregatorBridge.this,
-                id.namespace, id.id, hasUserGesture);
+        OfflineContentAggregatorBridgeJni.get()
+                .resumeDownload(
+                        mNativeOfflineContentAggregatorBridge,
+                        OfflineContentAggregatorBridge.this,
+                        id.namespace,
+                        id.id,
+                        true);
     }
 
     @Override

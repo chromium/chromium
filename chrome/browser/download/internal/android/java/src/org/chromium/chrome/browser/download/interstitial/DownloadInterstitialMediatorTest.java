@@ -428,7 +428,7 @@ public class DownloadInterstitialMediatorTest {
         }
 
         @Override
-        public void resumeDownload(ContentId id, boolean hasUserGesture) {
+        public void resumeDownload(ContentId id) {
             if (findItem(id).state != OfflineItemState.COMPLETE) {
                 findItem(id).state = OfflineItemState.IN_PROGRESS;
             }

@@ -124,7 +124,7 @@ public final class ServicificationDownloadTest {
                             url, DOWNLOAD_GUID, tempFile);
                     OfflineContentAggregatorFactory.get().addObserver(mDownloadUpdateObserver);
                     OfflineContentAggregatorFactory.get()
-                            .resumeDownload(new ContentId("LEGACY_DOWNLOAD", DOWNLOAD_GUID), true);
+                            .resumeDownload(new ContentId("LEGACY_DOWNLOAD", DOWNLOAD_GUID));
                 });
         mDownloadUpdateObserver.waitForDownloadCompletion();
     }

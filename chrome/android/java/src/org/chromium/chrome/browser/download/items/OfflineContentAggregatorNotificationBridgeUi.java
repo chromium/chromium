@@ -117,8 +117,8 @@ public class OfflineContentAggregatorNotificationBridgeUi
     }
 
     @Override
-    public void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
-        mProvider.resumeDownload(id, hasUserGesture);
+    public void resumeDownload(ContentId id, DownloadItem item) {
+        mProvider.resumeDownload(id);
     }
 
     @Override

@@ -184,7 +184,7 @@ class DownloadInterstitialMediator {
 
     private void onResumeItem(OfflineItem item) {
         if (mModel.get(STATE) == State.PAUSED) {
-            mProvider.resumeDownload(mModel.get(DOWNLOAD_ITEM).id, true /* hasUserGesture */);
+            mProvider.resumeDownload(mModel.get(DOWNLOAD_ITEM).id);
             UmaHelper.logUIAction(UmaHelper.Action.RESUMED);
         } else {
             mModel.set(STATE, State.PENDING);

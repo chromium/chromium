@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.A
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_RESUME;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_ID;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_NAMESPACE;
-import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_AUTO_RESUMPTION;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.EXTRA_NOTIFICATION_ID;
 
@@ -257,8 +256,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                                                                     .setDownloadGuid(id.id)
                                                                     .setOTRProfileId(otrProfileID)
                                                                     .build());
-                downloadServiceDelegate.resumeDownload(id, item,
-                        !IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_AUTO_RESUMPTION, false));
+                downloadServiceDelegate.resumeDownload(id, item);
                 break;
 
             default:

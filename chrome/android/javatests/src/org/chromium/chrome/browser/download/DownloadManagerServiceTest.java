@@ -224,7 +224,7 @@ public class DownloadManagerServiceTest {
         }
 
         @Override
-        public void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
+        public void resumeDownload(ContentId id, DownloadItem item) {
             mResumed = true;
         }
 
