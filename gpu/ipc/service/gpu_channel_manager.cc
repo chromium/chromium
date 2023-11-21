@@ -379,7 +379,8 @@ GpuChannelManager::GpuChannelManager(
   DCHECK(scheduler);
 
   const bool enable_gr_shader_cache =
-      (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+      (gpu_feature_info_
+           .status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
        gpu::kGpuFeatureStatusEnabled);
   const bool disable_disk_cache =
       gpu_preferences_.disable_gpu_shader_disk_cache;

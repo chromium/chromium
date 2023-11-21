@@ -383,7 +383,7 @@ class CommandBufferSetup {
     context_->MakeCurrent(surface_.get());
     GpuFeatureInfo gpu_feature_info;
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
-    gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+    gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         kGpuFeatureStatusEnabled;
 #endif
     auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(

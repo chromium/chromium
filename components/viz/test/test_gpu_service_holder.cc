@@ -301,7 +301,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   gpu::GpuFeatureInfo gpu_feature_info = gpu::ComputeGpuFeatureInfo(
       gpu_info, gpu_preferences, base::CommandLine::ForCurrentProcess(),
       /*needs_more_info=*/nullptr);
-  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
 
   // On MacOS, the default texture target for native GpuMemoryBuffers is

@@ -538,7 +538,8 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
 
   bool enable_gpu_rasterization =
       features::IsUiGpuRasterizationEnabled() &&
-      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+      gpu_feature_info
+              .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
           gpu::kGpuFeatureStatusEnabled;
 
   if (!worker_context_provider_wrapper_) {

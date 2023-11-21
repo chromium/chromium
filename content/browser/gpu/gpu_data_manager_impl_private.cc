@@ -300,7 +300,7 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   const gpu::GpuFeatureType kGpuFeatures[] = {
       gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_GL,
-      gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION,
+      gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU};

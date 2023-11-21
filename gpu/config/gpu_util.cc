@@ -166,8 +166,9 @@ GpuFeatureStatus GetGpuRasterizationFeatureStatus(
 
   // If swiftshader is being used, the blocklist should be ignored.
   if (!use_swift_shader &&
-      blocklisted_features.count(GPU_FEATURE_TYPE_GPU_RASTERIZATION))
+      blocklisted_features.count(GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION)) {
     return kGpuFeatureStatusBlocklisted;
+  }
 
   // Enable gpu rasterization for vulkan, unless it is overridden by
   // commandline.
@@ -434,7 +435,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithHardwareAccelerationDisabled() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] =
       kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusSoftware;
@@ -468,7 +469,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] =
       kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusDisabled;
@@ -502,7 +503,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] =
       kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusSoftware;
@@ -580,13 +581,13 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
                                        use_swift_shader);
 #else
   // TODO(penghuang): call GetGpuRasterizationFeatureStatus() with
   // |use_swift_shader|.
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
                                        /*use_swift_shader=*/false);
 #endif

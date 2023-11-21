@@ -32,8 +32,8 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
                             GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE);
   list->AddSupportedFeature("accelerated_video_encode",
                             GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE);
-  list->AddSupportedFeature("gpu_rasterization",
-                            GPU_FEATURE_TYPE_GPU_RASTERIZATION);
+  list->AddSupportedFeature("gpu_tile_rasterization",
+                            GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION);
   list->AddSupportedFeature("accelerated_webgl2",
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGL2);
   list->AddSupportedFeature("android_surface_control",

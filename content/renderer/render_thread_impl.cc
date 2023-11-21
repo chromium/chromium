@@ -1661,7 +1661,7 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
   bool support_locking = true;
   bool support_gpu_rasterization =
       gpu_channel_host->gpu_feature_info()
-          .status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+          .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
       gpu::kGpuFeatureStatusEnabled;
 
   bool support_gles2_interface = false;

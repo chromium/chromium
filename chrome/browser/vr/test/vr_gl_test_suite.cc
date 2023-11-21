@@ -25,7 +25,8 @@ void VrGlTestSuite::Initialize() {
 #if defined(VR_USE_COMMAND_BUFFER)
   // Always enable gpu and oop raster, regardless of platform and denylist.
   auto* gpu_feature_info = gpu::GetTestGpuThreadHolder()->GetGpuFeatureInfo();
-  gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info
+      ->status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
   gles2::Initialize();
 #endif  // defined(VR_USE_COMMAND_BUFFER)

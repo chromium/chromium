@@ -1076,7 +1076,8 @@ RasterDecoderImpl::RasterDecoderImpl(
           shared_image_manager &&
           shared_image_manager->display_context_on_another_thread()),
       gpu_raster_enabled_(
-          gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+          gpu_feature_info
+              .status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
           kGpuFeatureStatusEnabled),
       use_passthrough_(gles2::PassthroughCommandDecoderSupported() &&
                        gpu_preferences.use_passthrough_cmd_decoder),

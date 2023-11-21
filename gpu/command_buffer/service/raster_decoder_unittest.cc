@@ -205,7 +205,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
         share_group.get(), surface.get(), gl::GLContextAttribs());
     ASSERT_TRUE(context->MakeCurrent(surface.get()));
 
-    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         kGpuFeatureStatusEnabled;
     auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
         workarounds, gpu_feature_info_);

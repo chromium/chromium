@@ -13,7 +13,7 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -61,7 +61,7 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -614,7 +614,7 @@
         }
       ],
       "features": [
-        "gpu_rasterization",
+        "gpu_tile_rasterization",
         "accelerated_2d_canvas"
       ]
     },
@@ -627,7 +627,7 @@
       },
       "gl_renderer": ".*Mali-T604.*",
       "features": [
-        "gpu_rasterization",
+        "gpu_tile_rasterization",
         "accelerated_2d_canvas"
       ]
     },
@@ -641,7 +641,7 @@
       "gl_renderer": "PowerVR SGX 540",
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -658,7 +658,7 @@
       },
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -671,7 +671,7 @@
       "gl_renderer": "PowerVR SGX \\d+",
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -688,7 +688,7 @@
       },
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -718,7 +718,7 @@
       },
       "gl_renderer": ".*Vivante.*",
       "features": [
-        "gpu_rasterization",
+        "gpu_tile_rasterization",
         "accelerated_2d_canvas"
       ]
     },
@@ -761,7 +761,7 @@
                     "0x2a02", "0x27a2", "0x2a42"],
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -803,7 +803,7 @@
                     "0x0fd1", "0x0dfa"],
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -825,7 +825,7 @@
                     "0x68c1"],
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -838,7 +838,7 @@
       "vendor_id": "0x80ee",
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -849,7 +849,7 @@
         "type": "win"
       },
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ],
       "exceptions": [
         {
@@ -931,7 +931,7 @@
         }
       ],
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -1065,7 +1065,7 @@
                     "0x1051", "0x1052", "0x1054", "0x1055", "0x1056", "0x1057",
                     "0x1058", "0x1059", "0x105a", "0x107d", "0x1140"],
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -1076,7 +1076,7 @@
         "type": "chromeos"
       },
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ],
       "exceptions": [
         { "vendor_id": "0x8086" },
@@ -1107,7 +1107,7 @@
         "value2": "8.17.10.1433"
       },
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
