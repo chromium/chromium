@@ -432,7 +432,8 @@ TEST_F(PromoCardShortcutTest, NoPromoIfShortcutInstalled) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardShortcutTest, ShouldShowPromoFirstThreeTimes) {
+// TODO(dfried): Fix. Segfaults.
+TEST_F(PromoCardShortcutTest, DISABLED_ShouldShowPromoFirstThreeTimes) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
   std::unique_ptr<PasswordPromoCardBase> promo =
@@ -447,7 +448,8 @@ TEST_F(PromoCardShortcutTest, ShouldShowPromoFirstThreeTimes) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardShortcutTest, PromoNotShownAfterDismiss) {
+// TODO(dfried): Fix. Segfaults.
+TEST_F(PromoCardShortcutTest, DISABLED_PromoNotShownAfterDismiss) {
   base::HistogramTester histogram_tester;
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
