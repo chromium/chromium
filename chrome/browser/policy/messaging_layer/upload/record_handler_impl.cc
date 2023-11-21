@@ -40,6 +40,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/record_upload_request_json_keys.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -309,11 +310,11 @@ StatusOr<SequenceInformation>
 RecordHandlerImpl::SequenceInformationValueToProto(
     const base::Value::Dict& value) {
   const std::string* sequencing_id =
-      value.FindString(UploadEncryptedReportingRequestBuilder::kSequencingId);
+      value.FindString(reporting::json_keys::kSequencingIdKey);
   const std::string* generation_id =
-      value.FindString(UploadEncryptedReportingRequestBuilder::kGenerationId);
+      value.FindString(reporting::json_keys::kGenerationIdKey);
   const std::string* generation_guid =
-      value.FindString(UploadEncryptedReportingRequestBuilder::kGenerationGuid);
+      value.FindString(json_keys::kGenerationGuidKey);
   const auto priority_result =
       GetPriorityProtoFromSequenceInformationValue(value);
   // If required sequence info fields don't exist, or are malformed,
