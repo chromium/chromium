@@ -1126,13 +1126,16 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
 void LocalFrameMojoHandler::GetOpenGraphMetadata(
     GetOpenGraphMetadataCallback callback) {
   auto metadata = mojom::blink::OpenGraphMetadata::New();
-  for (const auto& child : Traversal<HTMLMetaElement>::DescendantsOf(
-           *frame_->GetDocument()->documentElement())) {
-    // If there are multiple OpenGraph tags for the same property, we always
-    // take the value from the first one - this is the specified behavior in
-    // the OpenGraph spec:
-    //   The first tag (from top to bottom) is given preference during conflicts
-    ParseOpenGraphProperty(child, *frame_->GetDocument(), metadata.get());
+  if (auto* document_element = frame_->GetDocument()->documentElement()) {
+    for (const auto& child :
+         Traversal<HTMLMetaElement>::DescendantsOf(*document_element)) {
+      // If there are multiple OpenGraph tags for the same property, we always
+      // take the value from the first one - this is the specified behavior in
+      // the OpenGraph spec:
+      //   The first tag (from top to bottom) is given preference during
+      //   conflicts
+      ParseOpenGraphProperty(child, *frame_->GetDocument(), metadata.get());
+    }
   }
   std::move(callback).Run(std::move(metadata));
 }
