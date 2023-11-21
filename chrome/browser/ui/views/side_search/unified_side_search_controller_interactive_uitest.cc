@@ -866,6 +866,7 @@ class SideSearchIPHAndTutorialBrowserTest
     feature_list_.InitAndEnableFeaturesWithParameters({
         {feature_engagement::kIPHSideSearchFeature,
          GetFeatureEngagementParams()},
+        {features::kSideSearch, {}},
     });
   }
 
