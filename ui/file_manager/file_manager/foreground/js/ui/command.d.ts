@@ -10,6 +10,6 @@ export class Command extends HTMLElement {
   checked: boolean;
   shortcut: string;
   hideShortcutText: boolean;
-  execute(element?: HTMLElement): void;
+  execute(element?: HTMLElement|null): void;
   canExecuteChange(node?: Node|null): void;
 }

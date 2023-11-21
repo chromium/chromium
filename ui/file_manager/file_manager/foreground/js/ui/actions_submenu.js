@@ -46,7 +46,7 @@ export class ActionsSubmenu {
     // 'Menu'.
     const menuItem = this.menu_.addMenuItem(options);
     FilesMenuItem.decorate(menuItem);
-    menuItem.parentNode.insertBefore(menuItem, this.separator_);
+    menuItem.parentNode?.insertBefore(menuItem, this.separator_);
     this.items_.push(menuItem);
     return menuItem;
   }

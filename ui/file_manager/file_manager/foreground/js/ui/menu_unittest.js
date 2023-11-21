@@ -43,9 +43,8 @@ function mouseUpAt(x, y) {
 }
 
 export function setUp() {
-  // @ts-ignore: error TS2673: Constructor of class 'Menu' is private and only
-  // accessible within the class declaration.
-  menu = new Menu();
+  menu = /** @type {Menu}*/ (document.createElement('cr-menu'));
+  decorate(menu, Menu);
 }
 
 /** @suppress {visibility} Allow test to reach to private properties. */
@@ -345,6 +344,6 @@ export function testMenuItemTabIndex() {
   // @ts-ignore: error TS2339: Property 'menuItems' does not exist on type
   // 'Menu'.
   const separator = menu.menuItems[menu.menuItems.length - 1];
-  assertTrue(separator.isSeparator());
-  assertFalse(separator.hasAttribute('tabindex'));
+  assertTrue(separator?.isSeparator() === true);
+  assertTrue(separator?.hasAttribute('tabindex') === false);
 }
