@@ -2325,7 +2325,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void logIntentInfo(Intent intent, Pair<Integer, Integer> instanceIdInfo) {
-        boolean willUseNewInstance = MultiWindowUtils.willUseNewInstance();
         boolean isFromOs =
                 getReferrer() != null
                         && getReferrer().toString().equals(SOURCE_ACTIVITY_REFERRER_OS);
@@ -2341,8 +2340,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 intent,
                                 IntentHandler.EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY,
                                 false)
-                        + "\nReferrer: "
+                        + "\nActivity referrer: "
                         + getReferrer()
+                        + "\nIntent referrer extra: "
+                        + IntentUtils.safeGetStringExtra(
+                                intent, IntentHandler.EXTRA_ACTIVITY_REFERRER)
                         + "\nIntent contains LAUNCHER category: "
                         + intent.hasCategory(Intent.CATEGORY_LAUNCHER)
                         + "\nIntent contains FLAG_ACTIVITY_MULTIPLE_TASK: "
@@ -2353,12 +2355,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         + (intent.getComponent() == null
                                 ? "N/A"
                                 : intent.getComponent().getClassName())
-                        + "\nIntent sent by OS: "
-                        + isFromOs
-                        + "\n@ExternalAppId of intent source: "
-                        + IntentHandler.determineExternalIntentSource(intent)
-                        + "\nAre all instances running: "
-                        + willUseNewInstance
                         + "\nWindow allocation type: "
                         + windowAllocationType;
         Log.i(TAG_MULTI_INSTANCE, logMessage);
@@ -2374,7 +2370,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean isMainIntent =
                 Intent.ACTION_MAIN.equals(intent.getAction()) && !isFromChrome && !isFromOs;
 
-        if (willUseNewInstance
+        if (instanceIdInfo.second == InstanceAllocationType.NEW_INSTANCE_NEW_TASK
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
                 && (isViewIntent || isMainIntent)) {
             logMessage =
