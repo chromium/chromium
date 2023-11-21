@@ -431,6 +431,10 @@ class StreamingSearchPrefetchURLLoader
   // set up, we will delete soon |this|.
   bool pending_delete_ = false;
 
+  // Whether fallback should start when search prefetch is activated (i.e., when
+  // `is_activated_` is set).
+  bool is_scheduled_to_fallback_ = false;
+
   // Whether fallback has started.
   bool is_in_fallback_ = false;
 
