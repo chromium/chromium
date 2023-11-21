@@ -669,8 +669,6 @@ static_library("extensions") {
     "pref_transformer_interface.h",
     "profile_util.cc",
     "profile_util.h",
-    "proxy_overridden_bubble_delegate.cc",
-    "proxy_overridden_bubble_delegate.h",
     "safe_browsing_verdict_handler.cc",
     "safe_browsing_verdict_handler.h",
     "scoped_active_install.cc",

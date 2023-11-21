@@ -23,7 +23,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/proxy_overridden_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/suspicious_extension_bubble_delegate.h"
 #include "chrome/browser/extensions/test_extension_message_bubble_delegate.h"
@@ -35,7 +34,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
@@ -297,42 +295,6 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     return testing::AssertionFailure() << "Could not install extension: " << id;
   }
 
-  testing::AssertionResult LoadExtensionOverridingProxy(
-      const std::string& index,
-      const std::string& id,
-      ManifestLocation location) {
-    ExtensionBuilder builder;
-    builder.SetManifest(
-        base::Value::Dict()
-            .Set("name", std::string("Extension " + index))
-            .Set("version", "1.0")
-            .Set("manifest_version", 2)
-            .Set("permissions", base::Value::List().Append("proxy")));
-
-    builder.SetLocation(location);
-    builder.SetID(id);
-    service_->AddExtension(builder.Build().get());
-
-    // The proxy check relies on ExtensionPrefValueMap being up to date as to
-    // specifying which extension is controlling the proxy, but unfortunately
-    // that Map is not updated automatically for unit tests, so we simulate the
-    // update here to avoid test failures.
-    ExtensionPrefValueMap* extension_prefs_value_map =
-        ExtensionPrefValueMapFactory::GetForBrowserContext(profile());
-    extension_prefs_value_map->RegisterExtension(
-        id,
-        base::Time::Now(),
-        true,    // is_enabled.
-        false);  // is_incognito_enabled.
-    extension_prefs_value_map->SetExtensionPref(
-        id, proxy_config::prefs::kProxy,
-        extensions::api::types::ChromeSettingScope::kRegular, base::Value(id));
-
-    if (ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(id))
-      return testing::AssertionSuccess();
-    return testing::AssertionFailure() << "Could not install extension: " << id;
-  }
-
   void Init() {
     LoadErrorReporter::Init(false);
     // The two lines of magical incantation required to get the extension
@@ -379,7 +341,6 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     // global variables, they can be shared between tests and cause
     // unpredicatable behavior.
     DevModeBubbleDelegate(profile()).ClearProfileSetForTesting();
-    ProxyOverriddenBubbleDelegate(profile()).ClearProfileSetForTesting();
     for (auto type : {BUBBLE_TYPE_HOME_PAGE}) {
       SettingsApiBubbleDelegate(profile(), type).ClearProfileSetForTesting();
     }
@@ -957,146 +918,6 @@ TEST_F(ExtensionMessageBubbleTest, BubbleShownForMultipleExtensions) {
   EXPECT_TRUE(bubble.is_closed());
 
   controller.reset();
-}
-
-void SetInstallTime(const std::string& extension_id,
-                    const base::Time& time,
-                    ExtensionPrefs* prefs) {
-  std::string time_str = base::NumberToString(time.ToInternalValue());
-  prefs->UpdateExtensionPref(extension_id, "last_update_time",
-                             base::Value(time_str));
-}
-
-// The feature this is meant to test is only implemented on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// http://crbug.com/397426
-#define MAYBE_ProxyOverriddenControllerTest DISABLED_ProxyOverriddenControllerTest
-#else
-#define MAYBE_ProxyOverriddenControllerTest DISABLED_ProxyOverriddenControllerTest
-#endif
-
-TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
-#if BUILDFLAG(IS_MAC)
-  // On Mac, this API is limited to trunk.
-  ScopedCurrentChannel scoped_channel(version_info::Channel::UNKNOWN);
-#endif  // BUILDFLAG(IS_MAC)
-
-  Init();
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  // Load two extensions overriding proxy and one overriding something
-  // unrelated (to check for interference). Extension 2 should still win
-  // on the proxy setting.
-  ASSERT_TRUE(
-      LoadExtensionOverridingProxy("1", kId1, ManifestLocation::kUnpacked));
-  ASSERT_TRUE(
-      LoadExtensionOverridingProxy("2", kId2, ManifestLocation::kUnpacked));
-  ASSERT_TRUE(
-      LoadExtensionOverridingStart("3", kId3, ManifestLocation::kUnpacked));
-
-  // The bubble will not show if the extension was installed in the last 7 days
-  // so we artificially set the install time to simulate an old install during
-  // testing.
-  base::Time old_enough = base::Time::Now() - base::Days(8);
-  SetInstallTime(kId1, old_enough, prefs);
-  SetInstallTime(kId2, base::Time::Now(), prefs);
-  SetInstallTime(kId3, old_enough, prefs);
-
-  std::unique_ptr<TestExtensionMessageBubbleController> controller(
-      new TestExtensionMessageBubbleController(
-          new ProxyOverriddenBubbleDelegate(browser()->profile()), browser()));
-  controller->SetIsActiveBubble();
-
-  // The second extension is too new to warn about.
-  EXPECT_FALSE(controller->ShouldShow());
-  // Lets make it old enough.
-  SetInstallTime(kId2, old_enough, prefs);
-
-  // The list will contain one enabled unpacked extension (ext 2).
-  EXPECT_TRUE(controller->ShouldShow());
-  EXPECT_FALSE(controller->ShouldShow());
-  std::vector<std::u16string> override_extensions =
-      controller->GetExtensionList();
-  ASSERT_EQ(1U, override_extensions.size());
-  EXPECT_EQ(u"Extension 2", override_extensions[0]);
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-
-  // Simulate showing the bubble and dismissing it.
-  FakeExtensionMessageBubble bubble;
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_DISMISS_BUTTON);
-  bubble.set_controller(controller.get());
-  bubble.Show();
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-  EXPECT_EQ(1U, controller->dismiss_click_count());
-  // No extension should have become disabled.
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != nullptr);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != nullptr);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != nullptr);
-  // Only extension 2 should have been acknowledged.
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-  // Clean up after ourselves.
-  controller->delegate()->SetBubbleInfoBeenAcknowledged(kId2, false);
-
-  // Simulate clicking the learn more link to dismiss it.
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-  controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new ProxyOverriddenBubbleDelegate(browser()->profile()), browser());
-  controller->SetIsActiveBubble();
-  EXPECT_TRUE(controller->ShouldShow());
-  bubble.set_controller(controller.get());
-  bubble.Show();
-  EXPECT_EQ(1U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  // No extension should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != nullptr);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != nullptr);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != nullptr);
-  // Only extension 2 should have been acknowledged.
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-  // Clean up after ourselves.
-  controller->delegate()->SetBubbleInfoBeenAcknowledged(kId2, false);
-
-  // Do it again, but now opt to disable the extension.
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-  controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new ProxyOverriddenBubbleDelegate(browser()->profile()), browser());
-  controller->SetIsActiveBubble();
-  EXPECT_TRUE(controller->ShouldShow());
-  override_extensions = controller->GetExtensionList();
-  EXPECT_EQ(1U, override_extensions.size());
-  bubble.set_controller(controller.get());
-  bubble.Show();  // Simulate showing the bubble.
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(1U, controller->action_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  // Only extension 2 should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != nullptr);
-  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId2) != nullptr);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != nullptr);
-
-  // No extension should have been acknowledged (it got disabled).
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-
-  // Clean up after ourselves.
-  service_->UninstallExtension(kId1, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               nullptr);
-  service_->UninstallExtension(kId2, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               nullptr);
-  service_->UninstallExtension(kId3, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               nullptr);
 }
 
 // Tests that a bubble outliving the associated browser object doesn't crash.

@@ -1081,13 +1081,6 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
         &str_value));
     EXPECT_EQ(kTestValue, str_value);
 
-    // TODO(crbug.com/1015619): Remove 2023-05. kPrefStringForIdMapping.
-    base::Value::Dict dictionary;
-    prefs()->UpdateExtensionPref(extension_->id(), kPrefStringForIdMapping,
-                                 base::Value(std::move(dictionary)));
-    EXPECT_TRUE(
-        prefs()->ReadPrefAsDict(extension_->id(), kPrefStringForIdMapping));
-
     prefs()->MigrateObsoleteExtensionPrefs();
   }
 
@@ -1096,17 +1089,10 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
     EXPECT_FALSE(prefs()->ReadPrefAsString(
         extension_->id(), ExtensionPrefs::kFakeObsoletePrefForTesting,
         &str_value));
-
-    // TODO(crbug.com/1015619): Remove 2023-05. kPrefStringForIdMapping.
-    EXPECT_FALSE(
-        prefs()->ReadPrefAsDict(extension_->id(), kPrefStringForIdMapping));
   }
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  // Incorrect spelling since 2013 (https://codereview.chromium.org/21289004).
-  const char* kPrefStringForIdMapping = "id_mapping_dictioanry";
 };
 
 TEST_F(ExtensionPrefsObsoletePrefRemoval, ExtensionPrefsObsoletePrefRemoval) {}

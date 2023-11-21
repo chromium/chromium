@@ -2569,8 +2569,9 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       // Permanent testing-only key.
       kFakeObsoletePrefForTesting,
 
-      // TODO(crbug.com/1015619): Remove 2023-05. Incorrect spelling from 2013.
-      "id_mapping_dictioanry"};
+      // Added 2023-11.
+      "ack_proxy_bubble",
+  };
 
   for (auto key_value : extensions_dictionary) {
     if (!crx_file::id_util::IdIsValid(key_value.first))
