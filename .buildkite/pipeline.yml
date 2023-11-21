@@ -9,7 +9,20 @@ steps:
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /home/ubuntu/chromium/src
-    command: "git fetch --all && git reset --hard origin/$BUILDKITE_BRANCH && node replay_build_scripts/update-all-repos.mjs && pushd ../backend && buck2 kill && buck2 build --console simple //:chromium && popd"
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    commands:
+      - "be_cmd git-fetch-all -- git fetch --all"
+      - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+      - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
+      - "pushd ../backend"
+      - "be_cmd buck2-kill -- buck2 kill"
+      - "be_cmd buck2-build -- buck2 build --console simple //:chromium"
+      - "popd"
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
@@ -26,7 +39,18 @@ steps:
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
-    command: "git fetch --all && git reset --hard origin/$BUILDKITE_BRANCH && node replay_build_scripts/update-all-repos.mjs && node buildMac.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    commands:
+      - "be_cmd git-fetch-all -- git fetch --all"
+      - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+      - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
+      - "be_cmd buildMac -- node buildMac.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
@@ -43,7 +67,18 @@ steps:
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
-    command: "git fetch --all && git reset --hard origin/$BUILDKITE_BRANCH && node replay_build_scripts/update-all-repos.mjs && node buildMac.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    commands:
+      - "be_cmd git-fetch-all -- git fetch --all"
+      - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+      - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
+      - "be_cmd buildMac -- node buildMac.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
@@ -77,7 +112,6 @@ steps:
       - "build-chromium-linux-x86_64"
       - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
-      - "build-chromium-windows"
   - label: "Metabase Test Suite"
     depends_on: "build-chromium-linux-x86_64"
     if: build.branch == "master"
@@ -91,4 +125,28 @@ steps:
           region: us-east-2
           env:
             GITHUB_AUTH_SECRET: "prod/metabase-github-secret"
-    command: "/home/ubuntu/chromium/src/replay_build_scripts/metabase.sh"
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    command: "be_cmd metabase-tests -- /home/ubuntu/chromium/src/replay_build_scripts/metabase.sh"
+
+  # wait for all steps above, but also continue if they fail
+  - wait: ~ 
+    continue_on_failure: true
+
+  - label: "Buildevents Watch"
+    key: "buildevents-watch"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1:
+          cd: /home/ubuntu/chromium/src
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    command: "be_watch"
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=linux"
+      - "queue=runtime"
