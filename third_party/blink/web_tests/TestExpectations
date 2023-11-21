@@ -7047,6 +7047,9 @@ crbug.com/1492850 [ Linux ] http/tests/devtools/elements/accessibility/edit-aria
 crbug.com/1467464 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
 crbug.com/1467464 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
 
+# Expected to fail 2023-11-13
+[ Win ] virtual/media-foundation-for-clear-dcomp/media/video-preload-first-frame-presented.html [ Timeout ]
+
 # Failures due to adding new virtual tests.
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/* [ Failure ]
 # Tests that the mask doesn't apply(?).

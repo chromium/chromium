@@ -50,4 +50,5 @@ function main() {
   }, false);
 
   video.src = QueryString.src;
+  video.play();
 }

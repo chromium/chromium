@@ -34,6 +34,7 @@ class MediaEngineNotifyImpl
   using CanPlayThroughCB = base::RepeatingClosure;
   using PlayingCB = base::RepeatingClosure;
   using WaitingCB = base::RepeatingClosure;
+  using FrameStepCompletedCB = base::RepeatingClosure;
   using TimeUpdateCB = base::RepeatingClosure;
 
   HRESULT RuntimeClassInitialize(ErrorCB error_cb,
@@ -43,6 +44,7 @@ class MediaEngineNotifyImpl
                                  CanPlayThroughCB can_play_through_cb,
                                  PlayingCB playing_cb,
                                  WaitingCB waiting_cb,
+                                 FrameStepCompletedCB frame_step_completed_cb,
                                  TimeUpdateCB time_update_cb);
 
   // IMFMediaEngineNotify implementation.
@@ -63,6 +65,7 @@ class MediaEngineNotifyImpl
   CanPlayThroughCB can_play_through_cb_;
   PlayingCB playing_cb_;
   WaitingCB waiting_cb_;
+  FrameStepCompletedCB frame_step_completed_cb_;
   TimeUpdateCB time_update_cb_;
 
   // EventNotify is invoked from MF threadpool thread where the callbacks are
