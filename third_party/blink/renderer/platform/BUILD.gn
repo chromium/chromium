@@ -1891,6 +1891,8 @@ static_library("test_support") {
     "testing/io_task_runner_testing_platform_support.h",
     "testing/layer_tree_host_embedder.cc",
     "testing/layer_tree_host_embedder.h",
+    "testing/main_thread_isolate.cc",
+    "testing/main_thread_isolate.h",
     "testing/message_loop_for_mojo.h",
     "testing/mock_context_lifecycle_notifier.h",
     "testing/noop_url_loader.cc",

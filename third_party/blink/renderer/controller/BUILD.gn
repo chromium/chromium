@@ -323,6 +323,7 @@ test("blink_unittests_v2") {
   testonly = true
 
   sources = [
+    "//third_party/blink/renderer/platform/testing/main_thread_isolate_unittest.cc",
     "tests/run_all_tests_v2.cc",
     "tests/thread_state_test_environment.h",
   ]

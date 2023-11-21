@@ -15,6 +15,7 @@ include_rules = [
     "+services/network/public",
     "+testing",
 
+    "+third_party/blink/renderer/platform/bindings",
     "+third_party/blink/renderer/platform/context_lifecycle_notifier.h",
     "+third_party/blink/renderer/platform/context_lifecycle_observer.h",
     "+third_party/blink/renderer/platform/exported",
