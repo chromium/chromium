@@ -137,7 +137,7 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
 
   // Add content notification item if the feature is enabled and the user has
   // signed in.
-  if (IsSetUpListContentNotificationEnabled() &&
+  if (IsContentPushNotificationsSetUpListEnabled() &&
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     AddItemIfNotNil(items, BuildItem(SetUpListItemType::kContentNotification,
                                      prefs, localState, authService));
