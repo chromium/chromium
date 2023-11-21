@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 
 class Browser;
@@ -22,16 +21,7 @@ class BrowserListObserver;
 
 namespace search_engines {
 enum class SearchEngineChoiceScreenConditions;
-
-// Profile specific data related to the search engine choice.
-// `timestamp` is the search engine choice timestamp that's saved in the
-// `kDefaultSearchProviderChoiceScreenCompletionTimestamp` pref.
-// `default_search_engine` is the profile's default search engine.
-struct ChoiceData {
-  int64_t timestamp = 0;
-  TemplateURLData default_search_engine;
-};
-}  // namespace search_engines
+}
 
 // Service handling the Search Engine Choice dialog.
 class SearchEngineChoiceService : public KeyedService {
@@ -116,14 +106,6 @@ class SearchEngineChoiceService : public KeyedService {
   // Registers the local state preferences used by the search engine choice
   // screen.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
-  // Returns a copy of the `ChoiceData` specific to `profile`.
-  static search_engines::ChoiceData GetChoiceDataFromProfile(Profile& profile);
-
-  // Updates `profile` with the values from `choice_data`.
-  static void UpdateProfileFromChoiceData(
-      Profile& profile,
-      search_engines::ChoiceData& choice_data);
 
  private:
   // Observes the BrowserList to make sure that closed browsers are correctly
