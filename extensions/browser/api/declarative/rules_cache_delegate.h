@@ -53,7 +53,7 @@ class RulesCacheDelegate {
     kPersistent,
   };
 
-  RulesCacheDelegate(Type type, bool log_storage_init_delay);
+  explicit RulesCacheDelegate(Type type);
 
   virtual ~RulesCacheDelegate();
 
@@ -129,11 +129,6 @@ class RulesCacheDelegate {
 
   // A set of extension IDs that have rules we are reading from storage.
   std::set<std::string> waiting_for_extensions_;
-
-  // We measure the time spent on loading rules on init. The result is logged
-  // with UMA once per each RulesCacheDelegate instance, unless in Incognito.
-  base::Time storage_init_time_;
-  bool log_storage_init_delay_;
 
   // Weak pointer to post tasks to the owning rules registry.
   base::WeakPtr<RulesRegistry> registry_;

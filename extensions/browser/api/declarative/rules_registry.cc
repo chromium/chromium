@@ -337,14 +337,8 @@ void RulesRegistry::ReportInternalError(const std::string& extension_id,
 RulesRegistry::~RulesRegistry() {
 }
 
-void RulesRegistry::MarkReady(base::Time storage_init_time) {
+void RulesRegistry::MarkReady() {
   DCHECK_CURRENTLY_ON(owner_thread());
-
-  if (!storage_init_time.is_null()) {
-    UMA_HISTOGRAM_TIMES("Extensions.DeclarativeRulesStorageInitialization",
-                        base::Time::Now() - storage_init_time);
-  }
-
   ready_.Signal();
 }
 

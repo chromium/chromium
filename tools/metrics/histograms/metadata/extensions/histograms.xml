@@ -843,12 +843,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.DeclarativeRulesStorageInitialization" units="ms"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Time spent until rules storage delegate gets ready.</summary>
-</histogram>
-
 <histogram name="Extensions.DeclarativeSetIconWasVisible" enum="BooleanVisible"
     expires_after="2019-09-07">
   <owner>dbertoni@chromium.org</owner>

@@ -189,8 +189,8 @@ RulesRegistryService::RegisterWebRequestRulesRegistry(
       RulesRegistryKey(declarative_webrequest_constants::kOnRequest,
                        rules_registry_id)));
 
-  auto web_request_cache_delegate = std::make_unique<RulesCacheDelegate>(
-      cache_delegate_type, true /* log_storage_init_delay */);
+  auto web_request_cache_delegate =
+      std::make_unique<RulesCacheDelegate>(cache_delegate_type);
   auto web_request_rules_registry =
       base::MakeRefCounted<WebRequestRulesRegistry>(
           browser_context_, web_request_cache_delegate.get(),
@@ -227,8 +227,7 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
   // Create the ContentRulesRegistry.
   DCHECK(!content_rules_registry_);
   auto content_rules_cache_delegate = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kPersistent,
-      false /* log_storage_init_delay */);
+      RulesCacheDelegate::Type::kPersistent);
   scoped_refptr<ContentRulesRegistry> content_rules_registry =
       ExtensionsAPIClient::Get()->CreateContentRulesRegistry(
           browser_context_, content_rules_cache_delegate.get());
