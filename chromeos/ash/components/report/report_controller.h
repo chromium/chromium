@@ -99,6 +99,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Time chrome_first_run_time,
       base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
+      base::RepeatingCallback<policy::DeviceMode()> device_mode_callback,
+      base::RepeatingCallback<policy::MarketSegment()> market_segment_callback,
       std::unique_ptr<device_metrics::PsmDelegateInterface> psm_delegate);
   ReportController(const ReportController&) = delete;
   ReportController& operator=(const ReportController&) = delete;
@@ -170,7 +172,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
   void StartReport();
 
   // Chrome browser passed parameters that live throughout this class lifetime.
-  const device_metrics::ChromeDeviceMetadataParameters chrome_device_params_;
+  // Market segment field is only assigned after oobe is completed and the
+  // market segment is known.
+  device_metrics::ChromeDeviceMetadataParameters chrome_device_params_;
 
   // Update relevant pref keys with preserved file data if missing.
   // Pref keys are found in //report/prefs/fresnel_pref_names.h
@@ -182,6 +186,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
 
   // The chrome first run sentinel creation time.
   base::Time chrome_first_run_time_;
+
+  // Store callbacks to retrieve the policy device mode and market segment.
+  // Method should be called after oobe is successfully completed, and the
+  // .oobe_completed file is written.
+  // Callback will outlive this class, and is managed by ash-chrome.
+  base::RepeatingCallback<policy::DeviceMode()> device_mode_callback_;
+  base::RepeatingCallback<policy::MarketSegment()> market_segment_callback_;
 
   // Try report metrics every |kTimeToRepeat|.
   std::unique_ptr<base::RepeatingTimer> report_timer_;

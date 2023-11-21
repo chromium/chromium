@@ -232,7 +232,6 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
  public:
   static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
       version_info::Channel::STABLE /* chromeos_channel */,
-      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
   };
 
   void SetUp() override {
@@ -255,6 +254,9 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
         std::make_unique<FakePsmDelegate>(
             psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
             std::vector{psm_test_case_.plaintext_id()}));
@@ -567,8 +569,7 @@ class ReportControllerPreservedFileReadWriteSuccessTest
     : public ReportControllerTestBase {
  public:
   static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
-      version_info::Channel::STABLE /* chromeos_channel */,
-      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
+      version_info::Channel::STABLE /* chromeos_channel */
   };
 
   void SetUp() override {
@@ -595,6 +596,9 @@ class ReportControllerPreservedFileReadWriteSuccessTest
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
         std::make_unique<FakePsmDelegate>(
             psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
             std::vector{psm_test_case_.plaintext_id()}));

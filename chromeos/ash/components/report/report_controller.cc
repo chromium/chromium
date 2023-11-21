@@ -202,11 +202,15 @@ ReportController::ReportController(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Time chrome_first_run_time,
     base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
+    base::RepeatingCallback<policy::DeviceMode()> device_mode_callback,
+    base::RepeatingCallback<policy::MarketSegment()> market_segment_callback,
     std::unique_ptr<device_metrics::PsmDelegateInterface> psm_delegate)
     : chrome_device_params_(chrome_device_params),
       local_state_(local_state),
       url_loader_factory_(url_loader_factory),
       chrome_first_run_time_(chrome_first_run_time),
+      device_mode_callback_(std::move(device_mode_callback)),
+      market_segment_callback_(std::move(market_segment_callback)),
       report_timer_(std::make_unique<base::RepeatingTimer>()),
       network_state_handler_(NetworkHandler::Get()->network_state_handler()),
       statistics_provider_(system::StatisticsProvider::GetInstance()),
@@ -317,6 +321,11 @@ void ReportController::OnOobeFileWritten(
 
     return;
   }
+
+  // Set the market segment since we know OOBE was completed and the
+  // .oobe_completed file existed for more than 1 minute.
+  chrome_device_params_.market_segment = GetMarketSegment(
+      device_mode_callback_.Run(), market_segment_callback_.Run());
 
   // Wrap with callback from |psm_device_active_secret_| retrieval using
   // |SessionManagerClient| DBus.
