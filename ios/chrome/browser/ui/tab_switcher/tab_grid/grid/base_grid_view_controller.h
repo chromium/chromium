@@ -10,14 +10,13 @@
 #import <set>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
+@protocol BaseGridMediatorItemProvider;
 @class BaseGridViewController;
 @protocol GridEmptyView;
 @class GridItemIdentifier;
-@protocol GridShareableItemsProvider;
 @protocol GridViewControllerMutator;
 @class LegacyGridTransitionLayout;
 @protocol PriceCardDataSource;
@@ -94,8 +93,7 @@ class WebStateID;
 @end
 
 // A view controller that contains a grid of items.
-@interface BaseGridViewController
-    : UIViewController <GridItemProvider, TabCollectionConsumer>
+@interface BaseGridViewController : UIViewController <TabCollectionConsumer>
 // The gridView is accessible to manage the content inset behavior.
 @property(nonatomic, readonly) UIScrollView* gridView;
 // The view that is shown when there are no items.
@@ -119,6 +117,8 @@ class WebStateID;
 @property(nonatomic, weak) id<GridViewControllerDelegate> delegate;
 // Mutator is informed when the model should be updated after user interaction.
 @property(nonatomic, weak) id<GridViewControllerMutator> mutator;
+// Provider of the grid.
+@property(nonatomic, weak) id<BaseGridMediatorItemProvider> gridProvider;
 // Handles drag and drop interactions that involved the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
 // Tracks if a drop animation is in progress.
@@ -130,13 +130,6 @@ class WebStateID;
     BOOL selectedCellVisible;
 // Provider of context menu configurations for the tabs in the grid.
 @property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
-// Provider of shareable state for tabs in the grid.
-@property(nonatomic, weak) id<GridShareableItemsProvider>
-    shareableItemsProvider;
-
-// Whether or not all items are selected. NO if `mode` is not
-// TabGridModeSelection.
-@property(nonatomic, readonly) BOOL allItemsSelectedForEditing;
 
 // Opacity of grid cells that are not the selected tab.
 @property(nonatomic, assign) CGFloat notSelectedTabCellOpacity;
@@ -157,14 +150,6 @@ class WebStateID;
 
 // Notifies the grid that it is about to be dismissed.
 - (void)prepareForDismissal;
-
-// Selects all items in the grid for editing. No-op if `mode` is not
-// TabGridModeSelection.
-- (void)selectAllItemsForEditing;
-
-// Deselects all items in the grid for editing. No-op if `mode` is not
-// TabGridModeSelection.
-- (void)deselectAllItemsForEditing;
 
 @end
 

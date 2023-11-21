@@ -187,11 +187,11 @@
   IncognitoGridViewController* gridViewController =
       [[IncognitoGridViewController alloc] init];
   gridViewController.reauthHandler = _reauthAgent;
-  gridViewController.shareableItemsProvider = _mediator;
   gridViewController.menuProvider = _tabContextMenuHelper;
 
   gridViewController.dragDropHandler = _mediator;
   gridViewController.mutator = _mediator;
+  gridViewController.gridProvider = _mediator;
   // TODO(crbug.com/1457146): Move the following lines to the grid itself when
   // specific grid file will be created.
   gridViewController.view.accessibilityIdentifier = kIncognitoTabGridIdentifier;
@@ -202,7 +202,6 @@
   gridViewController.theme = GridThemeDark;
 
   _mediator.consumer = gridViewController;
-  _mediator.itemProvider = gridViewController;
 
   return gridViewController;
 }

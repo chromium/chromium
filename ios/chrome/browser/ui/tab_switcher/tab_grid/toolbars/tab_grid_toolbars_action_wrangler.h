@@ -14,8 +14,6 @@
 
 - (void)doneButtonTapped:(id)sender;
 
-- (void)selectAllButtonTapped:(id)sender;
-
 - (void)pageControlChangedValue:(id)sender;
 
 - (void)pageControlChangedPageByDrag:(id)sender;

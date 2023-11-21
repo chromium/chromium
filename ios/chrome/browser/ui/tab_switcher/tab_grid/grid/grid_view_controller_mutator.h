@@ -10,9 +10,14 @@
 // Reflects user’s change in grid's model.
 @protocol GridViewControllerMutator <NSObject>
 
-// Notifies the model that the number of selected items and the number of
-// shareabled one changed.
-- (void)numberOfSelectedItemsAndShareableItemsChanged;
+// Notifies the model when the user tapped on a specific item id.
+- (void)userTappedOnItemID:(web::WebStateID)itemID;
+
+// Adds the given `itemID` to the selected item lists.
+- (void)addToSelectionItemID:(web::WebStateID)itemID;
+
+// Removes the given `itemID` to the selected item lists.
+- (void)removeFromSelectionItemID:(web::WebStateID)itemID;
 
 @end
 

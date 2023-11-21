@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
@@ -17,7 +18,6 @@
 
 class Browser;
 @protocol GridConsumer;
-@protocol GridItemProvider;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
@@ -27,8 +27,8 @@ class Browser;
 class WebStateList;
 
 // Mediates between model layer and tab grid UI layer.
-@interface BaseGridMediator : NSObject <GridCommands,
-                                        GridShareableItemsProvider,
+@interface BaseGridMediator : NSObject <BaseGridMediatorItemProvider,
+                                        GridCommands,
                                         GridViewControllerMutator,
                                         TabCollectionDragDropHandler,
                                         TabGridPageMutator,
@@ -54,7 +54,6 @@ class WebStateList;
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
-@property(nonatomic, weak) id<GridItemProvider> itemProvider;
 
 @end
 

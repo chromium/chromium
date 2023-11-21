@@ -70,6 +70,9 @@ class WebStateID;
 // Notifies the grid that all closed items have been restored.
 - (void)didUndoCloseAll;
 
+// Reloads the view.
+- (void)reload;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_CONSUMER_H_

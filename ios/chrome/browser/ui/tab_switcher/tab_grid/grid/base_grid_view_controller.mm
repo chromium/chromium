@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
@@ -32,7 +33,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/legacy_grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
@@ -150,10 +150,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
   std::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
-  // Items selected for editing.
-  std::set<web::WebStateID> _selectedEditingItemIDs;
-  // Items selected for editing which are shareable outside of the app.
-  std::set<web::WebStateID> _selectedSharableEditingItemIDs;
 }
 
 - (instancetype)init {
@@ -334,8 +330,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   TabGridMode previousMode = _mode;
   _mode = mode;
 
-  // TODO(crbug.com/1300369): Enable dragging items from search results.
-  self.collectionView.dragInteractionEnabled = (_mode != TabGridModeSearch);
+  self.collectionView.dragInteractionEnabled =
+      [self shouldEnableDrapAndDropInteraction];
   self.emptyStateView.tabGridMode = _mode;
 
   if (mode == TabGridModeSearch && self.suggestedActionsDelegate) {
@@ -366,10 +362,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   }
 
   if (mode == TabGridModeNormal) {
-    // Clear items when exiting selection mode.
-    _selectedEditingItemIDs.clear();
-    _selectedSharableEditingItemIDs.clear();
-
     // After transition from other modes to the normal mode, the selection
     // border doesn't show around the selected item, because reloading
     // operations lose the selected items. The collection view needs to be
@@ -512,57 +504,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // Stop animating the collection view to prevent the insertion animation from
   // interfering with the tab presentation animation.
   self.gridLayout.animatesItemUpdates = NO;
-}
-
-#pragma mark - Public Editing Mode Selection
-
-- (void)selectAllItemsForEditing {
-  if (_mode != TabGridModeSelection) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
-  for (TabSwitcherItem* item in self.items) {
-    [self selectItemWithIDForEditing:item.identifier];
-  }
-  [self.collectionView reloadData];
-}
-
-- (void)deselectAllItemsForEditing {
-  if (_mode != TabGridModeSelection) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
-  for (TabSwitcherItem* item in self.items) {
-    [self deselectItemWithIDForEditing:item.identifier];
-  }
-  [self.collectionView reloadData];
-}
-
-- (BOOL)allItemsSelectedForEditing {
-  return _mode == TabGridModeSelection &&
-         self.items.count == _selectedEditingItemIDs.size();
-}
-
-#pragma mark - Private Editing Mode Selection
-
-- (BOOL)isItemWithIDSelectedForEditing:(web::WebStateID)identifier {
-  return _selectedEditingItemIDs.contains(identifier);
-}
-
-- (void)selectItemWithIDForEditing:(web::WebStateID)identifier {
-  _selectedEditingItemIDs.insert(identifier);
-  if ([self.shareableItemsProvider isItemWithIDShareable:identifier]) {
-    _selectedSharableEditingItemIDs.insert(identifier);
-  }
-  [self.mutator numberOfSelectedItemsAndShareableItemsChanged];
-}
-
-- (void)deselectItemWithIDForEditing:(web::WebStateID)identifier {
-  _selectedEditingItemIDs.erase(identifier);
-  _selectedSharableEditingItemIDs.erase(identifier);
-  [self.mutator numberOfSelectedItemsAndShareableItemsChanged];
 }
 
 #pragma mark - UICollectionView Diffable Data Source Helpers
@@ -828,8 +769,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // unfinished `UIFeedbackGenerator` may result in a crash.
   [self.collectionView endInteractiveMovement];
 
-  [self.dragDropHandler dragSessionDidEnd];
   [self.delegate gridViewControllerDragSessionDidEnd:self];
+  [self.dragDropHandler dragSessionDidEnd];
 }
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
@@ -858,15 +799,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // from it.
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
   web::WebStateID pressedItemID = self.items[index].identifier;
-  if (![self isItemWithIDSelectedForEditing:pressedItemID]) {
-    [self tappedItemAtIndexPath:indexPath];
-  }
-
-  NSMutableArray<UIDragItem*>* dragItems = [[NSMutableArray alloc] init];
-  for (web::WebStateID itemID : _selectedEditingItemIDs) {
-    [dragItems addObject:[self.dragDropHandler dragItemForItemWithID:itemID]];
-  }
-  return dragItems;
+  [self.mutator addToSelectionItemID:pressedItemID];
+  return [self.dragDropHandler allSelectedDragItems];
 }
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
@@ -1076,8 +1010,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   self.items = [items mutableCopy];
   self.selectedItemID = selectedItemID;
-  _selectedEditingItemIDs.clear();
-  _selectedSharableEditingItemIDs.clear();
 
   [self reloadDataSource];
 
@@ -1219,13 +1151,16 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   ios::provider::DismissModalsForCollectionView(self.collectionView);
 }
 
+- (void)reload {
+  [self.collectionView reloadData];
+}
+
 - (void)willCloseAll {
   self.isClosingAllOrUndoRunning = YES;
 }
 
 - (void)didCloseAll {
   self.isClosingAllOrUndoRunning = NO;
-  [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 - (void)willUndoCloseAll {
@@ -1234,17 +1169,6 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didUndoCloseAll {
   self.isClosingAllOrUndoRunning = NO;
-  [self.collectionView.collectionViewLayout invalidateLayout];
-}
-
-#pragma mark - GridItemProvider
-
-- (std::set<web::WebStateID>)selectedItemIDsForEditing {
-  return _selectedEditingItemIDs;
-}
-
-- (std::set<web::WebStateID>)selectedShareableItemIDsForEditing {
-  return _selectedSharableEditingItemIDs;
 }
 
 #pragma mark - Actions
@@ -1396,7 +1320,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   TabSwitcherItem* removedItem = self.items[index];
   [self.items removeObjectAtIndex:index];
   self.selectedItemID = selectedItemID;
-  [self deselectItemWithIDForEditing:removedItemID];
+  [self.mutator removeFromSelectionItemID:removedItemID];
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
 
   GridItemIdentifier* removedItemIdentifier =
@@ -1554,9 +1478,17 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
+// Returns YES if drag and drop is enabled.
+// TODO(crbug.com/1300369): Enable dragging items from search results.
 - (BOOL)shouldEnableDrapAndDropInteraction {
   // Don't enable drag and drop when voice over is enabled.
-  return !UIAccessibilityIsVoiceOverRunning();
+  return !UIAccessibilityIsVoiceOverRunning()
+         // Dragging multiple tabs to reorder them is not supported. So there is
+         // no need to enable dragging when multiple items are selected in
+         // devices that don't support multiple windows.
+         && ((self.mode == TabGridModeSelection &&
+              base::ios::IsMultipleScenesSupported()) ||
+             self.mode == TabGridModeNormal);
 }
 
 // Returns the index in `self.items` of the first item whose identifier is
@@ -1585,7 +1517,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
-    if ([self isItemWithIDSelectedForEditing:item.identifier]) {
+    if ([self.gridProvider isItemSelected:item.identifier]) {
       cell.state = GridCellStateEditingSelected;
     } else {
       cell.state = GridCellStateEditingUnselected;
@@ -1650,23 +1582,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   if (index >= self.items.count) {
     return;
   }
-
   web::WebStateID itemID = self.items[index].identifier;
+  [self.mutator userTappedOnItemID:itemID];
   if (_mode == TabGridModeSelection) {
-    if ([self isItemWithIDSelectedForEditing:itemID]) {
-      [self deselectItemWithIDForEditing:itemID];
-    } else {
-      [self selectItemWithIDForEditing:itemID];
-    }
-    // Dragging multiple tabs to reorder them is not supported. So there is no
-    // need to enable dragging when multiple items are selected in devices that
-    // don't support multiple windows.
-    if (self.selectedItemIDsForEditing.size() > 1 &&
-        !base::ios::IsMultipleScenesSupported()) {
-      self.collectionView.dragInteractionEnabled = NO;
-    } else {
-      self.collectionView.dragInteractionEnabled = YES;
-    }
     // Reconfigure the item.
     GridSnapshot* snapshot = self.diffableDataSource.snapshot;
     GridItemIdentifier* itemIdentifier =

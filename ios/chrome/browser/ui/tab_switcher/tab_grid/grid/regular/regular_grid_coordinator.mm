@@ -101,7 +101,6 @@
   _mediator.delegate = _gridMediatorDelegate;
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.actionWrangler = self.tabGridViewController;
-  _mediator.itemProvider = self.gridViewController;
 
   // TODO(crbug.com/1457146): As browser state should never be nil, it should be
   // safe to remove the check.
@@ -115,7 +114,7 @@
   self.tabGridViewController.regularTabsDelegate = _mediator;
   self.gridViewController.dragDropHandler = _mediator;
   self.gridViewController.mutator = _mediator;
-  self.gridViewController.shareableItemsProvider = _mediator;
+  self.gridViewController.gridProvider = _mediator;
 
   // If regular is enabled then the grid exists and it is not disabled.
   // TODO(crbug.com/1457146): Get disabled status from the mediator.

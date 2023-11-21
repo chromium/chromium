@@ -51,6 +51,10 @@ class WebStateID;
           placeholderContext:
               (id<UICollectionViewDropPlaceholderContext>)placeholderContext;
 
+// Returns the drag items list of selected element in selection mode. Selection
+// mode is only supported for incognito and regular grids.
+- (NSArray<UIDragItem*>*)allSelectedDragItems;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_HANDLER_H_

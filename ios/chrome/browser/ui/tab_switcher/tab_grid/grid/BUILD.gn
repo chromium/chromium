@@ -11,6 +11,7 @@ source_set("grid") {
   deps = [
     ":grid_consumer",
     ":grid_mediator_delegate",
+    ":grid_mediator_item_provider",
     ":grid_toolbars_mutator",
     ":grid_ui",
     ":grid_view_controller_mutator",
@@ -82,7 +83,6 @@ source_set("grid_ui") {
     "grid_header.mm",
     "grid_item_identifier.h",
     "grid_item_identifier.mm",
-    "grid_item_provider.h",
     "grid_shareable_items_provider.h",
     "grid_theme.h",
     "legacy_grid_layout.h",
@@ -90,6 +90,7 @@ source_set("grid_ui") {
   ]
 
   deps = [
+    ":grid_mediator_item_provider",
     ":grid_ui_constants",
     ":grid_view_controller_mutator",
     "resources:tab_grid_incognito_tabs_empty",
@@ -136,6 +137,10 @@ source_set("grid_mediator_delegate") {
   sources = [ "grid_mediator_delegate.h" ]
 
   deps = [ "//base" ]
+}
+
+source_set("grid_mediator_item_provider") {
+  sources = [ "base_grid_mediator_items_provider.h" ]
 }
 
 source_set("grid_toolbars_configuration_provider") {

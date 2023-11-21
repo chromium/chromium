@@ -69,15 +69,17 @@
 }
 
 - (void)setButtonsEnabled:(BOOL)enabled {
+  // Do not do anything if the state do not change.
+  if (enabled != _isDisabled) {
+    return;
+  }
+
   if (enabled) {
     // Set the disabled boolean before modifiying the toolbar configuration
     // because the configuration setup is skipped when disabled.
     _isDisabled = NO;
     [self setToolbarConfiguration:_previousConfiguration];
   } else {
-    if (_isDisabled) {
-      return;
-    }
     _previousConfiguration = _configuration;
     [self setToolbarConfiguration:[TabGridToolbarsConfiguration
                                       disabledConfiguration]];

@@ -1150,12 +1150,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
 
-  [self configureAddToButtonMenuForSelectedItems];
-  BOOL incognitoTabsNeedsAuth =
-      (self.currentPage == TabGridPageIncognitoTabs &&
-       self.incognitoTabsViewController.contentNeedsAuthentication);
-  [self.bottomToolbar setAddToButtonEnabled:!incognitoTabsNeedsAuth];
-
   // When current page is a remote tabs page.
   if (self.currentPage == TabGridPageRemoteTabs) {
     if (self.pageConfiguration ==
@@ -1185,44 +1179,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  if (self.tabGridMode == TabGridModeSelection) {
-    [self updateSelectionModeToolbars];
-  }
-
   [self configureDoneButtonBasedOnPage:self.currentPage];
   [self configureNewTabButtonBasedOnContentPermissions];
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
-}
-
-// Updates the add to menu items with all the currently selected items.
-- (void)configureAddToButtonMenuForSelectedItems {
-  BaseGridViewController* gridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-  // This can be called when the current page is not tied to a grid view
-  // controller. If so, return early, because getting the std::set off of a nil
-  // gridViewController would return a garbage std::set.
-  if (!gridViewController) {
-    return;
-  }
-  const std::set<web::WebStateID> items =
-      gridViewController.selectedShareableItemIDsForEditing;
-  UIMenu* menu = nil;
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      menu =
-          [UIMenu menuWithChildren:[self.incognitoTabsDelegate
-                                       addToButtonMenuElementsForItems:items]];
-      break;
-    case TabGridPageRegularTabs:
-      menu =
-          [UIMenu menuWithChildren:[self.regularTabsDelegate
-                                       addToButtonMenuElementsForItems:items]];
-      break;
-    case TabGridPageRemoteTabs:
-      // No-op, Add To button inaccessible in remote tabs page.
-      break;
-  }
-  [self.bottomToolbar setAddToButtonMenu:menu];
 }
 
 // TODO(crbug.com/1457146): Remove this when incognito authentication is take
@@ -1403,44 +1362,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Animate the toolbar alphas alongside the current transition.
   [self.transitionCoordinator animateAlongsideTransition:animation
                                               completion:cleanup];
-}
-
-// Updates the labels and the buttons on the top and the bottom toolbars based
-// based on the selected tabs count.
-- (void)updateSelectionModeToolbars {
-  BaseGridViewController* currentBaseGridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-  // This can be called when the current page is not tied to a grid view
-  // controller. If so, return early, because getting the std::set off of a nil
-  // gridViewController would return a garbage std::set.
-  if (!currentBaseGridViewController) {
-    return;
-  }
-  NSUInteger selectedItemsCount =
-      currentBaseGridViewController.selectedItemIDsForEditing.size();
-  NSUInteger sharableSelectedItemsCount =
-      currentBaseGridViewController.selectedShareableItemIDsForEditing.size();
-  self.topToolbar.selectedTabsCount = selectedItemsCount;
-  self.bottomToolbar.selectedTabsCount = selectedItemsCount;
-
-  BOOL incognitoTabsNeedsAuth =
-      (self.currentPage == TabGridPageIncognitoTabs &&
-       self.incognitoTabsViewController.contentNeedsAuthentication);
-  BOOL enableMultipleItemsSharing =
-      !incognitoTabsNeedsAuth && sharableSelectedItemsCount > 0;
-  [self.bottomToolbar setShareTabsButtonEnabled:enableMultipleItemsSharing];
-  [self.bottomToolbar setAddToButtonEnabled:enableMultipleItemsSharing];
-  [self.bottomToolbar
-      setCloseTabsButtonEnabled:!incognitoTabsNeedsAuth && selectedItemsCount];
-  [self.topToolbar setSelectAllButtonEnabled:!incognitoTabsNeedsAuth];
-
-  if (currentBaseGridViewController.allItemsSelectedForEditing) {
-    [self.topToolbar configureDeselectAllButtonTitle];
-  } else {
-    [self.topToolbar configureSelectAllButtonTitle];
-  }
-
-  [self configureAddToButtonMenuForSelectedItems];
 }
 
 // Tells the appropriate delegate to create a new item, and then tells the
@@ -2036,9 +1957,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsPinnedTabsEnabled()) {
     [self.pinnedTabsViewController dragSessionEnabled:NO];
   }
-  if (self.tabGridMode == TabGridModeSelection) {
-    [self updateSelectionModeToolbars];
-  }
 }
 
 - (void)gridViewControllerScrollViewDidScroll:
@@ -2092,23 +2010,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // Record when users exit the tab grid to return to the current foreground
     // tab.
     base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
-  }
-}
-
-- (void)selectAllButtonTapped:(id)sender {
-  BaseGridViewController* gridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-  CHECK(gridViewController);
-
-  // Deselect all items if they are all already selected.
-  if (gridViewController.allItemsSelectedForEditing) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridSelectionDeselectAll"));
-    [gridViewController deselectAllItemsForEditing];
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridSelectionSelectAll"));
-    [gridViewController selectAllItemsForEditing];
   }
 }
 

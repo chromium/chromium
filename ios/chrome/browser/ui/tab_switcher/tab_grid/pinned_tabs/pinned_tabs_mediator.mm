@@ -475,6 +475,11 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
 }
 
+- (NSArray<UIDragItem*>*)allSelectedDragItems {
+  NOTREACHED_NORETURN() << @"You should not be able to drag and drop multiple "
+                           @"items. There is no selection mode in pinned tabs.";
+}
+
 #pragma mark - Private
 
 - (void)addWebStateObservations {
