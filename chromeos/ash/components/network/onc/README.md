@@ -12,7 +12,7 @@ enterprise policy to be capable of network configuration on ChromeOS.
 
 There are many layers involved when thinking about networking on ChromeOS
 (see more
-[here](https://chromium.googlesource.com/chromium/src/+/master/chromeos/ash/components/network/README.md))),
+[here](https://chromium.googlesource.com/chromium/src/+/master/chromeos/ash/components/network/README.md)),
 multiple of which involve ONC. Of these layers there are two areas in particular
 that are the most helpful to be familiar with and can be thought of as the
 "implementation" of ONC within ChromeOS: **ONC constants** and the **translation
@@ -54,7 +54,7 @@ constants can be found in
 As mentioned earlier, there are many layers when it comes to networking on
 ChromeOS and they do not all use ONC. In particular, the connection manager on
 ChromeOS,
-[Shill](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/README.md;l=31-62;drc=a95f7d7e85c88d5472b19bc4aac3413e3122117a),
+[Shill](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/README.md;l=31-62;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d),
 does not use ONC and requires that ONC be translated to the Shill format before
 being provided. This is by design; if Shill was tightly coupled with ONC it
 would be difficult or impossible for Shill to ever change its internal
@@ -108,9 +108,9 @@ functionality:
 ### Signatures
 
 The default values for all ONC properties are defined in the
-[`onc_signature.h`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.h;drc=b6106a56da0170f037fe58840de60bb62cbad251)/[`onc_signature.cc`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.cc;drc=b6106a56da0170f037fe58840de60bb62cbad251)
+[`onc_signature.h`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.h;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)/[`onc_signature.cc`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.cc;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
 files. These values are defined using
-["signatures"](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.h;l=24-46;drc=f43f215636cf345e051c2ef30500ec1978ceac9a),
+["signatures"](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.h;l=24-46;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d),
 allowing for information beyond just the default value to be provided, e.g., the
 type of the value itself. There are two distinct signature types that are
 organized in a hierarchical structure that matches the ONC specification: a
@@ -122,30 +122,80 @@ property of a cellular network would be a "field" signature and the value, e.g.,
 what the EID actually is, would be a "value" signature.
 
 While the [commonly used value
-signatures](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.cc;l=16-24;drc=f43f215636cf345e051c2ef30500ec1978ceac9a)
+signatures](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.cc;l=16-24;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
 have already been defined, it is possible to create custom signatures when
 necessary. For an example please see the [IP address config type
-value](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.cc;l=367-368;drc=f43f215636cf345e051c2ef30500ec1978ceac9a).
+value](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc/onc_signature.cc;l=367-368;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d).
 
 Note: The Shill constants that ONC properties are mapped to can be found in
-[dbus-constants.h](https://osscs.corp.google.com/chromium/chromium/src/+/main:third_party/cros_system_api/dbus/shill/dbus-constants.h;drc=c13d041e8414a890e2f24863a121c639d33237c2).
+[dbus-constants.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/cros_system_api/dbus/shill/dbus-constants.h;drc=0d7f441b3c48f9ebb5a7947fc0a0d4393541085b).
 
 ### `Validator`
 
-TODO: Complete
-[`Validator`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/components/onc/onc_validator.h;drc=7b5b3a0b8c5a14562035b7660b36aeb021cf98be)
-section.
+ONC configurations are validated before being applied to ensure that they align
+with the specification. The validation is performed by the [`Validator`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc/onc_validator.h;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+class; examples of issues this class checks for are:
+
+* Field has a value with the incorrect type
+* Field has an unknown enum value
+* Field has an integer value that is out of range
+* Field name is unknown
+* Duplicate values for fields intended to be globally unique, e.g. GUID
+* Required field is missing
+* Recommended field contains the name of a field that was not provided in the
+  configuration
+* Recommended field exists but the configuration is not from enterprise policy
+
+Please reference the ONC spec for [more
+information](https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md#recommended-values)
+and
+[examples](https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md#recommended-values-example)
+of recommended values.
+
+There are different modes that can be used when performing validation of an ONC
+configuration:
+
+* Log warnings
+* Error when an unknown field name is found
+* Error when a field is unexpectedly recommended
+* Enterprise policy
+
+For more information on the impact these modes have when performing validation
+see the [`Validator` class
+documentation](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc/onc_validator.h;l=23-76;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d).
 
 ### Merging functionality
 
-TODO: Complete [Merging
-functionality](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_merger.h;drc=c12ecb80242110efc2852881f03b0924ec525fb2)
-section.
+Multiple ONC configurations can be applied to a device; for example, a device
+may have a "global" ONC configuration that is applied to all users of a device
+and a "user" ONC configuration that is applied to a specific user. Similar to
+how functionality is provided to check if a configuration is valid,
+functionality is also provided to merge configurations:
+
+* [`MergeSettingsAndPoliciesToEffective()`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_merger.h;l=17-31;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+returns the result of merging the provided configurations. If conflicting values
+are found when merging the provided configurations the "effective", or highest
+priority value, will be chosen. For example, if a network is configured locally
+on the DUT by the user to have auto-connect enabled but a global policy
+restricts auto-connect the effective value of auto-connect will be disabled/off.
+  * Please note that this function expects that the provided configurations
+    refer to the same section/level of ONC.
+* [`MergeSettingsAndPoliciesToAugmented()`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_merger.h;l=33-47;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+  returns the result of merging the provided configurations, similar to
+  `MergeSettingsAndPoliciesToEffective()`, but instead of providing the
+  effective value for each field this function will provide the augmented
+  values. The "augmented" value of a field is a dictionary that includes the
+  effective value and can include additional values that provide additional
+  context about the field such as the source of the different values and their
+  enforcement.  For more information about the dictionary format of augmented
+  values see the [managed ONC dictionary format
+  section](https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md#dictionary-format)
+  of the specification.
 
 ### Translation tables
 
 The [ONC translation
-tables](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translation_tables.h;drc=cfbf492a6067da8111cb984972e39a7890e9895d)
+tables](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translation_tables.h;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
 define the mapping of ONC properties to Shill properties and provide helper
 functions for translating properties. The tables allow properties with a direct
 mapping to automatically be translated. However, while **all** properties should
@@ -158,17 +208,17 @@ required.
 
 Building upon the concepts and functionality discussed earlier in this document,
 there are [two
-functions](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translator.h;drc=2fbe9cc6ca4ce563e2aa20361b011230ddd4afcb)
-that are used to translate ONC to/from Shill properties.  Both functions accept
+functions](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translator.h;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+that are used to translate ONC to/from Shill properties. Both functions accept
 an [ONC signature](#translation-tables) that indicates to the translation logic
 at which level this translation is occurring; this feature allows clients to
 translate to and from any level of properties rather than needing to translate
 only from top-level ONC to top-level Shill properties.
 
 These functions,
-[`TranslateONCObjectToShill`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translator_onc_to_shill.cc;l=679-686;drc=f43f215636cf345e051c2ef30500ec1978ceac9a)
+[`TranslateONCObjectToShill`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translator_onc_to_shill.cc;l=679-686;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
 and
-[`TranslateShillServiceToONCPart`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translator_shill_to_onc.cc;l=1085-1095;drc=f43f215636cf345e051c2ef30500ec1978ceac9a),
+[`TranslateShillServiceToONCPart`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_translator_shill_to_onc.cc;l=1085-1095;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d),
 internally perform translation using the [translation tables](#translation
 tables) and [signatures](#signatures) by default but are implemented such that
 custom translation logic can easily be added.
@@ -179,7 +229,7 @@ While users typically will not be configuring networks using ONC, there are
 three primary places that ONC is used within ChromeOS:
 
  * The
-   [`ManagedNetworkConfigurationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/README.md;l=243-301;drc=3fae3cf5c30202296035e102951627745dc39627)
+   [`ManagedNetworkConfigurationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/README.md;l=243-301;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
    class provides multiple APIs that are used for creating and configuring
    networks on ChromeOS. Unlike other networking classes, the
    `ManagedNetworkConfigurationHandler` class specifically only accepts ONC with
@@ -195,4 +245,45 @@ three primary places that ONC is used within ChromeOS:
 
 ## Extending ONC
 
-TODO: Complete Extending ONC section.
+Extending ONC is straightforward but requires care to ensure that all of the
+necessary changes are made. Additionally, it is important to consider when
+making these changes is what the expected behavior is when an older client
+*without* these changes receives a policy *with* these changes; this case is far
+from uncommon and it is worth checking that no issues would be introduced.
+
+Depending on how ONC is being extended not all of the changes mentioned are
+required, but the comprehensive list is as follows:
+
+ * Update
+   [//components/onc/docs/onc_spec.md](https://chromium.googlesource.com/chromium/src/+/HEAD/components/onc/docs/onc_spec.md).
+   Any changes to the specification are expected to have been discussed and
+   reviewed prior to landing.
+ * Add any necessary constants to [//components/onc/onc_constants.[h|cc]](https://source.chromium.org/chromium/chromium/src/+/main:components/onc;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d).
+ * Update
+   [//chromeos/components/onc/onc_signature.[h|cc]](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/components/onc;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+   files to have the correct type for all properties added. This is where custom
+   default values can be chosen for properties.
+ * Update the
+   [//chromeos/ash/components/network/onc/onc_translation_tables.[h|cc]](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+   files to map all properties added to their corresponding Shill properties. This can
+   only be done for properties that can be translated 1:1.
+ * Update the
+   [//chromeos/ash/components/network/onc/onc_translator.\*](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+   files to handle translating all properties that could not be handled
+   automatically by the translation tables.
+ * If necessary, update
+   [//chromeos/ash/components/network/onc/onc_merger.cc](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/onc/onc_merger.cc;drc=f444c4385d414a4c916d9ed83fde775c484d0c2d)
+   to correctly handle merging any added or changed properties.
+
+### Examples
+
+ * [This
+   change](https://chromium-review.googlesource.com/c/chromium/src/+/4424729)
+   introduces a new property to the ONC specification. The added property is
+   intended to be mutually exclusive with another property, and to enforce this
+   behavior the validators were updated to check that only one is provided.
+ * [This
+   change](https://chromium-review.googlesource.com/c/chromium/src/+/3794908)
+   changes the default of an existing property to be a value other than the
+   default value for the variable type; in this case the change makes a boolean
+   property default to `true`.

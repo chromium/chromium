@@ -2302,7 +2302,7 @@ If a policy configuration exists, the following rules apply:
     it is considered 'Recommended'. If a UserSetting or SharedSetting value
     exists, it can be selected as the Effective value.
 
-### Dictionary format
+### Managed ONC Dictionary format ("augmented")
 
 Managed ONC dictionaries contain the keys described under
 [Network Configuration](#Network-Configuration), however the values are
