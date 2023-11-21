@@ -16,51 +16,72 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /**
- * Extends the base NotificationWrapperCompatBuilder to add UMA by way of
- * {@link NotificationIntentInterceptor}.
+ * Extends the base NotificationWrapperCompatBuilder to add UMA by way of {@link
+ * NotificationIntentInterceptor}.
  */
 public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperCompatBuilder {
-    ChromeNotificationWrapperCompatBuilder(Context context, String channelId,
-            ChannelsInitializer channelsInitializer, NotificationMetadata metadata) {
+    ChromeNotificationWrapperCompatBuilder(
+            Context context,
+            String channelId,
+            ChannelsInitializer channelsInitializer,
+            NotificationMetadata metadata) {
         super(context, channelId, channelsInitializer, metadata);
         if (metadata != null) {
-            getBuilder().setDeleteIntent(
-                    NotificationIntentInterceptor.getDefaultDeletePendingIntent(metadata));
+            getBuilder()
+                    .setDeleteIntent(
+                            NotificationIntentInterceptor.getDefaultDeletePendingIntent(metadata));
         }
     }
 
     @Override
     public NotificationWrapperBuilder setContentIntent(PendingIntentProvider contentIntent) {
-        PendingIntent pendingIntent = NotificationIntentInterceptor.createInterceptPendingIntent(
-                NotificationIntentInterceptor.IntentType.CONTENT_INTENT, 0 /* intentId */,
-                getMetadata(), contentIntent);
+        PendingIntent pendingIntent =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        /* intentId= */ 0,
+                        getMetadata(),
+                        contentIntent);
         return setContentIntent(pendingIntent);
     }
 
     @Override
-    public NotificationWrapperBuilder addAction(int icon, CharSequence title,
+    public NotificationWrapperBuilder addAction(
+            int icon,
+            CharSequence title,
             PendingIntentProvider pendingIntentProvider,
             @NotificationUmaTracker.ActionType int actionType) {
-        PendingIntent pendingIntent = NotificationIntentInterceptor.createInterceptPendingIntent(
-                NotificationIntentInterceptor.IntentType.ACTION_INTENT, actionType, getMetadata(),
-                pendingIntentProvider);
+        PendingIntent pendingIntent =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.ACTION_INTENT,
+                        actionType,
+                        getMetadata(),
+                        pendingIntentProvider);
         return addAction(icon, title, pendingIntent);
     }
 
     @Override
-    public NotificationWrapperBuilder addAction(NotificationCompat.Action action, int flags,
-            @NotificationUmaTracker.ActionType int actionType, int requestCode) {
-        PendingIntent pendingIntent = NotificationIntentInterceptor.createInterceptPendingIntent(
-                NotificationIntentInterceptor.IntentType.ACTION_INTENT, actionType, getMetadata(),
-                new PendingIntentProvider(action.actionIntent, flags, requestCode));
+    public NotificationWrapperBuilder addAction(
+            NotificationCompat.Action action,
+            int flags,
+            @NotificationUmaTracker.ActionType int actionType,
+            int requestCode) {
+        PendingIntent pendingIntent =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.ACTION_INTENT,
+                        actionType,
+                        getMetadata(),
+                        new PendingIntentProvider(action.actionIntent, flags, requestCode));
         action.actionIntent = pendingIntent;
         return addAction(action);
     }
 
     @Override
     public NotificationWrapperBuilder setDeleteIntent(PendingIntentProvider intent) {
-        return setDeleteIntent(NotificationIntentInterceptor.createInterceptPendingIntent(
-                NotificationIntentInterceptor.IntentType.DELETE_INTENT, 0 /* intentId */,
-                getMetadata(), intent));
+        return setDeleteIntent(
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.DELETE_INTENT,
+                        /* intentId= */ 0,
+                        getMetadata(),
+                        intent));
     }
 }
