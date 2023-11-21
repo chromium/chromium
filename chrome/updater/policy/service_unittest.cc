@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
@@ -65,10 +66,16 @@ class FakePolicyManager : public PolicyManagerInterface {
     download_preference_ = preference;
   }
   std::optional<int> GetPackageCacheSizeLimitMBytes() const override {
-    return std::nullopt;
+    return cache_size_limit_;
+  }
+  void SetPackageCacheSizeLimitMBytes(int size_limit) {
+    cache_size_limit_ = std::make_optional(size_limit);
   }
   std::optional<int> GetPackageCacheExpirationTimeDays() const override {
-    return std::nullopt;
+    return cache_expiration_time_;
+  }
+  void SetPackageCacheExpirationTimeDays(int expiration_time) {
+    cache_expiration_time_ = std::make_optional(expiration_time);
   }
   std::optional<int> GetEffectivePolicyForAppInstalls(
       const std::string& app_id) const override {
@@ -84,33 +91,47 @@ class FakePolicyManager : public PolicyManagerInterface {
   void SetUpdatePolicy(const std::string& app_id, int update_policy) {
     update_policies_[app_id] = update_policy;
   }
-  std::optional<std::string> GetTargetVersionPrefix(
-      const std::string& app_id) const override {
-    return std::nullopt;
-  }
-  std::optional<bool> IsRollbackToTargetVersionAllowed(
-      const std::string& app_id) const override {
-    return std::nullopt;
-  }
   std::optional<std::string> GetProxyMode() const override {
     return proxy_mode_.empty() ? std::nullopt : std::make_optional(proxy_mode_);
   }
   void SetProxyMode(const std::string& proxy_mode) { proxy_mode_ = proxy_mode; }
   std::optional<std::string> GetProxyPacUrl() const override {
-    return std::nullopt;
+    return proxy_pac_url_.empty() ? std::nullopt
+                                  : std::make_optional(proxy_pac_url_);
+  }
+  void SetProxyPacUrl(const std::string& proxy_pac_url) {
+    proxy_pac_url_ = proxy_pac_url;
   }
   std::optional<std::string> GetProxyServer() const override {
+    return proxy_server_.empty() ? std::nullopt
+                                 : std::make_optional(proxy_server_);
+  }
+  void SetProxyServer(const std::string& proxy_server) {
+    proxy_server_ = proxy_server;
+  }
+  std::optional<bool> IsRollbackToTargetVersionAllowed(
+      const std::string& app_id) const override {
     return std::nullopt;
   }
   std::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override {
     auto value = channels_.find(app_id);
-    if (value == channels_.end())
-      return std::nullopt;
-    return value->second;
+    return value == channels_.end() ? std::nullopt
+                                    : std::make_optional(value->second);
   }
   void SetChannel(const std::string& app_id, std::string channel) {
     channels_[app_id] = std::move(channel);
+  }
+  std::optional<std::string> GetTargetVersionPrefix(
+      const std::string& app_id) const override {
+    auto value = target_version_prefixes_.find(app_id);
+    return value == target_version_prefixes_.end()
+               ? std::nullopt
+               : std::make_optional(value->second);
+  }
+  void SetTargetVersionPrefix(const std::string& app_id,
+                              std::string target_version_prefix) {
+    target_version_prefixes_[app_id] = std::move(target_version_prefix);
   }
   std::optional<std::vector<std::string>> GetForceInstallApps() const override {
     return std::nullopt;
@@ -133,10 +154,15 @@ class FakePolicyManager : public PolicyManagerInterface {
   bool has_active_device_policies_;
   std::string source_;
   UpdatesSuppressedTimes suppressed_times_;
+  std::optional<int> cache_size_limit_ = std::nullopt;
+  std::optional<int> cache_expiration_time_ = std::nullopt;
   std::string download_preference_;
   std::string proxy_mode_;
-  std::map<std::string, std::string> channels_;
+  std::string proxy_server_;
+  std::string proxy_pac_url_;
   std::map<std::string, int> update_policies_;
+  std::map<std::string, std::string> channels_;
+  std::map<std::string, std::string> target_version_prefixes_;
 };
 
 TEST(PolicyService, DefaultPolicyValue) {
@@ -245,22 +271,28 @@ TEST(PolicyService, MultiplePolicyManagers) {
   updates_suppressed_times.start_minute_ = 10;
   updates_suppressed_times.duration_minute_ = 30;
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
+  manager->SetPackageCacheSizeLimitMBytes(1000);
   manager->SetChannel("app1", "channel_gp");
   manager->SetUpdatePolicy("app2", 1);
   managers.push_back(std::move(manager));
 
   manager = base::MakeRefCounted<FakePolicyManager>(true, "device_management");
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
+  manager->SetPackageCacheExpirationTimeDays(60);
   manager->SetChannel("app1", "channel_dm");
   manager->SetUpdatePolicy("app1", 3);
   managers.push_back(std::move(manager));
 
   manager = base::MakeRefCounted<FakePolicyManager>(true, "imaginary");
+  manager->SetProxyMode("direct");
+  manager->SetProxyPacUrl("url://proxyurl");
+  manager->SetProxyServer("test-server");
   updates_suppressed_times.start_hour_ = 1;
   updates_suppressed_times.start_minute_ = 1;
   updates_suppressed_times.duration_minute_ = 20;
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetChannel("app1", "channel_imaginary");
+  manager->SetTargetVersionPrefix("app1", "103.3.");
   manager->SetUpdatePolicy("app1", 2);
   manager->SetDownloadPreference("cacheable");
   managers.push_back(std::move(manager));
@@ -272,6 +304,23 @@ TEST(PolicyService, MultiplePolicyManagers) {
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(),
             "group_policy;device_management;imaginary;Default");
+
+  EXPECT_EQ(policy_service->GetPackageCacheSizeLimitMBytes()
+                .effective_policy()
+                .value()
+                .policy,
+            1000);
+  EXPECT_EQ(policy_service->GetPackageCacheExpirationTimeDays()
+                .effective_policy()
+                .value()
+                .policy,
+            60);
+  EXPECT_EQ(policy_service->GetProxyMode().effective_policy().value().policy,
+            "direct");
+  EXPECT_EQ(policy_service->GetProxyPacUrl().effective_policy().value().policy,
+            "url://proxyurl");
+  EXPECT_EQ(policy_service->GetProxyServer().effective_policy().value().policy,
+            "test-server");
 
   PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
       policy_service->GetUpdatesSuppressedTimes();
@@ -332,17 +381,22 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(download_preference_status.policy(), "cacheable");
   EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
-  EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
             "{\n"
             "  LastCheckPeriod = 270 (Default)\n"
             "  UpdatesSuppressed = "
             "{StartHour: 5, StartMinute: 10, Duration: 30} (group_policy)\n"
             "  DownloadPreference = cacheable (imaginary)\n"
+            "  PackageCacheSizeLimit = 1000 MB (group_policy)\n"
+            "  PackageCacheExpires = 60 days (device_management)\n"
+            "  ProxyMode = direct (imaginary)\n"
+            "  ProxyPacURL = url://proxyurl (imaginary)\n"
+            "  ProxyServer = test-server (imaginary)\n"
             "  \"app1\": {\n"
             "    Install = 1 (Default)\n"
             "    Update = 3 (device_management)\n"
             "    TargetChannel = channel_gp (group_policy)\n"
+            "    TargetVersionPrefix = 103.3. (imaginary)\n"
             "    RollbackToTargetVersionAllowed = 0 (Default)\n"
             "  }\n"
             "  \"app2\": {\n"
@@ -351,6 +405,78 @@ TEST(PolicyService, MultiplePolicyManagers) {
             "    RollbackToTargetVersionAllowed = 0 (Default)\n"
             "  }\n"
             "}\n");
+  EXPECT_EQ(
+      policy_service->GetAllPolicies(),
+      base::Value(
+          base::Value::Dict()
+              .Set("LastCheckPeriod", base::Value::Dict()
+                                          .Set("value", 270)
+                                          .Set("source", "Default"))
+              .Set("UpdatesSuppressed", base::Value::Dict()
+                                            .Set("StartHour", 5)
+                                            .Set("StartMinute", 10)
+                                            .Set("Duration", 30)
+                                            .Set("source", "group_policy"))
+              .Set("DownloadPreference", base::Value::Dict()
+                                             .Set("value", "cacheable")
+                                             .Set("source", "group_policy"))
+              .Set("PackageCacheSizeLimit", base::Value::Dict()
+                                                .Set("value", 1000)
+                                                .Set("source", "group_policy"))
+              .Set("PackageCacheExpires",
+                   base::Value::Dict()
+                       .Set("value", 60)
+                       .Set("source", "device_management"))
+              .Set("ProxyMode", base::Value::Dict()
+                                    .Set("value", "direct")
+                                    .Set("source", "imaginary"))
+              .Set("ProxyPacURL",
+                   base::Value::Dict()
+                       .Set("value", "url://proxyurl")
+                       .Set("source", "imaginary"))
+              .Set("ProxyServer",
+                   base::Value::Dict()
+                       .Set("value", "test-server")
+                       .Set("source", "imaginary"))
+              .Set("app1",
+                   base::Value::Dict()
+                       .Set("Install", base::Value::Dict()
+                                           .Set("value", 1)
+                                           .Set("source", "Default"))
+                       .Set("Update", base::Value::Dict()
+                                          .Set("value", 3)
+                                          .Set("source", "device_management"))
+                       .Set("RollbackToTargetVersionAllowed",
+                            base::Value::Dict()
+                                .Set("value", false)
+                                .Set("source", "Default"))
+                       .Set("TargetChannel", base::Value::Dict()
+                                                 .Set("value", "channel_gp")
+                                                 .Set("source", "group_policy"))
+                       .Set("TargetVersionPrefix",
+                            base::Value::Dict()
+                                .Set("value", "103.3.")
+                                .Set("source", "imaginary"))
+                       .Set("RollbackToTargetVersionAllowed",
+                            base::Value::Dict()
+                                .Set("value", false)
+                                .Set("source", "Default")))
+              .Set("app2",
+                   base::Value::Dict()
+                       .Set("Install", base::Value::Dict()
+                                           .Set("value", 1)
+                                           .Set("source", "Default"))
+                       .Set("Update", base::Value::Dict()
+                                          .Set("value", 1)
+                                          .Set("source", "group_policy"))
+                       .Set("RollbackToTargetVersionAllowed",
+                            base::Value::Dict()
+                                .Set("value", false)
+                                .Set("source", "Default"))
+                       .Set("RollbackToTargetVersionAllowed",
+                            base::Value::Dict()
+                                .Set("value", false)
+                                .Set("source", "Default")))));
 }
 
 TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {

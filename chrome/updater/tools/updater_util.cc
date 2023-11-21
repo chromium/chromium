@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -41,6 +42,7 @@ constexpr char kBackgroundSwitch[] = "background";
 constexpr char kListAppsSwitch[] = "list-apps";
 constexpr char kListUpdateSwitch[] = "list-update";
 constexpr char kListPoliciesSwitch[] = "list-policies";
+constexpr char kJSONFormatSwitch[] = "json";
 constexpr char kUpdateSwitch[] = "update";
 
 UpdaterScope Scope() {
@@ -53,6 +55,10 @@ UpdateService::Priority Priority() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kBackgroundSwitch)
              ? UpdateService::Priority::kBackground
              : UpdateService::Priority::kForeground;
+}
+
+bool OutputInJSONFormat() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kJSONFormatSwitch);
 }
 
 std::string Quoted(const std::string& value) {
@@ -174,8 +180,7 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
 
   std::cout << "Usage: "
             << base::CommandLine::ForCurrentProcess()->GetProgram().BaseName()
-            << " [action...] [parameters...]"
-            << R"(
+            << " [action...] [parameters...]" << R"(
     Actions:
         --update            Update app(s).
         --list-apps         List all registered apps.
@@ -184,7 +189,8 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
     Action parameters:
         --background        Use background priority.
         --product           ProductID.
-        --system            Use the system scope.)"
+        --system            Use the system scope.
+        --json              Use JSON as output format where applicable.)"
             << std::endl;
   Shutdown(error_message.empty() ? 0 : 1);
 }
@@ -312,13 +318,23 @@ void UpdaterUtilApp::ListPolicies() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce([] {
-        std::cout << "Updater policies: "
-                  << base::MakeRefCounted<Configurator>(
-                         CreateGlobalPrefs(Scope()),
-                         CreateDefaultExternalConstants())
-                         ->GetPolicyService()
-                         ->GetAllPoliciesAsString()
-                  << std::endl;
+        auto configurator = base::MakeRefCounted<Configurator>(
+            CreateGlobalPrefs(Scope()), CreateDefaultExternalConstants());
+        if (OutputInJSONFormat()) {
+          std::string policy_string;
+          if (base::JSONWriter::Write(
+                  configurator->GetPolicyService()->GetAllPolicies(),
+                  &policy_string)) {
+            std::cout << policy_string << std::endl;
+          } else {
+            LOG(ERROR) << "Failed to write policy as JSON string.";
+          }
+        } else {
+          std::cout
+              << "Updater policies: "
+              << configurator->GetPolicyService()->GetAllPoliciesAsString()
+              << std::endl;
+        }
       }),
       base::BindOnce(&UpdaterUtilApp::Shutdown, this, 0));
 }

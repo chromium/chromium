@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/manager.h"
 
@@ -62,11 +63,11 @@ class PolicyStatus {
 
   explicit operator bool() const { return effective_policy_.has_value(); }
   // Convenience method to extract the effective policy's value.
-  const T& policy() {
+  const T& policy() const {
     CHECK(effective_policy_);
     return effective_policy_->policy;
   }
-  const T& policy_or(const T& fallback) {
+  const T& policy_or(const T& fallback) const {
     return effective_policy_ ? policy() : fallback;
   }
 
@@ -128,6 +129,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyStatus<int> DeprecatedGetLastCheckPeriodMinutes() const;
 
   // Helper methods.
+  base::Value GetAllPolicies() const;
   std::string GetAllPoliciesAsString() const;
   bool AreUpdatesSuppressedNow(const base::Time& now = base::Time::Now()) const;
 
