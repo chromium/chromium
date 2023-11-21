@@ -618,7 +618,7 @@ class BrowserAutofillManager
   void SetFillingContext(const FormStructure& form,
                          std::unique_ptr<FillingContext> context);
 
-  FillingContext* GetFillingContext(const FormStructure& form);
+  FillingContext* GetFillingContext(FormGlobalId form_id);
 
   // Whether there should be an attempts to refill the form. Returns true if all
   // the following are satisfied:

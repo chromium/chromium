@@ -1916,7 +1916,8 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
 
   FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (form_structure && ShouldTriggerRefill(*form_structure)) {
-    FillingContext* filling_context = GetFillingContext(*form_structure);
+    FillingContext* filling_context =
+        GetFillingContext(form_structure->global_id());
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
     filling_context->forced_fill_values[field.global_id()] = refill_value;
     ScheduleRefill(form, trigger_details);
@@ -1937,7 +1938,8 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
 
-  FillingContext* filling_context = GetFillingContext(*form_structure);
+  FillingContext* filling_context =
+      GetFillingContext(form_structure->global_id());
   if (!filling_context)
     return;
 
@@ -2458,7 +2460,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   //  The form is already filled.
   //  A refill has not been attempted for that form yet.
   //  This fill is not a refill attempt.
-  FillingContext* filling_context = GetFillingContext(*form_structure);
+  FillingContext* filling_context =
+      GetFillingContext(form_structure->global_id());
   bool could_attempt_refill = filling_context != nullptr &&
                               !filling_context->attempted_refill && !is_refill;
 
@@ -3338,8 +3341,8 @@ void BrowserAutofillManager::SetFillingContext(
 }
 
 BrowserAutofillManager::FillingContext*
-BrowserAutofillManager::GetFillingContext(const FormStructure& form) {
-  auto it = filling_context_.find(form.global_id());
+BrowserAutofillManager::GetFillingContext(FormGlobalId form_id) {
+  auto it = filling_context_.find(form_id);
   return it != filling_context_.end() ? it->second.get() : nullptr;
 }
 
@@ -3347,7 +3350,8 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
     const FormStructure& form_structure) {
   // Should not refill if a form with the same FormGlobalId that has not been
   // filled before.
-  FillingContext* filling_context = GetFillingContext(form_structure);
+  FillingContext* filling_context =
+      GetFillingContext(form_structure.global_id());
   if (filling_context == nullptr)
     return false;
 
@@ -3372,7 +3376,8 @@ void BrowserAutofillManager::ScheduleRefill(
   if (!form_structure)
     return;
 
-  FillingContext* filling_context = GetFillingContext(*form_structure);
+  FillingContext* filling_context =
+      GetFillingContext(form_structure->global_id());
   DCHECK(filling_context != nullptr);
 
   // If a timer for the refill was already running, it means the form
@@ -3398,7 +3403,8 @@ void BrowserAutofillManager::TriggerRefill(
   address_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
                                           *form_structure);
 
-  FillingContext* filling_context = GetFillingContext(*form_structure);
+  FillingContext* filling_context =
+      GetFillingContext(form_structure->global_id());
   DCHECK(filling_context);
 
   // The refill attempt can happen from different paths, some of which happen
