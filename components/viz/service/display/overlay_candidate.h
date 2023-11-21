@@ -131,6 +131,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Format of the buffer to scanout.
   gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+
+  gfx::ProtectedVideoType protected_video_type =
+      gfx::ProtectedVideoType::kClear;
+
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+
   // ColorSpace of the buffer for scanout.
   gfx::ColorSpace color_space;
   // Optional HDR Metadata for the buffer.
@@ -148,9 +155,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   ResourceId resource_id = kInvalidResourceId;
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
-
-  gfx::ProtectedVideoType protected_video_type =
-      gfx::ProtectedVideoType::kClear;
 
 #if BUILDFLAG(IS_WIN)
   // Indication of the overlay to be detected as possible full screen
@@ -215,17 +219,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
   // platform specific code.
   RAW_PTR_EXCLUSION const AggregatedRenderPassDrawQuad* rpdq = nullptr;
-  // The DDL for generating render pass overlay buffer with SkiaRenderer. This
-  // is the recorded output of rendering the |rpdq|.
-  sk_sp<GrDeferredDisplayList> ddl;
 
   // Quad |shared_quad_state| opacity is ubiquitous for quad types
   // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate
   // context must support non opaque opacity for these types.
   float opacity = 1.0f;
-
-  // Hints for overlay prioritization when delegated composition is used.
-  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
 
   // Specifies the rounded corners of overlay candidate, in target space.
   gfx::RRectF rounded_corners;
