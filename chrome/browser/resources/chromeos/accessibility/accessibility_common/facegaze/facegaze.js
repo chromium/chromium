@@ -49,6 +49,8 @@ export class FaceGaze {
     this.onMouseDraggedHandler_.setNodes(desktop);
     this.onMouseDraggedHandler_.start();
 
+    this.connectToWebCam_();
+
     // TODO(b/309121742): Listen to magnifier bounds changed so as to update
     // cursor relative position logic when magnifier is running.
   }
@@ -59,5 +61,24 @@ export class FaceGaze {
    */
   onMouseMovedOrDragged_(event) {
     this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
+  }
+
+  /** @private */
+  connectToWebCam_() {
+    // Open camera_stream.html, which will connect to the webcam and pass
+    // the stream back to the background page.
+    const params = {
+      url: chrome.runtime.getURL(
+          'accessibility_common/facegaze/camera_stream.html'),
+      active: false,
+    };
+    chrome.tabs.create(params, () => {
+      chrome.runtime.onMessage.addListener(message => {
+        if (message.type === 'cameraStream') {
+          const stream = message.stream;
+          // TODO(b/309121742): Pass stream to the Facelandmark API.
+        }
+      });
+    });
   }
 }

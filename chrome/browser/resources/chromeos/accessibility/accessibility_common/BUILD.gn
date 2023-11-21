@@ -59,6 +59,8 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/parse/simple_parse_strategy.js",
     "dictation/parse/speech_parser.js",
     "dictation/ui_controller.js",
+    "facegaze/camera_stream.html",
+    "facegaze/camera_stream.js",
     "facegaze/facegaze.js",
     "magnifier/magnifier.js",
   ]
