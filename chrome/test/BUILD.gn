@@ -8142,6 +8142,9 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/recipes/time_format_util_unittest.cc",
       "../browser/new_tab_page/modules/safe_browsing/safe_browsing_handler_unittest.cc",
       "../browser/new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2_unittest.cc",
+      "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler_unittest.cc",
+      "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_test_support.cc",
+      "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_test_support.h",
       "../browser/search/ntp_features_unittest.cc",
     ]
     if (build_with_tflite_lib) {
@@ -8204,6 +8207,7 @@ test("unit_tests") {
       "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings",
+      "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings",
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/resources:component_extension_resources_grit",
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
