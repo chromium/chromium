@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 12
+version_major: 13
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -126,6 +126,8 @@ trust_anchors {
 # https://certdemo-ev-valid.ssl.d-trust.net/
 trust_anchors {
   sha256_hex: "eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881"
+  # TODO(cclements,hchao): remove non-CABF OID once it is not used anymore.
+  ev_policy_oids: "1.3.6.1.4.1.4788.2.202.1"
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -521,6 +523,8 @@ trust_anchors {
 # https://www.secomtrust.net/contact/form.html
 trust_anchors {
   sha256_hex: "513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6"
+  # TODO(cclements,hchao): remove non-CABF OID once it is not used anymore.
+  ev_policy_oids: "1.2.392.200091.100.721.1"
   ev_policy_oids: "2.23.140.1.1"
 }
 
