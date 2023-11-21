@@ -69,7 +69,7 @@
       }
 
       #safeBrowsingEnhanced {
-        --cr-radio-button-unchecked-ripple-color: 
+        --cr-radio-button-unchecked-ripple-color:
             var(--cr-radio-button-checked-ripple-color);
       }
     </style>
@@ -260,7 +260,8 @@
         pref="{{prefs.generated.https_first_mode_enabled}}"
         label="$i18n{httpsOnlyModeTitle}"
         sub-label="[[getHttpsFirstModeSubLabel_(
-                       prefs.generated.https_first_mode_enabled.*)]]">
+                       prefs.generated.https_first_mode_enabled.*)]]"
+        numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]">
     </settings-toggle-button>
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
       <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>

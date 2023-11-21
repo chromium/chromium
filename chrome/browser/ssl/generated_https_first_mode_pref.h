@@ -12,9 +12,9 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
-// The generated pref for HTTPS-First Mode. Only used for enabling/disabling
-// the setting in the Security UI settings page. The actual HTTPS-First Mode
-// is controlled by prefs::kHttpsOnlyModeEnabled.
+// The generated pref for HTTPS-First Mode. Only used for managing the setting
+// in the Security UI settings page. The actual HTTPS-First Mode is controlled
+// by prefs::kHttpsOnlyModeEnabled and prefs::kHttpsFirstModeIncognito.
 extern const char kGeneratedHttpsFirstModePref[];
 
 class GeneratedHttpsFirstModePref

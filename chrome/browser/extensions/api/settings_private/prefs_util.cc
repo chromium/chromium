@@ -339,7 +339,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kHttpsOnlyModeEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::kGeneratedHttpsFirstModePref] =
-      settings_api::PrefType::kBoolean;
+      settings_api::PrefType::kNumber;
 
   // Cookies page
   (*s_allowlist)[::prefs::kCookieControlsMode] =

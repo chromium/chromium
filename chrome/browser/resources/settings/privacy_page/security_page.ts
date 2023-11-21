@@ -47,6 +47,17 @@ export enum SafeBrowsingSetting {
   DISABLED = 2,
 }
 
+/**
+ * Enumeration of all HTTPS-First Mode setting states. Must be kept in sync with
+ * the enum of the same name located in:
+ * chrome/browser/ssl/https_first_mode_settings_tracker.h
+ */
+enum HttpsFirstModeSetting {
+  DISABLED = 0,
+  ENABLED_INCOGNITO = 1,
+  ENABLED_FULL = 2,
+}
+
 export interface SettingsSecurityPageElement {
   $: {
     passwordsLeakToggle: SettingsToggleButtonElement,
@@ -125,6 +136,14 @@ export class SettingsSecurityPageElement extends
       safeBrowsingSettingEnum_: {
         type: Object,
         value: SafeBrowsingSetting,
+      },
+
+      /**
+       * Valid HTTPS-First Mode states.
+       */
+      httpsFirstModeSettingEnum_: {
+        type: Object,
+        value: HttpsFirstModeSetting,
       },
 
       enableSecurityKeysSubpage_: {
@@ -224,6 +243,10 @@ export class SettingsSecurityPageElement extends
       } else if (prefValue === SafeBrowsingSetting.STANDARD) {
         this.$.safeBrowsingStandard.expanded = true;
       }
+
+      assert(
+          this.getPref('generated.https_first_mode_enabled').value !==
+          HttpsFirstModeSetting.ENABLED_INCOGNITO);
     });
 
     this.registerHelpBubble(
