@@ -202,8 +202,9 @@ class AdTrackerTest : public testing::Test {
 
   void WillExecuteScript(const String& script_url,
                          int script_id = v8::Message::kNoScriptIdInfo) {
+    auto* execution_context = GetExecutionContext();
     ad_tracker_->WillExecuteScript(
-        GetExecutionContext(), v8::Isolate::GetCurrent()->GetCurrentContext(),
+        execution_context, execution_context->GetIsolate()->GetCurrentContext(),
         String(script_url), script_id);
   }
 
