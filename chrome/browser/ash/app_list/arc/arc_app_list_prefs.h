@@ -38,6 +38,7 @@ class Profile;
 
 namespace arc {
 class ArcAppMetricsUtil;
+class ArcPackageInstallPriorityHandler;
 class ArcPackageSyncableService;
 template <typename InstanceType, typename HostType>
 class ConnectionHolder;
@@ -487,6 +488,8 @@ class ArcAppListPrefs : public KeyedService,
 
   arc::mojom::AppCategory GetAppCategory(const std::string& app_id) const;
 
+  arc::ArcPackageInstallPriorityHandler* GetInstallPriorityHandler();
+
  private:
   friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;
@@ -743,6 +746,8 @@ class ArcAppListPrefs : public KeyedService,
 
   bool default_apps_ready_ = false;
   std::unique_ptr<ArcDefaultAppList> default_apps_;
+  std::unique_ptr<arc::ArcPackageInstallPriorityHandler>
+      install_priority_handler_;
   base::OnceClosure default_apps_ready_callback_;
   // Set of packages installed by policy in case of managed user.
   std::set<std::string> packages_by_policy_;

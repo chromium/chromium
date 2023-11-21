@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_scoped_pref_update.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
+#include "chrome/browser/ash/app_list/arc/arc_package_install_priority_handler.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ash/app_list/arc/arc_pai_starter.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -548,6 +549,11 @@ ArcAppListPrefs::ArcAppListPrefs(
     if (net_host) {
       net_host->SetArcAppMetadataProvider(this);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(arc::kSyncInstallPriority)) {
+    install_priority_handler_ =
+        std::make_unique<arc::ArcPackageInstallPriorityHandler>(profile);
   }
 }
 
@@ -1352,6 +1358,11 @@ arc::mojom::AppCategory ArcAppListPrefs::GetAppCategory(
   return app_info->app_category;
 }
 
+arc::ArcPackageInstallPriorityHandler*
+ArcAppListPrefs::GetInstallPriorityHandler() {
+  return install_priority_handler_.get();
+}
+
 void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
                                          arc::mojom::ArcResizeLockState state) {
   if (!IsRegistered(app_id)) {
@@ -1440,6 +1451,11 @@ void ArcAppListPrefs::Shutdown() {
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
   if (policy_bridge)
     policy_bridge->RemoveObserver(this);
+
+  // TODO(lgcheng) remove the check once the feature is enabled.
+  if (install_priority_handler_) {
+    install_priority_handler_->Shutdown();
+  }
 }
 
 void ArcAppListPrefs::RegisterDefaultApps() {
@@ -1544,6 +1560,11 @@ void ArcAppListPrefs::OnConnectionClosed() {
   is_initialized_ = false;
   package_list_initial_refreshed_ = false;
   app_list_refreshed_callback_.Reset();
+
+  // TODO(lgcheng) remove the check once the feature is enabled.
+  if (install_priority_handler_) {
+    install_priority_handler_->Clear();
+  }
 
   for (auto& observer : observer_list_)
     observer.OnAppConnectionClosed();
@@ -2334,6 +2355,11 @@ void ArcAppListPrefs::OnPackageAdded(
 
   packages_to_be_added_.erase(package_info->package_name);
   UpdateArcPackagesIsUpToDatePref();
+
+  // TODO(lgcheng) remove the check once the feature is enabled.
+  if (install_priority_handler_) {
+    install_priority_handler_->ClearPackage(package_info->package_name);
+  }
 
   for (auto& observer : observer_list_)
     observer.OnPackageInstalled(*package_info);

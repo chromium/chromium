@@ -76,6 +76,11 @@ class ArcPackageSyncableService : public syncer::SyncableService,
 
   bool SyncStarted();
 
+  // Tries to install/resinstall a package that is in the pending list.
+  // Sends the request to Android.
+  void InstallPendingPackage(const std::string& package_name,
+                             arc::mojom::InstallPriority priority);
+
  private:
   using SyncItemMap =
       std::unordered_map<std::string, std::unique_ptr<SyncItem>>;
@@ -102,9 +107,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   // Deletes local syncItem corresponding to data change from sync server.
   // Sends request to uninstall package to Android.
   bool DeleteSyncItemSpecifics(const sync_pb::ArcPackageSpecifics& specifics);
-
-  // Sends install notification for given package to Android.
-  void InstallPackage(const SyncItem* sync_item);
 
   // Sends uninstall notification for given package to Android.
   void UninstallPackage(const SyncItem* sync_item);

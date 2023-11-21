@@ -5041,6 +5041,7 @@ source_set("unit_tests") {
     "app_list/arc/arc_app_unittest.cc",
     "app_list/arc/arc_app_utils_unittest.cc",
     "app_list/arc/arc_default_app_list_unittest.cc",
+    "app_list/arc/arc_package_install_priority_handler_unittest.cc",
     "app_list/arc/arc_vpn_provider_unittest.cc",
     "app_list/arc/intent_unittest.cc",
     "app_list/arc/mock_arc_app_list_prefs_observer.cc",
