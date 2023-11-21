@@ -14,6 +14,7 @@ source_set("promo_handler") {
   deps = [
     "//base",
     "//components/feature_engagement/public",
+    "//components/policy/core/common",
     "//components/prefs",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",

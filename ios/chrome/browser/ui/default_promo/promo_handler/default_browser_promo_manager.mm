@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -68,8 +69,11 @@ enum class DisplayedVideoPromo {
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   self.tracker = feature_engagement::TrackerFactory::GetForBrowserState(
       self.browser->GetBrowserState());
+  policy::UserCloudPolicyManager* user_policy_manager =
+      browserState->GetUserCloudPolicyManager();
 
-  if (IsUserPolicyNotificationNeeded(authService, prefService)) {
+  if (IsUserPolicyNotificationNeeded(authService, prefService,
+                                     user_policy_manager)) {
     // Showing the User Policy notification has priority over showing the
     // default browser promo. Both dialogs are competing for the same time slot
     // which is after the browser startup and the browser UI is initialized.
