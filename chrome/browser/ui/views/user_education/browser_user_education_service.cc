@@ -518,16 +518,16 @@ void MaybeRegisterChromeFeaturePromos(
         FeaturePromoSpecification::CreateForSnoozePromo(
             feature_engagement::kIPHSidePanelGenericMenuFeature,
             kToolbarAppMenuButtonElementId, IDS_SIDE_PANEL_GENERIC_MENU_IPH)
-            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-            .SetBubbleIcon(kLightbulbOutlineIcon)));
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
     // kIPHSidePanelGenericPinnableFeature:
     registry.RegisterFeature(std::move(
-        FeaturePromoSpecification::CreateForSnoozePromo(
+        FeaturePromoSpecification::CreateForToastPromo(
             feature_engagement::kIPHSidePanelGenericPinnableFeature,
-            kSidePanelPinButtonElementId, IDS_SIDE_PANEL_GENERIC_PINNABLE_IPH)
-            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-            .SetBubbleIcon(kLightbulbOutlineIcon)));
+            kSidePanelPinButtonElementId, IDS_SIDE_PANEL_GENERIC_PINNABLE_IPH,
+            IDS_SIDE_PANEL_GENERIC_PINNABLE_IPH_SCREENREADER,
+            FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
   }
 
   // kIPHSideSearchFeature:
