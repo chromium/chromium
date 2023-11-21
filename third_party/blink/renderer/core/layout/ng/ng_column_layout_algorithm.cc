@@ -829,7 +829,7 @@ const NGLayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         LayoutUnit block_end_overflow =
             LogicalBoxFragment(GetConstraintSpace().GetWritingDirection(),
                                column)
-                .BlockEndLayoutOverflow();
+                .BlockEndScrollableOverflow();
         if (row_offset + block_end_overflow >
             FragmentainerSpaceLeft(GetConstraintSpace())) {
           if (GetConstraintSpace().IsInsideBalancedColumns() &&

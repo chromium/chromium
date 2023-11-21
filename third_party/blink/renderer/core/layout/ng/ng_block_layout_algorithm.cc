@@ -3268,7 +3268,7 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
   const NGPhysicalBoxFragment& ruby_text_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   const LogicalRect ruby_text_box = ruby_text_fragment.ConvertChildToLogical(
-      ruby_text_fragment.ScrollableOverflow(NGPhysicalFragment::kEmHeight));
+      ruby_text_fragment.ComputeRubyEmHeightBox(NGPhysicalFragment::kEmHeight));
 
   // Find the ruby-base fragment.
   const NGPhysicalBoxFragment* ruby_base_fragment = nullptr;
@@ -3291,12 +3291,12 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
     // Get the top of the text in the ruby-base.
     LayoutUnit first_line_top;
     if (ruby_base_fragment) {
-      first_line_top =
-          ruby_base_block_offset +
-          ruby_base_fragment
-              ->ConvertChildToLogical(ruby_base_fragment->ScrollableOverflow(
-                  NGPhysicalFragment::kEmHeight))
-              .offset.block_offset;
+      first_line_top = ruby_base_block_offset +
+                       ruby_base_fragment
+                           ->ConvertChildToLogical(
+                               ruby_base_fragment->ComputeRubyEmHeightBox(
+                                   NGPhysicalFragment::kEmHeight))
+                           .offset.block_offset;
     }
     ruby_text_box_top = first_line_top - last_line_ruby_text_bottom;
     const LayoutUnit ruby_text_top =
@@ -3314,12 +3314,12 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
           ruby_base_fragment->Size()
               .ConvertToLogical(Style().GetWritingMode())
               .block_size;
-      last_line_bottom =
-          ruby_base_block_offset +
-          ruby_base_fragment
-              ->ConvertChildToLogical(ruby_base_fragment->ScrollableOverflow(
-                  NGPhysicalFragment::kEmHeight))
-              .BlockEndOffset();
+      last_line_bottom = ruby_base_block_offset +
+                         ruby_base_fragment
+                             ->ConvertChildToLogical(
+                                 ruby_base_fragment->ComputeRubyEmHeightBox(
+                                     NGPhysicalFragment::kEmHeight))
+                             .BlockEndOffset();
       base_logical_bottom = ruby_base_block_offset + base_block_size;
     }
     ruby_text_box_top = last_line_bottom - first_line_ruby_text_top;

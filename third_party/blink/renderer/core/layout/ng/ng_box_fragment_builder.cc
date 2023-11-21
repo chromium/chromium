@@ -203,7 +203,7 @@ void NGBoxFragmentBuilder::AddChild(
 
       // If we are a scroll container, we need to track the maximum bounds of
       // any inflow children (including line-boxes) to calculate the
-      // layout-overflow.
+      // scrollable-overflow.
       //
       // This is used for determining the "padding-box" of the scroll container
       // which is *sometimes* considered as part of the scrollable area. Inflow
@@ -211,7 +211,7 @@ void NGBoxFragmentBuilder::AddChild(
       // don't.
       //
       // Out-of-flow positioned children still contribute to the
-      // layout-overflow, but just don't influence where this padding is.
+      // scrollable-overflow, but just don't influence where this padding is.
       if (Node().IsScrollContainer() && !IsFragmentainerBoxType() &&
           !child.IsOutOfFlowPositioned()) {
         BoxStrut margins;
@@ -398,7 +398,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
       LogicalBoxFragment logical_fragment(
           child_box_fragment->Style().GetWritingDirection(),
           *child_box_fragment);
-      block_size = logical_fragment.BlockEndLayoutOverflow();
+      block_size = logical_fragment.BlockEndScrollableOverflow();
     } else {
       LogicalFragment logical_fragment(
           child_fragment.Style().GetWritingDirection(), child_fragment);

@@ -93,7 +93,7 @@ class CORE_EXPORT LogicalBoxFragment final : public LogicalFragment {
     return PhysicalBoxFragment().HasDescendantsForTablePart();
   }
 
-  LayoutUnit BlockEndLayoutOverflow() const;
+  LayoutUnit BlockEndScrollableOverflow() const;
 };
 
 }  // namespace blink

@@ -61,18 +61,19 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
   // Compute the baseline metrics for this linebox.
   FontHeight BaselineMetrics() const;
 
-  // Scrollable overflow. including contents, in the local coordinate.
-  // |ScrollableOverflow| is not precomputed/cached because it cannot be
+  // Em height box. including contents, in the local coordinate.
+  // |ComputeRubyEmHeightBox| is not precomputed/cached because it cannot be
   // computed when LineBox is generated because it needs container dimensions
   // to resolve relative position of its children.
-  PhysicalRect ScrollableOverflow(const NGPhysicalBoxFragment& container,
-                                  const ComputedStyle& container_style,
-                                  TextHeightType height_type) const;
-  PhysicalRect ScrollableOverflowForLine(const NGPhysicalBoxFragment& container,
-                                         const ComputedStyle& container_style,
-                                         const FragmentItem& line,
-                                         const InlineCursor& cursor,
-                                         TextHeightType height_type) const;
+  PhysicalRect ComputeRubyEmHeightBox(const NGPhysicalBoxFragment& container,
+                                      const ComputedStyle& container_style,
+                                      TextHeightType height_type) const;
+  PhysicalRect ComputeRubyEmHeightBoxForLine(
+      const NGPhysicalBoxFragment& container,
+      const ComputedStyle& container_style,
+      const FragmentItem& line,
+      const InlineCursor& cursor,
+      TextHeightType height_type) const;
 
   // Whether the content soft-wraps to the next line.
   bool HasSoftWrapToNextLine() const;

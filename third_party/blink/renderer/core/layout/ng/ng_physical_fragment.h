@@ -482,6 +482,7 @@ class CORE_EXPORT NGPhysicalFragment
   const NGPhysicalFragment* PostLayout() const;
 
   // Specifies the type of scrollable overflow computation.
+  // TODO(layout-dev): Remove this. Only kEmHeight is used.
   enum TextHeightType {
     // Apply text fragment size as is.
     kNormalHeight,
@@ -489,16 +490,16 @@ class CORE_EXPORT NGPhysicalFragment
     // container's bounding box. This type is useful for ruby annotation.
     kEmHeight
   };
-  // Scrollable overflow. including contents, in the local coordinate.
-  PhysicalRect ScrollableOverflow(const NGPhysicalBoxFragment& container,
-                                  TextHeightType height_type) const;
+  // Em height box. including contents, in the local coordinate.
+  PhysicalRect ComputeRubyEmHeightBox(const NGPhysicalBoxFragment& container,
+                                      TextHeightType height_type) const;
 
-  // ScrollableOverflow(), with transforms applied wrt container if needed.
+  // ComputeRubyEmHeightBox(), with transforms applied wrt container if needed.
   // This does not include any offsets from the parent (including relpos).
-  PhysicalRect ScrollableOverflowForPropagation(
+  PhysicalRect ComputeRubyEmHeightBoxForPropagation(
       const NGPhysicalBoxFragment& container,
       TextHeightType height_type) const;
-  void AdjustScrollableOverflowForPropagation(
+  void AdjustRubyEmHeightBoxForPropagation(
       const NGPhysicalBoxFragment& container,
       TextHeightType height_type,
       PhysicalRect* overflow) const;

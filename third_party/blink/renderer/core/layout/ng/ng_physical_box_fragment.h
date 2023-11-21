@@ -47,8 +47,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
                         NGBoxFragmentBuilder* builder,
-                        bool has_layout_overflow,
-                        const PhysicalRect& layout_overflow,
+                        bool has_scrollable_overflow,
+                        const PhysicalRect& scrollable_overflow,
                         bool has_borders,
                         const PhysicalBoxStrut& borders,
                         bool has_padding,
@@ -63,8 +63,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // based on the parameters, rather than copying it from the original fragment.
   NGPhysicalBoxFragment(PassKey,
                         const NGPhysicalBoxFragment& other,
-                        bool has_layout_overflow,
-                        const PhysicalRect& layout_overflow);
+                        bool has_scrollable_overflow,
+                        const PhysicalRect& scrollable_overflow);
 
   ~NGPhysicalBoxFragment();
 
@@ -215,16 +215,16 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return g_null_atom;
   }
 
-  // Returns the layout-overflow for this fragment.
-  const PhysicalRect LayoutOverflow() const {
-    if (const auto* field = GetRareField(FieldId::kLayoutOverflow)) {
-      return field->layout_overflow;
+  // Returns the scrollable-overflow for this fragment.
+  const PhysicalRect ScrollableOverflow() const {
+    if (const auto* field = GetRareField(FieldId::kScrollableOverflow)) {
+      return field->scrollable_overflow;
     }
     return {{}, Size()};
   }
 
-  bool HasLayoutOverflow() const {
-    return GetRareField(FieldId::kLayoutOverflow);
+  bool HasScrollableOverflow() const {
+    return GetRareField(FieldId::kScrollableOverflow);
   }
 
   const PhysicalBoxStrut Borders() const {
@@ -314,8 +314,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // supported for CSS boxes (i.e. not for fragmentainers, for instance).
   PhysicalOffset OffsetFromOwnerLayoutBox() const;
 
-  PhysicalRect ScrollableOverflow(TextHeightType height_type) const;
-  PhysicalRect ScrollableOverflowFromChildren(TextHeightType height_type) const;
+  PhysicalRect ComputeRubyEmHeightBox(TextHeightType height_type) const;
+  PhysicalRect ComputeRubyEmHeightBoxFromChildren(
+      TextHeightType height_type) const;
 
   // TODO(layout-dev): These three methods delegate to legacy layout for now,
   // update them to use LayoutNG based overflow information from the fragment
@@ -441,7 +442,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
    public:
     MutableForStyleRecalc(base::PassKey<NGPhysicalBoxFragment>,
                           NGPhysicalBoxFragment& fragment);
-    void SetLayoutOverflow(const PhysicalRect& layout_overflow);
+    void SetScrollableOverflow(const PhysicalRect& scrollable_overflow);
 
    private:
     NGPhysicalBoxFragment& fragment_;

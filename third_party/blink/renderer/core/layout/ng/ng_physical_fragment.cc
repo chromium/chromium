@@ -619,12 +619,13 @@ void NGPhysicalFragment::CheckType() const {
 }
 #endif
 
-PhysicalRect NGPhysicalFragment::ScrollableOverflow(
+PhysicalRect NGPhysicalFragment::ComputeRubyEmHeightBox(
     const NGPhysicalBoxFragment& container,
     TextHeightType height_type) const {
   switch (Type()) {
     case kFragmentBox:
-      return To<NGPhysicalBoxFragment>(*this).ScrollableOverflow(height_type);
+      return To<NGPhysicalBoxFragment>(*this).ComputeRubyEmHeightBox(
+          height_type);
     case kFragmentLineBox:
       NOTREACHED()
           << "You must call NGLineBoxFragment::ScrollableOverflow explicitly.";
@@ -634,15 +635,15 @@ PhysicalRect NGPhysicalFragment::ScrollableOverflow(
   return {{}, Size()};
 }
 
-PhysicalRect NGPhysicalFragment::ScrollableOverflowForPropagation(
+PhysicalRect NGPhysicalFragment::ComputeRubyEmHeightBoxForPropagation(
     const NGPhysicalBoxFragment& container,
     TextHeightType height_type) const {
-  PhysicalRect overflow = ScrollableOverflow(container, height_type);
-  AdjustScrollableOverflowForPropagation(container, height_type, &overflow);
+  PhysicalRect overflow = ComputeRubyEmHeightBox(container, height_type);
+  AdjustRubyEmHeightBoxForPropagation(container, height_type, &overflow);
   return overflow;
 }
 
-void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
+void NGPhysicalFragment::AdjustRubyEmHeightBoxForPropagation(
     const NGPhysicalBoxFragment& container,
     TextHeightType height_type,
     PhysicalRect* overflow) const {
@@ -914,16 +915,16 @@ void NGPhysicalFragment::AddScrollableOverflowForInlineChild(
         child_box->AddScrollableOverflowForInlineChild(
             container, container_style, line, has_hanging, descendants,
             height_type, &child_scroll_overflow);
-        child_box->AdjustScrollableOverflowForPropagation(
-            container, height_type, &child_scroll_overflow);
+        child_box->AdjustRubyEmHeightBoxForPropagation(container, height_type,
+                                                       &child_scroll_overflow);
         if (UNLIKELY(has_hanging)) {
           AdjustScrollableOverflowForHanging(line.RectInContainerFragment(),
                                              container_writing_mode,
                                              &child_scroll_overflow);
         }
       } else {
-        child_scroll_overflow =
-            child_box->ScrollableOverflowForPropagation(container, height_type);
+        child_scroll_overflow = child_box->ComputeRubyEmHeightBoxForPropagation(
+            container, height_type);
         child_scroll_overflow.offset += item->OffsetInContainerFragment();
       }
       overflow->Unite(child_scroll_overflow);

@@ -58,7 +58,7 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   //  * |LayoutText::PhysicalLinesBoundingBox()| used by
   //    |LayoutObject::DebugRect()|, intersection observer, and scroll anchor.
   //  * |FragmentItem::RecalcInkOverflow()| for line box
-  //  * |NGLayoutOverflowCalculator::AddItemsInternal()| for line box.
+  //  * |ScrollableOverflowCalculator::AddItemsInternal()| for line box.
   //  * |NGPhysicalFragment::AddOutlineRectsForCursor()|
   //  * |NGPhysicalFragment::AddScrollableOverflowForInlineChild()|
   PhysicalRect AdjustRectForBoundingBox(const PhysicalRect& rect) const;

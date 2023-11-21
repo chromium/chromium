@@ -3299,7 +3299,7 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
         break;
     }
 
-    PhysicalRect fragment_layout_overflow = fragment.LayoutOverflow();
+    PhysicalRect fragment_layout_overflow = fragment.ScrollableOverflow();
     fragment_layout_overflow.offset += offset_adjust;
 
     // If we are the first fragment just set the layout-overflow.
@@ -3361,16 +3361,16 @@ RecalcLayoutOverflowResult LayoutBox::RecalcLayoutOverflowNG() {
       // Recalculate our layout-overflow if a child had its layout-overflow
       // changed, or if we are marked as dirty.
       if (should_recalculate_layout_overflow) {
-        const PhysicalRect old_layout_overflow = fragment.LayoutOverflow();
+        const PhysicalRect old_layout_overflow = fragment.ScrollableOverflow();
         const bool has_block_fragmentation =
             layout_result->GetConstraintSpaceForCaching()
                 .HasBlockFragmentation();
 #if DCHECK_IS_ON()
         NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
 #endif
-        const PhysicalRect new_layout_overflow =
-            NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
-                fragment, has_block_fragmentation);
+        const PhysicalRect new_layout_overflow = ScrollableOverflowCalculator::
+            RecalculateScrollableOverflowForFragment(fragment,
+                                                     has_block_fragmentation);
 
         // Set the appropriate flags if the layout-overflow changed.
         if (old_layout_overflow != new_layout_overflow) {
@@ -3381,7 +3381,8 @@ RecalcLayoutOverflowResult LayoutBox::RecalcLayoutOverflowNG() {
       }
 
       if (layout_overflow) {
-        fragment.GetMutableForStyleRecalc().SetLayoutOverflow(*layout_overflow);
+        fragment.GetMutableForStyleRecalc().SetScrollableOverflow(
+            *layout_overflow);
       }
     }
     SetLayoutOverflowFromLayoutResults();

@@ -21,7 +21,8 @@
 namespace blink {
 
 // static
-PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
+PhysicalRect
+ScrollableOverflowCalculator::RecalculateScrollableOverflowForFragment(
     const NGPhysicalBoxFragment& fragment,
     bool has_block_fragmentation) {
   const BlockNode node(const_cast<LayoutBox*>(
@@ -39,7 +40,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
         writing_direction);
   }
 
-  NGLayoutOverflowCalculator calculator(
+  ScrollableOverflowCalculator calculator(
       node, fragment.IsCSSBox(), has_block_fragmentation, fragment.Borders(),
       scrollbar, fragment.Padding(), fragment.Size(), writing_direction);
 
@@ -54,10 +55,11 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
       continue;
 
     if (box_fragment->IsFragmentainerBox()) {
-      // When this function is called nothing has updated the layout-overflow
-      // of any fragmentainers (as they are not directly associated with a
-      // layout-object). Recalculate their layout-overflow directly.
-      PhysicalRect child_overflow = RecalculateLayoutOverflowForFragment(
+      // When this function is called nothing has updated the
+      // scrollable-overflow of any fragmentainers (as they are not directly
+      // associated with a layout-object). Recalculate their scrollable-overflow
+      // directly.
+      PhysicalRect child_overflow = RecalculateScrollableOverflowForFragment(
           *box_fragment, has_block_fragmentation);
       child_overflow.offset += child.offset;
       calculator.AddOverflow(child_overflow, /* child_is_fragmentainer */ true);
@@ -72,7 +74,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
   return calculator.Result(fragment.InflowBounds());
 }
 
-NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
+ScrollableOverflowCalculator::ScrollableOverflowCalculator(
     const BlockNode& node,
     bool is_css_box,
     bool has_block_fragmentation,
@@ -100,13 +102,13 @@ NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
                                     .ClampNegativeToZero(),
                                 (size_.height - border_scrollbar.VerticalSum())
                                     .ClampNegativeToZero())};
-  layout_overflow_ = padding_rect_;
+  scrollable_overflow_ = padding_rect_;
 }
 
-const PhysicalRect NGLayoutOverflowCalculator::Result(
+const PhysicalRect ScrollableOverflowCalculator::Result(
     const absl::optional<PhysicalRect> inflow_bounds) {
   if (!inflow_bounds || !is_scroll_container_)
-    return layout_overflow_;
+    return scrollable_overflow_;
 
   PhysicalOffset start_offset = inflow_bounds->MinXMinYCorner() -
                                 PhysicalOffset(padding_.left, padding_.top);
@@ -118,23 +120,23 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
                                  end_offset.top - start_offset.top)};
   inflow_overflow = AdjustOverflowForScrollOrigin(inflow_overflow);
 
-  layout_overflow_.UniteEvenIfEmpty(inflow_overflow);
-  return layout_overflow_;
+  scrollable_overflow_.UniteEvenIfEmpty(inflow_overflow);
+  return scrollable_overflow_;
 }
 
-void NGLayoutOverflowCalculator::AddTableSelfRect() {
+void ScrollableOverflowCalculator::AddTableSelfRect() {
   AddOverflow({PhysicalOffset(), size_});
 }
 
 template <typename Items>
-void NGLayoutOverflowCalculator::AddItemsInternal(
+void ScrollableOverflowCalculator::AddItemsInternal(
     const LayoutObject* layout_object,
     const Items& items) {
   bool has_hanging = false;
   PhysicalRect line_rect;
 
-  // |LayoutNGTextCombine| doesn't not cause layout overflow because combined
-  // text fits in 1em by using width variant font or scaling.
+  // |LayoutNGTextCombine| doesn't not cause scrollable overflow because
+  // combined text fits in 1em by using width variant font or scaling.
   if (UNLIKELY(IsA<LayoutTextCombine>(layout_object))) {
     return;
   }
@@ -147,7 +149,7 @@ void NGLayoutOverflowCalculator::AddItemsInternal(
       if (line_rect.IsEmpty())
         continue;
 
-      layout_overflow_.UniteEvenIfEmpty(line_rect);
+      scrollable_overflow_.UniteEvenIfEmpty(line_rect);
       continue;
     }
 
@@ -165,7 +167,7 @@ void NGLayoutOverflowCalculator::AddItemsInternal(
     if (const auto* child_box_fragment = item->BoxFragment()) {
       // Use the default box-fragment overflow logic.
       PhysicalRect child_overflow =
-          LayoutOverflowForPropagation(*child_box_fragment);
+          ScrollableOverflowForPropagation(*child_box_fragment);
       child_overflow.offset += item->OffsetInContainerFragment();
 
       // Only inline-boxes (not atomic-inlines) should be adjusted if the
@@ -179,19 +181,19 @@ void NGLayoutOverflowCalculator::AddItemsInternal(
   }
 }
 
-void NGLayoutOverflowCalculator::AddItems(
+void ScrollableOverflowCalculator::AddItems(
     const LayoutObject* layout_object,
     const FragmentItemsBuilder::ItemWithOffsetList& items) {
   AddItemsInternal(layout_object, items);
 }
 
-void NGLayoutOverflowCalculator::AddItems(
+void ScrollableOverflowCalculator::AddItems(
     const NGPhysicalBoxFragment& box_fragment,
     const FragmentItems& items) {
   AddItemsInternal(box_fragment.GetLayoutObject(), items.Items());
 }
 
-PhysicalRect NGLayoutOverflowCalculator::AdjustOverflowForHanging(
+PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForHanging(
     const PhysicalRect& line_rect,
     PhysicalRect overflow) {
   if (writing_direction_.IsHorizontal()) {
@@ -209,7 +211,7 @@ PhysicalRect NGLayoutOverflowCalculator::AdjustOverflowForHanging(
   return overflow;
 }
 
-PhysicalRect NGLayoutOverflowCalculator::AdjustOverflowForScrollOrigin(
+PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForScrollOrigin(
     const PhysicalRect& overflow) {
   LayoutUnit left_offset =
       has_left_overflow_
@@ -234,25 +236,25 @@ PhysicalRect NGLayoutOverflowCalculator::AdjustOverflowForScrollOrigin(
           PhysicalSize(right_offset - left_offset, bottom_offset - top_offset)};
 }
 
-PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
+PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
     const NGPhysicalBoxFragment& child_fragment) {
-  // If the fragment is anonymous, just return its layout-overflow (don't apply
-  // any incorrect transforms, etc).
+  // If the fragment is anonymous, just return its scrollable-overflow (don't
+  // apply any incorrect transforms, etc).
   if (!child_fragment.IsCSSBox())
-    return child_fragment.LayoutOverflow();
+    return child_fragment.ScrollableOverflow();
 
   PhysicalRect overflow = {{}, child_fragment.Size()};
 
   // Collapsed table rows/sections set IsHiddenForPaint flag.
-  bool ignore_layout_overflow =
+  bool ignore_scrollable_overflow =
       child_fragment.ShouldApplyLayoutContainment() ||
       child_fragment.IsInlineBox() ||
       (child_fragment.ShouldClipOverflowAlongBothAxis() &&
        !child_fragment.ShouldApplyOverflowClipMargin()) ||
       child_fragment.IsHiddenForPaint();
 
-  if (!ignore_layout_overflow) {
-    PhysicalRect child_overflow = child_fragment.LayoutOverflow();
+  if (!ignore_scrollable_overflow) {
+    PhysicalRect child_overflow = child_fragment.ScrollableOverflow();
     if (child_fragment.HasNonVisibleOverflow()) {
       const OverflowClipAxes overflow_clip_axes =
           child_fragment.GetOverflowClipAxes();

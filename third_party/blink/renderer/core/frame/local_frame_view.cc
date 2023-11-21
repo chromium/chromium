@@ -3276,10 +3276,10 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     // largest relative overflow.
     float page_scale_factor;
     if (layout_view->StyleRef().IsHorizontalWritingMode()) {
-      page_scale_factor =
-          page.LayoutOverflow().Right().ToFloat() / page.Size().width.ToFloat();
+      page_scale_factor = page.ScrollableOverflow().Right().ToFloat() /
+                          page.Size().width.ToFloat();
     } else {
-      page_scale_factor = page.LayoutOverflow().Bottom().ToFloat() /
+      page_scale_factor = page.ScrollableOverflow().Bottom().ToFloat() /
                           page.Size().height.ToFloat();
     }
     overall_scale_factor = std::max(overall_scale_factor, page_scale_factor);

@@ -152,7 +152,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetAspectRatio() const;
 
-  // Returns the transform to apply to a child (e.g. for layout-overflow).
+  // Returns the transform to apply to a child (e.g. for scrollable-overflow).
   absl::optional<gfx::Transform> GetTransformForChildFragment(
       const NGPhysicalBoxFragment& child_fragment,
       PhysicalSize size) const;

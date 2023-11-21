@@ -261,7 +261,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
       const auto* fragment = item.PhysicalFragment();
       if (fragment && fragment->IsRubyColumn()) {
         PhysicalRect rect =
-            To<NGPhysicalBoxFragment>(fragment)->ScrollableOverflow(
+            To<NGPhysicalBoxFragment>(fragment)->ComputeRubyEmHeightBox(
                 NGPhysicalFragment::kEmHeight);
         LayoutUnit block_size;
         if (IsHorizontalWritingMode(line_style.GetWritingMode())) {

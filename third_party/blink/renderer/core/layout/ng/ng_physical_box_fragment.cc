@@ -150,12 +150,12 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
     DCHECK(builder->is_may_have_descendant_above_block_start_explicitly_set_);
 #endif
 
-  PhysicalRect layout_overflow = {PhysicalOffset(), physical_size};
+  PhysicalRect scrollable_overflow = {PhysicalOffset(), physical_size};
   if (builder->node_ && !builder->node_.IsReplaced()) {
     const PhysicalBoxStrut scrollbar =
         builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
             writing_direction);
-    NGLayoutOverflowCalculator calculator(
+    ScrollableOverflowCalculator calculator(
         To<BlockNode>(builder->node_),
         /* is_css_box */ !builder->IsFragmentainerBoxType(),
         builder->GetConstraintSpace().HasBlockFragmentation(), borders,
@@ -180,12 +180,13 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
     if (builder->table_collapsed_borders_)
       calculator.AddTableSelfRect();
 
-    layout_overflow = calculator.Result(inflow_bounds);
+    scrollable_overflow = calculator.Result(inflow_bounds);
   }
 
-  // For the purposes of object allocation we have layout-overflow if it
+  // For the purposes of object allocation we have scrollable-overflow if it
   // differs from the fragment size.
-  bool has_layout_overflow = layout_overflow != PhysicalRect({}, physical_size);
+  bool has_scrollable_overflow =
+      scrollable_overflow != PhysicalRect({}, physical_size);
 
   // Omit |FragmentItems| if there were no items; e.g., display-lock.
   bool has_fragment_items = false;
@@ -202,8 +203,8 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
   // The initialization of the array is done by NGPhysicalFragment;
   // we pass the buffer as a constructor argument.
   return MakeGarbageCollected<NGPhysicalBoxFragment>(
-      AdditionalBytes(byte_size), PassKey(), builder, has_layout_overflow,
-      layout_overflow, has_borders, borders, has_padding, padding,
+      AdditionalBytes(byte_size), PassKey(), builder, has_scrollable_overflow,
+      scrollable_overflow, has_borders, borders, has_padding, padding,
       inflow_bounds, has_fragment_items, block_or_line_writing_mode);
 }
 
@@ -214,23 +215,23 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Clone(
   size_t byte_size = AdditionalByteSize(other.HasItems());
 
   return MakeGarbageCollected<NGPhysicalBoxFragment>(
-      AdditionalBytes(byte_size), PassKey(), other, other.HasLayoutOverflow(),
-      other.LayoutOverflow());
+      AdditionalBytes(byte_size), PassKey(), other,
+      other.HasScrollableOverflow(), other.ScrollableOverflow());
 }
 
 // static
 const NGPhysicalBoxFragment*
 NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     const NGPhysicalBoxFragment& other) {
-  PhysicalRect layout_overflow = other.LayoutOverflow();
-  bool has_layout_overflow = other.HasLayoutOverflow();
+  PhysicalRect scrollable_overflow = other.ScrollableOverflow();
+  bool has_scrollable_overflow = other.HasScrollableOverflow();
 
   // The size of the new fragment shouldn't differ from the old one.
   size_t byte_size = AdditionalByteSize(other.HasItems());
 
   const auto* cloned_fragment = MakeGarbageCollected<NGPhysicalBoxFragment>(
-      AdditionalBytes(byte_size), PassKey(), other, has_layout_overflow,
-      layout_overflow);
+      AdditionalBytes(byte_size), PassKey(), other, has_scrollable_overflow,
+      scrollable_overflow);
 
   // To ensure the fragment tree is consistent, use the post-layout fragment.
 #if DCHECK_IS_ON()
@@ -294,8 +295,8 @@ size_t NGPhysicalBoxFragment::AdditionalByteSize(bool has_fragment_items) {
 NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     PassKey key,
     NGBoxFragmentBuilder* builder,
-    bool has_layout_overflow,
-    const PhysicalRect& layout_overflow,
+    bool has_scrollable_overflow,
+    const PhysicalRect& scrollable_overflow,
     bool has_borders,
     const PhysicalBoxStrut& borders,
     bool has_padding,
@@ -343,7 +344,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   SetInkOverflowType(NGInkOverflow::Type::kNotSet);
 
   wtf_size_t rare_fields_size =
-      has_layout_overflow + !!builder->frame_set_layout_data_ +
+      has_scrollable_overflow + !!builder->frame_set_layout_data_ +
       !!builder->mathml_paint_info_ + !!builder->table_grid_rect_ +
       !!builder->table_collapsed_borders_ +
       !!builder->table_collapsed_borders_geometry_ +
@@ -354,7 +355,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 
   if (rare_fields_size > 0 || !builder->table_column_geometries_.empty()) {
     rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(
-        has_layout_overflow ? &layout_overflow : nullptr,
+        has_scrollable_overflow ? &scrollable_overflow : nullptr,
         has_borders ? &borders : nullptr, has_padding ? &padding : nullptr,
         inflow_bounds, *builder, rare_fields_size);
   }
@@ -404,8 +405,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     PassKey key,
     const NGPhysicalBoxFragment& other,
-    bool has_layout_overflow,
-    const PhysicalRect& layout_overflow)
+    bool has_scrollable_overflow,
+    const PhysicalRect& scrollable_overflow)
     : NGPhysicalFragment(other),
       bit_field_(other.bit_field_),
       first_baseline_(other.first_baseline_),
@@ -782,7 +783,7 @@ bool NGPhysicalBoxFragment::MayIntersect(
   return true;
 }
 
-PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
+PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBox(
     TextHeightType height_type) const {
   DCHECK(GetLayoutObject());
   // TODO(kojii): Scrollable overflow is computed after layout, and that the
@@ -796,7 +797,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
   }
   const LayoutObject* layout_object = GetLayoutObject();
   if (height_type == TextHeightType::kEmHeight && IsRubyBox()) {
-    return ScrollableOverflowFromChildren(height_type);
+    return ComputeRubyEmHeightBoxFromChildren(height_type);
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
     if (HasNonVisibleOverflow())
@@ -810,7 +811,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
       overflow = PhysicalRect({}, Size());
     for (const auto& child_fragment : PostLayoutChildren()) {
       PhysicalRect child_overflow =
-          child_fragment->ScrollableOverflowForPropagation(*this, height_type);
+          child_fragment->ComputeRubyEmHeightBoxForPropagation(*this,
+                                                               height_type);
       child_overflow.offset += child_fragment.Offset();
       overflow.Unite(child_overflow);
     }
@@ -821,7 +823,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
   return PhysicalRect({}, Size());
 }
 
-PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
+PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
     TextHeightType height_type) const {
   // TODO(kojii): See |ScrollableOverflow|.
   DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
@@ -883,7 +885,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
         const PhysicalOffset& child_offset) {
       DCHECK(child.IsFloatingOrOutOfFlowPositioned());
       PhysicalRect child_scrollable_overflow =
-          child.ScrollableOverflowForPropagation(container, height_type);
+          child.ComputeRubyEmHeightBoxForPropagation(container, height_type);
       child_scrollable_overflow.offset += child_offset;
       AddChild(child_scrollable_overflow);
     }
@@ -893,7 +895,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       if (padding_strut)
         AddLineBoxRect({child_offset, child.Size()});
       PhysicalRect child_scrollable_overflow =
-          child.ScrollableOverflow(container, style, height_type);
+          child.ComputeRubyEmHeightBox(container, style, height_type);
       child_scrollable_overflow.offset += child_offset;
       AddChild(child_scrollable_overflow);
     }
@@ -907,8 +909,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       const PhysicalLineBoxFragment* line_box = child.LineBoxFragment();
       DCHECK(line_box);
       PhysicalRect child_scrollable_overflow =
-          line_box->ScrollableOverflowForLine(container, style, child, cursor,
-                                              height_type);
+          line_box->ComputeRubyEmHeightBoxForLine(container, style, child,
+                                                  cursor, height_type);
       AddChild(child_scrollable_overflow);
     }
 
@@ -974,7 +976,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       context.AddLineBoxChild(To<PhysicalLineBoxFragment>(*child),
                               child.Offset());
     } else if (height_type == TextHeightType::kEmHeight && IsRubyColumn()) {
-      PhysicalRect r = child->ScrollableOverflow(*this, height_type);
+      PhysicalRect r = child->ComputeRubyEmHeightBox(*this, height_type);
       r.offset += child.offset;
       context.AddChild(r);
     }
@@ -1042,16 +1044,16 @@ NGPhysicalBoxFragment::MutableForStyleRecalc::MutableForStyleRecalc(
     NGPhysicalBoxFragment& fragment)
     : fragment_(fragment) {}
 
-void NGPhysicalBoxFragment::MutableForStyleRecalc::SetLayoutOverflow(
-    const PhysicalRect& layout_overflow) {
-  bool has_layout_overflow =
-      layout_overflow != PhysicalRect({}, fragment_.Size());
-  if (has_layout_overflow) {
+void NGPhysicalBoxFragment::MutableForStyleRecalc::SetScrollableOverflow(
+    const PhysicalRect& scrollable_overflow) {
+  bool has_scrollable_overflow =
+      scrollable_overflow != PhysicalRect({}, fragment_.Size());
+  if (has_scrollable_overflow) {
     // This can be called even without rare_data_.
-    fragment_.EnsureRareField(FieldId::kLayoutOverflow).layout_overflow =
-        layout_overflow;
-  } else if (fragment_.HasLayoutOverflow()) {
-    fragment_.rare_data_->RemoveField(FieldId::kLayoutOverflow);
+    fragment_.EnsureRareField(FieldId::kScrollableOverflow)
+        .scrollable_overflow = scrollable_overflow;
+  } else if (fragment_.HasScrollableOverflow()) {
+    fragment_.rare_data_->RemoveField(FieldId::kScrollableOverflow);
   }
 }
 

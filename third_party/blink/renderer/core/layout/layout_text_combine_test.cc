@@ -569,18 +569,18 @@ TEST_F(LayoutTextCombineTest, LayoutOverflow) {
   const auto& sample1 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t1"));
   ASSERT_EQ(sample1.PhysicalFragmentCount(), 1u);
   const auto& sample_fragment1 = *sample1.GetPhysicalFragment(0);
-  EXPECT_FALSE(sample_fragment1.HasLayoutOverflow());
+  EXPECT_FALSE(sample_fragment1.HasScrollableOverflow());
   EXPECT_EQ(PhysicalSize(150, 200), sample_fragment1.Size());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),
-            sample_fragment1.LayoutOverflow());
+            sample_fragment1.ScrollableOverflow());
 
   const auto& sample2 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t2"));
   ASSERT_EQ(sample2.PhysicalFragmentCount(), 1u);
   const auto& sample_fragment2 = *sample2.GetPhysicalFragment(0);
-  EXPECT_FALSE(sample_fragment2.HasLayoutOverflow());
+  EXPECT_FALSE(sample_fragment2.HasScrollableOverflow());
   EXPECT_EQ(PhysicalSize(150, 200), sample_fragment2.Size());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),
-            sample_fragment2.LayoutOverflow());
+            sample_fragment2.ScrollableOverflow());
 }
 
 // http://crbug.com/1223015

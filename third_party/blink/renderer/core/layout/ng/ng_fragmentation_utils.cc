@@ -271,7 +271,7 @@ LogicalSize FragmentainerLogicalCapacity(
   // other words, we would still want to clamp a zero height fragmentainer if
   // it had content with zero inline size and non-zero block size. This would
   // likely require us to store an extra flag on NGPhysicalBoxFragment.
-  if (fragmentainer.HasLayoutOverflow()) {
+  if (fragmentainer.HasScrollableOverflow()) {
     // Don't clamp the fragmentainer to a block size of 1 if it is truly a
     // zero-height column.
     logical_size.block_size =

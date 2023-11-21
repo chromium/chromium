@@ -97,7 +97,7 @@ inline void AddInlineSizeToOverflow(const PhysicalRect& rect,
 
 }  // namespace
 
-PhysicalRect PhysicalLineBoxFragment::ScrollableOverflow(
+PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBox(
     const NGPhysicalBoxFragment& container,
     const ComputedStyle& container_style,
     TextHeightType height_type) const {
@@ -109,7 +109,7 @@ PhysicalRect PhysicalLineBoxFragment::ScrollableOverflow(
   return overflow;
 }
 
-PhysicalRect PhysicalLineBoxFragment::ScrollableOverflowForLine(
+PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBoxForLine(
     const NGPhysicalBoxFragment& container,
     const ComputedStyle& container_style,
     const FragmentItem& line,

@@ -15,7 +15,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(wtf_size_t num_fields) {
 }
 
 PhysicalFragmentRareData::PhysicalFragmentRareData(
-    const PhysicalRect* layout_overflow,
+    const PhysicalRect* scrollable_overflow,
     const PhysicalBoxStrut* borders,
     const PhysicalBoxStrut* padding,
     absl::optional<PhysicalRect> inflow_bounds,
@@ -26,8 +26,9 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   // Each field should be processed in order of FieldId to avoid vector
   // element insertions.
 
-  if (layout_overflow) {
-    SetField(FieldId::kLayoutOverflow).layout_overflow = *layout_overflow;
+  if (scrollable_overflow) {
+    SetField(FieldId::kScrollableOverflow).scrollable_overflow =
+        *scrollable_overflow;
   }
   if (borders) {
     SetField(FieldId::kBorders).borders = *borders;
@@ -100,7 +101,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   // Each field should be processed in order of FieldId to avoid vector
   // element insertions.
 
-  SET_IF_EXISTS(kLayoutOverflow, layout_overflow, other);
+  SET_IF_EXISTS(kScrollableOverflow, scrollable_overflow, other);
   SET_IF_EXISTS(kBorders, borders, other);
   SET_IF_EXISTS(kPadding, padding, other);
   SET_IF_EXISTS(kInflowBounds, inflow_bounds, other);
@@ -128,7 +129,7 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
 
 #define DISPATCH_BY_MEMBER_TYPE(FUNC)                                       \
   switch (type) {                                                           \
-    FUNC(kLayoutOverflow, layout_overflow);                                 \
+    FUNC(kScrollableOverflow, scrollable_overflow);                         \
     FUNC(kBorders, borders);                                                \
     FUNC(kPadding, padding);                                                \
     FUNC(kInflowBounds, inflow_bounds);                                     \

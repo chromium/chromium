@@ -35,7 +35,7 @@ class PhysicalFragmentRareData
     : public GarbageCollected<PhysicalFragmentRareData> {
  public:
   explicit PhysicalFragmentRareData(wtf_size_t num_fields);
-  PhysicalFragmentRareData(const PhysicalRect* layout_overflow,
+  PhysicalFragmentRareData(const PhysicalRect* scrollable_overflow,
                            const PhysicalBoxStrut* borders,
                            const PhysicalBoxStrut* padding,
                            absl::optional<PhysicalRect> inflow_bounds,
@@ -57,7 +57,7 @@ class PhysicalFragmentRareData
   // In ARM, the size of a shift amount operand of shift instructions is same
   // as the size of shifted data. So FieldId should be RareBitFieldType.
   enum class FieldId : RareBitFieldType {
-    kLayoutOverflow = 0,
+    kScrollableOverflow = 0,
     kBorders,
     kPadding,
     kInflowBounds,
@@ -79,7 +79,7 @@ class PhysicalFragmentRareData
 
   struct RareField {
     union {
-      PhysicalRect layout_overflow;
+      PhysicalRect scrollable_overflow;
       PhysicalBoxStrut borders;
       PhysicalBoxStrut padding;
       PhysicalRect inflow_bounds;

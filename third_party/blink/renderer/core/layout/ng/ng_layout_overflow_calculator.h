@@ -15,41 +15,42 @@
 
 namespace blink {
 
-// This class contains the logic for correctly determining the layout-overflow
-// (also known as scrollable-overflow) for a fragment.
+// This class contains the logic for correctly determining the
+// scrollable-overflow (also known as layout-overflow) for a fragment.
 // https://drafts.csswg.org/css-overflow-3/#scrollable
-class CORE_EXPORT NGLayoutOverflowCalculator {
+class CORE_EXPORT ScrollableOverflowCalculator {
   STACK_ALLOCATED();
 
  public:
-  static PhysicalRect RecalculateLayoutOverflowForFragment(
+  static PhysicalRect RecalculateScrollableOverflowForFragment(
       const NGPhysicalBoxFragment&,
       bool has_block_fragmentation);
 
-  NGLayoutOverflowCalculator(const BlockNode&,
-                             bool is_css_box,
-                             bool has_block_fragmentation,
-                             const PhysicalBoxStrut& borders,
-                             const PhysicalBoxStrut& scrollbar,
-                             const PhysicalBoxStrut& padding,
-                             PhysicalSize size,
-                             WritingDirectionMode);
+  ScrollableOverflowCalculator(const BlockNode&,
+                               bool is_css_box,
+                               bool has_block_fragmentation,
+                               const PhysicalBoxStrut& borders,
+                               const PhysicalBoxStrut& scrollbar,
+                               const PhysicalBoxStrut& padding,
+                               PhysicalSize size,
+                               WritingDirectionMode);
 
   // Applies the final adjustments given the bounds of any inflow children
-  // (|inflow_bounds|), and returns the final layout-overflow.
+  // (|inflow_bounds|), and returns the final scrollable-overflow.
   const PhysicalRect Result(const absl::optional<PhysicalRect> inflow_bounds);
 
-  // Adds layout-overflow from |child_fragment|, at |offset|.
+  // Adds scrollable-overflow from |child_fragment|, at |offset|.
   void AddChild(const NGPhysicalBoxFragment& child_fragment,
                 PhysicalOffset offset) {
     if (is_view_ && child_fragment.IsFixedPositioned())
       return;
-    PhysicalRect child_overflow = LayoutOverflowForPropagation(child_fragment);
+    PhysicalRect child_overflow =
+        ScrollableOverflowForPropagation(child_fragment);
     child_overflow.offset += offset;
     AddOverflow(child_overflow, child_fragment.IsFragmentainerBox());
   }
 
-  // Adds layout-overflow from fragment-items.
+  // Adds scrollable-overflow from fragment-items.
   void AddItems(const NGPhysicalBoxFragment&, const FragmentItems&);
   void AddItems(const LayoutObject*,
                 const FragmentItemsBuilder::ItemWithOffsetList&);
@@ -64,7 +65,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
                                         PhysicalRect overflow);
   PhysicalRect AdjustOverflowForScrollOrigin(const PhysicalRect& overflow);
 
-  PhysicalRect LayoutOverflowForPropagation(
+  PhysicalRect ScrollableOverflowForPropagation(
       const NGPhysicalBoxFragment& child_fragment);
 
   void AddOverflow(PhysicalRect child_overflow,
@@ -75,7 +76,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
     // A fragmentainer may result in an overflow, even if it is empty. For
     // example, an overflow as a result of a non-zero column gap.
     if (!child_overflow.IsEmpty() || child_is_fragmentainer)
-      layout_overflow_.UniteEvenIfEmpty(child_overflow);
+      scrollable_overflow_.UniteEvenIfEmpty(child_overflow);
   }
 
   const BlockNode node_;
@@ -91,7 +92,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   const PhysicalSize size_;
 
   PhysicalRect padding_rect_;
-  PhysicalRect layout_overflow_;
+  PhysicalRect scrollable_overflow_;
 };
 
 }  // namespace blink

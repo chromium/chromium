@@ -65,10 +65,10 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
   return FontHeight(block_size - block_size / 2, block_size / 2);
 }
 
-LayoutUnit LogicalBoxFragment::BlockEndLayoutOverflow() const {
+LayoutUnit LogicalBoxFragment::BlockEndScrollableOverflow() const {
   WritingModeConverter converter(writing_direction_, physical_fragment_.Size());
   LogicalRect overflow =
-      converter.ToLogical(PhysicalBoxFragment().LayoutOverflow());
+      converter.ToLogical(PhysicalBoxFragment().ScrollableOverflow());
   return overflow.BlockEndOffset();
 }
 
