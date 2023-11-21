@@ -152,10 +152,15 @@ class StructuredMetricsRecorderTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     // Fixed paths to store keys for test.
-    device_key_path_ =
-        temp_dir_.GetPath().Append("structured_metrics").Append("device_keys");
-    profile_key_path_ =
-        temp_dir_.GetPath().Append("structured_metrics").Append("keys");
+    device_key_path_ = temp_dir_.GetPath()
+                           .Append(FILE_PATH_LITERAL("structured_metrics"))
+                           .Append(FILE_PATH_LITERAL("device_keys"));
+    device_events_path_ = temp_dir_.GetPath()
+                              .Append(FILE_PATH_LITERAL("structured_metrics"))
+                              .Append(FILE_PATH_LITERAL("device_events"));
+    profile_key_path_ = temp_dir_.GetPath()
+                            .Append(FILE_PATH_LITERAL("structured_metrics"))
+                            .Append(FILE_PATH_LITERAL("profile_keys"));
 
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
@@ -170,6 +175,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   base::FilePath ProfileKeyFilePath() { return profile_key_path_; }
 
   base::FilePath DeviceKeyFilePath() { return device_key_path_; }
+
+  base::FilePath DeviceStoreFilePath() { return device_events_path_; }
 
   void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
 
@@ -351,6 +358,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
   TestRecorder test_recorder_;
 
   base::FilePath device_key_path_;
+  base::FilePath device_events_path_;
   base::FilePath profile_key_path_;
 };
 

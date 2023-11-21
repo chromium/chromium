@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/browser_process.h"  // nogncheck
+#include "chrome/browser/browser_process.h"                       // nogncheck
 #include "chrome/browser/metrics/structured/ash_event_storage.h"  // nogncheck
 #include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"  // nogncheck
 #include "chrome/browser/metrics/structured/cros_events_processor.h"  // nogncheck
@@ -44,6 +44,12 @@ void LogInitializationInStructuredMetrics(StructuredMetricsPlatform platform) {
       .SetPlatform(static_cast<int64_t>(platform))
       .Record();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The path used to store events before the start of a user session.
+constexpr char kAshPreUserStorePath[] =
+    "/var/lib/metrics/structured/chromium/events";
+#endif
 
 }  // namespace
 
@@ -99,8 +105,8 @@ void ChromeStructuredMetricsRecorder::Initialize() {
   // Initialize the key data provider and event storage.
   service->recorder()->InitializeKeyDataProvider(
       std::make_unique<KeyDataProviderAsh>());
-  service->recorder()->InitializeEventStorage(
-      std::make_unique<AshEventStorage>(AshEventStorage::kSaveDelay));
+  service->recorder()->InitializeEventStorage(std::make_unique<AshEventStorage>(
+      AshEventStorage::kSaveDelay, base::FilePath(kAshPreUserStorePath)));
 
   Recorder::GetInstance()->AddEventsProcessor(
       std::make_unique<MetadataProcessorAsh>());

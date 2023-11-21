@@ -90,6 +90,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // Returns true if ready to provide metrics via ProvideEventMetrics.
   bool CanProvideMetrics();
 
+  // Returns true if there are metrics to provide.
+  bool HasMetricsToProvide();
+
   // KeyDataProvider::Observer:
   void OnKeyReady() override;
 
@@ -131,7 +134,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   using InitState =
       base::EnumSet<State, State::kUninitialized, State::kMaxValue>;
 
-  void OnExternalMetricsCollected(const EventsProto& events);
+  void OnRead(ReadStatus status);
+  void OnWrite(WriteStatus status);
+  void OnExternalMetricsCollected(const EventsProto& external_events);
 
   // Recorder::RecorderImpl:
   void OnProfileAdded(const base::FilePath& profile_path) override;
@@ -149,8 +154,11 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // happens asynchronously.
   void SetEventRecordCallbackForTest(base::RepeatingClosure callback);
 
-  // Records events before |init_state_| is kInitialized.
+  // Records events before IsInitialized().
   void RecordEventBeforeInitialization(const Event& event);
+
+  // Records events before IsProfileInitialized().
+  void RecordProfileEventBeforeInitialization(const Event& event);
 
   // Records |event| to persistent disk to be eventually sent.
   void RecordEvent(const Event& event);
@@ -198,11 +206,18 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // Returns true if ready to record events.
   bool IsInitialized();
 
+  // Returns true if ready to record profile events.
+  bool IsProfileInitialized();
+
   // Returns whether the |event| can be recorded event if metrics is opted-out.
   // Note that uploading is still guarded by metrics opt-in state and that these
   // events will never be uploaded. In the event that a user opts-in, these
   // events will be purged.
   bool CanForceRecord(const Event& event) const;
+
+  // Helper functions to determine scope of the event.
+  bool IsDeviceEvent(const Event& event) const;
+  bool IsProfileEvent(const Event& event) const;
 
   // Helper function to get the validators for |event|.
   absl::optional<std::pair<const ProjectValidator*, const EventValidator*>>
@@ -255,14 +270,14 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // Key data provider that provides device and profile keys.
   std::unique_ptr<KeyDataProvider> key_data_provider_;
 
-  // Store for events that were recorded before user/device keys are loaded.
+  // Store for events that were recorded before keys are loaded.
   std::deque<Event> unhashed_events_;
+
+  // Store for events that were recorded before profile keys are loaded.
+  std::deque<Event> unhashed_profile_events_;
 
   // Whether the system profile has been initialized.
   bool system_profile_initialized_ = false;
-
-  // File path where device keys will be persisted.
-  const base::FilePath device_key_path_;
 
   // Interface for providing the SystemProfile to metrics.
   // See chrome/browser/metrics/chrome_metrics_service_client.h

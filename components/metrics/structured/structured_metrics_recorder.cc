@@ -100,7 +100,9 @@ void StructuredMetricsRecorder::OnKeyReady() {
   // persistent storage.
   if (CanProvideMetrics()) {
     HashUnhashedEventsAndPersist();
-    std::move(on_ready_callback_).Run();
+    if (!on_ready_callback_.is_null()) {
+      std::move(on_ready_callback_).Run();
+    }
   }
 }
 
@@ -125,19 +127,19 @@ void StructuredMetricsRecorder::ProvideEventMetrics(
   const auto& structured_data = uma_proto.structured_data();
   LogUploadSizeBytes(structured_data.ByteSizeLong());
   LogExternalMetricsScanInUpload(external_metrics_scans_);
+  LogNumEventsInUpload(structured_data.events_size());
   external_metrics_scans_ = 0;
 
   // Applies custom metadata providers.
   Recorder::GetInstance()->OnProvideIndependentMetrics(&uma_proto);
 }
 
-bool StructuredMetricsRecorder::CanProvideMetrics() {
-  return recording_enabled() && IsInitialized();
+bool StructuredMetricsRecorder::IsInitialized() {
+  return init_state_.Has(State::kKeyDataInitialized);
 }
 
-bool StructuredMetricsRecorder::IsInitialized() {
-  return init_state_.HasAll(
-      InitState{State::kKeyDataInitialized, State::kProfileKeyDataInitialized});
+bool StructuredMetricsRecorder::IsProfileInitialized() {
+  return init_state_.Has(State::kProfileKeyDataInitialized);
 }
 
 void StructuredMetricsRecorder::InitializeKeyDataProvider(
@@ -152,7 +154,7 @@ void StructuredMetricsRecorder::InitializeEventStorage(
 }
 
 void StructuredMetricsRecorder::OnExternalMetricsCollected(
-    const EventsProto& events) {
+    const EventsProto& external_events) {
   DCHECK(base::CurrentUIThread::IsSet());
   if (!recording_enabled_) {
     return;
@@ -162,21 +164,15 @@ void StructuredMetricsRecorder::OnExternalMetricsCollected(
   // This isn't called until after a profile is added |event_storage_| will
   // never be null in that situation.
   CHECK(event_storage_);
-  event_storage_->AddBatchEvents(events.non_uma_events());
+  event_storage_->AddBatchEvents(external_events.non_uma_events());
 
   // Only increment if new events were add.
-  if (events.non_uma_events_size()) {
+  if (external_events.non_uma_events_size()) {
     external_metrics_scans_ += 1;
   }
 }
 
 void StructuredMetricsRecorder::Purge() {
-  // Only purge if the recorder has been initialized.
-  if (!IsInitialized()) {
-    return;
-  }
-  DCHECK(IsKeyDataInitialized());
-
   CHECK(event_storage_);
   event_storage_->Purge();
   key_data_provider_->Purge();
@@ -226,15 +222,17 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
     // Events should be ignored if recording is disabled.
     LogEventRecordingState(EventRecordingState::kRecordingDisabled);
     return;
-  } else if (!IsInitialized()) {
-    // If recorder is not ready to record metrics, then store the events
-    // in-memory until they are ready to be persisted.
-    LogEventRecordingState(EventRecordingState::kProviderUninitialized);
+  }
+
+  if (IsDeviceEvent(event) && !IsInitialized()) {
     RecordEventBeforeInitialization(event);
     return;
   }
 
-  DCHECK(IsKeyDataInitialized());
+  if (IsProfileEvent(event) && !IsProfileInitialized()) {
+    RecordProfileEventBeforeInitialization(event);
+    return;
+  }
 
   RecordEvent(event);
 
@@ -314,6 +312,12 @@ void StructuredMetricsRecorder::RecordEventBeforeInitialization(
     const Event& event) {
   DCHECK(!IsInitialized());
   unhashed_events_.emplace_back(event.Clone());
+}
+
+void StructuredMetricsRecorder::RecordProfileEventBeforeInitialization(
+    const Event& event) {
+  DCHECK(!IsProfileInitialized());
+  unhashed_profile_events_.emplace_back(event.Clone());
 }
 
 void StructuredMetricsRecorder::RecordEvent(const Event& event) {
@@ -497,11 +501,19 @@ void StructuredMetricsRecorder::AddMetricsToProto(
 }
 
 void StructuredMetricsRecorder::HashUnhashedEventsAndPersist() {
-  LogNumEventsRecordedBeforeInit(unhashed_events_.size());
-
-  while (!unhashed_events_.empty()) {
-    RecordEvent(unhashed_events_.front());
-    unhashed_events_.pop_front();
+  if (IsInitialized()) {
+    LogNumEventsRecordedBeforeInit(unhashed_events_.size());
+    while (!unhashed_events_.empty()) {
+      RecordEvent(unhashed_events_.front());
+      unhashed_events_.pop_front();
+    }
+  }
+  if (IsProfileInitialized()) {
+    LogNumEventsRecordedBeforeInit(unhashed_profile_events_.size());
+    while (!unhashed_profile_events_.empty()) {
+      RecordEvent(unhashed_profile_events_.front());
+      unhashed_profile_events_.pop_front();
+    }
   }
 }
 
@@ -567,6 +579,34 @@ StructuredMetricsRecorder::GetEventValidators(const Event& event) const {
   }
   const auto* event_validator = maybe_event_validator.value();
   return std::make_pair(project_validator, event_validator);
+}
+
+bool StructuredMetricsRecorder::IsDeviceEvent(const Event& event) const {
+  // Validates the event. If valid, retrieve the metadata associated
+  // with the event.
+  const auto validators = GetEventValidators(event);
+  if (!validators) {
+    return false;
+  }
+  const auto* project_validator = validators->first;
+
+  return project_validator->id_scope() == IdScope::kPerDevice;
+}
+
+bool StructuredMetricsRecorder::IsProfileEvent(const Event& event) const {
+  // Validates the event. If valid, retrieve the metadata associated
+  // with the event.
+  const auto validators = GetEventValidators(event);
+  if (!validators) {
+    return false;
+  }
+  const auto* project_validator = validators->first;
+
+  return project_validator->id_scope() == IdScope::kPerProfile;
+}
+
+bool StructuredMetricsRecorder::CanProvideMetrics() {
+  return recording_enabled() && (IsInitialized() || IsProfileInitialized());
 }
 
 }  // namespace metrics::structured

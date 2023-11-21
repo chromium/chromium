@@ -119,6 +119,10 @@ class StructuredMetricsServiceTest : public testing::Test {
         .Append("device_keys");
   }
 
+  base::FilePath DeviceEventsFilePath() {
+    return temp_dir_.GetPath().Append("structured_metrics").Append("events");
+  }
+
   void WriteTestingProfileKeys() {
     const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
 

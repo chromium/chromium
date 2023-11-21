@@ -54,9 +54,10 @@ void KeyDataProviderAsh::OnKeyReady() {
 
 KeyData* KeyDataProviderAsh::GetKeyData(const std::string& project_name) {
   auto* key_data_provider = GetKeyDataProvider(project_name);
-  if (!key_data_provider) {
+  if (!key_data_provider || !key_data_provider->IsReady()) {
     return nullptr;
   }
+
   return key_data_provider->GetKeyData(project_name);
 }
 
