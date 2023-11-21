@@ -529,7 +529,8 @@ void ConfigurePartitions(
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
-    size_t scheduler_loop_quarantine_capacity_in_bytes) {
+    size_t scheduler_loop_quarantine_capacity_in_bytes,
+    ZappingByFreeFlags zapping_by_free_flags) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
   // out the aligned partition.
@@ -583,6 +584,10 @@ void ConfigurePartitions(
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;
         opts.ref_count_size = ref_count_size;
+        opts.zapping_by_free_flags =
+            zapping_by_free_flags
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
         opts.scheduler_loop_quarantine_capacity_in_bytes =
             scheduler_loop_quarantine_capacity_in_bytes;
         opts.memory_tagging = {
@@ -662,13 +667,15 @@ void ConfigurePartitions(
               ? partition_alloc::TagViolationReportingMode::kSynchronous
               : partition_alloc::TagViolationReportingMode::kDisabled;
 
-  // We don't use this feature in PDFium.
+  // We don't use these features in PDFium.
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
+  auto zapping_by_free_flags = ZappingByFreeFlags(false);
 
-  ConfigurePartitions(
-      enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
-      split_main_partition, use_dedicated_aligned_partition, ref_count_size,
-      distribution, scheduler_loop_quarantine_capacity_in_bytes);
+  ConfigurePartitions(enable_brp, enable_memory_tagging,
+                      memory_tagging_reporting_mode, split_main_partition,
+                      use_dedicated_aligned_partition, ref_count_size,
+                      distribution, scheduler_loop_quarantine_capacity_in_bytes,
+                      zapping_by_free_flags);
 }
 
 // No synchronization provided: `PartitionRoot.flags` is only written

@@ -357,6 +357,7 @@ class PartitionAllocTest
   PartitionOptions GetCommonPartitionOptions() {
     PartitionOptions opts;
     opts.ref_count_size = GetParam().ref_count_size;
+    opts.zapping_by_free_flags = PartitionOptions::kEnabled;
     return opts;
   }
 
