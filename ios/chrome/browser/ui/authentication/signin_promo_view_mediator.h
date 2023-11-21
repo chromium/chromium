@@ -15,6 +15,7 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 class PrefService;
 @protocol SigninPresenter;
+@protocol AccountSettingsPresenter;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
 @protocol SystemIdentity;
@@ -125,7 +126,9 @@ enum class SigninPromoAction {
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
-                        presenter:(id<SigninPresenter>)presenter
+                  signinPresenter:(id<SigninPresenter>)signinPresenter
+         accountSettingsPresenter:
+             (id<AccountSettingsPresenter>)accountSettingsPresenter
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

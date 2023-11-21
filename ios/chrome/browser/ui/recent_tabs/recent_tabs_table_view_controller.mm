@@ -732,7 +732,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                           syncService:self.syncService
                           accessPoint:signin_metrics::AccessPoint::
                                           ACCESS_POINT_RECENT_TABS
-                            presenter:self];
+                      signinPresenter:self
+             accountSettingsPresenter:nil];
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       ChromeAccountManagerService* accountManagerService =

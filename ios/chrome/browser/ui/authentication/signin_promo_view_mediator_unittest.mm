@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_mock.h"
+#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -105,6 +106,11 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void CreateMediator(signin_metrics::AccessPoint access_point) {
     consumer_ = OCMStrictProtocolMock(@protocol(SigninPromoViewConsumer));
     signin_presenter_ = OCMStrictProtocolMock(@protocol(SigninPresenter));
+    account_settings_presenter_ =
+        access_point ==
+                signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
+            ? OCMStrictProtocolMock(@protocol(AccountSettingsPresenter))
+            : nil;
     mediator_ = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                           GetForBrowserState(
@@ -113,7 +119,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                           prefService:chrome_browser_state_.get()->GetPrefs()
                           syncService:GetSyncService()
                           accessPoint:access_point
-                            presenter:signin_presenter_];
+                      signinPresenter:signin_presenter_
+             accountSettingsPresenter:account_settings_presenter_];
     mediator_.consumer = consumer_;
 
     signin_promo_view_ = OCMStrictClassMock([SigninPromoView class]);
@@ -358,6 +365,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Mocks.
   id<SigninPresenter> signin_presenter_;
+  id<AccountSettingsPresenter> account_settings_presenter_;
   id<SigninPromoViewConsumer> consumer_;
   SigninPromoView* signin_promo_view_;
   UIButton* primary_button_;

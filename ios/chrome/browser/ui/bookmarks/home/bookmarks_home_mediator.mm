@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -80,7 +81,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   NOTREACHED_NORETURN();
 }
 
-@interface BookmarksHomeMediator () <BookmarkModelBridgeObserver,
+@interface BookmarksHomeMediator () <AccountSettingsPresenter,
+                                     BookmarkModelBridgeObserver,
                                      BookmarkPromoControllerDelegate,
                                      PrefObserverDelegate,
                                      SigninPresenter,
@@ -159,7 +161,8 @@ bool IsABookmarkNodeSectionForIdentifier(
       [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
                                            syncService:_syncService
                                               delegate:self
-                                             presenter:self];
+                                       signinPresenter:self
+                              accountSettingsPresenter:self];
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(browserState->GetPrefs());
@@ -647,6 +650,12 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)showSignin:(ShowSigninCommand*)command {
   // Proxy this call along to the consumer.
   [self.consumer showSignin:command];
+}
+
+#pragma mark - AccountSettingsPresenter
+
+- (void)showAccountSettings {
+  NOTIMPLEMENTED();
 }
 
 #pragma mark - SyncObserverModelBridge

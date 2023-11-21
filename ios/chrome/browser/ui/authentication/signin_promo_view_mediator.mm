@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
@@ -539,7 +540,11 @@ id<SystemIdentity> GetDisplayedIdentity(
 @property(nonatomic, assign, readwrite) BOOL initialSyncInProgress;
 
 // Presenter which can show signin UI.
-@property(nonatomic, weak, readonly) id<SigninPresenter> presenter;
+@property(nonatomic, weak, readonly) id<SigninPresenter> signinPresenter;
+
+// Presenter which can show the signed-in account settings UI.
+@property(nonatomic, weak, readonly) id<AccountSettingsPresenter>
+    accountSettingsPresenter;
 
 // User's preferences service.
 @property(nonatomic, assign) PrefService* prefService;
@@ -659,7 +664,9 @@ id<SystemIdentity> GetDisplayedIdentity(
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
-                        presenter:(id<SigninPresenter>)presenter {
+                  signinPresenter:(id<SigninPresenter>)signinPresenter
+         accountSettingsPresenter:
+             (id<AccountSettingsPresenter>)accountSettingsPresenter {
   self = [super init];
   if (self) {
     DCHECK(accountManagerService);
@@ -670,7 +677,8 @@ id<SystemIdentity> GetDisplayedIdentity(
     _syncService = syncService;
     _accessPoint = accessPoint;
     _dataTypeToWaitForInitialSync = syncer::ModelType::UNSPECIFIED;
-    _presenter = presenter;
+    _signinPresenter = signinPresenter;
+    _accountSettingsPresenter = accountSettingsPresenter;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
@@ -947,7 +955,14 @@ id<SystemIdentity> GetDisplayedIdentity(
                                        accessPoint:self.accessPoint
                                        promoAction:promoAction
                                           callback:completion];
-  [self.presenter showSignin:command];
+  [self.signinPresenter showSignin:command];
+}
+
+// Shows account settings.
+- (void)showAccountSettings {
+  DCHECK(self.accountSettingsPresenter);
+  self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
+  [self.accountSettingsPresenter showAccountSettings];
 }
 
 // Changes the promo view state, and records the metrics.

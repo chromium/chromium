@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -75,7 +76,8 @@
 // TODO(crbug.com/1425862): SigninPromoViewMediator will be refactored so that
 // we can move the SigninPromoViewConsumer implementation from the coordinator
 // to the view.
-@interface ReadingListCoordinator () <IdentityManagerObserverBridgeDelegate,
+@interface ReadingListCoordinator () <AccountSettingsPresenter,
+                                      IdentityManagerObserverBridgeDelegate,
                                       ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
@@ -205,7 +207,8 @@
                         syncService:_syncService
                         accessPoint:signin_metrics::AccessPoint::
                                         ACCESS_POINT_READING_LIST
-                          presenter:self];
+                    signinPresenter:self
+           accountSettingsPresenter:self];
   _signinPromoViewMediator.signinPromoAction =
       SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;
@@ -563,6 +566,12 @@
 - (void)showSignin:(ShowSigninCommand*)command {
   [_applicationCommandsHandler showSignin:command
                        baseViewController:self.tableViewController];
+}
+
+#pragma mark - AccountSettingsPresenter
+
+- (void)showAccountSettings {
+  NOTIMPLEMENTED();
 }
 
 #pragma mark - SigninPromoViewConsumer

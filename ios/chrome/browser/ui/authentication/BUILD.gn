@@ -21,6 +21,7 @@ source_set("authentication") {
     "signin_promo_view_mediator.mm",
   ]
   deps = [
+    ":account_settings_presenter",
     ":authentication_constants",
     ":signin_presenter",
     "resources:signin_confirmation_more",
@@ -104,6 +105,10 @@ source_set("signin_presenter") {
   sources = [ "signin_presenter.h" ]
 }
 
+source_set("account_settings_presenter") {
+  sources = [ "account_settings_presenter.h" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -114,6 +119,7 @@ source_set("unit_tests") {
     "signin_promo_view_mediator_unittest.mm",
   ]
   deps = [
+    ":account_settings_presenter",
     ":authentication",
     ":signin_presenter",
     "//base",
@@ -180,6 +186,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/test/earl_grey:hooks",
   ]
   deps = [
+    ":account_settings_presenter",
     ":authentication",
     ":signin_presenter",
     "unified_consent",
@@ -223,6 +230,7 @@ source_set("eg_test_support+eg2") {
     "signin_matchers.mm",
   ]
   deps = [
+    ":account_settings_presenter",
     ":signin_presenter",
     "//base",
     "//base/test:test_support",
