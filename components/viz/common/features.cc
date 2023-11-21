@@ -179,7 +179,7 @@ BASE_FEATURE(kCanSkipRenderPassOverlay,
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kCVDisplayLinkBeginFrameSource,
              "CVDisplayLinkBeginFrameSource",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Allow SkiaRenderer to skip drawing render passes that contain a single
