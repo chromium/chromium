@@ -10376,23 +10376,6 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="Touchscreen.TouchEventsEnabled"
-    enum="TouchEventFeatureDetectionState" expires_after="M77">
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    Tracks whether Touch Event Feature Detection is enabled. This is based on
-    the touch events enabled flag and the presence of a touchscreen.
-
-    Team: input-dev@chromium.org.
-
-    NOTE: This metric was incorrectly recorded on Chrome OS for versions 42
-    through 45, see http://crbug.com/499476 for more details. As of
-    http://crbug.com/644318, we changed the internal name to
-    TouchEventFeatureDetection, but we still keep the old histogram name here to
-    keep consistensy.
-  </summary>
-</histogram>
-
 <histogram name="Tracing.Background.CompressedTraceSizeInKB" units="KB"
     expires_after="2024-03-24">
   <owner>etiennep@chromium.org</owner>

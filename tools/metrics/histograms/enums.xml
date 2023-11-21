@@ -56649,13 +56649,6 @@ would be helpful to identify which type is being sent.
   <int value="3" label="Token was cleared"/>
 </enum>
 
-<enum name="TouchEventFeatureDetectionState">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Automatic - enabled"/>
-  <int value="2" label="Automatic - disabled"/>
-  <int value="3" label="Disabled"/>
-</enum>
-
 <enum name="TouchpadDeviceState">
   <int value="0" label="NO_TP_PRESENT_NO_TP_EXPECTED">
     No touchpad detected on a device without built-in touchpad
