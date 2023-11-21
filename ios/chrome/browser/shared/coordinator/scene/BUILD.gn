@@ -89,7 +89,7 @@ source_set("scene") {
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/intents:user_activity_handler",
+    "//ios/chrome/browser/intents:user_activity_browser_agent",
     "//ios/chrome/browser/mailto_handler/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/main",

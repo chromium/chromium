@@ -41,7 +41,6 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/autofill/manual_fill",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/main",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

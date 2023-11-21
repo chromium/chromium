@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/favicon/favicon_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
+#import "ios/chrome/browser/intents/user_activity_browser_agent.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
@@ -125,6 +126,8 @@ void AttachBrowserAgents(Browser* browser) {
 
   PagePlaceholderBrowserAgent::CreateForBrowser(browser);
   FaviconBrowserAgent::CreateForBrowser(browser);
+
+  UserActivityBrowserAgent::CreateForBrowser(browser);
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.

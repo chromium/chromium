@@ -54,7 +54,7 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_logger.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/intents/user_activity_handler.h"
+#import "ios/chrome/browser/intents/user_activity_browser_agent.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
@@ -463,6 +463,8 @@ void InjectNTP(Browser* browser) {
   if (![self canHandleIntents]) {
     return;
   }
+  UserActivityBrowserAgent* userActivityBrowserAgent =
+      UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
   // Handle URL opening from
   // `UIWindowSceneDelegate scene:willConnectToSession:options:`.
   for (UIOpenURLContext* context in self.sceneState.connectionOptions
@@ -475,15 +477,7 @@ void InjectNTP(Browser* browser) {
                            appState:self.sceneState.appState];
   }
   if (self.sceneState.connectionOptions.shortcutItem) {
-    [UserActivityHandler
-        performActionForShortcutItem:self.sceneState.connectionOptions
-                                         .shortcutItem
-                   completionHandler:nil
-                           tabOpener:self
-               connectionInformation:self
-                  startupInformation:self.sceneState.appState.startupInformation
-                        browserState:self.currentInterface.browserState
-                           initStage:self.sceneState.appState.initStage];
+    userActivityBrowserAgent->Handle3DTouchApplicationShortcuts();
   }
 
   // See if this scene launched as part of a multiwindow URL opening.
@@ -524,14 +518,7 @@ void InjectNTP(Browser* browser) {
     // Consider the scene as still not active at this point as the handling
     // of startup parameters is not yet done (and will be later in this
     // function).
-    [UserActivityHandler
-         continueUserActivity:activityWithCompletion
-          applicationIsActive:NO
-                    tabOpener:self
-        connectionInformation:self
-           startupInformation:self.sceneState.appState.startupInformation
-                 browserState:self.currentInterface.browserState
-                    initStage:self.sceneState.appState.initStage];
+    userActivityBrowserAgent->ContinueUserActivity(activityWithCompletion, NO);
   }
   self.sceneState.connectionOptions = nil;
 
@@ -552,14 +539,7 @@ void InjectNTP(Browser* browser) {
           setApplicationMode:ApplicationModeForTabOpening::NORMAL];
     }
 
-    [UserActivityHandler
-        handleStartupParametersWithTabOpener:self
-                       connectionInformation:self
-                          startupInformation:self.sceneState.appState
-                                                 .startupInformation
-                                browserState:self.currentInterface.browserState
-                                   initStage:self.sceneState.appState
-                                                 .initStage];
+    userActivityBrowserAgent->RouteToCorrectTab();
 
     // Show a toast if the browser is opened in an unexpected mode.
     if (self.startupParameters.isUnexpectedMode) {
@@ -637,15 +617,13 @@ void InjectNTP(Browser* browser) {
     [self.startupParameters
         setApplicationMode:ApplicationModeForTabOpening::INCOGNITO];
   }
-
-  [UserActivityHandler
-      performActionForShortcutItem:shortcutItem
-                 completionHandler:completionHandler
-                         tabOpener:self
-             connectionInformation:self
-                startupInformation:self.sceneState.appState.startupInformation
-                      browserState:self.currentInterface.browserState
-                         initStage:self.sceneState.appState.initStage];
+  UserActivityBrowserAgent* userActivityBrowserAgent =
+      UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
+  BOOL handledShortcutItem =
+      userActivityBrowserAgent->Handle3DTouchApplicationShortcuts();
+  if (completionHandler) {
+    completionHandler(handledShortcutItem);
+  }
 }
 
 - (void)sceneState:(SceneState*)sceneState
@@ -667,21 +645,15 @@ void InjectNTP(Browser* browser) {
   self.sceneState.startupHadExternalIntent = YES;
 
   PrefService* prefs = self.currentInterface.browserState->GetPrefs();
+  UserActivityBrowserAgent* userActivityBrowserAgent =
+      UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
   if (IsIncognitoPolicyApplied(prefs) &&
-      ![UserActivityHandler canProceedWithUserActivity:userActivity
-                                           prefService:prefs]) {
+      !userActivityBrowserAgent->ProceedWithUserActivity(userActivity)) {
     // If users request opening url in a unavailable mode, don't open the url
     // but show a toast.
     [self showToastWhenOpenExternalIntentInUnexpectedMode];
   } else {
-    [UserActivityHandler
-         continueUserActivity:userActivity
-          applicationIsActive:sceneIsActive
-                    tabOpener:self
-        connectionInformation:self
-           startupInformation:self.sceneState.appState.startupInformation
-                 browserState:self.currentInterface.browserState
-                    initStage:self.sceneState.appState.initStage];
+    userActivityBrowserAgent->ContinueUserActivity(userActivity, sceneIsActive);
   }
 
   if (sceneIsActive) {

@@ -29,10 +29,10 @@ source_set("constants") {
   ]
 }
 
-source_set("user_activity_handler") {
+source_set("user_activity_browser_agent") {
   sources = [
-    "user_activity_handler.h",
-    "user_activity_handler.mm",
+    "user_activity_browser_agent.h",
+    "user_activity_browser_agent.mm",
   ]
 
   public_deps = [ "//ios/chrome/browser/shared/model/browser" ]
@@ -41,14 +41,12 @@ source_set("user_activity_handler") {
     "//base",
     "//components/crash/core/common",
     "//components/handoff",
-    "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/app",
     "//ios/chrome/app:mode",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/spotlight",
-    "//ios/chrome/app/startup",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/intents:intent_type",
     "//ios/chrome/browser/metrics:metrics_internal",
@@ -67,14 +65,15 @@ source_set("user_activity_handler") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "user_activity_handler_unittest.mm" ]
+  sources = [ "user_activity_browser_agent_unittest.mm" ]
   deps = [
     ":constants",
-    ":user_activity_handler",
+    ":user_activity_browser_agent",
     "//components/handoff",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/app",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:mode",
@@ -84,11 +83,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_testing",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/intents",
     "//ios/testing:block_swizzler",
