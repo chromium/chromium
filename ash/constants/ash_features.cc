@@ -2020,11 +2020,6 @@ BASE_FEATURE(kOsSettingsRevampWayfinding,
              "OsSettingsRevampWayfinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the new Chrome component refresh for testing purposes in OS Settings.
-BASE_FEATURE(kOsSettingsTestChromeRefresh,
-             "OsSettingsTestChromeRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOverviewButton,
              "OverviewButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3942,10 +3937,6 @@ bool IsOsSettingsDeprecateSyncMetricsToggleEnabled() {
 
 bool IsOsSettingsRevampWayfindingEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsRevampWayfinding);
-}
-
-bool IsOsSettingsTestChromeRefresh() {
-  return base::FeatureList::IsEnabled(kOsSettingsTestChromeRefresh);
 }
 
 bool IsOsSyncConsentRevampEnabled() {

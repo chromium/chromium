@@ -6188,11 +6188,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "os-settings-test-chrome-refresh",
-    "owners": [ "xiaohuic@chromium.org", "cros-settings@google.com" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "overflow-menu-customization",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 115
