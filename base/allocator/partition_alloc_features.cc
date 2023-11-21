@@ -118,10 +118,6 @@ BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
 const base::FeatureParam<int> kPartitionAllocSchedulerLoopQuarantineCapacity{
     &kPartitionAllocSchedulerLoopQuarantine,
     "PartitionAllocSchedulerLoopQuarantineCapacity", 0};
-
-BASE_FEATURE(kPartitionAllocZappingByFreeFlags,
-             "PartitionAllocZappingByFreeFlags",
-             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,

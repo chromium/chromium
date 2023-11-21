@@ -182,8 +182,6 @@ struct PartitionOptions {
 
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
 
-  EnableToggle zapping_by_free_flags = kDisabled;
-
   struct {
     EnableToggle enabled = kDisabled;
     TagViolationReportingMode reporting_mode =
@@ -274,7 +272,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
-    bool zapping_by_free_flags = false;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
     TagViolationReportingMode memory_tagging_reporting_mode_ =
@@ -1393,13 +1390,10 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   }
 
   if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
-    if (settings.zapping_by_free_flags) {
-      SlotSpan* slot_span = SlotSpan::FromObject(object);
-      uintptr_t slot_start = ObjectToSlotStart(object);
-      internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start),
-                             internal::kFreedByte,
-                             GetSlotUsableSize(slot_span));
-    }
+    SlotSpan* slot_span = SlotSpan::FromObject(object);
+    uintptr_t slot_start = ObjectToSlotStart(object);
+    internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start),
+                           internal::kFreedByte, GetSlotUsableSize(slot_span));
   }
   // TODO(https://crbug.com/1497380): Collecting objects for
   // `kSchedulerLoopQuarantine` here means it "delays" other checks (BRP
