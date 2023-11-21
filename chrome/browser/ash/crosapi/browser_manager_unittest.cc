@@ -523,6 +523,7 @@ TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInWebKiosk) {
 }
 
 class BrowserManagerWithoutLacrosUserTest : public BrowserManagerTest {
+ public:
   void SetUpBrowserManager() override {
     AddKnownUser(/*lacros_enabled=*/false);
     BrowserManagerTest::SetUpBrowserManager();
@@ -534,12 +535,32 @@ TEST_F(BrowserManagerWithoutLacrosUserTest,
   // Simulate that we are ready and the log in screen is shown.
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-
   // Trigger the pre-launch logic as the log in screen is ready.
   fake_browser_manager_->TriggerLoginPromptVisible();
-
   // Expect the prelaunch logic was NOT called as no user has Lacros enabled.
   EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
+}
+
+class BrowserManagerWithForceSwitchWithoutLacrosUserTest
+    : public BrowserManagerWithoutLacrosUserTest {
+  void SetUpBrowserManager() override {
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kForceLacrosLaunchAtLoginScreenForTesting);
+    BrowserManagerWithoutLacrosUserTest::SetUpBrowserManager();
+  }
+};
+
+TEST_F(BrowserManagerWithForceSwitchWithoutLacrosUserTest,
+       PrelaunchLacrosIfForcedViaSwitch) {
+  // Simulate that we are ready and the log in screen is shown.
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  // Trigger the pre-launch logic as the log in screen is ready.
+  fake_browser_manager_->TriggerLoginPromptVisible();
+  // Expect the prelaunch logic was called as the force switch was passed,
+  // even if no Lacros users were present in the system.
+  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 1);
 }
 
 class BrowserManagerWithLacrosUserTest : public BrowserManagerTest {
@@ -554,10 +575,8 @@ TEST_F(BrowserManagerWithLacrosUserTest, AllowUseOfLacrosOnNormalCPUs) {
   // Simulate that we are ready and the log in screen is shown.
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-
   // Trigger the pre-launch logic as the log in screen is ready.
   fake_browser_manager_->TriggerLoginPromptVisible();
-
   // Expect that the prelaunch logic was called.
   EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 1);
 }
@@ -575,10 +594,8 @@ TEST_F(BrowserManagerWithOldCPUTest, DisallowUseOfLacrosOnOldCPUs) {
   // Simulate that we are ready and the log in screen is shown.
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-
   // Trigger the pre-launch logic as the log in screen is ready.
   fake_browser_manager_->TriggerLoginPromptVisible();
-
   // Expect the prelaunch logic was NOT called as the CPU is not sufficient.
   EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
 }

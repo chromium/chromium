@@ -519,6 +519,7 @@ bool IsLacrosEnabledByAnyUserForPrelaunch() {
 }
 
 bool ShouldPrelaunchLacrosAtLoginScreen() {
+  // Only prelaunch if the corresponding feature is enabled.
   if (!base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)) {
     LOG(WARNING)
         << "Lacros will not be prelaunched: prelaunching feature is disabled";
@@ -540,15 +541,18 @@ bool ShouldPrelaunchLacrosAtLoginScreen() {
   // Originally introduced because of https://crbug.com/1432779, which
   // causes PRE_ tests to restart back to login screen, but with the
   // user still "logged in" (UserManager::IsUserLoggedIn() == true).
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kLoginUser)) {
+  const auto* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(ash::switches::kLoginUser)) {
     LOG(WARNING)
         << "Lacros will not be prelaunched: `login-user` switch was passed";
     return false;
   }
 
-  // If Lacros is not enabled for any user, don't prelaunch it.
-  if (!IsLacrosEnabledByAnyUserForPrelaunch()) {
+  // If Lacros is not enabled for any user, don't prelaunch it, unless
+  // a switch to force prelaunching was passed.
+  const bool force_prelaunch = cmdline->HasSwitch(
+      ash::switches::kForceLacrosLaunchAtLoginScreenForTesting);
+  if (!force_prelaunch && !IsLacrosEnabledByAnyUserForPrelaunch()) {
     LOG(WARNING)
         << "Lacros will not be prelaunched: no user has Lacros enabled";
     return false;
