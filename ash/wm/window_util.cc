@@ -21,6 +21,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -273,7 +274,16 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
     window_state->SetRestoreBoundsInScreen(restore_bounds);
   }
 
+  auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker();
+  gfx::Rect remapped_bounds;
+  if (window_bounds_tracker) {
+    remapped_bounds = window_bounds_tracker->RemapOrRestore(window, display_id);
+  }
+
   container->AddChild(window);
+  if (window_bounds_tracker) {
+    window->SetBounds(remapped_bounds);
+  }
   return true;
 }
 

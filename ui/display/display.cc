@@ -235,6 +235,12 @@ int Display::PanelRotationAsDegree() const {
   return RotationToDegrees(panel_rotation());
 }
 
+gfx::Rect Display::GetLocalWorkArea() const {
+  gfx::Rect local_work_area(size());
+  local_work_area.Inset(GetWorkAreaInsets());
+  return local_work_area;
+}
+
 gfx::Insets Display::GetWorkAreaInsets() const {
   return gfx::Insets::TLBR(work_area_.y() - bounds_.y(),
                            work_area_.x() - bounds_.x(),

@@ -109,11 +109,15 @@ bool IsPortraitOrientation(OrientationType type) {
          type == OrientationType::kPortraitSecondary;
 }
 
-bool IsDisplayLayoutPrimary(const display::Display& display) {
+OrientationType GetDisplayCurrentOrientation(const display::Display& display) {
   DCHECK(display.is_valid());
   const display::Display::Rotation rotation = display.rotation();
-  return IsPrimaryOrientation(
-      RotationToOrientation(GetDisplayNaturalOrientation(display), rotation));
+  return RotationToOrientation(GetDisplayNaturalOrientation(display), rotation);
+}
+
+bool IsDisplayLayoutPrimary(const display::Display& display) {
+  DCHECK(display.is_valid());
+  return IsPrimaryOrientation(GetDisplayCurrentOrientation(display));
 }
 
 float GetRepresentativeDeviceScaleFactor(

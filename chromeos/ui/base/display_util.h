@@ -46,6 +46,10 @@ bool IsLandscapeOrientation(OrientationType type);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsPortraitOrientation(OrientationType type);
 
+// Returns the current orientation of `display`.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+OrientationType GetDisplayCurrentOrientation(const display::Display& display);
+
 // Returns true if the current layout of |display| is primary.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsDisplayLayoutPrimary(const display::Display& display);

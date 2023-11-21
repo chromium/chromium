@@ -28,7 +28,7 @@ class WindowBoundsTrackerTest : public AshTestBase {
 };
 
 // Tests that the window is fully visible after being moved to a new display.
-TEST_F(WindowBoundsTrackerTest, DISABLED_OffscreenProtection) {
+TEST_F(WindowBoundsTrackerTest, OffscreenProtection) {
   UpdateDisplay("400x300,600x500");
 
   // Initially, the window is half-offscreen inside the second display.
@@ -43,7 +43,7 @@ TEST_F(WindowBoundsTrackerTest, DISABLED_OffscreenProtection) {
   // Moving the window back to the 2nd display, it should be restored to its
   // previous bounds, even though it was offscreen.
   PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_EQ(initial_bounds, w->bounds());
+  EXPECT_EQ(initial_bounds, w->GetBoundsInScreen());
 }
 
 // Tests that the window will stay in the same physical position after rotation.
@@ -117,26 +117,145 @@ TEST_F(WindowBoundsTrackerTest, DISABLED_ScreenRotation) {
 
 // Tests that the window's relative position to the center point of the work
 // area is the same after work area size changes.
-TEST_F(WindowBoundsTrackerTest, DISABLED_WorkAreaSizeChanges) {
-  UpdateDisplay("400x300,600x500");
+TEST_F(WindowBoundsTrackerTest, WorkAreaSizeChanges) {
+  UpdateDisplay("400x300,800x600");
 
-  const gfx::Rect first_display_work_area = GetPrimaryDisplay().work_area();
-  const gfx::Rect second_display_work_area = GetSecondaryDisplay().work_area();
+  display::Display first_display = GetPrimaryDisplay();
+  display::Display secondary_display = GetSecondaryDisplay();
+  const gfx::Rect first_display_work_area = first_display.work_area();
+  const gfx::Rect second_display_work_area = secondary_display.work_area();
 
   // Creates a window at the center of the work area.
   const gfx::Point first_center_point = first_display_work_area.CenterPoint();
-  const gfx::Rect initial_bounds(first_center_point.x() - 100,
-                                 first_center_point.y() - 50, 200, 100);
+  const gfx::Size window_size(200, 100);
+  const gfx::Rect initial_bounds(
+      gfx::Point(first_center_point.x() - window_size.width() / 2,
+                 first_center_point.y() - window_size.height() / 2),
+      window_size);
   aura::Window* w = CreateTestWindowInShellWithBounds(initial_bounds);
   EXPECT_TRUE(first_display_work_area.Contains(w->GetBoundsInScreen()));
   EXPECT_EQ(first_center_point, w->GetBoundsInScreen().CenterPoint());
 
   // After moving the window from primary display to the secondary display, it
   // should still stay at the center of the current work area.
+  wm::ActivateWindow(w);
   PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
   const gfx::Point second_center_point = second_display_work_area.CenterPoint();
   EXPECT_TRUE(second_display_work_area.Contains(w->GetBoundsInScreen()));
   EXPECT_EQ(second_center_point, w->GetBoundsInScreen().CenterPoint());
+
+  // Moves the window to the top left center of the primary display.
+  const gfx::Point top_left_center(first_center_point.x() / 2,
+                                   first_center_point.y() / 2);
+  const gfx::Point origin(
+      top_left_center -
+      gfx::Vector2d(window_size.width() / 2, window_size.height() / 2));
+  w->SetBoundsInScreen(gfx::Rect(origin, window_size), first_display);
+
+  // Using the shortcut to move the window to the secondary display, it should
+  // stay at the top left center of the secondary display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_TRUE(second_display_work_area.Contains(w->GetBoundsInScreen()));
+  const gfx::Point second_local_work_area_center =
+      secondary_display.GetLocalWorkArea().CenterPoint();
+  const gfx::Point second_top_left_center(
+      second_local_work_area_center.x() / 2,
+      second_local_work_area_center.y() / 2);
+  EXPECT_EQ(second_top_left_center, w->bounds().CenterPoint());
+}
+
+// Tests that window's bounds stored in the same display configuration can be
+// updated correctly. Window can be restored to the update bounds in the tracker
+// correctly as well.
+TEST_F(WindowBoundsTrackerTest, RestoreToUpdatedBounds) {
+  UpdateDisplay("400x300,600x500");
+
+  // Initially, the window is half-offscreen inside the 2nd display. Moving it
+  // to the 1st display and back to the 2nd display to set up its bounds in the
+  // bounds tracker inside these two displays.
+  const gfx::Rect initial_bounds(900, 0, 200, 100);
+  aura::Window* w = CreateTestWindowInShellWithBounds(initial_bounds);
+  wm::ActivateWindow(w);
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  const gfx::Rect bounds_in_1st(200, 0, 200, 100);
+  EXPECT_EQ(bounds_in_1st, w->bounds());
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(initial_bounds, w->GetBoundsInScreen());
+
+  // Move the window back to the 1st display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(bounds_in_1st, w->bounds());
+  // Update the window's position inside the 1st display, make it half-offscreen
+  // as well.
+  const gfx::Rect new_bounds_in_1st(300, 0, 200, 100);
+  w->SetBounds(new_bounds_in_1st);
+  // Move the window to 2nd display and then back to 1st display, it should
+  // restore to its updated bounds stored in the tracker.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(initial_bounds, w->GetBoundsInScreen());
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(new_bounds_in_1st, w->bounds());
+}
+
+// Tests of moving a window from a landscape orientation display to a portrait
+// orientation display.
+TEST_F(WindowBoundsTrackerTest, LandscapeToPortrait) {
+  UpdateDisplay("400x300,300x400");
+
+  ASSERT_TRUE(chromeos::IsLandscapeOrientation(
+      chromeos::GetDisplayCurrentOrientation(GetPrimaryDisplay())));
+  ASSERT_TRUE(chromeos::IsPortraitOrientation(
+      chromeos::GetDisplayCurrentOrientation(GetSecondaryDisplay())));
+
+  // Initially, the window is at the top right of the 1st display.
+  const gfx::Rect initial_bounds(200, 0, 200, 100);
+  const gfx::Rect rotated_90_bounds(0, 0, 100, 200);
+  aura::Window* w = CreateTestWindowInShellWithBounds(initial_bounds);
+  wm::ActivateWindow(w);
+
+  // Moving the window from a landscape to portrait display. The window is
+  // supposed to be rotated 90 and then being mapped to the target portrait
+  // display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(rotated_90_bounds, w->bounds());
+  EXPECT_EQ(gfx::Rect(400, 0, 100, 200), w->GetBoundsInScreen());
+}
+
+TEST_F(WindowBoundsTrackerTest, PortraitToLandscape) {
+  UpdateDisplay("300x400,400x300");
+
+  display::Display primary_display = GetPrimaryDisplay();
+  display::Display secondary_display = GetSecondaryDisplay();
+  ASSERT_TRUE(chromeos::IsPortraitOrientation(
+      chromeos::GetDisplayCurrentOrientation(primary_display)));
+  ASSERT_TRUE(chromeos::IsLandscapeOrientation(
+      chromeos::GetDisplayCurrentOrientation(secondary_display)));
+
+  // Initially, the window is at the top right of the 1st display.
+  const int x = 200;
+  const gfx::Size window_size(100, 200);
+  const gfx::Rect initial_bounds(gfx::Point(x, 0), window_size);
+  const int bottom_inset_1st = primary_display.GetWorkAreaInsets().bottom();
+  const int bottom_inset_2nd = secondary_display.GetWorkAreaInsets().bottom();
+  EXPECT_EQ(bottom_inset_1st, bottom_inset_2nd);
+  const int primary_display_width = primary_display.bounds().width();
+  const int rotated_y =
+      primary_display_width - bottom_inset_1st - window_size.width();
+  gfx::Size transposed_window_size = window_size;
+  transposed_window_size.Transpose();
+  const gfx::Rect rotated_270_bounds(gfx::Point(x, rotated_y),
+                                     transposed_window_size);
+  aura::Window* w = CreateTestWindowInShellWithBounds(initial_bounds);
+  wm::ActivateWindow(w);
+
+  // Moving the window from a portrait to landscape display. The window is
+  // supposed to be rotated 270 and then being mapped to the target landscape
+  // display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(rotated_270_bounds, w->bounds());
+  EXPECT_EQ(gfx::Rect(gfx::Point(x + primary_display_width, rotated_y),
+                      transposed_window_size),
+            w->GetBoundsInScreen());
 }
 
 }  // namespace ash
