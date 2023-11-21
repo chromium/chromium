@@ -481,27 +481,16 @@ class CORE_EXPORT NGPhysicalFragment
   // check if there were newer generations.
   const NGPhysicalFragment* PostLayout() const;
 
-  // Specifies the type of scrollable overflow computation.
-  // TODO(layout-dev): Remove this. Only kEmHeight is used.
-  enum TextHeightType {
-    // Apply text fragment size as is.
-    kNormalHeight,
-    // Adjust text fragment size for 'em' height, and skip to unite
-    // container's bounding box. This type is useful for ruby annotation.
-    kEmHeight
-  };
   // Em height box. including contents, in the local coordinate.
-  PhysicalRect ComputeRubyEmHeightBox(const NGPhysicalBoxFragment& container,
-                                      TextHeightType height_type) const;
+  PhysicalRect ComputeRubyEmHeightBox(
+      const NGPhysicalBoxFragment& container) const;
 
   // ComputeRubyEmHeightBox(), with transforms applied wrt container if needed.
   // This does not include any offsets from the parent (including relpos).
   PhysicalRect ComputeRubyEmHeightBoxForPropagation(
-      const NGPhysicalBoxFragment& container,
-      TextHeightType height_type) const;
+      const NGPhysicalBoxFragment& container) const;
   void AdjustRubyEmHeightBoxForPropagation(
       const NGPhysicalBoxFragment& container,
-      TextHeightType height_type,
       PhysicalRect* overflow) const;
 
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
@@ -735,16 +724,14 @@ class CORE_EXPORT NGPhysicalFragment
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  void AddScrollableOverflowForInlineChild(
-      const NGPhysicalBoxFragment& container,
-      const ComputedStyle& container_style,
-      const FragmentItem& line,
-      bool has_hanging,
-      const InlineCursor& cursor,
-      TextHeightType height_type,
-      PhysicalRect* overflow) const;
+  void AddRubyEmHeightBoxForInlineChild(const NGPhysicalBoxFragment& container,
+                                        const ComputedStyle& container_style,
+                                        const FragmentItem& line,
+                                        bool has_hanging,
+                                        const InlineCursor& cursor,
+                                        PhysicalRect* overflow) const;
 
-  static void AdjustScrollableOverflowForHanging(
+  static void AdjustRubyEmHeightBoxForHanging(
       const PhysicalRect& rect,
       const WritingMode container_writing_mode,
       PhysicalRect* overflow);

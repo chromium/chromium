@@ -620,15 +620,13 @@ void NGPhysicalFragment::CheckType() const {
 #endif
 
 PhysicalRect NGPhysicalFragment::ComputeRubyEmHeightBox(
-    const NGPhysicalBoxFragment& container,
-    TextHeightType height_type) const {
+    const NGPhysicalBoxFragment& container) const {
   switch (Type()) {
     case kFragmentBox:
-      return To<NGPhysicalBoxFragment>(*this).ComputeRubyEmHeightBox(
-          height_type);
+      return To<NGPhysicalBoxFragment>(*this).ComputeRubyEmHeightBox();
     case kFragmentLineBox:
-      NOTREACHED()
-          << "You must call NGLineBoxFragment::ScrollableOverflow explicitly.";
+      NOTREACHED() << "You must call LineBoxFragment::ComputeRubyEmHeightBox "
+                      "explicitly.";
       break;
   }
   NOTREACHED();
@@ -636,16 +634,14 @@ PhysicalRect NGPhysicalFragment::ComputeRubyEmHeightBox(
 }
 
 PhysicalRect NGPhysicalFragment::ComputeRubyEmHeightBoxForPropagation(
-    const NGPhysicalBoxFragment& container,
-    TextHeightType height_type) const {
-  PhysicalRect overflow = ComputeRubyEmHeightBox(container, height_type);
-  AdjustRubyEmHeightBoxForPropagation(container, height_type, &overflow);
+    const NGPhysicalBoxFragment& container) const {
+  PhysicalRect overflow = ComputeRubyEmHeightBox(container);
+  AdjustRubyEmHeightBoxForPropagation(container, &overflow);
   return overflow;
 }
 
 void NGPhysicalFragment::AdjustRubyEmHeightBoxForPropagation(
     const NGPhysicalBoxFragment& container,
-    TextHeightType height_type,
     PhysicalRect* overflow) const {
   DCHECK(!IsLineBox());
   if (!IsCSSBox())
@@ -654,9 +650,6 @@ void NGPhysicalFragment::AdjustRubyEmHeightBoxForPropagation(
     NOTREACHED();
     return;
   }
-
-  if (height_type == TextHeightType::kNormalHeight && Type() == kFragmentBox)
-    overflow->Unite({{}, Size()});
 
   const LayoutObject* layout_object = GetLayoutObject();
   DCHECK(layout_object);
@@ -867,13 +860,12 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
   }
 }
 
-void NGPhysicalFragment::AddScrollableOverflowForInlineChild(
+void NGPhysicalFragment::AddRubyEmHeightBoxForInlineChild(
     const NGPhysicalBoxFragment& container,
     const ComputedStyle& container_style,
     const FragmentItem& line,
     bool has_hanging,
     const InlineCursor& cursor,
-    TextHeightType height_type,
     PhysicalRect* overflow) const {
   DCHECK(IsLineBox() || IsInlineBox());
   DCHECK(cursor.Current().Item() &&
@@ -890,15 +882,13 @@ void NGPhysicalFragment::AddScrollableOverflowForInlineChild(
     }
     if (item->IsText()) {
       PhysicalRect child_scroll_overflow = item->RectInContainerFragment();
-      if (height_type == TextHeightType::kEmHeight) {
-        child_scroll_overflow = AdjustTextRectForEmHeight(
-            child_scroll_overflow, item->Style(), item->TextShapeResult(),
-            container_writing_mode);
-      }
+      child_scroll_overflow = AdjustTextRectForEmHeight(
+          child_scroll_overflow, item->Style(), item->TextShapeResult(),
+          container_writing_mode);
       if (UNLIKELY(has_hanging)) {
-        AdjustScrollableOverflowForHanging(line.RectInContainerFragment(),
-                                           container_writing_mode,
-                                           &child_scroll_overflow);
+        AdjustRubyEmHeightBoxForHanging(line.RectInContainerFragment(),
+                                        container_writing_mode,
+                                        &child_scroll_overflow);
       }
       overflow->Unite(child_scroll_overflow);
       descendants.MoveToNextSkippingChildren();
@@ -908,23 +898,23 @@ void NGPhysicalFragment::AddScrollableOverflowForInlineChild(
     if (const NGPhysicalBoxFragment* child_box =
             item->PostLayoutBoxFragment()) {
       PhysicalRect child_scroll_overflow;
-      if (height_type == TextHeightType::kNormalHeight ||
-          (child_box->BoxType() != kInlineBox && !IsRubyBox()))
+      if (child_box->BoxType() != kInlineBox && !IsRubyBox()) {
         child_scroll_overflow = item->RectInContainerFragment();
+      }
       if (child_box->IsInlineBox()) {
-        child_box->AddScrollableOverflowForInlineChild(
+        child_box->AddRubyEmHeightBoxForInlineChild(
             container, container_style, line, has_hanging, descendants,
-            height_type, &child_scroll_overflow);
-        child_box->AdjustRubyEmHeightBoxForPropagation(container, height_type,
+            &child_scroll_overflow);
+        child_box->AdjustRubyEmHeightBoxForPropagation(container,
                                                        &child_scroll_overflow);
         if (UNLIKELY(has_hanging)) {
-          AdjustScrollableOverflowForHanging(line.RectInContainerFragment(),
-                                             container_writing_mode,
-                                             &child_scroll_overflow);
+          AdjustRubyEmHeightBoxForHanging(line.RectInContainerFragment(),
+                                          container_writing_mode,
+                                          &child_scroll_overflow);
         }
       } else {
-        child_scroll_overflow = child_box->ComputeRubyEmHeightBoxForPropagation(
-            container, height_type);
+        child_scroll_overflow =
+            child_box->ComputeRubyEmHeightBoxForPropagation(container);
         child_scroll_overflow.offset += item->OffsetInContainerFragment();
       }
       overflow->Unite(child_scroll_overflow);
@@ -942,7 +932,7 @@ void NGPhysicalFragment::AddScrollableOverflowForInlineChild(
 // Chop the hanging part from scrollable overflow. Children overflow in inline
 // direction should hang, which should not cause scroll.
 // TODO(kojii): Should move to text fragment to make this more accurate.
-void NGPhysicalFragment::AdjustScrollableOverflowForHanging(
+void NGPhysicalFragment::AdjustRubyEmHeightBoxForHanging(
     const PhysicalRect& rect,
     const WritingMode container_writing_mode,
     PhysicalRect* overflow) {

@@ -3302,7 +3302,7 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
   const NGPhysicalBoxFragment& ruby_text_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   const LogicalRect ruby_text_box = ruby_text_fragment.ConvertChildToLogical(
-      ruby_text_fragment.ComputeRubyEmHeightBox(NGPhysicalFragment::kEmHeight));
+      ruby_text_fragment.ComputeRubyEmHeightBox());
 
   // Find the ruby-base fragment.
   const NGPhysicalBoxFragment* ruby_base_fragment = nullptr;
@@ -3328,8 +3328,7 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
       first_line_top = ruby_base_block_offset +
                        ruby_base_fragment
                            ->ConvertChildToLogical(
-                               ruby_base_fragment->ComputeRubyEmHeightBox(
-                                   NGPhysicalFragment::kEmHeight))
+                               ruby_base_fragment->ComputeRubyEmHeightBox())
                            .offset.block_offset;
     }
     ruby_text_box_top = first_line_top - last_line_ruby_text_bottom;
@@ -3351,8 +3350,7 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
       last_line_bottom = ruby_base_block_offset +
                          ruby_base_fragment
                              ->ConvertChildToLogical(
-                                 ruby_base_fragment->ComputeRubyEmHeightBox(
-                                     NGPhysicalFragment::kEmHeight))
+                                 ruby_base_fragment->ComputeRubyEmHeightBox())
                              .BlockEndOffset();
       base_logical_bottom = ruby_base_block_offset + base_block_size;
     }

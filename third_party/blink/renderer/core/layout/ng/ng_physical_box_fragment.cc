@@ -783,21 +783,17 @@ bool NGPhysicalBoxFragment::MayIntersect(
   return true;
 }
 
-PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBox(
-    TextHeightType height_type) const {
+PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBox() const {
   DCHECK(GetLayoutObject());
-  // TODO(kojii): Scrollable overflow is computed after layout, and that the
-  // tree needs to be consistent, except for Ruby where it is computed during
-  // layout. It might be that |ComputeAnnotationOverflow| should move to layout
-  // overflow recalc, but it is to be thought out.
-  DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
+  // TODO(kojii): It might be that |ComputeAnnotationOverflow| should move to
+  // scrollable overflow recalc, but it is to be thought out.
   if (UNLIKELY(IsLayoutObjectDestroyedOrMoved())) {
     NOTREACHED();
     return PhysicalRect();
   }
   const LayoutObject* layout_object = GetLayoutObject();
-  if (height_type == TextHeightType::kEmHeight && IsRubyBox()) {
-    return ComputeRubyEmHeightBoxFromChildren(height_type);
+  if (IsRubyBox()) {
+    return ComputeRubyEmHeightBoxFromChildren();
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
     if (HasNonVisibleOverflow())
@@ -807,12 +803,12 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBox(
   } else if (layout_object->IsLayoutInline()) {
     // Inline overflow is a union of child overflows.
     PhysicalRect overflow;
-    if (height_type == TextHeightType::kNormalHeight || BoxType() != kInlineBox)
+    if (BoxType() != kInlineBox) {
       overflow = PhysicalRect({}, Size());
+    }
     for (const auto& child_fragment : PostLayoutChildren()) {
       PhysicalRect child_overflow =
-          child_fragment->ComputeRubyEmHeightBoxForPropagation(*this,
-                                                               height_type);
+          child_fragment->ComputeRubyEmHeightBoxForPropagation(*this);
       child_overflow.offset += child_fragment.Offset();
       overflow.Unite(child_overflow);
     }
@@ -823,10 +819,8 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBox(
   return PhysicalRect({}, Size());
 }
 
-PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
-    TextHeightType height_type) const {
-  // TODO(kojii): See |ScrollableOverflow|.
-  DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
+PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren() const {
+  // TODO(kojii): See |ComputeRubyEmHeightBox|.
   const FragmentItems* items = Items();
   if (Children().empty() && !items)
     return PhysicalRect();
@@ -839,14 +833,12 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
     STACK_ALLOCATED();
 
    public:
-    ComputeOverflowContext(const NGPhysicalBoxFragment& container,
-                           TextHeightType height_type)
+    explicit ComputeOverflowContext(const NGPhysicalBoxFragment& container)
         : container(container),
           style(container.Style()),
           writing_direction(style.GetWritingDirection()),
           border_inline_start(LayoutUnit(style.BorderInlineStartWidth())),
-          border_block_start(LayoutUnit(style.BorderBlockStartWidth())),
-          height_type(height_type) {
+          border_block_start(LayoutUnit(style.BorderBlockStartWidth())) {
       DCHECK_EQ(&style, container.GetLayoutObject()->Style(
                             container.UsesFirstLineStyle()));
 
@@ -863,21 +855,9 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
       }
     }
 
-    // Rectangles not reachable by scroll should not be added to overflow.
-    bool IsRectReachableByScroll(const PhysicalRect& rect) {
-      LogicalOffset rect_logical_end =
-          rect.offset.ConvertToLogical(writing_direction, container.Size(),
-                                       rect.size) +
-          rect.size.ConvertToLogical(writing_direction.GetWritingMode());
-      return rect_logical_end.inline_offset > border_inline_start ||
-             rect_logical_end.block_offset > border_block_start;
-    }
-
     void AddChild(const PhysicalRect& child_scrollable_overflow) {
       // Do not add overflow if fragment is not reachable by scrolling.
-      if (height_type == kEmHeight ||
-          IsRectReachableByScroll(child_scrollable_overflow))
-        children_overflow.Unite(child_scrollable_overflow);
+      children_overflow.Unite(child_scrollable_overflow);
     }
 
     void AddFloatingOrOutOfFlowPositionedChild(
@@ -885,7 +865,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
         const PhysicalOffset& child_offset) {
       DCHECK(child.IsFloatingOrOutOfFlowPositioned());
       PhysicalRect child_scrollable_overflow =
-          child.ComputeRubyEmHeightBoxForPropagation(container, height_type);
+          child.ComputeRubyEmHeightBoxForPropagation(container);
       child_scrollable_overflow.offset += child_offset;
       AddChild(child_scrollable_overflow);
     }
@@ -895,7 +875,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
       if (padding_strut)
         AddLineBoxRect({child_offset, child.Size()});
       PhysicalRect child_scrollable_overflow =
-          child.ComputeRubyEmHeightBox(container, style, height_type);
+          child.ComputeRubyEmHeightBox(container, style);
       child_scrollable_overflow.offset += child_offset;
       AddChild(child_scrollable_overflow);
     }
@@ -910,7 +890,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
       DCHECK(line_box);
       PhysicalRect child_scrollable_overflow =
           line_box->ComputeRubyEmHeightBoxForLine(container, style, child,
-                                                  cursor, height_type);
+                                                  cursor);
       AddChild(child_scrollable_overflow);
     }
 
@@ -938,8 +918,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
     absl::optional<PhysicalBoxStrut> padding_strut;
     absl::optional<PhysicalRect> lineboxes_enclosing_rect;
     PhysicalRect children_overflow;
-    TextHeightType height_type;
-  } context(*this, height_type);
+  } context(*this);
 
   // Traverse child items.
   if (items) {
@@ -975,8 +954,8 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren(
     } else if (add_inline_children && child->IsLineBox()) {
       context.AddLineBoxChild(To<PhysicalLineBoxFragment>(*child),
                               child.Offset());
-    } else if (height_type == TextHeightType::kEmHeight && IsRubyColumn()) {
-      PhysicalRect r = child->ComputeRubyEmHeightBox(*this, height_type);
+    } else if (IsRubyColumn()) {
+      PhysicalRect r = child->ComputeRubyEmHeightBox(*this);
       r.offset += child.offset;
       context.AddChild(r);
     }
