@@ -533,16 +533,20 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     return gpu::ContextResult::kFatalFailure;
 
   if (worker_context_provider_wrapper_ &&
-      IsWorkerContextLost(worker_context_provider_wrapper_->GetContext().get()))
+      IsWorkerContextLost(
+          worker_context_provider_wrapper_->GetContext().get())) {
     worker_context_provider_wrapper_.reset();
-
-  bool enable_gpu_rasterization =
-      features::IsUiGpuRasterizationEnabled() &&
-      gpu_feature_info
-              .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled;
+  }
 
   if (!worker_context_provider_wrapper_) {
+    // If the worker context supports GPU rasterization then UI tiles will be
+    // rasterized on the GPU.
+    bool enable_gpu_rasterization =
+        features::IsUiGpuRasterizationEnabled() &&
+        gpu_feature_info
+                .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
+            gpu::kGpuFeatureStatusEnabled;
+
     auto worker_context_provider = CreateContextProvider(
         gpu_channel_host, /*supports_locking=*/true,
         /*supports_gles2_interface=*/false, enable_gpu_rasterization,

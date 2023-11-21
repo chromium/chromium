@@ -918,7 +918,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   // Number of commands remaining to be processed in DoCommands().
   int commands_to_process_ = 0;
 
-  bool gpu_raster_enabled_ = false;
   bool use_gpu_raster_ = false;
   bool use_passthrough_ = false;
 
@@ -1075,10 +1074,6 @@ RasterDecoderImpl::RasterDecoderImpl(
       disable_legacy_mailbox_(
           shared_image_manager &&
           shared_image_manager->display_context_on_another_thread()),
-      gpu_raster_enabled_(
-          gpu_feature_info
-              .status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
-          kGpuFeatureStatusEnabled),
       use_passthrough_(gles2::PassthroughCommandDecoderSupported() &&
                        gpu_preferences.use_passthrough_cmd_decoder),
       gpu_preferences_(gpu_preferences),
@@ -1150,12 +1145,6 @@ ContextResult RasterDecoderImpl::Initialize(
   query_manager_ = std::make_unique<RasterQueryManager>(shared_context_state_);
 
   if (attrib_helper.enable_oop_rasterization) {
-    if (!gpu_raster_enabled_) {
-      LOG(ERROR) << "ContextResult::kFatalFailure: GPU raster is disabled";
-      Destroy(true);
-      return ContextResult::kFatalFailure;
-    }
-
     DCHECK(gr_context() || graphite_context());
     use_gpu_raster_ = true;
     paint_cache_ = std::make_unique<cc::ServicePaintCache>();

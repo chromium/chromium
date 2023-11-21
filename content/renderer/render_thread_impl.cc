@@ -1659,6 +1659,9 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
   }
 
   bool support_locking = true;
+
+  // If the compositor worker context supports GPU rasterization then renderer
+  // tiles will be rasterized on the GPU.
   bool support_gpu_rasterization =
       gpu_channel_host->gpu_feature_info()
           .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
