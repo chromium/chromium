@@ -2,65 +2,106 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>$1</title>
-    <style type="text/css">
+    <style>
       body {
+        /* Light mode is the default, media queries handle dark mode switching. */
+        --gray-900: #202124;
+        --gray-500: #9AA0A6;
+        --gray-light: #F7F7F7;
+        --text-color-light: var(--gray-900);
+        --text-color-dark: var(--gray-500);
+        --text-color: var(--text-color-light);
+        --background-color-light: var(--gray-light);
+        --background-color-dark: var(--gray-900);
+        --background-color: var(--background-color-light);
+        --icon-color-light: black;
+        --icon-color-dark: white;
+        --icon-color: var(--icon-color-light);
+        --icon-size-large: 48px;
+        --icon-size-small: 24px;
+        --icon-size: var(--icon-size-large);
+
         margin: 0;
         padding: 0;
+        background-color: var(--background-color);
+      }
+
+      #wrapper {
+        width: 100vw;
+        height: 100vh;
+        padding: 16px;
+        box-sizing: border-box;
+        display: grid;
+        place-items: center;
+      }
+
+      #content {
         display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #icon {
+        width: var(--icon-size);
+        height: var(--icon-size);
+        fill: var(--icon-color);
+        opacity: 0.54;
+      }
+
+      #message {
+        font: 14px/21px Roboto, Arial, sans-serif;
         text-align: center;
-        font: 22px/28px 'Google Sans';
-        background: #FFF;
-        color: #1F1F1F;
+        color: var(--text-color);
       }
-      .container {
-        margin: auto;
-        padding: 24px;
-      }
-      svg {
-        width: 48px;
-        height: 63px;
-        fill: #303030;
-      }
-      .message   {
-        margin-top: 24px;
-      }
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: #333;
-          color: #F2F2F2;
-        }
-        svg {
-          fill: #F2F2F2;
-        }
-      }
-      @media (max-height: 200px) {
-        .container {
-          padding: 0;
-        }
-        svg {
-          width: 32px;
-          height: 42px;
-        }
-        .message {
+
+      /* Media queries for resizing */
+      /* Note: while same as for Safe Browsing Quiet Interstitial */
+      /* ems are converted to px so that the same unit measure */
+      /* is used for everything */
+      /* Default size has large icon and visible text set up */
+
+      /* Smallest size, no icon, no text */
+      @media (max-width: 30px),
+            (max-height: 30px) {
+        #icon {
           display: none;
         }
       }
-      @media (max-height: 100px) {
-        svg {
-          width: 24px;
-          height: 32px;
+
+      /* Medium size, small icon, no text */
+      @media (max-width: 280px) and (max-height: 168px),
+            (max-width: 168px) and (max-height: 280px),
+            (max-width: 75px),
+            (max-height: 75px) {
+        body {
+          --icon-size: var(--icon-size-small);
+        }
+        #message {
+          display: none;
+        }
+        #wrapper {
+          padding: 0;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          --text-color: var(--text-color-dark);
+          --background-color: var(--background-color-dark);
+          --icon-color: var(--icon-color-dark);
         }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div>
-        <svg viewBox="0 0 48 63" fill="none">
-          <path d="M4.5 63C3.2625 63 2.20312 62.5594 1.32188 61.6781C0.440625 60.7969 0 59.7375 0 58.5V25.95C0 24.7125 0.440625 23.6531 1.32188 22.7719C2.20312 21.8906 3.2625 21.45 4.5 21.45H9.75V14.25C9.75 10.3075 11.1401 6.94688 13.9204 4.16813C16.7008 1.38938 20.0632 0 24.0079 0C27.9527 0 31.3125 1.38938 34.0875 4.16813C36.8625 6.94688 38.25 10.3075 38.25 14.25V21.45H43.5C44.7375 21.45 45.7969 21.8906 46.6781 22.7719C47.5594 23.6531 48 24.7125 48 25.95V58.5C48 59.7375 47.5594 60.7969 46.6781 61.6781C45.7969 62.5594 44.7375 63 43.5 63H4.5ZM24.0126 48C25.6042 48 26.9625 47.4492 28.0875 46.3477C29.2125 45.2461 29.775 43.9219 29.775 42.375C29.775 40.875 29.2083 39.5125 28.0749 38.2875C26.9415 37.0625 25.579 36.45 23.9874 36.45C22.3958 36.45 21.0375 37.0625 19.9125 38.2875C18.7875 39.5125 18.225 40.8875 18.225 42.4125C18.225 43.9375 18.7917 45.25 19.9251 46.35C21.0585 47.45 22.421 48 24.0126 48ZM14.25 21.45H33.75V14.25C33.75 11.5417 32.803 9.23957 30.9088 7.34377C29.0147 5.44792 26.7147 4.5 24.0089 4.5C21.303 4.5 19 5.44792 17.1 7.34377C15.2 9.23957 14.25 11.5417 14.25 14.25V21.45Z">
+    <div id="wrapper">
+      <div id="content">
+        <svg id="icon" viewBox="0 0 40 40">
+          <path d="M20 40C17.2333 40 14.6333 39.4833 12.2 38.45C9.76667 37.3833 7.65 35.95 5.85 34.15C4.05 32.35 2.61667 30.2333 1.55 27.8C0.516667 25.3667 1.19209e-07 22.7667 1.19209e-07 20C1.19209e-07 17.2333 0.516667 14.6333 1.55 12.2C2.61667 9.76666 4.05 7.65 5.85 5.85C7.65 4.05 9.76667 2.63333 12.2 1.6C14.6333 0.533332 17.2333 -9.53674e-07 20 -9.53674e-07C22.7667 -9.53674e-07 25.3667 0.533332 27.8 1.6C30.2333 2.63333 32.35 4.05 34.15 5.85C35.95 7.65 37.3667 9.76666 38.4 12.2C39.4667 14.6333 40 17.2333 40 20C40 22.7667 39.4667 25.3667 38.4 27.8C37.3667 30.2333 35.95 32.35 34.15 34.15C32.35 35.95 30.2333 37.3833 27.8 38.45C25.3667 39.4833 22.7667 40 20 40ZM20 37C22.0333 37 23.9833 36.6667 25.85 36C27.75 35.3 29.45 34.3 30.95 33L7 9.05C5.73333 10.5833 4.75 12.2833 4.05 14.15C3.35 16.0167 3 17.9667 3 20C3 24.7333 4.65 28.75 7.95 32.05C11.25 35.35 15.2667 37 20 37ZM32.95 30.95C34.1833 29.45 35.1667 27.7667 35.9 25.9C36.6333 24 37 22.0333 37 20C37 15.2667 35.35 11.25 32.05 7.95C28.75 4.65 24.7333 3 20 3C17.9667 3 16.0167 3.35 14.15 4.05C12.2833 4.75 10.5833 5.75 9.05 7.05L32.95 30.95Z" fill-opacity="0.2">
         </svg>
+        <div id="message">$1</div>
       </div>
-      <div class="message">$1</div>
     </div>
   </body>
 </html>
