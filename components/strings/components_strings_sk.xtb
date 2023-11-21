@@ -75,6 +75,7 @@
 <translation id="1142713751288681188">Typ papiera</translation>
 <translation id="1142846828089312304">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="1147769322402934017">Online galérie obrázkov</translation>
+<translation id="1149617035358809955">overiť vašu totožnosť, aby mohol vypĺňať vaše platobné údaje</translation>
 <translation id="1150565364351027703">Slnečné okuliare</translation>
 <translation id="1150979032973867961">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, operačný systém vášho počítača nedôveruje jej bezpečnostnému certifikátu. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="1151972924205500581">Vyžaduje sa heslo</translation>
@@ -93,6 +94,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1175364870820465910">&amp;Tlačiť...</translation>
 <translation id="1175393348063009671">Fotka (matná)</translation>
 <translation id="1175875016430184367">Tri spinky vpravo</translation>
+<translation id="1177548198167638471">Nabudúce sa nepýtať</translation>
 <translation id="1177802847690410663">Webové prehliadače</translation>
 <translation id="1177863135347784049">Vlastné</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
@@ -355,6 +357,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1645368109819982629">Nepodporovaný protokol</translation>
 <translation id="1650602712345345441">Spravovať nastavenia Chromu</translation>
 <translation id="1652415888492971589">JIS B8</translation>
+<translation id="1652862280638399816">Ak chcete používať Správcu hesiel s Kľúčenkou systému macOS, znova spustite Chromium a povoľte prístup ku Kľúčenke. Po opätovnom spustení sa karty znova otvoria.</translation>
 <translation id="1656024727720460136">Chrome zjednodušil túto stránku, aby sa dala ľahšie prečítať. Chrome načítal pôvodnú stránku cez zabezpečené pripojenie.</translation>
 <translation id="1656489000284462475">Vyzdvihnutie</translation>
 <translation id="1658111267661135323">Televízia a video</translation>
@@ -988,6 +991,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2991174974383378012">Zdieľanie s webmi</translation>
 <translation id="299122504639061328">Spravujte svoj predvolený vyhľadávač a vyhľadávanie na webe</translation>
 <translation id="2991571918955627853">Web <ph name="SITE" /> momentálne nemôžete navštíviť, pretože používa certifikát HSTS. Chyby siete a útoky sú zvyčajne dočasné, takže by táto stránka mala neskôr pravdepodobne fungovať.</translation>
+<translation id="2991865971341174470">Overte svoju totožnosť, aby Google Chrome mohol dopĺňať vaše platobné údaje.</translation>
 <translation id="2995517112308048736">Veľkosť súboru:</translation>
 <translation id="299990983510665749">Autá typu hatchback</translation>
 <translation id="3002501248619246229">Skontrolujte médiá vstupnej priehradky</translation>
@@ -1359,6 +1363,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3723663469265383848">Počas aktualizácie nebudete môcť zariadenie desať minút používať.</translation>
 <translation id="372429172604983730">Medzi aplikácie, ktoré môžu túto chybu spôsobiť, patria okrem iných antivírusové programy, brány firewall, softvér na filtrovanie webu alebo proxy softvér.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter vytvoríte rýchlym spôsobom novú prezentáciu Google v Prezentáciách</translation>
+<translation id="3727850735097852673">Ak chcete používať Správcu hesiel Google s Kľúčenkou systému macOS, znova spustite Chrome a povoľte prístup ku Kľúčenke. Po opätovnom spustení sa karty znova otvoria.</translation>
 <translation id="3733139489341305600">Autonómne vozidlá</translation>
 <translation id="3736520371357197498">Ak si uvedomujete bezpečnostné riziko, môžete <ph name="BEGIN_LINK" />tieto nebezpečné stránky navštíviť<ph name="END_LINK" /> ešte skôr, ako budú nebezpečné programy odstránené.</translation>
 <translation id="3736739313435669994">Webom ste zablokovali možnosť sledovať vás pri prehliadaní pomocou súborov cookie tretích strán. Prejdite do nastavení a <ph name="LINK" />.</translation>
@@ -1401,6 +1406,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3807270098669886186">Poskytovatelia telekomunikačných služieb</translation>
 <translation id="3807366285948165054">Posun obrázka na osi X</translation>
 <translation id="3807873520724684969">Škodlivý obsah bol zablokovaný.</translation>
+<translation id="3810770279996899697">Správca hesiel potrebuje prístup ku Kľúčenke systému MacOS</translation>
 <translation id="3810973564298564668">Spravovať</translation>
 <translation id="3812398568375898177">Ide o kľúčovú aktualizáciu, ktorá zlepší výkon aplikácií pre Android v systéme ChromeOS.</translation>
 <translation id="3815434930383843058">8 × 12 palcov</translation>
@@ -2636,6 +2642,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6349101878882523185">Inštalovať aplikáciu <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Žiadne}=1{Jedno heslo (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}=2{Dve heslá (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}few{# heslá (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}many{# passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# hesiel (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizovaných)}}</translation>
 <translation id="6355392890578844978">Tento prehliadač nespravuje firma ani iná organizácia. Aktivita v tomto zariadení môže byť spravovaná mimo prehliadača Chromium. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="6358088212770985041">upraviť spôsoby platby</translation>
 <translation id="6358450015545214790">Čo znamenajú tieto položky?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Zobraziť denníky</translation>
@@ -2844,6 +2851,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6767985426384634228">Chcete adresu aktualizovať?</translation>
 <translation id="6770747695101757579">Papier (bavlna)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6779348349813025131">Správca hesiel Google potrebuje prístup ku Kľúčenke systému MacOS</translation>
 <translation id="6784045420901191374">Komerčné pôžičky</translation>
 <translation id="6785990323398321538">Vyhľadávač môžete kedykoľvek zmeniť v nastaveniach Chromu.</translation>
 <translation id="6786145470008421571">Obálka 152,4 mm × 228,6 mm</translation>
@@ -2984,6 +2992,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7023162328967545559">Upozornenie správcu</translation>
 <translation id="7024932305105294144">Chrome má integrované bezpečnostné funkcie na vašu ochranu pri prehliadaní – napríklad Bezpečné prehliadanie Google, ktoré <ph name="BEGIN_LINK" />nedávno našlo phishing<ph name="END_LINK" /> na webe, ktorý sa pokúšate navštíviť. Phishingové weby sa vydávajú za iné weby, aby vás oklamali.<ph name="NEW_LINE" />Útočníci môžu niekedy napadnúť aj weby, ktoré sú zvyčajne bezpečné. Ak si myslíte, že ide o omyl a tento web nie je nebezpečný, <ph name="BEGIN_ERROR_LINK" />oznámte nám to<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">Heslá</translation>
+<translation id="7030164307377592766">upraviť nastavenia vypĺňania spôsobov platby</translation>
 <translation id="7030436163253143341">Certifikát je neplatný</translation>
 <translation id="7031646650991750659">Ktoré aplikácie Google Play máte nainštalované.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter spravujte nastavenia ochrany súkromia svojho účtu Google</translation>
@@ -3794,6 +3803,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8555010941760982128">Tento kód použite pri platbe</translation>
 <translation id="8556297087315686325">Monitorovanie a správa sietí</translation>
 <translation id="8557066899867184262">Kód CVC nájdete na zadnej strane karty.</translation>
+<translation id="8557412555245662180">Ďalšie informácie o Ochrane pred sledovaním</translation>
 <translation id="8558347880669160417">Kamera a mikrofón sú momentálne povolené</translation>
 <translation id="8559762987265718583">Súkromné pripojenie k doméne <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sa nedá nadviazať, pretože dátum a čas (<ph name="DATE_AND_TIME" />) vášho zariadenia sú nesprávne.</translation>
 <translation id="8564182942834072828">Samostatné dokumenty alebo nezoradené kópie</translation>

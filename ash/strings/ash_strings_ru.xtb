@@ -1683,6 +1683,13 @@
 <translation id="7893503627044934815">Скрыть файл</translation>
 <translation id="7895348134893321514">Быстрый доступ</translation>
 <translation id="7897375687985782769">Вы нажали сочетание клавиш для поворота экрана. Выполнить это действие?</translation>
+<translation id="7897626842031123113">Строка состояния. Время: <ph name="TIME" />.
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />.
+        <ph name="NETWORK" />
+        <ph name="MANAGED" />.
+        <ph name="IME" />.
+        <ph name="LOCALE" />.</translation>
 <translation id="7901190436359881020">Поменять окна местами</translation>
 <translation id="7901405293566323524">Управление телефоном</translation>
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>

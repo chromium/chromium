@@ -1843,6 +1843,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2402226831639195063">Tonen</translation>
 <translation id="2405887402346713222">Serienummers apparaat en component</translation>
 <translation id="2406153734066939945">Dit profiel en de bijbehorende gegevens verwijderen?</translation>
+<translation id="2407671304279211586">DNS-provider selecteren</translation>
 <translation id="2408018932941436077">Kaart opslaan</translation>
 <translation id="2408955596600435184">Je pincode invoeren</translation>
 <translation id="2409268599591722235">Aan de slag</translation>
@@ -2674,6 +2675,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3021065318976393105">Op batterij</translation>
 <translation id="3021066826692793094">Vlinder</translation>
 <translation id="3021678814754966447">&amp;Framebron bekijken</translation>
+<translation id="3021902017511220299">Scannen mislukt. Je beheerder heeft deze actie geblokkeerd.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> wordt verwijderd van deze Chromebook en niet opgeslagen in <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Dat heb ik niet verstaan.</translation>
 <translation id="3023464535986383522">Selecteer om voor te lezen</translation>
@@ -9034,6 +9036,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="811994229154425014">Twee keer spatie om punt te typen</translation>
 <translation id="8120505434908124087">E-simkaartprofiel installeren</translation>
 <translation id="8121750884985440809">Je cast nu je scherm</translation>
+<translation id="8122898034710982882">Telefoonhub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Geel-witte bloem</translation>
 <translation id="8123975449645947908">Terugscrollen</translation>
 <translation id="8124313775439841391">Beheerde ONC</translation>
@@ -9069,6 +9072,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8148760431881541277">Inloggen beperken</translation>
 <translation id="8149564499626272569">Bevestigen via je telefoon met een USB-kabel</translation>
 <translation id="8149870652370242480">Als je de opgeslagen wachtwoorden op je telefoon wilt gebruiken, download je Chrome voor iOS en log je in op je Google-account.</translation>
+<translation id="8151057139207656239">Buildgegevens gekopieerd</translation>
 <translation id="815114315010033526">In plaats daarvan QR-code gebruiken</translation>
 <translation id="8151638057146502721">Configureren</translation>
 <translation id="8154790740888707867">Geen bestand</translation>
@@ -9312,7 +9316,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> bekijken die onlangs veel meldingen heeft gestuurd}other{<ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> bekijken die onlangs veel meldingen hebben gestuurd}}</translation>
 <translation id="8342221978608739536">Niet geprobeerd</translation>
 <translation id="8342861492835240085">Een verzameling selecteren</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) wil de volgende app installeren op dit apparaat:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) wil de volgende apps installeren op dit apparaat:}}</translation>
 <translation id="8345848587667658367">Je kunt nu de recente foto's, media, meldingen en apps van je telefoon bekijken</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="834785183489258869">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>

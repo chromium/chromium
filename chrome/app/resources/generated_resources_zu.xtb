@@ -1859,6 +1859,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2402226831639195063">Amathoni</translation>
 <translation id="2405887402346713222">Izinombolo Zomkhiqizo Zedivayisi Nengxenye</translation>
 <translation id="2406153734066939945">Susa le phrofayela nedatha yayo?</translation>
+<translation id="2407671304279211586">Khetha Umhlinzeki we-DNS</translation>
 <translation id="2408018932941436077">Ilondoloza ikhadi</translation>
 <translation id="2408955596600435184">Faka iphinikhodi yakho</translation>
 <translation id="2409268599591722235">Masihambe</translation>
@@ -9340,7 +9341,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Buyekeza <ph name="BEGIN_BOLD" />isayithi eli-1<ph name="END_BOLD" /> elisanda kuthumela izaziso eziningi}one{Buyekeza <ph name="BEGIN_BOLD" />amasayithi angu-{NUM_SITES}<ph name="END_BOLD" /> asanda kuthumela izaziso eziningi}other{Buyekeza <ph name="BEGIN_BOLD" />amasayithi angu-{NUM_SITES}<ph name="END_BOLD" /> asanda kuthumela izaziso eziningi}}</translation>
 <translation id="8342221978608739536">Ayizamanga</translation>
 <translation id="8342861492835240085">Khetha iqoqo</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{I-"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) ingathanda ukufaka i-app elandelayo kule divayisi:}one{I-"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) ingathanda ukufaka ama-app alandelayo kule divayisi:}other{I-"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) ingathanda ukufaka ama-app alandelayo kule divayisi:}}</translation>
 <translation id="8345848587667658367">Manje usungabuka izithombe zefoni yakho zakamuva, imidiya, izaziso, nama-app</translation>
 <translation id="8347227221149377169">Imisebenzi yokuphrinta</translation>
 <translation id="834785183489258869">Lapho uku-incognito, amasayithi awakwazi ukusebenzisa amakhukhi akho ukubona umsebenzi wakho wokuphequlula kumasayithi ahlukahlukene, ngokwesibonelo, ukwenza izikhangiso ngokwezifiso. Izakhi ezikwamanye amasayithi zingase zingasebenzi.</translation>

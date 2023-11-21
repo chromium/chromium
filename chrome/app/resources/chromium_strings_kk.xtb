@@ -277,6 +277,7 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> қауіпті болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="6132897690380286411">Chromium жақын арада жабылып, деректерді жояды</translation>
 <translation id="6134968993075716475">"Қауіпсіз шолу" функциясы өшірулі. Chromium браузері оны қосуды ұсынады.</translation>
+<translation id="6144416395842701622">Chromium-ді толық қолдану үшін аккаунтқа кіріңіз.</translation>
 <translation id="6145820983052037069">Осы жерде Chromium профильдерін ауыстыра аласыз.</translation>
 <translation id="615103374448673771">Егер cookie файлдарына рұқсат берсеңіз, Chromium оларды алдын ала жүктеу кезінде пайдалануы мүмкін.</translation>
 <translation id="6175304430031192654">Сонымен қатар параметрлеріңізге байланысты Chromium cookie файлдары мен қазіргі URL мекенжайыңызды жіберуі мүмкін</translation>
@@ -434,6 +435,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8648201657708811153">Google Chrome for Testing браузерін әдепкі браузер қылу мүмкін емес.</translation>
 <translation id="8697124171261953979">Сонымен қатар ол Chromium іске қосқаныңызда немесе Omnibox ішінен іздегеніңізде қайсы бет көрсетілетінін бақылайды.</translation>
 <translation id="8704119203788522458">Сізге арналған Chromium.</translation>
+<translation id="8719993436687031146">Chromium-ге кіру қажет пе?</translation>
 <translation id="878572486461146056">Орнату қатесі: желі әкімшісі орнатуға рұқсат бермейтін топтық саясатты қолданды: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium браузеріне бұл сайтта камераны және микрофонды пайдалану үшін рұқсат керек</translation>
 <translation id="8826492472752484139">"Password Manager" түймесін басыңыз.</translation>

@@ -9323,7 +9323,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que ha enviado muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que han enviado muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo he intentado</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) quiere instalar la siguiente aplicación en este dispositivo:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) quiere instalar las siguientes aplicaciones en este dispositivo:}}</translation>
 <translation id="8345848587667658367">Ahora puedes consultar las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="834785183489258869">Mientras estás en modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar tus anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>

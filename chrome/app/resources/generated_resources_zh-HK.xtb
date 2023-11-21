@@ -2690,7 +2690,7 @@
 <translation id="3021065318976393105">使用電池時</translation>
 <translation id="3021066826692793094">蝴蝶</translation>
 <translation id="3021678814754966447">檢視頁框原始碼(&amp;V)</translation>
-<translation id="3021902017511220299">掃描失敗。系統管理員已禁止這項操作。</translation>
+<translation id="3021902017511220299">掃瞄失敗。管理員已封鎖此操作。</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> 將會從此 Chromebook 移除，且不會儲存至 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">無法辨識語音。</translation>
 <translation id="3023464535986383522">揀選朗讀內容</translation>
@@ -9055,7 +9055,7 @@
 <translation id="811994229154425014">按空白鍵兩下插入句號</translation>
 <translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
 <translation id="8121750884985440809">您目前正在投放螢幕畫面</translation>
-<translation id="8122898034710982882">Phone Hub、<ph name="FEATURE_NAME" /></translation>
+<translation id="8122898034710982882">Phone Hub，<ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">黃色和白色的花</translation>
 <translation id="8123975449645947908">向後捲動</translation>
 <translation id="8124313775439841391">管理 ONC</translation>
@@ -9091,7 +9091,7 @@
 <translation id="8148760431881541277">限制登入</translation>
 <translation id="8149564499626272569">透過連接 USB 連接線的手機進行驗證</translation>
 <translation id="8149870652370242480">如要在手機上使用儲存的密碼，請下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
-<translation id="8151057139207656239">已複製版本詳細資料</translation>
+<translation id="8151057139207656239">複製咗版本詳情</translation>
 <translation id="815114315010033526">改用 QR 碼</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
@@ -9335,7 +9335,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{審核最近曾傳送大量通知的 <ph name="BEGIN_BOLD" />1 個網站<ph name="END_BOLD" />}other{審核最近曾傳送大量通知的 <ph name="BEGIN_BOLD" />{NUM_SITES} 個網站<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342861492835240085">選取相片集</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」(<ph name="DOMAIN" />) 要求在此裝置上安裝以下應用程式：}other{「<ph name="APP_NAME" />」(<ph name="DOMAIN" />) 要求在此裝置上安裝以下多個應用程式：}}</translation>
 <translation id="8345848587667658367">您現可查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="834785183489258869">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>

@@ -733,6 +733,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4856841893565072365">Chytře seřadit lištu s nabídkou</translation>
 <translation id="4860895144060829044">Volat</translation>
 <translation id="4881695831933465202">Otevřít</translation>
+<translation id="4883824756452868502">Detekovat jednotky</translation>
 <translation id="488785315393301722">Zobrazit podrobnosti</translation>
 <translation id="4894963374040315706">Toto umožňuje vyhledávat hlasem</translation>
 <translation id="489903206070130262">Vaše naposledy otevřená karta</translation>
@@ -854,8 +855,10 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5551897871312988470">Nabízet překlad</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="555749644339804659">Kontrola hesel…</translation>
+<translation id="5559567453458728487">Převádět měrné jednotky nalezené na webech</translation>
 <translation id="556042886152191864">Tlačítko</translation>
 <translation id="5572684875078967866">Úložiště informací</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Sledovat tuto zásilku}few{Sledovat všechny zásilky}many{Sledovat všechny zásilky}other{Sledovat všechny zásilky}}</translation>
 <translation id="5597915316964418992">Otevřít mřížku karet</translation>
 <translation id="560322036295180549">Vypnuto vaší organizací</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
@@ -1118,6 +1121,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6781260999953472352">Zapnout synchronizaci?</translation>
 <translation id="6781405765516175232">Pokud chcete zobrazit možné trasy, klepněte na Vyhledat trasu.</translation>
 <translation id="6785453220513215166">Odesílání zprávy o selhání...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Přestat sledovat tuto zásilku}few{Přestat sledovat tyto zásilky}many{Přestat sledovat tyto zásilky}other{Přestat sledovat tyto zásilky}}</translation>
 <translation id="6790502149545262384">Brzy se vám po otevření nové karty začnou zobrazovat články z webu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Hlasové vyhledávání</translation>
 <translation id="6800349425672670802">Všechny otevřené karty jsou přístupné z Přepínače karet.</translation>

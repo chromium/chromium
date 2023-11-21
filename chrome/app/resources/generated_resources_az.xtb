@@ -1842,6 +1842,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2402226831639195063">Tonlar</translation>
 <translation id="2405887402346713222">Cihaz və komponentin seriya nömrələri</translation>
 <translation id="2406153734066939945">Bu profil və datası silinsin?</translation>
+<translation id="2407671304279211586">DNS provayderini seçin</translation>
 <translation id="2408018932941436077">Kart yadda saxlanılır</translation>
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
 <translation id="2409268599591722235">Gedək</translation>
@@ -9315,7 +9316,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Bu yaxınlarda çox sayda bildiriş göndərən <ph name="BEGIN_BOLD" />1 saytı<ph name="END_BOLD" /> nəzərdən keçirin}other{Bu yaxınlarda çox sayda bildiriş göndərən <ph name="BEGIN_BOLD" />{NUM_SITES} saytı<ph name="END_BOLD" /> nəzərdən keçirin}}</translation>
 <translation id="8342221978608739536">Sınaqdan keçirilmədi</translation>
 <translation id="8342861492835240085">Kolleksiya seçin</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) bu cihazda aşağıdakı tətbiqi quraşdırmaq istəyir:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) bu cihazda aşağıdakı tətbiqləri quraşdırmaq istəyir:}}</translation>
 <translation id="8345848587667658367">İndi telefonunuzun son fotolarına, mediasına, bildirişlərinə və tətbiqlərinə baxa bilərsiniz</translation>
 <translation id="8347227221149377169">Çap işləri</translation>
 <translation id="834785183489258869">Anonim rejimdə olduqda saytlar müxtəlif saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün). Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>

@@ -9344,7 +9344,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{יש לבדוק <ph name="BEGIN_BOLD" />אתר אחד<ph name="END_BOLD" /> ששלח הרבה התראות לאחרונה}one{יש לבדוק <ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> ששלחו הרבה התראות לאחרונה}two{יש לבדוק <ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> ששלחו הרבה התראות לאחרונה}other{יש לבדוק <ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> ששלחו הרבה התראות לאחרונה}}</translation>
 <translation id="8342221978608739536">לא ניסיתי</translation>
 <translation id="8342861492835240085">בחירת אוסף</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י (<ph name="DOMAIN" />) להתקין את האפליקציה הבאה במכשיר הזה:}one{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י (<ph name="DOMAIN" />) להתקין את האפליקציות הבאות במכשיר הזה:}two{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י (<ph name="DOMAIN" />) להתקין את האפליקציות הבאות במכשיר הזה:}other{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י (<ph name="DOMAIN" />) להתקין את האפליקציות הבאות במכשיר הזה:}}</translation>
 <translation id="8345848587667658367">עכשיו יש לך אפשרות לראות את התמונות, המדיה, ההתראות והאפליקציות האחרונות שבטלפון</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="834785183489258869">‏במצב אנונימי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים השונים, למשל לצורך הצגת מודעות בהתאמה אישית. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>

@@ -733,6 +733,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4856841893565072365">Smart çeşidləmə üzrə menyu paneli</translation>
 <translation id="4860895144060829044">Zəng</translation>
 <translation id="4881695831933465202">Açın</translation>
+<translation id="4883824756452868502">Vahidləri aşkarlayın</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
 <translation id="4894963374040315706">Səsinizi istifadə edərək axtarış etməyə icazə verir</translation>
 <translation id="489903206070130262">Son açıq tab</translation>
@@ -854,8 +855,10 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5551897871312988470">Tərcümə Təklif Edin</translation>
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="555749644339804659">Parollar yoxlanır…</translation>
+<translation id="5559567453458728487">Vebdə tapılan ölçü vahidlərini çevirin</translation>
 <translation id="556042886152191864">Düymə</translation>
 <translation id="5572684875078967866">Məlumat yaddaşı</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Bu paketi izləyin}other{Bütün paketləri izləyin}}</translation>
 <translation id="5597915316964418992">Tab Torunu açın</translation>
 <translation id="560322036295180549">Təşkilatınız tərəfindən deaktiv edilib</translation>
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
@@ -1118,6 +1121,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6781260999953472352">Sinxronizasiya aktiv edilsin?</translation>
 <translation id="6781405765516175232">Marşrut seçimləri üçün "İstiqamətləri əldə edin" üzərinə toxunun.</translation>
 <translation id="6785453220513215166">Qəza haqqında hesabat göndərilir...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Bu paketi izləməyin}other{Heç bir paketi izləməyin}}</translation>
 <translation id="6790502149545262384">Tezliklə yeni tab açdığınız zaman <ph name="CHANNEL_NAME" /> saytından hekayələri görəcəksiniz.</translation>
 <translation id="6797885426782475225">Səsli Axtarış</translation>
 <translation id="6800349425672670802">Tab Keçiricisində bütün açıq tablara daxil ola bilərsiniz.</translation>

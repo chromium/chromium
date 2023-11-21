@@ -2693,6 +2693,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3021065318976393105">Wrth ddefnyddio'r batri</translation>
 <translation id="3021066826692793094">Pili-pala</translation>
 <translation id="3021678814754966447">&amp;Gweld Ffynhonnell Ffrâm</translation>
+<translation id="3021902017511220299">Methodd y sgan. Mae'r diweddariad hwn wedi'i rwystro gan eich gweinyddwr.</translation>
 <translation id="3022361196600037287">Bydd <ph name="DEVICE" /> yn cael ei dynnu o'r Chromebook hwn ac ni fydd yn cael ei gadw i <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Heb ei ddal.</translation>
 <translation id="3023464535986383522">Dewis i siarad</translation>
@@ -9070,6 +9071,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="811994229154425014">Pwyswch Space dwywaith i deipio atalnod llawn</translation>
 <translation id="8120505434908124087">Gosod proffil eSIM</translation>
 <translation id="8121750884985440809">Rydych yn castio'ch sgrîn ar hyn o bryd</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Blodyn melyn a gwyn</translation>
 <translation id="8123975449645947908">Sgrolio'n ôl</translation>
 <translation id="8124313775439841391">ONC a Reolir</translation>
@@ -9105,6 +9107,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8148760431881541277">Cyfyngu mewngofnodi</translation>
 <translation id="8149564499626272569">Dilysu drwy'ch ffôn gyda chebl USB</translation>
 <translation id="8149870652370242480">I ddefnyddio'ch cyfrineiriau sydd wedi'u cadw ar eich ffôn, lawrlwythwch Chrome ar gyfer iOS a mewngofnodwch i'ch Cyfrif Google.</translation>
+<translation id="8151057139207656239">Wedi copïo manylion y fersiwn</translation>
 <translation id="815114315010033526">Defnyddio Cod QR yn lle hynny</translation>
 <translation id="8151638057146502721">Ffurfweddu</translation>
 <translation id="8154790740888707867">Dim ffeil</translation>
@@ -9348,7 +9351,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Adolygwch <ph name="BEGIN_BOLD" />1 wefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}zero{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}two{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} wefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}few{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}many{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}other{Adolygwch <ph name="BEGIN_BOLD" />{NUM_SITES} gwefan<ph name="END_BOLD" /> a anfonodd lawer o hysbysiadau yn ddiweddar}}</translation>
 <translation id="8342221978608739536">Heb geisio</translation>
 <translation id="8342861492835240085">Dewis casgliad</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{Hoffai "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) osod yr ap canlynol ar y ddyfais hon:}zero{Hoffai "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) osod yr apiau canlynol ar y ddyfais hon:}two{Hoffai "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) osod yr apiau canlynol ar y ddyfais hon:}few{Hoffai "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) osod yr apiau canlynol ar y ddyfais hon:}many{Hoffai "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) osod yr apiau canlynol ar y ddyfais hon:}other{Hoffai "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) osod yr apiau canlynol ar y ddyfais hon:}}</translation>
 <translation id="8345848587667658367">Gallwch bellach weld lluniau, cyfryngau, hysbysiadau ac apiau diweddar eich ffôn</translation>
 <translation id="8347227221149377169">Ffeiliau i'w hargraffu</translation>
 <translation id="834785183489258869">Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>

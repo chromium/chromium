@@ -277,6 +277,7 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> кооптуу файл болгондуктан, Chromium аны бөгөттөп койду.</translation>
 <translation id="6132897690380286411">Chromium жакында жабылып, серептөө дайындары жок кылынат</translation>
 <translation id="6134968993075716475">Коопсуз серептөө өчүк. Chromium аны күйгүзүүнү сунуштайт.</translation>
+<translation id="6144416395842701622">Chromium'дун бардык мүмкүнчүлүктөрүн пайдалуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="6145820983052037069">Chromium профилдерин бул жерден которо аласыз</translation>
 <translation id="615103374448673771">Cookie файлдарына уруксат берсеңиз, Chromium аларды алдын ала жүктөө үчүн колдонушу мүмкүн</translation>
 <translation id="6175304430031192654">Параметрлерге жараша Chromium cookie файлдарын жана учурдагы URL дарегин да жөнөтүшү мүмкүн</translation>
@@ -435,6 +436,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8648201657708811153">Google Chrome for Testing версиясын демейки серепчиңиз катары тандай албайсыз.</translation>
 <translation id="8697124171261953979">Chromium иштеп баштаганда же Omnibox'тон изделгенде, кайсы бет көрсөтүлө тургандыгын көзөмөлдөйт.</translation>
 <translation id="8704119203788522458">Бул сиздин Chromium</translation>
+<translation id="8719993436687031146">Chromium'га киресизби?</translation>
 <translation id="878572486461146056">Орнотуу катасы: Тармактын администратору орнотууга тоскоол болгон Топтук эрежелерди колдонду: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Бул сайтта иштөө үчүн Chromium камераңызды жана микрофонуңузду колдонушу керек</translation>
 <translation id="8826492472752484139">"Сырсөздөрдү башкаргыч" баскычын басыңыз</translation>

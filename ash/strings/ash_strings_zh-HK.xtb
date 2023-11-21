@@ -1681,7 +1681,7 @@
 <translation id="7893503627044934815">不想顯示此檔案</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您已按下螢幕旋轉的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
-<translation id="7897626842031123113">狀態匣，時間 <ph name="TIME" />，
+<translation id="7897626842031123113">狀態列，時間 <ph name="TIME" />，
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
         <ph name="NETWORK" />，

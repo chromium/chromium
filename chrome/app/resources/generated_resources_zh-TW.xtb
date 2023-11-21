@@ -9321,7 +9321,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 (1 個)<ph name="END_BOLD" />}other{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 ({NUM_SITES} 個)<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342861492835240085">選取集合</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」(<ph name="DOMAIN" />) 要求在這部裝置上安裝以下應用程式：}other{「<ph name="APP_NAME" />」(<ph name="DOMAIN" />) 要求在這部裝置上安裝以下多個應用程式：}}</translation>
 <translation id="8345848587667658367">你現在可以查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="834785183489258869">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>

@@ -680,6 +680,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1536754031901697553">Veza se prekida...</translation>
 <translation id="1537254971476575106">Lupa za ceo ekran</translation>
 <translation id="15373452373711364">Veliki kursor</translation>
+<translation id="1539727654733007771">Nije podešena nijedna mobilna mreža. Preuzmite novi <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">ChromeOS usluga aplikacije</translation>
 <translation id="1540605929960647700">Omogućite režim demonstracije</translation>
 <translation id="1541346352678737112">Nije pronađena nijedna mreža</translation>
@@ -1249,6 +1250,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1951012854035635156">Pomoćnik</translation>
 <translation id="1954597385941141174">Sajtovi mogu da traže da se povezuju sa USB uređajima</translation>
 <translation id="1954813140452229842">Greška pri učitavanju deljene datoteke. Proverite akreditive i probajte ponovo.</translation>
+<translation id="1955313993396968525">Pretraži kadar videa uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">Datoteka sadrži više sertifikata, od kojih nijedan nije uvezen:</translation>
 <translation id="1956167375087861299">Nije dozvoljeno koristiti identifikatore za puštanje zaštićenog sadržaja</translation>
 <translation id="1956390763342388273">Ovim ćete otpremiti sve datoteke iz „<ph name="FOLDER_PATH" />“. Radite ovo samo ako je sajt pouzdan.</translation>
@@ -1818,6 +1820,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="237828693408258535">Želite li da prevedete ovu stranicu?</translation>
 <translation id="2378982052244864789">Izbor direktorijuma dodatka.</translation>
 <translation id="2379281330731083556">Štampaj pomoću sistemskog dijaloga... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Zbog toga će se možda prekinuti veza sa mobilnom mrežom na nekoliko minuta</translation>
 <translation id="2381499968174336913">Pregled deljene kartice</translation>
 <translation id="2382875860893882175">Prebacivanje je trenutno pauzirano. Možete da nastavite sa prebacivanjem ili da zaustavite prebacivanje u svakom trenutku.</translation>
 <translation id="2383825469508278924">Promenite mapiranje tastera na tastaturi, funkcijskih tastera i drugo</translation>
@@ -2673,6 +2676,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3021065318976393105">Tokom korišćenja baterije</translation>
 <translation id="3021066826692793094">Leptir</translation>
 <translation id="3021678814754966447">&amp;Prikaži izvor okvira</translation>
+<translation id="3021902017511220299">Skeniranje nije uspelo. Administrator blokira ovu radnju.</translation>
 <translation id="3022361196600037287">Uređaj <ph name="DEVICE" /> će biti uklonjen sa ovog Chromebook-a i neće biti sačuvan na <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nismo vas razumeli.</translation>
 <translation id="3023464535986383522">Izaberite za govor</translation>
@@ -6778,6 +6782,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6344576354370880196">Sačuvani štampači</translation>
 <translation id="6344608411615208519">Roditelj <ph name="BEGIN_LINK" />upravlja pregledačem<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">Zaštita od praćenja</translation>
+<translation id="6345203628032613660">Pretraži kadar videa uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">Za proksi <ph name="PROXY" /> su neophodni vaše korisničko ime i lozinka, kako bi administrator mogao da vam konfiguriše mrežu</translation>
 <translation id="6345566021391290381">Sa vama se dele lozinke za: <ph name="WEBSITE_NAME" />. Možete da ih koristite u obrascu za prijavljivanje.</translation>
 <translation id="6345878117466430440">Označi kao pročitano</translation>
@@ -9047,6 +9052,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="811994229154425014">Dupli razmak za tačku</translation>
 <translation id="8120505434908124087">Instalirajte eSIM profil</translation>
 <translation id="8121750884985440809">Trenutno prebacujete ekran</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Žuti i beli cvet</translation>
 <translation id="8123975449645947908">Skroluj unazad</translation>
 <translation id="8124313775439841391">Upravljani ONC</translation>
@@ -9082,6 +9088,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8148760431881541277">Ograničite prijavljivanje</translation>
 <translation id="8149564499626272569">Potvrdi pomoću telefona sa USB kablom</translation>
 <translation id="8149870652370242480">Da biste koristili sačuvane lozinke na telefonu, preuzmite Chrome za iOS i prijavite se na Google nalog.</translation>
+<translation id="8151057139207656239">Detalji o verziji su kopirani</translation>
 <translation id="815114315010033526">Bolje koristi QR kôd</translation>
 <translation id="8151638057146502721">Konfiguriši</translation>
 <translation id="8154790740888707867">Nema datoteke</translation>
@@ -9325,7 +9332,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Pregledajte <ph name="BEGIN_BOLD" />1 sajt<ph name="END_BOLD" /> koji je nedavno poslao mnogo obaveštenja}one{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} sajt<ph name="END_BOLD" /> koji je nedavno poslao mnogo obaveštenja}few{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} sajta<ph name="END_BOLD" /> koja su nedavno poslala mnogo obaveštenja}other{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} sajtova<ph name="END_BOLD" /> koji su nedavno poslali mnogo obaveštenja}}</translation>
 <translation id="8342221978608739536">Nisam pokušao/la</translation>
 <translation id="8342861492835240085">Izaberite kolekciju</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) želi da instalira sledeću aplikaciju na ovaj uređaj:}one{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) želi da instalira sledeće aplikacije na ovom uređaju:}few{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) želi da instalira sledeće aplikacije na ovom uređaju:}other{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) želi da instalira sledeće aplikacije na ovom uređaju:}}</translation>
 <translation id="8345848587667658367">Sada možete da pregledate nedavne slike, medije, obaveštenja i aplikacije na telefonu</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="834785183489258869">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>

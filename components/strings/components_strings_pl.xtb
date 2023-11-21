@@ -75,6 +75,7 @@
 <translation id="1142713751288681188">Typ papieru</translation>
 <translation id="1142846828089312304">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="1147769322402934017">Galerie obrazów online</translation>
+<translation id="1149617035358809955">zweryfikować Twoją tożsamość, aby móc uzupełnić dane do płatności</translation>
 <translation id="1150565364351027703">Okulary przeciwsłoneczne</translation>
 <translation id="1150979032973867961">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego komputera. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="1151972924205500581">Wymagane hasło</translation>
@@ -93,6 +94,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1175364870820465910">&amp;Drukuj...</translation>
 <translation id="1175393348063009671">Zdjęcie (matowe)</translation>
 <translation id="1175875016430184367">Trzy zszywki po prawej</translation>
+<translation id="1177548198167638471">Nie pytaj ponownie</translation>
 <translation id="1177802847690410663">Przeglądarki internetowe</translation>
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
@@ -355,6 +357,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1645368109819982629">Nieobsługiwany protokół</translation>
 <translation id="1650602712345345441">Zarządzaj ustawieniami Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
+<translation id="1652862280638399816">Aby używać Menedżera haseł z pękiem kluczy macOS, uruchom ponownie Chromium i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="1656024727720460136">Strona została uproszczona przez Chrome, by było ją łatwiej przeczytać. Przeglądarka Chrome pobrała oryginalną stronę przez zabezpieczone połączenie.</translation>
 <translation id="1656489000284462475">Odbiór</translation>
 <translation id="1658111267661135323">TV i wideo</translation>
@@ -988,6 +991,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2991174974383378012">Udostępnianie stronom internetowym</translation>
 <translation id="299122504639061328">Zarządzaj domyślną wyszukiwarką i wyszukiwaniem w witrynie</translation>
 <translation id="2991571918955627853">Nie możesz teraz wejść na stronę <ph name="SITE" />, ponieważ używa ona HSTS. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
+<translation id="2991865971341174470">Potwierdź swoją tożsamość, aby przeglądarka Chrome mogła uzupełnić dane do płatności.</translation>
 <translation id="2995517112308048736">Rozmiar pliku:</translation>
 <translation id="299990983510665749">Hatchbacki</translation>
 <translation id="3002501248619246229">Sprawdź nośnik na tacy wejściowej</translation>
@@ -1363,6 +1367,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3723663469265383848">Podczas aktualizacji przez 10 minut nie będzie można korzystać z urządzenia.</translation>
 <translation id="372429172604983730">Aplikacje, które mogą wywoływać ten błąd, to na przykład programy antywirusowe, zapory sieciowe oraz oprogramowanie do filtrowania ruchu w sieci lub obsługi serwera proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nową prezentację w Prezentacjach Google</translation>
+<translation id="3727850735097852673">Aby używać Menedżera haseł Google z pękiem kluczy macOS, uruchom ponownie Chrome i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="3733139489341305600">Pojazdy autonomiczne</translation>
 <translation id="3736520371357197498">Jeśli rozumiesz zagrożenie, możesz <ph name="BEGIN_LINK" />odwiedzić tę niebezpieczną stronę<ph name="END_LINK" />, zanim niebezpieczne programy zostaną usunięte.</translation>
 <translation id="3736739313435669994">Witryny nie mogą używać plików cookie innych firm, aby uzyskiwać informacje na temat przeglądania przez Ciebie internetu. Otwórz ustawienia, aby <ph name="LINK" />.</translation>
@@ -1405,6 +1410,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3807270098669886186">Operatorzy telefoniczni</translation>
 <translation id="3807366285948165054">Przesunięcie obrazu wzdłuż osi X</translation>
 <translation id="3807873520724684969">Zablokowano szkodliwe treści.</translation>
+<translation id="3810770279996899697">Menedżer haseł potrzebuje dostępu do pęku kluczy macOS</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="3812398568375898177">To kluczowa aktualizacja, która poprawia wydajność aplikacji na Androida w ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 cali</translation>
@@ -2641,6 +2647,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}=2{2 hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}few{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}many{# haseł (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}other{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}}</translation>
 <translation id="6355392890578844978">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="6358088212770985041">edytować formy płatności</translation>
 <translation id="6358450015545214790">Co to oznacza?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Wyświetl logi</translation>
@@ -2849,6 +2856,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6767985426384634228">Zmienić adres?</translation>
 <translation id="6770747695101757579">Papier (bawełna)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6779348349813025131">Menedżer haseł Google potrzebuje dostępu do pęku kluczy macOS</translation>
 <translation id="6784045420901191374">Pożyczki komercyjne</translation>
 <translation id="6785990323398321538">W każdej chwili możesz zmienić wyszukiwarkę w ustawieniach Chrome.</translation>
 <translation id="6786145470008421571">Koperta 6 x 9 cali</translation>
@@ -2989,6 +2997,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7023162328967545559">Ostrzeżenie administratora</translation>
 <translation id="7024932305105294144">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno <ph name="BEGIN_LINK" />wykryło ono próbę wyłudzenia informacji<ph name="END_LINK" /> na stronie, którą chcesz otworzyć. Strony wyłudzające informacje udają inne strony, aby Cię oszukać.<ph name="NEW_LINE" />Osoby przeprowadzające ataki czasem przejmują nawet strony, które zwykle są bezpieczne. <ph name="BEGIN_ERROR_LINK" />Daj nam znać<ph name="END_ERROR_LINK" />, jeśli uważasz, że zaszła pomyłka i że ta witryna nie stanowi zagrożenia.</translation>
 <translation id="7029809446516969842">Hasła</translation>
+<translation id="7030164307377592766">zmienić ustawienia wypełniania form płatności</translation>
 <translation id="7030436163253143341">Certyfikat jest nieważny</translation>
 <translation id="7031646650991750659">Zainstalowane przez Ciebie aplikacje z Google Play</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać ustawieniami prywatności konta Google, naciśnij Tab, a potem Enter</translation>
@@ -3799,6 +3808,7 @@ Dodatkowe informacje:
 <translation id="8555010941760982128">Użyj tego kodu w momencie płatności</translation>
 <translation id="8556297087315686325">Monitorowanie sieci i zarządzanie nimi</translation>
 <translation id="8557066899867184262">Kod CVC znajduje się na odwrocie karty.</translation>
+<translation id="8557412555245662180">Więcej informacji o ochronie przed śledzeniem</translation>
 <translation id="8558347880669160417">Przyznano jednorazowy dostęp do aparatu i mikrofonu</translation>
 <translation id="8559762987265718583">Nie można nawiązać prywatnego połączenia z <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ data i godzina (<ph name="DATE_AND_TIME" />) ustawione na urządzeniu są nieprawidłowe.</translation>
 <translation id="8564182942834072828">Oddzielne dokumenty / Kopie niesortowane</translation>

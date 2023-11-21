@@ -75,6 +75,7 @@
 <translation id="1142713751288681188">የወረቀት ዓይነት</translation>
 <translation id="1142846828089312304">ማንነትን በማያሳውቅ ሁነታ ላይ የሶስተኛ ወገን ኩኪዎችን ያግዱ</translation>
 <translation id="1147769322402934017">የመስመር ላይ ምስል ማዕከለ-ስዕላት</translation>
+<translation id="1149617035358809955">የክፍያ መረጃዎን እንዲያስገባ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="1150565364351027703">የጸሐይ መነጽሮች</translation>
 <translation id="1150979032973867961">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በኮምፒውተርዎ ስርዓተ ክወና የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="1151972924205500581">የይለፍ ቃል ያስፈልጋል</translation>
@@ -93,6 +94,7 @@
 <translation id="1175364870820465910">&amp;አትም…</translation>
 <translation id="1175393348063009671">ፎቶ (ድብዳብ)</translation>
 <translation id="1175875016430184367">ሦስቴ በቀኝ በኩል ስቴፕለር ምታ</translation>
+<translation id="1177548198167638471">ዳግም አትጠይቁ</translation>
 <translation id="1177802847690410663">ድር አሳሾች</translation>
 <translation id="1177863135347784049">ብጁ</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
@@ -355,6 +357,7 @@
 <translation id="1645368109819982629">የማይደገፍ ፕሮቶኮል</translation>
 <translation id="1650602712345345441">የእርስዎን Chrome ቅንብሮች ያቀናብሩ</translation>
 <translation id="1652415888492971589">JIS B8</translation>
+<translation id="1652862280638399816">የሚስጥር ቁልፍ አስተዳዳሪን ከ macOS Keychain ጋር ለመጠቀም Chromium ን እንደገና ያስጀምሩ እና የ Keychain መዳረሻን ይፍቀዱ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="1656024727720460136">Chrome ለማንበብ እንዲቀልል ይህን ገፅ አቃልሎታል። Chrome የመጀመሪያውን ገፅ ደህንነቱ በተጠበቀ ግንኙነት ላይ ሰርስሮ አውጥቶታል።</translation>
 <translation id="1656489000284462475">መውሰጃ</translation>
 <translation id="1658111267661135323">ቴሌቪዥን እና ቪድዮ</translation>
@@ -988,6 +991,7 @@
 <translation id="2991174974383378012">ከድረ ገጾች ጋር ማጋራት</translation>
 <translation id="299122504639061328">ነባሪ የፍለጋ ፕሮግራምዎን እና የጣቢያ ፍለጋዎን ያቀናብሩ</translation>
 <translation id="2991571918955627853">የድር ጣቢያው HSTS ስለሚጠቀም አሁን <ph name="SITE" />ን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች አብዛኛው ጊዜ ጊዜያዊ ናቸው፣ ስለዚህ ይህ ገፅ በኋላ ላይ ሳይሠራ አይቀርም።</translation>
+<translation id="2991865971341174470">Chrome የክፍያ መረጃዎን መሙላት እንዲችል እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="2995517112308048736">የፋይል መጠን፡</translation>
 <translation id="299990983510665749">ሃችባኮች</translation>
 <translation id="3002501248619246229">የግቤት መሳቢያ ሚዲያን ይመልከቱ</translation>
@@ -1362,6 +1366,7 @@
 <translation id="3723663469265383848">በዝማኔው ጊዜ መሳሪያዎን እስከ 10 ደቂቃ ድረስ መጠቀም አይችሉም።</translation>
 <translation id="372429172604983730">ይህን ስህተት ሊያስከትሉ የሚችሉ መተግበሪያዎች ጸረ-ቫይረስ፣ ኬላ እና ድር ማጣሪያ ተኪ ሶፍትዌር ያካትታሉ።</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በስላይዶች ውስጥ አዲስ የGoogle የዝግጅት አቀራረብን በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
+<translation id="3727850735097852673">Google የይለፍ ቃል አስተዳዳሪን ከ macOS Keychain ጋር ለመጠቀም Chrome ን እንደገና ያስጀምሩ እና የ Keychain መዳረሻን ይፍቀዱ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="3733139489341305600">ራስ-ሰር ተሽከርካሪዎች</translation>
 <translation id="3736520371357197498">ደህንነትዎ ላይ የሚያመጣቸውን ስጋቶች ከተረዱ አደገኛ ፕሮግራሞቹ ከመወገዳቸው በፊት <ph name="BEGIN_LINK" />ይህን ደህንነቱ ያልተጠበቀ ጣቢያ ሊጎብኙ<ph name="END_LINK" /> ይችላሉ።</translation>
 <translation id="3736739313435669994">በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ጣቢያዎችን አግደዋል። ወደ <ph name="LINK" /> ቅንብሮችን ይጎብኙ።</translation>
@@ -1404,6 +1409,7 @@
 <translation id="3807270098669886186">የስልክ ግልጋሎት ሰጪዎች</translation>
 <translation id="3807366285948165054">የምስል X ፈረቃ</translation>
 <translation id="3807873520724684969">ጎጂ ይዘት ታግዷል።</translation>
+<translation id="3810770279996899697">የሚስጥር ቁልፍ አስተዳዳሪ የ MacOS Keychain መዳረሻ ያስፈልገዋል</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
 <translation id="3812398568375898177">ይህ በChromeOS ላይ የAndroid መተግበሪያዎችን አፈጻጸም የሚያሻሽል ወሳኝ ዝማኔ ነው።</translation>
 <translation id="3815434930383843058">8 x 12 ኢንች</translation>
@@ -2640,6 +2646,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" />ን ይጫኑ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ምንም}=1{1 ይለፍ ቃል (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}=2{2 ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}one{# ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}other{# ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}}</translation>
 <translation id="6355392890578844978">ይህ አሳሽ በኩባንያ ወይም በሌላ ድርጅት አይተዳደርም። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChromium ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="6358088212770985041">የመክፈያ ዘዴዎችን አርትዕ ያድርጉ።</translation>
 <translation id="6358450015545214790">እነዚህ ምን ማለት ናቸው?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ምዝግብ ማስታወሻ ይመልከቱ</translation>
@@ -2848,6 +2855,7 @@
 <translation id="6767985426384634228">አድራሻ ይዘምን?</translation>
 <translation id="6770747695101757579">ወረቀት (ጥጥ)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6779348349813025131">Google የይለፍ ቃል አስተዳዳሪ ለ MacOS Keychain መዳረሻ ይፈልጋል</translation>
 <translation id="6784045420901191374">የንግድ ብድር</translation>
 <translation id="6785990323398321538">የእርስዎን የፍለጋ ፕሮግራም በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="6786145470008421571">6 x 9 ኢንች ፖስታ</translation>
@@ -2988,6 +2996,7 @@
 <translation id="7023162328967545559">የአስተዳዳሪ ማስጠንቀቂያ</translation>
 <translation id="7024932305105294144">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ — እንደ የGoogle ጥንቃቄ አሰሳ ያሉ<ph name="BEGIN_LINK" />በቅርብ ጊዜ ማስገር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት። የሚያሰግሩ ጣቢያዎች እርስዎን ለመሸወድ ሌሎች ጣቢያዎችን እንደሆኑ ያስመስላሉ።<ph name="NEW_LINE" />በተለምዶ ደህንነታቸው የተጠበቀ ጣቢያዎች እንኳን አንዳንድ ጊዜ በጥቃት አድራሾች ይጠለፋሉ። ስህተት ተፈጥሯል ብለው ካሰቡ እና ይህ ጣቢያ አደጋ የማያስከትል ከሆነ <ph name="BEGIN_ERROR_LINK" />ያሳወቁን<ph name="END_ERROR_LINK" />።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
+<translation id="7030164307377592766">የመክፈያ ዘዴዎችን ለመሙላት ቅንብሮችን ያስተካክሉ።</translation>
 <translation id="7030436163253143341">የዕውቅና ማረጋገጫው ልክ ያልሆነ ነው</translation>
 <translation id="7031646650991750659">የትኛዎቹን የGoogle Play መተግበሪያዎች እንደጫኑ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የGoogle መለያ ግላዊነት ቅንብሮችን ለማስተዳደር ትርን ከዚያ አስገባን ይጫኑ</translation>
@@ -3798,6 +3807,7 @@
 <translation id="8555010941760982128">ተመዝግበው ሲወጡ ይህን ኮድ ይጠቀሙ</translation>
 <translation id="8556297087315686325">የአውታረ መረብ ክትትል እና አስተዳደር</translation>
 <translation id="8557066899867184262">CVC ከካርድዎ በስተጀርባ ላይ ይገኛል።</translation>
+<translation id="8557412555245662180">ስለክትትል ጥበቃ የበለጠ ይረዱ</translation>
 <translation id="8558347880669160417">ካሜራ እና ማይክሮፎን ለዚህ ጊዜ ይፈቀዳል</translation>
 <translation id="8559762987265718583">የእርስዎ መሣሪያ ቀን (<ph name="DATE_AND_TIME" />) ልክ ስላልሆነ ወደ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> የግል ግንኙነት መመስረት አይቻልም።</translation>
 <translation id="8564182942834072828">የተለዩ ሰነዶች/ያልተጣመሩ ቅጂዎች</translation>

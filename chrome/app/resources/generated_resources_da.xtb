@@ -2691,6 +2691,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3021065318976393105">Når batteriet bruges</translation>
 <translation id="3021066826692793094">Sommerfugl</translation>
 <translation id="3021678814754966447">&amp;Vis rammens kilde</translation>
+<translation id="3021902017511220299">Scanningen mislykkedes. Denne handling er blokeret af din administrator.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> fjernes fra denne Chromebook og gemmes ikke på <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Det er ikke forstået.</translation>
 <translation id="3023464535986383522">Tekstoplæsning</translation>
@@ -9063,6 +9064,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="811994229154425014">Tryk to gange på mellemrumstasten for at indsætte punktum</translation>
 <translation id="8120505434908124087">Installer eSIM-profil</translation>
 <translation id="8121750884985440809">Du caster i øjeblikket din skærm</translation>
+<translation id="8122898034710982882">Telefonstyring, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Gul og hvid blomst</translation>
 <translation id="8123975449645947908">Rul baglæns</translation>
 <translation id="8124313775439841391">Administreret ONC</translation>
@@ -9098,6 +9100,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8148760431881541277">Begræns login</translation>
 <translation id="8149564499626272569">Verificer via din telefon med et USB-kabel</translation>
 <translation id="8149870652370242480">Hvis du vil bruge dine gemte adgangskoder på din telefon, skal du downloade Chrome til iOS og logge ind på din Google-konto.</translation>
+<translation id="8151057139207656239">Buildoplysningerne er kopieret</translation>
 <translation id="815114315010033526">Brug QR-kode i stedet</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
 <translation id="8154790740888707867">Ingen fil</translation>
@@ -9341,7 +9344,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Gennemgå <ph name="BEGIN_BOLD" />1 website<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}one{Gennemgå <ph name="BEGIN_BOLD" />{NUM_SITES} website<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}other{Gennemgå <ph name="BEGIN_BOLD" />{NUM_SITES} websites<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}}</translation>
 <translation id="8342221978608739536">Jeg prøvede ikke</translation>
 <translation id="8342861492835240085">Vælg en samling</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) vil gerne installere følgende app på denne enhed:}one{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) vil gerne installere følgende app på denne enhed:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) vil gerne installere følgende apps på denne enhed:}}</translation>
 <translation id="8345848587667658367">Du kan nu se din telefons seneste billeder, medier, notifikationer og apps</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="834785183489258869">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browserhistorik på forskellige websites for f.eks. at personligt tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>

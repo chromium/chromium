@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">በኋላ ላይ በማንኛውም ጊዜ የማይክሮፎን ባህሪን መለወጥ ይችላሉ።</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> ገደማ ቀርቷል (<ph name="PERCENTAGE" />%)።
 መሣሪያዎን ኃይል ላይ ይሰኩት።</translation>
+<translation id="3660860940251915011">ከፍተኛ ታይነት ደረጃን <ph name="FEATURE_NAME" /> ይቀይሩ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> የሚተዳደር ተጠቃሚ</translation>
 <translation id="3666266999138159418">ተንሳፋፊ መስኮትዎን ለመደበቅ ያንሸራትቱ</translation>
 <translation id="367531336287639526">ከአድራሻ አሞሌ በስተግራ በኩል ያለውን የመጀመሪያ አዶ ምረጥ</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />፣
         <ph name="NOTIFICATION_2" />፣
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">የተቀየረው <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">ዴስክ 16</translation>
 <translation id="4989163558385430922">ሁሉንም ይመልከቱ</translation>
 <translation id="5003993274120026347">ቀጣይ ዓረፍተ ነገር</translation>
@@ -1684,6 +1686,13 @@
 <translation id="7893503627044934815">ይህ ፋይል እንዲታይ አልፈልግም</translation>
 <translation id="7895348134893321514">ማስታወሻ</translation>
 <translation id="7897375687985782769">የማያ ገፅ ማሽከርከሪያ የቁልፍ ሰሌዳ አቋራጩን ተጭነውታል። ማያ ገጹን ማሽከርከር ይፈልጋሉ?</translation>
+<translation id="7897626842031123113">የሁኔታ መግቢያ፣ ጊዜ <ph name="TIME" />፣
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />፣
+        <ph name="NETWORK" />፣
+        <ph name="MANAGED" />፣
+        <ph name="IME" />፣
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">መስኮቶቹን ይለዋውጡ</translation>
 <translation id="7901405293566323524">የስልክ መገናኛ</translation>
 <translation id="7902625623987030061">የጣት አሻራ ዳሳሹን ይንኩ</translation>

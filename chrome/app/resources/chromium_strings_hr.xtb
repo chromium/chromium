@@ -275,6 +275,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6129621093834146363">Datoteka <ph name="FILE_NAME" /> opasna je, pa ju je Chromium blokirao.</translation>
 <translation id="6132897690380286411">Chromium će se uskoro zatvoriti i izbrisati podatke</translation>
 <translation id="6134968993075716475">Sigurno je pregledavanje isključeno. Chromium preporučuje da ga uključite.</translation>
+<translation id="6144416395842701622">Prijavite se da biste iskoristili sve prednosti Chromiuma</translation>
 <translation id="6145820983052037069">Ovdje se možete prebacivati između profila u Chromiumu</translation>
 <translation id="615103374448673771">Ako dopustite kolačiće, Chromium ih može koristiti prilikom predučitavanja.</translation>
 <translation id="6175304430031192654">Ovisno o postavkama, Chromium može slati kolačiće i vaš trenutačni URL</translation>
@@ -433,6 +434,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ne može biti vaš zadani preglednik.</translation>
 <translation id="8697124171261953979">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromiuma ili pretraživanja putem višenamjenskog okvira.</translation>
 <translation id="8704119203788522458">To je vaš Chromium</translation>
+<translation id="8719993436687031146">Želite li se prijaviti na Chromium?</translation>
 <translation id="878572486461146056">Pogreška pri instalaciji: vaš administrator mreže primijenio je pravilo grupe koje sprječava instalaciju: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium treba dopuštenje za pristup kameri i mikrofonu za ovu web-lokaciju</translation>
 <translation id="8826492472752484139">Kliknite Upravitelj zaporki</translation>

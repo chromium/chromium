@@ -2683,6 +2683,7 @@
 <translation id="3021065318976393105">ಬ್ಯಾಟರಿ ಆನ್ ಇರುವಾಗ</translation>
 <translation id="3021066826692793094">ಚಿಟ್ಟೆ</translation>
 <translation id="3021678814754966447">ಫ್ರೇಮ್ ಮೂಲವನ್ನು &amp;ವೀಕ್ಷಿಸಿ</translation>
+<translation id="3021902017511220299">ಸ್ಕ್ಯಾನ್ ವಿಫಲಗೊಂಡಿದೆ. ಈ ಆ್ಯಕ್ಷನ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ.</translation>
 <translation id="3022361196600037287">ಈ Chromebook ನಿಂದ <ph name="DEVICE" /> ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ ಮತ್ತು <ph name="PRIMARY_EMAIL" /> ಗೆ ಉಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3022978424994383087">ಅದು ಅರ್ಥವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3023464535986383522">ಧ್ವನಿ ಆಯ್ಕೆ ಮಾಡಿ</translation>
@@ -9054,6 +9055,7 @@
 <translation id="811994229154425014">ವಿರಾಮ ಚಿಹ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಲು ಡಬಲ್ ಸ್ಪೇಸ್ ನೀಡಿ</translation>
 <translation id="8120505434908124087">eSIM ಪ್ರೊಫೈಲ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="8121750884985440809">ನೀವು ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಬಿತ್ತರಿಸುತ್ತಿರುವಿರಿ</translation>
+<translation id="8122898034710982882">ಫೋನ್ ಹಬ್, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">ಹಳದಿ ಮತ್ತು ಬಿಳಿ ಹೂ</translation>
 <translation id="8123975449645947908">ಹಿಂದಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="8124313775439841391">ನಿರ್ವಹಿಸಲಾದ ONC</translation>
@@ -9089,6 +9091,7 @@
 <translation id="8148760431881541277">ಸೈನ್ ಇನ್ ಅನ್ನು ಮಿತಿಗೊಳಿಸಿ</translation>
 <translation id="8149564499626272569">USB ಕೇಬಲ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿರುವ ನಿಮ್ಮ ಫೋನ್ ಮೂಲಕ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8149870652370242480">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಲು, iOS ಗಾಗಿ Chrome ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
+<translation id="8151057139207656239">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="815114315010033526">ಬದಲಾಗಿ QR ಕೋಡ್ ಬಳಸಿ</translation>
 <translation id="8151638057146502721">ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="8154790740888707867">ಫೈಲ್‌ ಇಲ್ಲ</translation>
@@ -9332,7 +9335,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ <ph name="BEGIN_BOLD" />1 ಸೈಟ್<ph name="END_BOLD" /> ಅನ್ನು ಪರಿಶೀಲಿಸಿ}one{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ <ph name="BEGIN_BOLD" />{NUM_SITES} ಸೈಟ್‌ಗಳನ್ನು<ph name="END_BOLD" /> ಪರಿಶೀಲಿಸಿ}other{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ <ph name="BEGIN_BOLD" />{NUM_SITES} ಸೈಟ್‌ಗಳನ್ನು<ph name="END_BOLD" /> ಪರಿಶೀಲಿಸಿ}}</translation>
 <translation id="8342221978608739536">ಪ್ರಯತ್ನಿಸಿಲ್ಲ</translation>
 <translation id="8342861492835240085">ಸಂಗ್ರಹವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />), ಈ ಸಾಧನದಲ್ಲಿ ಕೆಳಗಿನ ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುತ್ತದೆ:}one{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />), ಈ ಸಾಧನದಲ್ಲಿ ಕೆಳಗಿನ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುತ್ತದೆ:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />), ಈ ಸಾಧನದಲ್ಲಿ ಕೆಳಗಿನ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುತ್ತದೆ:}}</translation>
 <translation id="8345848587667658367">ನೀವು ಈಗ ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ, ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="8347227221149377169">ಮುದ್ರಣ ಕಾರ್ಯಗಳು</translation>
 <translation id="834785183489258869">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇರುವಾಗ, ವಿವಿಧ ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, ಉದಾಹರಣೆಗೆ, ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ಫೀಚರ್‌ಗಳು ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>

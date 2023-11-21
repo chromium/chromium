@@ -9320,7 +9320,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Controlla <ph name="BEGIN_BOLD" />1 sito<ph name="END_BOLD" /> che di recente ha inviato molte notifiche}other{Controlla <ph name="BEGIN_BOLD" />{NUM_SITES}<ph name="END_BOLD" /> siti che di recente hanno inviato molte notifiche}}</translation>
 <translation id="8342221978608739536">Non ho provato</translation>
 <translation id="8342861492835240085">Seleziona una raccolta</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) vuole installare la seguente app su questo dispositivo:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) vuole installare le seguenti app su questo dispositivo:}}</translation>
 <translation id="8345848587667658367">Ora puoi visualizzare le foto recenti, i contenuti multimediali, le notifiche e le app del tuo telefono</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="834785183489258869">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>

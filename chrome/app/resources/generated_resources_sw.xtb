@@ -1855,6 +1855,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2402226831639195063">Sauti</translation>
 <translation id="2405887402346713222">Nambari za Ufuatiliaji za Kifaa na Kijenzi</translation>
 <translation id="2406153734066939945">Ungependa kufuta wasifu huu na data iliyomo?</translation>
+<translation id="2407671304279211586">Chagua mtoa huduma wa DNS</translation>
 <translation id="2408018932941436077">Inahifadhi kadi</translation>
 <translation id="2408955596600435184">Weka PIN yako</translation>
 <translation id="2409268599591722235">Anza kutumia</translation>
@@ -9337,7 +9338,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Kagua <ph name="BEGIN_BOLD" />tovuti 1<ph name="END_BOLD" /> ambayo imetuma arifa nyingi hivi karibuni}other{Kagua <ph name="BEGIN_BOLD" />tovuti {NUM_SITES}<ph name="END_BOLD" /> ambazo zimetuma arifa nyingi hivi karibuni}}</translation>
 <translation id="8342221978608739536">Sijajaribu</translation>
 <translation id="8342861492835240085">Chagua mkusanyiko</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) ingependa kusakinisha programu ifuatayo kwenye kifaa hiki:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) ingependa kusakinisha programu zifuatazo kwenye kifaa hiki:}}</translation>
 <translation id="8345848587667658367">Sasa unaweza kuangalia picha, programu, maudhui na arifa za hivi karibuni za simu yako</translation>
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="834785183489258869">Katika hali fiche, tovuti haziwezi kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi. Huenda vipengele kwenye baadhi ya tovuti visifanye kazi.</translation>

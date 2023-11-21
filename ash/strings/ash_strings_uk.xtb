@@ -1683,6 +1683,13 @@
 <translation id="7893503627044934815">Не показувати цей файл</translation>
 <translation id="7895348134893321514">Сховище</translation>
 <translation id="7897375687985782769">Ви натиснули комбінацію клавіш для обертання екрана. Обернути?</translation>
+<translation id="7897626842031123113">Панель статусу, час: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Поміняти вікна місцями</translation>
 <translation id="7901405293566323524">Керування телефоном</translation>
 <translation id="7902625623987030061">Торкніться сканера відбитків пальців</translation>

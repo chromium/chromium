@@ -733,6 +733,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4856841893565072365">Ordenatu menu-barra modu adimendunean</translation>
 <translation id="4860895144060829044">Deitu</translation>
 <translation id="4881695831933465202">Ireki</translation>
+<translation id="4883824756452868502">Hauteman unitateak</translation>
 <translation id="488785315393301722">Erakutsi xehetasunak</translation>
 <translation id="4894963374040315706">Honi esker, ahotsaren bidez bilatu ahal izango dituzu gauzak</translation>
 <translation id="489903206070130262">Irekitako azken fitxa</translation>
@@ -854,8 +855,10 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5551897871312988470">Eskaini itzultzea</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="555749644339804659">Pasahitzak egiaztatzen…</translation>
+<translation id="5559567453458728487">Bihurtu sarean aurkitutako neurketa-unitateak</translation>
 <translation id="556042886152191864">Botoia</translation>
 <translation id="5572684875078967866">Informazioaren biltegiratzea</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Egin paketearen jarraipena}other{Egin pakete guztien jarraipena}}</translation>
 <translation id="5597915316964418992">Ireki fitxen sareta</translation>
 <translation id="560322036295180549">Erakundeak desaktibatu du</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
@@ -1118,6 +1121,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6781260999953472352">Sinkronizazioa aktibatu nahi duzu?</translation>
 <translation id="6781405765516175232">Ibilbidearen aukerak ikusteko, sakatu "Lortu jarraibideak".</translation>
 <translation id="6785453220513215166">Hutsegite-txostena bidaltzen…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Utzi paketearen jarraipena egiteari}other{Utzi pakete guztien jarraipena egiteari}}</translation>
 <translation id="6790502149545262384">Laster, <ph name="CHANNEL_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean.</translation>
 <translation id="6797885426782475225">Ahozko bilaketa</translation>
 <translation id="6800349425672670802">Fitxa-aldatzailearen bidez atzi ditzakezu irekitako fitxa guztiak.</translation>

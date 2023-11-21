@@ -9342,7 +9342,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Review <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> that recently sent a lot of notifications}other{Review <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> that recently sent a lot of notifications}}</translation>
 <translation id="8342221978608739536">Did not try</translation>
 <translation id="8342861492835240085">Select a collection</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) would like to install the following app on this device:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) would like to install the following apps on this device:}}</translation>
 <translation id="8345848587667658367">You can now view your phone's recent photos, media, notifications and apps</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="834785183489258869">While in Incognito, sites can't use your cookies to see your browsing activity across different sites; for example, to personalise ads. Features on some sites may not work.</translation>

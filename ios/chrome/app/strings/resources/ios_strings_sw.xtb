@@ -733,6 +733,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4856841893565072365">Kupanga Upau wa Menyu Kiotomatiki</translation>
 <translation id="4860895144060829044">Piga simu</translation>
 <translation id="4881695831933465202">Fungua</translation>
+<translation id="4883824756452868502">Tambua Vipimo</translation>
 <translation id="488785315393301722">Onyesha Maelezo</translation>
 <translation id="4894963374040315706">Hali hii hukuwezesha kutafuta kwa kutumia sauti yako</translation>
 <translation id="489903206070130262">Kichupo Ulichofungua Mara ya Mwisho</translation>
@@ -854,8 +855,10 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5551897871312988470">Jitolee Kutafsiri</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
 <translation id="555749644339804659">Inakagua manenosiri…</translation>
+<translation id="5559567453458728487">Geuza vipimo vinavyopatikana kwenye wavuti</translation>
 <translation id="556042886152191864">Kitufe</translation>
 <translation id="5572684875078967866">Nafasi ya Hifadhi ya Data</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Fuatilia Kifurushi Hiki}other{Fuatilia Vifurushi Vyote}}</translation>
 <translation id="5597915316964418992">Fungua Gridi ya Kichupo</translation>
 <translation id="560322036295180549">Imezimwa na shirika lako</translation>
 <translation id="5614553682702429503">Ungependa kuhifadhi nenosiri?</translation>
@@ -1118,6 +1121,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6781260999953472352">Ungependa Kuwasha Kipengele cha Kusawazisha?</translation>
 <translation id="6781405765516175232">Kwa chaguo za kupata njia, gusa “Pata Maelekezo.”</translation>
 <translation id="6785453220513215166">Inatuma ripoti ya kuacha kufanya kazi...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Acha Kufuatilia Kifurushi Hiki}other{Acha Kufuatilia Vifurushi Vyote}}</translation>
 <translation id="6790502149545262384">Hivi karibuni, utaona hadithi kutoka <ph name="CHANNEL_NAME" /> unapofungua kichupo kipya.</translation>
 <translation id="6797885426782475225">Kutafuta kwa Kutamka</translation>
 <translation id="6800349425672670802">Unaweza kufikia vichupo vyote ulivyofungua kwenye Kibadilishaji cha Vichupo.</translation>

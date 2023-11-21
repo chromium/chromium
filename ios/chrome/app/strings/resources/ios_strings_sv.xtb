@@ -733,6 +733,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4856841893565072365">Menyrad med smart sortering</translation>
 <translation id="4860895144060829044">Ring</translation>
 <translation id="4881695831933465202">Öppna</translation>
+<translation id="4883824756452868502">Identifiera enheter</translation>
 <translation id="488785315393301722">Visa information</translation>
 <translation id="4894963374040315706">Det här gör att du kan söka med hjälp av rösten</translation>
 <translation id="489903206070130262">Din senast öppna flik</translation>
@@ -854,8 +855,10 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5551897871312988470">Erbjud översättning</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="555749644339804659">Kontrollerar lösenord …</translation>
+<translation id="5559567453458728487">Konvertera måttenheter som hittas på webben</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5572684875078967866">Informationslagring</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Spåra den här försändelsen}other{Spåra alla försändelser}}</translation>
 <translation id="5597915316964418992">Öppna rutnätet med flikar</translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
@@ -1118,6 +1121,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6781260999953472352">Vill du aktivera synkronisering?</translation>
 <translation id="6781405765516175232">Tryck på Hämta vägbeskrivning för att se ruttalternativ.</translation>
 <translation id="6785453220513215166">Skickar en felrapport ...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Sluta spåra den här försändelsen}other{Sluta spåra alla försändelser}}</translation>
 <translation id="6790502149545262384">Snart visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="6797885426782475225">Röstsökning</translation>
 <translation id="6800349425672670802">Du kommer åt alla dina öppna flikar med Flikbyte.</translation>

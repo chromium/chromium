@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
 <translation id="1426410128494586442">Áno</translation>
 <translation id="1448064542941920355">Znížiť úroveň lupy</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webe}few{<ph name="SITE_COUNT" /> weboch}many{<ph name="SITE_COUNT" /> sites}other{<ph name="SITE_COUNT" /> weboch}}</translation>
 <translation id="1510341833810331442">Weby nemôžu ukladať údaje vo vašom zariadení</translation>
 <translation id="1547123415014299762">Súbory cookie tretích strán sú povolené</translation>
 <translation id="1568470248891039841">Na weboch, ktoré navštívite, môže byť vložený obsah z iných webov, napríklad obrázky, reklamy a text. Tieto iné weby môžu žiadať o povolenia používať informácie, ktoré o vás uložili, keď ich prehliadate. <ph name="BEGIN_LINK" />Ďalšie informácie o vloženom obsahu<ph name="END_LINK" /></translation>
@@ -264,6 +265,7 @@
 <translation id="5677928146339483299">Blokované</translation>
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastaveniach Androidu</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> môže pri prehliadaní používať vaše informácie</translation>
 <translation id="5700761515355162635">Súbory cookie tretích strán sú povolené</translation>
 <translation id="5706552988683188916">Týmto odstránite súbory cookie a ďalšie dáta webu <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Súbory cookie tretích strán sú v anonymnom režime blokované</translation>
@@ -302,6 +304,7 @@
 <translation id="6262279340360821358">Blokované: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Weby môžu žiadať o odosielanie upozornení</translation>
 <translation id="6295158916970320988">Všetky weby</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> má zablokované používanie vašich informácií na</translation>
 <translation id="6320088164292336938">Vibrovanie</translation>
 <translation id="6344622098450209924">Ochrana pred sledovaním</translation>
 <translation id="6367753977865761591">Na konkrétnom webe môžete blokovať prihlasovanie tretích strán.</translation>

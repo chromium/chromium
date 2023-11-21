@@ -1683,6 +1683,13 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7893503627044934815">Ne želim da se ta datoteka prikazuje</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Pritisnuli ste tipkovni prečac za zakretanje zaslona. Želite li zakrenuti zaslon?</translation>
+<translation id="7897626842031123113">Traka statusa, vrijeme <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Zamijeni prozore</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dodirnite senzor otiska prsta</translation>

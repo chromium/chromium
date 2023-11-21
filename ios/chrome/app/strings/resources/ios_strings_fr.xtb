@@ -733,6 +733,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4856841893565072365">Barre de menu de tri intelligent</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
+<translation id="4883824756452868502">Détecter les unités</translation>
 <translation id="488785315393301722">Afficher les détails</translation>
 <translation id="4894963374040315706">Cela vous permet d'utiliser la recherche vocale</translation>
 <translation id="489903206070130262">Dernier onglet ouvert</translation>
@@ -854,8 +855,10 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5551897871312988470">Proposer de traduire</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="555749644339804659">Vérif. des mots de passe…</translation>
+<translation id="5559567453458728487">Convertir les unités de mesure trouvées sur le Web</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5572684875078967866">Stockage des informations</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Suivre ce colis}one{Suivre ce colis}other{Suivre tous les colis}}</translation>
 <translation id="5597915316964418992">Ouvrez la grille d'onglets</translation>
 <translation id="560322036295180549">Désactivé par votre organisation</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
@@ -1118,6 +1121,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6781260999953472352">Activer la synchronisation ?</translation>
 <translation id="6781405765516175232">Pour afficher les options d'itinéraire, appuyez sur "Obtenir un itinéraire".</translation>
 <translation id="6785453220513215166">Envoi du rapport d'erreur en cours…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Annuler le suivi de ce colis}one{Annuler le suivi de ce colis}other{Annuler le suivi de ces colis}}</translation>
 <translation id="6790502149545262384">Vous verrez bientôt les stories de <ph name="CHANNEL_NAME" /> quand vous ouvrirez un onglet.</translation>
 <translation id="6797885426782475225">Recherche vocale</translation>
 <translation id="6800349425672670802">Vous pouvez accéder à tous vos onglets ouverts à partir du sélecteur d'onglets.</translation>

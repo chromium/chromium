@@ -58,6 +58,7 @@ Pamiętaj, że:
 <translation id="2671426118752779020">Haseł zapisanych w menedżerze haseł Google możesz używać w innych aplikacjach na iPhonie.</translation>
 <translation id="2689064829982324496">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK" />wyloguj się z Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nie udało się sprawdzić dostępności aktualizacji. Spróbuj ponownie później.</translation>
+<translation id="2702250627063295552">Dodaj element listy Do przeczytania do Chrome</translation>
 <translation id="2736805085127235148">Powiadomienia Chrome są aktualnie wyłączone w ustawieniach urządzenia.</translation>
 <translation id="2767464022270041271">Brak zapisanych haseł. Menedżer haseł Google może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="2868822340714096138">Wyczyść dane przeglądania w Chrome</translation>
@@ -83,6 +84,7 @@ Pamiętaj, że:
 <translation id="3744018071945602754">Zarządzaj hasłami w Chrome</translation>
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
 <translation id="384394811301901750">Google Chrome nie może teraz użyć aparatu</translation>
+<translation id="3863841106411295595">Dodaje wpisane adresy URL do listy Do przeczytania w Chrome.</translation>
 <translation id="3901001113120561395">W pełni wykorzystuj potencjał Chrome.</translation>
 <translation id="3967382818307165056">Zarządzaj formami płatności w Chrome</translation>
 <translation id="3980220367029651214">Przełączasz synchronizację kont z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Twoje istniejące dane Chrome są zarządzane przez <ph name="DOMAIN" />. Spowoduje to usunięcie danych z tego urządzenia, ale pozostaną one na koncie <ph name="USER_EMAIL1" />.</translation>

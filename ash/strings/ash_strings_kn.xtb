@@ -1683,6 +1683,13 @@
 <translation id="7893503627044934815">ಈ ಫೈಲ್ ಅನ್ನು ತೋರಿಸುವುದು ಬೇಡ</translation>
 <translation id="7895348134893321514">ಟೋಟ್</translation>
 <translation id="7897375687985782769">ನೀವು ಪರದೆಯನ್ನು ತಿರುಗಿಸಲು ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಒತ್ತಿದ್ದೀರಿ. ನೀವು ಪರದೆಯನ್ನು ತಿರುಗಿಸಲು ಬಯಸುವಿರಾ?</translation>
+<translation id="7897626842031123113">ಸ್ಥಿತಿ ಟ್ರೇ, ಸಮಯ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">ವಿಂಡೋಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7901405293566323524">ಫೋನ್ ಹಬ್</translation>
 <translation id="7902625623987030061">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆನ್ಸರ್‌‌ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>

@@ -681,6 +681,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1536754031901697553">Kobler fra …</translation>
 <translation id="1537254971476575106">Lupe for hele skjermen</translation>
 <translation id="15373452373711364">Stor markør</translation>
+<translation id="1539727654733007771">Ingen mobilnettverk er konfigurert. Last ned en ny <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">ChromeOS-apptjenesten</translation>
 <translation id="1540605929960647700">Slå på demomodus</translation>
 <translation id="1541346352678737112">Fant ingen nettverk</translation>
@@ -1256,6 +1257,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954597385941141174">Nettsteder kan be om å få koble til USB-enheter</translation>
 <translation id="1954813140452229842">Feil ved innsetting av deling. Sjekk legitimasjonen og prøv igjen.</translation>
+<translation id="1955313993396968525">Søk i videorammen med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">Filen inneholdt flere sertifikater, men ingen av dem ble importert:</translation>
 <translation id="1956167375087861299">Nettsteder som ikke har lov til å bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="1956390763342388273">Dette fører til at alle filer fra «<ph name="FOLDER_PATH" />» lastes opp. Du bør bare gjøre dette hvis du stoler på nettstedet.</translation>
@@ -1830,6 +1832,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="237828693408258535">Vil du oversette denne siden?</translation>
 <translation id="2378982052244864789">Velg katalog for utvidelsen.</translation>
 <translation id="2379281330731083556">Skriv ut med systemdialogen <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Dette kan føre til at mobilnettverket kobles fra i noen minutter</translation>
 <translation id="2381499968174336913">Forhåndsvisning av delt fane</translation>
 <translation id="2382875860893882175">Castingen er satt på pause. Du kan når som helst gjenoppta eller stoppe castingen.</translation>
 <translation id="2383825469508278924">Endre tastaturtilordninger, funksjonstaster med mer</translation>
@@ -2685,6 +2688,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3021065318976393105">Ved batteridrift</translation>
 <translation id="3021066826692793094">Sommerfugl</translation>
 <translation id="3021678814754966447">&amp;Vis rammekilde</translation>
+<translation id="3021902017511220299">Skanningen mislyktes. Administratoren din har blokkert denne handlingen.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> blir fjernet fra denne Chromebooken og blir ikke lagret i <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Det skjønte jeg ikke.</translation>
 <translation id="3023464535986383522">Tekstopplesing</translation>
@@ -6787,6 +6791,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6344576354370880196">Lagrede skrivere</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Nettleseren administreres<ph name="END_LINK" /> av forelderen din</translation>
 <translation id="6344622098450209924">Sporingsbeskyttelse</translation>
+<translation id="6345203628032613660">Søk i videorammen med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">Brukernavnet og passordet ditt kreves for proxy-tjeneren <ph name="PROXY" />, slik at administratoren kan konfigurere nettverket ditt</translation>
 <translation id="6345566021391290381">Noen har delt passord med deg for <ph name="WEBSITE_NAME" />. Du kan bruke dem i påloggingsskjemaet.</translation>
 <translation id="6345878117466430440">Merk som lest</translation>
@@ -9052,6 +9057,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="811994229154425014">Dobbelt mellomrom for å skrive punktum</translation>
 <translation id="8120505434908124087">Installer eSIM-profil</translation>
 <translation id="8121750884985440809">Du caster skjermen nå</translation>
+<translation id="8122898034710982882">Telefonstyring, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Gul og hvit blomst</translation>
 <translation id="8123975449645947908">Rull bakover</translation>
 <translation id="8124313775439841391">Administrert ONC</translation>
@@ -9087,6 +9093,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8148760431881541277">Begrens pålogging</translation>
 <translation id="8149564499626272569">Bekreft via telefonen din med USB-kabel</translation>
 <translation id="8149870652370242480">For å bruke de lagrede passordene dine på telefonen, last ned Chrome for iOS og logg på Google-kontoen din.</translation>
+<translation id="8151057139207656239">Detaljer om delversjonen er kopiert</translation>
 <translation id="815114315010033526">Bruk QR-kode i stedet</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
 <translation id="8154790740888707867">Ingen fil</translation>
@@ -9330,7 +9337,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Gjennomgå <ph name="BEGIN_BOLD" />1 nettsted<ph name="END_BOLD" /> som nylig har sendt mange varsler}other{Gjennomgå <ph name="BEGIN_BOLD" />{NUM_SITES} nettsteder<ph name="END_BOLD" /> som nylig har sendt mange varsler}}</translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>
 <translation id="8342861492835240085">Velg en samling</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) vil installere følgende app på denne enheten:}other{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) vil installere følgende apper på denne enheten:}}</translation>
 <translation id="8345848587667658367">Nå kan du se telefonens nylige bilder, medier, varsler og apper</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="834785183489258869">Når du er i Inkognitomodus, kan ikke nettsteder bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>

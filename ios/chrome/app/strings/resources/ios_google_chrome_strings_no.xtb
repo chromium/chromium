@@ -58,6 +58,7 @@ Du bør tenke på følgende:
 <translation id="2671426118752779020">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="2689064829982324496">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK" />logg av Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
+<translation id="2702250627063295552">Legg til elementet på leselisten i Chrome</translation>
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2868822340714096138">Slett nettlesingsdata i Chrome</translation>
@@ -83,6 +84,7 @@ Du bør tenke på følgende:
 <translation id="3744018071945602754">Administrer passord i Chrome</translation>
 <translation id="3827545470516145620">Du får standard sikkerhetsbeskyttelse på denne enheten</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruke kameraet akkurat nå</translation>
+<translation id="3863841106411295595">Legger til de angitte nettadressene på leselisten i Chrome.</translation>
 <translation id="3901001113120561395">Få mest mulig ut av Chrome.</translation>
 <translation id="3967382818307165056">Administrer betalingsmåter i Chrome</translation>
 <translation id="3980220367029651214">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chrome-dataene dine administreres av <ph name="DOMAIN" />. Dette sletter dataene dine fra denne enheten, men dataene blir værende i <ph name="USER_EMAIL1" />.</translation>

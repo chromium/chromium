@@ -2672,6 +2672,7 @@
 <translation id="3021065318976393105">Батареямен істегенде</translation>
 <translation id="3021066826692793094">Көбелек</translation>
 <translation id="3021678814754966447">&amp;Жақтау дереккөзін көру</translation>
+<translation id="3021902017511220299">Сканерлеу сәтсіз аяқталды. Бұл әрекетті әкімшіңіз блоктады.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> осы Chromebook-тан өшіріледі, <ph name="PRIMARY_EMAIL" /> электрондық мекенжайына сақталмайды.</translation>
 <translation id="3022978424994383087">Түсініксіз.</translation>
 <translation id="3023464535986383522">Select to Speak</translation>
@@ -9036,6 +9037,7 @@
 <translation id="811994229154425014">Нүкте қою үшін бос орын пернесін екі рет басу</translation>
 <translation id="8120505434908124087">eSIM профилін орнату</translation>
 <translation id="8121750884985440809">Қазір экраныңызды трансляциялап жатырсыз.</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Сары және ақ гүл</translation>
 <translation id="8123975449645947908">Артқа айналдыру</translation>
 <translation id="8124313775439841391">Басқарылатын ONC</translation>
@@ -9071,6 +9073,7 @@
 <translation id="8148760431881541277">Кіруді шектеу</translation>
 <translation id="8149564499626272569">USB кабелімен қосылған телефоныңыз арқылы растау</translation>
 <translation id="8149870652370242480">Телефонда сақталған құпия сөздеріңізді пайдалану үшін iOS-қа арналған Chrome браузерін жүктеп алып, Google аккаунтыңызға кіріңіз.</translation>
+<translation id="8151057139207656239">Көшірілген құрама мәліметтері</translation>
 <translation id="815114315010033526">Орнына QR кодын пайдалану</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
 <translation id="8154790740888707867">Файл жоқ</translation>
@@ -9314,7 +9317,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />1 сайтты<ph name="END_BOLD" /> тексеріңіз}other{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />{NUM_SITES} сайтты<ph name="END_BOLD" /> тексеріңіз}}</translation>
 <translation id="8342221978608739536">Қолданып көрмедім</translation>
 <translation id="8342861492835240085">Жинақ таңдау</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) келесі қолданбаны осы құрылғыға орнатуды қалайды:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) келесі қолданбаларды осы құрылғыға орнатуды қалайды:}}</translation>
 <translation id="8345848587667658367">Енді телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландырулар мен қолданбаларды көре аласыз</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="834785183489258869">Инкогнито режимінде болғанда, сайттар браузерді қолдану мәліметін көру (мысалы, жарнамаларды жекелендіру) үшін cookie файлдарын пайдалана алмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>

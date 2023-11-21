@@ -2689,6 +2689,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3021065318976393105">Tokom rada na bateriji</translation>
 <translation id="3021066826692793094">Leptir</translation>
 <translation id="3021678814754966447">&amp;Prikaži izvor okvira</translation>
+<translation id="3021902017511220299">Skeniranje nije uspjelo. Radnju je blokirao administrator.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> će se ukloniti s ovog Chromebooka i neće se sačuvati na računu <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">To nije bilo razumljivo.</translation>
 <translation id="3023464535986383522">Odaberite za govor</translation>
@@ -9064,6 +9065,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="811994229154425014">Dupli razmak za unos tačke</translation>
 <translation id="8120505434908124087">Instaliraj eSIM profil</translation>
 <translation id="8121750884985440809">Trenutno emitirate ekran</translation>
+<translation id="8122898034710982882">Phone hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Žuto-bijeli cvijet</translation>
 <translation id="8123975449645947908">Listaj nazad</translation>
 <translation id="8124313775439841391">Upravljani ONC</translation>
@@ -9099,6 +9101,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8148760431881541277">Ograniči prijavu</translation>
 <translation id="8149564499626272569">Potvrdite telefonom putem USB kabla</translation>
 <translation id="8149870652370242480">Da koristite sačuvane lozinke na telefonu, preuzmite Chrome za iOS i prijavite se na Google račun.</translation>
+<translation id="8151057139207656239">Kopirane pojedinosti o međuverziji</translation>
 <translation id="815114315010033526">Umjesto toga koristi QR kôd</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154790740888707867">Nema fajla</translation>
@@ -9342,7 +9345,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Pregledajte <ph name="BEGIN_BOLD" />1 web lokaciju<ph name="END_BOLD" /> koja je nedavno poslala mnogo obavještenja}one{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web lokaciju <ph name="END_BOLD" /> koja je nedavno poslala mnogo obavještenja}few{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web lokacije<ph name="END_BOLD" /> koje su nedavno poslale mnogo obavještenja}other{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web lokacija <ph name="END_BOLD" /> koje su nedavno poslale mnogo obavještenja}}</translation>
 <translation id="8342221978608739536">Nisam probao/la</translation>
 <translation id="8342861492835240085">Odaberite kolekciju</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) želi instalirati sljedeću aplikaciju na ovom uređaju:}one{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) želi instalirati sljedeće aplikacije na ovom uređaju:}few{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) želi instalirati sljedeće aplikacije na ovom uređaju:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) želi instalirati sljedeće aplikacije na ovom uređaju:}}</translation>
 <translation id="8345848587667658367">Sada možete pregledati nedavne fotografije, medijski sadržaj, obavještenja i aplikacije telefona</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="834785183489258869">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, npr. radi personaliziranja oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>

@@ -1841,6 +1841,7 @@
 <translation id="2402226831639195063">ટોન</translation>
 <translation id="2405887402346713222">ડિવાઇસ અને ઘટકના અનુક્રમ નંબર</translation>
 <translation id="2406153734066939945">આ પ્રોફાઇલ અને તેનો ડેટા ડિલીટ કરીએ?</translation>
+<translation id="2407671304279211586">DNS પ્રદાતા પસંદ કરો</translation>
 <translation id="2408018932941436077">કાર્ડ સાચવી રહ્યાં છીએ</translation>
 <translation id="2408955596600435184">તમારો PIN દાખલ કરો</translation>
 <translation id="2409268599591722235">ચાલો જઈએ</translation>
@@ -2672,6 +2673,7 @@
 <translation id="3021065318976393105">બૅટરી પર હોય, ત્યારે</translation>
 <translation id="3021066826692793094">પતંગિયું</translation>
 <translation id="3021678814754966447">ફ્રેમ સ્રોત &amp;જુઓ</translation>
+<translation id="3021902017511220299">સ્કૅન કરવાનું નિષ્ફળ રહ્યું. આ ક્રિયાને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" />ને આ Chromebookમાંથી કાઢી નાખવામાં આવશે અને તેને <ph name="PRIMARY_EMAIL" />માં સાચવવામાં આવશે નહીં.</translation>
 <translation id="3022978424994383087">તે મળ્યો નથી.</translation>
 <translation id="3023464535986383522">સાંભળવા માટે પસંદ કરો</translation>
@@ -9040,6 +9042,7 @@ USB ડિવાઇસ</translation>
 <translation id="811994229154425014">પૂર્ણવિરામ ટાઇપ કરવા માટે ડબલ-સ્પેસ</translation>
 <translation id="8120505434908124087">ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરો</translation>
 <translation id="8121750884985440809">હાલમાં તમે તમારી સ્ક્રીન કાસ્ટ કરી રહ્યા છો</translation>
+<translation id="8122898034710982882">ફોન હબ, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">પીળા અને સફેદ ફૂલ</translation>
 <translation id="8123975449645947908">પાછળ સ્ક્રોલ કરો</translation>
 <translation id="8124313775439841391">મેનેજ થયેલ ONC</translation>
@@ -9075,6 +9078,7 @@ USB ડિવાઇસ</translation>
 <translation id="8148760431881541277">સાઇન ઇન કરવાનું મર્યાદિત કરવાના સેટિંગ</translation>
 <translation id="8149564499626272569">USB કેબલનો ઉપયોગ કરીને તમારા ફોન મારફતે ચકાસો</translation>
 <translation id="8149870652370242480">તમારા ફોન પર તમારા સાચવેલા પાસવર્ડનો ઉપયોગ કરવા માટે, iOS માટે Chrome ડાઉનલોડ કરો અને તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો.</translation>
+<translation id="8151057139207656239">બિલ્ડની વિગતો કૉપિ કરી</translation>
 <translation id="815114315010033526">તેને બદલે QR કોડનો ઉપયોગ કરો</translation>
 <translation id="8151638057146502721">ગોઠવો</translation>
 <translation id="8154790740888707867">કોઇ ફાઇલ નથી</translation>
@@ -9318,7 +9322,6 @@ USB ડિવાઇસ</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{જે <ph name="BEGIN_BOLD" />1 સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}one{જે <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}other{જે <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}}</translation>
 <translation id="8342221978608739536">પ્રયાસ કર્યો ન હતો</translation>
 <translation id="8342861492835240085">સંગ્રહ પસંદ કરો</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) આ ડિવાઇસ પર નીચેની ઍપ ઇન્સ્ટૉલ કરવા માગે છે:}one{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) આ ડિવાઇસ પર નીચેની ઍપ ઇન્સ્ટૉલ કરવા માગે છે:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) આ ડિવાઇસ પર નીચેની ઍપ ઇન્સ્ટૉલ કરવા માગે છે:}}</translation>
 <translation id="8345848587667658367">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોઈ શકો છો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
 <translation id="834785183489258869">જ્યારે છૂપા મોડમાં હો, ત્યારે અલગ-અલગ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને વ્યક્તિગત બનાવવા માટે. અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં.</translation>

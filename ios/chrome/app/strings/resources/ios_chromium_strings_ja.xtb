@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">Chromium で最近使ったタブを表示</translation>
 <translation id="4408912345039114853">Chromium で安全チェックを実行する</translation>
 <translation id="4432744876818348753">Chromium を最大限に活用するにはログインしてください。</translation>
+<translation id="4498832288620833153">入力した URL を Chromium のリーディング リストに追加します。</translation>
 <translation id="452436063477828504">Google アカウントの Chromium データを常に使用できるようにしてください</translation>
 <translation id="4555020257205549924">この機能を有効にすると、外国語のページを開いたときに翻訳ツールが表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium でお支払い方法の設定ページを開きます。</translation>
@@ -197,6 +198,7 @@
 <translation id="7928628054454574139">他のアプリでタップしたリンクを Chromium で開くことができます</translation>
 <translation id="7931842119211730154">Chromium を終了するときにシークレット タブをロックする</translation>
 <translation id="7934404985878918282">Chromium リーディング リストを表示</translation>
+<translation id="7971753607796745700">Chromium にリーディング リストの項目を追加する</translation>
 <translation id="7980860476903281594">Chromium で、許可したサイトと現在地が共有されます。</translation>
 <translation id="7995166854192397899">候補は、他のデバイスでの閲覧アクティビティに基づいて表示されます。候補を表示するには、すべてのデバイスで Chromium にログインしてください。</translation>
 <translation id="800195749539500647">Chromium を最大限に活用</translation>

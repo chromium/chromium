@@ -681,6 +681,7 @@
 <translation id="1536754031901697553">切断しています...</translation>
 <translation id="1537254971476575106">全画面拡大鏡</translation>
 <translation id="15373452373711364">大きいマウスカーソル</translation>
+<translation id="1539727654733007771">モバイル ネットワークが設定されていません。新しい<ph name="BEGIN_LINK" />プロファイル<ph name="END_LINK" />をダウンロードしてください。</translation>
 <translation id="1540265419569299117">ChromeOS アプリサービス</translation>
 <translation id="1540605929960647700">デモモードの有効化</translation>
 <translation id="1541346352678737112">ネットワークが見つかりません</translation>
@@ -1247,6 +1248,7 @@
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1954597385941141174">サイトが USB デバイスへの接続を要求できるようにする</translation>
 <translation id="1954813140452229842">共有フォルダのマウントエラー。認証情報を確認してもう一度お試しください。</translation>
+<translation id="1955313993396968525"><ph name="VISUAL_SEARCH_PROVIDER" /> で動画フレームを検索</translation>
 <translation id="1956050014111002555">ファイルに含まれる複数の証明書のうち、いずれもインポートできませんでした:</translation>
 <translation id="1956167375087861299">識別子の使用と保護されたコンテンツの再生を許可しないサイト</translation>
 <translation id="1956390763342388273">「<ph name="FOLDER_PATH" />」のすべてのファイルがアップロードされます。この操作は、サイトを信頼できる場合にのみ行ってください。</translation>
@@ -1815,6 +1817,7 @@
 <translation id="237828693408258535">このページを翻訳しますか？</translation>
 <translation id="2378982052244864789">拡張機能のディレクトリを選択してください。</translation>
 <translation id="2379281330731083556">システム ダイアログを使用して印刷... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">これにより、モバイル ネットワークが数分切断されることがあります。</translation>
 <translation id="2381499968174336913">共有タブのプレビュー</translation>
 <translation id="2382875860893882175">キャストは現在一時停止しています。いつでもキャストを再開または停止できます。</translation>
 <translation id="2383825469508278924">キーボードのキーマッピング、ファンクション キーなどを変更します</translation>
@@ -6771,6 +6774,7 @@
 <translation id="6344576354370880196">保存済みのプリンタ</translation>
 <translation id="6344608411615208519">保護者によって<ph name="BEGIN_LINK" />ブラウザが管理<ph name="END_LINK" />されています</translation>
 <translation id="6344622098450209924">トラッキング保護</translation>
+<translation id="6345203628032613660"><ph name="VISUAL_SEARCH_PROVIDER" /> で動画フレームを検索</translation>
 <translation id="6345418402353744910">管理者がネットワークを設定できるよう、プロキシ「<ph name="PROXY" />」のユーザー名とパスワードを指定してください</translation>
 <translation id="6345566021391290381"><ph name="WEBSITE_NAME" /> のパスワードがあなたと共有されています。これらのパスワードはログイン フォームで使用できます。</translation>
 <translation id="6345878117466430440">既読にする</translation>
@@ -9312,7 +9316,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{最近、通知を多数送信した <ph name="BEGIN_BOLD" />1 件のサイト<ph name="END_BOLD" />を確認する}other{最近、通知を多数送信した <ph name="BEGIN_BOLD" />{NUM_SITES} 件のサイト<ph name="END_BOLD" />を確認する}}</translation>
 <translation id="8342221978608739536">試していない</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」（<ph name="DOMAIN" />）がこのデバイスに次のアプリをインストールしようとしています。}other{「<ph name="APP_NAME" />」（<ph name="DOMAIN" />）がこのデバイスに次のアプリをインストールしようとしています。}}</translation>
 <translation id="8345848587667658367">スマートフォンの最近の写真、メディア、通知、アプリを表示できるようになりました</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="834785183489258869">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のパーソナライズなどを行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>

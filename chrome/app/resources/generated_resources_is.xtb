@@ -2691,6 +2691,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3021065318976393105">Þegar rafhlaða er notuð</translation>
 <translation id="3021066826692793094">Fiðrildi</translation>
 <translation id="3021678814754966447">Skoða frumkóða ramma</translation>
+<translation id="3021902017511220299">Skönnun mistókst. Stjórnandinn lokaði á þessa aðgerð.</translation>
 <translation id="3022361196600037287">Tækið <ph name="DEVICE" /> verður fjarlægt úr þessari Chromebook og vistast ekki á <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Náði þessu ekki.</translation>
 <translation id="3023464535986383522">Textaupplestur</translation>
@@ -9062,6 +9063,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="811994229154425014">Tvö bil til að slá inn punkt</translation>
 <translation id="8120505434908124087">Setja upp eSIM-prófíl</translation>
 <translation id="8121750884985440809">Þú ert að varpa skjánum þínum.</translation>
+<translation id="8122898034710982882">Símstöð, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Gult og hvítt blóm</translation>
 <translation id="8123975449645947908">Fletta til baka</translation>
 <translation id="8124313775439841391">Stýrt ONC</translation>
@@ -9097,6 +9099,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8148760431881541277">Takmarka innskráningu</translation>
 <translation id="8149564499626272569">Staðfesta með símanum með USB-snúru</translation>
 <translation id="8149870652370242480">Til að nota vistuð aðgangsorð í símanum skaltu sækja Chrome fyrir iOS og skrá þig inn á Google-reikninginn þinn.</translation>
+<translation id="8151057139207656239">Afritaðar upplýsingar um smíði</translation>
 <translation id="815114315010033526">Nota frekar QR-kóða</translation>
 <translation id="8151638057146502721">Grunnstilla</translation>
 <translation id="8154790740888707867">Engin skrá</translation>
@@ -9340,7 +9343,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Yfirfara <ph name="BEGIN_BOLD" />1 vefsvæði<ph name="END_BOLD" /> sem sendi margar tilkynningar undanfarið}one{Yfirfara <ph name="BEGIN_BOLD" />{NUM_SITES} vefsvæði<ph name="END_BOLD" /> sem sendi margar tilkynningar undanfarið}other{Yfirfara <ph name="BEGIN_BOLD" />{NUM_SITES} vefsvæði<ph name="END_BOLD" /> sem sendu margar tilkynningar undanfarið}}</translation>
 <translation id="8342221978608739536">Prófaði ekki</translation>
 <translation id="8342861492835240085">Velja safn</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) vill setja upp eftirfarandi forrit í tækinu:}one{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) vill setja upp eftirfarandi forrit í tækinu:}other{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) vill setja upp eftirfarandi forrit í tækinu:}}</translation>
 <translation id="8345848587667658367">Nú geturðu séð nýlegar myndir, margmiðlunarefni, tilkynningar og forrit símans</translation>
 <translation id="8347227221149377169">Prentverk</translation>
 <translation id="834785183489258869">Þegar huliðsstilling er notuð geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>

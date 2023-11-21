@@ -2678,6 +2678,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3021065318976393105">Tijekom baterijskog napajanja</translation>
 <translation id="3021066826692793094">Leptir</translation>
 <translation id="3021678814754966447">&amp;Pogledaj izvor okvira</translation>
+<translation id="3021902017511220299">Skeniranje nije uspjelo. Radnju je blokirao administrator.</translation>
 <translation id="3022361196600037287">Uređaj <ph name="DEVICE" /> uklonit će se s ovog Chromebooka i neće se spremiti na <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nisam shvatio.</translation>
 <translation id="3023464535986383522">Odabir za govor</translation>
@@ -9049,6 +9050,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="811994229154425014">Dva pritiska na razmaknicu za unos točke</translation>
 <translation id="8120505434908124087">Instalirajte eSIM profil</translation>
 <translation id="8121750884985440809">Trenutačno emitirate zaslon</translation>
+<translation id="8122898034710982882">Phone hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Žuti i bijeli cvijet</translation>
 <translation id="8123975449645947908">Pomicanje unatrag</translation>
 <translation id="8124313775439841391">Upravljani ONC</translation>
@@ -9084,6 +9086,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8148760431881541277">Ograničavanje prijave</translation>
 <translation id="8149564499626272569">Potvrdite putem telefona povezanog USB kabelom</translation>
 <translation id="8149870652370242480">Kako biste upotrebljavali spremljene zaporke na telefonu, preuzmite Chrome za iOS i prijavite se na Google račun.</translation>
+<translation id="8151057139207656239">Kopirane pojedinosti o međuverziji</translation>
 <translation id="815114315010033526">Umjesto toga upotrijebite QR kôd</translation>
 <translation id="8151638057146502721">Konfiguracija</translation>
 <translation id="8154790740888707867">Nema datoteke</translation>
@@ -9327,7 +9330,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Pregledajte <ph name="BEGIN_BOLD" />jednu web-lokaciju<ph name="END_BOLD" /> koja je nedavno poslala mnogo obavijesti}one{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokaciju<ph name="END_BOLD" /> koja je nedavno poslala mnogo obavijesti}few{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokacije<ph name="END_BOLD" /> koje su nedavno poslale mnogo obavijesti}other{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokacija<ph name="END_BOLD" /> koje su nedavno poslale mnogo obavijesti}}</translation>
 <translation id="8342221978608739536">Nisam pokušao/pokušala</translation>
 <translation id="8342861492835240085">Odaberite zbirku</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{Aplikacija <ph name="APP_NAME" /> (<ph name="DOMAIN" />) želi instalirati sljedeću aplikaciju na ovom uređaju:}one{Aplikacija <ph name="APP_NAME" /> (<ph name="DOMAIN" />) želi instalirati sljedeće aplikacije na ovom uređaju:}few{Aplikacija <ph name="APP_NAME" /> (<ph name="DOMAIN" />) želi instalirati sljedeće aplikacije na ovom uređaju:}other{Aplikacija <ph name="APP_NAME" /> (<ph name="DOMAIN" />) želi instalirati sljedeće aplikacije na ovom uređaju:}}</translation>
 <translation id="8345848587667658367">Sada možete pregledati nedavne fotografije, medije, obavijesti i aplikacije telefona</translation>
 <translation id="8347227221149377169">Zadaci ispisa</translation>
 <translation id="834785183489258869">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama možda neće funkcionirati.</translation>

@@ -9317,7 +9317,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 Website<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{<ph name="BEGIN_BOLD" />{NUM_SITES} Websites<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
 <translation id="8342221978608739536">Nicht ausprobiert</translation>
 <translation id="8342861492835240085">Sammlung auswählen</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) möchte die folgende App auf diesem Gerät installieren:}other{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) möchte die folgenden Apps auf diesem Gerät installieren:}}</translation>
 <translation id="8345848587667658367">Du kannst jetzt die neuesten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone ansehen</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="834785183489258869">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>

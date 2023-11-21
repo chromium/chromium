@@ -733,6 +733,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4856841893565072365">Barra de menú con orden inteligente</translation>
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4883824756452868502">Detectar unidades</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4894963374040315706">Te permite realizar búsquedas con tu voz</translation>
 <translation id="489903206070130262">La última pestaña que cerraste</translation>
@@ -854,8 +855,10 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5551897871312988470">Ofrecer la traducción</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="555749644339804659">Verificando contraseñas…</translation>
+<translation id="5559567453458728487">Convierte las unidades de medida que se encuentran en la Web</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5572684875078967866">Almacenamiento de información</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Realizar el seguimiento de este paquete}other{Realizar el seguimiento de todos los paquetes}}</translation>
 <translation id="5597915316964418992">Abre la cuadrícula de pestañas</translation>
 <translation id="560322036295180549">Tu organización desactivó la opción.</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
@@ -1118,6 +1121,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6781260999953472352">¿Deseas activar la sincronización?</translation>
 <translation id="6781405765516175232">Para ver las opciones de ruta, presiona "Obtener instrucciones sobre cómo llegar".</translation>
 <translation id="6785453220513215166">Enviando informe de fallos…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Detener el seguimiento de este paquete}other{Detener el seguimiento de todos los paquetes}}</translation>
 <translation id="6790502149545262384">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Búsqueda por voz</translation>
 <translation id="6800349425672670802">Puedes acceder a todas las pestañas abiertas desde el Alternador de pestañas.</translation>

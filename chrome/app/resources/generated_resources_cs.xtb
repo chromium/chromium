@@ -1845,6 +1845,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2402226831639195063">Tóny</translation>
 <translation id="2405887402346713222">Sériová čísla zařízení a komponent</translation>
 <translation id="2406153734066939945">Smazat tento profil a jeho data?</translation>
+<translation id="2407671304279211586">Vybrat poskytovatele DNS</translation>
 <translation id="2408018932941436077">Ukládání karty</translation>
 <translation id="2408955596600435184">Zadejte PIN</translation>
 <translation id="2409268599591722235">Jdeme na to</translation>
@@ -9323,7 +9324,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Zkontrolujte <ph name="BEGIN_BOLD" />1 web<ph name="END_BOLD" />, který nedávno odeslal mnoho oznámení}few{Zkontrolujte <ph name="BEGIN_BOLD" />{NUM_SITES} weby<ph name="END_BOLD" />, které nedávno odeslaly mnoho oznámení}many{Zkontrolujte <ph name="BEGIN_BOLD" />{NUM_SITES} webu<ph name="END_BOLD" />, které nedávno odeslaly mnoho oznámení}other{Zkontrolujte <ph name="BEGIN_BOLD" />{NUM_SITES} webů<ph name="END_BOLD" />, které nedávno odeslaly mnoho oznámení}}</translation>
 <translation id="8342221978608739536">Nezkoušel(a) jsem to</translation>
 <translation id="8342861492835240085">Vyberte sbírku</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) chce do tohoto zařízení nainstalovat následující aplikaci:}few{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) chce do tohoto zařízení nainstalovat následující aplikace:}many{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) chce do tohoto zařízení nainstalovat následující aplikace:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) chce do tohoto zařízení nainstalovat následující aplikace:}}</translation>
 <translation id="8345848587667658367">Nyní můžete zobrazit nedávné fotky, média, oznámení a aplikace v telefonu</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
 <translation id="834785183489258869">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>

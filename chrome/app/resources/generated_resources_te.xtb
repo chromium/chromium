@@ -2688,6 +2688,7 @@
 <translation id="3021065318976393105">బ్యాటరీలో ఉన్నప్పుడు</translation>
 <translation id="3021066826692793094">సీతాకోకచిలుక</translation>
 <translation id="3021678814754966447">ఫ్రేమ్ మూలాన్ని &amp;వీక్షించండి</translation>
+<translation id="3021902017511220299">స్కాన్ విఫలమైంది. ఈ చర్యను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
 <translation id="3022361196600037287">ఈ Chromebook నుండి <ph name="DEVICE" /> తీసివేయబడుతుంది, అలాగే <ph name="PRIMARY_EMAIL" />కు సేవ్ చేయబడదు.</translation>
 <translation id="3022978424994383087">అది పూర్తి కాలేదు.</translation>
 <translation id="3023464535986383522">వినడానికి ఎంచుకోండి</translation>
@@ -9055,6 +9056,7 @@
 <translation id="811994229154425014">వ్యవధిని టైప్ చేయడానికి డబుల్-స్పేస్ నొక్కండి</translation>
 <translation id="8120505434908124087">eSIM ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="8121750884985440809">మీరు ప్రస్తుతం మీ స్క్రీన్‌ను ప్రసారం చేస్తున్నారు</translation>
+<translation id="8122898034710982882">ఫోన్ హబ్, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">పసుపు మరియు తెలుపు రంగు పుష్పం</translation>
 <translation id="8123975449645947908">వెనుకకు స్క్రోల్ చేయి</translation>
 <translation id="8124313775439841391">నిర్వహిత ONC</translation>
@@ -9090,6 +9092,7 @@
 <translation id="8148760431881541277">సైన్ ఇన్‌ను పరిమితం చేయండి</translation>
 <translation id="8149564499626272569">USB కేబుల్‌తో మీ ఫోన్ ద్వారా వెరిఫై చేయండి</translation>
 <translation id="8149870652370242480">మీ ఫోన్‌లో మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించడానికి, iOSకు సంబంధించిన Chromeను డౌన్‌లోడ్ చేయండి, ఆపై మీ Google ఖాతాకు సైన్ ఇన్ చేయండి.</translation>
+<translation id="8151057139207656239">బిల్డ్ వివరాలు కాపీ చేయబడ్డాయి</translation>
 <translation id="815114315010033526">బదులుగా QR కోడ్‌ను ఉపయోగించండి</translation>
 <translation id="8151638057146502721">కాన్ఫిగర్ చేయి</translation>
 <translation id="8154790740888707867">ఫైల్ లేదు</translation>
@@ -9333,7 +9336,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{ఇటీవల చాలా నోటిఫికేషన్‌లను పంపిన <ph name="BEGIN_BOLD" />1 సైట్‌ని<ph name="END_BOLD" /> రివ్యూ చేయండి}other{ఇటీవల చాలా నోటిఫికేషన్‌లను పంపిన <ph name="BEGIN_BOLD" />{NUM_SITES} సైట్‌లను<ph name="END_BOLD" /> రివ్యూ చేయండి}}</translation>
 <translation id="8342221978608739536">ట్రై చేయలేదు</translation>
 <translation id="8342861492835240085">సేకరణను ఎంచుకోండి</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) ఈ పరికరంలో కింది యాప్‌ను ఇన్‌స్టాల్ చేయాలనుకుంటోంది:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) ఈ పరికరంలో కింది యాప్‌లను ఇన్‌స్టాల్ చేయాలనుకుంటోంది:}}</translation>
 <translation id="8345848587667658367">మీరు ఇప్పుడు మీ ఫోన్‌లోని ఇటీవలి ఫోటోలు, మీడియా, నోటిఫికేషన్‌లు, ఇంకా యాప్‌లను చూడవచ్చు</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="834785183489258869">అజ్ఞాతం మోడ్‌లో ఉండగా, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం. కొన్ని సైట్‌లలోని ఫీచర్‌లు సరిగ్గా పని చేయకపోవచ్చు.</translation>

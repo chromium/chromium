@@ -733,6 +733,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4856841893565072365">Shiriti i menysë për renditjen inteligjente</translation>
 <translation id="4860895144060829044">Telefono</translation>
 <translation id="4881695831933465202">Hap</translation>
+<translation id="4883824756452868502">Zbulo njësitë</translation>
 <translation id="488785315393301722">Shfaq detajet</translation>
 <translation id="4894963374040315706">Kjo të lejon të kërkosh me anë të zërit</translation>
 <translation id="489903206070130262">Skeda e hapur e fundit</translation>
@@ -854,8 +855,10 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5551897871312988470">Ofro që t'i përkthesh</translation>
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="555749644339804659">Po kontrollon fjalëkalimet…</translation>
+<translation id="5559567453458728487">Konverto njësitë matëse të gjetura në ueb</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5572684875078967866">Hapësira ruajtëse e informacioneve</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Gjurmo këtë pako}other{Gjurmo të gjitha pakot}}</translation>
 <translation id="5597915316964418992">Hap rrjetën e skedave</translation>
 <translation id="560322036295180549">Çaktivizuar nga organizata jote</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
@@ -1118,6 +1121,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6781260999953472352">Të aktivizohet sinkronizimi?</translation>
 <translation id="6781405765516175232">Për opsionet e itinerarit, trokit te "Merr udhëzime".</translation>
 <translation id="6785453220513215166">Po dërgon raportin e ndërprerjeve aksidentale...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Anulo gjurmimin e kësaj pakoje}other{Anulo gjurmimin e të gjitha pakove}}</translation>
 <translation id="6790502149545262384">Së shpejti do të shikosh histori nga <ph name="CHANNEL_NAME" /> kur të hapësh një skedë të re.</translation>
 <translation id="6797885426782475225">Kërkimi me zë</translation>
 <translation id="6800349425672670802">Mund të kesh qasje te të gjitha skedat e hapura nga "Ndërruesi i skedave".</translation>

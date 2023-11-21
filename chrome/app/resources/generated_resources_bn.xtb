@@ -1859,6 +1859,7 @@
 <translation id="2402226831639195063">টোন</translation>
 <translation id="2405887402346713222">ডিভাইস ও কম্পোনেন্ট সিরিয়াল নম্বর</translation>
 <translation id="2406153734066939945">এই প্রোফাইল এবং এর ডেটা মুছে ফেলতে চান?</translation>
+<translation id="2407671304279211586">ডিএনএস প্রদানকারী বেছে নিন</translation>
 <translation id="2408018932941436077">কার্ড সেভ করা হচ্ছে</translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2409268599591722235">শুরু করা যাক</translation>
@@ -9343,7 +9344,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />১টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}one{<ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}other{<ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}}</translation>
 <translation id="8342221978608739536">ব্যবহার করিনি</translation>
 <translation id="8342861492835240085">একটি সংগ্রহ বেছে নিন</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) এই ডিভাইসে নিচে উল্লেখ করা অ্যাপ ইনস্টল করতে চায়:}one{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) এই ডিভাইসে নিচে উল্লেখ করা অ্যাপগুলি ইনস্টল করতে চায়:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) এই ডিভাইসে নিচে উল্লেখ করা অ্যাপগুলি ইনস্টল করতে চায়:}}</translation>
 <translation id="8345848587667658367">আপনি এখন আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া, বিজ্ঞপ্তি এবং অ্যাপ দেখতে পারেন</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
 <translation id="834785183489258869">ছদ্মবেশী মোডে থাকলে, বিভিন্ন ওয়েবসাইট জুড়ে বিজ্ঞাপন পছন্দ অনুযায়ী দেখানোর মতো ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারে না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>

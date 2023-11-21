@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">မိုက်လုပ်ဆောင်ပုံကို နောက်ပိုင်းတွင် အချိန်မရွေး ပြောင်းနိုင်ပါသည်။</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> ခန့် ကျန်သည် (<ph name="PERCENTAGE" />%)။
 စက်ကို အားသွင်းပါ။</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> ၏ မြင့်မားသောမြင်နိုင်မှုကို ဖွင့်/ပိတ် လုပ်ရန်</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> စီမံခန့်ခွဲသော အသုံးပြုသူ</translation>
 <translation id="3666266999138159418">လွင့်မျောဝင်းဒိုးဖျောက်ရန် ပွတ်ဆွဲပါ</translation>
 <translation id="367531336287639526">လိပ်စာဘား၏ ဘယ်ဘက်ရှိ ပထမဆုံးသင်္ကေတကို ရွေးရန်</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />၊
         <ph name="NOTIFICATION_2" />၊
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> တွင် မွမ်းမံထားသည်</translation>
 <translation id="4987738733603015246">မျက်နှာပြင် ၁၆</translation>
 <translation id="4989163558385430922">အားလုံး ကြည့်ရန်</translation>
 <translation id="5003993274120026347">နောက် ဝါကျ</translation>
@@ -1683,6 +1685,13 @@
 <translation id="7893503627044934815">ဤဖိုင်ကို မကြည့်လိုပါ</translation>
 <translation id="7895348134893321514">အိတ်</translation>
 <translation id="7897375687985782769">မျက်နှာပြင်လှည့်ရန် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်ထားသည်။ မျက်နှာပြင်ကို လှည့်လိုပါသလား။</translation>
+<translation id="7897626842031123113">အခြေအနေပြ ဗန်း၊ အချိန် <ph name="TIME" />၊
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />၊
+        <ph name="NETWORK" />၊
+        <ph name="MANAGED" />၊
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">ဝင်းဒိုးများ ပြောင်းရန်</translation>
 <translation id="7901405293566323524">ဖုန်းပင်မ</translation>
 <translation id="7902625623987030061">လက်ဗွေအာရုံခံကိရိယာကို ထိပါ</translation>

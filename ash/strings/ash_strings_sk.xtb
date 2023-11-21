@@ -650,6 +650,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3659667652322717492">Správanie mikrofónu môžete kedykoľvek zmeniť.</translation>
 <translation id="3659814201068740063">Približný zostávajúci čas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Pripojte svoje zariadenie k napájaniu.</translation>
+<translation id="3660860940251915011">Prepnúť vysokú viditeľnosť funkcie <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Spravovaný používateľ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Plávajúce okno skryjete potiahnutím</translation>
 <translation id="367531336287639526">Výber prvej ikony naľavo od panela s adresou</translation>
@@ -980,6 +981,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Upravené <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">16. plocha</translation>
 <translation id="4989163558385430922">Zobraziť všetko</translation>
 <translation id="5003993274120026347">Ďalšia veta</translation>

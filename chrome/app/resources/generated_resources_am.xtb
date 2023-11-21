@@ -682,6 +682,7 @@
 <translation id="1536754031901697553">ግንኙነት በማቋረጥ ላይ...</translation>
 <translation id="1537254971476575106">የሙሉ ማያ ገፅ ማጉያ</translation>
 <translation id="15373452373711364">ትልቅ የመዳፊት ጠቋሚ</translation>
+<translation id="1539727654733007771">ምንም የተንቀሳቃሽ ስልክ አውታረ መረቦች አልተቀናበሩም። አዲስ <ph name="BEGIN_LINK" />መገለጫ<ph name="END_LINK" /> ያውርዱ።</translation>
 <translation id="1540265419569299117">የChromeOS የመተግበሪያ አገልግሎት</translation>
 <translation id="1540605929960647700">የማሳያ ሁነታውን ያንቁ</translation>
 <translation id="1541346352678737112">ምንም አውታረ መረብ አልተገኘም</translation>
@@ -1258,6 +1259,7 @@
 <translation id="1951012854035635156">ረዳት</translation>
 <translation id="1954597385941141174">ጣቢያዎች ከዩኤስቢ መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላሉ</translation>
 <translation id="1954813140452229842">ማጋራትን ማፈናጠጥ ላይ ስህተት። እባክዎ ምስክርነቶችዎን ይፈትሹና እንደገና ይሞክሩ።</translation>
+<translation id="1955313993396968525">የቪዲዮ ፍሬም በ <ph name="VISUAL_SEARCH_PROVIDER" /> ይፈልጉ</translation>
 <translation id="1956050014111002555">ፋይሉ እንዲገቡ ያልተደረጉ በርካታ የእውቅና ማረጋገጫዎችን ይዞ ነበር፦</translation>
 <translation id="1956167375087861299">የተጠበቀ ይዘትን ለማጫወት ለዪዎችን እንዲጠቀም አልተፈቀደም</translation>
 <translation id="1956390763342388273">ይህ ሁሉንም ፋይሎች ከ«<ph name="FOLDER_PATH" />» ይሰቅላል። ጣቢያውን የሚያምኑት ከሆነ ብቻ ይህን ያድርጉ።</translation>
@@ -1829,6 +1831,7 @@
 <translation id="237828693408258535">ይህ ገፅ ይተርጎም?</translation>
 <translation id="2378982052244864789">የቅጥያውን ማውጫ ይምረጡ።</translation>
 <translation id="2379281330731083556">የስርዓት መገናኛ ተጠቅመው ያትሙ... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">ይህ የተንቀሳቃሽ ስልክ አውታረ መረብዎ ለጥቂት ደቂቃዎች ግንኙነቱ እንዲቋረጥ ሊያደርግ ይችላል</translation>
 <translation id="2381499968174336913">የተጋራ ትር ቅድመ ዕይታ</translation>
 <translation id="2382875860893882175">cast ማድረግ በአሁኑ ጊዜ ባለበት ቆሟል። በማንኛውም ጊዜ cast ማድረግን ከቆመበት ማስቀጠል ወይም cast ማድረግን ማቆም ይችላሉ።</translation>
 <translation id="2383825469508278924">የቁልፍ ሰሌዳ ቁልፍ ማዛመድ፣ የተግባር ቁልፎች እና ተጨማሪዎችን ይቀይሩ</translation>
@@ -2684,6 +2687,7 @@
 <translation id="3021065318976393105">ባትሪ ላይ ሳለ</translation>
 <translation id="3021066826692793094">ቢራቢሮ</translation>
 <translation id="3021678814754966447">የፍሬም መነሻ &amp;አሳይ</translation>
+<translation id="3021902017511220299">ቅኝት አልተሳካም። ይህ እርምጃ በአስተዳዳሪዎ ታግዷል።</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> ከዚህ Chromebook ይወገዳል እና ወደ <ph name="PRIMARY_EMAIL" /> አይቀመጥም።</translation>
 <translation id="3022978424994383087">አልሰማሁትም።</translation>
 <translation id="3023464535986383522">ለመናገር-ይምረጡ</translation>
@@ -6787,6 +6791,7 @@
 <translation id="6344576354370880196">የተቀመጡ አታሚዎች</translation>
 <translation id="6344608411615208519">የእርስዎ <ph name="BEGIN_LINK" />አሳሽ የሚተዳደረው<ph name="END_LINK" /> በወላጅዎ ነው</translation>
 <translation id="6344622098450209924">የመከታተል ጥበቃ</translation>
+<translation id="6345203628032613660">የቪዲዮ ፍሬም በ <ph name="VISUAL_SEARCH_PROVIDER" /> ይፈልጉ</translation>
 <translation id="6345418402353744910">አስተዳዳሪው አውታረ መረብዎን ማዋቀር እንዲችል የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል ለተኪው <ph name="PROXY" /> ያስፈልጋሉ።</translation>
 <translation id="6345566021391290381">ለ<ph name="WEBSITE_NAME" /> ከእርስዎ ጋር የተጋሩ የይለፍ ቃሎች አሉ። በመለያ የመግቢያ ቅጹ ላይ ሊጠቀሙባቸው ይችላሉ።</translation>
 <translation id="6345878117466430440">እንደተነበበ ምልክት አድርግ</translation>
@@ -9059,6 +9064,7 @@ nil</translation>
 <translation id="811994229154425014">ነጥብን ለመተየብ ሁለት ባዶ ቦታ</translation>
 <translation id="8120505434908124087">የኢሲም መገለጫ ይጫኑ</translation>
 <translation id="8121750884985440809">እርስዎ በአሁኑ ጊዜ የማያ ገጽዎን cast እያደረጉ ነው</translation>
+<translation id="8122898034710982882">የስልክ ሃብ፣ <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">ቢጫ እና ነጭ አበባ</translation>
 <translation id="8123975449645947908">ወደ ኋላ ያሸብልሉ</translation>
 <translation id="8124313775439841391">የሚቀናበር ONC</translation>
@@ -9094,6 +9100,7 @@ nil</translation>
 <translation id="8148760431881541277">በመለያ መግባትን ይገድቡ</translation>
 <translation id="8149564499626272569">በዩኤስቢ ገመድ በኩል የእርስዎን ስልክ ያረጋግጡ</translation>
 <translation id="8149870652370242480">በስልክዎ ላይ የተቀመጡ የይለፍ ቃሎችዎን ለመጠቀም Chrome ለiOSን ያውርዱ እና ወደ Google መለያዎ ይግቡ።</translation>
+<translation id="8151057139207656239">የተቀዱ የግንባታ ዝርዝሮች</translation>
 <translation id="815114315010033526">በምትኩ QR ኮድ ተጠቀም</translation>
 <translation id="8151638057146502721">አዋቅር</translation>
 <translation id="8154790740888707867">ምንም ፋይል የለም</translation>
@@ -9337,7 +9344,6 @@ nil</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{በቅርቡ ብዙ ማሳወቂያዎችን የላከ <ph name="BEGIN_BOLD" />1 ጣቢያ<ph name="END_BOLD" />ን ይገምግሙ}one{በቅርቡ ብዙ ማሳወቂያዎችን የላከ <ph name="BEGIN_BOLD" />{NUM_SITES} ጣቢያ<ph name="END_BOLD" />ን ይገምግሙ}other{በቅርቡ ብዙ ማሳወቂያዎችን የላኩ <ph name="BEGIN_BOLD" />{NUM_SITES} ጣቢያዎች<ph name="END_BOLD" />ን ይገምግሙ}}</translation>
 <translation id="8342221978608739536">አልሞከርኩትም</translation>
 <translation id="8342861492835240085">አንድ ስብስብ ይምረጡ</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) የሚከተለውን መተግበሪያ በዚህ መሣሪያ ላይ መጫን ይፈልጋል፦}one{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) የሚከተለውን መተግበሪያ በዚህ መሣሪያ ላይ መጫን ይፈልጋል፦}other{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) የሚከተሉትን መተግበሪያዎች በዚህ መሣሪያ ላይ መጫን ይፈልጋል፦}}</translation>
 <translation id="8345848587667658367">አሁን የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎች መመልከት ይችላሉ</translation>
 <translation id="8347227221149377169">የኅትመት ሥራዎች</translation>
 <translation id="834785183489258869">ማንነት በማያሳውቅ ሁኔታ ላይ ሳሉ ጣቢያዎች ለምሳሌ ማስታወቂያዎችን ግላዊነት ለማላበስ ብለው የእርስዎን ኩኪዎች በመጠቀም በተለያዩ ጣቢያዎች ላይ ያለዎትን የአሰሳ እንቅስቃሴ መመልከት አይችሉም። በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ላይሰሩ ይችላሉ።</translation>

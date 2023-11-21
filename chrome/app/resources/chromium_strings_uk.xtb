@@ -275,6 +275,7 @@
 <translation id="6129621093834146363">Файл <ph name="FILE_NAME" /> небезпечний, тому Chromium заблокував його.</translation>
 <translation id="6132897690380286411">Незабаром Chromium закриється і видалить дані веб-перегляду</translation>
 <translation id="6134968993075716475">Безпечний перегляд вимкнено. Chromium радить увімкнути його.</translation>
+<translation id="6144416395842701622">Увійдіть, щоб користуватися всіма можливостями Chromium</translation>
 <translation id="6145820983052037069">Тут можна перемикати профілі Chromium</translation>
 <translation id="615103374448673771">Якщо ви дозволите файли cookie, Chromium може використовувати їх для попереднього завантаження</translation>
 <translation id="6175304430031192654">Залежно від ваших налаштувань Chromium також може надсилати файли cookie й поточну URL-адресу</translation>
@@ -433,6 +434,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8648201657708811153">Google Chrome for Testing не можна зробити веб-переглядачем за умовчанням.</translation>
 <translation id="8697124171261953979">Розширення також змінило сторінку, яка відкривається під час запуску Chromium або пошуку в універсальному вікні пошуку.</translation>
 <translation id="8704119203788522458">Це ваш Chromium</translation>
+<translation id="8719993436687031146">Увійти в Chromium?</translation>
 <translation id="878572486461146056">Сталася помилка. Адміністратор мережі застосував правило для груп, яке забороняє встановлення: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796602469536043152">Chromium потрібен дозвіл на використання камери й мікрофона, щоб надати цьому сайту доступ до них</translation>
 <translation id="8826492472752484139">Натисніть "Менеджер паролів"</translation>

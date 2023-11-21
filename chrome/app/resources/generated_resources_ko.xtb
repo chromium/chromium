@@ -2692,6 +2692,7 @@
 <translation id="3021065318976393105">배터리 사용 시</translation>
 <translation id="3021066826692793094">나비</translation>
 <translation id="3021678814754966447">프레임 소스 보기(&amp;V)</translation>
+<translation id="3021902017511220299">스캔할 수 없습니다. 관리자가 이 작업을 차단했습니다.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" />가 Chromebook에서 삭제되며 <ph name="PRIMARY_EMAIL" />에 저장되지 않습니다.</translation>
 <translation id="3022978424994383087">인식하지 못했습니다.</translation>
 <translation id="3023464535986383522">텍스트 읽어주기</translation>
@@ -9061,6 +9062,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="811994229154425014">스페이스바를 2번 눌러 마침표 입력</translation>
 <translation id="8120505434908124087">eSIM 프로필 설치</translation>
 <translation id="8121750884985440809">현재 화면을 전송하고 있습니다</translation>
+<translation id="8122898034710982882">휴대전화 허브, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">노란색과 흰색 꽃</translation>
 <translation id="8123975449645947908">뒤로 스크롤</translation>
 <translation id="8124313775439841391">관리되는 ONC</translation>
@@ -9096,6 +9098,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8148760431881541277">로그인 제한</translation>
 <translation id="8149564499626272569">USB 케이블로 휴대전화를 연결하여 인증</translation>
 <translation id="8149870652370242480">휴대전화에서 저장된 비밀번호를 사용하려면 iOS용 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
+<translation id="8151057139207656239">빌드 세부정보가 복사되었습니다</translation>
 <translation id="815114315010033526">대신 QR 코드 사용</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
@@ -9339,7 +9342,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 1개<ph name="END_BOLD" />를 검토합니다.}other{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 {NUM_SITES}개<ph name="END_BOLD" />를 검토합니다.}}</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"(<ph name="DOMAIN" />)에서 기기에 다음 앱을 설치하려고 합니다.}other{"<ph name="APP_NAME" />"(<ph name="DOMAIN" />)에서 기기에 다음 앱을 설치하려고 합니다.}}</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="834785183489258869">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>

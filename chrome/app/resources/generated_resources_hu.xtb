@@ -684,6 +684,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1536754031901697553">Kapcsolat bontása...</translation>
 <translation id="1537254971476575106">Teljes képernyős nagyító</translation>
 <translation id="15373452373711364">Nagy egérmutató</translation>
+<translation id="1539727654733007771">Nincs beállítva mobilhálózat. Töltsön le új <ph name="BEGIN_LINK" />profilt.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">ChromeOS-alkalmazásszolgáltatás</translation>
 <translation id="1540605929960647700">Demó mód engedélyezése</translation>
 <translation id="1541346352678737112">Nem található hálózat</translation>
@@ -1261,6 +1262,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1951012854035635156">Segéd</translation>
 <translation id="1954597385941141174">A webhelyek engedélyt kérhetnek az USB-eszközökhöz való csatlakozásra</translation>
 <translation id="1954813140452229842">Hiba történt a megosztott tároló csatlakoztatása során. Ellenőrizze hitelesítő adatait, majd próbálkozzon újra.</translation>
+<translation id="1955313993396968525">Videókeret keresése a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">A fájl több tanúsítványt tartalmazott, amelyek közül egy sincs importálva:</translation>
 <translation id="1956167375087861299">Nem használhatnak azonosítókat védett tartalmak lejátszása érdekében</translation>
 <translation id="1956390763342388273">Ezzel feltölti az összes fájlt a(z) „<ph name="FOLDER_PATH" />” mappából. Csak akkor tegye ezt, ha megbízik a webhelyben.</translation>
@@ -1834,6 +1836,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="237828693408258535">Szeretné kérni az oldal lefordítását?</translation>
 <translation id="2378982052244864789">A bővítmény könyvtárának kiválasztása.</translation>
 <translation id="2379281330731083556">Nyomtatás a rendszer párbeszédablakán keresztül... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
 <translation id="2381499968174336913">Megosztott lap előnézete</translation>
 <translation id="2382875860893882175">Az átküldés jelenleg szünetel. Bármikor folytathatja vagy leállíthatja az átküldést.</translation>
 <translation id="2383825469508278924">Billentyűzetkiosztások, funkcióbillentyűk és egyebek módosítása.</translation>
@@ -2689,6 +2692,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3021065318976393105">Amíg akkumulátorról működik</translation>
 <translation id="3021066826692793094">Pillangó</translation>
 <translation id="3021678814754966447">&amp;Keret forrásának megtekintése</translation>
+<translation id="3021902017511220299">Sikertelen ellenőrzés. Ezt a műveletet letiltotta a rendszergazda.</translation>
 <translation id="3022361196600037287">A(z) <ph name="DEVICE" /> eszköz el lesz távolítva erről a Chromebookról, és nem menti a rendszer a következő fiókba: <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nem értettem.</translation>
 <translation id="3023464535986383522">Felolvasás</translation>
@@ -6796,6 +6800,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6344576354370880196">Mentett nyomtatók</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Böngésződet a szülőd kezeli<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">Nyomon követés elleni védelem</translation>
+<translation id="6345203628032613660">Videókeret keresése a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">Szükség van a(z) <ph name="PROXY" /> proxyhoz tartozó felhasználónevének és jelszavának megadására, hogy a rendszergazda be tudja állítani a hálózatot.</translation>
 <translation id="6345566021391290381">Jelszavak vannak megosztva Önnel a következőhöz: <ph name="WEBSITE_NAME" />. A bejelentkezési űrlapon használhatja őket.</translation>
 <translation id="6345878117466430440">Megjelölés olvasottként</translation>
@@ -9060,6 +9065,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="811994229154425014">Dupla szóköz pont írásához</translation>
 <translation id="8120505434908124087">eSIM-profil telepítése</translation>
 <translation id="8121750884985440809">Jelenleg folyamatban van a képernyő átküldése.</translation>
+<translation id="8122898034710982882">Telefonközpont, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Sárga és fehér virág</translation>
 <translation id="8123975449645947908">Görgetés visszafelé</translation>
 <translation id="8124313775439841391">Felügyelt ONC</translation>
@@ -9095,6 +9101,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8148760431881541277">Bejelentkezés korlátozása</translation>
 <translation id="8149564499626272569">Ellenőrzés telefonon, USB-kábellel</translation>
 <translation id="8149870652370242480">Ha szeretné mentett jelszavait használni telefonján, töltse le a Chrome iOS rendszerhez tervezett verzióját, és jelentkezzen be Google-fiókjába.</translation>
+<translation id="8151057139207656239">Build részletei vágólapra másolva</translation>
 <translation id="815114315010033526">Inkább QR-kód használata</translation>
 <translation id="8151638057146502721">Konfigurálás</translation>
 <translation id="8154790740888707867">Nincs fájl</translation>
@@ -9338,7 +9345,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Tekintse át azt az <ph name="BEGIN_BOLD" />1 webhelyet<ph name="END_BOLD" />, amely a közelmúltban sok értesítést küldött}other{Tekintse át azt a(z) <ph name="BEGIN_BOLD" />{NUM_SITES} webhelyet<ph name="END_BOLD" />, amelyek a közelmúltban sok értesítést küldtek}}</translation>
 <translation id="8342221978608739536">Nem próbáltam</translation>
 <translation id="8342861492835240085">Válasszon gyűjteményt</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{A(z) „<ph name="APP_NAME" />” (<ph name="DOMAIN" />) telepíteni szeretné a következő alkalmazást erre az eszközre:}other{A(z) „<ph name="APP_NAME" />” (<ph name="DOMAIN" />) telepíteni szeretné a következő alkalmazásokat erre az eszközre:}}</translation>
 <translation id="8345848587667658367">Mostantól megtekintheti a telefonon legutóbb megnyitott fotókat, médiatartalmakat, értesítéseket és alkalmazásokat</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="834785183489258869">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy lássák a különböző webhelyeken végzett böngészési tevékenységeit például annak érdekében, hogy a hirdetéseket személyre szabják. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>

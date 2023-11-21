@@ -36,6 +36,17 @@
 <translation id="1020006815010587263">ユーザーがゴミ箱を使用できないようにする。</translation>
 <translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" /> ポリシー</translation>
 <translation id="1022361784792428773">ユーザーに対してインストールを禁止する拡張機能 ID (すべて指定する場合は *)</translation>
+<translation id="1023465280109914543">このポリシーを有効にした場合、デフォルトで匿名のレポートが有効になり、<ph name="PRODUCT_NAME" /> の使用状況とクラッシュに関するデータが Google に送信されます。ユーザーはこの設定を変更できます。
+
+このポリシーを無効にした場合、匿名のレポートは無効になり、使用状況とクラッシュに関するデータは Google に送信されません。ユーザーはこの動作を変更できません。
+
+このポリシーを未設定のままにした場合、ユーザーはインストール時または初回起動時に匿名のレポートを送信するかどうかを選択し、後からこの設定を変更できます。
+
+<ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、<ph name="MS_AAD_NAME" /> に追加されたインスタンス、または <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。
+
+<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。
+
+（<ph name="PRODUCT_OS_NAME" /> については、<ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> をご覧ください）</translation>
 <translation id="102492767056134033">ログイン画面での画面キーボードのデフォルト状態を設定する</translation>
 <translation id="1026335125982730097">Cookie の設定を許可するサイトを指定する URL パターンのリストを設定できます。
 

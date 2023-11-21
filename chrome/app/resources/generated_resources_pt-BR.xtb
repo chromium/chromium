@@ -9343,7 +9343,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revise <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> que enviou muitas notificações recentemente}one{Revise <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> que enviou muitas notificações recentemente}other{Revise <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que enviaram muitas notificações recentemente}}</translation>
 <translation id="8342221978608739536">Não tentei</translation>
 <translation id="8342861492835240085">Selecione uma coleção</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) quer instalar o seguinte app neste dispositivo:}one{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) quer instalar o seguinte app neste dispositivo:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) quer instalar os seguintes apps neste dispositivo:}}</translation>
 <translation id="8345848587667658367">Agora, você pode ver apps, mídias, notificações e fotos recentes do seu smartphone</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
 <translation id="834785183489258869">Na navegação anônima, os sites não podem usar seus cookies para ver suas atividades de navegação em outras páginas, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem não funcionar.</translation>

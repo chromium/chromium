@@ -1861,6 +1861,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2402226831639195063">Tonai</translation>
 <translation id="2405887402346713222">Įrenginių ir komponentų serijos numeriai</translation>
 <translation id="2406153734066939945">Ištrinti šį profilį ir jo duomenis?</translation>
+<translation id="2407671304279211586">Pasirinkite DNS teikėją</translation>
 <translation id="2408018932941436077">Išsaugoma kortelė</translation>
 <translation id="2408955596600435184">Įveskite PIN kodą</translation>
 <translation id="2409268599591722235">Pradėti</translation>
@@ -9351,7 +9352,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Peržiūrėkite <ph name="BEGIN_BOLD" />1 svetainę<ph name="END_BOLD" />, kuri neseniai išsiuntė daug pranešimų}one{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetainę<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}few{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetaines<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}many{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetainės<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}other{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_SITES} svetainių<ph name="END_BOLD" />, kurios neseniai išsiuntė daug pranešimų}}</translation>
 <translation id="8342221978608739536">Nebandžiau</translation>
 <translation id="8342861492835240085">Pasirinkti kolekciją</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) norėtų šiame įrenginyje įdiegti toliau nurodytą programą.}one{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}few{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}many{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}other{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) norėtų šiame įrenginyje įdiegti toliau nurodytas programas.}}</translation>
 <translation id="8345848587667658367">Dabar galite peržiūrėti naujausias telefono nuotraukas, mediją, pranešimus ir programas</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
 <translation id="834785183489258869">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti kai kuriose svetainėse.</translation>

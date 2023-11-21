@@ -1844,6 +1844,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2402226831639195063">Tonalités</translation>
 <translation id="2405887402346713222">Numéros de série des appareils et composants</translation>
 <translation id="2406153734066939945">Voulez-vous supprimer ce profil et ses données associées ?</translation>
+<translation id="2407671304279211586">Sélectionner un fournisseur DNS</translation>
 <translation id="2408018932941436077">Enregistrement de la carte…</translation>
 <translation id="2408955596600435184">Saisissez votre code.</translation>
 <translation id="2409268599591722235">C'est parti</translation>
@@ -9326,7 +9327,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examiner <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}one{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}other{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> qui ont envoyé beaucoup de notifications récemment}}</translation>
 <translation id="8342221978608739536">Je n'ai pas essayé.</translation>
 <translation id="8342861492835240085">Sélectionner une collection</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) souhaite installer l'appli suivante sur cet appareil :}one{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) souhaite installer l'appli suivante sur cet appareil :}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) souhaite installer les applis suivantes sur cet appareil :}}</translation>
 <translation id="8345848587667658367">Vous pouvez désormais afficher les photos, notifications, applis et contenus multimédias récents de votre téléphone</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="834785183489258869">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>

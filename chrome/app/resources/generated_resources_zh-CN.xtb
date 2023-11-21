@@ -2667,6 +2667,7 @@
 <translation id="3021065318976393105">使用电池时</translation>
 <translation id="3021066826692793094">蝴蝶</translation>
 <translation id="3021678814754966447">查看框架的源代码(&amp;V)</translation>
+<translation id="3021902017511220299">扫描失败。您的管理员已禁用此操作。</translation>
 <translation id="3022361196600037287">系统会将“<ph name="DEVICE" />”从此 Chromebook 中移除，并且不会将其保存到 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">无法解析您所说的内容。</translation>
 <translation id="3023464535986383522">随选朗读</translation>
@@ -9033,6 +9034,7 @@
 <translation id="811994229154425014">按两下空格键时输入句点</translation>
 <translation id="8120505434908124087">安装 eSIM 卡配置文件</translation>
 <translation id="8121750884985440809">您目前正在投放屏幕画面</translation>
+<translation id="8122898034710982882">Phone Hub、<ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">黄色和白色花朵</translation>
 <translation id="8123975449645947908">向后滚动</translation>
 <translation id="8124313775439841391">受管理的 ONC</translation>
@@ -9068,6 +9070,7 @@
 <translation id="8148760431881541277">限制登录</translation>
 <translation id="8149564499626272569">通过使用 USB 线连接手机进行验证</translation>
 <translation id="8149870652370242480">如需在手机上使用您已保存的密码，请下载 iOS 版 Chrome 并登录您的 Google 账号。</translation>
+<translation id="8151057139207656239">已复制版本详情</translation>
 <translation id="815114315010033526">改用二维码</translation>
 <translation id="8151638057146502721">配置</translation>
 <translation id="8154790740888707867">未发现文件</translation>
@@ -9311,7 +9314,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />1 个网站<ph name="END_BOLD" />}other{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />{NUM_SITES} 个网站<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />”(<ph name="DOMAIN" />) 想在此设备上安装以下应用：}other{“<ph name="APP_NAME" />”(<ph name="DOMAIN" />) 想在此设备上安装以下应用：}}</translation>
 <translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="834785183489258869">不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>

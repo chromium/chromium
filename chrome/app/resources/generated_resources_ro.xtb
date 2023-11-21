@@ -2676,6 +2676,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3021065318976393105">În timpul funcționării pe baterie</translation>
 <translation id="3021066826692793094">Fluture</translation>
 <translation id="3021678814754966447">&amp;Afișează sursa cadrului</translation>
+<translation id="3021902017511220299">Scanarea nu a reușit. Acțiunea este blocată de administrator.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> va fi eliminat de pe acest Chromebook și nu va fi salvat în <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nu am înțeles.</translation>
 <translation id="3023464535986383522">Selectează și ascultă</translation>
@@ -9048,6 +9049,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="811994229154425014">Spațiu dublu pentru a insera punct</translation>
 <translation id="8120505434908124087">Instalează profilul eSIM</translation>
 <translation id="8121750884985440809">Momentan proiectezi ecranul</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Floare galbenă și albă</translation>
 <translation id="8123975449645947908">Derulează înapoi</translation>
 <translation id="8124313775439841391">Proprietăți ONC gestionate</translation>
@@ -9083,6 +9085,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8148760431881541277">Limitează conectarea</translation>
 <translation id="8149564499626272569">Confirmă prin telefon cu un cablu USB</translation>
 <translation id="8149870652370242480">Pentru a folosi parolele salvate pe telefon, descarcă Chrome pentru iOS și conectează-te la Contul Google.</translation>
+<translation id="8151057139207656239">Detaliile versiunii au fost copiate</translation>
 <translation id="815114315010033526">Folosește un cod QR</translation>
 <translation id="8151638057146502721">Configurați</translation>
 <translation id="8154790740888707867">Niciun fișier</translation>
@@ -9326,7 +9329,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examinează <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> care a trimis recent multe notificări}few{Examinează <ph name="BEGIN_BOLD" />{NUM_SITES} site-uri<ph name="END_BOLD" /> care au trimis recent multe notificări}other{Examinează <ph name="BEGIN_BOLD" />{NUM_SITES} de site-uri<ph name="END_BOLD" /> care au trimis recent multe notificări}}</translation>
 <translation id="8342221978608739536">Nu am încercat</translation>
 <translation id="8342861492835240085">Selectează o colecție</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />” (<ph name="DOMAIN" />) dorește să instaleze următoarea aplicație pe acest dispozitiv:}few{„<ph name="APP_NAME" />” (<ph name="DOMAIN" />) dorește să instaleze următoarele aplicații pe acest dispozitiv:}other{„<ph name="APP_NAME" />” (<ph name="DOMAIN" />) dorește să instaleze următoarele aplicații pe acest dispozitiv:}}</translation>
 <translation id="8345848587667658367">Acum poți vedea fotografiile, conținutul media, notificările și aplicațiile recente ale telefonului</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="834785183489258869">În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile de pe anumite site-uri să nu funcționeze.</translation>

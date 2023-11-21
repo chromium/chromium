@@ -9336,7 +9336,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{শেহতীয়াকৈ বহুতো জাননী পঠিওৱা <ph name="BEGIN_BOLD" />১ টা ছাইট<ph name="END_BOLD" /> পৰ্যালোচনা কৰক}one{শেহতীয়াকৈ বহুতো জাননী পঠিওৱা <ph name="BEGIN_BOLD" />{NUM_SITES} টা ছাইট<ph name="END_BOLD" /> পৰ্যালোচনা কৰক}other{শেহতীয়াকৈ বহুতো জাননী পঠিওৱা <ph name="BEGIN_BOLD" />{NUM_SITES} টা ছাইট<ph name="END_BOLD" /> পৰ্যালোচনা কৰক}}</translation>
 <translation id="8342221978608739536">চেষ্টা কৰি চোৱা নাই</translation>
 <translation id="8342861492835240085">এটা সংগ্ৰহ বাছনি কৰক</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />)এ এই ডিভাইচটোত তলত দিয়া এপ্‌টো ইনষ্টল কৰিবলৈ বিচাৰে:}one{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />)এ এই ডিভাইচটোত তলত দিয়া এপ্‌সমূহ ইনষ্টল কৰিবলৈ বিচাৰে:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />)এ এই ডিভাইচটোত তলত দিয়া এপ্‌সমূহ ইনষ্টল কৰিবলৈ বিচাৰে:}}</translation>
 <translation id="8345848587667658367">এতিয়া আপুনি আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া, জাননী আৰু এপ্‌সমূহ চাব পাৰে</translation>
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
 <translation id="834785183489258869">ইনক’গনিট’ ম’ডত থকাৰ সময়ত, ছাইটসমূহে বিভিন্ন ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ চাবলৈ আপোনাৰ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে; যেনে, বিজ্ঞাপন ব্যক্তিগতকৃত কৰা ইত্যাদি। কিছুমান ছাইটত সুবিধাসমূহে কাম নকৰিবও পাৰে।</translation>

@@ -7997,7 +7997,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7331646370422660166">alt + allanool</translation>
 <translation id="7332053360324989309">Spetsiaalne töötaja: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Rakenduste ja seadete varundamine ja taastamine</translation>
-<translation id="7335436113423103413">Lubab kasutada Chrome kohandamise funktsiooni uue vahelehe ühendatud külgpaneelil.</translation>
+<translation id="7335436113423103413">Lubab kasutada Chrome’i kohandamise funktsiooni uue vahelehe ühendatud külgpaneelil.</translation>
 <translation id="7335974957018254119">Kasuta õigekirjakontrolli:</translation>
 <translation id="7336799713063880535">Märguanded on blokeeritud.</translation>
 <translation id="7338630283264858612">Seadme seerianumber on kehtetu.</translation>
@@ -9329,7 +9329,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Vaadake üle <ph name="BEGIN_BOLD" />1 sait<ph name="END_BOLD" />, mis saatis hiljuti palju märguandeid}other{Vaadake üle <ph name="BEGIN_BOLD" />{NUM_SITES} saiti<ph name="END_BOLD" />, mis saatsid hiljuti palju märguandeid}}</translation>
 <translation id="8342221978608739536">Ei proovinud</translation>
 <translation id="8342861492835240085">Kogu valimine</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) soovib installida sellesse seadmesse järgmise rakenduse:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) soovib installida sellesse seadmesse järgmised rakendused:}}</translation>
 <translation id="8345848587667658367">Saate nüüd vaadata oma telefoni hiljutisi fotosid, meediat, märguandeid ja rakendusi</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="834785183489258869">Inkognito režiimis ei saa saidid eri saitidel küpsisefailide kaudu teie sirvimistegevusi jälgida, näiteks selleks, et reklaame isikupärastada. Funktsioonid ei pruugi mõnel saidil toimida.</translation>

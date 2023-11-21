@@ -9320,7 +9320,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisar <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que enviou moitas notificacións recentemente}other{Revisar <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que enviaron moitas notificacións recentemente}}</translation>
 <translation id="8342221978608739536">Non se intentou</translation>
 <translation id="8342861492835240085">Seleccionar unha colección</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) quere instalar a seguinte aplicación neste dispositivo:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) quere instalar as seguintes aplicacións neste dispositivo:}}</translation>
 <translation id="8345848587667658367">Xa podes acceder ás aplicacións, ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="834785183489258869">Co modo de incógnito activado, os sitios web non poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios). As funcións dalgúns sitios poden deixar de funcionar.</translation>

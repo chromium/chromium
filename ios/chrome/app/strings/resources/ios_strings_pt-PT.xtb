@@ -410,6 +410,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3080525922482950719">Pode guardar páginas para ler mais tarde ou offline.</translation>
 <translation id="3081338492074632642">Certifique-se de que a palavra-passe que está a guardar corresponde à sua palavra-passe para <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
+<translation id="3090455602619185166">Inicie sessão com uma conta gerida</translation>
 <translation id="309710370695886264">Tem 1 palavra-passe reutilizada. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
 <translation id="4018310736049373830">Gerir atividade</translation>
+<translation id="4021931095789478915">Adicione ${url} à Lista de leitura</translation>
 <translation id="4038354071007134711">Nenhuma app neste disp. pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Localizar na página</translation>
 <translation id="40433179647657191">Crie e partilhe um link direto para parte de uma página que realçou.</translation>
@@ -1447,6 +1449,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8556590991644167667">{count,plural, =1{Ignorou {count} aviso}other{Ignorou {count} avisos}}</translation>
 <translation id="8558480467877843976">Agora, pode usar o Chrome sempre que navegar ou tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="8560253818350321773">Mostre primeiro os itens usados frequentemente.</translation>
+<translation id="8569721750632860947">Que URL quer adicionar à sua Lista de leitura?</translation>
 <translation id="8588404856427128947">Desativada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros na Navegação anónima</translation>
 <translation id="8593565399399144771">Pode abrir um novo separador aqui.</translation>

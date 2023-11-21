@@ -191,6 +191,7 @@
 <translation id="4278390842282768270">Autorisé</translation>
 <translation id="429312253194641664">Un site est en train de lire un contenu multimédia</translation>
 <translation id="42981349822642051">Développer</translation>
+<translation id="4336566011000459927">Chrome limitera de nouveau les cookies aujourd'hui</translation>
 <translation id="4338831206024587507">Tous les sites du domaine <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
@@ -293,6 +294,7 @@
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6181444274883918285">Ajouter une exception pour un site</translation>
 <translation id="6192792657125177640">Exceptions</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome bloquera de nouveau les cookies demain}one{Les cookies seront de nouveau bloqués dans # jour}other{Les cookies seront de nouveau bloqués dans # jours}}</translation>
 <translation id="6195163219142236913">Cookies tiers limités</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
@@ -382,6 +384,7 @@
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7804248752222191302">Un site utilise actuellement votre appareil photo</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>
+<translation id="7822573154188733812">Chrome empêche les sites d'utiliser des cookies tiers pour suivre votre activité lorsque vous naviguez. Accédez aux paramètres pour <ph name="BEGIN_LINK" />gérer vos protections contre le suivi<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Contenu en cours de lecture</translation>
 <translation id="783819812427904514">Réactiver le son de la vidéo</translation>
 <translation id="7846076177841592234">Annuler la sélection</translation>
@@ -398,6 +401,7 @@
 <translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous montrer des annonces</translation>
 <translation id="8087000398470557479">Ce contenu est issu de <ph name="DOMAIN_NAME" />. Il est diffusé par Google.</translation>
 <translation id="8088603949666785339">Plus d'options dans <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome limitera de nouveau les cookies demain}one{Chrome limitera de nouveau les cookies dans # jour}other{Chrome limitera de nouveau les cookies dans # jours}}</translation>
 <translation id="8116925261070264013">Son coupé</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8131740175452115882">Confirmer</translation>

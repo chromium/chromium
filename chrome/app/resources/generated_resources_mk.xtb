@@ -1859,6 +1859,7 @@
 <translation id="2402226831639195063">Тонови</translation>
 <translation id="2405887402346713222">Сериски броеви на уредот и компонентите</translation>
 <translation id="2406153734066939945">Да се избрише профилот и неговите податоци?</translation>
+<translation id="2407671304279211586">Изберете давател на услуги на DNS</translation>
 <translation id="2408018932941436077">Се зачувува картичката</translation>
 <translation id="2408955596600435184">Внесете го вашиот PIN</translation>
 <translation id="2409268599591722235">Ајде</translation>
@@ -9342,7 +9343,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Прегледајте <ph name="BEGIN_BOLD" />1 сајт<ph name="END_BOLD" /> кој неодамна испрати многу известувања}one{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајт<ph name="END_BOLD" /> кои неодамна испратија многу известувања}other{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајтови<ph name="END_BOLD" /> кои неодамна испратија многу известувања}}</translation>
 <translation id="8342221978608739536">Не го пробав</translation>
 <translation id="8342861492835240085">Изберете колекција</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) сака да ја инсталира следнава апликација на уредов:}one{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) сака да ги инсталира следниве апликации на уредов:}other{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) сака да ги инсталира следниве апликации на уредов:}}</translation>
 <translation id="8345848587667658367">Сега можете да ги прегледувате неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации од телефонот</translation>
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="834785183489258869">Додека сте во „Инкогнито“, сајтовите не може да ги користат колачињата за да ја гледаат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами. Функциите на некои сајтови може да не функционираат</translation>

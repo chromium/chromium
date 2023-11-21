@@ -1840,6 +1840,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2402226831639195063">Tonos</translation>
 <translation id="2405887402346713222">Números de serie del dispositivo y los componentes</translation>
 <translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
+<translation id="2407671304279211586">Seleccionar proveedor de DNS</translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
 <translation id="2409268599591722235">Comenzar</translation>
@@ -9319,7 +9320,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que envió muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que enviaron muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) quiere instalar la siguiente app en este dispositivo:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) quiere instalar las siguientes apps en este dispositivo:}}</translation>
 <translation id="8345848587667658367">Ahora puedes ver las apps, las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="834785183489258869">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>

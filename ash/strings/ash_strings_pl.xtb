@@ -650,6 +650,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3659667652322717492">Działanie mikrofonu możesz w każdej chwili zmienić.</translation>
 <translation id="3659814201068740063">Pozostało około <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Podłącz urządzenie do zasilania.</translation>
+<translation id="3660860940251915011">Przełącz dużą widoczność funkcji <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Przesuń, aby ukryć pływające okno</translation>
 <translation id="367531336287639526">Wybierz pierwszą ikonę na lewo od paska adresu</translation>
@@ -980,6 +981,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Zmodyfikowano <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Biurko 16</translation>
 <translation id="4989163558385430922">Pokaż wszystko</translation>
 <translation id="5003993274120026347">Następne zdanie</translation>
@@ -1682,6 +1684,13 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7893503627044934815">Nie chcę, żeby ten plik był pokazywany</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Naciśnięto skrót klawiszowy obrotu ekranu. Czy chcesz obrócić ekran?</translation>
+<translation id="7897626842031123113">Zasobnik stanu, godzina <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Zamień okna</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dotknij czytnika linii papilarnych</translation>

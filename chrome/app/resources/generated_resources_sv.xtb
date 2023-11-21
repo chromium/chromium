@@ -1858,6 +1858,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2402226831639195063">Toner</translation>
 <translation id="2405887402346713222">Serienummer för enhet och komponenter</translation>
 <translation id="2406153734066939945">Vill du radera den här profilen och tillhörande data?</translation>
+<translation id="2407671304279211586">Välj DNS-leverantör</translation>
 <translation id="2408018932941436077">Kortet sparas</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2409268599591722235">Då kör vi</translation>
@@ -9341,7 +9342,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Granska <ph name="BEGIN_BOLD" />1 webbplats<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}other{Granska <ph name="BEGIN_BOLD" />{NUM_SITES} webbplatser<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}}</translation>
 <translation id="8342221978608739536">Jag försökte inte</translation>
 <translation id="8342861492835240085">Välj en samling</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) vill installera följande app på den här enheten:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) vill installera följande appar på den här enheten:}}</translation>
 <translation id="8345848587667658367">Nu kan du se de senaste bilderna, mediefilerna, aviseringarna och apparna från telefonen</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="834785183489258869">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Vissa webbplatsers funktioner kanske inte fungerar.</translation>

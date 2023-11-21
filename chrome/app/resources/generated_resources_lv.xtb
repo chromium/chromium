@@ -1845,6 +1845,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2402226831639195063">Intonācijas</translation>
 <translation id="2405887402346713222">Ierīces un komponentu sērijas numuri</translation>
 <translation id="2406153734066939945">Vai dzēst šo profilu un tā datus?</translation>
+<translation id="2407671304279211586">Atlasiet DNS pakalpojumu sniedzēju</translation>
 <translation id="2408018932941436077">Karte tiek saglabāta.</translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
 <translation id="2409268599591722235">Aiziet!</translation>
@@ -9324,7 +9325,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Pārskatiet <ph name="BEGIN_BOLD" />1 vietni<ph name="END_BOLD" />, no kuras nesen tika nosūtīts daudz paziņojumu.}zero{Pārskatiet <ph name="BEGIN_BOLD" />{NUM_SITES} vietnes<ph name="END_BOLD" />, no kurām nesen tika nosūtīts daudz paziņojumu.}one{Pārskatiet <ph name="BEGIN_BOLD" />{NUM_SITES} vietni<ph name="END_BOLD" />, no kurām nesen tika nosūtīts daudz paziņojumu.}other{Pārskatiet <ph name="BEGIN_BOLD" />{NUM_SITES} vietnes<ph name="END_BOLD" />, no kurām nesen tika nosūtīts daudz paziņojumu.}}</translation>
 <translation id="8342221978608739536">Nemēģināju skatīt</translation>
 <translation id="8342861492835240085">Kolekcijas atlase</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) pieprasa atļauju šajā ierīcē instalēt šo lietotni:}zero{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) pieprasa atļauju šajā ierīcē instalēt šīs lietotnes:}one{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) pieprasa atļauju šajā ierīcē instalēt šīs lietotnes:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) pieprasa atļauju šajā ierīcē instalēt šīs lietotnes:}}</translation>
 <translation id="8345848587667658367">Tagad varat skatīt tālruņa jaunākos fotoattēlus, multivides saturu, paziņojumus un lietotnes.</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="834785183489258869">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>

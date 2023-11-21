@@ -9322,7 +9322,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 lloc web<ph name="END_BOLD" /> que ha enviat moltes notificacions recentment}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} llocs web<ph name="END_BOLD" /> que han enviat moltes notificacions recentment}}</translation>
 <translation id="8342221978608739536">No ho he provat</translation>
 <translation id="8342861492835240085">Selecciona una col·lecció</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) vol instal·lar l'aplicació següent en aquest dispositiu:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) vol instal·lar les aplicacions següents en aquest dispositiu:}}</translation>
 <translation id="8345848587667658367">Ara pots consultar les aplicacions, les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="834785183489258869">En mode d'incògnit, els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>

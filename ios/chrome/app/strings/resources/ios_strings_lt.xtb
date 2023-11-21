@@ -733,6 +733,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4856841893565072365">Išmaniojo rūšiavimo meniu juosta</translation>
 <translation id="4860895144060829044">Skambinti</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
+<translation id="4883824756452868502">Aptikti vienetus</translation>
 <translation id="488785315393301722">Rodyti išsamią informaciją</translation>
 <translation id="4894963374040315706">Galite ieškoti balsu</translation>
 <translation id="489903206070130262">Paskutinis atidarytas skirtukas</translation>
@@ -854,8 +855,10 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5551897871312988470">Siūlyti versti</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="555749644339804659">Tikrinami slaptažodžiai…</translation>
+<translation id="5559567453458728487">Konvertuoti žiniatinklyje rastus matavimo vienetus</translation>
 <translation id="556042886152191864">Mygtukas</translation>
 <translation id="5572684875078967866">Informacijos saugykla</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Stebėti šį siuntinį}one{Stebėti visus siuntinius}few{Stebėti visus siuntinius}many{Stebėti visus siuntinius}other{Stebėti visus siuntinius}}</translation>
 <translation id="5597915316964418992">Atidarykite skirtuko tinklelį</translation>
 <translation id="560322036295180549">Išjungė jūsų organizacija</translation>
 <translation id="5614553682702429503">Išsaugoti slaptažodį?</translation>
@@ -1118,6 +1121,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6781260999953472352">Įjungti sinchronizavimą?</translation>
 <translation id="6781405765516175232">Norėdami pamatyti maršruto parinktis, palieskite „Gauti nuorodų“.</translation>
 <translation id="6785453220513215166">Siunčiama strigties ataskaita...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Nebestebėti šio siuntinio}one{Nebestebėti visų siuntinių}few{Nebestebėti visų siuntinių}many{Nebestebėti visų siuntinių}other{Nebestebėti visų siuntinių}}</translation>
 <translation id="6790502149545262384">Netrukus atidarę naują skirtuką matysite istorijas iš „<ph name="CHANNEL_NAME" />“.</translation>
 <translation id="6797885426782475225">Paieška balsu</translation>
 <translation id="6800349425672670802">Visus atidarytus skirtukus galite pasiekti naudodami skirtukų perjungiklį.</translation>

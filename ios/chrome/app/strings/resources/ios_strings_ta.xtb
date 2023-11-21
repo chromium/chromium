@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">ஸ்மார்ட்டாக வரிசைப்படுத்தப்படும் மெனு பட்டி</translation>
 <translation id="4860895144060829044">அழை</translation>
 <translation id="4881695831933465202">திற</translation>
+<translation id="4883824756452868502">யூனிட்களைக் கண்டறிதல்</translation>
 <translation id="488785315393301722">விவரங்களைக் காண்பி</translation>
 <translation id="4894963374040315706">இதன் மூலம் உங்கள் குரலைப் பயன்படுத்தித் தேடலாம்</translation>
 <translation id="489903206070130262">நீங்கள் கடைசியாகத் திறந்த பக்கம்</translation>
@@ -854,8 +855,10 @@
 <translation id="5551897871312988470">மொழிபெயர்க்க அனுமதி</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="555749644339804659">சரிபார்க்கிறது…</translation>
+<translation id="5559567453458728487">இணையத்தில் கண்டறிந்த அளவீட்டு யூனிட்களை மாற்றும்</translation>
 <translation id="556042886152191864">பட்டன்</translation>
 <translation id="5572684875078967866">தகவல் சேமிப்பகம்</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{இந்தப் பேக்கேஜைக் கண்காணி}other{அனைத்து பேக்கேஜ்களையும் கண்காணி}}</translation>
 <translation id="5597915316964418992">பக்கத்தின் கட்டக் கட்சியைத் திறக்கவும்</translation>
 <translation id="560322036295180549">உங்கள் நிறுவனம் முடக்கியுள்ளது</translation>
 <translation id="5614553682702429503">கடவுச்சொல்லைச் சேமிக்கவா?</translation>
@@ -1118,6 +1121,7 @@
 <translation id="6781260999953472352">ஒத்திசைவை இயக்கவா?</translation>
 <translation id="6781405765516175232">வழி விருப்பங்களுக்கு, “வழிகளைப் பெறு” என்பதைத் தட்டவும்.</translation>
 <translation id="6785453220513215166">சிதைவு அறிக்கையை அனுப்புகிறது...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{இந்தப் பேக்கேஜைக் கண்காணிக்காதே}other{அனைத்து பேக்கேஜ்களையும் கண்காணிக்காதே}}</translation>
 <translation id="6790502149545262384">விரைவில், புதிய பக்கத்தைத் திறக்கும்போது <ph name="CHANNEL_NAME" /> சேனலில் உள்ள கதைகள் காட்டப்படும்.</translation>
 <translation id="6797885426782475225">குரல் தேடல்</translation>
 <translation id="6800349425672670802">நீங்கள் திறந்துள்ள பக்கங்கள் அனைத்தையும் 'பக்கம் மாற்றும் அம்சம்' மூலம் அணுகலாம்.</translation>

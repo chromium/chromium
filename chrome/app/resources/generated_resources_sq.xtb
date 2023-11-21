@@ -1841,6 +1841,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2402226831639195063">Tonet</translation>
 <translation id="2405887402346713222">Numrat e serisë të pajisjes dhe komponentëve</translation>
 <translation id="2406153734066939945">Të fshihet ky profil dhe të dhënat e tij?</translation>
+<translation id="2407671304279211586">Zgjidh ofruesin e DNS-së</translation>
 <translation id="2408018932941436077">Po ruhet karta</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2409268599591722235">Fillojmë</translation>
@@ -9317,7 +9318,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Rishiko <ph name="BEGIN_BOLD" />1 sajt<ph name="END_BOLD" /> që ka dërguar së fundi shumë njoftime}other{Rishiko <ph name="BEGIN_BOLD" />{NUM_SITES} sajte<ph name="END_BOLD" /> që kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="8342221978608739536">Nuk e provova</translation>
 <translation id="8342861492835240085">Zgjidh një koleksion</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) dëshiron të instalojë aplikacionin e mëposhtëm në këtë pajisje:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) dëshiron të instalojë aplikacionet e mëposhtme në këtë pajisje:}}</translation>
 <translation id="8345848587667658367">Tani mund të shikosh aplikacionet, njoftimet, mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="834785183489258869">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë.</translation>

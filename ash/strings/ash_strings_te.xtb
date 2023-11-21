@@ -1684,6 +1684,13 @@
 <translation id="7893503627044934815">ఈ ఫైల్‌ను చూపవద్దు</translation>
 <translation id="7895348134893321514">టోటి</translation>
 <translation id="7897375687985782769">మీరు స్క్రీన్‌ని తిప్పడం కోసం కీబోర్డ్ షార్ట్‌కట్‌ని నొక్కారు. మీరు స్క్రీన్‌ని తిప్పాలనుకుంటున్నారా?</translation>
+<translation id="7897626842031123113">స్టేటస్ ట్రే, సమయం <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">విండోలను స్వాప్ చేయండి</translation>
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
 <translation id="7902625623987030061">వేలిముద్ర సెన్సార్‌ను తాకండి</translation>

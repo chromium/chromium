@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">Можете да користите лозинке које сте сачували у Google менаџеру лозинки у другим апликацијама на iPhone-у.</translation>
 <translation id="2689064829982324496">Да бисте се одјавили са Google налога на свим веб-сајтовима, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome не може да тражи ажурирања. Пробајте поново касније.</translation>
+<translation id="2702250627063295552">Додај ставку листе за читање у Chrome</translation>
 <translation id="2736805085127235148">Chrome обавештења су тренутно искључена у подешавањима уређаја.</translation>
 <translation id="2767464022270041271">Нема сачуваних лозинки. Google менаџер лозинки може да вам проверава лозинке када их сачувате.</translation>
 <translation id="2868822340714096138">Обришите податке прегледања у Chrome-у</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">Управљајте лозинкама у Chrome-у</translation>
 <translation id="3827545470516145620">Добијате стандардну безбедносну заштиту на овом уређају</translation>
 <translation id="384394811301901750">Google Chrome тренутно не може да користи камеру</translation>
+<translation id="3863841106411295595">Додаје унете URL-ове на листу за читање у Chrome-у.</translation>
 <translation id="3901001113120561395">Искористите Chrome на најбољи начин.</translation>
 <translation id="3967382818307165056">Управљајте начинима плаћања у Chrome-у</translation>
 <translation id="3980220367029651214">Мењате налог за синхронизацију из <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Постојећим Chrome подацима управља <ph name="DOMAIN" />. Промена ће избрисати податке са овог уређаја, али ће подаци остати на <ph name="USER_EMAIL1" />.</translation>

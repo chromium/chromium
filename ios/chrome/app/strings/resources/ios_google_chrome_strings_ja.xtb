@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">iPhone の他のアプリで Google パスワード マネージャーに保存したパスワードを使用できます。</translation>
 <translation id="2689064829982324496">すべてのウェブサイトで Google アカウントからログアウトするには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />します。</translation>
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
+<translation id="2702250627063295552">Chrome にリーディング リストの項目を追加する</translation>
 <translation id="2736805085127235148">現在、デバイスの設定で Chrome の通知がオフになっています。</translation>
 <translation id="2767464022270041271">保存されているパスワードがありません。パスワードを保存すると、Google パスワード マネージャーで確認できるようになります。</translation>
 <translation id="2868822340714096138">Chrome の閲覧データを削除する</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">Chrome でパスワードを管理する</translation>
 <translation id="3827545470516145620">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
+<translation id="3863841106411295595">入力した URL を Chrome のリーディング リストに追加します。</translation>
 <translation id="3901001113120561395">Chrome を最大限に活用しましょう。</translation>
 <translation id="3967382818307165056">Chrome でお支払い方法を管理する</translation>
 <translation id="3980220367029651214">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> へ切り替えます。既存の Chrome データは <ph name="DOMAIN" /> で管理されています。データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> で保持されます。</translation>

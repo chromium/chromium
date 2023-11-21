@@ -733,6 +733,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4856841893565072365">Menubalk slim sorteren</translation>
 <translation id="4860895144060829044">Bellen</translation>
 <translation id="4881695831933465202">Openen</translation>
+<translation id="4883824756452868502">Eenheden waarnemen</translation>
 <translation id="488785315393301722">Details bekijken</translation>
 <translation id="4894963374040315706">Zo kun je zoeken met je stem</translation>
 <translation id="489903206070130262">Je laatst geopende tabblad</translation>
@@ -854,8 +855,10 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5551897871312988470">Aanbieden om te vertalen</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="555749644339804659">Wachtwoorden checken…</translation>
+<translation id="5559567453458728487">Converteer meeteenheden die op internet zijn gevonden</translation>
 <translation id="556042886152191864">Knop</translation>
 <translation id="5572684875078967866">Informatieopslag</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Dit pakket volgen}other{Alle pakketten volgen}}</translation>
 <translation id="5597915316964418992">Open het tabbladraster</translation>
 <translation id="560322036295180549">Uitgezet door je organisatie</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
@@ -1118,6 +1121,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6781260999953472352">Synchronisatie aanzetten?</translation>
 <translation id="6781405765516175232">Tik voor route-opties op Route.</translation>
 <translation id="6785453220513215166">Crashrapport verzenden...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Dit pakket niet meer volgen}other{Geen pakketten meer volgen}}</translation>
 <translation id="6790502149545262384">Binnenkort zie je artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="6797885426782475225">Gesproken zoekopdracht</translation>
 <translation id="6800349425672670802">Via de Tabbladschakelaar heb je toegang tot al je geopende tabbladen.</translation>

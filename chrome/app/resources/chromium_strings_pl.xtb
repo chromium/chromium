@@ -273,6 +273,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6129621093834146363">Plik <ph name="FILE_NAME" /> jest niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
 <translation id="6132897690380286411">Przeglądarka Chromium zostanie wkrótce zamknięta, a dane zostaną usunięte</translation>
 <translation id="6134968993075716475">Bezpieczne przeglądanie jest wyłączone. Chromium zaleca jego włączenie.</translation>
+<translation id="6144416395842701622">Zaloguj się, aby w pełni wykorzystać możliwości Chromium</translation>
 <translation id="6145820983052037069">Tu możesz przełączać się między profilami Chromium</translation>
 <translation id="615103374448673771">Jeśli zezwolisz na pliki cookie, Chromium może ich używać podczas wstępnego wczytywania</translation>
 <translation id="6175304430031192654">W zależności od ustawień Chromium może też wysyłać pliki cookie i Twój aktualny adres URL</translation>
@@ -430,6 +431,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nie można ustawić jako przeglądarki domyślnej.</translation>
 <translation id="8697124171261953979">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub wyszukiwaniu w omniboksie.</translation>
 <translation id="8704119203788522458">Oto Twoja przeglądarka Chromium</translation>
+<translation id="8719993436687031146">Chcesz zalogować się w Chromium?</translation>
 <translation id="878572486461146056">Błąd instalacji: administrator sieci zastosował zasady grupy, które uniemożliwiają instalację: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
 <translation id="8826492472752484139">Kliknij „Menedżer haseł”</translation>

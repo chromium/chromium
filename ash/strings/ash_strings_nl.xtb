@@ -1683,6 +1683,13 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7893503627044934815">Wil niet dat dit bestand wordt getoond</translation>
 <translation id="7895348134893321514">Bak</translation>
 <translation id="7897375687985782769">Je hebt op de sneltoets voor schermrotatie gedrukt. Wil je het scherm draaien?</translation>
+<translation id="7897626842031123113">Statusvak, tijd <ph name="TIME" />,
+<ph name="BATTERY" />
+<ph name="CHANNEL" />
+<ph name="NETWORK" />,
+<ph name="MANAGED" />
+<ph name="IME" />
+<ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">De vensters omwisselen</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Raak de vingerafdruksensor aan</translation>

@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">Меню тилкеси үчүн акылдуу иргөө</translation>
 <translation id="4860895144060829044">Чалуу</translation>
 <translation id="4881695831933465202">Ачуу</translation>
+<translation id="4883824756452868502">Бирдиктерди аныктоо</translation>
 <translation id="488785315393301722">Чоо-жайын көрсөтүү</translation>
 <translation id="4894963374040315706">Бул үнүңүз менен издөөгө жол ачат</translation>
 <translation id="489903206070130262">Акыркы жолу ачкан өтмөгүңүз</translation>
@@ -854,8 +855,10 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5551897871312988470">Которуу сунушталсын</translation>
 <translation id="5556459405103347317">Кайра жүктөө</translation>
 <translation id="555749644339804659">Сырсөздөр текшерилүүдө…</translation>
+<translation id="5559567453458728487">Интернетте табылган конверсияны талдоо бирдиктери</translation>
 <translation id="556042886152191864">Баскыч</translation>
 <translation id="5572684875078967866">Маалымат сактагыч</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Бул таңгакка көз салуу}other{Бардык таңгактарга көз салуу}}</translation>
 <translation id="5597915316964418992">Өтмөк торчосун ачуу</translation>
 <translation id="560322036295180549">Уюмуңуз тарабынан өчүрүлгөн</translation>
 <translation id="5614553682702429503">Сырсөз сакталсынбы?</translation>
@@ -1118,6 +1121,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6781260999953472352">Шайкештирүү күйгүзүлсүнбү?</translation>
 <translation id="6781405765516175232">Маршруттун варианттарын көрүү үчүн "Багыттарды алууну" таптап коюңуз.</translation>
 <translation id="6785453220513215166">Ката жөнүндө кабар жөнөтүү…</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Бул таңгакка көз салууну токтотуу}other{Бардык таңгактарга көз салууну токтотуу}}</translation>
 <translation id="6790502149545262384">Жакында жаңы өтмөктү ачкан сайын <ph name="CHANNEL_NAME" /> окуяларын көрүп турасыз.</translation>
 <translation id="6797885426782475225">Айтып издөө</translation>
 <translation id="6800349425672670802">Өтмөктөрдү которуштургучтан ачык өтмөктөрүңүзгө кире аласыз.</translation>

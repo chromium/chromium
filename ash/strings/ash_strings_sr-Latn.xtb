@@ -650,6 +650,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3659667652322717492">Možete da promenite ponašanje mikrofona kasnije u bilo kom trenutku.</translation>
 <translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Priključite uređaj na napajanje.</translation>
+<translation id="3660860940251915011">Uključite/isključite veliku vidljivost funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Korisnik kojim se upravlja</translation>
 <translation id="3666266999138159418">Prevucite da biste sakrili plutajući prozor</translation>
 <translation id="367531336287639526">Izaberite prvu ikonu sa leve strane trake za adresu</translation>
@@ -981,6 +982,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Izmenjeno je <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Radna površina 16</translation>
 <translation id="4989163558385430922">Prikaži sve</translation>
 <translation id="5003993274120026347">Sledeća rečenica</translation>
@@ -1685,6 +1687,13 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7893503627044934815">Ne želim da mi se prikazuje ovaj fajl</translation>
 <translation id="7895348134893321514">Držač</translation>
 <translation id="7897375687985782769">Pritisnuli ste tastersku prečicu za rotaciju ekrana. Želite li da rotirate ekran?</translation>
+<translation id="7897626842031123113">Statusna traka, vreme <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Zameni prozor</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dodirnite senzor za otisak prsta</translation>

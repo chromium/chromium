@@ -2686,6 +2686,7 @@
 <translation id="3021065318976393105">Батарейгаар ажиллах үед</translation>
 <translation id="3021066826692793094">Эрвээхэй</translation>
 <translation id="3021678814754966447">&amp;Хүрээний эх үүсвэрийг харах</translation>
+<translation id="3021902017511220299">Скан амжилтгүй боллоо. Энэ үйлдлийг танай администратор блоклосон.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" />-г энэ Chromebook-с хасах бөгөөд <ph name="PRIMARY_EMAIL" />-д хадгалахгүй.</translation>
 <translation id="3022978424994383087">Үүнийг ойлгосонгүй.</translation>
 <translation id="3023464535986383522">Ярихаар сонгох</translation>
@@ -9052,6 +9053,7 @@
 <translation id="811994229154425014">Цэг бичихийн тулд хоёр зай авах</translation>
 <translation id="8120505434908124087">eSIM профайл суулгах</translation>
 <translation id="8121750884985440809">Та одоогоор дэлгэцээ дамжуулж байна</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Шар, цагаан цэцэг</translation>
 <translation id="8123975449645947908">Арагш гүйлгэх</translation>
 <translation id="8124313775439841391">Managed ONC</translation>
@@ -9087,6 +9089,7 @@
 <translation id="8148760431881541277">Нэвтрэхийг хязгаарлах</translation>
 <translation id="8149564499626272569">USB кабелиар холбогдсон утсаараа бататгах</translation>
 <translation id="8149870652370242480">Утсандаа хадгалсан нууц үгнүүдээ ашиглахын тулд iOS-т зориулсан Chrome-г татаж Google Бүртгэлдээ нэвтэрнэ үү.</translation>
+<translation id="8151057139207656239">Хуулсан хийцийн дэлгэрэнгүй</translation>
 <translation id="815114315010033526">Оронд нь QR код ашиглах</translation>
 <translation id="8151638057146502721">Тохируулах</translation>
 <translation id="8154790740888707867">Файл байхгүй байна</translation>
@@ -9330,7 +9333,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Саяхан маш олон мэдэгдэл илгээсэн <ph name="BEGIN_BOLD" />1 сайтыг<ph name="END_BOLD" /> шалгах}other{Саяхан маш олон мэдэгдэл илгээсэн <ph name="BEGIN_BOLD" />{NUM_SITES} сайтыг<ph name="END_BOLD" /> шалгах}}</translation>
 <translation id="8342221978608739536">Оролдож үзээгүй</translation>
 <translation id="8342861492835240085">Цуглуулга сонгох</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) энэ төхөөрөмжид дараах аппыг суулгах хүсэлтэй байна:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) энэ төхөөрөмжид дараах аппуудыг суулгах хүсэлтэй байна:}}</translation>
 <translation id="8345848587667658367">Та одоо утасныхаа саяхны зургууд, медиа, мэдэгдлүүд болон аппуудыг харах боломжтой</translation>
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
 <translation id="834785183489258869">Сайтууд нь Нууцлалтай байх үедээ, жишээлбэл зарыг хувийн болгохын тулд өөр сайт дээрх таны хөтчийн үйл ажиллагааг харах зорилгоор таны күүкиг ашиглах боломжгүй. Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй.</translation>

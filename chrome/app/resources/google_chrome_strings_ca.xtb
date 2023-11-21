@@ -489,7 +489,7 @@
 <translation id="940313311831216333">Per accedir a les teves coses de Chrome des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització.</translation>
 <translation id="943390475793766444">Chrome recomana que s'analitzi aquest fitxer perquè pot ser perillós.</translation>
 <translation id="963650557422347554">Quan aquesta opció està activada, Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos.</translation>
-<translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de cap valor de resum de dades per a l'aplicació.</translation>
+<translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de dades de valor resum per a l'aplicació.</translation>
 <translation id="989369509083708165">Google Chrome és el navegador predeterminat</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet canviar entre perfils de Chrome</translation>
 </translationbundle>

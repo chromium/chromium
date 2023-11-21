@@ -1681,6 +1681,13 @@
 <translation id="7893503627044934815">不想让系统显示此文件</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您按下了旋转屏幕的键盘快捷键。要旋转屏幕吗？</translation>
+<translation id="7897626842031123113">状态栏，时间为 <ph name="TIME" />，
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />，
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">切换窗口</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7902625623987030061">请轻触指纹传感器</translation>

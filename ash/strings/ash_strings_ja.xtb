@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">マイクの動作は後からいつでも変更できます。</translation>
 <translation id="3659814201068740063">残り <ph name="TIME_LEFT" />（<ph name="PERCENTAGE" /> %）。
 デバイスを電源に接続してください。</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> で付近のデバイスに表示されるモードのオンとオフを切り替える</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> の管理対象ユーザー</translation>
 <translation id="3666266999138159418">フローティング ウィンドウを非表示にするにはスワイプします</translation>
 <translation id="367531336287639526">アドレスバーの左側にある最初のアイコンを選択します</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />、
         <ph name="NOTIFICATION_2" />、
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">更新: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">デスク 16</translation>
 <translation id="4989163558385430922">すべて表示</translation>
 <translation id="5003993274120026347">次の文</translation>

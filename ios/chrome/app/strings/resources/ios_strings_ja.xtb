@@ -410,6 +410,7 @@
 <translation id="3080525922482950719">ページを保存して、後で読んだり、オフラインで読んだりできます</translation>
 <translation id="3081338492074632642">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
 <translation id="3087734570205094154">下</translation>
+<translation id="3090455602619185166">管理対象アカウントでログイン</translation>
 <translation id="309710370695886264">使い回しのパスワードが 1 件あります。安全を確保するため、今すぐ修正してください。</translation>
 <translation id="3112556859945124369">マーク...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4004204301268239848">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます。</translation>
 <translation id="4018310736049373830">アクティビティを管理</translation>
+<translation id="4021931095789478915">${url} をリーディング リストに追加</translation>
 <translation id="4038354071007134711">このデバイスのアプリケーションではファイルを開けません。</translation>
 <translation id="4042870976416480368">ページ内を検索</translation>
 <translation id="40433179647657191">ページでハイライトした部分への直接リンクを作成して共有します。</translation>
@@ -1447,6 +1449,7 @@
 <translation id="8556590991644167667">{count,plural, =1{{count} 件の警告を非表示にしました}other{{count} 件の警告を非表示にしました}}</translation>
 <translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="8560253818350321773">よく使うアイテムを最初に表示します。</translation>
+<translation id="8569721750632860947">どの URL をリーディング リストに追加しますか？</translation>
 <translation id="8588404856427128947">オフ</translation>
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8593565399399144771">ここで新しいタブを開くことができます。</translation>

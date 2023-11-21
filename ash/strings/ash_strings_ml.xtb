@@ -1684,6 +1684,13 @@
 <translation id="7893503627044934815">ഈ ഫയൽ കാണിക്കാൻ ആഗ്രഹിക്കുന്നില്ല</translation>
 <translation id="7895348134893321514">ടോട്ട്</translation>
 <translation id="7897375687985782769">നിങ്ങൾ സ്‌ക്രീൻ തിരിക്കുന്നതിനായി കീബോഡ് കുറുക്കുവഴി അമർത്തി. സ്‌ക്രീൻ തിരിക്കണോ?</translation>
+<translation id="7897626842031123113">സ്റ്റാറ്റസ് ട്രേ, സമയം <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">വിൻഡോകൾ സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="7901405293566323524">ഫോൺ ഹബ്</translation>
 <translation id="7902625623987030061">ഫിംഗർപ്രിന്റ് സെൻസർ സ്‌പർശിക്കുക</translation>

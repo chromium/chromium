@@ -682,6 +682,7 @@
 <translation id="1536754031901697553">درحال قطع اتصال...</translation>
 <translation id="1537254971476575106">ذره‌بین تمام‌صفحه</translation>
 <translation id="15373452373711364">نشانگر موشواره بزرگ</translation>
+<translation id="1539727654733007771">هیچ شبکه تلفن همراهی راه‌اندازی نشده است. <ph name="BEGIN_LINK" />نمایه<ph name="END_LINK" /> جدیدی بارگیری کنید.</translation>
 <translation id="1540265419569299117">‏سرویس برنامه ChromeOS</translation>
 <translation id="1540605929960647700">فعال کردن حالت نمایشی</translation>
 <translation id="1541346352678737112">شبکه‌ای پیدا نشد</translation>
@@ -1259,6 +1260,7 @@
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1954597385941141174">‏سایت‌ها می‌توانند اتصال به دستگاه‌های USB را درخواست کنند</translation>
 <translation id="1954813140452229842">هنگام نشاندن دستگاه ذخیره‌سازی متصل به شبکه خطایی روی داد. لطفاً اطلاعات کاربری را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="1955313993396968525">جستجوی قاب ویدیو با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">این فایل دارای چندین مجوز است، هیچ‌کدام وارد نشده است:</translation>
 <translation id="1956167375087861299">سایت‌هایی که مجاز نیستند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کنند</translation>
 <translation id="1956390763342388273">با این کار همه فایل‌ها از «<ph name="FOLDER_PATH" />» بارگذاری خواهد شد. تنها درصورتی که به این سایت اعتماد دارید، این کار را انجام دهید.</translation>
@@ -1832,6 +1834,7 @@
 <translation id="237828693408258535">این صفحه ترجمه شود؟</translation>
 <translation id="2378982052244864789">دایرکتوری برنامهٔ افزودنی را انتخاب کنید.</translation>
 <translation id="2379281330731083556">چاپ با استفاده از گفتگوی سیستم... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">این کار ممکن است باعث شود شبکه تلفن همراهتان برای چند دقیقه قطع شود</translation>
 <translation id="2381499968174336913">پیش‌نمای برگه هم‌رسانی‌شده</translation>
 <translation id="2382875860893882175">پخش محتوا موقتاً متوقف شده است. هرزمان بخواهید می‌توانید پخش محتوا را ازسر بگیرید یا متوقف کنید.</translation>
 <translation id="2383825469508278924">تغییر نگاشت کلیدهای صفحه‌کلید، کلیدهای کار و غیره</translation>
@@ -2687,6 +2690,7 @@
 <translation id="3021065318976393105">هنگام استفاده از باتری</translation>
 <translation id="3021066826692793094">پروانه</translation>
 <translation id="3021678814754966447">&amp;نمای منبع قاب</translation>
+<translation id="3021902017511220299">اسکن انجام نشد. سرپرست این کنش را مسدود کرده است.</translation>
 <translation id="3022361196600037287">‏<ph name="DEVICE" /> از این Chromebook برداشته خواهد شد و در <ph name="PRIMARY_EMAIL" /> ذخیره نخواهد شد.</translation>
 <translation id="3022978424994383087">متوجه نشدم.</translation>
 <translation id="3023464535986383522">انتخاب برای شنیدن</translation>
@@ -6793,6 +6797,7 @@
 <translation id="6344576354370880196">چاپگرهای ذخیره‌شده</translation>
 <translation id="6344608411615208519">ولی‌تان <ph name="BEGIN_LINK" />مرورگر شما را مدیریت می‌کند<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">محافظت دربرابر ردیابی</translation>
+<translation id="6345203628032613660">جستجوی قاب ویدیو با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">وارد کردن نام کاربری و گذرواژه برای پراکسی <ph name="PROXY" /> الزامی است تا سرپرست بتواند شبکه‌تان را پیکربندی کند</translation>
 <translation id="6345566021391290381">گذرواژه‌هایی برای <ph name="WEBSITE_NAME" /> با شما هم‌رسانی شده است. می‌توانید از این گذرواژه‌ها در فرم ورود به سیستم استفاده کنید.</translation>
 <translation id="6345878117466430440">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
@@ -9059,6 +9064,7 @@
 <translation id="811994229154425014">دوفاصله برای تایپ نقطه</translation>
 <translation id="8120505434908124087">نصب نمایه سیم‌کارت داخلی</translation>
 <translation id="8121750884985440809">اکنون درحال پخش محتوای صفحه‌نمایش خود هستید</translation>
+<translation id="8122898034710982882">مرکز کنترل تلفن، <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">گل زرد و سفید</translation>
 <translation id="8123975449645947908">پیمایش به‌عقب</translation>
 <translation id="8124313775439841391">‏ONC مدیریت شده</translation>
@@ -9094,6 +9100,7 @@
 <translation id="8148760431881541277">محدود کردن ورود به سیستم</translation>
 <translation id="8149564499626272569">‏به‌تأیید رساندن ازطریق تلفن با سیم USB</translation>
 <translation id="8149870652370242480">‏برای استفاده از گذرواژه‌های ذخیره‌شده در تلفن، Chrome ویژه iOS را بارگیری کنید و به سیستم «حساب Google» وارد شوید.</translation>
+<translation id="8151057139207656239">جزئیات ساخت کپی شد</translation>
 <translation id="815114315010033526">درعوض، از رمزینه پاسخ‌سریع استفاده شود</translation>
 <translation id="8151638057146502721">پیکربندی</translation>
 <translation id="8154790740888707867">فایلی وجود ندارد</translation>
@@ -9337,7 +9344,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{مرور <ph name="BEGIN_BOLD" />سایتی<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}one{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}other{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="8342221978608739536">امتحان نکرده‌ام</translation>
 <translation id="8342861492835240085">انتخاب مجموعه</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) می‌خواهد برنامه زیر را در این دستگاه نصب کند:}one{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) می‌خواهد برنامه زیر را در این دستگاه نصب کند:}other{«<ph name="APP_NAME" />» (<ph name="DOMAIN" />) می‌خواهد برنامه‌های زیر را در این دستگاه نصب کند:}}</translation>
 <translation id="8345848587667658367">اکنون می‌توانید عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="834785183489258869">در «حالت ناشناس»، سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>

@@ -855,10 +855,10 @@
 <translation id="5551897871312988470">提供翻譯</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="555749644339804659">正在檢查密碼…</translation>
-<translation id="5559567453458728487">轉換在網頁上偵測到的計量單位</translation>
+<translation id="5559567453458728487">轉換在網上找到的量度單位</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5572684875078967866">資料儲存空間</translation>
-<translation id="5591792606924434384">{COUNT,plural, =1{追蹤這個包裹}other{追蹤所有包裹}}</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{追蹤此包裹}other{追蹤所有包裹}}</translation>
 <translation id="5597915316964418992">開啟「分頁網格」</translation>
 <translation id="560322036295180549">已由您的機構停用</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
@@ -1119,7 +1119,7 @@
 <translation id="6781260999953472352">要開啟同步處理功能嗎？</translation>
 <translation id="6781405765516175232">如要查看路線選項，請輕按「取得路線」。</translation>
 <translation id="6785453220513215166">正在傳送當機報告…</translation>
-<translation id="6788698206356268539">{COUNT,plural, =1{取消追蹤這個包裹}other{取消追蹤所有包裹}}</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{取消追蹤此包裹}other{取消追蹤所有包裹}}</translation>
 <translation id="6790502149545262384">不久後，您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
 <translation id="6797885426782475225">語音搜尋</translation>
 <translation id="6800349425672670802">你可以用分頁切換工具存取所有開咗嘅分頁。</translation>

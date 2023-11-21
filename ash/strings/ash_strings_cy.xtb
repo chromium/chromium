@@ -1683,6 +1683,13 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7893503627044934815">Ddim eisiau i'r ffeil hon gael ei dangos</translation>
 <translation id="7895348134893321514">Tôt</translation>
 <translation id="7897375687985782769">Gwnaethoch bwyso'r llwybr byr bysellfwrdd ar gyfer cylchdroi'r sgrîn. Ydych chi eisiau cylchdroi'r sgrîn?</translation>
+<translation id="7897626842031123113">Hambwrdd statws, amser <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Cyfnewid y ffenestri</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Cyffyrddwch â'r synhwyrydd olion bysedd</translation>

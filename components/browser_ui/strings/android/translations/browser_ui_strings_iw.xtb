@@ -191,6 +191,7 @@
 <translation id="4278390842282768270">מותר</translation>
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="42981349822642051">הרחבה</translation>
+<translation id="4336566011000459927">‏קובצי Cookie יוגבלו היום שוב ב-Chrome</translation>
 <translation id="4338831206024587507">כל האתרים בדומיין <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">אתרים לא יוכלו לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4412992751769744546">‏התר קובצי Cookie של צד שלישי</translation>
@@ -293,6 +294,7 @@
 <translation id="6177128806592000436">החיבור שלך לאתר הזה לא מאובטח</translation>
 <translation id="6181444274883918285">להוספת מקרה חריג של אתר</translation>
 <translation id="6192792657125177640">יוצאי דופן</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{‏קובצי Cookie ייחסמו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי Cookie ייחסמו שוב}two{‏יש עוד יומיים עד שקובצי Cookie ייחסמו שוב}other{‏יש עוד # ימים עד שקובצי Cookie ייחסמו שוב}}</translation>
 <translation id="6195163219142236913">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
@@ -382,6 +384,7 @@
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7804248752222191302">אתר כלשהו משתמש במצלמה שלך</translation>
 <translation id="7807060072011926525">‏סופק על ידי Google</translation>
+<translation id="7822573154188733812">‏Chrome מונע מאתרים להשתמש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את האמצעים לחסימת מעקב<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">מדיה פועלת</translation>
 <translation id="783819812427904514">ביטול ההשתקה של הסרטון</translation>
 <translation id="7846076177841592234">ביטול הבחירה</translation>
@@ -398,6 +401,7 @@
 <translation id="8077120325605624147">לכל אתר שבו מבקרים יש הרשאה להציג כל מודעה</translation>
 <translation id="8087000398470557479">‏התוכן הזה הוא מ-<ph name="DOMAIN_NAME" />, ומוגש על-ידי Google.</translation>
 <translation id="8088603949666785339">אפשרויות נוספות ב<ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{‏קובצי Cookie יוגבלו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}two{‏יש עוד יומיים עד שקובצי Cookie יוגבלו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}}</translation>
 <translation id="8116925261070264013">מושתקים</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8131740175452115882">אישור</translation>

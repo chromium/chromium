@@ -1844,6 +1844,7 @@
 <translation id="2402226831639195063">Танальныя сігналы</translation>
 <translation id="2405887402346713222">Серыйныя нумары прылад і кампанентаў</translation>
 <translation id="2406153734066939945">Выдаліць профіль і ўсе яго даныя?</translation>
+<translation id="2407671304279211586">Выбраць пастаўшчыка паслуг DNS</translation>
 <translation id="2408018932941436077">Ідзе захаванне даных карткі</translation>
 <translation id="2408955596600435184">Увядзіце PIN-код</translation>
 <translation id="2409268599591722235">Пачаць</translation>
@@ -9323,7 +9324,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Праглядзіце <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, які нядаўна адправіў шмат апавяшчэнняў}one{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайт<ph name="END_BOLD" />, які нядаўна адправіў шмат апавяшчэнняў}few{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайты<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}many{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаў<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}other{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}}</translation>
 <translation id="8342221978608739536">Не давялося праверыць</translation>
 <translation id="8342861492835240085">Выберыце калекцыю</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{Праграма "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) запытвае дазвол на ўсталяванне наступнай праграмы на гэтай прыладзе:}one{Праграма "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) запытвае дазвол на ўсталяванне наступных праграм на гэтай прыладзе:}few{Праграма "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) запытвае дазвол на ўсталяванне наступных праграм на гэтай прыладзе:}many{Праграма "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) запытвае дазвол на ўсталяванне наступных праграм на гэтай прыладзе:}other{Праграма "<ph name="APP_NAME" />" (<ph name="DOMAIN" />) запытвае дазвол на ўсталяванне наступных праграм на гэтай прыладзе:}}</translation>
 <translation id="8345848587667658367">Цяпер вы можаце праглядаць нядаўнія апавяшчэнні, медыяфайлы, фота і праграмы з тэлефона</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="834785183489258869">У рэжыме інкогніта сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах у мэтах персаналізацыі рэкламы. На некаторых сайтах можа не працаваць частка функцый.</translation>

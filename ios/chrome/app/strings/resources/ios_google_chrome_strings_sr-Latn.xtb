@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">Možete da koristite lozinke koje ste sačuvali u Google menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="2689064829982324496">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK" />odjavite se iz Chrome-a<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
+<translation id="2702250627063295552">Dodaj stavku liste za čitanje u Chrome</translation>
 <translation id="2736805085127235148">Chrome obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
 <translation id="2767464022270041271">Nema sačuvanih lozinki. Google menadžer lozinki može da vam proverava lozinke kada ih sačuvate.</translation>
 <translation id="2868822340714096138">Obrišite podatke pregledanja u Chrome-u</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">Upravljajte lozinkama u Chrome-u</translation>
 <translation id="3827545470516145620">Dobijate standardnu bezbednosnu zaštitu na ovom uređaju</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može da koristi kameru</translation>
+<translation id="3863841106411295595">Dodaje unete URL-ove na listu za čitanje u Chrome-u.</translation>
 <translation id="3901001113120561395">Iskoristite Chrome na najbolji način.</translation>
 <translation id="3967382818307165056">Upravljajte načinima plaćanja u Chrome-u</translation>
 <translation id="3980220367029651214">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chrome podacima upravlja <ph name="DOMAIN" />. Promena će izbrisati podatke sa ovog uređaja, ali će podaci ostati na <ph name="USER_EMAIL1" />.</translation>

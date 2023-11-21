@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">Лента со мени за паметно подредување</translation>
 <translation id="4860895144060829044">Повикајте</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4883824756452868502">Откривање единици</translation>
 <translation id="488785315393301722">Прикажи детали</translation>
 <translation id="4894963374040315706">Ова ви овозможува да пребарувате со вашиот глас</translation>
 <translation id="489903206070130262">Вашата последно отворена картичка</translation>
@@ -854,8 +855,10 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5551897871312988470">Понудувај превод</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="555749644339804659">Се проверуваат лозинките…</translation>
+<translation id="5559567453458728487">Конвертирање мерни единици на интернет</translation>
 <translation id="556042886152191864">Копче</translation>
 <translation id="5572684875078967866">Меморија</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{Следи го пакетов}one{Следи ги сите пакети}other{Следи ги сите пакети}}</translation>
 <translation id="5597915316964418992">Отворете ја мрежата со апликации</translation>
 <translation id="560322036295180549">Исклучено од вашата организација</translation>
 <translation id="5614553682702429503">Дали да се зачува лозинката?</translation>
@@ -1118,6 +1121,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6781260999953472352">Да се вклучи синхронизација?</translation>
 <translation id="6781405765516175232">За опции за маршрути, допрете „Добијте насоки“.</translation>
 <translation id="6785453220513215166">Извештајот за пад се испраќа...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{Сопри со следење на пакетов}one{Сопри со следење на сите пакети}other{Сопри со следење на сите пакети}}</translation>
 <translation id="6790502149545262384">Наскоро ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="6797885426782475225">Гласовно пребарување</translation>
 <translation id="6800349425672670802">Може да пристапите до сите ваши отворени картички од „Менувачот на картички“.</translation>

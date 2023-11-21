@@ -1858,6 +1858,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2402226831639195063">Сигналдар</translation>
 <translation id="2405887402346713222">Түзмөктүн жана компоненттин сериялык номерлери</translation>
 <translation id="2406153734066939945">Бул профиль жана андагы маалымат жок кылынсынбы?</translation>
+<translation id="2407671304279211586">DNS кызмат көрсөтүүчүсүн тандоо</translation>
 <translation id="2408018932941436077">Карта сакталууда</translation>
 <translation id="2408955596600435184">PIN кодуңузду киргизиңиз</translation>
 <translation id="2409268599591722235">Кеттик!</translation>
@@ -2689,6 +2690,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3021065318976393105">Батареянын кубаты менен иштеп жатканда</translation>
 <translation id="3021066826692793094">Көпөлөк</translation>
 <translation id="3021678814754966447">Алкак булагын карап &amp;көрүү</translation>
+<translation id="3021902017511220299">Текшерилген жок. Бул аракетти администраторуңуз бөгөттөп койгон.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> бул Chromebook'тан өчүрүлүп, <ph name="PRIMARY_EMAIL" /> аккаунтуна сакталбайт.</translation>
 <translation id="3022978424994383087">Түшүнүксүз которулуп калды.</translation>
 <translation id="3023464535986383522">Басып туруп угуңуз</translation>
@@ -9058,6 +9060,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="811994229154425014">Чекит коюу үчүн боштук баскычын кош басуу</translation>
 <translation id="8120505434908124087">eSIM-карта профилин орнотуу</translation>
 <translation id="8121750884985440809">Учурда тышкы экранга чыгарып жатасыз</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Сары ала гүл</translation>
 <translation id="8123975449645947908">Артка сыдыруу</translation>
 <translation id="8124313775439841391">Башкарылган ONC</translation>
@@ -9093,6 +9096,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8148760431881541277">Кирүүнү чектөө</translation>
 <translation id="8149564499626272569">Телефонуңузду USB кабель менен туташтырып көрүңүз</translation>
 <translation id="8149870652370242480">Cакталган сырсөздөрдү телефонуңузда колдонуу үчүн iOS'ко Chrome'ду жүктөп алып, Google аккаунтуңузга кириңиз.</translation>
+<translation id="8151057139207656239">Версиянын чоо-жайы көчүрүлдү</translation>
 <translation id="815114315010033526">Анын ордуна QR кодду колдонуу</translation>
 <translation id="8151638057146502721">Конфигурациялоо</translation>
 <translation id="8154790740888707867">Файл жок</translation>
@@ -9336,7 +9340,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Жакында өтө көп билдирмелерди жөнөткөн <ph name="BEGIN_BOLD" />1 сайтты<ph name="END_BOLD" /> карап чыгуу}other{Жакында өтө көп билдирмелерди жөнөткөн <ph name="BEGIN_BOLD" />{NUM_SITES} сайтты<ph name="END_BOLD" /> карап чыгуу}}</translation>
 <translation id="8342221978608739536">Колдонуп көргөн жокмун</translation>
 <translation id="8342861492835240085">Жыйнакты тандаңыз</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) бул түзмөккө төмөнкү колдонмону орноткону жатат:}other{"<ph name="APP_NAME" />" (<ph name="DOMAIN" />) түзмөккө төмөнкү колдонмолорду орноткону жатат:}}</translation>
 <translation id="8345848587667658367">Телефонуңуздагы акыркы сүрөттөрдү, медиа файлдарды, билдирмелерди жана колдонмолорду көрө аласыз</translation>
 <translation id="8347227221149377169">Басып чыгаруу тапшырмалары</translation>
 <translation id="834785183489258869">Жашыруун режимде, сайттар cookie файлдарыңыз аркылуу сиз көргөн вебсайттарды көрө албайт (мисалы, жарнамаларды жекелештирүү үчүн). Функциялар айрым сайттарда иштебеши мүмкүн.</translation>

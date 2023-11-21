@@ -733,6 +733,7 @@
 <translation id="4856841893565072365">স্মার্ট সর্ট মেনু বার</translation>
 <translation id="4860895144060829044">কল করুন</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="4883824756452868502">একক শনাক্ত করুন</translation>
 <translation id="488785315393301722">বিশদ বিবরণ দেখান</translation>
 <translation id="4894963374040315706">এটি আপনার ভয়েস ব্যবহার করে আরও দ্রুত সার্চ করতে দেয়</translation>
 <translation id="489903206070130262">আপনার শেষ খোলা ট্যাব</translation>
@@ -855,8 +856,10 @@
 <translation id="5551897871312988470">অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="555749644339804659">পাসওয়ার্ড চেক করা হচ্ছে…</translation>
+<translation id="5559567453458728487">ওয়েবে খুঁজে পাওয়া পরিমাপ করার একক কনভার্ট করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5572684875078967866">তথ্যের স্টোরেজ</translation>
+<translation id="5591792606924434384">{COUNT,plural, =1{এই প্যাকেজ ট্র্যাক করুন}one{সব প্যাকেজ ট্র্যাক করুন}other{সব প্যাকেজ ট্র্যাক করুন}}</translation>
 <translation id="5597915316964418992">ট্যাব গ্রিড খুলুন</translation>
 <translation id="560322036295180549">আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
@@ -1119,6 +1122,7 @@
 <translation id="6781260999953472352">সিঙ্ক চালু করবেন?</translation>
 <translation id="6781405765516175232">রুট সম্পর্কিত বিকল্পের জন্য, “দিকনির্দেশ পান” বিকল্পে ট্যাপ করুন।</translation>
 <translation id="6785453220513215166">ক্র্যাশ রিপোর্ট পাঠানো হচ্ছে...</translation>
+<translation id="6788698206356268539">{COUNT,plural, =1{এই প্যাকেজ ট্র্যাক করা বন্ধ করুন}one{সব প্যাকেজ ট্র্যাক করা বন্ধ করুন}other{সব প্যাকেজ ট্র্যাক করা বন্ধ করুন}}</translation>
 <translation id="6790502149545262384">শীঘ্রই আপনি নতুন কোনও ট্যাব খুললেই, <ph name="CHANNEL_NAME" />-এর গল্প পড়তে পারবেন।</translation>
 <translation id="6797885426782475225">ভয়েস সার্চ</translation>
 <translation id="6800349425672670802">আপনি ট্যাব পাল্টানোর ফিচার থেকে সবকটি খোলা ট্যাব অ্যাক্সেস করতে পারবেন।</translation>

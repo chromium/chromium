@@ -9337,7 +9337,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Преглед на <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, който наскоро е изпратил много известия}other{Преглед на <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, които наскоро са изпратили много известия}}</translation>
 <translation id="8342221978608739536">Не опитах</translation>
 <translation id="8342861492835240085">Избиране на колекция</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) иска да инсталира следното приложение на това устройство:}other{<ph name="APP_NAME" /> (<ph name="DOMAIN" />) иска да инсталира следните приложения на това устройство:}}</translation>
 <translation id="8345848587667658367">Вече можете да преглеждате скорошните снимки, мултимедийни файлове, известия и приложения, които имате на телефона си</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="834785183489258869">Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитките“ ви, за да следят активността ви при сърфиране в различни сайтове, например с цел персонализиране на реклами. Функциите в някои сайтове може да не работят.</translation>

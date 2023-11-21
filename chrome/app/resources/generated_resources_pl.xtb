@@ -683,6 +683,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1536754031901697553">Rozłączam...</translation>
 <translation id="1537254971476575106">Lupa pełnego ekranu</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
+<translation id="1539727654733007771">Brak skonfigurowanych sieci komórkowych. Pobierz nowy <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Usługa aplikacji na ChromeOS</translation>
 <translation id="1540605929960647700">Włącz tryb demonstracyjny</translation>
 <translation id="1541346352678737112">Nie znaleziono sieci</translation>
@@ -1248,6 +1249,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1954597385941141174">Strony mogą prosić o zgodę na połączenie z urządzeniami USB</translation>
 <translation id="1954813140452229842">Błąd podczas podłączania udziału. Sprawdź dane logowania i spróbuj ponownie.</translation>
+<translation id="1955313993396968525">Wyszukaj klatkę wideo za pomocą: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">Plik zawierał wiele certyfikatów, z których żaden nie został zaimportowany:</translation>
 <translation id="1956167375087861299">Nie mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="1956390763342388273">Spowoduje to przesłanie wszystkich plików z folderu „<ph name="FOLDER_PATH" />”. Zdecyduj się na ten krok tylko, jeśli ufasz witrynie.</translation>
@@ -1806,6 +1808,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="237828693408258535">Przetłumaczyć tę stronę?</translation>
 <translation id="2378982052244864789">Wybierz katalog rozszerzenia.</translation>
 <translation id="2379281330731083556">Drukuj w oknie systemowym <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Może to spowodować utratę połączenia z siecią komórkową na kilka minut</translation>
 <translation id="2381499968174336913">Podgląd udostępnionej karty</translation>
 <translation id="2382875860893882175">Przesyłanie jest obecnie wstrzymane. W każdej chwili możesz je wznowić lub zakończyć.</translation>
 <translation id="2383825469508278924">Tu możesz zmieniać mapowanie klawiszy, klawisze funkcyjne i inne ustawienia</translation>
@@ -2659,6 +2662,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3021065318976393105">Na baterii</translation>
 <translation id="3021066826692793094">Motyl</translation>
 <translation id="3021678814754966447">&amp;Wyświetl źródło ramki</translation>
+<translation id="3021902017511220299">Skanowanie nieudane. To działanie zablokował administrator.</translation>
 <translation id="3022361196600037287">Urządzenie <ph name="DEVICE" /> zostanie usunięte z tego Chromebooka i nie zostanie zapisane na koncie <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nie rozumiem.</translation>
 <translation id="3023464535986383522">Przeczytaj na głos</translation>
@@ -6763,6 +6767,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6344576354370880196">Zapisane drukarki</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Przeglądarką zarządza<ph name="END_LINK" /> Twój rodzic</translation>
 <translation id="6344622098450209924">Ochrona przed śledzeniem</translation>
+<translation id="6345203628032613660">Wyszukaj klatkę wideo za pomocą: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">Serwer proxy <ph name="PROXY" /> wymaga Twojej nazwy użytkownika i hasła, by administrator mógł skonfigurować Twoją sieć</translation>
 <translation id="6345566021391290381">Ktoś udostępnia Ci hasła do strony <ph name="WEBSITE_NAME" />. Możesz ich używać w formularzu logowania.</translation>
 <translation id="6345878117466430440">Oznacz jako przeczytane</translation>
@@ -9029,6 +9034,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="811994229154425014">Wstawianie kropki po dwukrotnym naciśnięciu spacji</translation>
 <translation id="8120505434908124087">Zainstaluj profil eSIM</translation>
 <translation id="8121750884985440809">Obecnie przesyłasz ekran</translation>
+<translation id="8122898034710982882">Sterowanie telefonem, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Żółto-biały kwiat</translation>
 <translation id="8123975449645947908">Przewiń do tyłu</translation>
 <translation id="8124313775439841391">Zarządzana konfiguracja ONC</translation>
@@ -9064,6 +9070,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8148760431881541277">Ograniczanie logowania</translation>
 <translation id="8149564499626272569">Potwierdź swoją tożsamość za pomocą telefonu podłączonego kablem USB</translation>
 <translation id="8149870652370242480">Aby korzystać z zapisanych haseł na telefonie, pobierz Chrome na iOS i zaloguj się na swoje konto Google.</translation>
+<translation id="8151057139207656239">Szczegóły kompilacji zostały skopiowane</translation>
 <translation id="815114315010033526">Zamiast tego użyj kodu QR</translation>
 <translation id="8151638057146502721">Konfiguruj</translation>
 <translation id="8154790740888707867">Brak pliku</translation>
@@ -9307,7 +9314,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Sprawdź <ph name="BEGIN_BOLD" />1 witrynę<ph name="END_BOLD" />, która ostatnio wysłała wiele powiadomień}few{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryny<ph name="END_BOLD" />, które ostatnio wysłały wiele powiadomień}many{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryn<ph name="END_BOLD" />, które ostatnio wysłały wiele powiadomień}other{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryny<ph name="END_BOLD" />, która ostatnio wysłała wiele powiadomień}}</translation>
 <translation id="8342221978608739536">Nie wiem</translation>
 <translation id="8342861492835240085">Wybierz kolekcję</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />” (<ph name="DOMAIN" />) chce zainstalować na tym urządzeniu tę aplikację:}few{„<ph name="APP_NAME" />” (<ph name="DOMAIN" />) chce zainstalować na tym urządzeniu te aplikacje:}many{„<ph name="APP_NAME" />” (<ph name="DOMAIN" />) chce zainstalować na tym urządzeniu te aplikacje:}other{„<ph name="APP_NAME" />” (<ph name="DOMAIN" />) chce zainstalować na tym urządzeniu te aplikacje:}}</translation>
 <translation id="8345848587667658367">Możesz teraz wyświetlać najnowsze zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="834785183489258869">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>

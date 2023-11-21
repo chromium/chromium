@@ -277,6 +277,7 @@
 <translation id="6129621093834146363">Датотека <ph name="FILE_NAME" /> је опасна, па ју је Chromium блокирао.</translation>
 <translation id="6132897690380286411">Chromium ће се ускоро затворити и избрисати податке</translation>
 <translation id="6134968993075716475">Безбедно прегледање је искључено. Chromium препоручује да га укључите.</translation>
+<translation id="6144416395842701622">Пријавите се да бисте користили Chromium на најбољи начин</translation>
 <translation id="6145820983052037069">Овде можете да прелазите са једног Chromium профила на други</translation>
 <translation id="615103374448673771">Ако дозволите колачиће, Chromium може да их користи када предучитава странице</translation>
 <translation id="6175304430031192654">У зависности од подешавања, Chromium може да шаље и колачиће и актуелни URL</translation>
@@ -435,6 +436,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не може да се постави за подразумевани прегледач.</translation>
 <translation id="8697124171261953979">Контролише и страницу која се приказује када покренете Chromium или претражујете из омнибокса.</translation>
 <translation id="8704119203788522458">Ово је ваш Chromium</translation>
+<translation id="8719993436687031146">Желите ли да се пријавите у Chromium?</translation>
 <translation id="878572486461146056">Грешка при инсталацији: Администратор мреже је применио смернице за групу које спречавају инсталацију: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium тражи дозволу да приступи камери и микрофону за овај сајт</translation>
 <translation id="8826492472752484139">Кликните на Менаџер лозинки</translation>

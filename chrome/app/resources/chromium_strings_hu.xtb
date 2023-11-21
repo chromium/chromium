@@ -275,6 +275,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6129621093834146363">A(z) <ph name="FILE_NAME" /> veszélyes, ezért a Chromium letiltotta.</translation>
 <translation id="6132897690380286411">A Chromium hamarosan bezáródik, és törli az adatokat</translation>
 <translation id="6134968993075716475">A Biztonságos Böngészés ki van kapcsolva. A Chromium a szolgáltatás bekapcsolását javasolja.</translation>
+<translation id="6144416395842701622">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chromiumból</translation>
 <translation id="6145820983052037069">Itt válthat a Chromium-profilok között</translation>
 <translation id="615103374448673771">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chromium előtöltéskor felhasználja őket.</translation>
 <translation id="6175304430031192654">A beállításaitól függően a Chromium cookie-kat és az Ön jelenlegi URL-jét is elküldheti.</translation>
@@ -431,6 +432,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8648201657708811153">A Google Chrome for Testing nem alkalmazható alapértelmezett böngészőként.</translation>
 <translation id="8697124171261953979">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chromium indításakor vagy a cím- és keresősávban indított kereséskor.</translation>
 <translation id="8704119203788522458">Ez az Ön Chromiumja</translation>
+<translation id="8719993436687031146">Bejelentkezik a Chromiumba?</translation>
 <translation id="878572486461146056">Telepítési hiba: A hálózati rendszergazda olyan csoportházirendet alkalmazott, amely megakadályozza a telepítést: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796602469536043152">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához és a mikrofonhoz ennél a webhelynél</translation>
 <translation id="8826492472752484139">Kattintson a „Jelszókezelő” elemre</translation>

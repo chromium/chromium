@@ -1861,6 +1861,7 @@
 <translation id="2402226831639195063">Тони</translation>
 <translation id="2405887402346713222">Серійні номери пристрою і компонентів</translation>
 <translation id="2406153734066939945">Видалити профіль і його дані?</translation>
+<translation id="2407671304279211586">Вибрати постачальника послуг DNS</translation>
 <translation id="2408018932941436077">Зберігання картки</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2409268599591722235">Почати</translation>
@@ -2692,6 +2693,7 @@
 <translation id="3021065318976393105">Якщо пристрій не заряджається</translation>
 <translation id="3021066826692793094">Метелик</translation>
 <translation id="3021678814754966447">&amp;Переглянути джерело фрейму</translation>
+<translation id="3021902017511220299">Помилка сканування. Адміністратор заблокував цю дію.</translation>
 <translation id="3022361196600037287">Пристрій "<ph name="DEVICE" />" буде вилучено з цього пристрою Chromebook. Також його не буде збережено в обліковому записі <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Незрозуміло.</translation>
 <translation id="3023464535986383522">Читання з екрана</translation>
@@ -9065,6 +9067,7 @@
 <translation id="811994229154425014">Замінювати подвійний пробіл крапкою</translation>
 <translation id="8120505434908124087">Установити профіль eSIM-карти</translation>
 <translation id="8121750884985440809">Зараз ви транслюєте свій екран</translation>
+<translation id="8122898034710982882">Керування телефоном, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Жовто-біла квітка</translation>
 <translation id="8123975449645947908">Прокрутити назад</translation>
 <translation id="8124313775439841391">Керований ONC</translation>
@@ -9100,6 +9103,7 @@
 <translation id="8148760431881541277">Обмежити вхід</translation>
 <translation id="8149564499626272569">Підтвердити через телефон із кабелем USB</translation>
 <translation id="8149870652370242480">Щоб користуватися збереженими паролями на телефоні, завантажте Chrome для iOS і ввійдіть у свій обліковий запис Google.</translation>
+<translation id="8151057139207656239">Відомості про складання скопійовано</translation>
 <translation id="815114315010033526">Скористатися QR-кодом</translation>
 <translation id="8151638057146502721">Налаштувати</translation>
 <translation id="8154790740888707867">Немає файлу</translation>
@@ -9343,7 +9347,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Перегляньте <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, який останнім часом надсилав багато сповіщень}one{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайт<ph name="END_BOLD" />, який останнім часом надсилав багато сповіщень}few{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайти<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}many{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайтів<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}other{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайту<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}}</translation>
 <translation id="8342221978608739536">Не доводилося перевіряти</translation>
 <translation id="8342861492835240085">Виберіть колекцію</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{Додаток <ph name="APP_NAME" /> (<ph name="DOMAIN" />) хоче встановити на цей пристрій такий додаток:}one{Додаток <ph name="APP_NAME" /> (<ph name="DOMAIN" />) хоче встановити на цей пристрій такі додатки:}few{Додаток <ph name="APP_NAME" /> (<ph name="DOMAIN" />) хоче встановити на цей пристрій такі додатки:}many{Додаток <ph name="APP_NAME" /> (<ph name="DOMAIN" />) хоче встановити на цей пристрій такі додатки:}other{Додаток <ph name="APP_NAME" /> (<ph name="DOMAIN" />) хоче встановити на цей пристрій такі додатки:}}</translation>
 <translation id="8345848587667658367">Тепер ви можете переглядати нещодавні фотографії, медіафайли, сповіщення й додатки з телефона</translation>
 <translation id="8347227221149377169">Завдання друку</translation>
 <translation id="834785183489258869">В анонімному режимі сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>

@@ -680,6 +680,7 @@
 <translation id="1536754031901697553">Веза се прекида...</translation>
 <translation id="1537254971476575106">Лупа за цео екран</translation>
 <translation id="15373452373711364">Велики курсор</translation>
+<translation id="1539727654733007771">Није подешена ниједна мобилна мрежа. Преузмите нови <ph name="BEGIN_LINK" />профил<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">ChromeOS услуга апликације</translation>
 <translation id="1540605929960647700">Омогућите режим демонстрације</translation>
 <translation id="1541346352678737112">Није пронађена ниједна мрежа</translation>
@@ -1249,6 +1250,7 @@
 <translation id="1951012854035635156">Помоћник</translation>
 <translation id="1954597385941141174">Сајтови могу да траже да се повезују са USB уређајима</translation>
 <translation id="1954813140452229842">Грешка при учитавању дељене датотеке. Проверите акредитиве и пробајте поново.</translation>
+<translation id="1955313993396968525">Претражи кадар видеа уз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">Датотека садржи више сертификата, од којих ниједан није увезен:</translation>
 <translation id="1956167375087861299">Није дозвољено користити идентификаторе за пуштање заштићеног садржаја</translation>
 <translation id="1956390763342388273">Овим ћете отпремити све датотеке из „<ph name="FOLDER_PATH" />“. Радите ово само ако је сајт поуздан.</translation>
@@ -1818,6 +1820,7 @@
 <translation id="237828693408258535">Желите ли да преведете ову страницу?</translation>
 <translation id="2378982052244864789">Избор директоријума додатка.</translation>
 <translation id="2379281330731083556">Штампај помоћу системског дијалога... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Због тога ће се можда прекинути веза са мобилном мрежом на неколико минута</translation>
 <translation id="2381499968174336913">Преглед дељене картице</translation>
 <translation id="2382875860893882175">Пребацивање је тренутно паузирано. Можете да наставите са пребацивањем или да зауставите пребацивање у сваком тренутку.</translation>
 <translation id="2383825469508278924">Промените мапирање тастера на тастатури, функцијских тастера и друго</translation>
@@ -2673,6 +2676,7 @@
 <translation id="3021065318976393105">Током коришћења батерије</translation>
 <translation id="3021066826692793094">Лептир</translation>
 <translation id="3021678814754966447">&amp;Прикажи извор оквира</translation>
+<translation id="3021902017511220299">Скенирање није успело. Администратор блокира ову радњу.</translation>
 <translation id="3022361196600037287">Уређај <ph name="DEVICE" /> ће бити уклоњен са овог Chromebook-а и неће бити сачуван на <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Нисмо вас разумели.</translation>
 <translation id="3023464535986383522">Изаберите за говор</translation>
@@ -6778,6 +6782,7 @@
 <translation id="6344576354370880196">Сачувани штампачи</translation>
 <translation id="6344608411615208519">Родитељ <ph name="BEGIN_LINK" />управља прегледачем<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">Заштита од праћења</translation>
+<translation id="6345203628032613660">Претражи кадар видеа уз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">За прокси <ph name="PROXY" /> су неопходни ваше корисничко име и лозинка, како би администратор могао да вам конфигурише мрежу</translation>
 <translation id="6345566021391290381">Са вама се деле лозинке за: <ph name="WEBSITE_NAME" />. Можете да их користите у обрасцу за пријављивање.</translation>
 <translation id="6345878117466430440">Означи као прочитано</translation>
@@ -9047,6 +9052,7 @@
 <translation id="811994229154425014">Дупли размак за тачку</translation>
 <translation id="8120505434908124087">Инсталирајте eSIM профил</translation>
 <translation id="8121750884985440809">Тренутно пребацујете екран</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Жути и бели цвет</translation>
 <translation id="8123975449645947908">Скролуј уназад</translation>
 <translation id="8124313775439841391">Управљани ONC</translation>
@@ -9082,6 +9088,7 @@
 <translation id="8148760431881541277">Ограничите пријављивање</translation>
 <translation id="8149564499626272569">Потврди помоћу телефона са USB каблом</translation>
 <translation id="8149870652370242480">Да бисте користили сачуване лозинке на телефону, преузмите Chrome за iOS и пријавите се на Google налог.</translation>
+<translation id="8151057139207656239">Детаљи о верзији су копирани</translation>
 <translation id="815114315010033526">Боље користи QR кôд</translation>
 <translation id="8151638057146502721">Конфигуриши</translation>
 <translation id="8154790740888707867">Нема датотеке</translation>
@@ -9325,7 +9332,6 @@
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Прегледајте <ph name="BEGIN_BOLD" />1 сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}one{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}few{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајта<ph name="END_BOLD" /> која су недавно послала много обавештења}other{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајтова<ph name="END_BOLD" /> који су недавно послали много обавештења}}</translation>
 <translation id="8342221978608739536">Нисам покушао/ла</translation>
 <translation id="8342861492835240085">Изаберите колекцију</translation>
-<translation id="8344840655397047777">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) жели да инсталира следећу апликацију на овај уређај:}one{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) жели да инсталира следеће апликације на овом уређају:}few{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) жели да инсталира следеће апликације на овом уређају:}other{„<ph name="APP_NAME" />“ (<ph name="DOMAIN" />) жели да инсталира следеће апликације на овом уређају:}}</translation>
 <translation id="8345848587667658367">Сада можете да прегледате недавне слике, медије, обавештења и апликације на телефону</translation>
 <translation id="8347227221149377169">Задаци штампања</translation>
 <translation id="834785183489258869">Када сте у режиму без архивирања, сајтови не могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа. Функције на неким сајтовима могу да не раде.</translation>
