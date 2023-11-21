@@ -52,7 +52,7 @@ import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.
  * Numerical values should not be changed because they must stay in sync with
  * screen_ai::ScreenAIInstallState::State defined in screen_ai_install_state.h.
  */
-enum ScreenAiInstallStatus {
+export enum ScreenAiInstallStatus {
   NOT_DOWNLOADED = 0,
   DOWNLOADING = 1,
   FAILED = 2,

@@ -106,6 +106,11 @@ export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 export {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
+// clang-format off
+// <if expr="is_win or is_linux or is_macosx">
+export {ScreenAiInstallStatus} from './a11y_page/a11y_page.js';
+// </if>
+// clang-format on
 export {SettingsA11yPageElement} from './a11y_page/a11y_page.js';
 // <if expr="not is_chromeos">
 export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';

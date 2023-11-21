@@ -4,21 +4,21 @@
 
 import 'chrome://settings/lazy_load.js';
 
+// clang-format off
 // <if expr="is_win or is_linux or is_macosx">
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {ScreenAiInstallStatus} from 'chrome://settings/lazy_load.js';
+import {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 // </if>
+// clang-format on
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, SettingsPrefsElement} from 'chrome://settings/settings.js';
-// <if expr="is_win or is_linux or is_macosx">
-import {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-// </if>
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-// <if expr="is_win or is_linux or is_macosx">
-import {isVisible} from 'chrome://webui-test/test_util.js';
-// </if>
 
 class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
     AccessibilityBrowserProxy {
@@ -70,7 +70,7 @@ suite('A11yPage', () => {
   test('check pdf ocr toggle visibility', async () => {
     assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
 
-    // Disable a screen reader to hide the PDF OCR toggle.
+    // Simulate disabling a screen reader to hide the PDF OCR toggle.
     webUIListenerCallback('screen-reader-state-changed', false);
 
     const pdfOcrToggle =
@@ -80,7 +80,7 @@ suite('A11yPage', () => {
     await flushTasks();
     assertFalse(isVisible(pdfOcrToggle));
 
-    // Enable screen reader to show the PDF OCR toggle.
+    // Simulate enabling a screen reader to show the PDF OCR toggle.
     webUIListenerCallback('screen-reader-state-changed', true);
 
     await flushTasks();
@@ -89,7 +89,7 @@ suite('A11yPage', () => {
 
   test('test pdf ocr toggle and pref', async () => {
     assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-    // Enable screen reader to show the PDF OCR toggle.
+    // Simulate enabling a screen reader to show the PDF OCR toggle.
     webUIListenerCallback('screen-reader-state-changed', true);
 
     const pdfOcrToggle =
@@ -105,11 +105,50 @@ suite('A11yPage', () => {
     assertTrue(pdfOcrToggle.checked);
 
     pdfOcrToggle.click();
-    flush();
+    await flushTasks();
     assertFalse(
         a11yPage.getPref('settings.a11y.pdf_ocr_always_active').value,
         'pdf ocr pref should be off');
     assertFalse(pdfOcrToggle.checked);
+  });
+
+  test('test pdf ocr toggle subtitle', async () => {
+    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
+    // Simulate enabling a screen reader to show the PDF OCR toggle.
+    webUIListenerCallback('screen-reader-state-changed', true);
+
+    const pdfOcrToggle =
+        a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#pdfOcrToggle');
+    assertTrue(!!pdfOcrToggle);
+    await flushTasks();
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.NOT_DOWNLOADED);
+    assertEquals(a11yPage.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.FAILED);
+    assertEquals(
+        a11yPage.i18n('pdfOcrDownloadErrorLabel'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADING);
+    assertEquals(
+        a11yPage.i18n('pdfOcrDownloadingLabel'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback('pdf-ocr-downloading-progress-changed', 50);
+    assertEquals(
+        a11yPage.i18n('pdfOcrDownloadProgressLabel', 50),
+        pdfOcrToggle.subLabel);
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
+    assertEquals(
+        a11yPage.i18n('pdfOcrDownloadCompleteLabel'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback('pdf-ocr-state-changed', ScreenAiInstallStatus.READY);
+    assertEquals(a11yPage.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
   });
   // </if>
 
