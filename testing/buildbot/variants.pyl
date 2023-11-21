@@ -810,6 +810,7 @@
     'identifier': 'VOLTEER_PUBLIC_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'volteer',
+      'cros_model': 'voxel',
       'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',

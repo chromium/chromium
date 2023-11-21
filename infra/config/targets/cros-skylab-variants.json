@@ -431,6 +431,7 @@
   "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM": {
     "skylab": {
       "cros_board": "volteer",
+      "cros_model": "voxel",
       "bucket": "chromiumos-image-archive",
       "dut_pool": "chromium",
       "public_builder": "cros_test_platform_public",
