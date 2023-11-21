@@ -80,7 +80,7 @@ function isPersonalizationSearchResult(result: SearchResult):
  * Used to locate matches such that the query text omits a hyphen when the
  * matching result text contains a hyphen.
  */
-const DELOCALIZED_HYPHEN: string = '-';
+const DELOCALIZED_HYPHEN = '-';
 
 /**
  * A list of hyphens in all languages that will be ignored during the
@@ -99,7 +99,7 @@ const HYPHENS: string[] = [
 /**
  * String form of the regexp expressing hyphen chars.
  */
-const HYPHENS_REGEX_STR: string = `[${HYPHENS.join('')}]`;
+const HYPHENS_REGEX_STR = `[${HYPHENS.join('')}]`;
 
 /**
  * Regexp expressing hyphen chars.

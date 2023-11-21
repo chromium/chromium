@@ -45,7 +45,7 @@ export interface KerberosAddAccountDialogElement {
  * The default placeholder that is shown in the username field of the
  * authentication dialog.
  */
-const DEFAULT_USERNAME_PLACEHOLDER: string = 'user@example.com';
+const DEFAULT_USERNAME_PLACEHOLDER = 'user@example.com';
 
 const KerberosAddAccountDialogElementBase = I18nMixin(PolymerElement);
 

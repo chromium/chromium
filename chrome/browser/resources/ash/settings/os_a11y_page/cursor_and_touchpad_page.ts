@@ -34,7 +34,7 @@ import {Route, Router, routes} from '../router.js';
 import {getTemplate} from './cursor_and_touchpad_page.html.js';
 import {CursorAndTouchpadPageBrowserProxy, CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
 
-const DEFAULT_BLACK_CURSOR_COLOR: number = 0;
+const DEFAULT_BLACK_CURSOR_COLOR = 0;
 
 interface Option {
   name: string;

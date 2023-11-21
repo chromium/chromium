@@ -36,7 +36,7 @@ import {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, Pri
  * If the Show more button is visible, the minimum number of printers we show
  * is 3.
  */
-const MIN_VISIBLE_PRINTERS: number = 3;
+const MIN_VISIBLE_PRINTERS = 3;
 
 /**
  * The amount of time Printer settings is open until it switches to a longer
@@ -59,7 +59,7 @@ const GOOD_LONG_INTERVAL_IN_SECONDS: number[] = [60, 80];
  * Printers should be only be queried for status for up to this duration of
  * Printer Settings be open.
  */
-const MAX_PRINTER_QUERYING_TIME_IN_SECONDS: number = 300;
+const MAX_PRINTER_QUERYING_TIME_IN_SECONDS = 300;
 
 /**
  * Move a printer's position in |printerArr| from |fromIndex| to |toIndex|.

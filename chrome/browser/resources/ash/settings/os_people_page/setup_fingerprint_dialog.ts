@@ -36,7 +36,7 @@ export enum FingerprintSetupStep {
  * The amount of milliseconds after a successful but not completed scan before
  * a message shows up telling the user to scan their finger again.
  */
-const SHOW_TAP_SENSOR_MESSAGE_DELAY_MS: number = 2000;
+const SHOW_TAP_SENSOR_MESSAGE_DELAY_MS = 2000;
 
 const SettingsSetupFingerprintDialogElementBase =
     I18nMixin(WebUiListenerMixin(PolymerElement));

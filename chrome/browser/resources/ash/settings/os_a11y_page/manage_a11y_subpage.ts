@@ -50,7 +50,7 @@ interface LocaleInfo {
   recommended: boolean;
 }
 
-const DEFAULT_BLACK_CURSOR_COLOR: number = 0;
+const DEFAULT_BLACK_CURSOR_COLOR = 0;
 
 export interface SettingsManageA11ySubpageElement {
   $: {

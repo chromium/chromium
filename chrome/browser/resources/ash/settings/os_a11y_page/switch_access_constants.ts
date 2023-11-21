@@ -23,19 +23,19 @@ export const actionToPref: {[key in SwitchAccessCommand]: string} = {
 /**
  * The pref name for whether auto-scan is enabled.
  */
-export const AUTO_SCAN_ENABLED_PREF: string =
+export const AUTO_SCAN_ENABLED_PREF =
     'settings.a11y.switch_access.auto_scan.enabled';
 
 /**
  * The pref name for the auto-scan speed.
  */
-export const AUTO_SCAN_SPEED_PREF: string =
+export const AUTO_SCAN_SPEED_PREF =
     'settings.a11y.switch_access.auto_scan.speed_ms';
 
 /**
  * The pref name for the auto-scan speed specific to the onscreen keyboard.
  */
-export const AUTO_SCAN_KEYBOARD_SPEED_PREF: string =
+export const AUTO_SCAN_KEYBOARD_SPEED_PREF =
     'settings.a11y.switch_access.auto_scan.keyboard.speed_ms';
 
 /**

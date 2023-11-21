@@ -40,7 +40,7 @@ import {observeReceiveManager} from './nearby_share_receive_manager.js';
 import {getTemplate} from './nearby_share_subpage.html.js';
 import {dataUsageStringToEnum} from './types.js';
 
-const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S: number = 300;
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
 
 const SettingsNearbyShareSubpageElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));

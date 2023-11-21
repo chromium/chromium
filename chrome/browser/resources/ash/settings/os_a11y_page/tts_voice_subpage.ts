@@ -438,7 +438,7 @@ export class SettingsTtsVoiceSubpageElement extends
 
     this.langBrowserProxy_.getProspectiveUiLanguage().then(
         prospectiveUILanguage => {
-          let result: string = '';
+          let result = '';
           if (prospectiveUILanguage && prospectiveUILanguage !== '' &&
               languageCodeMap[prospectiveUILanguage]) {
             const code = languageCodeMap[prospectiveUILanguage];

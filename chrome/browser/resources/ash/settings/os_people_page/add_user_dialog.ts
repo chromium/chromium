@@ -29,7 +29,7 @@ import {getTemplate} from './add_user_dialog.html.js';
  * Email alias only, assuming it's a gmail address.
  *     e.g. 'john'
  */
-const NAME_ONLY_REGEX: RegExp =
+const NAME_ONLY_REGEX =
     new RegExp('^\\s*([\\w\\.!#\\$%&\'\\*\\+-\\/=\\?\\^`\\{\\|\\}~]+)\\s*$');
 
 /**
@@ -37,7 +37,7 @@ const NAME_ONLY_REGEX: RegExp =
  * email address.
  *     e.g. 'john@chromium.org'
  */
-const EMAIL_REGEX: RegExp = new RegExp(
+const EMAIL_REGEX = new RegExp(
     '^\\s*([\\w\\.!#\\$%&\'\\*\\+-\\/=\\?\\^`\\{\\|\\}~]+)@' +
     '([A-Za-z0-9\-]{2,63}\\..+)\\s*$');
 

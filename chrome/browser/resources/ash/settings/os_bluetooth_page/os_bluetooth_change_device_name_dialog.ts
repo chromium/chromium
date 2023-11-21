@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './os_bluetooth_change_device_name_dialog.html.js';
 
-const MAX_INPUT_LENGTH: number = 32;
+const MAX_INPUT_LENGTH = 32;
 
 export interface SettingsBluetoothChangeDeviceNameDialogElement {
   $: {dialog: CrDialogElement};
