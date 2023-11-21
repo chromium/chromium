@@ -36,24 +36,19 @@
 
 namespace {
 
-const char kOldOptimizationGuidePredictionModelAndFeaturesStore[] =
-    "optimization_guide_model_and_features_store";
-
 // Deletes old store paths that were written in incorrect locations.
 void DeleteOldStorePaths(const base::FilePath& profile_path) {
-  // Added 05/2022.
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::GetDeletePathRecursivelyCallback(profile_path.Append(
-          kOldOptimizationGuidePredictionModelAndFeaturesStore)));
-
-  base::FilePath models_dir;
-  base::PathService::Get(ios::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-                         &models_dir);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::GetDeletePathRecursivelyCallback(models_dir));
+  // Added 11/2023
+  //
+  // Delete the old profile-wide model download store path, since
+  // the install-wide model store is enabled now.
+  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::GetDeletePathRecursivelyCallback(profile_path.Append(
+            optimization_guide::
+                kOldOptimizationGuidePredictionModelDownloads)));
+  }
 }
 
 }  // namespace
@@ -108,13 +103,13 @@ OptimizationGuideService::OptimizationGuideService(
       // files to. Off-the-record profiles read the model locations from the
       // original profiles they are associated with.
       models_dir = profile_path.Append(
-          optimization_guide::kOptimizationGuidePredictionModelDownloads);
+          optimization_guide::kOldOptimizationGuidePredictionModelDownloads);
       prediction_model_and_features_store_ =
           std::make_unique<optimization_guide::OptimizationGuideStore>(
               proto_db_provider,
               profile_path.Append(
                   optimization_guide::
-                      kOptimizationGuidePredictionModelMetadataStore),
+                      kOldOptimizationGuidePredictionModelMetadataStore),
               models_dir,
               base::ThreadPool::CreateSequencedTaskRunner(
                   {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),

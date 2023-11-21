@@ -27,11 +27,14 @@ const base::FilePath::CharType kOptimizationGuideHintStore[] =
     FILE_PATH_LITERAL("optimization_guide_hint_cache_store");
 
 const base::FilePath::CharType
-    kOptimizationGuidePredictionModelMetadataStore[] =
+    kOldOptimizationGuidePredictionModelMetadataStore[] =
         FILE_PATH_LITERAL("optimization_guide_model_metadata_store");
 
-const base::FilePath::CharType kOptimizationGuidePredictionModelDownloads[] =
+const base::FilePath::CharType kOldOptimizationGuidePredictionModelDownloads[] =
     FILE_PATH_LITERAL("optimization_guide_prediction_model_downloads");
+
+const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
+    FILE_PATH_LITERAL("optimization_guide_model_store");
 
 const base::FilePath::CharType kPageEntitiesMetadataStore[] =
     FILE_PATH_LITERAL("page_content_annotations_page_entities_metadata_store");

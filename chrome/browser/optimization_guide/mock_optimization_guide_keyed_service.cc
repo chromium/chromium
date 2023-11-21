@@ -8,17 +8,10 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/prefs/testing_pref_service.h"
-
-namespace {
-
-// Prefix for the model store directory.
-const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
-    FILE_PATH_LITERAL("optimization_guide_model_store");
-
-}  // namespace
 
 // static
 void MockOptimizationGuideKeyedService::Initialize(
@@ -29,8 +22,8 @@ void MockOptimizationGuideKeyedService::Initialize(
   if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
     base::FilePath model_downloads_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
-    model_downloads_dir =
-        model_downloads_dir.Append(kOptimizationGuideModelStoreDirPrefix);
+    model_downloads_dir = model_downloads_dir.Append(
+        optimization_guide::kOptimizationGuideModelStoreDirPrefix);
     optimization_guide::PredictionModelStore::GetInstance()->Initialize(
         local_state, model_downloads_dir);
   }
