@@ -6,6 +6,8 @@
 
 #include <map>
 #include <string>
+#include <tuple>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -17,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
@@ -840,9 +843,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
 
 class PDFExtensionAccessibilityTreeDumpTest
     : public PDFExtensionAccessibilityTest,
-      public ::testing::WithParamInterface<ui::AXApiType::Type> {
+      public ::testing::WithParamInterface<
+          std::tuple<ui::AXApiType::Type, bool>> {
  public:
-  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(GetParam()) {}
+  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(ax_inspect_type()) {}
   ~PDFExtensionAccessibilityTreeDumpTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -852,13 +856,19 @@ class PDFExtensionAccessibilityTreeDumpTest
     test_helper_.InitializeFeatureList();
   }
 
- protected:
+  ui::AXApiType::Type ax_inspect_type() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool UseOopif() const override { return std::get<1>(GetParam()); }
+
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
   }
 
+ protected:
   void RunPDFTest(const base::FilePath::CharType* pdf_file) {
     base::FilePath test_path = ui_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
@@ -904,7 +914,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     ui::AXInspectScenario scenario = ParsePdfForExtraDirectives(pdf_contents);
 
     std::unique_ptr<ui::AXTreeFormatter> formatter =
-        content::AXInspectFactory::CreateFormatter(GetParam());
+        content::AXInspectFactory::CreateFormatter(ax_inspect_type());
     formatter->SetPropertyFilters(scenario.property_filters,
                                   ui::AXTreeFormatter::kFiltersDefaultSet);
 
@@ -951,7 +961,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     // TODO(b/1473176): Either keep the banner and status node in the output or
     // modify `pdf_root` above to remove the banner and status nodes from the
     // tree so that they are not in the format output.
-    RemoveBannerAndStatusNodesFromFormatOutput(actual_lines, GetParam());
+    RemoveBannerAndStatusNodesFromFormatOutput(actual_lines, ax_inspect_type());
 
     // Validate the dump against the expectation file.
     EXPECT_TRUE(test_helper_.ValidateAgainstExpectation(
@@ -1048,14 +1058,17 @@ const std::vector<ui::AXApiType::Type> GetAXTestValues() {
 
 struct PDFExtensionAccessibilityTreeDumpTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
-    return std::string(i.param);
+      const ::testing::TestParamInfo<std::tuple<ui::AXApiType::Type, bool>>& i)
+      const {
+    return std::string(std::get<1>(i.param) ? "OOPIF_" : "GUESTVIEW_") +
+           std::string(std::get<0>(i.param));
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionAccessibilityTreeDumpTest,
-                         testing::ValuesIn(GetAXTestValues()),
+                         testing::Combine(testing::ValuesIn(GetAXTestValues()),
+                                          testing::Bool()),
                          PDFExtensionAccessibilityTreeDumpTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {
