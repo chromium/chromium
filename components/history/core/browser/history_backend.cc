@@ -2803,8 +2803,6 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count) {
   if (!db_)
     return {};
 
-  base::TimeTicks begin_time = base::TimeTicks::Now();
-
   auto url_filter =
       backend_client_
           ? base::BindRepeating(&HistoryBackendClient::IsWebSafe,
@@ -2820,10 +2818,6 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count) {
     result.back().last_visit_time = current_data->GetLastVisitTimeslot();
     result.back().score = current_data->GetScore();
   }
-
-  UMA_HISTOGRAM_TIMES("History.QueryMostVisitedURLsTime",
-                      base::TimeTicks::Now() - begin_time);
-
   return result;
 }
 

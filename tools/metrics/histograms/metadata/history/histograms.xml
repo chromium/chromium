@@ -2094,17 +2094,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.QueryMostVisitedURLsTime" units="ms"
-    expires_after="M81">
-  <owner>chengx@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The amount of time for function HistoryBackend::QueryMostVisitedURLs to
-    execute. Excludes the case where local HistoryDatabase db_ is unavailable,
-    i.e. where the query doesn't really happen.
-  </summary>
-</histogram>
-
 <histogram name="History.ResultsRenderedTime" units="ms" expires_after="M90">
   <owner>calamity@chromium.org</owner>
   <owner>dbeam@chromium.org</owner>
