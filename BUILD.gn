@@ -1227,7 +1227,7 @@ if (use_blink && !is_cronet_build) {
       ]
     }
 
-    if (is_linux || is_fuchsia) {
+    if (is_linux || is_chromeos || is_fuchsia) {
       data += [ "//third_party/apache-linux/" ]
     }
 
