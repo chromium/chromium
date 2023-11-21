@@ -250,6 +250,40 @@ std::string ChromeDlpRulesManager::GetSourceUrlPattern(
   return std::string();
 }
 
+Verdict ChromeDlpRulesManager::GetVerdict(Restriction restriction,
+                                          const ActionContext& context) const {
+  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
+    return Verdict::NotSet();
+  }
+
+  Level max_level = Level::kNotSet;
+  std::set<size_t> triggered_rules;
+  for (size_t i = 0; i < rules_.size(); ++i) {
+    Level level = rules_[i].GetLevel(restriction, context);
+    if (level > max_level) {
+      max_level = level;
+    }
+    if (level != Level::kNotSet) {
+      triggered_rules.insert(i);
+    }
+  }
+
+  // TODO(b/303640183): Access `rules_` using the indexes in `triggered_rules`
+  // to populate the reporting callback(s) appropriately.
+  switch (max_level) {
+    case Rule::Level::kNotSet:
+      return Verdict::NotSet();
+    case Rule::Level::kReport:
+      return Verdict::Report(base::DoNothing());
+    case Rule::Level::kWarn:
+      return Verdict::Warn(base::DoNothing(), base::DoNothing());
+    case Rule::Level::kBlock:
+      return Verdict::Block(base::DoNothing());
+    case Rule::Level::kAllow:
+      return Verdict::NotSet();
+  }
+}
+
 // static
 RulesConditionsMap ChromeDlpRulesManager::MatchUrlAndGetRulesMapping(
     const GURL& url,
