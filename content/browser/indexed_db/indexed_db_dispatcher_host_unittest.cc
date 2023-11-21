@@ -667,8 +667,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
         base::BarrierClosure(2, loop.QuitClosure());
     context_impl_->IDBTaskRunner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          connection1->database->Close();
-
           connection2 = std::make_unique<TestDatabaseConnection>(
               context_impl_->IDBTaskRunner(),
               url::Origin::Create(GURL(kOrigin)), kDatabaseName, kDBVersion2,
@@ -732,7 +730,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
     base::RunLoop loop;
     context_impl_->IDBTaskRunner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          connection2->database->Close();
           connection3 = std::make_unique<TestDatabaseConnection>(
               context_impl_->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
               kDBVersion3, kTransactionId3);
@@ -899,7 +896,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
   base::RunLoop loop3;
   context_impl_->IDBTaskRunner()->PostTask(FROM_HERE,
                                            base::BindLambdaForTesting([&]() {
-                                             connection1->database->Close();
                                              connection1.reset();
                                              loop3.Quit();
                                            }));

@@ -38,7 +38,6 @@ class MODULES_EXPORT WebIDBDatabase final {
                          mojom::blink::IDBTransactionMode mode,
                          mojom::blink::IDBTransactionDurability durability);
 
-  void Close();
   void VersionChangeIgnored();
 
   void Get(

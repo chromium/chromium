@@ -250,7 +250,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -275,7 +275,7 @@ TEST_F(IDBRequestTest, EventsAfterDoneStop) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -302,7 +302,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -339,7 +339,7 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -439,7 +439,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     MockIDBDatabase mock_database;
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
-    EXPECT_CALL(mock_database, Close()).Times(1);
+    EXPECT_CALL(mock_database, OnDisconnect()).Times(1);
 
     auto* execution_context = scope.GetExecutionContext();
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
@@ -467,7 +467,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     MockIDBDatabase mock_database;
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
-    EXPECT_CALL(mock_database, Close()).Times(1);
+    EXPECT_CALL(mock_database, OnDisconnect()).Times(1);
 
     auto* execution_context = scope.GetExecutionContext();
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);

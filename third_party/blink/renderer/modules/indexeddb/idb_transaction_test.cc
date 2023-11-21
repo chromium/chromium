@@ -127,7 +127,7 @@ TEST_F(IDBTransactionTest, ContextDestroyedEarlyDeath) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
@@ -165,7 +165,7 @@ TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
@@ -204,7 +204,7 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithQueuedResult) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
@@ -245,7 +245,7 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithTwoQueuedResults) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
@@ -292,7 +292,7 @@ TEST_F(IDBTransactionTest, DocumentShutdownWithQueuedAndBlockedResults) {
 
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   {
     // The database isn't actually closed until `scope` is destroyed, so create
     // this object in a nested scope to allow mock expectations to be verified.
@@ -347,7 +347,7 @@ TEST_F(IDBTransactionTest, TransactionFinish) {
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =

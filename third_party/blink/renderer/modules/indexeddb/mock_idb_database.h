@@ -13,8 +13,12 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 
 namespace blink {
+class AbstrackMockIDBDatabase {
+  virtual void OnDisconnect() = 0;
+};
 
-class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase> {
+class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase>,
+                        public testing::StrictMock<AbstrackMockIDBDatabase> {
  public:
   MOCK_METHOD(void,
               RenameObjectStore,
@@ -31,7 +35,6 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase> {
        mojom::blink::IDBTransactionMode,
        mojom::blink::IDBTransactionDurability),
       (override));
-  MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, VersionChangeIgnored, (), (override));
   MOCK_METHOD(void, Abort, (int64_t transaction_id), (override));
   MOCK_METHOD(void,
@@ -126,6 +129,9 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase> {
               (int64_t transaction_id, int64_t object_store_id, ClearCallback),
               (override));
   MOCK_METHOD(void, DidBecomeInactive, (), (override));
+
+  // AbstrackMockIDBDatabase::OnDisconnect()
+  MOCK_METHOD(void, OnDisconnect, (), (override));
 
   void Bind(mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabase>);
   mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>

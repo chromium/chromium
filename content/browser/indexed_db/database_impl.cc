@@ -144,15 +144,6 @@ void DatabaseImpl::CreateTransaction(
   connection_->database()->RegisterAndScheduleTransaction(transaction);
 }
 
-void DatabaseImpl::Close() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
-    return;
-
-  connection_->AbortTransactionsAndClose(
-      IndexedDBConnection::CloseErrorHandling::kReturnOnFirstError);
-}
-
 void DatabaseImpl::VersionChangeIgnored() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!connection_->IsConnected())
