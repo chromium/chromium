@@ -1,0 +1,9 @@
+include_rules = [
+# DO NOT ADD `include_rules`, only add `specific_include_rules` instead.
+]
+
+specific_include_rules = {
+  '.*interactive_uitest\.cc': [
+    '+ash/ash_element_identifiers.h',
+  ],
+}
