@@ -124,14 +124,16 @@ struct SlotSpanMetadata {
   PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) void FreeSlowPath(
       size_t number_of_freed);
   PA_ALWAYS_INLINE EncodedNextFreelistEntry* PopForAlloc(size_t size);
-  PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root);
+  PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   // Appends the passed freelist to the slot-span's freelist. Please note that
   // the function doesn't increment the tags of the passed freelist entries,
   // since FreeInline() did it already.
   PA_ALWAYS_INLINE void AppendFreeList(EncodedNextFreelistEntry* head,
                                        EncodedNextFreelistEntry* tail,
                                        size_t number_of_freed,
-                                       PartitionRoot* root);
+                                       PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
   void Decommit(PartitionRoot* root);
   void DecommitIfPossible(PartitionRoot* root);
