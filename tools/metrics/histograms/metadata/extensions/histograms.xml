@@ -1462,14 +1462,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.ExtensionRootPathLength" units="units"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Length of the Extensions dir path inside the profile directory.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ExtensionsWithPageActions" units="units"
     expires_after="2024-05-05">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -3301,42 +3293,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ManifestFetchFailureRetryCountGoogleUrl"
-    units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a google.com domain, before eventually giving up.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestFetchFailureRetryCountOtherUrl"
-    units="units" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a non google.com domain, before eventually giving up.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestFetchSuccessRetryCountGoogleUrl"
-    units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a google.com domain, before eventually succeeding.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestFetchSuccessRetryCountOtherUrl"
-    units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of times chrome retried to download an extension update manifest with
-    a url on a non google.com domain, before eventually succeeding.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ManifestIconSetIconWasVisibleForPacked"
     enum="BooleanVisible" expires_after="2019-09-07">
   <owner>dbertoni@chromium.org</owner>
@@ -4337,25 +4293,6 @@ chromium-metrics-reviews@google.com.
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Uninstalls grouped by Extension::HistogramType.</summary>
-</histogram>
-
-<histogram name="Extensions.UpdateOnLoad" units="units" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The number of extensions that were updated at browser startup.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UpdateSource" enum="ExtensionLocation"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Updates grouped by the location property in prefs.</summary>
-</histogram>
-
-<histogram name="Extensions.UpdateType" enum="ExtensionType"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Updates grouped by Extension::HistogramType.</summary>
 </histogram>
 
 <histogram name="Extensions.UsedMimeTypeHandler" enum="UsedMimeTypeHandler"
