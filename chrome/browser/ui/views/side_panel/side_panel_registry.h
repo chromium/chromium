@@ -10,6 +10,7 @@
 
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 
@@ -84,6 +85,8 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   absl::optional<SidePanelEntry*> last_active_entry_;
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
+
+  absl::optional<SidePanelEntryKey> deregistering_entry_key_ = absl::nullopt;
 
   base::ObserverList<SidePanelRegistryObserver> observers_;
 };

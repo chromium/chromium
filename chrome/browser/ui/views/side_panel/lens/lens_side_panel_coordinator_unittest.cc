@@ -123,6 +123,22 @@ TEST_F(LensSidePanelCoordinatorTest, OpenWithUrlWhenSidePanelOpenShowsLens) {
                    kLensQuerySidePanelOpenNonLensAction));
 }
 
+TEST_F(LensSidePanelCoordinatorTest, DeregisterLensWithSidePanelOpen) {
+  lens_side_panel_coordinator_->RegisterEntryAndShow(
+      content::OpenURLParams(GURL(kLensHomepageURL), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
+  EXPECT_EQ(GetSidePanelCoordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kLens);
+  auto* registry = SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
+  registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kLens));
+  EXPECT_FALSE(GetUnifiedSidePanel()->GetVisible());
+}
+
 TEST_F(LensSidePanelCoordinatorTest,
        CallingRegisterTwiceOpensNewUrlAndLogsAction) {
   base::UserActionTester user_action_tester;
