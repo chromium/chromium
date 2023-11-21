@@ -1372,6 +1372,66 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       /*expected_bucket_count=*/1);
 }
 
+// Regression test for crbug.com/1500258: second FetchKeys() is triggered, while
+// first is still ongoing (e.g. keys are being downloaded).
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDownloadKeysAndCompleteConcurrentFetches) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
+                                      kInitialLastKeyVersion, account_info);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
+  SetPrimaryAccountWithUnknownAuthError(account_info);
+
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  ON_CALL(*connection(), DownloadNewKeys)
+      .WillByDefault(
+          [&](const CoreAccountInfo&,
+              const absl::optional<TrustedVaultKeyAndVersion>&,
+              std::unique_ptr<SecureBoxKeyPair> key_pair,
+              TrustedVaultConnection::DownloadNewKeysCallback callback) {
+            download_keys_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  EXPECT_CALL(*connection(), DownloadNewKeys);
+  // FetchKeys() should trigger keys downloading.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback1;
+  backend()->FetchKeys(account_info, fetch_keys_callback1.Get());
+  ASSERT_FALSE(download_keys_callback.is_null());
+
+  // Mimic second FetchKeys(), note that keys are not downloaded yet and first
+  // fetch is not completed.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback2;
+  backend()->FetchKeys(account_info, fetch_keys_callback2.Get());
+
+  // Both fetches should be completed once keys are downloaded.
+  std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+  EXPECT_CALL(fetch_keys_callback1,
+              Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
+  EXPECT_CALL(fetch_keys_callback2,
+              Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
+
+  base::HistogramTester histogram_tester;
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
+           kInitialLastKeyVersion + 1);
+
+  // Download keys status should be recorded for every fetch.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
+      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatusV1",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
+      /*expected_bucket_count=*/2);
+}
+
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldThrottleAndUntrottleKeysDownloading) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");

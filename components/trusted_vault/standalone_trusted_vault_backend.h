@@ -198,6 +198,14 @@ class StandaloneTrustedVaultBackend
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
                                     TrustedVaultRegistrationStatus status);
 
+  // Invokes |callback| with currently available keys for |gaia_id|.
+  void FulfillFetchKeys(
+      const std::string& gaia_id,
+      FetchKeysCallback callback,
+      absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+
+  // Same as above, but takes parameters from |ongoing_fetch_keys|, used when
+  // keys are fetched asynchronously, after keys downloading attempt.
   void FulfillOngoingFetchKeys(
       absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
@@ -260,19 +268,29 @@ class StandaloneTrustedVaultBackend
   };
   absl::optional<PendingTrustedRecoveryMethod> pending_trusted_recovery_method_;
 
-  // TODO(crbug.com/1413179): introduce a struct for ongoing/deferred
-  // FetchKeys().
-  // Used to plumb FetchKeys() result to the caller.
-  FetchKeysCallback ongoing_fetch_keys_callback_;
+  // Keys fetching is asynchronous when it involves sending request to the
+  // server, this structure encapsulates the data needed to process the response
+  // and allow concurrent key fetches for the same user. Destroying this will
+  // cancel the ongoing request.
+  // Note, that |gaia_id| should match |primary_account_|. It is used only for
+  // verification.
+  struct OngoingFetchKeys {
+    OngoingFetchKeys();
+    OngoingFetchKeys(OngoingFetchKeys&) = delete;
+    OngoingFetchKeys& operator=(OngoingFetchKeys&) = delete;
+    OngoingFetchKeys(OngoingFetchKeys&&);
+    OngoingFetchKeys& operator=(OngoingFetchKeys&&);
+    ~OngoingFetchKeys();
 
-  // Account used in last FetchKeys() call.
-  absl::optional<std::string> ongoing_fetch_keys_gaia_id_;
+    std::string gaia_id;
+    std::vector<FetchKeysCallback> callbacks;
+    std::unique_ptr<TrustedVaultConnection::Request> request;
+  };
+  absl::optional<OngoingFetchKeys> ongoing_fetch_keys_;
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_device_registration_request_;
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_keys_downloading_request_;
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_verify_registration_request_;
 
