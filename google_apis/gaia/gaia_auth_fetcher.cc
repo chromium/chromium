@@ -251,6 +251,10 @@ bool GaiaAuthFetcher::IsReAuthApiUrl(const GURL& url) {
                           base::CompareCase::SENSITIVE);
 }
 
+bool GaiaAuthFetcher::IsListAccountsUrl(const GURL& url) {
+  return url == list_accounts_gurl_;
+}
+
 void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
     const std::string& body,
     const std::string& body_content_type,
@@ -875,7 +879,7 @@ void GaiaAuthFetcher::DispatchFetchedRequest(const GURL& url,
     OnOAuthMultiloginFetched(data, net_error, response_code);
   } else if (url == oauth2_revoke_gurl_) {
     OnOAuth2RevokeTokenFetched(data, net_error, response_code);
-  } else if (url == list_accounts_gurl_) {
+  } else if (IsListAccountsUrl(url)) {
     OnListAccountsFetched(data, net_error, response_code);
   } else if (url == logout_gurl_) {
     OnLogOutFetched(data, net_error, response_code);
