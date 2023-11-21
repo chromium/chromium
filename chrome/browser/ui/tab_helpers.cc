@@ -39,7 +39,6 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
-#include "chrome/browser/media/history/media_history_contents_observer.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_observer.h"
 #include "chrome/browser/metrics/metrics_services_web_contents_observer.h"
@@ -394,9 +393,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents);
   if (MediaEngagementService::IsEnabled()) {
     MediaEngagementService::CreateWebContentsObserver(web_contents);
-  }
-  if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {
-    MediaHistoryContentsObserver::CreateForWebContents(web_contents);
   }
   metrics::MetricsServicesWebContentsObserver::CreateForWebContents(
       web_contents);

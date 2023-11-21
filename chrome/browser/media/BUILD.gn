@@ -6,10 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 mojom("mojo_bindings") {
-  sources = [
-    "history/media_history_store.mojom",
-    "media_engagement_score_details.mojom",
-  ]
+  sources = [ "media_engagement_score_details.mojom" ]
 
   public_deps = [
     "//services/media_session/public/mojom",

@@ -58,8 +58,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/media/history/media_history_keyed_service.h"
-#include "chrome/browser/media/history/media_history_store.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -1556,12 +1554,9 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+// TODO(crbug.com/1198344): Remove this.
 void Browser::MediaWatchTimeChanged(
     const content::MediaPlayerWatchTime& watch_time) {
-  if (media_history::MediaHistoryKeyedService::IsEnabled()) {
-    media_history::MediaHistoryKeyedService::Get(profile())->SavePlayback(
-        watch_time);
-  }
 }
 
 base::WeakPtr<content::WebContentsDelegate> Browser::GetDelegateWeakPtr() {

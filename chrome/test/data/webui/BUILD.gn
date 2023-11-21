@@ -45,7 +45,6 @@ source_set("browser_tests") {
     "js/js_browsertest.cc",
     "location_internals/location_internals_browsertest.cc",
     "media/media_engagement_browsertest.cc",
-    "media/media_history_browsertest.cc",
     "media_internals/media_internals_browsertest.cc",
     "metrics_internals/metrics_internals_browsertest.cc",
     "net_internals/net_internals_browsertest.cc",

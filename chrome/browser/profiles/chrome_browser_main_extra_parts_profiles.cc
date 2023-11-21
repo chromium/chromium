@@ -82,7 +82,6 @@
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
-#include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -854,9 +853,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   MediaDeviceSaltServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {
-    media_history::MediaHistoryKeyedServiceFactory::GetInstance();
-  }
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
     media_router::AccessCodeCastSinkServiceFactory::GetInstance();

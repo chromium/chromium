@@ -34159,7 +34159,6 @@ from previous Chrome versions.
   <int value="-1620568042" label="FeaturePolicy:disabled"/>
   <int value="-1620425260" label="ShelfPalmRejectionSwipeOffset:disabled"/>
   <int value="-1620230777" label="StylusBatteryStatus:enabled"/>
-  <int value="-1620046590" label="UseMediaHistoryStore:enabled"/>
   <int value="-1619757314" label="touch-scrolling-mode"/>
   <int value="-1619437172" label="OmniboxMostVisitedTilesOnSrp:enabled"/>
   <int value="-1619146163" label="OverrideSitePrefsForHrefTranslate:disabled"/>
@@ -34444,7 +34443,6 @@ from previous Chrome versions.
   <int value="-1486731455"
       label="AccessibilityDictationKeyboardImprovements:enabled"/>
   <int value="-1486728231" label="Win10TabSearchCaptionButton:disabled"/>
-  <int value="-1486521264" label="UseMediaHistoryStore:disabled"/>
   <int value="-1486198877" label="VrIconInDaydreamHome:disabled"/>
   <int value="-1485461805" label="EnterpriseReportingInBrowser:enabled"/>
   <int value="-1484786356" label="ClipboardHistoryUrlTitles:enabled"/>

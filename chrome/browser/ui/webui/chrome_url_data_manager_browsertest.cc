@@ -202,7 +202,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 #else
     enabled_features.push_back(kForYouFre);
 #endif
-    enabled_features.push_back(media::kUseMediaHistoryStore);
     feature_list_.InitWithFeatures(enabled_features, {});
   }
 
@@ -332,7 +331,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://local-state",
     "chrome://management",
     "chrome://media-engagement",
-    "chrome://media-history",
     "chrome://media-internals",
     "chrome://media-router-internals",
     "chrome://metrics-internals",

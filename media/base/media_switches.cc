@@ -763,11 +763,6 @@ BASE_FEATURE(kSuspendMutedAudio,
              "SuspendMutedAudio",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables using the media history store to store media engagement metrics.
-BASE_FEATURE(kUseMediaHistoryStore,
-             "UseMediaHistoryStore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Unified Autoplay policy by overriding the platform's default
 // autoplay policy.
 BASE_FEATURE(kUnifiedAutoplay,
