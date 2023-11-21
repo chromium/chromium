@@ -6937,6 +6937,7 @@
         "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
       ],
       typedom_types: ["Keyword"],
+      valid_for_position_fallback: true,
       runtime_flag: "CSSAnchorPositioning",
     },
 
