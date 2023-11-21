@@ -35,8 +35,10 @@ class CreditCardRiskBasedAuthenticator {
       // The user needs to complete further authentication to retrieve the card.
       // Also known as yellow path.
       kAuthenticationRequired = 2,
+      // The authentication has been cancelled.
+      kAuthenticationCancelled = 3,
       // The authentication failed. Also known as red path.
-      kError = 3,
+      kError = 4,
       kMaxValue = kError,
     };
 
@@ -106,6 +108,13 @@ class CreditCardRiskBasedAuthenticator {
   // been triggered for this `requester`.
   virtual void Authenticate(CreditCard card,
                             base::WeakPtr<Requester> requester);
+
+  // Callback function invoked when an unmask response has been cancelled.
+  void OnUnmaskCancelled();
+
+  base::WeakPtr<CreditCardRiskBasedAuthenticator> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   void OnUnmaskResponseReceivedForTesting(
       AutofillClient::PaymentsRpcResult result,

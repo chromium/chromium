@@ -170,6 +170,14 @@ chromium-metrics-reviews@google.com.
       summary="Progress dialog for the VCN Card Unmask Flow"/>
 </variants>
 
+<variants name="Autofill.ServerCardUnmaskFlowType">
+  <variant name="Fido" summary="FIDO authentication only"/>
+  <variant name="Otp" summary="OTP auth only"/>
+  <variant name="OtpFallbackFromFido"
+      summary="OTP fallback from FIDO authentication"/>
+  <variant name="UnspecifiedFlowType" summary="No authentication specified"/>
+</variants>
+
 <variants name="Autofill.SettingsPage.VirtualCardDialogType">
   <variant name="SettingsPageEnrollment"
       summary="the virtual card enrollment dialog"/>
@@ -230,14 +238,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SettingsPage" summary="settings page enrollment flow"/>
   <variant name="Unknown" summary="uncategorized enrollment source"/>
   <variant name="Upstream" summary="credit card uploading enrollment flow"/>
-</variants>
-
-<variants name="Autofill.VirtualCardUnmaskFlowType">
-  <variant name="Fido" summary="FIDO authentication only"/>
-  <variant name="Otp" summary="OTP auth only"/>
-  <variant name="OtpFallbackFromFido"
-      summary="OTP fallback from FIDO authentication"/>
-  <variant name="UnspecifiedFlowType" summary="No authentication specified"/>
 </variants>
 
 <variants name="AutofillCreditCardWebauthnOptInOrigin">
@@ -3794,6 +3794,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.RiskBasedAuth.{CardType}.Result"
+    enum="AutofillRiskBasedAuthEvent" expires_after="2024-11-14">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of a risk-based unmasking process when the unmasking is
+    finished (whether it succeeded or the failure reason). Broken down by the
+    type of card to be unmasked.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
     expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
@@ -4033,7 +4045,7 @@ chromium-metrics-reviews@google.com.
     authentication used) in the unmasking.
   </summary>
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
-  <token key="FlowType" variants="Autofill.VirtualCardUnmaskFlowType"/>
+  <token key="FlowType" variants="Autofill.ServerCardUnmaskFlowType"/>
 </histogram>
 
 <histogram name="Autofill.ServerQueryResponse" enum="AutofillQueryResult"

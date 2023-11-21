@@ -39,10 +39,7 @@ enum class ServerCardUnmaskResult {
   kMaxValue = kUnexpectedError,
 };
 
-// TODO(crbug.com/1263302): Right now this is only used for virtual cards.
-// Extend it for masked server cards in the future too. Tracks the flow type
-// used in a virtual card unmasking.
-enum class VirtualCardUnmaskFlowType {
+enum class ServerCardUnmaskFlowType {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
 
@@ -61,11 +58,9 @@ enum class VirtualCardUnmaskFlowType {
 
 void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type);
 
-// TODO(crbug.com/1263302): These functions are used for only virtual cards
-// now. Consider integrating with other masked server cards logging below.
 void LogServerCardUnmaskResult(ServerCardUnmaskResult unmask_result,
                                AutofillClient::PaymentsRpcCardType card_type,
-                               VirtualCardUnmaskFlowType flow_type);
+                               ServerCardUnmaskFlowType flow_type);
 void LogServerCardUnmaskFormSubmission(
     AutofillClient::PaymentsRpcCardType card_type);
 

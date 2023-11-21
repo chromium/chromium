@@ -19,19 +19,19 @@ void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type) {
 
 void LogServerCardUnmaskResult(ServerCardUnmaskResult unmask_result,
                                AutofillClient::PaymentsRpcCardType card_type,
-                               VirtualCardUnmaskFlowType flow_type) {
+                               ServerCardUnmaskFlowType flow_type) {
   std::string flow_type_suffix;
   switch (flow_type) {
-    case VirtualCardUnmaskFlowType::kUnspecified:
+    case ServerCardUnmaskFlowType::kUnspecified:
       flow_type_suffix = ".UnspecifiedFlowType";
       break;
-    case VirtualCardUnmaskFlowType::kFidoOnly:
+    case ServerCardUnmaskFlowType::kFidoOnly:
       flow_type_suffix = ".Fido";
       break;
-    case VirtualCardUnmaskFlowType::kOtpOnly:
+    case ServerCardUnmaskFlowType::kOtpOnly:
       flow_type_suffix = ".Otp";
       break;
-    case VirtualCardUnmaskFlowType::kOtpFallbackFromFido:
+    case ServerCardUnmaskFlowType::kOtpFallbackFromFido:
       flow_type_suffix = ".OtpFallbackFromFido";
       break;
   }

@@ -114,4 +114,14 @@ std::string GetOtpAuthType(CardUnmaskChallengeOptionType type) {
   NOTREACHED_NORETURN();
 }
 
+void LogRiskBasedAuthResult(CreditCard::RecordType card_type,
+                            RiskBasedAuthEvent event) {
+  std::string card_type_histogram_string =
+      AutofillMetrics::GetHistogramStringForCardType(card_type);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Autofill.RiskBasedAuth", card_type_histogram_string, ".Result"}),
+      event);
+}
+
 }  // namespace autofill::autofill_metrics

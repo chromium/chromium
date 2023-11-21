@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -2770,6 +2771,13 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
 // the server during a risk-based retrieval.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        RiskBasedMaskedServerCardUnmasking_Success) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  base::HistogramTester histogram_tester;
   std::string test_number = "4444333322221111";
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, test_number, /*masked=*/true, kTestServerId);
@@ -2805,12 +2813,18 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           ->GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted();
   ASSERT_TRUE(card_identifier.has_value());
   EXPECT_EQ(card_identifier.value(), CreditCard::RecordType::kMaskedServerCard);
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked, 1);
 }
 
 // Ensures that the masked server card risk-based unmasking response is
 // handled correctly if the retrieval failed.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        RiskBasedMaskedServerCardUnmasking_RetrievalError) {
+  base::HistogramTester histogram_tester;
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
 
@@ -2833,12 +2847,18 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      autofill_metrics::ServerCardUnmaskResult::kUnexpectedError, 1);
 }
 
 // Ensures that the masked server card risk-based unmasking response is
 // handled correctly if the flow is cancelled.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        RiskBasedMaskedServerCardUnmasking_FlowCancelled) {
+  base::HistogramTester histogram_tester;
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
 
@@ -2851,11 +2871,20 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
   EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
 
-  // Mock the flow is cancelled.
-  credit_card_access_manager().OnRiskBasedAuthenticationCancelledForTesting();
+  // Mock the authentication is cancelled.
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kAuthenticationCancelled));
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerCardUnmask.ServerCard.Result.UnspecifiedFlowType",
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 
 // Ensures that the masked server card risk-based authentication is not invoked
@@ -3029,7 +3058,11 @@ TEST_F(
   CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, test_number, /*masked=*/true, kTestServerId);
 
+  payments_network_interface().ShouldReturnUnmaskDetailsImmediately(false);
+  credit_card_access_manager().PrepareToFetchCreditCard();
+
   MockRiskBasedAuthSucceedsWithoutPanReturned(masked_server_card);
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.BetterAuth.FlowEvents.Cvc",
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);

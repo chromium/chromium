@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 
@@ -107,6 +108,10 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
       card_.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
       card_.set_record_type(CreditCard::RecordType::kFullServerCard);
       response.card = card_;
+
+      autofill_metrics::LogRiskBasedAuthResult(
+          CreditCard::RecordType::kMaskedServerCard,
+          autofill_metrics::RiskBasedAuthEvent::kNoAuthenticationRequired);
     } else {
       // The Payments server indicates further authentication is required.
       response.result =
@@ -114,6 +119,10 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
       response.fido_request_options =
           std::move(response_details.fido_request_options);
       response.context_token = response_details.context_token;
+
+      autofill_metrics::LogRiskBasedAuthResult(
+          CreditCard::RecordType::kMaskedServerCard,
+          autofill_metrics::RiskBasedAuthEvent::kAuthenticationRequired);
     }
   } else {
     // We received an error when attempting to unmask the card.
@@ -126,12 +135,25 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
             : AutofillErrorDialogType::
                   kMaskedServerCardRiskBasedUnmaskingPermanentError;
 
-    // TODO(crbug.com/1470933): Log the error metrics.
+    autofill_metrics::LogRiskBasedAuthResult(
+        CreditCard::RecordType::kMaskedServerCard,
+        autofill_metrics::RiskBasedAuthEvent::kUnexpectedError);
   }
 
   if (requester_) {
     requester_->OnRiskBasedAuthenticationResponseReceived(response);
   }
+  Reset();
+}
+
+void CreditCardRiskBasedAuthenticator::OnUnmaskCancelled() {
+  autofill_metrics::LogRiskBasedAuthResult(
+      CreditCard::RecordType::kMaskedServerCard,
+      autofill_metrics::RiskBasedAuthEvent::kAuthenticationCancelled);
+
+  requester_->OnRiskBasedAuthenticationResponseReceived(
+      RiskBasedAuthenticationResponse().with_result(
+          RiskBasedAuthenticationResponse::Result::kAuthenticationCancelled));
   Reset();
 }
 

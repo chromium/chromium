@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -83,6 +85,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, UnmaskRequestSetCorrectly) {
 
 // Test that risk-based authentication returns the full PAN upon success.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
+  base::HistogramTester histogram_tester;
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with valid masked server card information.
@@ -99,11 +102,17 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
       kTestNumber,
       base::UTF16ToUTF8(
           requester_->risk_based_authentication_response().card->number()));
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.RiskBasedAuth.ServerCard.Result",
+      autofill_metrics::RiskBasedAuthEvent::kNoAuthenticationRequired, 1);
 }
 
 // Test that risk-based authentication doesn't return the full PAN when the
 // server call fails.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
+  base::HistogramTester histogram_tester;
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Payment server response when unmask request fails is empty.
@@ -114,12 +123,35 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
   EXPECT_EQ(requester_->risk_based_authentication_response().result,
             CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
                 Result::kError);
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.RiskBasedAuth.ServerCard.Result",
+      autofill_metrics::RiskBasedAuthEvent::kUnexpectedError, 1);
+}
+
+// Test that the requester receives `kAuthenticationCancelled` response when the
+// risk-based authentication was cancelled.
+TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardCancelled) {
+  base::HistogramTester histogram_tester;
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
+
+  authenticator_->OnUnmaskCancelled();
+  EXPECT_EQ(requester_->risk_based_authentication_response().result,
+            CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
+                Result::kAuthenticationCancelled);
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.RiskBasedAuth.ServerCard.Result",
+      autofill_metrics::RiskBasedAuthEvent::kAuthenticationCancelled, 1);
 }
 
 // Test that risk-based authentication determines authentication is required
 // when the server call succeeds and the PAN is not returned.
 TEST_F(CreditCardRiskBasedAuthenticatorTest,
        AuthenticateServerCardSuccess_PanNotReturned) {
+  base::HistogramTester histogram_tester;
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with context token.
@@ -133,12 +165,18 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
                 Result::kAuthenticationRequired);
   EXPECT_FALSE(
       requester_->risk_based_authentication_response().card.has_value());
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.RiskBasedAuth.ServerCard.Result",
+      autofill_metrics::RiskBasedAuthEvent::kAuthenticationRequired, 1);
 }
 
 // Test that risk-based authentication determines authentication is required
 // when the server call succeeds and the `fido_request_options` is returned.
 TEST_F(CreditCardRiskBasedAuthenticatorTest,
        AuthenticateServerCardSuccess_FidoReturned) {
+  base::HistogramTester histogram_tester;
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with FIDO request options.
@@ -154,6 +192,11 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
       requester_->risk_based_authentication_response().card.has_value());
   EXPECT_TRUE(requester_->risk_based_authentication_response()
                   .fido_request_options.has_value());
+
+  // Expect the metrics are logged correctly.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.RiskBasedAuth.ServerCard.Result",
+      autofill_metrics::RiskBasedAuthEvent::kAuthenticationRequired, 1);
 }
 
 // Test a success risk based virtual card unmask request.
