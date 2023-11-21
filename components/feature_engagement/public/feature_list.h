@@ -267,6 +267,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSChoiceScreenFeature,
                        "IPH_iOSChoiceScreenFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSParcelTrackingFeature,
                        "IPH_iOSParcelTrackingFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSPullToRefreshFeature,
+                       "IPH_iOSPullToRefreshFeature");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -573,6 +575,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoPasswordManagerWidgetFeature),
         VARIATION_ENTRY(kIPHiOSChoiceScreenFeature),
         VARIATION_ENTRY(kIPHiOSParcelTrackingFeature),
+        VARIATION_ENTRY(kIPHiOSPullToRefreshFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

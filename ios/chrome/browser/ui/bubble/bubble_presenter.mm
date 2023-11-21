@@ -743,6 +743,8 @@
   return NO;
 }
 
+// TODO(crbug.com/1467873): Refactor observers and tab-event-based IPHs to a
+// separate object.
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -757,10 +759,17 @@
 - (void)tabDidLoadURL:(GURL)URL
        transitionType:(ui::PageTransition)transitionType {
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  if (currentWebState &&
-      ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
-       (transitionType & ui::PAGE_TRANSITION_FORWARD_BACK))) {
-    [self presentNewTabToolbarItemBubble];
+  if (currentWebState) {
+    if ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
+        (transitionType & ui::PAGE_TRANSITION_FORWARD_BACK)) {
+      [self presentNewTabToolbarItemBubble];
+    }
+    if (URL == currentWebState->GetVisibleURL() &&
+        transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR &&
+        URL != kChromeUINewTabURL) {
+      self.engagementTracker->NotifyEvent(
+          feature_engagement::events::kIOSMultiGestureRefreshUsed);
+    }
   }
 }
 

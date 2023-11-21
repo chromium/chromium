@@ -112,6 +112,8 @@ const char kDefaultBrowserVideoPromoConditionsMet[] =
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
 const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
 const char kParcelTracked[] = "parcel_tracked";
+const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
+const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

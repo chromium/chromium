@@ -1887,6 +1887,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and reloads the current page.
 - (void)reload {
   RecordAction(UserMetricsAction("MobileMenuReload"));
+  if (_engagementTracker) {
+    _engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  }
   [self dismissMenu];
   self.navigationAgent->Reload();
 }

@@ -557,6 +557,9 @@ BASE_FEATURE(kIPHiOSChoiceScreenFeature,
 BASE_FEATURE(kIPHiOSParcelTrackingFeature,
              "IPH_iOSParcelTrackingFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPullToRefreshFeature,
+             "IPH_iOSPullToRefreshFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

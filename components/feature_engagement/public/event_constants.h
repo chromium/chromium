@@ -209,6 +209,14 @@ extern const char kParcelTrackingTriggered[];
 // The user has tracked a parcel.
 extern const char kParcelTracked[];
 
+// The user has more than one gesture to refresh a page in iOS. This includes
+// but not limited to re-typing the URL in omnibox and refreshing from context
+// menu.
+extern const char kIOSMultiGestureRefreshUsed[];
+
+// The user has used the pull-to-refresh feature in iOS.
+extern const char kIOSPullToRefreshUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

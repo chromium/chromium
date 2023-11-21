@@ -1870,6 +1870,40 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSPullToRefreshFeature.name == feature->name) {
+    // The IPH of the pull-to-refresh feature for the current tab.
+    //
+    // Note that the IPH is only triggered for users who installed Chrome on iOS
+    // in the last specified number of days, so this could be used as the
+    // maximum storage period of respective events.
+    const uint32_t kMaxStorageDaysForIOSPullToRefresh = 61;
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // The IPH is shown at most once a week.
+    config->trigger =
+        EventConfig("iph_pull_to_refresh_trigger", Comparator(EQUAL, 0), 7, 7);
+    // The user hasn't used the pull-to-refresh feature.
+    config->used = EventConfig(
+        feature_engagement::events::kIOSPullToRefreshUsed, Comparator(EQUAL, 0),
+        kMaxStorageDaysForIOSPullToRefresh, kMaxStorageDaysForIOSPullToRefresh);
+    // The IPH only shows when user attempted multi-tap refresh methods at least
+    // twice.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSMultiGestureRefreshUsed,
+                    Comparator(GREATER_THAN_OR_EQUAL, 2),
+                    kMaxStorageDaysForIOSPullToRefresh,
+                    kMaxStorageDaysForIOSPullToRefresh));
+    // The IPH is shown at most twice.
+    config->event_configs.insert(
+        EventConfig("iph_pull_to_refresh_trigger", Comparator(LESS_THAN, 2),
+                    kMaxStorageDaysForIOSPullToRefresh,
+                    kMaxStorageDaysForIOSPullToRefresh));
+    return config;
+  }
+
   // iOS Promo Configs are split out into a separate file, so check that too.
   if (absl::optional<FeatureConfig> ios_promo_feature_config =
           GetClientSideiOSPromoFeatureConfig(feature)) {

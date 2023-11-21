@@ -3030,6 +3030,14 @@ enum class ToolbarKind {
   // occurring will cut the animation short.
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  if (engagementTracker) {
+    engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSPullToRefreshUsed);
+  }
+
   SnapshotTabHelper::FromWebState(activeWebState)->IgnoreNextLoad();
   _webNavigationBrowserAgent->Reload();
 }

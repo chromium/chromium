@@ -40170,6 +40170,8 @@ should be able to be added at any place in this file.
   <suffix name="iOSPromoPostRestoreDefaultBrowser"
       label="For iOSPromoPostRestoreDefaultBrowser feature"/>
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
+  <suffix name="iOSPullToRefreshFeature"
+      label="For iOSPullToRefreshFeature feature"/>
   <suffix name="iOSShareToolbarItemFeature"
       label="For iOSShareToolbarItemFeature feature"/>
   <suffix name="iOSTabGridToolbarItemFeature"
