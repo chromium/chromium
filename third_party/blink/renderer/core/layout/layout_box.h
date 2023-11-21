@@ -216,7 +216,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Use this with caution! No type checking is done!
   LayoutBox* FirstChildBox() const;
-  LayoutBox* FirstInFlowChildBox() const;
   LayoutBox* LastChildBox() const;
 
   LayoutUnit LogicalLeft() const;
@@ -515,16 +514,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   bool UsesOverlayScrollbars() const;
-
-  DISABLE_CFI_PERF LayoutUnit LogicalTopScrollbarHeight() const {
-    NOT_DESTROYED();
-    if (CanSkipComputeScrollbars())
-      return LayoutUnit();
-    else if (HasFlippedBlocksWritingMode())
-      return ComputeScrollbarsInternal(kClampToContentBox).right;
-    else
-      return ComputeScrollbarsInternal(kClampToContentBox).top;
-  }
 
   // Physical client rect (a.k.a. PhysicalPaddingBoxRect(), defined by
   // ClientLeft, ClientTop, ClientWidth and ClientHeight) represents the
@@ -1530,13 +1519,6 @@ inline LayoutBox* LayoutBox::NextInFlowSiblingBox() const {
 
 inline LayoutBox* LayoutBox::ParentBox() const {
   return To<LayoutBox>(Parent());
-}
-
-inline LayoutBox* LayoutBox::FirstInFlowChildBox() const {
-  LayoutBox* first = FirstChildBox();
-  return (first && first->IsOutOfFlowPositioned())
-             ? first->NextInFlowSiblingBox()
-             : first;
 }
 
 inline LayoutBox* LayoutBox::FirstChildBox() const {
