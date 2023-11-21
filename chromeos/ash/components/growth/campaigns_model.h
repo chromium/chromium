@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -82,6 +83,7 @@ const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
 
 const Targetings* GetTargetings(const Campaign* campaign);
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
 
 // Lists of campaigns keyed by the targeted slot. The key is the slot ID in

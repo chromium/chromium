@@ -1342,6 +1342,16 @@ BASE_FEATURE(kGoogleOneOfferFilesBanner,
              "GoogleOneOfferFilesBanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables growth framework.
+BASE_FEATURE(kGrowthFramework,
+             "GrowthFramework",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Demo mode customizations with growth campaigns.
+BASE_FEATURE(kGrowthCampaignsInDemoMode,
+             "GrowthCampaignsInDemoMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables editing with handwriting gestures within the virtual keyboard.
 BASE_FEATURE(kHandwritingGestureEditing,
              "HandwritingGestureEditing",
@@ -3506,6 +3516,15 @@ bool IsGifRecordingEnabled() {
 
 bool IsGifRenderingEnabled() {
   return base::FeatureList::IsEnabled(kGifRendering);
+}
+
+bool IsGrowthFrameworkEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthFramework);
+}
+
+bool IsGrowthCampaignsInDemoModeEnabled() {
+  return IsGrowthFrameworkEnabled() &&
+         base::FeatureList::IsEnabled(kGrowthCampaignsInDemoMode);
 }
 
 bool AreGlanceablesV2Enabled() {

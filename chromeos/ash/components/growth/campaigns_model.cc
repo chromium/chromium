@@ -73,9 +73,11 @@ const Targetings* GetTargetings(const Campaign* campaign) {
   return campaign->FindList(kTargetings);
 }
 
+// Return the payload for the given `slot`. Payload could be nullptr for running
+// A/A testing. When payload is nullptr, fallback to the default behavior.
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
   if (slot == Slot::kDemoModeApp) {
-    return campaign->FindDict(
+    return campaign->FindDictByDottedPath(
         base::StringPrintf(kPayloadPathTemplate, kDemoModePayloadPath));
   }
 

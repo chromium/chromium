@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/display/refresh_rate_controller.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
+#include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
@@ -289,6 +290,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   attestation_cleanup_manager_ =
       std::make_unique<enterprise_connectors::AshAttestationCleanupManager>();
 
+  if (ash::features::IsGrowthCampaignsInDemoModeEnabled()) {
+    campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>();
+  }
+
   ash::bluetooth_config::FastPairDelegate* delegate =
       ash::features::IsFastPairEnabled()
           ? ash::Shell::Get()->quick_pair_mediator()->GetFastPairDelegate()
@@ -387,6 +392,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
   attestation_cleanup_manager_.reset();
+
+  campaigns_manager_client_.reset();
+
   desks_client_.reset();
 
   projector_client_.reset();
