@@ -457,7 +457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseRollback.Success"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-11-30">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2024-06-01">
   <owner>mpolzer@google.com</owner>
   <owner>crisguerrero@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -518,7 +518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.KernelKey.MaxRollforwardSetSuccess"
-    enum="BooleanSuccess" expires_after="2023-11-30">
+    enum="BooleanSuccess" expires_after="2024-06-01">
   <owner>mpolzer@google.com</owner>
   <owner>crisguerrero@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.KernelKey.MaxRollforwardVersion" units="units"
-    expires_after="2023-11-30">
+    expires_after="2024-06-01">
   <owner>mpolzer@google.com</owner>
   <owner>crisguerrero@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -553,7 +553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.KernelKey.MinVersion" units="units"
-    expires_after="2023-11-30">
+    expires_after="2024-06-01">
   <owner>mpolzer@google.com</owner>
   <owner>crisguerrero@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
