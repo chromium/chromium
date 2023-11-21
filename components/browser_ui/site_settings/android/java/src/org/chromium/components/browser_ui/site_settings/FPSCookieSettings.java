@@ -19,11 +19,9 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/**
- * First Party Sets preference page. It's a FourStateCookieSettingsPreference subpage.
- */
-public class FPSCookieSettings
-        extends BaseSiteSettingsFragment implements Preference.OnPreferenceChangeListener {
+/** First Party Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
+public class FPSCookieSettings extends BaseSiteSettingsFragment
+        implements Preference.OnPreferenceChangeListener {
     public static final String ALLOW_FPS_COOKIE_PREFERENCE = "allow_fps";
     public static final String SUBTITLE = "subtitle";
     public static final String BULLET_TWO = "bullet_two";

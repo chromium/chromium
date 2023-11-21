@@ -122,13 +122,7 @@ public class AddExceptionPreference extends Preference
         final EditText input = view.findViewById(R.id.site);
         final CheckBoxWithDescription checkBox = view.findViewById(R.id.add_site_dialog_checkbox);
 
-        if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
-            checkBox.setVisibility(View.VISIBLE);
-            checkBox.setPrimaryText(
-                    getContext()
-                            .getString(
-                                    R.string.website_settings_third_party_cookies_exception_label));
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             // Default to domain level setting for Request Desktop Site.
             checkBox.setChecked(true);
             checkBox.setVisibility(View.VISIBLE);
@@ -224,10 +218,7 @@ public class AddExceptionPreference extends Preference
 
     @VisibleForTesting
     static String getPrimaryPattern(@NonNull String pattern, int type, boolean isChecked) {
-        if (type == SiteSettingsCategory.Type.COOKIES) {
-            // If a user clicks the third party checkbox, set wildcard as primary.
-            return isChecked ? SITE_WILDCARD : pattern;
-        } else if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+        if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             return SITE_WILDCARD;
         }
         return pattern;
@@ -235,10 +226,7 @@ public class AddExceptionPreference extends Preference
 
     @VisibleForTesting
     static String getSecondaryPattern(@NonNull String pattern, int type, boolean isChecked) {
-        if (type == SiteSettingsCategory.Type.COOKIES) {
-            // If a user clicks the third party checkbox, set pattern as secondary.
-            return isChecked ? pattern : SITE_WILDCARD;
-        } else if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+        if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             return pattern;
         }
         return SITE_WILDCARD;

@@ -102,7 +102,7 @@ public class TriStateCookieSettingsPreference extends Preference
         // Sets the layout resource that will be inflated for the view.
         setLayoutResource(R.layout.tri_state_cookie_settings_preference);
 
-        // Make unselectable, otherwise FourStateCookieSettingsPreference is treated as one
+        // Make unselectable, otherwise TriStateCookieSettingsPreference is treated as one
         // selectable Preference, instead of four selectable radio buttons.
         setSelectable(false);
     }

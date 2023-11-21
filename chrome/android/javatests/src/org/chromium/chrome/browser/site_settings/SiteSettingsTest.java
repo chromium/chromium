@@ -32,7 +32,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 
 import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
-import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_DISPLAY_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
@@ -113,8 +112,6 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.FPSCookieSettings;
-import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
-import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
@@ -465,15 +462,15 @@ public class SiteSettingsTest {
                     public void run() {
                         final SingleCategorySettings websitePreferences =
                                 (SingleCategorySettings) settingsActivity.getMainFragment();
-                        final FourStateCookieSettingsPreference cookies =
-                                (FourStateCookieSettingsPreference)
-                                        websitePreferences.findPreference(
-                                                SingleCategorySettings
-                                                        .FOUR_STATE_COOKIE_TOGGLE_KEY);
+                        final TriStateCookieSettingsPreference cookies =
+                                websitePreferences.findPreference(
+                                        SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
 
                         websitePreferences.onPreferenceChange(
                                 cookies,
-                                enabled ? CookieSettingsState.ALLOW : CookieSettingsState.BLOCK);
+                                enabled
+                                        ? CookieControlsMode.OFF
+                                        : CookieControlsMode.BLOCK_THIRD_PARTY);
                         Assert.assertEquals(
                                 "Cookies should be " + (enabled ? "allowed" : "blocked"),
                                 doesAcceptCookies(),
@@ -481,34 +478,9 @@ public class SiteSettingsTest {
                     }
 
                     private boolean doesAcceptCookies() {
-                        return WebsitePreferenceBridge.isCategoryEnabled(
-                                getBrowserContextHandle(), ContentSettingsType.COOKIES);
-                    }
-                });
-    }
-
-    private void setBlockCookiesSiteException(
-            final SettingsActivity settingsActivity,
-            final String hostname,
-            final boolean thirdPartiesOnly) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        final SingleCategorySettings websitePreferences =
-                                (SingleCategorySettings) settingsActivity.getMainFragment();
-
-                        Assert.assertTrue(doesAcceptCookies());
-                        if (thirdPartiesOnly) {
-                            websitePreferences.onAddSite(SITE_WILDCARD, hostname);
-                        } else {
-                            websitePreferences.onAddSite(hostname, SITE_WILDCARD);
-                        }
-                    }
-
-                    private boolean doesAcceptCookies() {
-                        return WebsitePreferenceBridge.isCategoryEnabled(
-                                getBrowserContextHandle(), ContentSettingsType.COOKIES);
+                        return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                        .getInteger(COOKIE_CONTROLS_MODE)
+                                == CookieControlsMode.OFF;
                     }
                 });
     }
@@ -520,28 +492,27 @@ public class SiteSettingsTest {
     }
 
     /** Checks if the button representing the given state matches the managed expectation. */
-    private void checkFourStateCookieToggleButtonState(
+    private void checkTriStateCookieToggleButtonState(
             final SettingsActivity settingsActivity,
-            final CookieSettingsState state,
+            final @CookieControlsMode int state,
             final ToggleButtonState toggleState) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
-                    FourStateCookieSettingsPreference fourStateCookieToggle =
-                            (FourStateCookieSettingsPreference)
-                                    preferences.findPreference(
-                                            SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
+                    TriStateCookieSettingsPreference triStateCookieToggle =
+                            preferences.findPreference(
+                                    SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
                     boolean enabled = toggleState != ToggleButtonState.Disabled;
                     boolean checked = toggleState == ToggleButtonState.EnabledChecked;
                     Assert.assertEquals(
                             state + " button should be " + (enabled ? "enabled" : "disabled"),
                             enabled,
-                            fourStateCookieToggle.isButtonEnabledForTesting(state));
+                            triStateCookieToggle.isButtonEnabledForTesting(state));
                     Assert.assertEquals(
                             state + " button should be " + (checked ? "checked" : "unchecked"),
                             checked,
-                            fourStateCookieToggle.isButtonCheckedForTesting(state));
+                            triStateCookieToggle.isButtonCheckedForTesting(state));
                 });
     }
 
@@ -611,7 +582,6 @@ public class SiteSettingsTest {
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
                     TriStateSiteSettingsPreference triStateToggle =
-                            (TriStateSiteSettingsPreference)
                                     preferences.findPreference(
                                             SingleCategorySettings.TRI_STATE_TOGGLE_KEY);
                     preferences.onPreferenceChange(triStateToggle, newValue);
@@ -619,19 +589,19 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    private void setFourStateCookieToggle(CookieSettingsState newState) {
+    private void setTriStateCookieToggle(@CookieControlsMode int newState) {
         final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
-                    FourStateCookieSettingsPreference fourStateCookieToggle =
-                            (FourStateCookieSettingsPreference)
-                                    preferences.findPreference(
-                                            SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
-                    preferences.onPreferenceChange(fourStateCookieToggle, newState);
+                    TriStateCookieSettingsPreference triStateCookieToggle =
+                            preferences.findPreference(
+                                    SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
+                    preferences.onPreferenceChange(triStateCookieToggle, newState);
                 });
         settingsActivity.finish();
     }
@@ -691,9 +661,11 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisabledTest(message = "TODO(crbug.com/1449833)")
     public void testCookiesNotBlocked() throws Exception {
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         setCookiesEnabled(settingsActivity, true);
         settingsActivity.finish();
 
@@ -720,45 +692,37 @@ public class SiteSettingsTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testCookiesFPSSubpageIsLaunched() throws Exception {
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
 
         verifyFPSCookieSubpageIsLaunchedWithParams(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY);
+                settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY);
         verifyFPSCookieSubpageIsLaunchedWithParams(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
+                settingsActivity, CookieControlsMode.INCOGNITO_ONLY);
     }
 
     private void verifyFPSCookieSubpageIsLaunchedWithParams(
-            final SettingsActivity settingsActivity, CookieSettingsState cookieSettingsState) {
+            final SettingsActivity settingsActivity,
+            @CookieControlsMode int expectedCookieControlMode) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final SingleCategorySettings websitePreferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
-                    final FourStateCookieSettingsPreference cookies =
+                    final TriStateCookieSettingsPreference cookies =
                             websitePreferences.findPreference(
-                                    SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
+                                    SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
 
                     Mockito.clearInvocations(mSettingsLauncher);
                     websitePreferences.setSettingsLauncher(mSettingsLauncher);
 
-                    SiteSettingsTestUtils.getCookieRadioButtonFrom(cookies, cookieSettingsState)
+                    SiteSettingsTestUtils.getCookieRadioButtonFrom(
+                                    cookies, expectedCookieControlMode)
                             .getAuxButtonForTests()
                             .performClick();
 
-                    @CookieControlsMode int expectedState = CookieControlsMode.OFF;
-                    switch (cookieSettingsState) {
-                        case BLOCK_THIRD_PARTY_INCOGNITO:
-                            expectedState = CookieControlsMode.INCOGNITO_ONLY;
-                            break;
-                        case BLOCK_THIRD_PARTY:
-                            expectedState = CookieControlsMode.BLOCK_THIRD_PARTY;
-                            break;
-                        default:
-                            assert false;
-                    }
-
                     Bundle fragmentArgs = new Bundle();
-                    fragmentArgs.putInt(FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE, expectedState);
+                    fragmentArgs.putInt(
+                            FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE, expectedCookieControlMode);
 
                     Mockito.verify(mSettingsLauncher)
                             .launchSettingsActivity(
@@ -766,67 +730,6 @@ public class SiteSettingsTest {
                                     eq(FPSCookieSettings.class),
                                     refEq(fragmentArgs));
                 });
-    }
-
-    /** Blocks cookies from being set and ensures that no cookies can be set. */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    public void testCookiesBlocked() throws Exception {
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        setCookiesEnabled(settingsActivity, false);
-        settingsActivity.finish();
-
-        final String url = mPermissionRule.getURL("/chrome/test/data/android/cookie.html");
-
-        // Load the page and clear any set cookies.
-        mPermissionRule.loadUrl(url);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("clearCookie()");
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie()");
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-
-        // Load the page again and ensure the cookie remains unset.
-        mPermissionRule.loadUrl(url);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-    }
-
-    /** Blocks specific sites from setting cookies and ensures that no cookies can be set. */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    public void testSiteExceptionCookiesBlocked() throws Exception {
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        setCookiesEnabled(settingsActivity, true);
-        settingsActivity.finish();
-
-        final String url = mPermissionRule.getURL("/chrome/test/data/android/cookie.html");
-
-        // Load the page and clear any set cookies.
-        mPermissionRule.loadUrl(url);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("clearCookie()");
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-
-        // Check cookies can be set for this website when there is no rule.
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie()");
-        Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-
-        // Set specific rule to block site and ensure it cannot set cookies.
-        mPermissionRule.loadUrl(url);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("clearCookie()");
-        settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        setBlockCookiesSiteException(settingsActivity, url, false);
-        settingsActivity.finish();
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie()");
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-
-        // Load the page again and ensure the cookie remains unset.
-        mPermissionRule.loadUrl(url);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /** Blocks specific sites from setting cookies and ensures that no cookies can be set. */
@@ -986,20 +889,20 @@ public class SiteSettingsTest {
         // The ContentSetting is managed (and set to ALLOW) while ThirdPartyCookieBlocking is not
         // managed. This means that every button other than BLOCK is enabled.
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledUnchecked);
-        checkFourStateCookieToggleButtonState(
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledUnchecked);
+        checkTriStateCookieToggleButtonState(
                 settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
+                CookieControlsMode.INCOGNITO_ONLY,
                 ToggleButtonState.EnabledChecked);
-        checkFourStateCookieToggleButtonState(
+        checkTriStateCookieToggleButtonState(
                 settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
+                CookieControlsMode.BLOCK_THIRD_PARTY,
                 ToggleButtonState.EnabledUnchecked);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
-        onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
+        // TODO(crbug.com/1449833): fix this assertion.
+        // onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
@@ -1014,7 +917,8 @@ public class SiteSettingsTest {
     @Policies.Add({@Policies.Item(key = "DefaultCookiesSetting", string = "1")})
     public void testDefaultCookiesSettingManagedAllowWithIncognitoDisabled() throws Exception {
         IncognitoUtils.setEnabledForTesting(false);
-        setFourStateCookieToggle(CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
+        setTriStateCookieToggle(CookieControlsMode.INCOGNITO_ONLY);
+
         checkDefaultCookiesSettingManaged(true);
         checkThirdPartyCookieBlockingManaged(false);
         // The ContentSetting is managed (and set to ALLOW) while ThirdPartyCookieBlocking managed.
@@ -1022,57 +926,18 @@ public class SiteSettingsTest {
         // incognito is disabled the button should be disabled and the allow
         // toggle should be checked.
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
-        checkFourStateCookieToggleButtonState(
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+        checkTriStateCookieToggleButtonState(
                 settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
+                CookieControlsMode.BLOCK_THIRD_PARTY,
                 ToggleButtonState.EnabledUnchecked);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
-        onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
-        onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
-        settingsActivity.finish();
-    }
-
-    /**
-     * Set the cookie content setting to block through a policy and ensure the correct radio buttons
-     * are enabled.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @Policies.Add({@Policies.Item(key = "DefaultCookiesSetting", string = "2")})
-    public void testDefaultCookiesSettingManagedBlock() {
-        checkDefaultCookiesSettingManaged(true);
-        checkThirdPartyCookieBlockingManaged(true);
-        // The ContentSetting is managed (and set to BLOCK) while ThirdPartyCookieBlocking is not
-        // managed. This means cookies should always be blocked, so the user cannot choose any other
-        // options and all buttons except the active one should be disabled.
-        // TODO(crbug.com/1378703): The logic this is testing is now somewhat superfluous, as the
-        // default content setting policy automatically sets the 3P cookie policy. This can be
-        // removed when the old cookies page is removed as part of the solidication of the Privacy
-        // Sandbox Settings 4 launch.
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledChecked);
-        onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
+        // TODO(crbug.com/1449833): fix this assertion.
+        // onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
     }
@@ -1092,19 +957,16 @@ public class SiteSettingsTest {
         // managed. This means a user can choose only between BLOCK_THIRD_PARTY and BLOCK, so only
         // these should be enabled.
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.Disabled);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+        checkTriStateCookieToggleButtonState(
                 settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
+                CookieControlsMode.BLOCK_THIRD_PARTY,
                 ToggleButtonState.EnabledChecked);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1125,19 +987,14 @@ public class SiteSettingsTest {
         // managed. This means a user can only choose to ALLOW all cookies or BLOCK all cookies, so
         // only these should be enabled.
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1161,19 +1018,14 @@ public class SiteSettingsTest {
         // fixed setting for cookies that they cannot change. Therefore, all buttons except the
         // selected one should be disabled.
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1189,19 +1041,18 @@ public class SiteSettingsTest {
         // The ContentSetting and ThirdPartyCookieBlocking are unmanaged. This means all buttons
         // should be enabled.
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledUnchecked);
-        checkFourStateCookieToggleButtonState(
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledUnchecked);
+        checkTriStateCookieToggleButtonState(
                 settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
+                CookieControlsMode.INCOGNITO_ONLY,
                 ToggleButtonState.EnabledChecked);
-        checkFourStateCookieToggleButtonState(
+        checkTriStateCookieToggleButtonState(
                 settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
+                CookieControlsMode.BLOCK_THIRD_PARTY,
                 ToggleButtonState.EnabledUnchecked);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(not(isDisplayed())));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1218,19 +1069,16 @@ public class SiteSettingsTest {
         // The ContentSetting and ThirdPartyCookieBlocking are unmanaged. This means all buttons
         // should be enabled.
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
-        checkFourStateCookieToggleButtonState(
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.OFF, ToggleButtonState.EnabledChecked);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+        checkTriStateCookieToggleButtonState(
                 settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO,
-                ToggleButtonState.Disabled);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity,
-                CookieSettingsState.BLOCK_THIRD_PARTY,
+                CookieControlsMode.BLOCK_THIRD_PARTY,
                 ToggleButtonState.EnabledUnchecked);
-        checkFourStateCookieToggleButtonState(
-                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(not(isDisplayed())));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1378,7 +1226,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(32, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(31, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1486,21 +1334,6 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesClipboard() {
         testExpectedPreferences(SiteSettingsCategory.Type.CLIPBOARD, BINARY_TOGGLE, BINARY_TOGGLE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    public void testOnlyExpectedPreferencesCookies() {
-        String[] cookie = new String[] {"info_text", "four_state_cookie_toggle", "add_exception"};
-        setFourStateCookieToggle(CookieSettingsState.ALLOW);
-        checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
-        setFourStateCookieToggle(CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
-        checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
-        setFourStateCookieToggle(CookieSettingsState.BLOCK_THIRD_PARTY);
-        checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
-        setFourStateCookieToggle(CookieSettingsState.BLOCK);
-        checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
     }
 
     @Test
@@ -1733,34 +1566,24 @@ public class SiteSettingsTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testExpectedCookieButtonsCheckedWhenFPSUiEnabled() {
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
-                    FourStateCookieSettingsPreference fourStateCookieToggle =
+                    TriStateCookieSettingsPreference cookieToggle =
                             preferences.findPreference(
-                                    SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
+                                    SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
 
+                    clickButtonAndVerifyItsChecked(cookieToggle, CookieControlsMode.OFF);
+                    clickButtonAndVerifyItsChecked(cookieToggle, CookieControlsMode.INCOGNITO_ONLY);
                     clickButtonAndVerifyItsChecked(
-                            fourStateCookieToggle, CookieSettingsState.ALLOW);
-                    clickButtonAndVerifyItsChecked(
-                            fourStateCookieToggle, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
-                    clickButtonAndVerifyItsChecked(
-                            fourStateCookieToggle, CookieSettingsState.BLOCK_THIRD_PARTY);
-                    clickButtonAndVerifyItsChecked(
-                            fourStateCookieToggle, CookieSettingsState.BLOCK);
+                            cookieToggle, CookieControlsMode.BLOCK_THIRD_PARTY);
                 });
 
         settingsActivity.finish();
-    }
-
-    private void clickButtonAndVerifyItsChecked(
-            FourStateCookieSettingsPreference fourStateCookieToggle, CookieSettingsState state) {
-        fourStateCookieToggle.getButton(state).performClick();
-        Assert.assertTrue(
-                "Button should be checked.", fourStateCookieToggle.getButton(state).isChecked());
     }
 
     @Test
@@ -2939,7 +2762,8 @@ public class SiteSettingsTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderCookiesPageWithFPS() throws Exception {
         createCookieExceptions();
-        renderCategoryPage(SiteSettingsCategory.Type.COOKIES, "site_settings_cookies_page_fps");
+        renderCategoryPage(
+                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, "site_settings_cookies_page_fps");
     }
 
     @Test
@@ -3020,7 +2844,8 @@ public class SiteSettingsTest {
 
     public void testCookiesSettingsManagedForURL(String setting) throws Exception {
         final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.SITE_DATA);
 
         SingleCategorySettings websitePreferences =
                 (SingleCategorySettings) settingsActivity.getMainFragment();

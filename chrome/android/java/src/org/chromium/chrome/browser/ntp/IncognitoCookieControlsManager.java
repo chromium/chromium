@@ -120,8 +120,10 @@ public class IncognitoCookieControlsManager
     public void onClick(View v) {
         if (v.getId() == R.id.cookie_controls_card_managed_icon) {
             Bundle fragmentArguments = new Bundle();
-            fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
-                    SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.COOKIES));
+            fragmentArguments.putString(
+                    SingleCategorySettings.EXTRA_CATEGORY,
+                    SiteSettingsCategory.preferenceKey(
+                            SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(
                     v.getContext(), SingleCategorySettings.class, fragmentArguments);

@@ -62,8 +62,6 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.SiteAddedCallback;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
-import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
-import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.OnCookiesDetailsRequested;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -113,19 +111,19 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 SiteAddedCallback,
                 OnPreferenceTreeClickListener,
                 FragmentSettingsLauncher,
-                OnCookiesDetailsRequested,
                 TriStateCookieSettingsPreference.OnCookiesDetailsRequested,
                 CustomDividerFragment,
                 WebsitePreference.OnStorageAccessWebsiteDetailsRequested {
-    @IntDef({GlobalToggleLayout.BINARY_TOGGLE, GlobalToggleLayout.TRI_STATE_TOGGLE,
-            GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE,
-            GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE})
+    @IntDef({
+        GlobalToggleLayout.BINARY_TOGGLE,
+        GlobalToggleLayout.TRI_STATE_TOGGLE,
+        GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface GlobalToggleLayout {
         int BINARY_TOGGLE = 0;
         int TRI_STATE_TOGGLE = 1;
         int TRI_STATE_COOKIE_TOGGLE = 2;
-        int FOUR_STATE_COOKIE_TOGGLE = 3;
     }
 
     // The key to use to pass which category this preference should display,
@@ -218,7 +216,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     public static final String BINARY_TOGGLE_KEY = "binary_toggle";
     public static final String TRI_STATE_TOGGLE_KEY = "tri_state_toggle";
     public static final String TRI_STATE_COOKIE_TOGGLE = "tri_state_cookie_toggle";
-    public static final String FOUR_STATE_COOKIE_TOGGLE_KEY = "four_state_cookie_toggle";
 
     // Keys for category-specific preferences (toggle, link, button etc.), dynamically shown.
     public static final String NOTIFICATIONS_VIBRATE_TOGGLE_KEY = "notifications_vibrate";
@@ -442,8 +439,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         int contentType = mCategory.getContentSettingsType();
         if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             mGlobalToggleLayout = GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE;
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
-            mGlobalToggleLayout = GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE;
         } else if (WebsitePreferenceBridge.requiresTriStateContentSetting(contentType)) {
             mGlobalToggleLayout = GlobalToggleLayout.TRI_STATE_TOGGLE;
         }
@@ -622,9 +617,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             WebsitePreferenceBridge.setDefaultContentSetting(
                     browserContextHandle, mCategory.getContentSettingsType(), setting);
             getInfoForOrigins();
-        } else if (FOUR_STATE_COOKIE_TOGGLE_KEY.equals(preference.getKey())) {
-            setCookieSettingsPreference((CookieSettingsState) newValue);
-            getInfoForOrigins();
         } else if (TRI_STATE_COOKIE_TOGGLE.equals(preference.getKey())) {
             setThirdPartyCookieSettingsPreference((int) newValue);
             getInfoForOrigins();
@@ -695,48 +687,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         manager.showDialog(model, ModalDialogType.APP);
     }
 
-    private void setCookieSettingsPreference(CookieSettingsState state) {
-        assert mCategory.getType() == SiteSettingsCategory.Type.COOKIES;
-        boolean allowCookies;
-        @CookieControlsMode
-        int mode;
-
-        switch (state) {
-            case ALLOW:
-                allowCookies = true;
-                mode = CookieControlsMode.OFF;
-                break;
-            case BLOCK_THIRD_PARTY_INCOGNITO:
-                allowCookies = true;
-                mode = CookieControlsMode.INCOGNITO_ONLY;
-                break;
-            case BLOCK_THIRD_PARTY:
-                allowCookies = true;
-                mode = CookieControlsMode.BLOCK_THIRD_PARTY;
-                break;
-            case BLOCK:
-                allowCookies = false;
-                mode = CookieControlsMode.BLOCK_THIRD_PARTY;
-                break;
-            default:
-                return;
-        }
-
-        getSiteSettingsDelegate().dismissPrivacySandboxSnackbar();
-
-        // Display the Privacy Sandbox snackbar whenever third-party/all cookies are blocked.
-        if (mode == CookieControlsMode.BLOCK_THIRD_PARTY) {
-            getSiteSettingsDelegate().maybeDisplayPrivacySandboxSnackbar();
-        }
-
-        WebsitePreferenceBridge.setCategoryEnabled(
-                getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES,
-                allowCookies);
-        PrefService prefService =
-                UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle());
-        prefService.setInteger(COOKIE_CONTROLS_MODE, mode);
-    }
-
     private void setThirdPartyCookieSettingsPreference(@CookieControlsMode int mode) {
         assert mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES;
         getSiteSettingsDelegate().dismissPrivacySandboxSnackbar();
@@ -748,12 +698,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         PrefService prefService =
                 UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle());
         prefService.setInteger(COOKIE_CONTROLS_MODE, mode);
-    }
-
-    private CookieSettingsState getCookieSettingsState() {
-        FourStateCookieSettingsPreference fourStateCookieToggle =
-                getPreferenceScreen().findPreference(FOUR_STATE_COOKIE_TOGGLE_KEY);
-        return fourStateCookieToggle.getState();
     }
 
     private String getAddExceptionDialogMessage() {
@@ -778,11 +722,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                                    browserContextHandle, ContentSettingsType.SOUND)
                         ? R.string.website_settings_add_site_description_sound_block
                         : R.string.website_settings_add_site_description_sound_allow;
-                break;
-            case SiteSettingsCategory.Type.COOKIES:
-                resource = getCookieSettingsState() == CookieSettingsState.ALLOW
-                        ? R.string.website_settings_add_site_description_cookies_block
-                        : R.string.website_settings_add_site_description_cookies_allow;
                 break;
             case SiteSettingsCategory.Type.SITE_DATA:
                 resource = WebsitePreferenceBridge.isCategoryEnabled(
@@ -850,11 +789,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 getSiteSettingsDelegate().getBrowserContextHandle();
         int setting = ContentSettingValues.DEFAULT;
         switch (mGlobalToggleLayout) {
-            case GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE:
-                setting = getCookieSettingsState() == CookieSettingsState.ALLOW
-                        ? ContentSettingValues.BLOCK
-                        : ContentSettingValues.ALLOW;
-                break;
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 setting = getCookieControlsMode() == CookieControlsMode.OFF
                         ? ContentSettingValues.BLOCK
@@ -914,7 +848,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         switch (mCategory.getType()) {
             case SiteSettingsCategory.Type.SOUND:
             case SiteSettingsCategory.Type.JAVASCRIPT:
-            case SiteSettingsCategory.Type.COOKIES:
             case SiteSettingsCategory.Type.SITE_DATA:
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
@@ -1109,10 +1042,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 TriStateSiteSettingsPreference triStateToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_TOGGLE_KEY);
                 return (triStateToggle.getCheckedSetting() == ContentSettingValues.BLOCK);
-            case GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE:
-                FourStateCookieSettingsPreference fourStateCookieToggle =
-                        getPreferenceScreen().findPreference(FOUR_STATE_COOKIE_TOGGLE_KEY);
-                return fourStateCookieToggle.getState() == CookieSettingsState.BLOCK;
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 TriStateCookieSettingsPreference triStateCookieToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_COOKIE_TOGGLE);
@@ -1138,8 +1067,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         TriStateSiteSettingsPreference triStateToggle = screen.findPreference(TRI_STATE_TOGGLE_KEY);
         TriStateCookieSettingsPreference triStateCookieToggle =
                 screen.findPreference(TRI_STATE_COOKIE_TOGGLE);
-        FourStateCookieSettingsPreference fourStateCookieToggle =
-                screen.findPreference(FOUR_STATE_COOKIE_TOGGLE_KEY);
         Preference notificationsVibrate = screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
         mNotificationsQuietUiPref = screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
         mDesktopSitePeripheralPref = screen.findPreference(DESKTOP_SITE_PERIPHERAL_TOGGLE_KEY);
@@ -1160,9 +1087,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mGlobalToggleLayout != GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE) {
             screen.removePreference(triStateCookieToggle);
         }
-        if (mGlobalToggleLayout != GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE) {
-            screen.removePreference(fourStateCookieToggle);
-        }
         switch (mGlobalToggleLayout) {
             case GlobalToggleLayout.BINARY_TOGGLE:
                 configureBinaryToggle(binaryToggle, contentType);
@@ -1173,15 +1097,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 configureTriStateCookieToggle(triStateCookieToggle);
                 break;
-            case GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE:
-                configureFourStateCookieToggle(fourStateCookieToggle);
-                break;
         }
 
         Preference infoText = screen.findPreference(INFO_TEXT_KEY);
-        if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
-            infoText.setSummary(R.string.website_settings_cookie_info);
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
             infoText.setSummary(R.string.website_settings_site_data_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
@@ -1335,27 +1254,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             osWarningExtra.setKey(SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA);
             screen.addPreference(osWarningExtra);
         }
-    }
-
-    private void configureFourStateCookieToggle(
-            FourStateCookieSettingsPreference fourStateCookieToggle) {
-        fourStateCookieToggle.setOnPreferenceChangeListener(this);
-        fourStateCookieToggle.setCookiesDetailsRequestedListener(this);
-        FourStateCookieSettingsPreference.Params params =
-                new FourStateCookieSettingsPreference.Params();
-        params.allowCookies = WebsitePreferenceBridge.isCategoryEnabled(
-                getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES);
-        PrefService prefService =
-                UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle());
-        params.cookieControlsMode = getCookieControlsMode();
-        params.cookiesContentSettingEnforced = mCategory.isManaged();
-        params.cookieControlsModeEnforced = prefService.isManagedPreference(COOKIE_CONTROLS_MODE);
-        params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
-        params.isPrivacySandboxFirstPartySetsUIEnabled =
-                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled();
-        params.isFirstPartySetsDataAccessEnabled =
-                getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled();
-        fourStateCookieToggle.setState(params);
     }
 
     private void configureTriStateCookieToggle(

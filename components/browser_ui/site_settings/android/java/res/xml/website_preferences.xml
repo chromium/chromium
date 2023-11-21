@@ -24,9 +24,6 @@ found in the LICENSE file.
          "binary_toggle" above and the "four_state_cookie_toggle" below. -->
     <org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference
         android:key="tri_state_toggle" />
-    <!-- A four state toggle for cookie preferences, only shown for the Cookies category. -->
-    <org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference
-        android:key="four_state_cookie_toggle" />
     <!-- A three state toggle for third-party cookies preferences, only shown for the ThirdPartyCookies category. -->
     <org.chromium.components.browser_ui.site_settings.TriStateCookieSettingsPreference
         android:key="tri_state_cookie_toggle" />

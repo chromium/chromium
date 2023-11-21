@@ -111,9 +111,6 @@ public class SiteSettings extends BaseSiteSettingsFragment
                                .showPermissionBlockedMessage(getContext())) {
                 // Show 'disabled' message when permission is not granted in Android.
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, false));
-            } else if (Type.COOKIES == prefCategory && checked
-                    && cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
-                p.setSummary(ContentSettingsResources.getCookieAllowedExceptThirdPartySummary());
             } else if (Type.SITE_DATA == prefCategory) {
                 p.setSummary(ContentSettingsResources.getSiteDataListSummary(checked));
             } else if (Type.THIRD_PARTY_COOKIES == prefCategory) {

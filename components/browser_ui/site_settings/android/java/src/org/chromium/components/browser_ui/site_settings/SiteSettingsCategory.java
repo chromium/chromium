@@ -48,7 +48,6 @@ public class SiteSettingsCategory {
         Type.BLUETOOTH_SCANNING,
         Type.CAMERA,
         Type.CLIPBOARD,
-        Type.COOKIES,
         Type.IDLE_DETECTION,
         Type.DEVICE_LOCATION,
         Type.JAVASCRIPT,
@@ -85,33 +84,32 @@ public class SiteSettingsCategory {
         int BLUETOOTH_SCANNING = 5;
         int CAMERA = 6;
         int CLIPBOARD = 7;
-        int COOKIES = 8;
-        int DEVICE_LOCATION = 9;
-        int IDLE_DETECTION = 10;
-        int JAVASCRIPT = 11;
-        int MICROPHONE = 12;
-        int NFC = 13;
-        int NOTIFICATIONS = 14;
-        int POPUPS = 15;
-        int PROTECTED_MEDIA = 16;
-        int SENSORS = 17;
-        int SOUND = 18;
-        int USB = 19;
-        int BLUETOOTH = 20;
-        int VIRTUAL_REALITY = 21;
-        int USE_STORAGE = 22;
-        int AUTO_DARK_WEB_CONTENT = 23;
-        int REQUEST_DESKTOP_SITE = 24;
-        int FEDERATED_IDENTITY_API = 25;
-        int THIRD_PARTY_COOKIES = 26;
-        int SITE_DATA = 27;
-        int ANTI_ABUSE = 28;
-        int ZOOM = 29;
-        int STORAGE_ACCESS = 30;
-        int TRACKING_PROTECTION = 31;
+        int DEVICE_LOCATION = 8;
+        int IDLE_DETECTION = 9;
+        int JAVASCRIPT = 10;
+        int MICROPHONE = 11;
+        int NFC = 12;
+        int NOTIFICATIONS = 13;
+        int POPUPS = 14;
+        int PROTECTED_MEDIA = 15;
+        int SENSORS = 16;
+        int SOUND = 17;
+        int USB = 18;
+        int BLUETOOTH = 19;
+        int VIRTUAL_REALITY = 20;
+        int USE_STORAGE = 21;
+        int AUTO_DARK_WEB_CONTENT = 22;
+        int REQUEST_DESKTOP_SITE = 23;
+        int FEDERATED_IDENTITY_API = 24;
+        int THIRD_PARTY_COOKIES = 25;
+        int SITE_DATA = 26;
+        int ANTI_ABUSE = 27;
+        int ZOOM = 28;
+        int STORAGE_ACCESS = 29;
+        int TRACKING_PROTECTION = 30;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 32;
+        int NUM_ENTRIES = 31;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -207,7 +205,6 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.MEDIASTREAM_CAMERA;
             case Type.CLIPBOARD:
                 return ContentSettingsType.CLIPBOARD_READ_WRITE;
-            case Type.COOKIES:
             case Type.SITE_DATA:
             case Type.THIRD_PARTY_COOKIES:
                 return ContentSettingsType.COOKIES;
@@ -292,8 +289,6 @@ public class SiteSettingsCategory {
                 return "camera";
             case Type.CLIPBOARD:
                 return "clipboard";
-            case Type.COOKIES:
-                return "cookies";
             case Type.REQUEST_DESKTOP_SITE:
                 return "request_desktop_site";
             case Type.DEVICE_LOCATION:
@@ -376,8 +371,7 @@ public class SiteSettingsCategory {
                 || mCategory == Type.POPUPS) {
             return WebsitePreferenceBridge.isContentSettingManaged(
                     getBrowserContextHandle(), getContentSettingsType());
-        } else if (mCategory == Type.COOKIES
-                || mCategory == Type.DEVICE_LOCATION
+        } else if (mCategory == Type.DEVICE_LOCATION
                 || mCategory == Type.CAMERA
                 || mCategory == Type.MICROPHONE) {
             return !WebsitePreferenceBridge.isContentSettingUserModifiable(
@@ -395,8 +389,7 @@ public class SiteSettingsCategory {
      */
     public boolean isManagedByCustodian() {
         // TODO(dullweber): Why do we only check these types?
-        if (mCategory == Type.COOKIES
-                || mCategory == Type.DEVICE_LOCATION
+        if (mCategory == Type.DEVICE_LOCATION
                 || mCategory == Type.CAMERA
                 || mCategory == Type.MICROPHONE) {
             return WebsitePreferenceBridge.isContentSettingManagedByCustodian(

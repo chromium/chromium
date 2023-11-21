@@ -248,9 +248,6 @@
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCKED_DSE" desc="Status message explaining that the default search engine is blocked from accessing this permission. Displayed in Site Settings page. e.g. Location: Blocked for current search engine">
     Blocked for current search engine
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_EXCEPTION_LABEL" desc="The label for site exceptions that affect third party cookies.">
-   Including third-party cookies on this site
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_DOMAIN_EXCEPTION_LABEL" desc="The label for site exceptions that apply to the entire domain.">
     All sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
   </message>
@@ -502,36 +499,6 @@
     Blocked from reading clipboard
   </message>
 
-  <!-- Cookies -->
-
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOW_TITLE" desc="Text used to explain the allow cookies option in settings">
-    Allow cookies
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_INCOGNITO_TITLE" desc="Text used to explain the block third-party cookies in Incognito option in settings">
-    Block third-party cookies in Incognito
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_TITLE" desc="Text used to explain the block third-party cookies option in settings">
-    Block third-party cookies
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_TITLE" desc="Text used to explain the block cookies option in settings">
-    Block all cookies (not recommended)
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOW_ADDITION" desc="Additional text used to explain the allow cookies option in settings">
-    Sites will work normally
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_FPS_ADDITION" desc="Additional text used to explain the block third-party cookies option in settings when First Party Sets are enables.">
-    Related sites can see your activity in the group
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_ADDITION" desc="Additional text used to explain the block cookies option in settings">
-    Features on many sites may not work
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_COOKIES_ALLOW" desc="The description for the allow Cookies for website dialog.">
-    Allow cookies for a specific site.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_COOKIES_BLOCK" desc="The description for the block Cookies for website dialog.">
-    Block cookies for a specific site.
-  </message>
-
   <!-- Site data page -->
   <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_DESCRIPTION" desc="A paragraph that appear beneath the page title: 'On-device site data'. It defines what on-device site data is. What is 'On-device site data'? When you interact with a site, that site can remember things about what you do. For example, you might place a pair of shoes in a shopping cart, close down your browser, and find those same shoes in your shopping cart when you visit the same site a week later. Sometimes that info is saved in the Cloud. Sometimes that info is saved on the user's device. There are several ways a site can save info to the user's device—for example, with cookies (text files saved to your device), small JavaScript databases, and even Chrome's new ad settings that are part of the Privacy Sandbox project (see details below). This page introduces the concept of on-device site data, allows the user to see which sites are using it, and allows the user to delete all saved data or just data from specific sites.  **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com.">
     A site you visit can save info about what you’re doing so that it works as expected — for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.
@@ -597,9 +564,6 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_FPS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
     Features on some sites may not work
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_COOKIE_INFO" desc="Text describing cookie and third-party cookie settings.">
-    A site you visit can embed content from other sites, for example images, ads, and text. Any of these sites can save cookies and other data to personalize your experience.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
