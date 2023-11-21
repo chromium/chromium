@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
@@ -26,7 +27,9 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -343,6 +346,9 @@ class SaveCardInfobarEGTestHelper
 
 @implementation AutofillAppInterface
 
+static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
+    _scopedReauthModuleOverride;
+
 + (void)clearPasswordStore {
   ClearPasswordStore();
 }
@@ -490,6 +496,41 @@ class SaveCardInfobarEGTestHelper
 
 + (NSString*)paymentsRiskData {
   return ios::provider::GetRiskData();
+}
+
++ (void)setUpMockReauthenticationModule {
+  MockReauthenticationModule* mock_reauthentication_module =
+      [[MockReauthenticationModule alloc] init];
+  _scopedReauthModuleOverride =
+      ScopedAutofillPaymentReauthModuleOverride::MakeAndArmForTesting(
+          mock_reauthentication_module);
+}
+
++ (void)clearMockReauthenticationModule {
+  _scopedReauthModuleOverride = nullptr;
+}
+
++ (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt {
+  CHECK(_scopedReauthModuleOverride);
+  MockReauthenticationModule* mockModule =
+      base::apple::ObjCCastStrict<MockReauthenticationModule>(
+          _scopedReauthModuleOverride->module);
+  mockModule.canAttempt = canAttempt;
+}
+
++ (void)mockReauthenticationModuleExpectedResult:
+    (ReauthenticationResult)expectedResult {
+  CHECK(_scopedReauthModuleOverride);
+  MockReauthenticationModule* mockModule =
+      base::apple::ObjCCastStrict<MockReauthenticationModule>(
+          _scopedReauthModuleOverride->module);
+  mockModule.expectedResult = expectedResult;
+}
+
++ (void)setMandatoryReauthEnabled:(BOOL)enabled {
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  personalDataManager->SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
 #pragma mark - Private

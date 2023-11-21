@@ -7,9 +7,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -63,6 +65,11 @@ id<GREYMatcher> BottomToolbar() {
   return grey_accessibilityID(kAutofillPaymentMethodsToolbarId);
 }
 
+// Matcher for the toolbar's done button.
+id<GREYMatcher> SettingToolbarDoneButton() {
+  return grey_accessibilityID(kSettingsToolbarEditDoneButtonId);
+}
+
 }  // namespace
 
 // Various tests for the Autofill credit cards section of the settings.
@@ -71,14 +78,25 @@ id<GREYMatcher> BottomToolbar() {
 
 @implementation AutofillCreditCardSettingsTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnablePaymentsMandatoryReauth);
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
 
   [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface setMandatoryReauthEnabled:YES];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearMockReauthenticationModule];
   [super tearDown];
 }
 
@@ -124,6 +142,8 @@ id<GREYMatcher> BottomToolbar() {
 // Test that the page for viewing Autofill credit card details is as expected.
 - (void)testCreditCardViewPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
 
   // Check that all fields and values match the expectations.
@@ -147,6 +167,8 @@ id<GREYMatcher> BottomToolbar() {
 // Test that the page for viewing Autofill credit card details is accessible.
 - (void)testAccessibilityOnCreditCardViewPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
@@ -161,6 +183,8 @@ id<GREYMatcher> BottomToolbar() {
 // Test that the page for editing Autofill credit card details is accessible.
 - (void)testAccessibilityOnCreditCardEditPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
 
   // Switch on edit mode.
@@ -176,19 +200,53 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Checks that the Autofill credit cards list view is in edit mode and the
-// Autofill credit cards switch is disabled.
+// Autofill credit cards / mandatory reauth switches are disabled.
 - (void)testListViewEditMode {
   [AutofillAppInterface saveLocalCreditCard];
+
   [self openCreditCardsSettings];
 
   // Switch on edit mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
   // Check the Autofill credit card switch is disabled.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillCreditCardSwitchViewId, YES,
                                           NO)] assertWithMatcher:grey_notNil()];
+
+  // Check the Autofill mandatory reauth switch is disabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          YES, NO)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap Done button to exit the edit mode.
+  [[EarlGrey selectElementWithMatcher:SettingToolbarDoneButton()]
+      performAction:grey_tap()];
+
+  // Config next reauth attempt to fail.
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kFailure];
+
+  // Try to switch on edit mode again.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  // Check the Autofill credit card switch is enabled. Didn't enter edit mode.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillCreditCardSwitchViewId, YES, YES)]
+      assertWithMatcher:grey_notNil()];
+
+  // Check the Autofill mandatory reauth switch is enabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          YES, YES)]
+      assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
 }
@@ -267,6 +325,9 @@ id<GREYMatcher> BottomToolbar() {
                                    kAutofillCreditCardSwitchViewId, YES, YES)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
   // Open Edit Mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
@@ -280,6 +341,8 @@ id<GREYMatcher> BottomToolbar() {
 // Checks that the toolbar always appears in edit mode.
 - (void)testToolbarInEditModeAddPaymentMethodFeatureEnabled {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
   [self openCreditCardListInEditMode];
 
   [[EarlGrey selectElementWithMatcher:BottomToolbar()]
@@ -301,9 +364,8 @@ id<GREYMatcher> BottomToolbar() {
 // selected.
 - (void)testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
   [self openCreditCardListInEditMode];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -326,7 +388,10 @@ id<GREYMatcher> BottomToolbar() {
 // Checks that deleting a card exits from edit mode.
 - (void)testDeletingCreditCard {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
   [self openCreditCardListInEditMode];
+
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                           [self creditCardLabel:lastDigits])]
       performAction:grey_tap()];
@@ -340,6 +405,70 @@ id<GREYMatcher> BottomToolbar() {
   // mode.
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that toggling the mandatory reauth toggle triggers the reauth, and if
+// reauth succeeded, reauth preference and the toggle state are updated.
+- (void)testUpdateReauthToggle {
+  // Start from switched-off state.
+  [AutofillAppInterface setMandatoryReauthEnabled:NO];
+
+  [self openCreditCardsSettings];
+
+  // Check the reauth is there.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          NO, YES)]
+      assertWithMatcher:grey_notNil()];
+
+  // Config the next reauth attempt to fail.
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kFailure];
+
+  // Switch on reauth toggle.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          NO, YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+  // Upon reauth failure, the toggle is not updated.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          NO, YES)]
+      assertWithMatcher:grey_notNil()];
+
+  // Config the next reauth attempt to succeed.
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
+  // Switch on reauth toggle again.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          NO, YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+  // Upon reauth success, the toggle updated.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          YES, YES)]
+      assertWithMatcher:grey_notNil()];
+
+  // Mock that reauth is disabled.
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  // Try to switch off reauth toggle again.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          YES, YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Reauth toggle should be disabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          NO, NO)]
+      assertWithMatcher:grey_notNil()];
+
+  [self exitSettingsMenu];
 }
 
 @end

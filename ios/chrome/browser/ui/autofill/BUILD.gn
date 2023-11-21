@@ -10,6 +10,7 @@ source_set("autofill") {
   deps = [
     ":autofill_ui",
     ":bridges",
+    ":common",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -162,6 +163,17 @@ source_set("autofill_metrics") {
   deps = [ "//base" ]
 }
 
+source_set("common") {
+  sources = [
+    "scoped_autofill_payment_reauth_module_override.h",
+    "scoped_autofill_payment_reauth_module_override.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -170,6 +182,7 @@ source_set("eg2_tests") {
     "save_profile_egtest.mm",
   ]
   deps = [
+    ":common",
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
@@ -205,6 +218,7 @@ source_set("eg_app_support+eg2") {
     "autofill_app_interface.mm",
   ]
   deps = [
+    ":common",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
@@ -217,6 +231,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/common/ui/reauthentication:reauthentication",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/web/public:public",
@@ -234,6 +249,7 @@ source_set("eg_test_support+eg2") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/common/ui/reauthentication:reauthentication",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }

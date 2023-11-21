@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -48,7 +50,7 @@ namespace {
 
 enum SectionIdentifier : NSInteger {
   SectionIdentifierAutofillCardSwitch = kSectionIdentifierEnumZero,
-  SectionIdentifierMandatoryReauth,
+  SectionIdentifierMandatoryReauthSwitch,
   SectionIdentifierCards,
 };
 
@@ -69,7 +71,8 @@ enum ItemType : NSInteger {
 @interface AutofillCreditCardTableViewController () <
     AutofillAddCreditCardCoordinatorDelegate,
     PersonalDataManagerObserver,
-    PopoverLabelViewControllerDelegate> {
+    PopoverLabelViewControllerDelegate,
+    SuccessfulReauthTimeAccessor> {
   autofill::PersonalDataManager* _personalDataManager;
 
   Browser* _browser;
@@ -77,6 +80,9 @@ enum ItemType : NSInteger {
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
+
+  // Timestamp for last successful reauth attempt by the ReauthenticationModule.
+  NSDate* _lastSuccessfulReauthTime;
 }
 
 @property(nonatomic, getter=isAutofillCreditCardEnabled)
@@ -95,6 +101,9 @@ enum ItemType : NSInteger {
 
 // Add button for the toolbar.
 @property(nonatomic, strong) UIBarButtonItem* addButtonInToolbar;
+
+// Reauthentication module.
+@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
 
 @end
 
@@ -119,6 +128,20 @@ enum ItemType : NSInteger {
   return self;
 }
 
+#pragma mark - properties
+
+- (ReauthenticationModule*)reauthenticationModule {
+  if (ScopedAutofillPaymentReauthModuleOverride::instance) {
+    return ScopedAutofillPaymentReauthModuleOverride::instance->module;
+  }
+
+  if (!_reauthenticationModule) {
+    _reauthenticationModule = [[ReauthenticationModule alloc]
+        initWithSuccessfulReauthTimeAccessor:self];
+  }
+  return _reauthenticationModule;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -136,7 +159,15 @@ enum ItemType : NSInteger {
   if (editing) {
     self.deleteButton.enabled = NO;
   }
-  [self setSwitchItemEnabled:!editing itemType:ItemTypeAutofillCardSwitch];
+
+  // We don't want to update this preference when it is in editing mode.
+  [self setSwitchItemEnabled:!editing
+                    itemType:ItemTypeAutofillCardSwitch
+           sectionIdentifier:SectionIdentifierAutofillCardSwitch];
+  [self setSwitchItemEnabled:!editing
+                    itemType:ItemTypeMandatoryReauthSwitch
+           sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
+
   [self updateUIForEditState];
 }
 
@@ -170,11 +201,11 @@ enum ItemType : NSInteger {
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnablePaymentsMandatoryReauth)) {
-    [model addSectionWithIdentifier:SectionIdentifierMandatoryReauth];
+    [model addSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
     [model addItem:[self mandatoryReauthSwitchItem]
-        toSectionWithIdentifier:SectionIdentifierMandatoryReauth];
+        toSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
     [model setFooter:[self mandatoryReauthSwitchFooter]
-        forSectionWithIdentifier:SectionIdentifierMandatoryReauth];
+        forSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
   }
 
   [self populateCardSection];
@@ -239,9 +270,12 @@ enum ItemType : NSInteger {
       [[TableViewSwitchItem alloc] initWithType:ItemTypeMandatoryReauthSwitch];
   switchItem.text = l10n_util::GetNSString(
       IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL);
-  switchItem.on = autofill::prefs::IsPaymentMethodsMandatoryReauthEnabled(
-      _browser->GetBrowserState()->GetPrefs());
   switchItem.accessibilityIdentifier = kAutofillMandatoryReauthSwitchViewId;
+  BOOL canAttemptReauth = [self.reauthenticationModule canAttemptReauth];
+  switchItem.enabled = canAttemptReauth;
+  switchItem.on =
+      canAttemptReauth &&
+      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
   return switchItem;
 }
 
@@ -318,6 +352,30 @@ enum ItemType : NSInteger {
   return [self localCreditCardsExist];
 }
 
+// Override editButtonPressed to support triggering mandatory reauth when the
+// user wants to edit/delete the card.
+- (void)editButtonPressed {
+  // If 1. reauth is not available or 2. reauth succeeded, we
+  // proceed by calling the parent's editButtonPressed. Otherwise return
+  // early and do nothing.
+  if (_personalDataManager->IsPaymentMethodsMandatoryReauthEnabled() &&
+      [self.reauthenticationModule canAttemptReauth]) {
+    auto completionHandler = ^(ReauthenticationResult result) {
+      if (result != ReauthenticationResult::kFailure) {
+        [super editButtonPressed];
+      }
+    };
+    [self.reauthenticationModule
+        attemptReauthWithLocalizedReason:
+            l10n_util::GetNSString(
+                IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH)
+                    canReusePreviousAuth:YES
+                                 handler:completionHandler];
+  } else {
+    [super editButtonPressed];
+  }
+}
+
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
   // Do not call super as this also deletes the section if it is empty.
   [self deleteItemAtIndexPaths:indexPaths];
@@ -385,10 +443,15 @@ enum ItemType : NSInteger {
     case ItemTypeCard:
     case ItemTypeHeader:
     case ItemTypeMandatoryReauthSwitchSubtitle:
-    case ItemTypeMandatoryReauthSwitch:
-      // TODO(b/297268822): Wire up callback functions to handle mandatory
-      // reauth switch toggle events
       break;
+    case ItemTypeMandatoryReauthSwitch: {
+      TableViewSwitchCell* switchCell =
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
+      [switchCell.switchView addTarget:self
+                                action:@selector(mandatoryReauthSwitchChanged:)
+                      forControlEvents:UIControlEventValueChanged];
+      break;
+    }
     case ItemTypeAutofillCardSwitch: {
       TableViewSwitchCell* switchCell =
           base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
@@ -414,38 +477,68 @@ enum ItemType : NSInteger {
 #pragma mark - Switch Callbacks
 
 - (void)autofillCardSwitchChanged:(UISwitch*)switchView {
-  [self setSwitchItemOn:[switchView isOn] itemType:ItemTypeAutofillCardSwitch];
+  [self setSwitchItemOn:[switchView isOn]
+               itemType:ItemTypeAutofillCardSwitch
+      sectionIdentifier:SectionIdentifierAutofillCardSwitch];
   [self setAutofillCreditCardEnabled:[switchView isOn]];
   self.addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
+}
+
+- (void)mandatoryReauthSwitchChanged:(UISwitch*)switchView {
+  if ([self.reauthenticationModule canAttemptReauth]) {
+    __weak __typeof(self) weakSelf = self;
+    [self.reauthenticationModule
+        attemptReauthWithLocalizedReason:
+            l10n_util::GetNSString(
+                IDS_PAYMENTS_AUTOFILL_SETTINGS_TOGGLE_MANDATORY_REAUTH)
+                    canReusePreviousAuth:YES
+                                 handler:^(ReauthenticationResult result) {
+                                   [weakSelf
+                                       handleReauthenticationResult:result];
+                                 }];
+  } else {
+    // Reauth is not supported. Disable the Mandatory Reauth switch and set its
+    // value to switched-off.
+    [self setSwitchItemEnabled:NO
+                      itemType:ItemTypeMandatoryReauthSwitch
+             sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
+    [self setSwitchItemOn:NO
+                 itemType:ItemTypeMandatoryReauthSwitch
+        sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
+  }
 }
 
 #pragma mark - Switch Helpers
 
 // Sets switchItem's state to `on`. It is important that there is only one item
-// of `switchItemType` in SectionIdentifierAutofillCardSwitch.
-- (void)setSwitchItemOn:(BOOL)on itemType:(ItemType)switchItemType {
-  NSIndexPath* switchPath = [self.tableViewModel
-      indexPathForItemType:switchItemType
-         sectionIdentifier:SectionIdentifierAutofillCardSwitch];
+// of `switchItemType` in section with `sectionIdentifier`.
+- (void)setSwitchItemOn:(BOOL)on
+               itemType:(ItemType)switchItemType
+      sectionIdentifier:(SectionIdentifier)sectionIdentifier {
+  NSIndexPath* switchPath =
+      [self.tableViewModel indexPathForItemType:switchItemType
+                              sectionIdentifier:sectionIdentifier];
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
   switchItem.on = on;
+  [self reconfigureCellsForItems:@[ switchItem ]];
 }
 
 // Sets switchItem's enabled status to `enabled` and reconfigures the
 // corresponding cell. It is important that there is no more than one item of
-// `switchItemType` in SectionIdentifierAutofillCardSwitch.
-- (void)setSwitchItemEnabled:(BOOL)enabled itemType:(ItemType)switchItemType {
+// `switchItemType` in section with `sectionIdentifier`.
+- (void)setSwitchItemEnabled:(BOOL)enabled
+                    itemType:(ItemType)switchItemType
+           sectionIdentifier:(SectionIdentifier)sectionIdentifier {
   TableViewModel* model = self.tableViewModel;
 
   if (![model hasItemForItemType:switchItemType
-               sectionIdentifier:SectionIdentifierAutofillCardSwitch]) {
+               sectionIdentifier:sectionIdentifier]) {
     return;
   }
-  NSIndexPath* switchPath =
-      [model indexPathForItemType:switchItemType
-                sectionIdentifier:SectionIdentifierAutofillCardSwitch];
+  NSIndexPath* switchPath = [model indexPathForItemType:switchItemType
+                                      sectionIdentifier:sectionIdentifier];
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [model itemAtIndexPath:switchPath]);
@@ -614,6 +707,16 @@ enum ItemType : NSInteger {
   [self reloadData];
 }
 
+#pragma mark - SuccessfulReauthTimeAccessor
+
+- (void)updateSuccessfulReauthTime {
+  _lastSuccessfulReauthTime = [[NSDate alloc] init];
+}
+
+- (NSDate*)lastSuccessfulReauthTime {
+  return _lastSuccessfulReauthTime;
+}
+
 #pragma mark - Getters and Setter
 
 - (BOOL)isAutofillCreditCardEnabled {
@@ -652,6 +755,28 @@ enum ItemType : NSInteger {
   [self.addCreditCardCoordinator stop];
   self.addCreditCardCoordinator.delegate = nil;
   self.addCreditCardCoordinator = nil;
+}
+
+// Function that is invoked when the reauth is finished, and handles the reauth
+// result.
+- (void)handleReauthenticationResult:(ReauthenticationResult)result {
+  // Get the original value.
+  BOOL mandatoryReauthEnabled =
+      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
+
+  if (result == ReauthenticationResult::kFailure) {
+    // If authentication fails, restore the switch to its original state.
+    [self setSwitchItemOn:mandatoryReauthEnabled
+                 itemType:ItemTypeMandatoryReauthSwitch
+        sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
+  } else {
+    // Upon success, update the mandatory reauth pref and the switch.
+    _personalDataManager->SetPaymentMethodsMandatoryReauthEnabled(
+        !mandatoryReauthEnabled);
+    [self setSwitchItemOn:!mandatoryReauthEnabled
+                 itemType:ItemTypeMandatoryReauthSwitch
+        sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
+  }
 }
 
 #pragma mark - AutofillAddCreditCardCoordinatorDelegate
