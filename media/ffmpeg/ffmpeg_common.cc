@@ -14,6 +14,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
@@ -716,12 +717,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     extra_data.assign(codec_context->extradata,
                       codec_context->extradata + codec_context->extradata_size);
   }
-  // TODO(tmathmeyer) ffmpeg can't provide us with an actual video rotation yet.
-  config->Initialize(codec, profile, alpha_mode, color_space,
-                     video_transformation, coded_size, visible_rect,
-                     natural_size, extra_data, GetEncryptionScheme(stream));
-  // Set the aspect ratio explicitly since our version hasn't been rounded.
-  config->set_aspect_ratio(aspect_ratio);
 
   if (stream->nb_side_data) {
     for (int i = 0; i < stream->nb_side_data; ++i) {
@@ -762,11 +757,61 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
               gfx::HdrMetadataCta861_3(clli->MaxCLL, clli->MaxFALL);
           break;
         }
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+        case AV_PKT_DATA_DOVI_CONF: {
+          AVDOVIDecoderConfigurationRecord* dovi =
+              reinterpret_cast<AVDOVIDecoderConfigurationRecord*>(
+                  side_data.data);
+          VideoType type;
+          type.codec = VideoCodec::kDolbyVision;
+          type.level = dovi->dv_level;
+          type.color_space = color_space;
+          type.hdr_metadata_type = gfx::HdrMetadataType::kSmpteSt2094_10;
+          switch (dovi->dv_profile) {
+            case 0:
+              type.profile = VideoCodecProfile::DOLBYVISION_PROFILE0;
+              break;
+            case 4:
+              type.profile = VideoCodecProfile::DOLBYVISION_PROFILE4;
+              break;
+            case 5:
+              type.profile = VideoCodecProfile::DOLBYVISION_PROFILE5;
+              break;
+            case 7:
+              type.profile = VideoCodecProfile::DOLBYVISION_PROFILE7;
+              break;
+            case 8:
+              type.profile = VideoCodecProfile::DOLBYVISION_PROFILE8;
+              break;
+            case 9:
+              type.profile = VideoCodecProfile::DOLBYVISION_PROFILE9;
+              break;
+            default:
+              type.profile = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+              break;
+          }
+          // Treat dolby vision contents as dolby vision codec only if the
+          // device support clear DV decoding, otherwise use the original
+          // HEVC or AVC codec and profile.
+          if (media::IsSupportedVideoType(type)) {
+            codec = type.codec;
+            profile = type.profile;
+          }
+          break;
+        }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
         default:
           break;
       }
     }
   }
+
+  // TODO(tmathmeyer) ffmpeg can't provide us with an actual video rotation yet.
+  config->Initialize(codec, profile, alpha_mode, color_space,
+                     video_transformation, coded_size, visible_rect,
+                     natural_size, extra_data, GetEncryptionScheme(stream));
+  // Set the aspect ratio explicitly since our version hasn't been rounded.
+  config->set_aspect_ratio(aspect_ratio);
 
   if (hdr_metadata.IsValid()) {
     config->set_hdr_metadata(hdr_metadata);

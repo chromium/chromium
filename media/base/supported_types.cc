@@ -69,18 +69,21 @@ SupplementalProfileCache<AudioType>* GetSupplementalAudioTypeCache() {
   return cache.get();
 }
 
-bool IsSupportedHdrMetadata(const gfx::HdrMetadataType& hdr_metadata_type,
-                            const VideoColorSpace& cs) {
-  switch (hdr_metadata_type) {
+bool IsSupportedHdrMetadata(const VideoType& type) {
+  switch (type.hdr_metadata_type) {
     case gfx::HdrMetadataType::kNone:
       return true;
 
     case gfx::HdrMetadataType::kSmpteSt2086:
       // HDR metadata is currently only used with the PQ transfer function.
       // See gfx::ColorTransform for more details.
-      return cs.transfer == VideoColorSpace::TransferID::SMPTEST2084;
+      return type.color_space.transfer ==
+             VideoColorSpace::TransferID::SMPTEST2084;
 
     case gfx::HdrMetadataType::kSmpteSt2094_10:
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+      return type.codec == VideoCodec::kDolbyVision;
+#endif
     case gfx::HdrMetadataType::kSmpteSt2094_40:
       return false;
   }
@@ -345,7 +348,7 @@ bool IsSupportedVideoType(const VideoType& type) {
 // TODO(chcunningham): Add platform specific logic for Android (move from
 // MimeUtilInternal).
 bool IsDefaultSupportedVideoType(const VideoType& type) {
-  if (!IsSupportedHdrMetadata(type.hdr_metadata_type, type.color_space)) {
+  if (!IsSupportedHdrMetadata(type)) {
     return false;
   }
 

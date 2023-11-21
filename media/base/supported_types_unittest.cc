@@ -340,15 +340,23 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       IsTheoraSupported(),
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
-  // HDR metadata only works with the PQ transfer.
+  // HDR10 metadata only works with the PQ transfer.
   EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
                             color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
-  // Only HDR10 metadata is currently supported.
+  // Dolby vision metadata is not supported if the codec is not dolby vision.
   EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,
                                      gfx::HdrMetadataType::kSmpteSt2094_10}));
+
+#if !BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  // Dolby vision metadata maybe is supported if buildflag is enabled and
+  // platform declare it's support.
+  EXPECT_FALSE(IsSupportedVideoType(
+      {VideoCodec::kDolbyVision, DOLBYVISION_PROFILE5, kUnspecifiedLevel,
+       color_space, gfx::HdrMetadataType::kSmpteSt2094_10}));
+#endif  // !BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
   EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,
