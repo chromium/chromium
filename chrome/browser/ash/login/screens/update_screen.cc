@@ -100,6 +100,8 @@ std::string UpdateScreen::GetResultString(Result result) {
       return BaseScreen::kNotApplicable;
     case Result::UPDATE_OPT_OUT_INFO_SHOWN:
       return "UpdateNotRequired_OptOutInfo";
+    case Result::UPDATE_CHECK_TIMEOUT:
+      return "UpdateCheckTimeout";
   }
 }
 

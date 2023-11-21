@@ -225,6 +225,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Consolidated-consent.AcceptedRegular"/>
   <variant name="Consolidated-consent.BackDemo"/>
   <variant name="Consumer-update.Back"/>
+  <variant name="Consumer-update.UpdateCheckTimeout"/>
   <variant name="Consumer-update.Updated"/>
   <variant name="Consumer-update.UpdateDeclineCellular"/>
   <variant name="Consumer-update.UpdateError"/>
@@ -282,6 +283,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Network-selection.Connected"/>
   <variant name="Offline-login.Back"/>
   <variant name="Offline-login.ReloadOnlineLogin"/>
+  <variant name="Oobe-update.UpdateCheckTimeout"/>
   <variant name="Oobe-update.UpdateError"/>
   <variant name="Oobe-update.UpdateNotRequired"/>
   <variant name="Oobe-update.UpdateNotRequired_OptOutInfo"/>

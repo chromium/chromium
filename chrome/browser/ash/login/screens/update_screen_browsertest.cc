@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest,
   ASSERT_EQ(update_engine_client()->reboot_after_update_call_count(), 1);
 
   // Simulate the situation where reboot does not happen in time.
-  ASSERT_TRUE(version_updater_->GetRebootTimerForTesting()->IsRunning());
+  ASSERT_TRUE(version_updater_->get_reboot_timer_for_testing()->IsRunning());
   mocked_task_runner->FastForwardBy(kTimeDefaultWaiting);
 
   test::OobeJS().ExpectHiddenPath(kRestartingDialog);
@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_UpdateScreenSteps) {
   ASSERT_EQ(update_engine_client()->reboot_after_update_call_count(), 1);
 
   // Simulate the situation where reboot does not happen in time.
-  ASSERT_TRUE(version_updater_->GetRebootTimerForTesting()->IsRunning());
+  ASSERT_TRUE(version_updater_->get_reboot_timer_for_testing()->IsRunning());
   mocked_task_runner->FastForwardBy(kTimeDefaultWaiting);
 
   test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);

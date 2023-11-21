@@ -56,22 +56,27 @@ class VersionUpdaterUnitTest : public testing::Test {
   VersionUpdaterUnitTest(const VersionUpdaterUnitTest&) = delete;
   VersionUpdaterUnitTest& operator=(const VersionUpdaterUnitTest&) = delete;
 
-  void SetUpdateEngineStatus(update_engine::Operation operation) {
+  void SetUpdateEngineStatus(update_engine::Operation operation,
+                             bool is_install = false) {
     update_engine::StatusResult status;
     status.set_current_operation(operation);
+    status.set_current_operation(operation);
+    status.set_is_install(is_install);
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
 
-  void SetStatusWithChecks(update_engine::Operation operation) {
+  void SetStatusWithChecks(update_engine::Operation operation,
+                           bool is_install = false) {
     testing::MockFunction<void(int check_point_name)> check;
     {
       testing::InSequence s;
 
-      EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_));
+      if (!is_install || operation == update_engine::Operation::IDLE) {
+        EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_));
+      }
       EXPECT_CALL(check, Call(checks_count_));
     }
-
-    SetUpdateEngineStatus(operation);
+    SetUpdateEngineStatus(operation, is_install);
     check.Call(checks_count_);
     ++checks_count_;
   }
@@ -107,6 +112,20 @@ class VersionUpdaterUnitTest : public testing::Test {
     network_handler_test_helper_.reset();
 
     UpdateEngineClient::Shutdown();
+  }
+
+  void InstallDLC() {
+    SetStatusWithChecks(update_engine::Operation::CHECKING_FOR_UPDATE, true);
+
+    SetStatusWithChecks(update_engine::Operation::UPDATE_AVAILABLE, true);
+
+    SetStatusWithChecks(update_engine::Operation::DOWNLOADING, true);
+
+    SetStatusWithChecks(update_engine::Operation::VERIFYING, true);
+
+    SetStatusWithChecks(update_engine::Operation::FINALIZING, true);
+
+    SetStatusWithChecks(update_engine::Operation::IDLE, true);
   }
 
   void StartNetworkCheck() {
@@ -388,6 +407,46 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
       .Times(1);
   network_handler_test_helper_->SetServiceProperty(
       path, shill::kStateProperty, base::Value(shill::kStateRedirectFound));
+}
+
+TEST_F(VersionUpdaterUnitTest, IgnoreInstallStatus) {
+  StartNetworkCheck();
+  // Verify that the DUT checks for an update.
+  EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
+
+  InstallDLC();
+
+  // Verify that the DUT retry check for an update after receiving IDLE.
+  EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 2);
+
+  // Verify that all non_idle_state ignored for install status
+  EXPECT_EQ(version_updater_->get_non_idle_status_received_for_testing(),
+            false);
+}
+
+TEST_F(VersionUpdaterUnitTest, RetryOnIDLEState) {
+  StartNetworkCheck();
+  // Verify that the DUT checks for an update.
+  // this is the iitial request and not include in the retry update.
+  EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
+
+  // Retry 3 Times
+  InstallDLC();
+  EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 2);
+
+  InstallDLC();
+  EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 3);
+}
+
+TEST_F(VersionUpdaterUnitTest, ExitOnRetryCheckTimeout) {
+  StartNetworkCheck();
+
+  EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
+
+  EXPECT_CALL(*mock_delegate_,
+              FinishExitUpdate(VersionUpdater::Result::UPDATE_CHECK_TIMEOUT))
+      .Times(1);
+  task_environment_.FastForwardBy(base::Seconds(185));
 }
 
 }  // namespace ash

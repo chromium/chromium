@@ -91,6 +91,8 @@ std::string ConsumerUpdateScreen::GetResultString(Result result) {
       return "UpdateSkipped";
     case Result::DECLINE_CELLULAR:
       return "UpdateDeclineCellular";
+    case Result::CHECK_TIMEOUT:
+      return "UpdateCheckTimeout";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -237,6 +239,9 @@ void ConsumerUpdateScreen::FinishExitUpdate(VersionUpdater::Result result) {
       break;
     case VersionUpdater::Result::UPDATE_SKIPPED:
       exit_callback_.Run(Result::NOT_APPLICABLE);
+      break;
+    case VersionUpdater::Result::UPDATE_CHECK_TIMEOUT:
+      exit_callback_.Run(Result::CHECK_TIMEOUT);
       break;
     case VersionUpdater::Result::UPDATE_OPT_OUT_INFO_SHOWN:
       // the opt_out_info_shown is displayed only for FAU

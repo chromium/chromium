@@ -105,6 +105,11 @@ class UpdateScreenUnitTest : public testing::Test {
     UpdateEngineClient::Shutdown();
   }
 
+  // Fast forwards time by the specified amount.
+  void FastForwardTime(base::TimeDelta time) {
+    task_environment_.FastForwardBy(time);
+  }
+
  protected:
   // A pointer to the UpdateScreen used in this test.
   std::unique_ptr<UpdateScreen> update_screen_;
@@ -128,7 +133,8 @@ class UpdateScreenUnitTest : public testing::Test {
   }
 
   // Test versions of core browser infrastructure.
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState local_state_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
@@ -202,6 +208,20 @@ TEST_F(UpdateScreenUnitTest, HandleCriticalUpdateError) {
 
   ASSERT_TRUE(last_screen_result_.has_value());
   EXPECT_EQ(UpdateScreen::Result::UPDATE_ERROR, last_screen_result_.value());
+}
+
+TEST_F(UpdateScreenUnitTest, RetryCheckforUpdateElapsed) {
+  // DUT reaches UpdateScreen.
+  update_screen_->Show(wizard_context_.get());
+
+  // Verify that the DUT checks for an update.
+  EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
+
+  FastForwardTime(base::Seconds(185));
+
+  ASSERT_TRUE(last_screen_result_.has_value());
+  EXPECT_EQ(UpdateScreen::Result::UPDATE_CHECK_TIMEOUT,
+            last_screen_result_.value());
 }
 
 }  // namespace ash

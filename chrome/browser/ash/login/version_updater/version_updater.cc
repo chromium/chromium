@@ -94,6 +94,9 @@ void VersionUpdater::StartNetworkCheck() {
 
 void VersionUpdater::StartUpdateCheck() {
   delegate_->PrepareForUpdateCheck();
+  retry_check_timer_.Start(FROM_HERE, retry_check_timeout_,
+                           base::BindOnce(&VersionUpdater::OnRetryCheckElapsed,
+                                          weak_ptr_factory_.GetWeakPtr()));
   RequestUpdateCheck();
 }
 
@@ -132,10 +135,6 @@ void VersionUpdater::StartExitUpdate(Result result) {
   Init();
 }
 
-base::OneShotTimer* VersionUpdater::GetRebootTimerForTesting() {
-  return &reboot_timer_;
-}
-
 void VersionUpdater::GetEolInfo(EolInfoCallback callback) {
   // Request the End of Life (Auto Update Expiration) status. Bind to a weak_ptr
   // bound method rather than passing `callback` directly so that `callback`
@@ -166,12 +165,27 @@ void VersionUpdater::RequestUpdateCheck() {
     UpdateEngineClient::Get()->AddObserver(this);
   }
   VLOG(1) << "Initiate update check";
+  TriggerUpdateCheck();
+}
+
+void VersionUpdater::TriggerUpdateCheck() {
   UpdateEngineClient::Get()->RequestUpdateCheck(base::BindOnce(
       &VersionUpdater::OnUpdateCheckStarted, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VersionUpdater::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
+  // If the status change is for an installation, this means that DLCs are being
+  // installed and has nothing to do with the OS. Ignore this status change.
+  // Do not ignore update_engine::Operation::IDLE even if is_install is true,
+  // because install stays true on status changes after a DLC install, even if
+  // no DLC install is in progress anymore.
+  if (status.is_install() &&
+      status.current_operation() != update_engine::Operation::IDLE) {
+    LOG(WARNING) << "Ignoring update status change related to DLC install.";
+    return;
+  }
+
   update_info_.status = status;
 
   if (update_info_.is_checking_for_update &&
@@ -247,9 +261,7 @@ void VersionUpdater::UpdateStatusChanged(
       if (non_idle_status_received_) {
         exit_update = true;
       } else {
-        UpdateEngineClient::Get()->RequestUpdateCheck(
-            base::BindOnce(&VersionUpdater::OnUpdateCheckStarted,
-                           weak_ptr_factory_.GetWeakPtr()));
+        TriggerUpdateCheck();
       }
       break;
     case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
@@ -329,6 +341,14 @@ void VersionUpdater::PortalStateChanged(const NetworkState* network,
         delegate_->ShowErrorMessage();
       }
     }
+  }
+}
+
+void VersionUpdater::OnRetryCheckElapsed() {
+  // If update_engine didn't handle our request, exit with update_not_requiered.
+  if (!non_idle_status_received_) {
+    LOG(WARNING) << "Exiting update after retry check timout.";
+    StartExitUpdate(Result::UPDATE_CHECK_TIMEOUT);
   }
 }
 

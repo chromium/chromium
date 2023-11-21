@@ -41,6 +41,7 @@ class ConsumerUpdateScreen : public BaseScreen,
     UPDATE_NOT_REQUIRED,
     UPDATE_ERROR,
     NOT_APPLICABLE,
+    CHECK_TIMEOUT,
   };
 
   // This enum is tied directly to the OobeConsumerUpdateScreenSkippedReason UMA
