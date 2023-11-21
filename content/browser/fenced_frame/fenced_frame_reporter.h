@@ -115,11 +115,16 @@ class CONTENT_EXPORT FencedFrameReporter
   // `browser_context` is used to help notify Attribution Reporting API
   // for the beacons, and to check attestations before sending out the beacons.
   //
+  // `reporting_url_declarer_origin` is used to set the request initiator on
+  // outgoing beacon network requests. The initiator is the entity that chose
+  // the destination URLs in order to prevent CSRF.
+  //
   // `main_frame_origin` is the main frame of the page where Shared Storage
   // was called.
   static scoped_refptr<FencedFrameReporter> CreateForSharedStorage(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       BrowserContext* browser_context,
+      const absl::optional<url::Origin>& reporting_url_declarer_origin,
       ReportingUrlMap reporting_url_map,
       const url::Origin& main_frame_origin = url::Origin());
 
@@ -198,6 +203,9 @@ class CONTENT_EXPORT FencedFrameReporter
   // destination, so it can discard reports for that destination, and provide
   // errors messages for subsequent SendReporter() using that destination.
   //
+  // Reports that use the urls declared in `reporting_url_map` will be sent
+  // with the request initiator set to `reporting_url_declarer_origin`
+  //
   // `reporting_ad_macros` is absl::nullopt unless when `reporting_destination`
   // is kBuyer. If it is learned that there are no ad macros for kBuyer, should
   // be called with an empty ReportingMacros, so it can discard macro reports,
@@ -210,6 +218,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // options.
   void OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination reporting_destination,
+      const absl::optional<url::Origin>& reporting_url_declarer_origin,
       ReportingUrlMap reporting_url_map,
       absl::optional<ReportingMacros> reporting_ad_macros = absl::nullopt);
 
@@ -278,17 +287,25 @@ class CONTENT_EXPORT FencedFrameReporter
   const std::vector<blink::FencedFrame::ReportingDestination>
   ReportingDestinations();
 
+  // Returns a copy of the internal reporting metadata's
+  // `reporting_url_declarer_origin` for each reporting destination, so it can
+  // be validated in tests. Only includes reporting destinations for which maps
+  // have been received - i.e., if OnUrlMappingReady() has not yet been invoked
+  // for a reporting destination, it is not included in the returned map.
+  base::flat_map<blink::FencedFrame::ReportingDestination, url::Origin>
+  GetReportingUrlDeclarerOriginsForTesting();
+
   // Returns a copy of the internal reporting metadata's `reporting_url_map`, so
   // it can be validated in tests. Only includes ad beacon maps for which maps
-  // have been received - i.e., if wait for OnUrlMappingReady() to be invoked
+  // have been received - i.e., if OnUrlMappingReady() has not yet been invoked
   // for a reporting destination, it is not included in the returned map.
   base::flat_map<blink::FencedFrame::ReportingDestination, ReportingUrlMap>
   GetAdBeaconMapForTesting();
 
   // Returns a copy of the internal reporting metadata's
   // `reporting_ad_macros`, so it can be validated in tests. Only includes ad
-  // macros for which maps have been received - i.e., if wait for
-  // OnUrlMappingReady() to be invoked for a reporting destination, it is not
+  // macros for which maps have been received - i.e., if OnUrlMappingReady()
+  // has not yet been invoked for a reporting destination, it is not
   // included in the returned map.
   base::flat_map<blink::FencedFrame::ReportingDestination, ReportingMacros>
   GetAdMacrosForTesting();
@@ -339,20 +356,21 @@ class CONTENT_EXPORT FencedFrameReporter
   // The per-blink::FencedFrame::ReportingDestination reporting information.
   struct ReportingDestinationInfo {
     explicit ReportingDestinationInfo(
+        absl::optional<url::Origin> reporting_url_declarer_origin =
+            absl::nullopt,
         absl::optional<ReportingUrlMap> reporting_url_map = absl::nullopt);
     ReportingDestinationInfo(ReportingDestinationInfo&&);
     ~ReportingDestinationInfo();
 
     ReportingDestinationInfo& operator=(ReportingDestinationInfo&&);
 
-    // If null, the reporting URL map has yet to be received, and any reports
-    // that are attempted to be sent of the corresponding type will be added to
-    // `pending_events`, and only sent once this is populated.
+    // `reporting_url_declarer_origin`, `reporting_url_map`, and
+    // `reporting_ad_macros` are set asynchronously, all at once.
+    // If they are null, any reports that are attempted to be sent of the
+    // corresponding type will be added to `pending_events` and only sent once
+    // these are populated.
+    absl::optional<url::Origin> reporting_url_declarer_origin;
     absl::optional<ReportingUrlMap> reporting_url_map;
-
-    // If null, the reporting ad macros has yet to be received, and any reports
-    // that are attempted to be sent to custom URLs will be added to
-    // `pending_events`, and only sent once this is populated.
     absl::optional<ReportingMacros> reporting_ad_macros;
 
     // Pending report strings received while `reporting_url_map` was
