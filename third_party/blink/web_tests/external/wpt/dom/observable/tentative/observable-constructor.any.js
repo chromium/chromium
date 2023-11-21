@@ -653,4 +653,169 @@ test(() => {
   assert_equals(errorReported.error, error, "Error object is equivalent");
 }, "Calling subscribe should never throw an error synchronously, subscriber pushes error");
 
-// TODO(domfarolino): Add back the teardown tests that Ben wrote.
+test(() => {
+  let addTeardownCalled = false;
+  let activeDuringTeardown;
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => {
+      addTeardownCalled = true;
+      activeDuringTeardown = subscriber.active;
+    });
+  });
+
+  const ac = new AbortController();
+  source.subscribe({
+    signal: ac.signal,
+  });
+
+  assert_false(addTeardownCalled, "Teardown is not be called upon subscription");
+  ac.abort();
+  assert_true(addTeardownCalled, "Teardown is called when subscription is aborted");
+  assert_false(activeDuringTeardown, "Teardown observers inactive subscription");
+}, "Teardown should be called when subscription is aborted");
+
+test(() => {
+  const addTeardownsCalled = [];
+  // This is used to snapshot `addTeardownsCalled` from within the subscribe
+  // callback, for assertion/comparison later.
+  let teardownsSnapshot = [];
+  const results = [];
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 1"));
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 2"));
+
+    subscriber.next(1);
+    subscriber.next(2);
+    subscriber.next(3);
+    subscriber.complete();
+
+    // We don't run the actual `assert_array_equals` here because if it fails,
+    // it won't be properly caught. This is because assertion failures throw an
+    // error, and in subscriber callback, thrown errors result in
+    // `window.onerror` handlers being called, which this test file doesn't
+    // record as an error (see the first line of this file).
+    teardownsSnapshot = addTeardownsCalled;
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: () => results.push("unreached"),
+    complete: () => results.push("complete"),
+  });
+
+  assert_array_equals(
+    results,
+    [1, 2, 3, "complete"],
+    "should emit values and complete synchronously"
+  );
+
+  assert_array_equals(teardownsSnapshot, addTeardownsCalled);
+  assert_array_equals(addTeardownsCalled, ["teardown 2", "teardown 1"],
+      "Teardowns called in LIFO order synchronously after complete()");
+}, "Teardowns should be called when subscription is closed by completion");
+
+test(() => {
+  const addTeardownsCalled = [];
+  let teardownsSnapshot = [];
+  const error = new Error("error");
+  const results = [];
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 1"));
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 2"));
+
+    subscriber.next(1);
+    subscriber.next(2);
+    subscriber.next(3);
+    subscriber.error(error);
+
+    teardownsSnapshot = addTeardownsCalled;
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: (error) => results.push(error),
+    complete: () => assert_unreached("complete should not be called"),
+  });
+
+  assert_array_equals(
+    results,
+    [1, 2, 3, error],
+    "should emit values and error synchronously"
+  );
+
+  assert_array_equals(teardownsSnapshot, addTeardownsCalled);
+  assert_array_equals(addTeardownsCalled, ["teardown 2", "teardown 1"],
+      "Teardowns called in LIFO order synchronously after error()");
+}, "Teardowns should be called when subscription is closed by subscriber pushing an error");
+
+test(() => {
+  const addTeardownsCalled = [];
+  const error = new Error("error");
+  const results = [];
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 1"));
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 2"));
+
+    subscriber.next(1);
+    subscriber.next(2);
+    subscriber.next(3);
+    throw error;
+  });
+
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: (error) => results.push(error),
+    complete: () => assert_unreached("complete should not be called"),
+  });
+
+  assert_array_equals(
+    results,
+    [1, 2, 3, error],
+    "should emit values and error synchronously"
+  );
+
+  assert_array_equals(addTeardownsCalled, ["teardown 2", "teardown 1"],
+      "Teardowns called in LIFO order synchronously after thrown error");
+}, "Teardowns should be called when subscription is closed by subscriber throwing error");
+
+test(() => {
+  const addTeardownsCalled = [];
+  const results = [];
+  let firstTeardownInvokedSynchronously = false;
+  let secondTeardownInvokedSynchronously = false;
+
+  const source = new Observable((subscriber) => {
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 1"));
+    if (addTeardownsCalled.length === 1) {
+      firstTeardownInvokedSynchronously = true;
+    }
+    subscriber.addTeardown(() => addTeardownsCalled.push("teardown 2"));
+    if (addTeardownsCalled.length === 2) {
+      secondTeardownInvokedSynchronously = true;
+    }
+
+    subscriber.next(1);
+    subscriber.next(2);
+    subscriber.next(3);
+    subscriber.complete();
+  });
+
+  const ac = new AbortController();
+  ac.abort();
+  source.subscribe({
+    next: (x) => results.push(x),
+    error: (error) => results.push(error),
+    complete: () => results.push('complete'),
+    signal: ac.signal,
+  });
+
+  assert_array_equals(results, []);
+  assert_true(firstTeardownInvokedSynchronously, "First teardown callback is invoked during addTeardown()");
+  assert_true(secondTeardownInvokedSynchronously, "Second teardown callback is invoked during addTeardown()");
+  assert_array_equals(addTeardownsCalled, ["teardown 1", "teardown 2"],
+      "Teardowns called synchronously upon addition end up in FIFO order");
+}, "Teardowns should be called synchronously during addTeardown() if the subscription is inactive");

@@ -9514,6 +9514,7 @@ interface Subscriber
     attribute @@toStringTag
     getter active
     getter signal
+    method addTeardown
     method complete
     method constructor
     method error

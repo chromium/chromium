@@ -1334,6 +1334,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter active
 [Worker]     getter signal
+[Worker]     method addTeardown
 [Worker]     method complete
 [Worker]     method constructor
 [Worker]     method error

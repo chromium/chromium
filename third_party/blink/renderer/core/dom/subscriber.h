@@ -22,6 +22,7 @@ class Observer;
 class ScriptState;
 class V8ObserverCallback;
 class V8ObserverCompleteCallback;
+class V8VoidFunction;
 
 class CORE_EXPORT Subscriber final : public ScriptWrappable,
                                      public ExecutionContextClient {
@@ -34,6 +35,7 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   void next(ScriptValue);
   void complete(ScriptState*);
   void error(ScriptState*, ScriptValue);
+  void addTeardown(V8VoidFunction*);
 
   // API attributes.
   bool active() { return active_; }
@@ -76,6 +78,8 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
 
   // Non-null before `CloseSubscription()` is called.
   Member<AbortSignal::AlgorithmHandle> close_subscription_algorithm_handle_;
+
+  HeapVector<Member<V8VoidFunction>> teardown_callbacks_;
 };
 
 }  // namespace blink
