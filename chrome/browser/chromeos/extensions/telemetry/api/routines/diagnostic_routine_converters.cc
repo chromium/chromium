@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
 
 #include <cstdint>
+#include <vector>
 
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -82,6 +83,30 @@ cx_diag::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
   result.uuid = uuid.AsLowercaseString();
   result.has_passed = has_passed;
 
+  return result;
+}
+
+cx_diag::FanRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticFanRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed) {
+  cx_diag::FanRoutineFinishedInfo result;
+
+  std::vector<int> passed_fan_ids = {};
+  for (const auto& passed_fan_id : input->passed_fan_ids) {
+    passed_fan_ids.push_back(passed_fan_id);
+  }
+  result.passed_fan_ids = passed_fan_ids;
+
+  std::vector<int> failed_fan_ids = {};
+  for (const auto& failed_fan_id : input->failed_fan_ids) {
+    failed_fan_ids.push_back(failed_fan_id);
+  }
+  result.failed_fan_ids = failed_fan_ids;
+
+  result.fan_count_status = Convert(input->fan_count_status);
+  result.uuid = uuid.AsLowercaseString();
+  result.has_passed = has_passed;
   return result;
 }
 
@@ -163,6 +188,21 @@ cx_diag::MemtesterTestItemEnum Convert(
       return cx_diag::MemtesterTestItemEnum::kEightBitWrites;
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites:
       return cx_diag::MemtesterTestItemEnum::kSixteenBitWrites;
+  }
+  NOTREACHED_NORETURN();
+}
+
+cx_diag::HardwarePresenceStatus Convert(
+    crosapi::TelemetryDiagnosticHardwarePresenceStatus input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kUnmappedEnumField:
+      return cx_diag::HardwarePresenceStatus::kNone;
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched:
+      return cx_diag::HardwarePresenceStatus::kMatched;
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotMatched:
+      return cx_diag::HardwarePresenceStatus::kNotMatched;
+    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotConfigured:
+      return cx_diag::HardwarePresenceStatus::kNotConfigured;
   }
   NOTREACHED_NORETURN();
 }

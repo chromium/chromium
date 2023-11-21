@@ -38,6 +38,13 @@ crosapi::TelemetryDiagnosticVolumeButtonRoutineDetailPtr UncheckedConvertPtr(
   return crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
 }
 
+crosapi::TelemetryDiagnosticFanRoutineDetailPtr UncheckedConvertPtr(
+    healthd::FanRoutineDetailPtr input) {
+  return crosapi::TelemetryDiagnosticFanRoutineDetail::New(
+      input->passed_fan_ids, input->failed_fan_ids,
+      Convert(input->fan_count_status));
+}
+
 crosapi::TelemetryDiagnosticRoutineStateInitializedPtr UncheckedConvertPtr(
     healthd::RoutineStateInitializedPtr input) {
   return crosapi::TelemetryDiagnosticRoutineStateInitialized::New();
@@ -66,6 +73,9 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kVolumeButton:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
           ConvertRoutinePtr(std::move(input->get_volume_button())));
+    case healthd::RoutineDetail::Tag::kFan:
+      return crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
+          ConvertRoutinePtr(std::move(input->get_fan())));
   }
   NOTREACHED_NORETURN();
 }
@@ -117,6 +127,9 @@ healthd::RoutineArgumentPtr UncheckedConvertPtr(
     case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton:
       return healthd::RoutineArgument::NewVolumeButton(
           ConvertRoutinePtr(std::move(input->get_volume_button())));
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan:
+      return healthd::RoutineArgument::NewFan(
+          ConvertRoutinePtr(std::move(input->get_fan())));
   }
 }
 
@@ -146,6 +159,11 @@ healthd::VolumeButtonRoutineArgumentPtr UncheckedConvertPtr(
   }
   arg->timeout = input->timeout;
   return arg;
+}
+
+healthd::FanRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticFanRoutineArgumentPtr input) {
+  return healthd::FanRoutineArgument::New();
 }
 
 }  // namespace unchecked
@@ -197,6 +215,22 @@ crosapi::TelemetryDiagnosticMemtesterTestItemEnum Convert(
     case healthd::MemtesterTestItemEnum::k16BitWrites:
       return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
           kSixteenBitWrites;
+  }
+  NOTREACHED_NORETURN();
+}
+
+crosapi::TelemetryDiagnosticHardwarePresenceStatus Convert(
+    healthd::HardwarePresenceStatus input) {
+  switch (input) {
+    case healthd::HardwarePresenceStatus::kUnmappedEnumField:
+      return crosapi::TelemetryDiagnosticHardwarePresenceStatus::
+          kUnmappedEnumField;
+    case healthd::HardwarePresenceStatus::kMatched:
+      return crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+    case healthd::HardwarePresenceStatus::kNotMatched:
+      return crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotMatched;
+    case healthd::HardwarePresenceStatus::kNotConfigured:
+      return crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotConfigured;
   }
   NOTREACHED_NORETURN();
 }

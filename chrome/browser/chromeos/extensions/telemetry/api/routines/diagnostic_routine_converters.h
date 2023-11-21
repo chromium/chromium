@@ -50,6 +50,11 @@ api::os_diagnostics::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
     base::Uuid uuid,
     bool has_passed);
 
+api::os_diagnostics::FanRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed);
+
 }  // namespace unchecked
 
 api::os_diagnostics::ExceptionReason Convert(
@@ -60,6 +65,9 @@ api::os_diagnostics::RoutineWaitingReason Convert(
 
 api::os_diagnostics::MemtesterTestItemEnum Convert(
     crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum input);
+
+api::os_diagnostics::HardwarePresenceStatus Convert(
+    crosapi::mojom::TelemetryDiagnosticHardwarePresenceStatus input);
 
 template <class InputT,
           class OutputT = decltype(Convert(std::declval<InputT>())),

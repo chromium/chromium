@@ -61,9 +61,15 @@ struct TelemetryDiagnosticVolumeButtonRoutineArgument {
   mojo_base.mojom.TimeDelta timeout@1;
 };
 
+// This routine checks whether the fan is controllable.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryDiagnosticFanRoutineArgument {};
+
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 3, NextIndex: 3
+// NextMinVersion: 4, NextIndex: 4
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -73,6 +79,8 @@ union TelemetryDiagnosticRoutineArgument {
   [MinVersion=1] TelemetryDiagnosticMemoryRoutineArgument memory@1;
   // Arguments to create a volume button routine.
   [MinVersion=2] TelemetryDiagnosticVolumeButtonRoutineArgument volume_button@2;
+  // Arguments to create a fan routine.
+  [MinVersion=3] TelemetryDiagnosticFanRoutineArgument fan@3;
 };
 
 // Routine has been initialized but not yet started.
@@ -194,9 +202,37 @@ struct TelemetryDiagnosticMemoryRoutineDetail {
 [Stable]
 struct TelemetryDiagnosticVolumeButtonRoutineDetail {};
 
+// Whether the given hardware probed matches the hardware description recorded.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable, Extensible]
+enum TelemetryDiagnosticHardwarePresenceStatus {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // The hardware presence matches the description.
+  kMatched = 1,
+  // The hardware presence does not match the description.
+  kNotMatched = 2,
+  // There is no description available, skipping check.
+  kNotConfigured = 3,
+};
+
+// Details regarding fan routine.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct TelemetryDiagnosticFanRoutineDetail {
+  // The ids of fans that can be controlled.
+  array<uint8> passed_fan_ids@0;
+  // The ids of fans that cannot be controlled.
+  array<uint8> failed_fan_ids@1;
+  // Whether the number of fan probed is matched.
+  TelemetryDiagnosticHardwarePresenceStatus fan_count_status@2;
+};
+
 // Details about a finished routine.
 //
-// NextMinVersion: 3, NextIndex: 3
+// NextMinVersion: 4, NextIndex: 4
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
@@ -206,6 +242,8 @@ union TelemetryDiagnosticRoutineDetail {
   [MinVersion=1] TelemetryDiagnosticMemoryRoutineDetail memory@1;
   // Details of a completed volume button routine.
   [MinVersion=2] TelemetryDiagnosticVolumeButtonRoutineDetail volume_button@2;
+  // Details of a completed fan routine.
+  [MinVersion=3] TelemetryDiagnosticFanRoutineDetail fan@3;
 };
 
 // Information about a finished routine.

@@ -17572,6 +17572,7 @@ Called by update_extension_histograms.py.-->
   <int value="548"
       label="INPUT_METHOD_PRIVATE_ON_LANGUAGE_PACK_STATUS_CHANGED"/>
   <int value="549" label="OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED"/>
+  <int value="550" label="OS_DIAGNOSTICS_ON_FAN_ROUTINE_FINISHED"/>
 </enum>
 
 <enum name="ExtensionFromWebstoreInconcistencyEnum">
@@ -19504,6 +19505,8 @@ Called by update_extension_histograms.py.-->
   <int value="1842" label="PDFVIEWERPRIVATE_SETPDFPLUGINATTRIBUTES"/>
   <int value="1843" label="ACCESSIBILITY_PRIVATE_SETCURSORPOSITION"/>
   <int value="1844" label="ACCESSIBILITY_PRIVATE_GETTTSDLCCONTENTS"/>
+  <int value="1845" label="OS_DIAGNOSTICS_CREATEFANROUTINE"/>
+  <int value="1846" label="OS_DIAGNOSTICS_ISFANROUTINEARGUMENTSUPPORTED"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

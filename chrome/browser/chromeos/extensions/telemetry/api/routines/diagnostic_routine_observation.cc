@@ -51,6 +51,14 @@ std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
           cx_diag::OnVolumeButtonRoutineFinished::kEventName,
           base::Value::List().Append(finished_info.ToValue()), browser_context);
     }
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kFan: {
+      auto finished_info = converters::routines::ConvertPtr(
+          std::move(finished->detail->get_fan()), uuid, finished->has_passed);
+      return std::make_unique<extensions::Event>(
+          extensions::events::OS_DIAGNOSTICS_ON_FAN_ROUTINE_FINISHED,
+          cx_diag::OnFanRoutineFinished::kEventName,
+          base::Value::List().Append(finished_info.ToValue()), browser_context);
+    }
   }
   NOTREACHED_NORETURN();
 }

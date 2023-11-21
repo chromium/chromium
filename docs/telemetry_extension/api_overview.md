@@ -305,6 +305,26 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------- | ----------- |
 | maxTestingMemKib | number | An optional field to indicate how much memory should be tested. If the value is null, memory test will run with as much memory as possible |
 
+### Enum HardwarePresenceStatus
+| Property Name |
+------------ |
+| matched |
+| not_matched |
+| not_configured |
+
+### FanRoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+| passed_fan_ids | Array<number\> | The ids of fans that can be controlled |
+| failed_fan_ids | Array<number\> | The ids of fans that cannot be controlled |
+| fan_count_status | HardwarePresenceStatus | Whether the number of fan probed is matched |
+
+### RunFanRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
 ### CreateRoutineResponse
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -333,6 +353,8 @@ extension-event based interface in M119. The interface is described in
 | cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
 | createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
 | isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
+| createFanRoutine | (args: RunFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| isFanRoutineArgumentSupported | (args: RunFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
 
 ## Events
 
@@ -343,6 +365,7 @@ extension-event based interface in M119. The interface is described in
 | onRoutineWaiting | function(RoutineWaitingInfo) | `os.diagnostics` | M119 | Informs the extension that a routine stopped execution and waits for an event, e.g. user interaction. `RoutineWaitingInfo` contains information about what the routine is waiting for |
 | onRoutineException | function(ExceptionInfo) | `os.diagnostics` | M119 | Informs the extension that an exception occurred. The error passed in `ExceptionInfo` is non-recoverable |
 | onMemoryRoutineFinished | function(MemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | Informs the extension that a memory routine finished |
+| onFanRoutineFinished | function(FanRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a fan routine finished |
 
 # Events
 

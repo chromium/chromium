@@ -458,6 +458,17 @@ class OsDiagnosticsCreateVolumeButtonRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsCreateFanRoutineFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.createFanRoutine",
+                             OS_DIAGNOSTICS_CREATEFANROUTINE)
+ private:
+  ~OsDiagnosticsCreateFanRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsStartRoutineFunction : public DiagnosticsApiFunctionBaseV2 {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.startRoutine",
                              OS_DIAGNOSTICS_STARTROUTINE)
@@ -499,6 +510,19 @@ class OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction
  private:
   ~OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction() override =
       default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::TelemetryExtensionSupportStatusPtr result);
+};
+
+class OsDiagnosticsIsFanRoutineArgumentSupportedFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.isFanRoutineArgumentSupported",
+                             OS_DIAGNOSTICS_ISFANROUTINEARGUMENTSUPPORTED)
+ private:
+  ~OsDiagnosticsIsFanRoutineArgumentSupportedFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

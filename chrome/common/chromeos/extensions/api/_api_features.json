@@ -102,5 +102,14 @@
       "lacros"
     ],
     "channel": "stable"
+  },
+  "os.diagnostics.createFanRoutine": {
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
+  "os.diagnostics.isFanRoutineArgumentSupported": {
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
+  "os.diagnostics.onFanRoutineFinished": {
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
   }
 }

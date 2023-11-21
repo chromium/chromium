@@ -591,6 +591,43 @@ void OsDiagnosticsCreateVolumeButtonRoutineFunction::RunIfAllowed() {
       cx_diag::CreateVolumeButtonRoutine::Results::Create(response)));
 }
 
+// OsDiagnosticsCreateFanRoutineFunction ------------------------------------
+
+void OsDiagnosticsCreateFanRoutineFunction::RunIfAllowed() {
+  absl::optional<cx_diag::CreateFanRoutine::Params> params(
+      cx_diag::CreateFanRoutine::Params::Create(args()));
+
+  if (!params.has_value()) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto fan_arg = crosapi::mojom::TelemetryDiagnosticFanRoutineArgument::New();
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  auto result = routines_manager->CreateRoutine(
+      extension_id(),
+      crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewFan(
+          std::move(fan_arg)));
+
+  if (!result.has_value()) {
+    switch (result.error()) {
+      case DiagnosticRoutineManager::kAppUiClosed:
+        Respond(Error("Companion app UI is not open."));
+        break;
+      case DiagnosticRoutineManager::kExtensionUnloaded:
+        Respond(Error("Extension has been unloaded."));
+        break;
+    }
+    return;
+  }
+
+  cx_diag::CreateRoutineResponse response;
+  response.uuid = result->AsLowercaseString();
+  Respond(ArgumentList(cx_diag::CreateFanRoutine::Results::Create(response)));
+}
+
 // OsDiagnosticsStartRoutineFunction -------------------------------------------
 
 void OsDiagnosticsStartRoutineFunction::RunIfAllowed() {
@@ -716,6 +753,43 @@ void OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction::OnResult(
   Respond(ArgumentList(
       cx_diag::IsVolumeButtonRoutineArgumentSupported::Results::Create(
           response.value())));
+}
+
+// OsDiagnosticsIsFanRoutineArgumentSupportedFunction -----------------------
+
+void OsDiagnosticsIsFanRoutineArgumentSupportedFunction::RunIfAllowed() {
+  auto params = GetParams<cx_diag::IsFanRoutineArgumentSupported::Params>();
+  if (!params.has_value()) {
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  auto fan_args = crosapi::mojom::TelemetryDiagnosticFanRoutineArgument::New();
+
+  auto args = crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewFan(
+      std::move(fan_args));
+  routines_manager->IsRoutineArgumentSupported(
+      std::move(args),
+      base::BindOnce(
+          &OsDiagnosticsIsFanRoutineArgumentSupportedFunction::OnResult, this));
+}
+
+void OsDiagnosticsIsFanRoutineArgumentSupportedFunction::OnResult(
+    crosapi::mojom::TelemetryExtensionSupportStatusPtr result) {
+  if (result.is_null()) {
+    RespondWithError("API internal error.");
+    return;
+  }
+
+  auto response = ParseRoutineArgumentSupportResult(std::move(result));
+
+  if (!response.has_value()) {
+    RespondWithError(response.error());
+    return;
+  }
+
+  Respond(ArgumentList(cx_diag::IsFanRoutineArgumentSupported::Results::Create(
+      response.value())));
 }
 
 }  // namespace chromeos
