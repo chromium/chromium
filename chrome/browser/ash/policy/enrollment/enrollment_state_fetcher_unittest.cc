@@ -307,7 +307,8 @@ TEST_F(EnrollmentStateFetcherTest, SystemClockNotSynchronized) {
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(state, base::unexpected(AutoEnrollmentError(
+                       AutoEnrollmentSystemClockSyncError{})));
 }
 
 TEST_F(EnrollmentStateFetcherTest, EmbargoDateNotPassed) {

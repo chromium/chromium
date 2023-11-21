@@ -487,7 +487,7 @@ void AutoEnrollmentController::OnSystemClockSyncResult(
   if (system_clock_sync_state_ == SystemClockSyncState::kSynchronized) {
     StartWithSystemClockSyncState();
   } else {
-    UpdateState(kAutoEnrollmentLegacyConnectionError);
+    UpdateState(base::unexpected(AutoEnrollmentSystemClockSyncError{}));
   }
 }
 
@@ -628,7 +628,7 @@ void AutoEnrollmentController::Timeout() {
     // generation is waiting for time sync or the server just doesn't reply and
     // keeps the connection open.
     LOG(ERROR) << "EnrollmentStateFetcher didn't complete within time limit.";
-    UpdateState(kAutoEnrollmentLegacyConnectionError);
+    UpdateState(base::unexpected(AutoEnrollmentSafeguardTimeoutError{}));
     ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutUnified);
     return;
   }
@@ -654,7 +654,7 @@ void AutoEnrollmentController::Timeout() {
     // generation is waiting for time sync or the server just doesn't reply and
     // keeps the connection open.
     LOG(ERROR) << "AutoEnrollmentClient didn't complete within time limit.";
-    UpdateState(kAutoEnrollmentLegacyConnectionError);
+    UpdateState(base::unexpected(AutoEnrollmentSafeguardTimeoutError{}));
     ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutFRE);
   }
 

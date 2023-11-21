@@ -77,7 +77,9 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
     }
   }
 
-  switch (state.error()) {
+  const AutoEnrollmentLegacyError error =
+      AutoEnrollmentErrorToLegacyError(state.error());
+  switch (error) {
     case AutoEnrollmentLegacyError::kConnectionError:
       return kUMASuffixConnectionError;
     case AutoEnrollmentLegacyError::kServerError:
@@ -900,7 +902,8 @@ class EnrollmentStateFetcherImpl::Sequence {
                               synchronized);
     if (!synchronized) {
       LOG(ERROR) << "System clock failed to synchronize";
-      return ReportResult(kAutoEnrollmentLegacyConnectionError);
+      return ReportResult(
+          base::unexpected(AutoEnrollmentSystemClockSyncError{}));
     }
 
     const bool passed = embargo_date_.Passed(context_);

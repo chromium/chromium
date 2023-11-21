@@ -411,7 +411,7 @@ class AutoEnrollmentControllerSafeguardTimeoutTest
 // Tests that the controller times out with connection error when it performs
 // forced re-enrollment check.
 TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
-       ReportsConnectionErrorForForcedReenrollment) {
+       ReportsErrorForForcedReenrollment) {
   SetupForcedReenrollmentCheckType();
   // Simulate long running request for state keys by doing nothing. We need to
   // preserve the callback as it holds weak pointer to controller which makes
@@ -442,7 +442,8 @@ TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
             AutoEnrollmentTypeChecker::CheckType::
                 kForcedReEnrollmentExplicitlyRequired);
   EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
-  EXPECT_EQ(controller.state(), kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(controller.state(), base::unexpected(AutoEnrollmentError(
+                                    AutoEnrollmentSafeguardTimeoutError{})));
 }
 
 // Tests that the controller times out with no enrollment state when it performs
@@ -485,7 +486,7 @@ TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
 // Tests that the controller times out with connection error when runs out of
 // attempts to retry state keys retrieval.
 TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
-       TimesOutWithConnectionErrorWhenCannotObtainStateKeys) {
+       TimesOutWithErrorWhenCannotObtainStateKeys) {
   SetupForcedReenrollmentCheckType();
   ServerBackedStateKeysBroker::StateKeysCallback last_state_keys_callback;
 
@@ -522,7 +523,8 @@ TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
   std::move(last_state_keys_callback).Run({});
 
   EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
-  EXPECT_EQ(controller.state(), kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(controller.state(), base::unexpected(AutoEnrollmentError(
+                                    AutoEnrollmentSafeguardTimeoutError{})));
 }
 
 class AutoEnrollmentControllerNetworkTest

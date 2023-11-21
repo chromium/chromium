@@ -1715,7 +1715,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Timeout) {
   // Ensure that we show an error on enrollment check screen and that it is not
   // possible to enter guest mode (like in FRE).
   EXPECT_EQ(auto_enrollment_controller()->state(),
-            policy::kAutoEnrollmentLegacyConnectionError);
+            base::unexpected(policy::AutoEnrollmentError(
+                policy::AutoEnrollmentSafeguardTimeoutError{})));
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
@@ -2084,7 +2085,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
                 kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
   EXPECT_EQ(auto_enrollment_controller()->state(),
-            policy::kAutoEnrollmentLegacyConnectionError);
+            base::unexpected(policy::AutoEnrollmentError(
+                policy::AutoEnrollmentSystemClockSyncError{})));
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,

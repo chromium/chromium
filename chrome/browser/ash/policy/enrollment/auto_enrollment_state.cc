@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 
+#include "base/functional/overloaded.h"
+
 namespace policy {
 
 namespace {
@@ -31,11 +33,27 @@ std::string_view AutoEnrollmentLegacyErrorCodeToString(
 
 }  // namespace
 
+// static
+AutoEnrollmentLegacyError AutoEnrollmentErrorToLegacyError(
+    const AutoEnrollmentError& error) {
+  return std::visit(
+      base::Overloaded{
+          [](AutoEnrollmentLegacyError legacy_error) { return legacy_error; },
+          [](AutoEnrollmentSafeguardTimeoutError) {
+            return AutoEnrollmentLegacyError::kConnectionError;
+          },
+          [](AutoEnrollmentSystemClockSyncError) {
+            return AutoEnrollmentLegacyError::kConnectionError;
+          }},
+      error);
+}
+
 std::string_view AutoEnrollmentStateToString(const AutoEnrollmentState& state) {
   if (state.has_value()) {
     return AutoEnrollmentResultToString(state.value());
   } else {
-    return AutoEnrollmentLegacyErrorCodeToString(state.error());
+    return AutoEnrollmentLegacyErrorCodeToString(
+        AutoEnrollmentErrorToLegacyError(state.error()));
   }
 }
 
