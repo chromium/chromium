@@ -380,6 +380,8 @@ public class CookieControlsBridgeTest {
     @Test
     @SmallTest
     @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    // This test will become obsolete when 3PCD is rolled out.
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieBridgeWithTPCookiesDisabledUserBypass() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -517,6 +519,8 @@ public class CookieControlsBridgeTest {
     @Test
     @SmallTest
     @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    // This test will become obsolete when 3PCD is rolled out.
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieBridgeWithIncognitoSettingUserBypass() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
