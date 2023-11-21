@@ -3116,7 +3116,7 @@ TEST_F(WebContentsImplTest, CanonicalUrlSchemeChromeIsNotAllowed) {
 TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
   MediaStreamRequest dummy_request(
       /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
-      /*security_origin=*/GURL(""), /*user_gesture=*/false,
+      /*url_origin=*/url::Origin::Create(GURL("")), /*user_gesture=*/false,
       blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
       /*requested_audio_device_id=*/"",
       /*requested_video_device_id=*/"",

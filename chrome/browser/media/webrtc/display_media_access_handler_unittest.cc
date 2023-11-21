@@ -74,8 +74,8 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
     return content::MediaStreamRequest(
         web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
-        GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-        std::string(), std::string(),
+        url::Origin::Create(GURL("http://origin/")), false,
+        blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
         request_audio ? blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE
                       : blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
@@ -405,8 +405,9 @@ TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
                  true /* cancelled */}});
   content::MediaStreamRequest request(
       render_process_id, render_frame_id, page_request_id,
-      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), audio_stream_type, video_stream_type,
+      url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+      audio_stream_type, video_stream_type,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
   access_handler_->HandleRequest(web_contents(), request, std::move(callback),
@@ -443,8 +444,9 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
                  true /* cancelled */}});
   content::MediaStreamRequest request(
       render_process_id, render_frame_id, page_request_id,
-      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), audio_stream_type, video_stream_type,
+      url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+      audio_stream_type, video_stream_type,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
   content::WebContents* test_web_contents = web_contents();
@@ -478,8 +480,9 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
                  true /* cancelled */}});
   content::MediaStreamRequest request(
       render_process_id, render_frame_id, page_request_id,
-      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), audio_stream_type, video_stream_type,
+      url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+      audio_stream_type, video_stream_type,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
   content::WebContents* test_web_contents = web_contents();
@@ -522,8 +525,9 @@ TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
                  true /* cancelled */}});
   content::MediaStreamRequest request(
       render_process_id, render_frame_id, page_request_id,
-      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), audio_stream_type, video_stream_type,
+      url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+      audio_stream_type, video_stream_type,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
   content::WebContents* test_web_contents = web_contents();
@@ -549,8 +553,9 @@ TEST_F(DisplayMediaAccessHandlerTest, WebContentsDestroyed) {
   content::MediaStreamRequest request(
       web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
-      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
+      url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+      blink::mojom::MediaStreamType::NO_SERVICE,
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
@@ -588,8 +593,9 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
     content::MediaStreamRequest request(
         web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
-        GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-        std::string(), std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
+        url::Origin::Create(GURL("http://origin/")), false,
+        blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+        blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
         /*disable_local_echo=*/false,
         /*request_pan_tilt_zoom_permission=*/false);

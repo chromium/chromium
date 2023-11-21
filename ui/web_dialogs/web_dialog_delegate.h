@@ -238,7 +238,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
       content::MediaResponseCallback callback) {}
   virtual bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
-      const GURL& security_origin,
+      const url::Origin& security_origin,
       blink::mojom::MediaStreamType type);
 
   // Whether to use dialog frame view for non client frame view.

@@ -346,7 +346,7 @@ TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       content::MediaStreamRequest(
           /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
-          /*security_origin=*/GURL(),
+          /*url_origin=*/url::Origin(),
           /*user_gesture=*/false,
           blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
           /*requested_audio_device_id=*/"",

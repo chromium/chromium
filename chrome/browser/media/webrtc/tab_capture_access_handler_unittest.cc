@@ -52,8 +52,8 @@ class TabCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
     content::MediaStreamRequest request(
         web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
-        /*page_request_id=*/0, GURL(kOrigin), /*user_gesture=*/false,
-        blink::MEDIA_GENERATE_STREAM,
+        /*page_request_id=*/0, url::Origin::Create(GURL(kOrigin)),
+        /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
         /*requested_audio_device_id=*/std::string(),
         /*requested_video_device_id=*/std::string(),
         blink::mojom::MediaStreamType::NO_SERVICE,

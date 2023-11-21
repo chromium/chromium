@@ -1514,7 +1514,7 @@ void FrameImpl::RequestMediaAccessPermission(
 
 bool FrameImpl::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   blink::PermissionType permission;
   switch (type) {
@@ -1530,8 +1530,7 @@ bool FrameImpl::CheckMediaAccessPermission(
   }
 
   // TODO(crbug.com/1321100): Remove `security_origin`.
-  if (url::Origin::Create(security_origin) !=
-      render_frame_host->GetLastCommittedOrigin()) {
+  if (security_origin != render_frame_host->GetLastCommittedOrigin()) {
     return false;
   }
 

@@ -325,7 +325,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
   std::unique_ptr<content::AudioStreamBrokerFactory>
   CreateAudioStreamBrokerFactory(content::WebContents* web_contents) override;

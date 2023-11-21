@@ -276,7 +276,7 @@ void AwWebContentsDelegate::RequestMediaAccessPermission(
 
 bool AwWebContentsDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (!base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache)) {
     return false;
@@ -288,11 +288,12 @@ bool AwWebContentsDelegate::CheckMediaAccessPermission(
   }
   AwPermissionManager* pm = AwBrowserContext::FromWebContents(web_contents)
                                 ->GetPermissionControllerDelegate();
+  const GURL& origin_gurl = security_origin.GetURL();
   switch (type) {
     case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return pm->ShouldShowEnumerateDevicesAudioLabels(security_origin);
+      return pm->ShouldShowEnumerateDevicesAudioLabels(origin_gurl);
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return pm->ShouldShowEnumerateDevicesVideoLabels(security_origin);
+      return pm->ShouldShowEnumerateDevicesVideoLabels(origin_gurl);
     default:
       return false;
   }

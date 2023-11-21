@@ -20,8 +20,6 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
 
-class GURL;
-
 namespace content {
 struct MediaStreamRequest;
 class RenderFrameHost;
@@ -66,7 +64,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
         content::MediaResponseCallback callback) override;
     bool CheckMediaAccessPermission(
         content::RenderFrameHost* render_frame_host,
-        const GURL& security_origin,
+        const url::Origin& security_origin,
         blink::mojom::MediaStreamType type) override;
 
    private:

@@ -138,8 +138,8 @@ MATCHER_P(SameRequest, expected, "") {
 
 TEST_F(MediaStreamUIProxyTest, Deny) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -177,8 +177,8 @@ TEST_F(MediaStreamUIProxyTest, Deny) {
 
 TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -228,8 +228,8 @@ TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
 // Verify that the proxy can be deleted before the request is processed.
 TEST_F(MediaStreamUIProxyTest, DeleteBeforeAccepted) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -260,8 +260,8 @@ TEST_F(MediaStreamUIProxyTest, DeleteBeforeAccepted) {
 
 TEST_F(MediaStreamUIProxyTest, StopFromUI) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -325,8 +325,9 @@ TEST_F(MediaStreamUIProxyTest, StopFromUI) {
 
 TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+      blink::mojom::MediaStreamType::NO_SERVICE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   MediaStreamRequest* request_ptr = request.get();
@@ -370,8 +371,8 @@ TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
 
 TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
       blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -436,8 +437,8 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
 
 TEST_F(MediaStreamUIProxyTest, ChangeTabSourceFromUI) {
   auto request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
       blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -504,8 +505,8 @@ TEST_F(MediaStreamUIProxyTest, ChangeTabSourceFromUI) {
 
   // Switching source tab will trigger another MediaStreamRequest
   request = std::make_unique<MediaStreamRequest>(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(),
+      0, 0, 0, url::Origin::Create(GURL("http://origin/")), false,
+      blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
       blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -587,8 +588,9 @@ class MediaStreamUIProxyPermissionsPolicyTest
       blink::mojom::MediaStreamType cam_type) {
     return std::make_unique<MediaStreamRequest>(
         rfh->GetProcess()->GetID(), rfh->GetRoutingID(), 0,
-        rfh->GetLastCommittedURL(), false, blink::MEDIA_GENERATE_STREAM,
-        std::string(), std::string(), mic_type, cam_type,
+        url::Origin::Create(rfh->GetLastCommittedURL()), false,
+        blink::MEDIA_GENERATE_STREAM, std::string(), std::string(), mic_type,
+        cam_type,
         /*disable_local_echo=*/false,
         /*request_pan_tilt_zoom_permission=*/false);
   }

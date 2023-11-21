@@ -1789,20 +1789,20 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
 
   // Mic should always be blocked.
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url1,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url1),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
 
   // Camera should be allowed if allowed by the allowlist, otherwise blocked.
   EXPECT_TRUE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url1,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url1),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   EXPECT_TRUE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url2,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url2),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url3,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url3),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   // Camera should be blocked in the login screen, even if it's allowed via
@@ -1815,7 +1815,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
                                       CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url3,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url3),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 }
 
@@ -1862,20 +1862,20 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLockMediaPermission) {
 
   // Mic should always be blocked.
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url1,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url1),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
 
   // Camera should be allowed if allowed by the allowlist, otherwise blocked.
   EXPECT_TRUE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url1,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url1),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   EXPECT_TRUE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url2,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url2),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetPrimaryMainFrame(), url3,
+      web_contents->GetPrimaryMainFrame(), url::Origin::Create(url3),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 }
 

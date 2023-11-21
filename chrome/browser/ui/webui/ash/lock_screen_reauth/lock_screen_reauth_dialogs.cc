@@ -115,7 +115,7 @@ void LockScreenStartReauthDialog::RequestMediaAccessPermission(
 
 bool LockScreenStartReauthDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   // This is required for accessing the camera for SAML logins.
   return MediaCaptureDevicesDispatcher::GetInstance()

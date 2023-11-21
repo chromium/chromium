@@ -173,7 +173,7 @@ bool PermissionBubbleMediaAccessHandler::SupportsStreamType(
 
 bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   blink::PermissionType permission_type =
@@ -182,7 +182,7 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
           : blink::PermissionType::VIDEO_CAPTURE;
 
   // TODO(crbug.com/1321100): Remove `security_origin`.
-  if (render_frame_host->GetLastCommittedOrigin().GetURL() != security_origin) {
+  if (render_frame_host->GetLastCommittedOrigin() != security_origin) {
     return false;
   }
   // It is OK to ignore `security_origin` because it will be calculated from

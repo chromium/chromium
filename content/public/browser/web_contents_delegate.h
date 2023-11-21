@@ -588,7 +588,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // this does not query the user. |type| must be MEDIA_DEVICE_AUDIO_CAPTURE
   // or MEDIA_DEVICE_VIDEO_CAPTURE.
   virtual bool CheckMediaAccessPermission(RenderFrameHost* render_frame_host,
-                                          const GURL& security_origin,
+                                          const url::Origin& security_origin,
                                           blink::mojom::MediaStreamType type);
 
   // Returns the human-readable name for title in Media Controls.
