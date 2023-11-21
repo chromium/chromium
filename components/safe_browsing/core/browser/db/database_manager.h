@@ -18,6 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -63,7 +64,8 @@ class SafeBrowsingDatabaseManager
   // request is still pending.
   class Client {
    public:
-    virtual ~Client() {}
+    Client();
+    virtual ~Client();
 
     // Called when the result of checking the API blocklist is known.
     // TODO(kcarattini): Consider if we need |url| passed here, remove if not.
@@ -92,6 +94,12 @@ class SafeBrowsingDatabaseManager
     // Called when the result of checking a allowlist is known.
     // Currently only used for CSD allowlist.
     virtual void OnCheckAllowlistUrlResult(bool did_match_allowlist) {}
+
+    // Returns a WeakPtr to this.
+    base::WeakPtr<Client> GetWeakPtr();
+
+   private:
+    base::WeakPtrFactory<Client> weak_factory_{this};
   };
 
   //

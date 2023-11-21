@@ -15,8 +15,14 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-
 namespace safe_browsing {
+SafeBrowsingDatabaseManager::Client::Client() = default;
+SafeBrowsingDatabaseManager::Client::~Client() = default;
+
+base::WeakPtr<SafeBrowsingDatabaseManager::Client>
+SafeBrowsingDatabaseManager::Client::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,

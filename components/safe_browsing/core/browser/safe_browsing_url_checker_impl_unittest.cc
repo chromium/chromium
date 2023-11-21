@@ -73,7 +73,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
-                         this, gurl, client));
+                         this, gurl, client->GetWeakPtr()));
     } else {
       // If delayed callback is set to true, store the client in |urls_client_|.
       // The callback can be triggered by |RestartDelayedCallback|.
@@ -129,7 +129,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
-                       this, gurl, urls_client_[url]));
+                       this, gurl, urls_client_[url]->GetWeakPtr()));
   }
 
   void SetThreatTypeForUrl(const GURL& gurl,
@@ -167,11 +167,11 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   ~MockSafeBrowsingDatabaseManager() override = default;
 
  private:
-  void OnCheckBrowseURLDone(const GURL& gurl, Client* client) {
+  void OnCheckBrowseURLDone(const GURL& gurl, base::WeakPtr<Client> client) {
     if (called_cancel_check_) {
       return;
     }
-
+    CHECK(client);
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     ThreatMetadata metadata;
