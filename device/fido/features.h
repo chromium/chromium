@@ -59,11 +59,6 @@ BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNoNullInJSON);
 
-// Require the "easy accessor" fields to be provided in JSON attestation
-// responses. Otherwise the fields are only checked if provided.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON);
-
 // Require up-to-date JSON formatting in remote-desktop contexts.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop);

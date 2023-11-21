@@ -589,13 +589,10 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
   response->attestation_object = std::move(fields->attestation_object_bytes);
 
   if (base::FeatureList::IsEnabled(
-          device::kWebAuthnRequireEasyAccessorFieldsInJSON) &&
-      (base::FeatureList::IsEnabled(
-           device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
-       user != JSONUser::kRemoteDesktop)) {
+          device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
+      user != JSONUser::kRemoteDesktop) {
     // These fields are checked against the calculated values to ensure that
     // bugs in providers don't sneak in.
-
     absl::optional<int> opt_public_key_algo =
         attestation_response->FindInt("publicKeyAlgorithm");
     if (!opt_public_key_algo ||
