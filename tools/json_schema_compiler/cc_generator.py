@@ -148,9 +148,9 @@ class _Generator(object):
         .Append('%s::~%s() = default;' % (classname_in_namespace, classname))
       )
       # Note: we use 'rhs' because some API objects have a member 'other'.
-      (c.Append('%s::%s(%s&& rhs) = default;' %
+      (c.Append('%s::%s(%s&& rhs) noexcept = default;' %
                     (classname_in_namespace, classname, classname))
-        .Append('%s& %s::operator=(%s&& rhs) = default;' %
+        .Append('%s& %s::operator=(%s&& rhs) noexcept = default;' %
                     (classname_in_namespace, classname_in_namespace,
                      classname))
       )
@@ -811,8 +811,8 @@ class _Generator(object):
       c.Concat(self._GeneratePropertyFunctions('Params', function.params))
       (c.Append('Params::Params() = default;')
         .Append('Params::~Params() = default;')
-        .Append('Params::Params(Params&& rhs) = default;')
-        .Append('Params& Params::operator=(Params&& rhs) = default;')
+        .Append('Params::Params(Params&& rhs) noexcept = default;')
+        .Append('Params& Params::operator=(Params&& rhs) noexcept = default;')
         .Append()
         .Cblock(self._GenerateFunctionParamsCreate(function))
       )

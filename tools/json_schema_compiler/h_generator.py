@@ -254,8 +254,8 @@ class _Generator(object):
         .Append('~%(classname)s();')
         .Append('%(classname)s(const %(classname)s&) = delete;')
         .Append('%(classname)s& operator=(const %(classname)s&) = delete;')
-        .Append('%(classname)s(%(classname)s&& rhs);')
-        .Append('%(classname)s& operator=(%(classname)s&& rhs);')
+        .Append('%(classname)s(%(classname)s&& rhs) noexcept;')
+        .Append('%(classname)s& operator=(%(classname)s&& rhs) noexcept;')
       )
 
       if type_.origin.from_manifest_keys:
@@ -402,8 +402,8 @@ class _Generator(object):
                     ('const base::Value::List& args',)))
       .Append('Params(const Params&) = delete;')
       .Append('Params& operator=(const Params&) = delete;')
-      .Append('Params(Params&& rhs);')
-      .Append('Params& operator=(Params&& rhs);')
+      .Append('Params(Params&& rhs) noexcept;')
+      .Append('Params& operator=(Params&& rhs) noexcept;')
       .Append('~Params();')
       .Append()
       .Cblock(self._GenerateTypes(p.type_ for p in function.params))
