@@ -180,7 +180,8 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   bool using_ssl = GURL::SchemeIsCryptographic(group_id.destination().scheme());
 
   // If applicable, set up a callback to handle checking for H2 IP pooling
-  // opportunities.
+  // opportunities. We don't perform H2 IP pooling to or through proxy servers,
+  // so ignore those cases.
   OnHostResolutionCallback resolution_callback;
   if (using_ssl && proxy_chain.is_direct()) {
     resolution_callback = base::BindRepeating(
@@ -189,17 +190,6 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
                        proxy_chain, group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
-                       group_id.network_anonymization_key(),
-                       group_id.secure_dns_policy()),
-        is_for_websockets_);
-  } else if (proxy_chain.proxy_server().is_https()) {
-    // TODO(crbug.com/1491092): Determine how to handle session aliasing for
-    // multi-proxy chains. See comments on https://crrev.com/c/4968319.
-    resolution_callback = base::BindRepeating(
-        &OnHostResolution, common_connect_job_params_->spdy_session_pool,
-        SpdySessionKey(proxy_chain.proxy_server().host_port_pair(),
-                       ProxyChain::Direct(), group_id.privacy_mode(),
-                       SpdySessionKey::IsProxySession::kTrue, socket_tag,
                        group_id.network_anonymization_key(),
                        group_id.secure_dns_policy()),
         is_for_websockets_);
