@@ -6,11 +6,17 @@
 
 #import <memory>
 
+#import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
+#import "components/policy/core/common/mock_configuration_policy_provider.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/policy_types.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -18,6 +24,7 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
+#import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -463,6 +470,68 @@ TEST_F(AuthenticationFlowTest,
                              viewController:view_controller_
                                     browser:browser_.get()
                                 syncConsent:NO];
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                                     clientID:kFakeClientID];
+  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
+  }] fetchUserPolicy:browser_state_.get()
+         withDmToken:kFakeDMToken
+            clientID:kFakeClientID
+            identity:managed_identity_];
+
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
+
+  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+
+  CheckSignInCompletion(/*expected_signed_in=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kManaged, 1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountType.SyncConsent", 0);
+}
+
+// Tests that the management confirmation dialog is not shown and the user
+// policies still fetched when the browser is already managed at the machine
+// level. This only applies to the sign-in consent level.
+TEST_F(AuthenticationFlowTest,
+       TestSkipManagedConfirmationWhenAlreadyManagedAtMachineLevel) {
+  // Enable user policy and sign-in consent only.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kReplaceSyncPromosWithSignInPromos,
+       policy::kUserPolicyForSigninAndNoSyncConsentLevel},
+      {});
+
+  // Set a machine level policy.
+  base::ScopedTempDir state_directory;
+  ASSERT_TRUE(state_directory.CreateUniqueTempDir());
+  EnterprisePolicyTestHelper enterprise_policy_helper(
+      state_directory.GetPath());
+  policy::PolicyMap map;
+  map.Set("test-policy", policy::POLICY_LEVEL_MANDATORY,
+          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+          base::Value("hello"), nullptr);
+  enterprise_policy_helper.GetPolicyProvider()->UpdateChromePolicy(map);
+
+  CreateAuthenticationFlow(
+      PostSignInAction::kNone, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
+  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+
+  // Make sure that the is no attempt to show the dialg.
+  [[performer_ reject] showManagedConfirmationForHostedDomain:@"foo.com"
+                                               viewController:view_controller_
+                                                      browser:browser_.get()
+                                                  syncConsent:NO];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
