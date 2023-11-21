@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -36,7 +37,6 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -76,8 +76,8 @@ class AggregationServiceStorageSqlTest : public testing::Test {
 
   // Use the default limit unless specified.
   void OpenDatabase(
-      absl::optional<int> max_stored_requests_per_reporting_origin =
-          absl::nullopt) {
+      std::optional<int> max_stored_requests_per_reporting_origin =
+          std::nullopt) {
     if (max_stored_requests_per_reporting_origin.has_value()) {
       storage_ = std::make_unique<AggregationServiceStorageSql>(
           /*run_in_memory=*/false, temp_directory_.GetPath(), &clock_,
@@ -674,13 +674,13 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   const struct {
     base::Time strictly_after_time;
-    absl::optional<base::Time> expected_return_value;
+    std::optional<base::Time> expected_return_value;
   } kTestCases[] = {
       {base::Time::Min(), report_time},
       {report_time - base::Seconds(1), report_time},
-      {report_time, absl::nullopt},
-      {report_time + base::Seconds(1), absl::nullopt},
-      {base::Time::Max(), absl::nullopt},
+      {report_time, std::nullopt},
+      {report_time + base::Seconds(1), std::nullopt},
+      {base::Time::Max(), std::nullopt},
 
   };
 
@@ -708,7 +708,7 @@ TEST_F(AggregationServiceStorageSqlTest,
         example_request.shared_info().Clone();
     shared_info.scheduled_report_time = scheduled_report_time;
 
-    absl::optional<AggregatableReportRequest> request =
+    std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(example_request.payload_contents(),
                                           std::move(shared_info));
     ASSERT_TRUE(request.has_value());
@@ -906,7 +906,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   {
     // The report time is now considered in the past so it is adjusted.
-    absl::optional<base::Time> new_report_time =
+    std::optional<base::Time> new_report_time =
         storage_->AdjustOfflineReportTimes(
             /*now=*/original_report_time + base::Minutes(1),
             /*min_delay=*/base::Minutes(1),
@@ -934,7 +934,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   {
     // The delay can be constant (i.e. min delay can be equal to max delay)
-    absl::optional<base::Time> new_report_time =
+    std::optional<base::Time> new_report_time =
         storage_->AdjustOfflineReportTimes(
             /*now=*/original_report_time + base::Minutes(1),
             /*min_delay=*/base::Minutes(1),
@@ -948,7 +948,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   {
     // The min delay can be zero
-    absl::optional<base::Time> new_report_time =
+    std::optional<base::Time> new_report_time =
         storage_->AdjustOfflineReportTimes(
             /*now=*/original_report_time + base::Minutes(5),
             /*min_delay=*/base::Minutes(0),
@@ -979,7 +979,7 @@ TEST_F(AggregationServiceStorageSqlTest,
         example_request.shared_info().Clone();
     shared_info.scheduled_report_time = scheduled_report_time;
 
-    absl::optional<AggregatableReportRequest> request =
+    std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(example_request.payload_contents(),
                                           std::move(shared_info));
     ASSERT_TRUE(request.has_value());
@@ -1152,7 +1152,7 @@ TEST_F(AggregationServiceStorageSqlTest,
           example_request.payload_contents(),
           example_request.shared_info().Clone(),
           /*reporting_path=*/std::string(),
-          /*debug_key=*/absl::nullopt,
+          /*debug_key=*/std::nullopt,
           /*additional_fields=*/{{"additional_key", "example_value"}})
           .value();
 
@@ -1191,7 +1191,7 @@ TEST_F(AggregationServiceStorageSqlTest,
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone(),
                                         /*reporting_path=*/std::string(),
-                                        /*debug_key=*/absl::nullopt,
+                                        /*debug_key=*/std::nullopt,
                                         /*additional_fields=*/{})
           .value();
 

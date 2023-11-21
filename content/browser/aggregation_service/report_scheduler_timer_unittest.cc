@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -36,14 +36,13 @@ class MockReportSchedulerTimerDelegate : public ReportSchedulerTimer::Delegate {
  public:
   MOCK_METHOD(void,
               GetNextReportTime,
-              (base::OnceCallback<void(absl::optional<base::Time>)>,
-               base::Time),
+              (base::OnceCallback<void(std::optional<base::Time>)>, base::Time),
               (override));
   MOCK_METHOD(void, OnReportingTimeReached, (base::Time), (override));
 
   MOCK_METHOD(void,
               AdjustOfflineReportTimes,
-              (base::OnceCallback<void(absl::optional<base::Time>)>),
+              (base::OnceCallback<void(std::optional<base::Time>)>),
               (override));
 
   MOCK_METHOD(void, OnReportingPaused, (), (override));
@@ -92,8 +91,8 @@ TEST_F(ReportSchedulerTimerTest, SetTimer_FiredAtAppropriateTime) {
 
 TEST_F(ReportSchedulerTimerTest, MultipleSetTimers_FiredAtAppropriateTime) {
   Checkpoint checkpoint;
-  base::OnceCallback<void(absl::optional<base::Time>)> saved_cb_1;
-  base::OnceCallback<void(absl::optional<base::Time>)> saved_cb_2;
+  base::OnceCallback<void(std::optional<base::Time>)> saved_cb_1;
+  base::OnceCallback<void(std::optional<base::Time>)> saved_cb_2;
 
   {
     InSequence seq;
@@ -141,7 +140,7 @@ TEST_F(ReportSchedulerTimerTest, MultipleSetTimers_FiredAtAppropriateTime) {
   checkpoint.Call(4);
 
   // Nothing should happen if no reports are left.
-  std::move(saved_cb_2).Run(absl::nullopt);
+  std::move(saved_cb_2).Run(std::nullopt);
 }
 
 TEST_F(ReportSchedulerTimerTest, NetworkChange) {

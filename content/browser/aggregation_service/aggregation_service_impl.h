@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -125,23 +125,23 @@ class CONTENT_EXPORT AggregationServiceImpl
       std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids,
       base::RepeatingClosure done);
 
-  // `request_id` is `absl::nullopt` iff `report_request` was not
+  // `request_id` is `std::nullopt` iff `report_request` was not
   // stored/scheduled.
   void AssembleAndSendReportImpl(
       AggregatableReportRequest report_request,
-      absl::optional<AggregationServiceStorage::RequestId> request_id,
+      std::optional<AggregationServiceStorage::RequestId> request_id,
       base::OnceClosure done);
   void OnReportAssemblyComplete(
       base::OnceClosure done,
-      absl::optional<AggregationServiceStorage::RequestId> request_id,
+      std::optional<AggregationServiceStorage::RequestId> request_id,
       GURL reporting_url,
       AggregatableReportRequest report_request,
-      absl::optional<AggregatableReport> report,
+      std::optional<AggregatableReport> report,
       AggregatableReportAssembler::AssemblyStatus status);
   void OnReportSendingComplete(
       base::OnceClosure done,
       AggregatableReportRequest report_request,
-      absl::optional<AggregationServiceStorage::RequestId> request_id,
+      std::optional<AggregationServiceStorage::RequestId> request_id,
       AggregatableReport report,
       AggregatableReportSender::RequestStatus status);
   void OnUserVisibleTaskStarted();
@@ -154,8 +154,8 @@ class CONTENT_EXPORT AggregationServiceImpl
 
   void NotifyReportHandled(
       const AggregatableReportRequest& request,
-      absl::optional<AggregationServiceStorage::RequestId> request_id,
-      const absl::optional<AggregatableReport>& report,
+      std::optional<AggregationServiceStorage::RequestId> request_id,
+      const std::optional<AggregatableReport>& report,
       AggregationServiceObserver::ReportStatus status);
 
   void NotifyRequestStorageModified();

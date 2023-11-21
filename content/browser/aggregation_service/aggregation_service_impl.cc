@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -38,7 +39,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -184,13 +184,14 @@ void AggregationServiceImpl::ScheduleReport(
 
 void AggregationServiceImpl::AssembleAndSendReport(
     AggregatableReportRequest report_request) {
-  AssembleAndSendReportImpl(std::move(report_request), /*id=*/absl::nullopt,
+  AssembleAndSendReportImpl(std::move(report_request),
+                            /*request_id=*/std::nullopt,
                             /*done=*/base::DoNothing());
 }
 
 void AggregationServiceImpl::AssembleAndSendReportImpl(
     AggregatableReportRequest report_request,
-    absl::optional<AggregationServiceStorage::RequestId> request_id,
+    std::optional<AggregationServiceStorage::RequestId> request_id,
     base::OnceClosure done) {
   GURL reporting_url = report_request.GetReportingUrl();
   AssembleReport(
@@ -210,10 +211,10 @@ void AggregationServiceImpl::OnScheduledReportTimeReached(
 
 void AggregationServiceImpl::OnReportAssemblyComplete(
     base::OnceClosure done,
-    absl::optional<AggregationServiceStorage::RequestId> request_id,
+    std::optional<AggregationServiceStorage::RequestId> request_id,
     GURL reporting_url,
     AggregatableReportRequest report_request,
-    absl::optional<AggregatableReport> report,
+    std::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
   DCHECK_EQ(report.has_value(),
             status == AggregatableReportAssembler::AssemblyStatus::kOk);
@@ -227,7 +228,7 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
     if (!will_retry) {
       NotifyReportHandled(
           std::move(report_request), request_id,
-          /*report=*/absl::nullopt,
+          /*report=*/std::nullopt,
           AggregationServiceObserver::ReportStatus::kFailedToAssemble);
     }
     if (request_id.has_value()) {
@@ -252,7 +253,7 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
 void AggregationServiceImpl::OnReportSendingComplete(
     base::OnceClosure done,
     AggregatableReportRequest report_request,
-    absl::optional<AggregationServiceStorage::RequestId> request_id,
+    std::optional<AggregationServiceStorage::RequestId> request_id,
     AggregatableReport report,
     AggregatableReportSender::RequestStatus status) {
   std::move(done).Run();
@@ -354,8 +355,8 @@ void AggregationServiceImpl::RemoveObserver(
 
 void AggregationServiceImpl::NotifyReportHandled(
     const AggregatableReportRequest& request,
-    absl::optional<AggregationServiceStorage::RequestId> request_id,
-    const absl::optional<AggregatableReport>& report,
+    std::optional<AggregationServiceStorage::RequestId> request_id,
+    const std::optional<AggregatableReport>& report,
     AggregationServiceObserver::ReportStatus status) {
   bool is_scheduled_request = request_id.has_value();
   bool did_request_succeed =

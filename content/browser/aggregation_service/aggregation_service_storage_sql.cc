@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -37,7 +38,6 @@
 #include "sql/statement_id.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -565,18 +565,17 @@ bool AggregationServiceStorageSql::DeleteRequestImpl(RequestId request_id) {
   return delete_request_statement.Run();
 }
 
-absl::optional<base::Time> AggregationServiceStorageSql::NextReportTimeAfter(
+std::optional<base::Time> AggregationServiceStorageSql::NextReportTimeAfter(
     base::Time strictly_after_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
-    return absl::nullopt;
+    return std::nullopt;
 
   return NextReportTimeAfterImpl(strictly_after_time);
 }
 
-absl::optional<base::Time>
-AggregationServiceStorageSql::NextReportTimeAfterImpl(
+std::optional<base::Time> AggregationServiceStorageSql::NextReportTimeAfterImpl(
     base::Time strictly_after_time) {
   static constexpr char kGetRequestsSql[] =
       "SELECT MIN(report_time) FROM report_requests WHERE report_time>?";
@@ -590,13 +589,13 @@ AggregationServiceStorageSql::NextReportTimeAfterImpl(
       get_requests_statement.GetColumnType(0) != sql::ColumnType::kNull) {
     return get_requests_statement.ColumnTime(0);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<AggregationServiceStorage::RequestAndId>
 AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
     base::Time not_after_time,
-    absl::optional<int> limit) {
+    std::optional<int> limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!limit.has_value() || limit.value() > 0);
 
@@ -626,7 +625,7 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
   while (get_requests_statement.Step()) {
     AggregationServiceStorage::RequestId request_id{
         get_requests_statement.ColumnInt64(0)};
-    absl::optional<AggregatableReportRequest> parsed_request =
+    std::optional<AggregatableReportRequest> parsed_request =
         AggregatableReportRequest::Deserialize(
             get_requests_statement.ColumnBlob(2));
     if (!parsed_request) {
@@ -677,7 +676,7 @@ AggregationServiceStorageSql::GetRequests(
     statement.BindInt64(0, *id);
     if (!statement.Step())
       continue;
-    absl::optional<AggregatableReportRequest> parsed_request =
+    std::optional<AggregatableReportRequest> parsed_request =
         AggregatableReportRequest::Deserialize(statement.ColumnBlob(1));
     if (!parsed_request)
       continue;
@@ -689,7 +688,7 @@ AggregationServiceStorageSql::GetRequests(
   return result;
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 AggregationServiceStorageSql::AdjustOfflineReportTimes(
     base::Time now,
     base::TimeDelta min_delay,
@@ -701,7 +700,7 @@ AggregationServiceStorageSql::AdjustOfflineReportTimes(
   DCHECK_LE(min_delay, max_delay);
 
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
-    return absl::nullopt;
+    return std::nullopt;
 
   // Set the report time for all reports that should have been sent before `now`
   // to `now` + a random number of microseconds between `min_delay` and

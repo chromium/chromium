@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -69,7 +69,7 @@ bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
     AggregationServiceStorage::RequestId request_id,
     int previous_failed_attempts) {
   DCHECK_GE(previous_failed_attempts, 0);
-  absl::optional<base::TimeDelta> delay =
+  std::optional<base::TimeDelta> delay =
       GetFailedReportDelay(previous_failed_attempts + 1);
 
   if (delay.has_value()) {
@@ -93,12 +93,12 @@ bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
   return false;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 AggregatableReportScheduler::GetFailedReportDelay(int failed_send_attempts) {
   DCHECK_GT(failed_send_attempts, 0);
 
   if (failed_send_attempts > kMaxRetries)
-    return absl::nullopt;
+    return std::nullopt;
 
   return kInitialRetryDelay *
          std::pow(kRetryDelayFactor, failed_send_attempts - 1);
@@ -120,7 +120,7 @@ AggregatableReportScheduler::TimerDelegate::TimerDelegate(
 AggregatableReportScheduler::TimerDelegate::~TimerDelegate() = default;
 
 void AggregatableReportScheduler::TimerDelegate::GetNextReportTime(
-    base::OnceCallback<void(absl::optional<base::Time>)> callback,
+    base::OnceCallback<void(std::optional<base::Time>)> callback,
     base::Time now) {
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::NextReportTimeAfter)
@@ -132,14 +132,14 @@ void AggregatableReportScheduler::TimerDelegate::OnReportingTimeReached(
     base::Time now) {
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-      .WithArgs(now, /*limit=*/absl::nullopt)
+      .WithArgs(now, /*limit=*/std::nullopt)
       .Then(base::BindOnce(&AggregatableReportScheduler::TimerDelegate::
                                OnRequestsReturnedFromStorage,
                            weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AggregatableReportScheduler::TimerDelegate::AdjustOfflineReportTimes(
-    base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb) {
+    base::OnceCallback<void(std::optional<base::Time>)> maybe_set_timer_cb) {
   if (should_not_delay_reports_) {
     // No need to adjust the report times, just set the timer as appropriate.
     storage_context_->GetStorage()

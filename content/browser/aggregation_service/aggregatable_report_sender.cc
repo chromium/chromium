@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -151,7 +151,7 @@ void AggregatableReportSender::OnReportSent(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   RequestStatus status;
 
-  absl::optional<int> http_response_code;
+  std::optional<int> http_response_code;
   if (headers)
     http_response_code = headers->response_code();
 

@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -46,7 +46,7 @@ using ::testing::Optional;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
 
-auto InvokeCallback(absl::optional<AggregatableReport> report,
+auto InvokeCallback(std::optional<AggregatableReport> report,
                     AggregationService::AssemblyStatus status) {
   return [report = std::move(report), status = status](
              AggregatableReportRequest report_request,
@@ -60,11 +60,11 @@ AggregatableReport CreateExampleAggregatableReport() {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/absl::nullopt);
+                        /*debug_cleartext_payload=*/std::nullopt);
   return AggregatableReport(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt,
+                            /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
-                            /*aggregation_coordinator_origin=*/absl::nullopt);
+                            /*aggregation_coordinator_origin=*/std::nullopt);
 }
 
 }  // namespace
@@ -133,8 +133,8 @@ class MockAggregationServiceObserver : public AggregationServiceObserver {
   MOCK_METHOD(void,
               OnReportHandled,
               (const AggregatableReportRequest& request,
-               absl::optional<AggregationServiceStorage::RequestId> id,
-               const absl::optional<AggregatableReport>& report,
+               std::optional<AggregationServiceStorage::RequestId> id,
+               const std::optional<AggregatableReport>& report,
                base::Time report_handle_time,
                ReportStatus status),
               (override));
@@ -236,7 +236,7 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Succeed) {
       aggregation_service::CreateExampleRequest(),
       base::BindLambdaForTesting(
           [&](AggregatableReportRequest request,
-              absl::optional<AggregatableReport> report,
+              std::optional<AggregatableReport> report,
               AggregationService::AssemblyStatus status) {
             EXPECT_TRUE(report.has_value());
             EXPECT_EQ(status, AggregationService::AssemblyStatus::kOk);
@@ -251,7 +251,7 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Succeed) {
 TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
   EXPECT_CALL(*test_assembler_, AssembleReport)
       .WillOnce(InvokeCallback(
-          /*report=*/absl::nullopt,
+          /*report=*/std::nullopt,
           AggregatableReportAssembler::AssemblyStatus::kPublicKeyFetchFailed));
 
   base::RunLoop run_loop;
@@ -259,7 +259,7 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
       aggregation_service::CreateExampleRequest(),
       base::BindLambdaForTesting(
           [&](AggregatableReportRequest request,
-              absl::optional<AggregatableReport> report,
+              std::optional<AggregatableReport> report,
               AggregationService::AssemblyStatus status) {
             EXPECT_FALSE(report.has_value());
             EXPECT_EQ(
@@ -349,7 +349,7 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
 
   EXPECT_CALL(*test_assembler_, AssembleReport)
       .WillOnce(InvokeCallback(
-          /*report=*/absl::nullopt,
+          /*report=*/std::nullopt,
           AggregatableReportAssembler::AssemblyStatus::kAssemblyFailed));
   EXPECT_CALL(*test_scheduler_,
               NotifyInProgressRequestFailed(
@@ -494,7 +494,7 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_Success) {
   observation.Observe(service_impl_.get());
 
   EXPECT_CALL(observer,
-              OnReportHandled(_, Eq(absl::nullopt), _, _,
+              OnReportHandled(_, Eq(std::nullopt), _, _,
                               AggregationServiceObserver::ReportStatus::kSent));
 
   // The scheduler should not have been interacted with.
@@ -511,7 +511,7 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_Success) {
 TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedAssembly) {
   EXPECT_CALL(*test_assembler_, AssembleReport)
       .WillOnce(InvokeCallback(
-          /*report=*/absl::nullopt,
+          /*report=*/std::nullopt,
           AggregatableReportAssembler::AssemblyStatus::kAssemblyFailed));
 
   StrictMock<MockAggregationServiceObserver> observer;
@@ -521,7 +521,7 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedAssembly) {
 
   EXPECT_CALL(observer,
               OnReportHandled(
-                  _, Eq(absl::nullopt), _, _,
+                  _, Eq(std::nullopt), _, _,
                   AggregationServiceObserver::ReportStatus::kFailedToAssemble));
 
   // The scheduler should not have been interacted with.
@@ -552,7 +552,7 @@ TEST_F(AggregationServiceImplTest, AssembleAndSendReport_FailedSender) {
 
   EXPECT_CALL(
       observer,
-      OnReportHandled(_, Eq(absl::nullopt), _, _,
+      OnReportHandled(_, Eq(std::nullopt), _, _,
                       AggregationServiceObserver::ReportStatus::kFailedToSend));
 
   // The scheduler should not have been interacted with.

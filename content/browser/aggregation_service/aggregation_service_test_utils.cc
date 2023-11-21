@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -33,7 +34,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -237,7 +237,7 @@ testing::AssertionResult SharedInfoEqual(
 AggregatableReportRequest CreateExampleRequest(
     blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
-    absl::optional<url::Origin> aggregation_coordinator_origin) {
+    std::optional<url::Origin> aggregation_coordinator_origin) {
   return CreateExampleRequestWithReportTime(
       /*report_time=*/base::Time::Now(), aggregation_mode, failed_send_attempts,
       std::move(aggregation_coordinator_origin));
@@ -247,7 +247,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
-    absl::optional<url::Origin> aggregation_coordinator_origin) {
+    std::optional<url::Origin> aggregation_coordinator_origin) {
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
@@ -266,7 +266,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  /*api_version=*/"",
                  /*api_identifier=*/"example-api"),
              /*reporting_path=*/"example-path",
-             /*debug_key=*/absl::nullopt, /*additional_fields=*/{},
+             /*debug_key=*/std::nullopt, /*additional_fields=*/{},
              failed_send_attempts)
       .value();
 }
@@ -429,8 +429,8 @@ void MockAggregationService::NotifyRequestStorageModified() {
 
 void MockAggregationService::NotifyReportHandled(
     const AggregatableReportRequest& request,
-    absl::optional<AggregationServiceStorage::RequestId> id,
-    absl::optional<AggregatableReport> report,
+    std::optional<AggregationServiceStorage::RequestId> id,
+    std::optional<AggregatableReport> report,
     base::Time report_handled_time,
     AggregationServiceObserver::ReportStatus status) {
   for (auto& observer : observers_)
