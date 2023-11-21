@@ -340,7 +340,7 @@ class ChromePrintContext : public PrintContext {
 
   ~ChromePrintContext() override = default;
 
-  void SpoolSinglePage(cc::PaintCanvas* canvas, int page_number) {
+  void SpoolSinglePage(cc::PaintCanvas* canvas, wtf_size_t page_number) {
     DispatchEventsForPrintingOnAllFrames();
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView()) {
@@ -445,7 +445,12 @@ class ChromePrintContext : public PrintContext {
   }
 
  protected:
-  virtual void SpoolPage(GraphicsContext& context, int page_number) {
+  virtual void SpoolPage(GraphicsContext& context, wtf_size_t page_number) {
+    if (!IsFrameValid() || page_number >= PageCount()) {
+      // TODO(crbug.com/452672): The number of pages may change after layout for
+      // pagination.
+      return;
+    }
     gfx::Rect page_rect = PageRect(page_number);
     AffineTransform transform;
 
@@ -518,6 +523,8 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 
   const gfx::Rect& PageRect(wtf_size_t) const = delete;
 
+  wtf_size_t PageCount() const override { return page_count_; }
+
   void BeginPrintMode(const WebPrintParams& print_params) override {
     page_count_ = plugin_->PrintBegin(print_params);
   }
@@ -537,7 +544,7 @@ class ChromePluginPrintContext final : public ChromePrintContext {
   }
 
  protected:
-  void SpoolPage(GraphicsContext& context, int page_number) override {
+  void SpoolPage(GraphicsContext& context, wtf_size_t page_number) override {
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
     plugin_->PrintPage(page_number, builder->Context());
     context.DrawRecord(builder->EndRecording());
@@ -546,6 +553,8 @@ class ChromePluginPrintContext final : public ChromePrintContext {
  private:
   // Set when printing.
   Member<WebPluginContainerImpl> plugin_;
+
+  wtf_size_t page_count_ = 0;
 };
 
 class PaintPreviewContext : public PrintContext {

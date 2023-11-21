@@ -58,26 +58,24 @@ PrintContext::~PrintContext() {
   DCHECK(!is_printing_);
 }
 
-void PrintContext::ComputePageCount() {
-  page_count_ = 0;
-
-  if (!IsFrameValid())
-    return;
-
+wtf_size_t PrintContext::PageCount() const {
+  DCHECK(is_printing_);
+  if (!IsFrameValid()) {
+    return 0;
+  }
   if (!use_printing_layout_) {
-    page_count_ = 1;
-    return;
+    return 1;
   }
 
   auto* view = frame_->GetDocument()->GetLayoutView();
   const auto& fragments = view->GetPhysicalFragment(0)->Children();
-  page_count_ = ClampTo<wtf_size_t>(fragments.size());
+  return ClampTo<wtf_size_t>(fragments.size());
 }
 
 gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
-  if (!IsFrameValid()) {
-    return gfx::Rect();
-  }
+  CHECK(IsFrameValid());
+  DCHECK(is_printing_);
+  DCHECK_LT(page_number, PageCount());
   const LayoutView& layout_view = *frame_->GetDocument()->GetLayoutView();
 
   if (!use_printing_layout_) {
@@ -123,8 +121,6 @@ void PrintContext::BeginPrintMode(const WebPrintParams& print_params) {
   // screen while in printing mode.
   frame_->StartPrinting(print_params.default_page_description,
                         maximum_shink_factor);
-
-  ComputePageCount();
 }
 
 void PrintContext::EndPrintMode() {

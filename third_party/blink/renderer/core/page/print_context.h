@@ -48,7 +48,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   LocalFrame* GetFrame() const { return frame_.Get(); }
 
   // These are only valid when inside print mode.
-  wtf_size_t PageCount() const { return page_count_; }
+  virtual wtf_size_t PageCount() const;
   gfx::Rect PageRect(wtf_size_t page_number) const;
 
   // Enter print mode, updating layout for paginated layout. WebPrintParams
@@ -82,7 +82,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   bool IsFrameValid() const;
 
   Member<LocalFrame> frame_;
-  wtf_size_t page_count_ = 0;
 
   // True when printing layout needs to be applied.
   bool use_printing_layout_ = true;
