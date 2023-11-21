@@ -108,11 +108,12 @@ class TestCascade {
   void Add(String block,
            CascadeOrigin origin = CascadeOrigin::kAuthor,
            unsigned link_match_type = CSSSelector::kMatchAll,
-           bool is_inline_style = false) {
+           bool is_inline_style = false,
+           bool is_fallback_style = false) {
     CSSParserMode mode =
         origin == CascadeOrigin::kUserAgent ? kUASheetMode : kHTMLStandardMode;
     Add(ParseDeclarationBlock(block, mode), origin, link_match_type,
-        is_inline_style);
+        is_inline_style, is_fallback_style);
   }
 
   void Add(String name, String value, CascadeOrigin origin = Origin::kAuthor) {
@@ -122,14 +123,16 @@ class TestCascade {
   void Add(const CSSPropertyValueSet* set,
            CascadeOrigin origin = CascadeOrigin::kAuthor,
            unsigned link_match_type = CSSSelector::kMatchAll,
-           bool is_inline_style = false) {
+           bool is_inline_style = false,
+           bool is_fallback_style = false) {
     DCHECK_LE(origin, CascadeOrigin::kAuthor) << "Animations not supported";
     DCHECK_LE(current_origin_, origin) << "Please add declarations in order";
     EnsureAtLeast(origin);
     cascade_.MutableMatchResult().AddMatchedProperties(
         set, origin,
         {.link_match_type = link_match_type,
-         .is_inline_style = is_inline_style});
+         .is_inline_style = is_inline_style,
+         .is_fallback_style = is_fallback_style});
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
@@ -3800,6 +3803,17 @@ TEST_F(StyleCascadeTest, InlineStyleLostCascade) {
               /*is_inline_style=*/true);
   cascade.Apply();
   EXPECT_TRUE(cascade.InlineStyleLostCascade());
+}
+
+TEST_F(StyleCascadeTest, FallbackStyle) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px", CascadeOrigin::kAuthor);
+  cascade.Add("top:2px", CascadeOrigin::kAuthor, CSSSelector::kMatchAll,
+              /*is_inline_style=*/true);
+  cascade.Add("top:3px", CascadeOrigin::kAuthor, CSSSelector::kMatchAll,
+              /*is_inline_style=*/false, /*is_fallback_style=*/true);
+  cascade.Apply();
+  EXPECT_EQ("3px", cascade.ComputedValue("top"));
 }
 
 TEST_F(StyleCascadeTest, LhUnitCycle) {

@@ -61,6 +61,7 @@ void MatchResult::AddMatchedProperties(
           options.valid_property_filter);
   new_properties.types_.layer_order = ClampTo<uint16_t>(options.layer_order);
   new_properties.types_.is_inline_style = options.is_inline_style;
+  new_properties.types_.is_fallback_style = options.is_fallback_style;
   new_properties.types_.origin = origin;
   new_properties.types_.tree_order = current_tree_order_;
 #if DCHECK_IS_ON()

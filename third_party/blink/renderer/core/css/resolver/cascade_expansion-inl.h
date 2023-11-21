@@ -42,6 +42,7 @@ void ExpandCascade(const MatchedProperties& matched_properties,
         matched_properties.types_.origin, metadata.important_,
         matched_properties.types_.tree_order,
         matched_properties.types_.is_inline_style,
+        matched_properties.types_.is_fallback_style,
         matched_properties.types_.layer_order,
         EncodeMatchResultPosition(matched_properties_index, property_idx));
 
