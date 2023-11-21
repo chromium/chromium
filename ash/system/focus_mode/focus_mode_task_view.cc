@@ -11,10 +11,12 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
+#include "ash/system/focus_mode/focus_mode_chip_carousel.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/border.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -64,11 +66,11 @@ class FocusModeTaskView::TaskTextfieldController
 
   // views::ViewObserver:
   void OnViewFocused(View* observed_view) override {
-    owner_->UpdateTextfieldStyle(/*show_selected_state=*/false);
+    owner_->UpdateStyle(/*show_selected_state=*/false);
   }
 
   void OnViewBlurred(views::View* view) override {
-    owner_->OnFinishedEditing();
+    owner_->SelectTask(textfield_->GetText());
   }
 
  private:
@@ -79,27 +81,33 @@ class FocusModeTaskView::TaskTextfieldController
 };
 
 FocusModeTaskView::FocusModeTaskView() {
-  SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  SetOrientation(views::LayoutOrientation::kHorizontal);
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                       views::MaximumFlexSizeRule::kUnbounded));
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+
+  auto* textfield_container =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  textfield_container->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  textfield_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+  textfield_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   // TODO(b/306272008): Finalize the style, size and spacing for the radio
   // button and the close button. Wait for replacing the check icon with the one
   // from UX.
-  radio_button_ = AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&FocusModeTaskView::OnRadioButtonPressed,
-                          base::Unretained(this)),
-      IconButton::Type::kXSmall, &views::kRadioButtonNormalIcon,
-      std::u16string(), /*is_togglable=*/true, /*has_border=*/false));
+  radio_button_ =
+      textfield_container->AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(&FocusModeTaskView::OnRadioButtonPressed,
+                              base::Unretained(this)),
+          IconButton::Type::kXSmall, &views::kRadioButtonNormalIcon,
+          std::u16string(), /*is_togglable=*/true, /*has_border=*/false));
   radio_button_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_RADIO_BUTTON));
   radio_button_->SetToggledVectorIcon(kCheckIcon);
 
   task_title_ = FocusModeController::Get()->selected_task_title();
 
-  textfield_ = AddChildView(
+  textfield_ = textfield_container->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium));
   textfield_->SetProperty(
       views::kFlexBehaviorKey,
@@ -114,12 +122,17 @@ FocusModeTaskView::FocusModeTaskView() {
   textfield_->SetPlaceholderTextColorId(cros_tokens::kCrosSysSecondary);
   textfield_->SetText(task_title_);
 
-  deselect_button_ = AddChildView(std::make_unique<CloseButton>(
-      base::BindRepeating(&FocusModeTaskView::OnDeselectButtonPressed,
-                          base::Unretained(this)),
-      CloseButton::Type::kMedium));
+  deselect_button_ =
+      textfield_container->AddChildView(std::make_unique<CloseButton>(
+          base::BindRepeating(&FocusModeTaskView::OnDeselectButtonPressed,
+                              base::Unretained(this)),
+          CloseButton::Type::kMedium));
 
-  UpdateTextfieldStyle(!task_title_.empty());
+  chip_carousel_ =
+      AddChildView(std::make_unique<FocusModeChipCarousel>(base::BindRepeating(
+          &FocusModeTaskView::SelectTask, base::Unretained(this))));
+
+  UpdateStyle(!task_title_.empty());
 
   textfield_controller_ =
       std::make_unique<TaskTextfieldController>(textfield_, this);
@@ -127,16 +140,34 @@ FocusModeTaskView::FocusModeTaskView() {
 
 FocusModeTaskView::~FocusModeTaskView() = default;
 
-void FocusModeTaskView::OnFinishedEditing() {
-  task_title_ = textfield_->GetText();
+void FocusModeTaskView::SelectTask(const std::u16string& task_title) {
+  task_title_ = task_title;
   FocusModeController::Get()->set_selected_task_title(task_title_);
-  UpdateTextfieldStyle(/*show_selected_state=*/!task_title_.empty());
+  UpdateStyle(/*show_selected_state=*/!task_title_.empty());
   // TODO(b/306271332): Call the tasks API to either save or update a task.
+  // TODO(b/306271315): Save task info to user prefs.
 }
 
-void FocusModeTaskView::UpdateTextfieldStyle(bool show_selected_state) {
+void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
+  // If a task chip was selected, populate the textfield with its name and
+  // unfocus the textfield.
+  if (show_selected_state) {
+    textfield_->SetText(task_title_);
+    auto* focus_manager = textfield_->GetFocusManager();
+    // If a task was selected from a chip, the textfield will still be focused.
+    // Unfocus it in this case.
+    if (focus_manager && focus_manager->GetFocusedView() == textfield_) {
+      textfield_->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+      // If the textfield is focused, unfocusing it will end up calling this
+      // method again.
+      return;
+    }
+  }
+
   radio_button_->SetVisible(show_selected_state);
   deselect_button_->SetVisible(show_selected_state);
+  chip_carousel_->SetVisible(!show_selected_state &&
+                             chip_carousel_->HasTasks());
 
   // TODO(b/306272008): Update label color and add a strikethrough if it's
   // selected state.

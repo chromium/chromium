@@ -63,10 +63,11 @@ class ASH_EXPORT FocusModeDetailedView
   // session based on whether focus is in session.
   void UpdateTimerView(bool in_focus_session);
 
-  // Creates the row to show a textfield view to allow a user to manually input
-  // a task and a list of chip carousel, or to show a saved task item view which
-  // was created by the text from the textfield view or selecting from the list
-  // of chip carousel.
+  // Creates the row with the task elements. Creates the textfield to allow a
+  // user to manually input a task and creates a chip carousel list of tasks to
+  // allow the user to select a task. Once the user enters a task in the
+  // textfield or selects a task from the list, this view only shows the
+  // selected saved task item view and the header.
   void CreateTaskView();
 
   // Creates the DND rounded container. This view will be visible only when
