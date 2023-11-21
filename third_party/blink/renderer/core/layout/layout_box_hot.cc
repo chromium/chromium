@@ -82,7 +82,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   }
 
   const bool use_layout_cache_slot =
-      new_space.CacheSlot() == NGCacheSlot::kLayout && !layout_results_.empty();
+      new_space.CacheSlot() == LayoutResultCacheSlot::kLayout &&
+      !layout_results_.empty();
   const NGLayoutResult* cached_layout_result =
       use_layout_cache_slot ? GetCachedLayoutResult(break_token)
                             : GetCachedMeasureResult();

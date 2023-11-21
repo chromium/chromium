@@ -87,7 +87,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       }
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kMeasure);
+          LayoutResultCacheSlot::kMeasure);
       const auto* child_layout_result = To<BlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
       UpdateBlockStretchSizes(child_layout_result);
@@ -105,7 +105,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
         NGConstraintSpace::MathTargetStretchBlockSizes zero_stretch_sizes;
         const auto child_constraint_space = CreateConstraintSpaceForMathChild(
             Node(), ChildAvailableSize(), constraint_space, child,
-            NGCacheSlot::kMeasure, zero_stretch_sizes);
+            LayoutResultCacheSlot::kMeasure, zero_stretch_sizes);
         const auto* child_layout_result = To<BlockNode>(child).Layout(
             child_constraint_space, nullptr /* break_token */);
         UpdateBlockStretchSizes(child_layout_result);
@@ -130,19 +130,20 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
         IsBlockAxisStretchyOperator(To<BlockNode>(child))) {
       child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kLayout, *constraint_space.TargetStretchBlockSizes());
+          LayoutResultCacheSlot::kLayout,
+          *constraint_space.TargetStretchBlockSizes());
     } else if (inherits_inline_stretch_size_constraint &&
                IsInlineAxisStretchyOperator(To<BlockNode>(child))) {
       child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kLayout, absl::nullopt,
+          LayoutResultCacheSlot::kLayout, absl::nullopt,
           constraint_space.TargetStretchInlineSize());
     } else if (!inherits_block_stretch_size_constraint &&
                !inherits_inline_stretch_size_constraint &&
                IsBlockAxisStretchyOperator(To<BlockNode>(child))) {
       child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kLayout, stretch_sizes);
+          LayoutResultCacheSlot::kLayout, stretch_sizes);
     } else {
       child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child);

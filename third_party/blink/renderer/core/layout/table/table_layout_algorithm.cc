@@ -72,7 +72,7 @@ NGConstraintSpace CreateCaptionConstraintSpace(
   SetOrthogonalFallbackInlineSizeIfNeeded(table_style, caption, &builder);
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(available_size);
-  builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+  builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
 
   // If a block-offset is specified, it means that table captions are laid out
   // as part of normal table child layout (rather than in initial table

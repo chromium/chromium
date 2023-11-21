@@ -470,7 +470,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
   builder.SetReplacedPercentageResolutionBlockSize(
       child_percentage_size_.block_size);
   if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child))
-    builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
+    builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
   return builder.ToConstraintSpace();
 }
 
@@ -482,14 +482,14 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
                                          child_style.GetWritingDirection(),
                                          /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item, &space_builder);
-  space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
+  space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
 
   if (WillChildCrossSizeBeContainerCrossSize(flex_item)) {
     if (is_column_)
-      space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
+      space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
     else
-      space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
+      space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
   }
 
   // For determining the intrinsic block-size we make %-block-sizes resolve
@@ -582,7 +582,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     space_builder.SetIsFixedBlockSize(true);
     if (line_cross_size_for_stretch ||
         WillChildCrossSizeBeContainerCrossSize(flex_item_node))
-      space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
+      space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
     // https://drafts.csswg.org/css-flexbox/#definite-sizes
     // If the flex container has a definite main size, a flex item's
     // post-flexing main size is treated as definite, even though it can
@@ -601,7 +601,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     space_builder.SetIsFixedInlineSize(true);
     if (line_cross_size_for_stretch ||
         WillChildCrossSizeBeContainerCrossSize(flex_item_node))
-      space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
+      space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
   }
   if (!line_cross_size_for_stretch && DoesItemStretch(flex_item_node)) {
     // For the first layout pass of stretched items, the goal is to determine
@@ -613,7 +613,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     // Setting the "measure" cache slot on the space writes the result
     // into both the "measure" and "layout" cache slots. So the stretch
     // layout will reuse this "measure" result if it can.
-    space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
+    space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
   } else if (block_offset_for_fragmentation &&
              GetConstraintSpace().HasBlockFragmentation()) {
     if (min_block_size_should_encompass_intrinsic_size)
@@ -1321,7 +1321,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       } else if (is_computing_multiline_column_intrinsic_size) {
         flex_item.cross_axis_size_ = *flex_item.max_content_contribution_;
       } else {
-        DCHECK((child_space.CacheSlot() == NGCacheSlot::kLayout) ||
+        DCHECK((child_space.CacheSlot() == LayoutResultCacheSlot::kLayout) ||
                !flex_item.layout_result_);
         flex_item.layout_result_ = flex_item.ng_input_node_.Layout(
             child_space, nullptr /*break token*/);

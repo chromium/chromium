@@ -31,7 +31,7 @@ static NGConstraintSpace ConstructConstraintSpace(
                                    /* is_new_fc */ false);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
-  builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+  builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   builder.SetIsFixedInlineSize(fixed_inline);
   builder.SetIsFixedBlockSize(fixed_block);
   return builder.ToConstraintSpace();

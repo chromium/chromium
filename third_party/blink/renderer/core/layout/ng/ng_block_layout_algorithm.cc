@@ -2760,7 +2760,7 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
                                        /* is_new_fc */ false);
       builder.SetAvailableSize(ChildAvailableSize());
       builder.SetPercentageResolutionSize(child_percentage_size_);
-      builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
       NGConstraintSpace space = builder.ToConstraintSpace();
 
       const auto block_child = To<BlockNode>(child);
@@ -2819,7 +2819,7 @@ NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
                                  child_writing_direction.GetWritingMode()))) {
     SetOrthogonalFallbackInlineSize(Style(), child, &builder);
   } else if (ShouldBlockContainerChildStretchAutoInlineSize(child)) {
-    builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   }
 
   builder.SetAvailableSize(child_available_size);
@@ -2832,7 +2832,7 @@ NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     // Always shrink-to-fit children within a <mtd> element.
     if (Node().GetDOMNode() &&
         IsA<MathMLTableCellElement>(Node().GetDOMNode())) {
-      builder.SetInlineAutoBehavior(NGAutoBehavior::kFitContent);
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
     }
 
     // Some scrollable percentage-sized children of table-cells use their
@@ -3259,7 +3259,7 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
   builder.SetAvailableSize(ChildAvailableSize());
   if (IsParallelWritingMode(GetConstraintSpace().GetWritingMode(),
                             rt_style.GetWritingMode())) {
-    builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   }
 
   const NGLayoutResult* result =

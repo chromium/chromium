@@ -197,7 +197,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.bitfields_.is_initial_block_size_indefinite = b;
   }
 
-  void SetInlineAutoBehavior(NGAutoBehavior auto_behavior) {
+  void SetInlineAutoBehavior(AutoSizeBehavior auto_behavior) {
     if (LIKELY(is_in_parallel_flow_)) {
       space_.bitfields_.inline_auto_behavior =
           static_cast<unsigned>(auto_behavior);
@@ -207,7 +207,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     }
   }
 
-  void SetBlockAutoBehavior(NGAutoBehavior auto_behavior) {
+  void SetBlockAutoBehavior(AutoSizeBehavior auto_behavior) {
     if (LIKELY(is_in_parallel_flow_)) {
       space_.bitfields_.block_auto_behavior =
           static_cast<unsigned>(auto_behavior);
@@ -315,7 +315,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.bitfields_.baseline_algorithm_type = static_cast<unsigned>(type);
   }
 
-  void SetCacheSlot(NGCacheSlot slot) {
+  void SetCacheSlot(LayoutResultCacheSlot slot) {
     space_.bitfields_.cache_slot = static_cast<unsigned>(slot);
   }
 
@@ -598,7 +598,7 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
                   child.Style().GetWritingDirection(),
                   is_new_fc) {
     SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &delegate_);
-    delegate_.SetCacheSlot(NGCacheSlot::kMeasure);
+    delegate_.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
     if (parent_space.IsInColumnBfc() && !child.CreatesNewFormattingContext())
       delegate_.SetIsInColumnBfc();
   }
@@ -616,7 +616,7 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
         {kIndefiniteSize, block_size});
   }
 
-  void SetBlockAutoBehavior(NGAutoBehavior auto_behavior) {
+  void SetBlockAutoBehavior(AutoSizeBehavior auto_behavior) {
     delegate_.SetBlockAutoBehavior(auto_behavior);
   }
 

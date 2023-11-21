@@ -145,7 +145,7 @@ TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
       builder.SetTableCellBorders(cell_border, cell_writing_direction,
                                   table_writing_direction);
       builder.SetIsTableCell(true);
-      builder.SetCacheSlot(NGCacheSlot::kMeasure);
+      builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
       if (!is_parallel) {
         // Only consider the ICB-size for the orthogonal fallback inline-size
         // (don't use the size of the containing-block).

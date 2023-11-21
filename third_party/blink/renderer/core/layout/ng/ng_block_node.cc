@@ -349,7 +349,8 @@ const NGLayoutResult* BlockNode::Layout(
 
   if ((cache_status == NGLayoutCacheStatus::kHit ||
        cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout) &&
-      needed_layout && constraint_space.CacheSlot() == NGCacheSlot::kLayout &&
+      needed_layout &&
+      constraint_space.CacheSlot() == LayoutResultCacheSlot::kLayout &&
       box_->HasBrokenSpine() && !ChildLayoutBlockedByDisplayLock()) {
     // If we're not guaranteed to discard the old fragment (which we're only
     // guaranteed to do if we have decided to perform full layout), we need to
@@ -501,8 +502,9 @@ const NGLayoutResult* BlockNode::Layout(
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
-    if (constraint_space.CacheSlot() == NGCacheSlot::kMeasure)
+    if (constraint_space.CacheSlot() == LayoutResultCacheSlot::kMeasure) {
       freeze_horizontal = freeze_vertical = true;
+    }
     do {
       // Freeze any scrollbars that appeared, and relayout. Repeat until both
       // have appeared, or until the scrollbar situation doesn't change,

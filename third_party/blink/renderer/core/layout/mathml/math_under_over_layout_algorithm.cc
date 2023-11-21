@@ -234,7 +234,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
     }
     const auto child_constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), constraint_space, child,
-        NGCacheSlot::kMeasure);
+        LayoutResultCacheSlot::kMeasure);
     const auto* child_layout_result = To<BlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     UpdateInlineStretchSize(child_layout_result);
@@ -255,7 +255,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
       LayoutUnit zero_stretch_size;
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kMeasure, absl::nullopt, zero_stretch_size);
+          LayoutResultCacheSlot::kMeasure, absl::nullopt, zero_stretch_size);
       const auto* child_layout_result = To<BlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
       UpdateInlineStretchSize(child_layout_result);
@@ -267,13 +267,14 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         IsBlockAxisStretchyOperator(To<BlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kLayout, *constraint_space.TargetStretchBlockSizes());
+          LayoutResultCacheSlot::kLayout,
+          *constraint_space.TargetStretchBlockSizes());
     }
     if (child == base && base_inherits_inline_stretch_size_constraint &&
         IsInlineAxisStretchyOperator(To<BlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kLayout, absl::nullopt,
+          LayoutResultCacheSlot::kLayout, absl::nullopt,
           constraint_space.TargetStretchInlineSize());
     }
     if ((child != base || (!base_inherits_block_stretch_size_constraint &&
@@ -281,11 +282,11 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         IsInlineAxisStretchyOperator(To<BlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          NGCacheSlot::kLayout, absl::nullopt, inline_stretch_size);
+          LayoutResultCacheSlot::kLayout, absl::nullopt, inline_stretch_size);
     }
     return CreateConstraintSpaceForMathChild(Node(), ChildAvailableSize(),
                                              constraint_space, child,
-                                             NGCacheSlot::kLayout);
+                                             LayoutResultCacheSlot::kLayout);
   };
 
   // TODO(crbug.com/1125136): take into account italic correction.

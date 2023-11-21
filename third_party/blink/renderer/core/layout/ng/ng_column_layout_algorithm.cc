@@ -1476,7 +1476,7 @@ NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
   space_builder.SetFragmentationType(kFragmentColumn);
   space_builder.SetShouldPropagateChildBreakValues();
   space_builder.SetAvailableSize({column_size.inline_size, kIndefiniteSize});
-  space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+  space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   space_builder.SetPercentageResolutionSize(ColumnPercentageResolutionSize());
   space_builder.SetIsAnonymous(true);
   space_builder.SetIsInColumnBfc();
@@ -1495,7 +1495,7 @@ NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
                              child_writing_direction.GetWritingMode())) {
     SetOrthogonalFallbackInlineSizeIfNeeded(Style(), spanner, &space_builder);
   } else if (ShouldBlockContainerChildStretchAutoInlineSize(spanner)) {
-    space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+    space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   }
   space_builder.SetAvailableSize(ChildAvailableSize());
   space_builder.SetPercentageResolutionSize(ChildAvailableSize());

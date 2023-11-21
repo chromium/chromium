@@ -26,7 +26,7 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
     const LogicalSize& child_available_size,
     const NGConstraintSpace& parent_constraint_space,
     const LayoutInputNode&,
-    const NGCacheSlot = NGCacheSlot::kLayout,
+    const LayoutResultCacheSlot = LayoutResultCacheSlot::kLayout,
     const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes = absl::nullopt,
     const absl::optional<LayoutUnit> target_stretch_inline_size =

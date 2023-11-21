@@ -2574,7 +2574,7 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result,
                                       wtf_size_t index) {
   NOT_DESTROYED();
   if (result->GetConstraintSpaceForCaching().CacheSlot() ==
-      NGCacheSlot::kMeasure) {
+      LayoutResultCacheSlot::kMeasure) {
     DCHECK(!result->PhysicalFragment().BreakToken());
     DCHECK(
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());

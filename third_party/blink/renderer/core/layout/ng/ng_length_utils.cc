@@ -410,8 +410,9 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
   // Even though an implicit stretch will resolve - we return an indefinite
   // size, as we prefer the inline-axis size for this case.
   if (style.LogicalHeight().IsAuto() &&
-      space.BlockAutoBehavior() != NGAutoBehavior::kStretchExplicit)
+      space.BlockAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
     return kIndefiniteSize;
+  }
 
   const auto block_size = ComputeBlockSizeForFragment(
       space, style, border_padding, /* intrinsic_size */ kIndefiniteSize,
@@ -559,7 +560,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     DCHECK_GE(*inline_size, LayoutUnit());
     const bool has_explicit_stretch =
         logical_height.IsAuto() &&
-        space.BlockAutoBehavior() == NGAutoBehavior::kStretchExplicit &&
+        space.BlockAutoBehavior() == AutoSizeBehavior::kStretchExplicit &&
         space.AvailableSize().block_size != kIndefiniteSize;
     if (BlockLengthUnresolvable(space, logical_height) &&
         !has_explicit_stretch) {

@@ -227,7 +227,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
         colspan_cell_tabulator->CurrentColumn(),
         /* is_initial_block_size_indefinite */ true,
         is_table_block_size_specified, has_collapsed_borders,
-        NGCacheSlot::kMeasure, &space_builder);
+        LayoutResultCacheSlot::kMeasure, &space_builder);
 
     const auto cell_space = space_builder.ToConstraintSpace();
     const NGLayoutResult* layout_result = cell.Layout(cell_space);
@@ -1402,7 +1402,7 @@ void SetupTableCellConstraintSpaceBuilder(
     bool is_initial_block_size_indefinite,
     bool is_table_block_size_specified,
     bool has_collapsed_borders,
-    NGCacheSlot cache_slot,
+    LayoutResultCacheSlot cache_slot,
     NGConstraintSpaceBuilder* builder) {
   const auto& cell_style = cell.Style();
   const auto table_writing_mode = table_writing_direction.GetWritingMode();

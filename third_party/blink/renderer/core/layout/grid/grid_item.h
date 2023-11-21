@@ -254,8 +254,8 @@ struct CORE_EXPORT GridItemData {
   absl::optional<bool> is_inline_axis_overflow_safe_fallback;
   absl::optional<bool> is_block_axis_overflow_safe_fallback;
 
-  NGAutoBehavior inline_auto_behavior;
-  NGAutoBehavior block_auto_behavior;
+  AutoSizeBehavior inline_auto_behavior;
+  AutoSizeBehavior block_auto_behavior;
 
   enum BaselineGroup column_baseline_group;
   enum BaselineGroup row_baseline_group;

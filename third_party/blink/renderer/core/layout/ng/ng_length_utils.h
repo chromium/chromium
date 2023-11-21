@@ -341,7 +341,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
   if (!style.AspectRatio().IsAuto() && style.LogicalWidth().IsAuto() &&
-      space.InlineAutoBehavior() != NGAutoBehavior::kStretchExplicit) {
+      space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
     MinMaxSizes transferred_sizes =
         ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
     sizes.min_size = std::max(
@@ -396,7 +396,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
 
   if (!style.AspectRatio().IsAuto() &&
       ((logical_width.IsAuto() &&
-        space.InlineAutoBehavior() != NGAutoBehavior::kStretchExplicit) ||
+        space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) ||
        logical_width.IsMinContent() || logical_width.IsMaxContent())) {
     extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
 

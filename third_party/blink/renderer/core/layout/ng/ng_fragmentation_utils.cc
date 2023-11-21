@@ -1276,7 +1276,7 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
       parent_space, parent_space.GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(fragmentainer_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
-  space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+  space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   space_builder.SetFragmentationType(fragmentation_type);
   space_builder.SetShouldPropagateChildBreakValues();
   space_builder.SetFragmentainerBlockSize(fragmentainer_size.block_size);

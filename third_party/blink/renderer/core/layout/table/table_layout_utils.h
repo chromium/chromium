@@ -18,7 +18,7 @@ class NGBoxFragmentBuilder;
 class NGConstraintSpaceBuilder;
 class TableBorders;
 class TableNode;
-enum class NGCacheSlot;
+enum class LayoutResultCacheSlot;
 struct TableColumnLocation;
 
 // Table size distribution algorithms.
@@ -52,7 +52,7 @@ void SetupTableCellConstraintSpaceBuilder(
     bool is_initial_block_size_indefinite,
     bool is_restricted_block_size_table,
     bool has_collapsed_borders,
-    NGCacheSlot,
+    LayoutResultCacheSlot,
     NGConstraintSpaceBuilder*);
 
 wtf_size_t ComputeMaximumNonMergeableColumnCount(

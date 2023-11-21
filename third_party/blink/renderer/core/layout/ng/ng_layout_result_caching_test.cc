@@ -1511,7 +1511,7 @@ TEST_F(NGLayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
 
-  EXPECT_EQ(space.CacheSlot(), NGCacheSlot::kMeasure);
+  EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kMeasure);
   EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
@@ -1520,7 +1520,7 @@ TEST_F(NGLayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   result = TestCachedLayoutResult(test1, space, &cache_status);
 
-  EXPECT_EQ(space.CacheSlot(), NGCacheSlot::kLayout);
+  EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kLayout);
   EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
@@ -1563,7 +1563,7 @@ TEST_F(NGLayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
 
-  EXPECT_EQ(space.CacheSlot(), NGCacheSlot::kMeasure);
+  EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kMeasure);
   EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
@@ -1572,7 +1572,7 @@ TEST_F(NGLayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   result = TestCachedLayoutResult(test1, space, &cache_status);
 
-  EXPECT_EQ(space.CacheSlot(), NGCacheSlot::kLayout);
+  EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kLayout);
   EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
@@ -1657,7 +1657,7 @@ TEST_F(NGLayoutResultCachingTest, HitFlexDefiniteChange) {
   EXPECT_EQ(result1->PhysicalFragment().Size().height, 200);
 
   EXPECT_EQ(result1->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kMeasure);
+            LayoutResultCacheSlot::kMeasure);
   EXPECT_EQ(result1, measure1);
 }
 
@@ -1702,14 +1702,14 @@ TEST_F(NGLayoutResultCachingTest, SimpleTable) {
   const NGLayoutResult* result1 = target1->GetSingleCachedLayoutResult();
   const NGLayoutResult* measure1 = target1->GetCachedMeasureResult();
   EXPECT_EQ(result1->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kMeasure);
+            LayoutResultCacheSlot::kMeasure);
   EXPECT_NE(result1, nullptr);
   EXPECT_EQ(result1, measure1);
 
   const NGLayoutResult* result2 = target2->GetSingleCachedLayoutResult();
   const NGLayoutResult* measure2 = target2->GetCachedMeasureResult();
   EXPECT_EQ(result2->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kMeasure);
+            LayoutResultCacheSlot::kMeasure);
   EXPECT_NE(result2, nullptr);
   EXPECT_EQ(result2, measure2);
 }
@@ -1730,9 +1730,9 @@ TEST_F(NGLayoutResultCachingTest, MissTableCellMiddleAlignment) {
   EXPECT_NE(measure, nullptr);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(measure->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kMeasure);
+            LayoutResultCacheSlot::kMeasure);
   EXPECT_EQ(result->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kLayout);
+            LayoutResultCacheSlot::kLayout);
   EXPECT_NE(result, measure);
 }
 
@@ -1752,9 +1752,9 @@ TEST_F(NGLayoutResultCachingTest, MissTableCellBottomAlignment) {
   EXPECT_NE(measure, nullptr);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(measure->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kMeasure);
+            LayoutResultCacheSlot::kMeasure);
   EXPECT_EQ(result->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kLayout);
+            LayoutResultCacheSlot::kLayout);
   EXPECT_NE(result, measure);
 }
 
@@ -1775,7 +1775,7 @@ TEST_F(NGLayoutResultCachingTest, HitTableCellBaselineAlignment) {
   const NGLayoutResult* result = target->GetSingleCachedLayoutResult();
   const NGLayoutResult* measure = target->GetCachedMeasureResult();
   EXPECT_EQ(result->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kMeasure);
+            LayoutResultCacheSlot::kMeasure);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(result, measure);
 }
@@ -1799,9 +1799,9 @@ TEST_F(NGLayoutResultCachingTest, MissTableCellBaselineAlignment) {
   EXPECT_NE(measure, nullptr);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(measure->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kMeasure);
+            LayoutResultCacheSlot::kMeasure);
   EXPECT_EQ(result->GetConstraintSpaceForCaching().CacheSlot(),
-            NGCacheSlot::kLayout);
+            LayoutResultCacheSlot::kLayout);
   EXPECT_NE(result, measure);
 }
 

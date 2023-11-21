@@ -1558,7 +1558,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     const auto space =
         RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled()
             ? CreateConstraintSpace(
-                  NGCacheSlot::kMeasure, *subgridded_item,
+                  LayoutResultCacheSlot::kMeasure, *subgridded_item,
                   containing_grid_area_size,
                   /* fixed_available_size */ {kIndefiniteSize, kIndefiniteSize},
                   std::move(subgrid_layout_subtree))
@@ -3185,7 +3185,7 @@ void AlignmentOffsetForOutOfFlow(const AxisEdge inline_axis_edge,
 }  // namespace
 
 NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
-    NGCacheSlot cache_slot,
+    LayoutResultCacheSlot cache_slot,
     const GridItemData& grid_item,
     const LogicalSize& containing_grid_area_size,
     const LogicalSize& fixed_available_size,
@@ -3279,7 +3279,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
         grid_item.has_subgridded_rows ? fixed_block_size : kIndefiniteSize};
   }
 
-  return CreateConstraintSpace(NGCacheSlot::kLayout, grid_item,
+  return CreateConstraintSpace(LayoutResultCacheSlot::kLayout, grid_item,
                                containing_grid_area_size, fixed_available_size,
                                std::move(opt_layout_subtree),
                                min_block_size_should_encompass_intrinsic_size,
@@ -3303,8 +3303,9 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
         *subgridded_item, subgridded_item.Columns(writing_mode));
   }
 
-  return CreateConstraintSpace(NGCacheSlot::kMeasure, *subgridded_item,
-                               containing_grid_area_size, fixed_available_size);
+  return CreateConstraintSpace(LayoutResultCacheSlot::kMeasure,
+                               *subgridded_item, containing_grid_area_size,
+                               fixed_available_size);
 }
 
 NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
@@ -3325,7 +3326,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
                         containing_grid_area_size.inline_size,
                         GetConstraintSpace().GetWritingDirection()));
 
-  return CreateConstraintSpace(NGCacheSlot::kMeasure, *subgrid_data,
+  return CreateConstraintSpace(LayoutResultCacheSlot::kMeasure, *subgrid_data,
                                containing_grid_area_size, fixed_available_size);
 }
 

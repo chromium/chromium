@@ -63,7 +63,7 @@ enum class NGBaselineAlgorithmType {
 };
 
 // The behavior of the 'auto' keyword when used with a main-size.
-enum class NGAutoBehavior : uint8_t {
+enum class AutoSizeBehavior : uint8_t {
   // We should shrink-to-fit within the available space.
   kFitContent,
   // We should stretch to the available space, but if there is an aspect-ratio
@@ -82,7 +82,7 @@ enum class NGAutoBehavior : uint8_t {
 //
 // This enum gives the caching logic a hint into which cache "slot" it should
 // store a result in.
-enum class NGCacheSlot { kLayout, kMeasure };
+enum class LayoutResultCacheSlot { kLayout, kMeasure };
 
 // The NGConstraintSpace represents a set of constraints and available space
 // which a layout algorithm may produce a LogicalFragment within.
@@ -466,8 +466,8 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Which cache slot the output layout result should be stored in.
-  NGCacheSlot CacheSlot() const {
-    return static_cast<NGCacheSlot>(bitfields_.cache_slot);
+  LayoutResultCacheSlot CacheSlot() const {
+    return static_cast<LayoutResultCacheSlot>(bitfields_.cache_slot);
   }
 
   // Some layout modes “stretch” their children to a fixed size (e.g. flex,
@@ -501,17 +501,17 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Returns the behavior of an 'auto' inline/block main-size.
-  NGAutoBehavior InlineAutoBehavior() const {
-    return static_cast<NGAutoBehavior>(bitfields_.inline_auto_behavior);
+  AutoSizeBehavior InlineAutoBehavior() const {
+    return static_cast<AutoSizeBehavior>(bitfields_.inline_auto_behavior);
   }
-  NGAutoBehavior BlockAutoBehavior() const {
-    return static_cast<NGAutoBehavior>(bitfields_.block_auto_behavior);
+  AutoSizeBehavior BlockAutoBehavior() const {
+    return static_cast<AutoSizeBehavior>(bitfields_.block_auto_behavior);
   }
   bool IsInlineAutoBehaviorStretch() const {
-    return InlineAutoBehavior() != NGAutoBehavior::kFitContent;
+    return InlineAutoBehavior() != AutoSizeBehavior::kFitContent;
   }
   bool IsBlockAutoBehaviorStretch() const {
-    return BlockAutoBehavior() != NGAutoBehavior::kFitContent;
+    return BlockAutoBehavior() != AutoSizeBehavior::kFitContent;
   }
 
   // If this is a child of a table-cell.
@@ -1546,11 +1546,11 @@ class CORE_EXPORT NGConstraintSpace final {
           ancestor_has_clearance_past_adjoining_floats(false),
           baseline_algorithm_type(
               static_cast<unsigned>(NGBaselineAlgorithmType::kDefault)),
-          cache_slot(static_cast<unsigned>(NGCacheSlot::kLayout)),
+          cache_slot(static_cast<unsigned>(LayoutResultCacheSlot::kLayout)),
           inline_auto_behavior(
-              static_cast<unsigned>(NGAutoBehavior::kFitContent)),
+              static_cast<unsigned>(AutoSizeBehavior::kFitContent)),
           block_auto_behavior(
-              static_cast<unsigned>(NGAutoBehavior::kFitContent)),
+              static_cast<unsigned>(AutoSizeBehavior::kFitContent)),
           is_fixed_inline_size(false),
           is_fixed_block_size(false),
           is_initial_block_size_indefinite(false),
@@ -1607,8 +1607,8 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned cache_slot : 1;
 
     // Size constraints.
-    unsigned inline_auto_behavior : 2;  // NGAutoBehavior
-    unsigned block_auto_behavior : 2;   // NGAutoBehavior
+    unsigned inline_auto_behavior : 2;  // AutoSizeBehavior
+    unsigned block_auto_behavior : 2;   // AutoSizeBehavior
     unsigned is_fixed_inline_size : 1;
     unsigned is_fixed_block_size : 1;
     unsigned is_initial_block_size_indefinite : 1;

@@ -209,7 +209,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       const GridSizingTrackCollection& track_collection) const;
 
   NGConstraintSpace CreateConstraintSpace(
-      NGCacheSlot cache_slot,
+      LayoutResultCacheSlot cache_slot,
       const GridItemData& grid_item,
       const LogicalSize& containing_grid_area_size,
       const LogicalSize& fixed_available_size,

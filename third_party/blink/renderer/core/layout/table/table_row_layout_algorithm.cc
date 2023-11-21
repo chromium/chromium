@@ -73,7 +73,8 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
             container_builder_.InlineSize(), row_baseline,
             cell_data.start_column, cell_data.is_initial_block_size_indefinite,
             table_data.is_table_block_size_specified,
-            table_data.has_collapsed_borders, NGCacheSlot::kLayout, &builder);
+            table_data.has_collapsed_borders, LayoutResultCacheSlot::kLayout,
+            &builder);
 
         if (GetConstraintSpace().HasBlockFragmentation()) {
           SetupSpaceBuilderForFragmentation(

@@ -20,7 +20,7 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
                                   bool is_out_of_flow,
                                   const ComputedStyle& item_style,
                                   const ComputedStyle& root_grid_style,
-                                  NGAutoBehavior* auto_behavior,
+                                  AutoSizeBehavior* auto_behavior,
                                   bool* is_overflow_safe) {
   DCHECK(auto_behavior && is_overflow_safe);
 
@@ -30,7 +30,7 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
                               : item_style.ResolvedAlignSelf(
                                     ItemPosition::kNormal, &root_grid_style);
 
-  *auto_behavior = NGAutoBehavior::kFitContent;
+  *auto_behavior = AutoSizeBehavior::kFitContent;
   *is_overflow_safe = alignment.Overflow() == OverflowAlignment::kSafe;
 
   // Auto-margins take precedence over any alignment properties.
@@ -94,7 +94,7 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
     case ItemPosition::kEnd:
       return AxisEdge::kEnd;
     case ItemPosition::kStretch:
-      *auto_behavior = NGAutoBehavior::kStretchExplicit;
+      *auto_behavior = AutoSizeBehavior::kStretchExplicit;
       return AxisEdge::kStart;
     case ItemPosition::kBaseline:
       return AxisEdge::kFirstBaseline;
@@ -109,8 +109,8 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
       return root_grid_writing_direction.IsRtl() ? AxisEdge::kStart
                                                  : AxisEdge::kEnd;
     case ItemPosition::kNormal:
-      *auto_behavior = is_replaced ? NGAutoBehavior::kFitContent
-                                   : NGAutoBehavior::kStretchImplicit;
+      *auto_behavior = is_replaced ? AutoSizeBehavior::kFitContent
+                                   : AutoSizeBehavior::kStretchImplicit;
       return AxisEdge::kStart;
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:

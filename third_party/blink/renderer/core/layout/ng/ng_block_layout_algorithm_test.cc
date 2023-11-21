@@ -236,7 +236,7 @@ TEST_F(BlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
         /* is_new_formatting_context */ false);
     builder.SetAvailableSize(size);
     builder.SetPercentageResolutionSize(size);
-    builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
+    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
     return builder.ToConstraintSpace();
   };
 

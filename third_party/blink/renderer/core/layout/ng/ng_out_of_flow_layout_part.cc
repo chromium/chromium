@@ -1656,7 +1656,7 @@ const NGLayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
         scrollbars_after.InlineSum() && scrollbars_after.BlockSum();
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
-    if (GetConstraintSpace().CacheSlot() == NGCacheSlot::kMeasure) {
+    if (GetConstraintSpace().CacheSlot() == LayoutResultCacheSlot::kMeasure) {
       freeze_horizontal = freeze_vertical = true;
       ignore_first_inline_freeze = false;
     }
