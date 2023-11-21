@@ -5670,12 +5670,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GData.AuthSuccess" enum="GDataAuthResult"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Result of the authentication for Drive.</summary>
-</histogram>
-
 <histogram name="GestureNavigation.Type" enum="GestureNavigationType"
     expires_after="2022-08-21">
   <owner>jinsukkim@chromium.org</owner>
