@@ -61,6 +61,72 @@ std::string ProxyInfo::ToPacString() const {
   return proxy_list_.ToPacString();
 }
 
+bool ProxyInfo::is_https() const {
+  if (is_empty() || is_direct()) {
+    return false;
+  }
+  if (proxy_chain().is_multi_proxy()) {
+    CHECK(AllChainProxiesAreHttps());
+    return true;
+  }
+  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_https();
+}
+
+bool ProxyInfo::is_http_like() const {
+  if (is_empty() || is_direct()) {
+    return false;
+  }
+  if (proxy_chain().is_multi_proxy()) {
+    CHECK(AllChainProxiesAreHttps());
+    return true;
+  }
+  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http_like();
+}
+
+bool ProxyInfo::is_secure_http_like() const {
+  if (is_empty() || is_direct()) {
+    return false;
+  }
+  if (proxy_chain().is_multi_proxy()) {
+    CHECK(AllChainProxiesAreHttps());
+    return true;
+  }
+  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_secure_http_like();
+}
+
+bool ProxyInfo::is_http() const {
+  if (is_empty() || is_direct()) {
+    return false;
+  }
+  if (proxy_chain().is_multi_proxy()) {
+    CHECK(AllChainProxiesAreHttps());
+    return false;
+  }
+  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http();
+}
+
+bool ProxyInfo::is_quic() const {
+  if (is_empty() || is_direct()) {
+    return false;
+  }
+  if (proxy_chain().is_multi_proxy()) {
+    CHECK(AllChainProxiesAreHttps());
+    return false;
+  }
+  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_quic();
+}
+
+bool ProxyInfo::is_socks() const {
+  if (is_empty() || is_direct()) {
+    return false;
+  }
+  if (proxy_chain().is_multi_proxy()) {
+    CHECK(AllChainProxiesAreHttps());
+    return false;
+  }
+  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_socks();
+}
+
 bool ProxyInfo::Fallback(int net_error, const NetLogWithSource& net_log) {
   return proxy_list_.Fallback(&proxy_retry_info_, net_error, net_log);
 }
@@ -81,6 +147,13 @@ void ProxyInfo::Reset() {
   proxy_list_.Clear();
   proxy_retry_info_.clear();
   did_bypass_proxy_ = false;
+}
+
+bool ProxyInfo::AllChainProxiesAreHttps() const {
+  const std::vector<ProxyServer>& proxy_servers = proxy_chain().proxy_servers();
+  return std::all_of(
+      proxy_servers.begin(), proxy_servers.end(),
+      [](const ProxyServer& proxy_server) { return proxy_server.is_https(); });
 }
 
 }  // namespace net

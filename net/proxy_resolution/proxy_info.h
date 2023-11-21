@@ -80,88 +80,38 @@ class NET_EXPORT ProxyInfo {
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
   // proxy chain in the proxy list.
-  bool is_https() const {
-    if (is_empty() || is_direct()) {
-      return false;
-    }
-    if (proxy_chain().is_multi_proxy()) {
-      return true;
-    }
-    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_https();
-  }
+  bool is_https() const;
 
   // Returns true if the first proxy server is an HTTP compatible proxy.
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
   // proxy chain in the proxy list.
-  bool is_http_like() const {
-    if (is_empty() || is_direct()) {
-      return false;
-    }
-    if (proxy_chain().is_multi_proxy()) {
-      return true;
-    }
-    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http_like();
-  }
+  bool is_http_like() const;
 
   // Returns true if the first proxy server is an HTTP compatible proxy over a
   // secure connection.
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
   // proxy chain in the proxy list.
-  bool is_secure_http_like() const {
-    if (is_empty() || is_direct()) {
-      return false;
-    }
-    if (proxy_chain().is_multi_proxy()) {
-      return true;
-    }
-    return proxy_chain()
-        .GetProxyServer(/*chain_index=*/0)
-        .is_secure_http_like();
-  }
+  bool is_secure_http_like() const;
 
   // Returns true if the first valid proxy server is an http proxy.
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
   // proxy chain in the proxy list.
-  bool is_http() const {
-    if (is_empty() || is_direct()) {
-      return false;
-    }
-    if (proxy_chain().is_multi_proxy()) {
-      return false;
-    }
-    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http();
-  }
+  bool is_http() const;
 
   // Returns true if the first valid proxy server is a quic proxy.
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
   // proxy chain in the proxy list.
-  bool is_quic() const {
-    if (is_empty() || is_direct()) {
-      return false;
-    }
-    if (proxy_chain().is_multi_proxy()) {
-      return false;
-    }
-    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_quic();
-  }
+  bool is_quic() const;
 
   // Returns true if the first valid proxy server is a socks server.
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
   // proxy chain in the proxy list.
-  bool is_socks() const {
-    if (is_empty() || is_direct()) {
-      return false;
-    }
-    if (proxy_chain().is_multi_proxy()) {
-      return false;
-    }
-    return proxy_chain().GetProxyServer(/*chain_index=*/0).is_socks();
-  }
+  bool is_socks() const;
 
   // Returns true if this proxy info has no proxies left to try.
   bool is_empty() const {
@@ -235,6 +185,11 @@ class NET_EXPORT ProxyInfo {
  private:
   // Reset proxy and config settings.
   void Reset();
+
+  // Verify that all proxies in the first chain have `SCHEME_HTTPS`. This is
+  // currently enforced by `ProxyChain::IsValid`, and assumed by various `is_..`
+  // methods in this class.
+  bool AllChainProxiesAreHttps() const;
 
   // The ordered list of proxy servers (including DIRECT attempts) remaining to
   // try. If proxy_list_ is empty, then there is nothing left to fall back to.
