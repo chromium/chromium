@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.download.home;
 
 import android.app.Activity;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils;
@@ -16,7 +15,6 @@ import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -59,20 +57,6 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
         mDownloadCoordinator.addObserver(this);
         mTitle = activity.getString(R.string.menu_downloads);
 
-        // #destroy() unregisters the ActivityStateListener to avoid checking for externally removed
-        // downloads after the downloads page is closed. This requires each DownloadPage to have its
-        // own ActivityStateListener. If multiple tabs are showing the downloads page, multiple
-        // requests to check for externally removed downloads will be issued when the activity is
-        // resumed.
-        mActivityStateListener = (activity1, newState) -> {
-            if (newState == ActivityState.RESUMED) {
-                Profile profile = otrProfileId == null
-                        ? Profile.getLastUsedRegularProfile()
-                        : Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
-                                otrProfileId, /*createIfNeeded=*/true);
-                DownloadUtils.checkForExternallyRemovedDownloads(profile.getProfileKey());
-            }
-        };
         ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
 
         initWithView(mDownloadCoordinator.getView());

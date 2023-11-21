@@ -34,7 +34,6 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -50,7 +49,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -279,27 +277,6 @@ public class DownloadUtils {
      */
     public static void showDownloadStartToast(Context context) {
         Toast.makeText(context, R.string.download_started, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Issues a request to the {@link DownloadManagerService} associated to check for externally
-     * removed downloads.
-     * See {@link DownloadManagerService#checkForExternallyRemovedDownloads}.
-     * @param profileKey  The {@link ProfileKey} to check downloads of the given profile.
-     */
-    public static void checkForExternallyRemovedDownloads(ProfileKey profileKey) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            return;
-        }
-
-        if (profileKey.isOffTheRecord()) {
-            DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
-                    profileKey);
-        }
-        DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
-                ProfileKey.getLastUsedRegularProfileKey());
-        RecordUserAction.record(
-                "Android.DownloadManager.CheckForExternallyRemovedItems");
     }
 
     /**

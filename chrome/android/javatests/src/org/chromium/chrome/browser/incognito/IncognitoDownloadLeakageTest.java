@@ -68,7 +68,6 @@ import java.util.concurrent.TimeoutException;
 @DisableFeatures(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=UseDownloadOfflineContentProvider"
 })
 public class IncognitoDownloadLeakageTest {
     private String mDownloadTestPage;

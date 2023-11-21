@@ -1284,10 +1284,6 @@ const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "
     "directory. The file can be imported into chrome://net-internals.";
 
-const char kEnableNewDownloadBackendName[] = "Enable new download backend";
-const char kEnableNewDownloadBackendDescription[] =
-    "Enables the new download backend that uses offline content provider";
-
 const char kDownloadNotificationServiceUnifiedAPIName[] =
     "Migrate download notification service to use new API";
 const char kDownloadNotificationServiceUnifiedAPIDescription[] =

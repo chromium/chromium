@@ -156,7 +156,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         });
 
         Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
         features.put(ChromeFeatureList.EMPTY_STATES, false);
 
         FeatureList.setTestFeatures(features);
@@ -351,7 +350,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         // Enable Empty State FF.
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.EMPTY_STATES, true);
-        features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
         FeatureList.setTestFeatures(features);
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -559,7 +557,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         // Enable Empty State FF.
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.EMPTY_STATES, true);
-        features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
         FeatureList.setTestFeatures(features);
 
         TestThreadUtils.runOnUiThreadBlocking(

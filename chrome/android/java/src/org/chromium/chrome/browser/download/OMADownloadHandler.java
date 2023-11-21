@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueRequest;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.download.DownloadCollectionBridge;
@@ -353,13 +352,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
 
         @Override
         protected void onPostExecute(OMAInfo omaInfo) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-                OfflineContentAggregatorFactory.get().removeItem(mDownloadInfo.getContentId());
-            } else {
-                DownloadManagerService.getDownloadManagerService().removeDownload(
-                        mDownloadInfo.getDownloadGuid(), mDownloadInfo.getOTRProfileId(),
-                        false /* externallyRemoved */);
-            }
+            OfflineContentAggregatorFactory.get().removeItem(mDownloadInfo.getContentId());
 
             if (omaInfo == null) return;
             // Send notification if required attributes are missing.
@@ -1075,7 +1068,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
                     DownloadManagerService.getDownloadManagerService()
                             .getDownloadNotifier()
                             .notifyDownloadSuccessful(mNewDownloadInfo, mDownloadId,
-                                    false /*canResolve*/, false /*isSupportedMimeType*/);
+                                    /* canResolve= */ false, /* isSupportedMimeType= */ false);
                 }
                 showNextUrlDialog(mOMAInfo);
             } else if (mDownloadId != DownloadConstants.INVALID_DOWNLOAD_ID) {

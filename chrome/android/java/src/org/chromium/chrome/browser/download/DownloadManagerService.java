@@ -40,7 +40,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueRequest;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -442,26 +441,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     private boolean updateDownloadSuccessNotification(DownloadProgress progress) {
         final boolean isSupportedMimeType = progress.mIsSupportedMimeType;
         final DownloadItem item = progress.mDownloadItem;
-        final DownloadInfo info = item.getDownloadInfo();
-
+        
         AsyncTask<Pair<Boolean, Boolean>> task = new AsyncTask<Pair<Boolean, Boolean>>() {
             @Override
             public Pair<Boolean, Boolean> doInBackground() {
                 boolean success = mDisableAddCompletedDownloadForTesting
                         || ContentUriUtils.isContentUri(item.getDownloadInfo().getFilePath())
                         || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
-                boolean shouldAddCompletedDownload =
-                        !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
-                        && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q);
-                if (!success && shouldAddCompletedDownload) {
-                    long systemDownloadId = DownloadManagerBridge.addCompletedDownload(
-                            info.getFileName(), info.getDescription(), info.getMimeType(),
-                            info.getFilePath(), info.getBytesReceived(), info.getOriginalUrl(),
-                            info.getReferrer(), info.getDownloadGuid());
-                    success = systemDownloadId != DownloadConstants.INVALID_DOWNLOAD_ID;
-                    if (success) item.setSystemDownloadId(systemDownloadId);
-                }
                 boolean canResolve = success
                         && (MimeUtils.isOMADownloadDescription(item.getDownloadInfo().getMimeType())
                                 || canResolveDownloadItem(item, isSupportedMimeType));
@@ -710,8 +696,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             // Redirect the user to an internal media viewer.  The file path is necessary to show
             // the real file path to the user instead of a content:// download ID.
             return MediaViewerUtils.getMediaViewerIntent(fileUri, contentUri, mimeType,
-                    !isAutomotive /* allowExternalAppHandlers */,
-                    !isAutomotive /* allowShareAction */, ContextUtils.getApplicationContext());
+                    /* allowExternalAppHandlers= */ !isAutomotive,
+                    /* allowShareAction= */ !isAutomotive, ContextUtils.getApplicationContext());
         }
         return MediaViewerUtils.createViewIntentForUri(contentUri, mimeType, originalUrl, referrer);
     }
@@ -967,12 +953,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                     IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
             removeDownloadProgress(downloadGuid);
         });
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            return;
-        }
-
-        DownloadManagerBridge.removeCompletedDownload(downloadGuid, externallyRemoved);
     }
 
     /**
@@ -1036,24 +1016,9 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      */
     public void onSuccessNotificationShown(
             DownloadInfo info, boolean canResolve, int notificationId, long systemDownloadId) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            if (canResolve && MimeUtils.canAutoOpenMimeType(info.getMimeType())
-                    && info.hasUserGesture()) {
-                DownloadItem item = new DownloadItem(false, info);
-                item.setSystemDownloadId(systemDownloadId);
-                handleAutoOpenAfterDownload(item);
-            } else {
-                DownloadMessageUiController infobarController =
-                        getMessageUiController(info.getOTRProfileId());
-                if (infobarController != null) {
-                    infobarController.onNotificationShown(info.getContentId(), notificationId);
-                }
-            }
-        } else {
-            if (getMessageUiController(info.getOTRProfileId()) != null) {
-                getMessageUiController(info.getOTRProfileId())
-                        .onNotificationShown(info.getContentId(), notificationId);
-            }
+        if (getMessageUiController(info.getOTRProfileId()) != null) {
+            getMessageUiController(info.getOTRProfileId())
+                    .onNotificationShown(info.getContentId(), notificationId);
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {

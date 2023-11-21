@@ -11,11 +11,6 @@
 
 namespace download {
 namespace features {
-
-// Whether offline content provider should be used for the downloads UI..
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
-    kUseDownloadOfflineContentProvider);
-
 // Whether a download can be handled by parallel jobs.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kParallelDownloading);
 

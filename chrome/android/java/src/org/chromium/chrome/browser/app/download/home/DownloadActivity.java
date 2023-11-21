@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -96,13 +94,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mCurrentUrl != null) outState.putString(BUNDLE_KEY_CURRENT_URL, mCurrentUrl);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        ProfileKey profileKey = IncognitoUtils.getProfileKeyFromOTRProfileID(mOtrProfileID);
-        DownloadUtils.checkForExternallyRemovedDownloads(profileKey);
     }
 
     @Override

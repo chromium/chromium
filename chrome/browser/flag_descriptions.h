@@ -790,9 +790,6 @@ extern const char kEnableLensStandaloneDescription[];
 extern const char kEnableManagedConfigurationWebApiName[];
 extern const char kEnableManagedConfigurationWebApiDescription[];
 
-extern const char kEnableNewDownloadBackendName[];
-extern const char kEnableNewDownloadBackendDescription[];
-
 extern const char kDownloadNotificationServiceUnifiedAPIName[];
 extern const char kDownloadNotificationServiceUnifiedAPIDescription[];
 
