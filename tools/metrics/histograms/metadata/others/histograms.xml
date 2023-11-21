@@ -5804,15 +5804,6 @@ chromium-metrics-reviews@google.com.
   <summary>The time it takes to open a hyphenation dictionary file.</summary>
 </histogram>
 
-<histogram name="Import.ImportedHistorySize.AutoImportFromIE" units="urls"
-    expires_after="M77">
-  <owner>gcomanici@chromium.org</owner>
-  <summary>
-    The size of the history on Auto Import from IE. This measure is only logged
-    on a succesfull Auto Import.
-  </summary>
-</histogram>
-
 <histogram name="Import.ImporterType.AutoImport" enum="ImporterType"
     expires_after="2024-08-30">
   <owner>robliao@chromium.org</owner>

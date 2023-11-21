@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,15 +100,10 @@ void ProfileWriter::AddPasswordForm(
 
 void ProfileWriter::AddHistoryPage(const history::URLRows& page,
                                    history::VisitSource visit_source) {
-  if (!page.empty())
+  if (!page.empty()) {
     HistoryServiceFactory::GetForProfile(profile_,
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->AddPagesWithDetails(page, visit_source);
-  // Measure the size of the history page after Auto Import on first run.
-  if (first_run::IsChromeFirstRun() &&
-      visit_source == history::SOURCE_IE_IMPORTED) {
-    UMA_HISTOGRAM_COUNTS_1M("Import.ImportedHistorySize.AutoImportFromIE",
-                            page.size());
   }
 }
 
