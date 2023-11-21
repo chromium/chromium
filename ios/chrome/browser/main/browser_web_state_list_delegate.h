@@ -7,14 +7,28 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 
-// WebStateList delegate for the old architecture.
+// WebStateList delegate used by Browser implementation.
 class BrowserWebStateListDelegate : public WebStateListDelegate {
  public:
-  explicit BrowserWebStateListDelegate(bool force_realization_on_activation);
+  // Policy controlling what to do when a WebState is inserted in the
+  // WebStateList.
+  enum class InsertionPolicy {
+    kDoNothing,
+    kAttachTabHelpers,
+  };
 
-  BrowserWebStateListDelegate(const BrowserWebStateListDelegate&) = delete;
-  BrowserWebStateListDelegate& operator=(const BrowserWebStateListDelegate&) =
-      delete;
+  // Policy Controlling what to do when a WebState is activated.
+  enum class ActivationPolicy {
+    kDoNothing,
+    kForceRealization,
+  };
+
+  // Creates a BrowserWebStateListDelegate with default policies.
+  BrowserWebStateListDelegate();
+
+  // Creates a BrowserWebStateListDelegate with specific policies.
+  BrowserWebStateListDelegate(InsertionPolicy insertion_policy,
+                              ActivationPolicy activation_policy);
 
   ~BrowserWebStateListDelegate() override;
 
@@ -23,9 +37,11 @@ class BrowserWebStateListDelegate : public WebStateListDelegate {
   void WillActivateWebState(web::WebState* web_state) override;
 
  private:
-  // Controls whether WebState are forced to the realized state when
-  // activated or not.
-  const bool force_realization_on_activation_;
+  // Controls what to do when a WebState is inserted.
+  const InsertionPolicy insertion_policy_;
+
+  // Controls what to do when a WebState is marked as active.
+  const ActivationPolicy activation_policy_;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_SHARED_MODEL_WEB_STATE_LIST_DELEGATE_H_

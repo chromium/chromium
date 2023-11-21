@@ -7,29 +7,28 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "ios/chrome/browser/main/browser_web_state_list_delegate.h"
 #include "ios/chrome/browser/shared/model/browser/browser.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class ChromeBrowserState;
 @class SceneState;
-class WebStateList;
-class WebStateListDelegate;
 
-// Browser is the model for a window containing multiple tabs. Instances
-// are owned by a BrowserList to allow multiple windows for a single user
-// session.
-//
-// See src/docs/ios/objects.md for more information.
-class BrowserImpl final : public Browser {
+// BrowserImpl is the concrete implementation of the Browser interface.
+class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
  public:
-  // Constructs a BrowserImpl attached to `browser_state`.
-  // If `active_browser` is not null, the created browser is the inactive
-  // counterpart to that active browser. Otherwise, the created browser is
-  // considered active by default.
+  // Constructs an instance attached to `browser_state`, `scene_state`. If
+  // `active_browser` is not null, then the Browser is an inactive Browser
+  // and is considered to be attached to it. The `insertion_policy` and
+  // `activation_policy` are passed to BrowserWebStateListDelegate constructor.
   BrowserImpl(ChromeBrowserState* browser_state,
               SceneState* scene_state,
-              BrowserImpl* active_browser = nullptr);
+              BrowserImpl* active_browser,
+              InsertionPolicy insertion_policy,
+              ActivationPolicy activation_policy);
 
   BrowserImpl(const BrowserImpl&) = delete;
   BrowserImpl& operator=(const BrowserImpl&) = delete;
@@ -51,14 +50,24 @@ class BrowserImpl final : public Browser {
   void DestroyInactiveBrowser() final;
 
  private:
-  ChromeBrowserState* const browser_state_;
-  std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
-  std::unique_ptr<WebStateList> web_state_list_;
-  __strong CommandDispatcher* command_dispatcher_;
+  // The ChromeBrowserState this Browser is attached to. Must not be null.
+  raw_ptr<ChromeBrowserState> const browser_state_;
+
+  // The owned WebStateList.
+  WebStateList web_state_list_;
+
+  // The CommandDispatcher and the SceneState.
+  // Will both be nil for a temporary Browser.
   __weak SceneState* scene_state_;
-  base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
-  Browser* const active_browser_;
+  __strong CommandDispatcher* command_dispatcher_;
+
+  // Used to maintain the relationship between the regular and the inactive
+  // Browser. For a regular Browser, `active_browser_` will be set to `this`.
+  raw_ptr<Browser> const active_browser_;
   std::unique_ptr<Browser> inactive_browser_;
+
+  // The list of observers.
+  base::ObserverList<BrowserObserver, /*check_empty=*/true> observers_;
 
   // Needs to be the last member field to ensure all weak pointers are
   // invalidated before the other internal objects are destroyed.

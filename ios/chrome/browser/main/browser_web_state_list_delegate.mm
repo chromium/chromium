@@ -7,22 +7,30 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/web_state.h"
 
+BrowserWebStateListDelegate::BrowserWebStateListDelegate()
+    : BrowserWebStateListDelegate(InsertionPolicy::kAttachTabHelpers,
+                                  ActivationPolicy::kForceRealization) {}
+
 BrowserWebStateListDelegate::BrowserWebStateListDelegate(
-    bool force_realization_on_activation)
-    : force_realization_on_activation_(force_realization_on_activation) {}
+    InsertionPolicy insertion_policy,
+    ActivationPolicy activation_policy)
+    : insertion_policy_(insertion_policy),
+      activation_policy_(activation_policy) {}
 
 BrowserWebStateListDelegate::~BrowserWebStateListDelegate() = default;
 
 void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
-  // Unconditionally call AttachTabHelper even for pre-rendered WebState as
-  // the method is idempotent and this ensure that any WebState in a
-  // WebStateList has all the expected tab helpers.
-  AttachTabHelpers(web_state, /*for_prerender=*/false);
+  if (insertion_policy_ == InsertionPolicy::kAttachTabHelpers) {
+    // WebState in a Browser are not pre-render tabs, so always attach
+    // all the tab helpers (the method is idempotent, so it is okay to
+    // call it multiple times for the same WebState).
+    AttachTabHelpers(web_state, /*for_prerender=*/false);
+  }
 }
 
 void BrowserWebStateListDelegate::WillActivateWebState(
     web::WebState* web_state) {
-  if (force_realization_on_activation_) {
+  if (activation_policy_ == ActivationPolicy::kForceRealization) {
     // Do not trigger a CheckForOverRealization here as some user actions
     // (such as side swipe over multiple tab in the tab strip) can cause
     // rapid change of the active WebState.
