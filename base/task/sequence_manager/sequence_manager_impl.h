@@ -5,7 +5,6 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_IMPL_H_
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_IMPL_H_
 
-#include <atomic>
 #include <deque>
 #include <map>
 #include <memory>
@@ -468,7 +467,7 @@ class BASE_EXPORT SequenceManagerImpl
   const MetricRecordingSettings metric_recording_settings_;
 
   // Whether to add the queue time to tasks.
-  std::atomic_bool add_queue_time_to_tasks_;
+  base::subtle::Atomic32 add_queue_time_to_tasks_;
 
   AtomicFlagSet empty_queues_to_reload_;
 
