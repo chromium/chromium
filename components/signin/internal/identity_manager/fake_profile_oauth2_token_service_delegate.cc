@@ -4,10 +4,10 @@
 
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 
+#include <list>
 #include <memory>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -92,7 +92,7 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     const CoreAccountId& account_id,
     const std::string& token) {
   if (token.empty()) {
-    base::Erase(account_ids_, account_id);
+    std::erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
     ClearAuthError(account_id);
     FireRefreshTokenRevoked(account_id);

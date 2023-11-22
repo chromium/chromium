@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -157,7 +156,7 @@ SystemWebDialogDelegate::SystemWebDialogDelegate(const GURL& url,
 }
 
 SystemWebDialogDelegate::~SystemWebDialogDelegate() {
-  base::EraseIf(*GetInstances(),
+  std::erase_if(*GetInstances(),
                 [this](SystemWebDialogDelegate* i) { return i == this; });
 }
 

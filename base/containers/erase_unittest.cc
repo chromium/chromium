@@ -116,11 +116,6 @@ TEST(Erase, Vector) {
   RunEraseIfTest<std::vector<std::pair<int, int>>>();
 }
 
-TEST(Erase, List) {
-  RunEraseTest<std::list<int>>();
-  RunEraseIfTest<std::list<std::pair<int, int>>>();
-}
-
 TEST(Erase, Map) {
   RunEraseIfTest<std::map<int, int>>();
   RunEraseIfTest<std::map<int, int, std::greater<>>>();

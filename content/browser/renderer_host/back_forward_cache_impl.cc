@@ -4,13 +4,13 @@
 
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 
+#include <list>
 #include <string>
 #include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -1497,7 +1497,7 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
   if (entries_.empty())
     return;
 
-  base::EraseIf(entries_, [this](std::unique_ptr<Entry>& entry) {
+  std::erase_if(entries_, [this](std::unique_ptr<Entry>& entry) {
     if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
       RemoveProcessesForEntry(*entry);
       return true;

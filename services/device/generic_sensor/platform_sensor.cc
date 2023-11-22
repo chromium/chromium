@@ -4,10 +4,10 @@
 
 #include "services/device/generic_sensor/platform_sensor.h"
 
+#include <list>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
@@ -78,8 +78,9 @@ bool PlatformSensor::StopListening(Client* client,
     return false;
 
   auto& config_list = client_entry->second;
-  if (base::Erase(config_list, config) == 0)
+  if (std::erase(config_list, config) == 0) {
     return false;
+  }
 
   return UpdateSensorInternal(config_map_);
 }

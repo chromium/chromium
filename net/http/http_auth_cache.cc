@@ -4,6 +4,9 @@
 
 #include "net/http/http_auth_cache.h"
 
+#include <list>
+#include <map>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -56,7 +59,7 @@ void CheckPathIsValid(const std::string& path) {
 }
 #endif
 
-// Functor used by EraseIf.
+// Functor used by std::erase_if.
 struct IsEnclosedBy {
   explicit IsEnclosedBy(const std::string& path) : path(path) { }
   bool operator() (const std::string& x) const {
@@ -87,7 +90,7 @@ void HttpAuthCache::SetKeyServerEntriesByNetworkAnonymizationKey(
 
   key_server_entries_by_network_anonymization_key_ =
       key_server_entries_by_network_anonymization_key;
-  base::EraseIf(entries_, [](EntryMap::value_type& entry_map_pair) {
+  std::erase_if(entries_, [](EntryMap::value_type& entry_map_pair) {
     return entry_map_pair.first.target == HttpAuth::AUTH_SERVER;
   });
 }
@@ -246,7 +249,7 @@ void HttpAuthCache::Entry::AddPath(const std::string& path) {
   std::string parent_dir = GetParentDirectory(path);
   if (!HasEnclosingPath(parent_dir, nullptr)) {
     // Remove any entries that have been subsumed by the new entry.
-    base::EraseIf(paths_, IsEnclosedBy(parent_dir));
+    std::erase_if(paths_, IsEnclosedBy(parent_dir));
 
     // Failsafe to prevent unbounded memory growth of the cache.
     //
@@ -311,7 +314,7 @@ void HttpAuthCache::ClearEntriesAddedBetween(
     ClearAllEntries();
     return;
   }
-  base::EraseIf(entries_, [begin_time, end_time,
+  std::erase_if(entries_, [begin_time, end_time,
                            url_matcher](EntryMap::value_type& entry_map_pair) {
     Entry& entry = entry_map_pair.second;
     return entry.creation_time_ >= begin_time &&

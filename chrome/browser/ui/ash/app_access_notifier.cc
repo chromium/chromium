@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 
+#include <list>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
@@ -171,7 +171,7 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     SendActiveCameraApplicationsChangedNotification(/*application_added=*/true);
   } else if (!is_camera_used && was_using_camera_already) {
     // App with id `app_id` stopped using camera.
-    base::Erase(camera_using_app_ids_[active_user_account_id_], update.AppId());
+    std::erase(camera_using_app_ids_[active_user_account_id_], update.AppId());
     SendActiveCameraApplicationsChangedNotification(
         /*application_added=*/false);
   }
@@ -181,7 +181,7 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     mic_using_app_ids_[active_user_account_id_].push_front(update.AppId());
   } else if (!is_microphone_used && was_using_microphone_already) {
     // App with id `app_id` stopped using microphone.
-    base::Erase(mic_using_app_ids_[active_user_account_id_], update.AppId());
+    std::erase(mic_using_app_ids_[active_user_account_id_], update.AppId());
   }
 
   if (ash::features::IsPrivacyIndicatorsEnabled()) {

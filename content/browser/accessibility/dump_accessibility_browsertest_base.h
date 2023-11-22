@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase_list.h"
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"

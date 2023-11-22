@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 
+#include <list>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -574,7 +574,7 @@ void ArcAppQueueRestoreHandler::MaybeLaunchApp() {
     const WindowInfo info = *it;
     LaunchAppWindow(info.app_id, info.window_id);
     MaybeReStartTimer(kAppLaunchDelay);
-    base::Erase(pending_windows_, info);
+    std::erase(pending_windows_, info);
     return;
   }
 
@@ -603,7 +603,7 @@ void ArcAppQueueRestoreHandler::MaybeLaunchApp() {
     const WindowInfo info = *it;
     LaunchAppWindow(info.app_id, info.window_id);
     MaybeReStartTimer(kAppLaunchDelay);
-    base::Erase(no_stack_windows_, info);
+    std::erase(no_stack_windows_, info);
   }
 }
 
