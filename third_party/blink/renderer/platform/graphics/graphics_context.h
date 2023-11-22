@@ -545,7 +545,7 @@ class PLATFORM_EXPORT GraphicsContext {
                                  const AutoDarkMode& auto_dark_mode);
 
   template <typename DrawTextFunc>
-  void DrawTextPasses(const AutoDarkMode& auto_dark_mode, const DrawTextFunc&);
+  void DrawTextPasses(const DrawTextFunc&);
 
   void BeginLayer(const cc::PaintFlags&);
 

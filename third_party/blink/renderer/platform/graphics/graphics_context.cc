@@ -567,8 +567,7 @@ void GraphicsContext::DrawText(const Font& font,
 }
 
 template <typename DrawTextFunc>
-void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
-                                     const DrawTextFunc& draw_text) {
+void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
   TextDrawingModeFlags mode_flags = TextDrawingMode();
 
   if (mode_flags & kTextModeFill) {
@@ -591,7 +590,7 @@ void GraphicsContext::DrawText(const Font& font,
                                const gfx::PointF& point,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
     DrawText(font, text_info, point, flags, node_id, auto_dark_mode);
   });
 }
@@ -603,9 +602,9 @@ void GraphicsContext::DrawEmphasisMarksInternal(
     const AtomicString& mark,
     const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&font, &text_info, &mark, &point,
-                                  this](const cc::PaintFlags& flags) {
-    font.DrawEmphasisMarks(canvas_, text_info, mark, point, flags);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    font.DrawEmphasisMarks(canvas_, text_info, mark, point,
+                           DarkModeFlags(this, auto_dark_mode, flags));
   });
 }
 
@@ -632,16 +631,15 @@ void GraphicsContext::DrawBidiText(
     const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode,
     Font::CustomFontNotReadyAction custom_font_not_ready_action) {
-  DrawTextPasses(
-      auto_dark_mode, [&font, &run_info, &point, custom_font_not_ready_action,
-                       this](const cc::PaintFlags& flags) {
-        if (font.DrawBidiText(canvas_, run_info, point,
-                              custom_font_not_ready_action, flags,
-                              printing_ ? Font::DrawType::kGlyphsAndClusters
-                                        : Font::DrawType::kGlyphsOnly)) {
-          paint_controller_->SetTextPainted();
-        }
-      });
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    if (font.DrawBidiText(canvas_, run_info, point,
+                          custom_font_not_ready_action,
+                          DarkModeFlags(this, auto_dark_mode, flags),
+                          printing_ ? Font::DrawType::kGlyphsAndClusters
+                                    : Font::DrawType::kGlyphsOnly)) {
+      paint_controller_->SetTextPainted();
+    }
+  });
 }
 
 void GraphicsContext::DrawImage(
