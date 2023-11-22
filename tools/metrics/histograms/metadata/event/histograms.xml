@@ -1204,16 +1204,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.WaylandDragDrop.IncomingDataTransferTime" units="ms"
-    expires_after="M90">
-  <owner>rjkroege@chromium.org</owner>
-  <owner>adunaev@igalia.com</owner>
-  <summary>
-    Delay between the drag coming into the window and the window is actually
-    notified.
-  </summary>
-</histogram>
-
 <histogram name="EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency"
     units="microseconds" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

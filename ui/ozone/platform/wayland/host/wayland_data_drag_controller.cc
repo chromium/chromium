@@ -602,9 +602,6 @@ void WaylandDataDragController::OnDataTransferFinished(
     return;
   }
 
-  UMA_HISTOGRAM_TIMES("Event.WaylandDragDrop.IncomingDataTransferTime",
-                      base::TimeTicks::Now() - timestamp);
-
   PropagateOnDragEnter(last_drag_location_, timestamp,
                        std::move(received_data));
 }
