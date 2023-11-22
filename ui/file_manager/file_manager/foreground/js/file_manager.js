@@ -16,6 +16,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 // Did you mean to set the 'moduleResolution' option to 'nodenext', or to add
 // aliases to the 'paths' option?
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
@@ -905,7 +906,7 @@ export class FileManager extends EventTarget {
     // '[Symbol.iterator]()' method that returns an iterator.
     for (const crButton of this.dialogDom_.querySelectorAll(
              'cr-button[command]')) {
-      CommandButton.decorate(crButton);
+      CommandButton.decorate(/** @type {CrButtonElement} */ (crButton));
     }
 
     // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a
@@ -1458,7 +1459,6 @@ export class FileManager extends EventTarget {
       // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.initDirectoryTree(directoryTree);
     }
-
 
     // If 'media-store-files-only' volume filter is enabled, then Android ARC
     // SelectFile opened files app to pick files from volumes that are indexed

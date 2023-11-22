@@ -100,7 +100,7 @@ export class Menu extends HTMLElement {
    * @param node The node to start searching from.
    * @return The found menu item or undefined.
    */
-  private findMenuItem_(node: Node): MenuItem|undefined {
+  protected findMenuItem(node: Node): MenuItem|undefined {
     while (node && node.parentNode !== this && !(node instanceof MenuItem)) {
       node = node.parentNode!;
     }
@@ -118,7 +118,7 @@ export class Menu extends HTMLElement {
    */
   private handleMouseOver_(e: Event) {
     const target = e.target as HTMLElement;
-    const overItem = this.findMenuItem_(target);
+    const overItem = this.findMenuItem(target);
     this.selectedItem = overItem;
   }
 

@@ -112,9 +112,11 @@
      * @param {!Element} el The element to decorate.
      */
     f.decorate = function(el) {
-      // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
-      // 'Element'.
-      el.__proto__ = f.prototype;
+      if (f.prototype.isPrototypeOf(el)) {
+        return;
+      }
+
+      Object.setPrototypeOf(el, f.prototype);
       // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
       // 'Element'.
       if (el.decorate) {
@@ -241,4 +243,3 @@
       doc.addEventListener('dblclick', swallow, true);
     }, 0);
   }
-

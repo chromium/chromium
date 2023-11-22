@@ -39,9 +39,9 @@ export function setUp() {
 
 export function testHandleMouseOver() {
   let called = false;
-  menu['findMenuItem_'] = function(node: Node) {
+  menu['findMenuItem'] = function(node: Node) {
     called = true;
-    return Menu.prototype['findMenuItem_'].apply(this, [node]);
+    return Menu.prototype['findMenuItem'].apply(this, [node]);
   };
 
   const over = new MouseEvent('mouseover', {bubbles: true});

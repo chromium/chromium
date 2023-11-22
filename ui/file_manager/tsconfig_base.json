@@ -2,7 +2,7 @@
   "extends": "../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
     "checkJs": true,
-    "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext"],
+    "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext", "dom.iterable"],
 
     "importsNotUsedAsValues": "preserve",
     "ignoreDeprecations": "5.0",
