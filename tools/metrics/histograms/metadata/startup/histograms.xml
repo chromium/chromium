@@ -628,15 +628,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.BrowserProcessImpl_PreMainMessageLoopRunTime"
-    units="ms" expires_after="M85">
-  <owner>rkaplow@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during
-    BrowserProcessImpl::PreMainMessageLoopRun.
-  </summary>
-</histogram>
-
 <histogram name="Startup.BrowserWindow.FirstPaint" units="ms"
     expires_after="2024-05-19">
   <owner>gab@chromium.org</owner>

@@ -1194,8 +1194,6 @@ void BrowserProcessImpl::PreCreateThreads() {
 
 void BrowserProcessImpl::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "BrowserProcessImpl::PreMainMessageLoopRun");
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Startup.BrowserProcessImpl_PreMainMessageLoopRunTime");
 
   // browser_policy_connector() is created very early because local_state()
   // needs policy to be initialized with the managed preference values.
