@@ -11,7 +11,8 @@
 
 namespace blink {
 
-V8MLOperandType::Enum ToV8MLOperandType(webnn_proto::MLOperandType type);
+V8MLOperandDataType::Enum ToV8MLOperandDataType(
+    webnn_proto::MLOperandDataType data_type);
 
 V8MLAutoPad::Enum ToV8MLAutoPad(webnn_proto::MLAutoPad auto_pad);
 

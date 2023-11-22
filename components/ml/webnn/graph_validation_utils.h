@@ -21,7 +21,7 @@ namespace webnn {
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
 struct Operand {
-  // Represents the `MLOperandType` in the WebIDL definition.
+  // Represents the `MLOperandDataType` in the WebIDL definition.
   enum DataType {
     kMinValue = 0,
     kFloat32 = 0,

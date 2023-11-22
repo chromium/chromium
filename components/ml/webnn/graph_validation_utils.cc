@@ -278,7 +278,8 @@ base::expected<Operand, std::string> ValidateConv2dBiasAndCreateOutputOperand(
           "The bias shape should be [%u].", output_info.channels));
     }
     if (attributes.bias_operand->data_type != input.data_type) {
-      return base::unexpected("The bias type doesn't match input type.");
+      return base::unexpected(
+          "The bias data type doesn't match input data type.");
     }
   }
 
@@ -361,10 +362,10 @@ base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
   if (input.dimensions.size() != 2) {
     return base::unexpected("The input must be a 2-D tensor.");
   }
-  // The input type must be one of the floating point types.
+  // The input data type must be one of the floating point types.
   if (!IsFloatingPointType(input.data_type)) {
     return base::unexpected(
-        "The input type must be one of the floating point types.");
+        "The input data type must be one of the floating point types.");
   }
   // The output tensor of softmax is the same shape as the input tensor.
   return Operand(input.data_type, std::move(input.dimensions));
@@ -552,7 +553,8 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
   }
   // Validate filter operand.
   if (filter.data_type != input.data_type) {
-    return base::unexpected("The filter type doesn't match the input type.");
+    return base::unexpected(
+        "The filter data type doesn't match the input data type.");
   }
   const auto filter_shape = filter.dimensions;
   if (filter_shape.size() != 4) {
@@ -641,7 +643,8 @@ base::expected<Operand, std::string> ValidateConvTranspose2dAndInferOutput(
   }
   // Validate filter operand.
   if (filter.data_type != input.data_type) {
-    return base::unexpected("The filter type doesn't match the input type.");
+    return base::unexpected(
+        "The filter data type doesn't match the input data type.");
   }
   const auto filter_shape = filter.dimensions;
   if (filter_shape.size() != 4) {
@@ -794,7 +797,7 @@ base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
     const Operand& a,
     const Operand& b) {
   if (a.data_type != b.data_type) {
-    return base::unexpected("The types of first two inputs don't match.");
+    return base::unexpected("The data types of first two inputs don't match.");
   }
 
   std::vector<uint32_t> a_dimensions = a.dimensions;
@@ -1071,7 +1074,7 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& b,
     const GemmAttributes& attributes) {
   if (a.data_type != b.data_type) {
-    return base::unexpected("The types of first two inputs don't match.");
+    return base::unexpected("The data types of first two inputs don't match.");
   }
   // According to WebNN spec:
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm, the first input 2-D
@@ -1109,7 +1112,7 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
   if (attributes.c_operand) {
     if (attributes.c_operand->data_type != a.data_type) {
       return base::unexpected(
-          "The third input type doesn't match other inputs' type.");
+          "The third input data type doesn't match other inputs' data type.");
     }
     const auto shape_c = attributes.c_operand->dimensions;
     if (shape_c.size() > 2) {
@@ -1148,7 +1151,7 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
   // The loop skips the first input to avoid repeated checks.
   for (size_t i = 1; i < inputs.size(); ++i) {
     if (inputs[i].data_type != output_type) {
-      return base::unexpected("The input types don't match.");
+      return base::unexpected("The input data types don't match.");
     }
     // According to WebNN spec:
     // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
@@ -1192,11 +1195,12 @@ base::expected<Operand, std::string> ValidatePreluAndInferOutput(
     const Operand& slope) {
   if (input.data_type != slope.data_type) {
     return base::unexpected(
-        "The type of slope doesn't match the type of input.");
+        "The data type of slope doesn't match the data type of input.");
   }
   if (!IsFloatingPointType(input.data_type)) {
     return base::unexpected(
-        "The type of input and slope must be one of the floating point types.");
+        "The data type of input and slope must be one of the floating point "
+        "types.");
   }
   // BroadcastShape unidirectionally broadcasts slope.dimensions to
   // input.dimensions.
@@ -1309,7 +1313,7 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
       kind == ReduceKind::kLogSum || kind == ReduceKind::kLogSumExp) {
     if (!IsFloatingPointType(input.data_type)) {
       return base::unexpected(
-          "The input type must be one of the floating point types.");
+          "The input data type must be one of the floating point types.");
     }
   }
 

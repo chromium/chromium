@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Failed to read the 'type' property from 'MLOperandDescriptor': Required member is undefined."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported."
 [FAIL] NavigatorML must be primary interface of navigator
   assert_own_property: self does not have own property "NavigatorML" expected property "NavigatorML" missing
 [FAIL] Stringification of navigator
@@ -12,22 +12,6 @@ Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
 [FAIL] Stringification of graph
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
-[FAIL] MLOperand must be primary interface of input
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
-[FAIL] Stringification of input
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
-[FAIL] MLOperand must be primary interface of filter
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
-[FAIL] Stringification of filter
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
-[FAIL] MLOperand must be primary interface of output
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: output is not defined"
-[FAIL] Stringification of output
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: output is not defined"
-[FAIL] MLActivation must be primary interface of relu
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: relu is not defined"
-[FAIL] Stringification of relu
-  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: relu is not defined"
 [FAIL] MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
   assert_own_property: interface prototype object missing non-static operation expected property "compute" missing
 [FAIL] MLContext interface: operation createCommandEncoder()

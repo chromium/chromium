@@ -122,12 +122,12 @@ absl::optional<ArrayBufferViewInfo> TransferArrayBufferView(
 DOMArrayBufferView* CreateArrayBufferView(ArrayBufferViewInfo view_info) {
   auto* target_buffer = DOMArrayBuffer::Create(std::move(view_info.contents));
 
-  // Align with the ArrayBufferView types supported by WebNN MLOperandType:
-  // https://www.w3.org/TR/webnn/#appendices-mloperandtype-arraybufferview-compatibility
+  // Align with the ArrayBufferView types supported by WebNN MLOperandDataType:
+  // https://www.w3.org/TR/webnn/#appendices-MLOperandDataType-arraybufferview-compatibility
   DOMArrayBufferView* target_view = nullptr;
   switch (view_info.type) {
     case DOMArrayBufferView::kTypeFloat32:
-      // Float32Array is used for MLOperandType::float32.
+      // Float32Array is used for MLOperandDataType::float32.
       target_view = DOMFloat32Array::Create(target_buffer, view_info.offset,
                                             view_info.length);
       break;
@@ -138,22 +138,22 @@ DOMArrayBufferView* CreateArrayBufferView(ArrayBufferViewInfo view_info) {
                                            view_info.length);
       break;
     case DOMArrayBufferView::kTypeInt32:
-      // Int32Array is used for MLOperandType::int32.
+      // Int32Array is used for MLOperandDataType::int32.
       target_view = DOMInt32Array::Create(target_buffer, view_info.offset,
                                           view_info.length);
       break;
     case DOMArrayBufferView::kTypeUint32:
-      // Uint32Array is used for MLOperandType::uint32.
+      // Uint32Array is used for MLOperandDataType::uint32.
       target_view = DOMUint32Array::Create(target_buffer, view_info.offset,
                                            view_info.length);
       break;
     case DOMArrayBufferView::kTypeInt8:
-      // Int8Array is used for MLOperandType::int8.
+      // Int8Array is used for MLOperandDataType::int8.
       target_view = DOMInt8Array::Create(target_buffer, view_info.offset,
                                          view_info.length);
       break;
     case DOMArrayBufferView::kTypeUint8:
-      // Uint8Array is used for MLOperandType::uint8.
+      // Uint8Array is used for MLOperandDataType::uint8.
       target_view = DOMUint8Array::Create(target_buffer, view_info.offset,
                                           view_info.length);
       break;

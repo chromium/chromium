@@ -53,10 +53,10 @@ struct ElementWiseBinaryTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
-                                   scope.GetExceptionState());
-    auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions, rhs.type,
-                                   scope.GetExceptionState());
+    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions,
+                                   lhs.data_type, scope.GetExceptionState());
+    auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions,
+                                   rhs.data_type, scope.GetExceptionState());
     auto* output_operand =
         BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
     auto [graph, build_exception] =
@@ -85,10 +85,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // scalars.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {},
                 .values = {2.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {},
                 .values = {3.0}},
         .expected = {5.0}}
@@ -100,10 +100,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // tensors, element-wise.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2},
                 .values = {1.0, 2.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2},
                 .values = {3.0, 4.0}},
         .expected = {4.0, 6.0}}
@@ -113,10 +113,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // Test element-wise add operator for two 2-D tensors.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {5.0, 6.0, 7.0, 8.0}},
         .expected = {6.0, 8.0, 10.0, 12.0}}
@@ -127,10 +127,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // tensor.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {},
                 .values = {5.0}},
         .expected = {6.0, 7.0, 8.0, 9.0}}
@@ -141,10 +141,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // tensor.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2},
                 .values = {5.0, 6.0}},
         .expected = {6.0, 8.0, 8.0, 10.0}}
@@ -155,10 +155,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // tensor.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 1, 2},
                 .values = {5.0, 6.0, 7.0, 8.0}},
         .expected = {6.0, 8.0, 8.0, 10.0, 8.0, 10.0, 10.0, 12.0}}
@@ -168,10 +168,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // Test element-wise add operator for two 4-D tensors
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {5.0, 6.0, 7.0, 8.0}},
         .expected = {6.0, 8.0, 10.0, 12.0}}
@@ -183,10 +183,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // input tensors, element-wise.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kSub,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {5.0, 6.0, 7.0, 8.0}},
         .expected = {-4.0, -4.0, -4.0, -4.0}}
@@ -198,10 +198,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // input tensors, element-wise.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kMul,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {5.0, 6.0, 7.0, 8.0}},
         .expected = {5.0, 12.0, 21.0, 32.0}}
@@ -213,10 +213,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // input tensors, element-wise.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kDiv,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {3.0, 4.0, 6.0, 8.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 2.0, 2.0, 2.0}},
         .expected = {3.0, 2.0, 3.0, 4.0}}
@@ -228,10 +228,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // tensors, element-wise.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kMin,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 4.0, 5.0, 8.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {2.0, 3.0, 6.0, 7.0}},
         .expected = {1.0, 3.0, 5.0, 7.0}}
@@ -243,10 +243,10 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
     // tensors, element-wise.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kMax,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {1.0, 4.0, 5.0, 8.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {1, 2, 2, 1},
                 .values = {2.0, 3.0, 6.0, 7.0}},
         .expected = {2.0, 4.0, 6.0, 8.0}}
@@ -265,9 +265,9 @@ struct PowTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
-                                   scope.GetExceptionState());
-    auto* rhs_operand = BuildConstant(builder, rhs.dimensions, rhs.type,
+    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions,
+                                   lhs.data_type, scope.GetExceptionState());
+    auto* rhs_operand = BuildConstant(builder, rhs.dimensions, rhs.data_type,
                                       rhs.values, scope.GetExceptionState());
     auto* output_operand = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kPow, lhs_operand, rhs_operand);
@@ -292,10 +292,10 @@ TEST_P(MLGraphTest, PowTest) {
   MLGraphV8TestingScope scope;
   {
     // Test element-wise pow operator with exponent = 2.
-    PowTester<float>{.lhs = {.type = V8MLOperandType::Enum::kFloat32,
+    PowTester<float>{.lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                              .dimensions = {1, 2, 2, 1},
                              .values = {1.0, 2.0, 3.0, 4.0}},
-                     .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+                     .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                              .dimensions = {},
                              .values = {2.0}},
                      .expected = {1.0, 4.0, 9.0, 16.0}}
@@ -303,10 +303,10 @@ TEST_P(MLGraphTest, PowTest) {
   }
   {
     // Test element-wise pow operator with exponent = 0.5.
-    PowTester<float>{.lhs = {.type = V8MLOperandType::Enum::kFloat32,
+    PowTester<float>{.lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                              .dimensions = {1, 2, 2, 1},
                              .values = {1.0, 4.0, 9.0, 16.0}},
-                     .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+                     .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                              .dimensions = {},
                              .values = {0.5}},
                      .expected = {1.0, 2.0, 3.0, 4.0}}
@@ -325,8 +325,9 @@ struct ElementWiseUnaryTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLOperand* output_operand = nullptr;
     switch (kind) {
       case ElementWiseUnaryKind::kAbs:
@@ -404,7 +405,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // The expected results should be the absolute value of the input scalar.
     ElementWiseUnaryTester<float>{
         .kind = ElementWiseUnaryKind::kAbs,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {},
                   .values = {-2.0}},
         .expected = {2.0}}
@@ -416,7 +417,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // element-wise.
     ElementWiseUnaryTester<float>{
         .kind = ElementWiseUnaryKind::kAbs,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2},
                   .values = {-1.0, -2.0}},
         .expected = {1.0, 2.0}}
@@ -428,7 +429,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // element-wise.
     ElementWiseUnaryTester<float>{
         .kind = ElementWiseUnaryKind::kCeil,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2},
                   .values = {1.1, -2.2}},
         .expected = {2.0, -2.0}}
@@ -440,7 +441,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // element-wise.
     ElementWiseUnaryTester<float>{
         .kind = ElementWiseUnaryKind::kFloor,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2},
                   .values = {1.1, -2.2, 3.3, -4.4}},
         .expected = {1.0, -3.0, 3.0, -5.0}}
@@ -452,7 +453,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
     // tensor, element-wise.
     ElementWiseUnaryTester<float>{
         .kind = ElementWiseUnaryKind::kNeg,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1.0, -2.0, 3.0, -4.0}},
         .expected = {-1.0, 2.0, -3.0, 4.0}}
@@ -471,10 +472,11 @@ struct PReluTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* slope_operand =
-        BuildConstant(builder, slope.dimensions, slope.type, slope.values,
+        BuildConstant(builder, slope.dimensions, slope.data_type, slope.values,
                       scope.GetExceptionState());
     auto* output_operand =
         builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
@@ -502,25 +504,26 @@ TEST_P(MLGraphTest, PReluTest) {
   {
     // Test prelu operator with input_shape = {3} and slope_shape =
     // {3}.
-    PReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                 .dimensions = {3},
-                                 .values = {1.0, -2.0, 3.0}},
-                       .slope = {.type = V8MLOperandType::Enum::kFloat32,
-                                 .dimensions = {3},
-                                 .values = {1.0, 2.0, 3.0}},
-                       .expected = {1.0, -4.0, 3.0}}
+    PReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {3},
+                  .values = {1.0, -2.0, 3.0}},
+        .slope = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {3},
+                  .values = {1.0, 2.0, 3.0}},
+        .expected = {1.0, -4.0, 3.0}}
         .Test(*this, scope);
   }
   {
     // Test prelu operator with input_shape = {1, 2, 3, 3} and slope_shape = {1,
     // 3}.
     PReluTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 3, 3},
                   .values = {-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0,
                              -9.0, -10.0, -11.0, -12.0, -13.0, -14.0, -15.0,
                              -16.0, -17.0, -18.0}},
-        .slope = {.type = V8MLOperandType::Enum::kFloat32,
+        .slope = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3},
                   .values = {1.0, 2.0, 3.0}},
         .expected = {-1.0, -4.0, -9.0, -4.0, -10.0, -18.0, -7.0, -16.0, -27.0,
@@ -540,8 +543,9 @@ struct ReluTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->relu(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -568,42 +572,47 @@ TEST_P(MLGraphTest, ReluTest) {
     // Test relu operator for 1-D tensor.
     // The expected results should be the result of the rectified linear
     // function, y = max(0, x), applied to the input tensor, element-wise.
-    ReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                .dimensions = {2},
-                                .values = {-1.0, 1.0}},
-                      .expected = {0.0, 1.0}}
+    ReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1.0, 1.0}},
+        .expected = {0.0, 1.0}}
         .Test(*this, scope);
   }
   {
     // Test relu operator for 0-D scalar.
-    ReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                .dimensions = {},
-                                .values = {-1.0}},
-                      .expected = {0.0}}
+    ReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {},
+                  .values = {-1.0}},
+        .expected = {0.0}}
         .Test(*this, scope);
   }
   {
     // Test relu operator for 2-D tensor.
-    ReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                .dimensions = {2, 2},
-                                .values = {-10.0, -0.5, 0.5, 10.0}},
-                      .expected = {0.0, 0.0, 0.5, 10.0}}
+    ReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {0.0, 0.0, 0.5, 10.0}}
         .Test(*this, scope);
   }
   {
     // Test relu operator for 3-D tensor.
-    ReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                .dimensions = {1, 2, 2},
-                                .values = {-10.0, -0.5, 0.5, 10.0}},
-                      .expected = {0.0, 0.0, 0.5, 10.0}}
+    ReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {0.0, 0.0, 0.5, 10.0}}
         .Test(*this, scope);
   }
   {
     // Test relu operator for 4-D tensor.
-    ReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                .dimensions = {1, 2, 2, 1},
-                                .values = {-10.0, -0.5, 0.5, 10.0}},
-                      .expected = {0.0, 0.0, 0.5, 10.0}}
+    ReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {0.0, 0.0, 0.5, 10.0}}
         .Test(*this, scope);
   }
 }
@@ -620,8 +629,9 @@ struct LeakyReluTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         BuildLeakyRelu(scope, builder, input_operand, options);
     auto [graph, build_exception] =
@@ -648,29 +658,32 @@ TEST_P(MLGraphTest, LeakyReluTest) {
   {
     // Test leakyRelu operator with default options.
     auto* options = MLLeakyReluOptions::Create();
-    LeakyReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                     .dimensions = {1, 2, 2, 1},
-                                     .values = {10, 5, -100, 0}},
-                           .expected = {10, 5, -1, 0}}
+    LeakyReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {10, 5, -100, 0}},
+        .expected = {10, 5, -1, 0}}
         .Test(*this, scope, options);
   }
   {
     // Test leakyRelu operator with alpha = 0.2.
     auto* options = MLLeakyReluOptions::Create();
     options->setAlpha(0.2);
-    LeakyReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                     .dimensions = {1, 2, 2, 1},
-                                     .values = {10, 5, -100, 0}},
-                           .expected = {10, 5, -20, 0}}
+    LeakyReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {10, 5, -100, 0}},
+        .expected = {10, 5, -20, 0}}
         .Test(*this, scope, options);
   }
   {
     // Test leakyRelu operator for scalar input.
     auto* options = MLLeakyReluOptions::Create();
-    LeakyReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                     .dimensions = {},
-                                     .values = {-100}},
-                           .expected = {-1}}
+    LeakyReluTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {},
+                  .values = {-100}},
+        .expected = {-1}}
         .Test(*this, scope, options);
   }
 }
@@ -687,8 +700,9 @@ struct ReduceTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         BuildReduce(scope, builder, kind, input_operand, options);
     auto [graph, build_exception] =
@@ -714,22 +728,24 @@ TEST_P(MLGraphTest, ReduceTest) {
   {
     // Test reduceMean operator with default options.
     auto* options = MLReduceOptions::Create();
-    ReduceTester<float>{.kind = ReduceKind::kMean,
-                        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                                  .dimensions = {1, 2, 2, 1},
-                                  .values = {1.0, 2.0, 3.0, 4.0}},
-                        .expected = {2.5}}
+    ReduceTester<float>{
+        .kind = ReduceKind::kMean,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0}},
+        .expected = {2.5}}
         .Test(*this, scope, options);
   }
   {
     // Test reduceMean operator with axes = {1}.
     auto* options = MLReduceOptions::Create();
     options->setAxes({1});
-    ReduceTester<float>{.kind = ReduceKind::kMean,
-                        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                                  .dimensions = {2, 2},
-                                  .values = {1.0, 2.0, 3.0, 4.0}},
-                        .expected = {1.5, 3.5}}
+    ReduceTester<float>{
+        .kind = ReduceKind::kMean,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1.0, 2.0, 3.0, 4.0}},
+        .expected = {1.5, 3.5}}
         .Test(*this, scope, options);
   }
 }
@@ -746,8 +762,9 @@ struct Resample2dTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         BuildResample2d(scope, builder, input_operand, options);
     auto [graph, build_exception] =
@@ -778,7 +795,7 @@ TEST_P(MLGraphTest, Resample2dTest) {
     options->setAxes({1, 2});
     options->setMode(V8MLInterpolationMode::Enum::kLinear);
     Resample2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1, 2, 3, 4}},
         .expected = {1., 1.25, 1.75, 2., 1.5, 1.75, 2.25, 2.5, 2.5, 2.75, 3.25,
@@ -792,7 +809,7 @@ TEST_P(MLGraphTest, Resample2dTest) {
     options->setAxes({1, 2});
     options->setMode(V8MLInterpolationMode::Enum::kLinear);
     Resample2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1, 2, 3, 4}},
         .expected = {1., 1.25, 1.75, 2., 1.5, 1.75, 2.25, 2.5, 2.5, 2.75, 3.25,
@@ -813,8 +830,9 @@ struct ClampTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->clamp(input_operand, options, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -841,30 +859,33 @@ TEST_P(MLGraphTest, ClampTest) {
   {
     // Test clamp operator with default options that no minimum and maximum
     // values are defined.
-    ClampTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                 .dimensions = {1, 2, 2, 1},
-                                 .values = {-10.0, -0.5, 0.5, 10.0}},
-                       .expected = {-10.0, -0.5, 0.5, 10.0}}
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {-10.0, -0.5, 0.5, 10.0}}
         .Test(*this, scope);
   }
   {
     // Test clamp operator with the minimum value defined.
     MLClampOptions* options = MLClampOptions::Create();
     options->setMinValue(0.0);
-    ClampTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                 .dimensions = {1, 2, 2, 1},
-                                 .values = {-10.0, -0.5, 0.5, 10.0}},
-                       .expected = {0.0, 0.0, 0.5, 10.0}}
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {0.0, 0.0, 0.5, 10.0}}
         .Test(*this, scope, options);
   }
   {
     // Test clamp operator with the maximum value defined.
     MLClampOptions* options = MLClampOptions::Create();
     options->setMaxValue(6.0);
-    ClampTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                 .dimensions = {1, 2, 2, 1},
-                                 .values = {-10.0, -0.5, 0.5, 10.0}},
-                       .expected = {-10.0, -0.5, 0.5, 6.0}}
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {-10.0, -0.5, 0.5, 6.0}}
         .Test(*this, scope, options);
   }
   {
@@ -872,10 +893,11 @@ TEST_P(MLGraphTest, ClampTest) {
     MLClampOptions* options = MLClampOptions::Create();
     options->setMinValue(0.0);
     options->setMaxValue(6.0);
-    ClampTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                 .dimensions = {1, 2, 2, 1},
-                                 .values = {-10.0, -0.5, 0.5, 10.0}},
-                       .expected = {0.0, 0.0, 0.5, 6.0}}
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .expected = {0.0, 0.0, 0.5, 6.0}}
         .Test(*this, scope, options);
   }
   {
@@ -883,10 +905,11 @@ TEST_P(MLGraphTest, ClampTest) {
     MLClampOptions* options = MLClampOptions::Create();
     options->setMinValue(0.0);
     options->setMaxValue(6.0);
-    ClampTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                 .dimensions = {},
-                                 .values = {10.0}},
-                       .expected = {6.0}}
+    ClampTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {},
+                  .values = {10.0}},
+        .expected = {6.0}}
         .Test(*this, scope, options);
   }
 }
@@ -903,15 +926,16 @@ struct Conv2dTester {
             MLGraphBuilder* builder,
             MLConv2dOptions* options = MLConv2dOptions::Create()) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* filter_operand =
-        BuildConstant(builder, filter.dimensions, filter.type, filter.values,
-                      scope.GetExceptionState());
+        BuildConstant(builder, filter.dimensions, filter.data_type,
+                      filter.values, scope.GetExceptionState());
     if (bias) {
-      options->setBias(BuildConstant(builder, bias.value().dimensions,
-                                     bias.value().type, bias.value().values,
-                                     scope.GetExceptionState()));
+      options->setBias(BuildConstant(
+          builder, bias.value().dimensions, bias.value().data_type,
+          bias.value().values, scope.GetExceptionState()));
     }
     auto* output_operand =
         BuildConv2d(scope, builder, input_operand, filter_operand, options);
@@ -945,11 +969,11 @@ TEST_P(MLGraphTest, Conv2dTest) {
     options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
     options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
     Conv2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 3, 3},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
                              11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {3, 1, 1, 3},
                    .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
         .expected = {30.0, 36.0, 42.0, 66.0, 81.0, 96.0, 102.0, 126.0, 150.0,
@@ -965,16 +989,17 @@ TEST_P(MLGraphTest, Conv2dTest) {
     options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
     options->setActivation(builder->relu(scope.GetExceptionState()));
     Conv2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 3, 3},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
                              11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {3, 1, 1, 3},
                    .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
-        .bias = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {3},
-                                   .values = {-6000.0, -7000.0, 8000.0}},
+        .bias =
+            OperandInfo<float>{.data_type = V8MLOperandDataType::Enum::kFloat32,
+                               .dimensions = {3},
+                               .values = {-6000.0, -7000.0, 8000.0}},
         .expected = {0.0, 0.0, 8042.0, 0.0, 0.0, 8096.0, 0.0, 0.0, 8150.0, 0.0,
                      0.0, 8204.0, 0.0, 0.0, 8258.0, 0.0, 0.0, 8312.0}}
         .Test(*this, scope, builder, options);
@@ -987,11 +1012,11 @@ TEST_P(MLGraphTest, Conv2dTest) {
     options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kIhwo);
     options->setGroups(4);
     Conv2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 4},
                   .values = {10.0, 21.0, 10.0, 0.0, 10.0, 22.0, 20.0, 0.0, 10.0,
                              23.0, 30.0, 0.0, 10.0, 24.0, 40.0, 0.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 2, 2, 4},
                    .values = {0.25, 0.0, 10.0, 50.0, 0.25, 1.0, 20.0, 50.0,
                               0.25, 0.0, 30.0, 50.0, 0.25, 1.0, 40.0, 50.0}},
@@ -1008,16 +1033,16 @@ TEST_P(MLGraphTest, Conv2dTest) {
     options->setGroups(4);
     options->setActivation(builder->relu(scope.GetExceptionState()));
     Conv2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 4},
                   .values = {10.0, 21.0, 10.0, 0.0, 10.0, 22.0, 20.0, 0.0, 10.0,
                              23.0, 30.0, 0.0, 10.0, 24.0, 40.0, 0.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 2, 2, 4},
                    .values = {0.25, 0.0, 10.0, 50.0, 0.25, 1.0, 20.0, 50.0,
                               0.25, 0.0, 30.0, 50.0, 0.25, 1.0, 40.0, 50.0}},
         .bias =
-            OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+            OperandInfo<float>{.data_type = V8MLOperandDataType::Enum::kFloat32,
                                .dimensions = {4},
                                .values = {-6000.0, -7000.0, 8000.0, 9000.0}},
         .expected = {0.0, 0.0, 11000.0, 9000.0}}
@@ -1037,16 +1062,16 @@ TEST_P(MLGraphTest, Conv2dTest) {
     options->setActivation(
         builder->clamp(clamp_options, scope.GetExceptionState()));
     Conv2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 4},
                   .values = {10.0, 21.0, 10.0, 0.0, 10.0, 22.0, 20.0, 0.0, 10.0,
                              23.0, 30.0, 0.0, 10.0, 24.0, 40.0, 0.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 2, 2, 4},
                    .values = {0.25, 0.0, 10.0, 50.0, 0.25, 1.0, 20.0, 50.0,
                               0.25, 0.0, 30.0, 50.0, 0.25, 1.0, 40.0, 50.0}},
         .bias =
-            OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+            OperandInfo<float>{.data_type = V8MLOperandDataType::Enum::kFloat32,
                                .dimensions = {4},
                                .values = {-6000.0, -7000.0, 8000.0, 9000.0}},
         .expected = {0.0, 0.0, 6.0, 6.0}}
@@ -1067,15 +1092,16 @@ struct ConvTranspose2dTester {
       MLGraphBuilder* builder,
       MLConvTranspose2dOptions* options = MLConvTranspose2dOptions::Create()) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* filter_operand =
-        BuildConstant(builder, filter.dimensions, filter.type, filter.values,
-                      scope.GetExceptionState());
+        BuildConstant(builder, filter.dimensions, filter.data_type,
+                      filter.values, scope.GetExceptionState());
     if (bias) {
-      options->setBias(BuildConstant(builder, bias.value().dimensions,
-                                     bias.value().type, bias.value().values,
-                                     scope.GetExceptionState()));
+      options->setBias(BuildConstant(
+          builder, bias.value().dimensions, bias.value().data_type,
+          bias.value().values, scope.GetExceptionState()));
     }
     auto* output_operand = BuildConvTranspose2d(scope, builder, input_operand,
                                                 filter_operand, options);
@@ -1111,10 +1137,10 @@ TEST_P(MLGraphTest, ConvTranspose2dTest) {
     options->setFilterLayout(
         V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
     ConvTranspose2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 3, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 3, 3, 1},
                    .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
         .expected = {1.0,  5.0,   14.0,  19.0,  15.0,  11.0,  40.0,
@@ -1132,17 +1158,18 @@ TEST_P(MLGraphTest, ConvTranspose2dTest) {
         V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
     options->setActivation(builder->relu(scope.GetExceptionState()));
     ConvTranspose2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 3, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {3, 3, 3, 1},
                    .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                               9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0,
                               1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
-        .bias = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {3},
-                                   .values = {-6000.0, -7000.0, 8000.0}},
+        .bias =
+            OperandInfo<float>{.data_type = V8MLOperandDataType::Enum::kFloat32,
+                               .dimensions = {3},
+                               .values = {-6000.0, -7000.0, 8000.0}},
         .expected = {0.0, 0.0, 8001.0, 0.0, 0.0, 8004.0, 0.0, 0.0, 8010.0,
                      0.0, 0.0, 8012.0, 0.0, 0.0, 8009.0, 0.0, 0.0, 8008.0,
                      0.0, 0.0, 8026.0, 0.0, 0.0, 8056.0, 0.0, 0.0, 8054.0,
@@ -1162,12 +1189,12 @@ TEST_P(MLGraphTest, ConvTranspose2dTest) {
         V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi);
     options->setPadding({1, 1, 1, 1});
     ConvTranspose2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 5, 5, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                              1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                              1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 3, 3, 1},
                    .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
         .expected = {48.0,  100.0, 127.0, 145.0, 101.0, 126.0, 186.0,
@@ -1185,10 +1212,10 @@ TEST_P(MLGraphTest, ConvTranspose2dTest) {
     options->setStrides({2, 2});
     options->setPadding({1, 1, 1, 1});
     ConvTranspose2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 3, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 3, 3, 1},
                    .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
         .expected = {9.0,   16.0, 18.0, 25.0, 27.0, 18.0, 41.0, 27.0, 59.0,
@@ -1205,10 +1232,10 @@ TEST_P(MLGraphTest, ConvTranspose2dTest) {
     options->setStrides({2, 2});
     options->setOutputSizes({8, 8});
     ConvTranspose2dTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 3, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 3, 3, 1},
                    .values = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0}},
         .expected = {1.0,  3.0,  7.0,  6.0,  13.0,  9.0,  15.0, 0.0,
@@ -1235,13 +1262,14 @@ struct GemmTester {
             MLGraphBuilder* builder,
             MLGemmOptions* options = MLGemmOptions::Create()) {
     // Build the graph.
-    auto* a_operand = BuildInput(builder, "input", a.dimensions, a.type,
+    auto* a_operand = BuildInput(builder, "input", a.dimensions, a.data_type,
                                  scope.GetExceptionState());
-    auto* b_operand = BuildConstant(builder, b.dimensions, b.type, b.values,
-                                    scope.GetExceptionState());
+    auto* b_operand = BuildConstant(builder, b.dimensions, b.data_type,
+                                    b.values, scope.GetExceptionState());
     if (c) {
-      options->setC(BuildConstant(builder, c.value().dimensions, c.value().type,
-                                  c.value().values, scope.GetExceptionState()));
+      options->setC(BuildConstant(builder, c.value().dimensions,
+                                  c.value().data_type, c.value().values,
+                                  scope.GetExceptionState()));
     }
     auto* output_operand =
         BuildGemm(scope, builder, a_operand, b_operand, options);
@@ -1269,10 +1297,10 @@ TEST_P(MLGraphTest, GemmTest) {
                            scope.GetExceptionState());
   {
     // Test gemm operator without operand c.
-    GemmTester<float>{.a = {.type = V8MLOperandType::Enum::kFloat32,
+    GemmTester<float>{.a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                             .dimensions = {2, 2},
                             .values = {1.0, 2.0, 2.0, 1.0}},
-                      .b = {.type = V8MLOperandType::Enum::kFloat32,
+                      .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                             .dimensions = {2, 1},
                             .values = {2.0, 4.0}},
                       .expected = {10.0, 8.0}}
@@ -1281,15 +1309,16 @@ TEST_P(MLGraphTest, GemmTest) {
   {
     // Test gemm operator with operand c.
     GemmTester<float>{
-        .a = {.type = V8MLOperandType::Enum::kFloat32,
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
               .dimensions = {2, 2},
               .values = {1.0, 2.0, 2.0, 1.0}},
-        .b = {.type = V8MLOperandType::Enum::kFloat32,
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
               .dimensions = {2, 1},
               .values = {2.0, 4.0}},
-        .c = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
-                                .dimensions = {1},
-                                .values = {1.0}},
+        .c =
+            OperandInfo<float>{.data_type = V8MLOperandDataType::Enum::kFloat32,
+                               .dimensions = {1},
+                               .values = {1.0}},
         .expected = {11.0, 9.0}}
         .Test(*this, scope, builder);
   }
@@ -1298,15 +1327,16 @@ TEST_P(MLGraphTest, GemmTest) {
     auto* options = MLGemmOptions::Create();
     options->setBTranspose(true);
     GemmTester<float>{
-        .a = {.type = V8MLOperandType::Enum::kFloat32,
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
               .dimensions = {2, 2},
               .values = {1.0, 2.0, 2.0, 1.0}},
-        .b = {.type = V8MLOperandType::Enum::kFloat32,
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
               .dimensions = {1, 2},
               .values = {2.0, 4.0}},
-        .c = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
-                                .dimensions = {1},
-                                .values = {1.0}},
+        .c =
+            OperandInfo<float>{.data_type = V8MLOperandDataType::Enum::kFloat32,
+                               .dimensions = {1},
+                               .values = {1.0}},
         .expected = {11.0, 9.0}}
         .Test(*this, scope, builder, options);
   }
@@ -1321,8 +1351,9 @@ struct HardSwishTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->hardSwish(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -1354,7 +1385,7 @@ TEST_P(MLGraphTest, HardSwishTest) {
     // The expected results should be the result of the nonlinear function, y
     // = x * max(0, min(6, (x + 3))) / 6, applied to the input tensor,
     // element-wise.
-    HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+    HardSwishTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                               .dimensions = {2},
                               .values = {-0.6, 0.6}},
                     .expected = {-0.24, 0.36}}
@@ -1362,7 +1393,7 @@ TEST_P(MLGraphTest, HardSwishTest) {
   }
   {
     // Test hardSwish operator for 0-D scalar.
-    HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+    HardSwishTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                               .dimensions = {},
                               .values = {0.6}},
                     .expected = {0.36}}
@@ -1370,7 +1401,7 @@ TEST_P(MLGraphTest, HardSwishTest) {
   }
   {
     // Test hardSwish operator for 2-D tensor.
-    HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+    HardSwishTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                               .dimensions = {2, 2},
                               .values = {-1.2, -0.6, 0.6, 1.2}},
                     .expected = {-0.36, -0.24, 0.36, 0.84}}
@@ -1378,7 +1409,7 @@ TEST_P(MLGraphTest, HardSwishTest) {
   }
   {
     // Test hardSwish operator for 3-D tensor.
-    HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+    HardSwishTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                               .dimensions = {1, 2, 2},
                               .values = {-1.2, -0.6, 0.6, 1.2}},
                     .expected = {-0.36, -0.24, 0.36, 0.84}}
@@ -1386,7 +1417,7 @@ TEST_P(MLGraphTest, HardSwishTest) {
   }
   {
     // Test hardSwish operator for 4-D tensor.
-    HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+    HardSwishTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                               .dimensions = {1, 2, 2, 1},
                               .values = {-1.2, -0.6, 0.6, 1.2}},
                     .expected = {-0.36, -0.24, 0.36, 0.84}}
@@ -1406,8 +1437,9 @@ struct Pool2dTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         BuildPool2d(scope, builder, kind, input_operand, options);
     auto [graph, build_exception] =
@@ -1437,7 +1469,7 @@ TEST_P(MLGraphTest, Pool2dTest) {
     options->setWindowDimensions({3, 3});
     Pool2dTester<float>{
         .kind = Pool2dKind::kAverage,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 4, 4, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
                              11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
@@ -1450,7 +1482,7 @@ TEST_P(MLGraphTest, Pool2dTest) {
     options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
     Pool2dTester<float>{
         .kind = Pool2dKind::kAverage,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 4, 4, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
                              11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
@@ -1464,7 +1496,7 @@ TEST_P(MLGraphTest, Pool2dTest) {
     options->setWindowDimensions({3, 3});
     Pool2dTester<float>{
         .kind = Pool2dKind::kMax,
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 4, 4, 1},
                   .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
                              11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
@@ -1486,8 +1518,9 @@ struct ReshapeTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->reshape(input_operand, new_shape, scope.GetExceptionState());
     EXPECT_EQ(output_operand->Dimensions(), expected_output_shape);
@@ -1513,56 +1546,62 @@ TEST_P(MLGraphTest, ReshapeTest) {
   MLGraphV8TestingScope scope;
   {
     // Test reshaping 1-D 1-element tensor to 0-D scalar.
-    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {1},
-                                   .values = {1.0}},
-                         .new_shape = {},
-                         .expected_output_shape = {}}
+    ReshapeTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1},
+                  .values = {1.0}},
+        .new_shape = {},
+        .expected_output_shape = {}}
         .Test(*this, scope);
   }
   {
     // Test reshaping 0-D scalar to 1-D 1-element tensor.
-    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {},
-                                   .values = {1.0}},
-                         .new_shape = {1},
-                         .expected_output_shape = {1}}
+    ReshapeTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {},
+                  .values = {1.0}},
+        .new_shape = {1},
+        .expected_output_shape = {1}}
         .Test(*this, scope);
   }
   {
     // Test reshaping 2-D tensor to 1-D tensor.
-    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {2, 2},
-                                   .values = {-10.0, -0.5, 0.5, 10.0}},
-                         .new_shape = {4},
-                         .expected_output_shape = {4}}
+    ReshapeTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .new_shape = {4},
+        .expected_output_shape = {4}}
         .Test(*this, scope);
   }
   {
     // Test reshaping from 2-D tensor to 1-D tensor with calculated dimension.
-    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {2, 2},
-                                   .values = {-10.0, -0.5, 0.5, 10.0}},
-                         .new_shape = {absl::nullopt},
-                         .expected_output_shape = {4}}
+    ReshapeTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .new_shape = {absl::nullopt},
+        .expected_output_shape = {4}}
         .Test(*this, scope);
   }
   {
     // Test reshaping from 4-D tensor to 2-D tensor.
-    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {1, 2, 2, 1},
-                                   .values = {-10.0, -0.5, 0.5, 10.0}},
-                         .new_shape = {1, 4},
-                         .expected_output_shape = {1, 4}}
+    ReshapeTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .new_shape = {1, 4},
+        .expected_output_shape = {1, 4}}
         .Test(*this, scope);
   }
   {
     // Test reshaping from 4-D tensor to 2-D tensor with calculated dimension.
-    ReshapeTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                                   .dimensions = {1, 2, 2, 1},
-                                   .values = {-10.0, -0.5, 0.5, 10.0}},
-                         .new_shape = {1, absl::nullopt},
-                         .expected_output_shape = {1, 4}}
+    ReshapeTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-10.0, -0.5, 0.5, 10.0}},
+        .new_shape = {1, absl::nullopt},
+        .expected_output_shape = {1, 4}}
         .Test(*this, scope);
   }
 }
@@ -1577,8 +1616,9 @@ struct SplitTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder,
             MLSplitOptions* options = MLSplitOptions::Create()) {
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto output_operands = builder->split(input_operand, splits, options,
                                           scope.GetExceptionState());
     MLNamedOperands named_operands;
@@ -1621,7 +1661,7 @@ TEST_P(MLGraphTest, SplitTest) {
     // Test split operator with default options.
     auto* options = MLSplitOptions::Create();
     SplitTester<float, uint32_t>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {0.0, 1.0, 2.0, 3.0}},
         .splits = 2u,
@@ -1633,7 +1673,7 @@ TEST_P(MLGraphTest, SplitTest) {
     auto* options = MLSplitOptions::Create();
     options->setAxis(1);
     SplitTester<float, uint32_t>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 4},
                   .values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
         .splits = 2u,
@@ -1645,7 +1685,7 @@ TEST_P(MLGraphTest, SplitTest) {
     // unsigned long.
     auto* options = MLSplitOptions::Create();
     SplitTester<float, Vector<uint32_t>>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {0.0, 1.0, 2.0, 3.0}},
         .splits = {1, 1},
@@ -1658,7 +1698,7 @@ TEST_P(MLGraphTest, SplitTest) {
     auto* options = MLSplitOptions::Create();
     options->setAxis(1);
     SplitTester<float, Vector<uint32_t>>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 4},
                   .values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
         .splits = {1, 2, 1},
@@ -1676,8 +1716,9 @@ struct TransposeTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder,
             MLTransposeOptions* options = MLTransposeOptions::Create()) {
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         BuildTranspose(scope, builder, input_operand, options);
     auto [graph, build_exception] =
@@ -1707,7 +1748,7 @@ TEST_P(MLGraphTest, TransposeTest) {
     // Test transpose operator with default options.
     auto* options = MLTransposeOptions::Create();
     TransposeTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 3, 4},
                   .values =
                       {
@@ -1726,7 +1767,7 @@ TEST_P(MLGraphTest, TransposeTest) {
     auto* options = MLTransposeOptions::Create();
     options->setPermutation({{0, 2, 1}});
     TransposeTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 3, 4},
                   .values =
                       {
@@ -1759,7 +1800,7 @@ struct ConcatTester {
     for (uint32_t i = 0; i < inputs.size(); ++i) {
       input_operands.push_back(BuildInput(
           builder, input_str + String::Number(i), inputs[i].dimensions,
-          inputs[i].type, scope.GetExceptionState()));
+          inputs[i].data_type, scope.GetExceptionState()));
     }
     auto* output_operand =
         builder->concat(input_operands, axis, scope.GetExceptionState());
@@ -1791,21 +1832,22 @@ TEST_P(MLGraphTest, ConcatTest) {
   V8TestingScope scope;
   {
     // Test concat operator with one input and axis = 0.
-    ConcatTester<float>{.inputs = {{.type = V8MLOperandType::Enum::kFloat32,
-                                    .dimensions = {2, 2},
-                                    .values = {1., 2., 3., 4.}}},
-                        .axis = 0,
-                        .expected_output_shape = {2, 2},
-                        .expected_output_data = {1., 2., 3., 4.}}
+    ConcatTester<float>{
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kFloat32,
+                    .dimensions = {2, 2},
+                    .values = {1., 2., 3., 4.}}},
+        .axis = 0,
+        .expected_output_shape = {2, 2},
+        .expected_output_data = {1., 2., 3., 4.}}
         .Test(*this, scope);
   }
   {
     // Test concat operator with two inputs and axis = 0.
     ConcatTester<float>{
-        .inputs = {{.type = V8MLOperandType::Enum::kFloat32,
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {2, 2},
                     .values = {1., 2., 3., 4.}},
-                   {.type = V8MLOperandType::Enum::kFloat32,
+                   {.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {2, 2},
                     .values = {1., 2., 3., 4.}}},
         .axis = 0,
@@ -1816,10 +1858,10 @@ TEST_P(MLGraphTest, ConcatTest) {
   {
     // Test concat operator with two inputs and axis = 1;
     ConcatTester<float>{
-        .inputs = {{.type = V8MLOperandType::Enum::kFloat32,
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {2, 2},
                     .values = {1., 2., 3., 4.}},
-                   {.type = V8MLOperandType::Enum::kFloat32,
+                   {.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {2, 2},
                     .values = {1., 2., 3., 4.}}},
         .axis = 1,
@@ -1829,34 +1871,35 @@ TEST_P(MLGraphTest, ConcatTest) {
   }
   {
     // Test concat operator with three inputs and axis = 0.
-    ConcatTester<float>{.inputs = {{.type = V8MLOperandType::Enum::kFloat32,
-                                    .dimensions = {1, 2},
-                                    .values = {1., 2.}},
-                                   {.type = V8MLOperandType::Enum::kFloat32,
-                                    .dimensions = {2, 2},
-                                    .values = {1., 2., 3., 4.}},
-                                   {.type = V8MLOperandType::Enum::kFloat32,
-                                    .dimensions = {3, 2},
-                                    .values = {1., 2., 3., 4., 5., 6.}}},
-                        .axis = 0,
-                        .expected_output_shape = {6, 2},
-                        .expected_output_data = {1., 2., 1., 2., 3., 4., 1., 2.,
-                                                 3., 4., 5., 6.}}
+    ConcatTester<float>{
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kFloat32,
+                    .dimensions = {1, 2},
+                    .values = {1., 2.}},
+                   {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                    .dimensions = {2, 2},
+                    .values = {1., 2., 3., 4.}},
+                   {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                    .dimensions = {3, 2},
+                    .values = {1., 2., 3., 4., 5., 6.}}},
+        .axis = 0,
+        .expected_output_shape = {6, 2},
+        .expected_output_data = {1., 2., 1., 2., 3., 4., 1., 2., 3., 4., 5.,
+                                 6.}}
         .Test(*this, scope);
   }
   {
     // Test concat operator with four inputs and axis = 2.
     ConcatTester<float>{
-        .inputs = {{.type = V8MLOperandType::Enum::kFloat32,
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {1, 2, 1},
                     .values = {1., 2.}},
-                   {.type = V8MLOperandType::Enum::kFloat32,
+                   {.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {1, 2, 2},
                     .values = {1., 2., 3., 4.}},
-                   {.type = V8MLOperandType::Enum::kFloat32,
+                   {.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {1, 2, 3},
                     .values = {1., 2., 3., 4., 5., 6.}},
-                   {.type = V8MLOperandType::Enum::kFloat32,
+                   {.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {1, 2, 4},
                     .values = {1., 2., 3., 4., 5., 6., 7., 8.}}},
         .axis = 2,
@@ -1879,8 +1922,9 @@ struct PadTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder,
             MLPadOptions* options = MLPadOptions::Create()) {
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand = BuildPad(scope, builder, input_operand,
                                     beginning_padding, ending_padding, options);
     auto [graph, build_exception] =
@@ -1910,7 +1954,7 @@ TEST_P(MLGraphTest, PadTest) {
     // Test pad operator with default options.
     auto* options = MLPadOptions::Create();
     PadTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 3},
                   .values = {1, 2, 3, 4, 5, 6}},
         .beginning_padding = {1, 2},
@@ -1924,7 +1968,7 @@ TEST_P(MLGraphTest, PadTest) {
     auto* options = MLPadOptions::Create();
     options->setValue(8);
     PadTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 3},
                   .values = {1, 2, 3, 4, 5, 6}},
         .beginning_padding = {1, 2},
@@ -1945,8 +1989,9 @@ struct SliceTester {
   void Test(MLGraphTest& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->slice(input_operand, starts, sizes, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -1976,7 +2021,7 @@ TEST_P(MLGraphTest, SliceTest) {
     // Test slice with input_shape = {3, 4, 5}, starts = {0, 0, 1} and sizes =
     // {2, 3, 4}.
     SliceTester<float>{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {3, 4, 5},
                   .values = {1,  4,  4,  -6, -3, -1, 7,  3,  1,  -8, 1,  -1,
                              -2, -3, 6,  7,  6,  1,  -5, -7, 1,  1,  5,  3,

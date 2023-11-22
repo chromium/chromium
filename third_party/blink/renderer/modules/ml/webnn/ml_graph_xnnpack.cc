@@ -377,16 +377,16 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-xnn_datatype GetXnnDataType(V8MLOperandType::Enum operand_type) {
+xnn_datatype GetXnnDataType(V8MLOperandDataType::Enum operand_type) {
   switch (operand_type) {
-    case V8MLOperandType::Enum::kFloat32:
+    case V8MLOperandDataType::Enum::kFloat32:
       return xnn_datatype_fp32;
-    case V8MLOperandType::Enum::kFloat16:
+    case V8MLOperandDataType::Enum::kFloat16:
       return xnn_datatype_fp16;
-    case V8MLOperandType::Enum::kInt32:
-    case V8MLOperandType::Enum::kUint32:
-    case V8MLOperandType::Enum::kInt8:
-    case V8MLOperandType::Enum::kUint8:
+    case V8MLOperandDataType::Enum::kInt32:
+    case V8MLOperandDataType::Enum::kUint32:
+    case V8MLOperandDataType::Enum::kInt8:
+    case V8MLOperandDataType::Enum::kUint8:
       // TODO(crbug.com/1273291): Support the quantized integer types that is a
       // WebNN v2 feature tracked by:
       // https://github.com/webmachinelearning/webnn/issues/128.
@@ -420,10 +420,10 @@ xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
                           uint32_t& value_id,
                           String& error_message) {
   DCHECK(operand);
-  xnn_datatype datatype = GetXnnDataType(operand->Type());
+  xnn_datatype datatype = GetXnnDataType(operand->DataType());
   if (datatype == xnn_datatype_invalid) {
-    error_message = "The operand type (" +
-                    V8MLOperandType(operand->Type()).AsString() +
+    error_message = "The operand data type (" +
+                    V8MLOperandDataType(operand->DataType()).AsString() +
                     ") is not supported.";
     return xnn_status_unsupported_parameter;
   }
@@ -976,13 +976,13 @@ xnn_status DefineXnnNodeForElementWiseBinary(
         return xnn_status_unsupported_parameter;
       }
 
-      // Currently, XNNPACK only supports fp32 input type for square and
+      // Currently, XNNPACK only supports fp32 input data type for square and
       // square_root operators.
-      if (operand_a->Type() != V8MLOperandType::Enum::kFloat32) {
+      if (operand_a->DataType() != V8MLOperandDataType::Enum::kFloat32) {
         error_message = "Pow only supports float32 operands.";
         return xnn_status_unsupported_parameter;
       }
-      CHECK_EQ(operand_b->Type(), V8MLOperandType::Enum::kFloat32);
+      CHECK_EQ(operand_b->DataType(), V8MLOperandDataType::Enum::kFloat32);
 
       const auto* array_buffer_view = operand_b->ArrayBufferView();
       CHECK(array_buffer_view);

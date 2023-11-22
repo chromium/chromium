@@ -80,12 +80,12 @@ DEFINE_PROTO_FUZZER(const webnn_proto::conv2d& conv2d) {
       exception_state);
   CHECK(builder);
 
-  auto* input =
-      BuildInput(builder, "input", Vector<uint32_t>(conv2d.input_dimensions()),
-                 ToV8MLOperandType(conv2d.input_type()), exception_state);
-  auto* filter =
-      BuildConstant(builder, Vector<uint32_t>(conv2d.filter_dimensions()),
-                    ToV8MLOperandType(conv2d.filter_type()), exception_state);
+  auto* input = BuildInput(
+      builder, "input", Vector<uint32_t>(conv2d.input_dimensions()),
+      ToV8MLOperandDataType(conv2d.input_data_type()), exception_state);
+  auto* filter = BuildConstant(
+      builder, Vector<uint32_t>(conv2d.filter_dimensions()),
+      ToV8MLOperandDataType(conv2d.filter_data_type()), exception_state);
   auto* conv2d_options = blink::MLConv2dOptions::Create();
   if (conv2d.has_conv2d_options()) {
     ProtobufToConv2dOptions(conv2d.conv2d_options(), conv2d_options);

@@ -52,19 +52,20 @@ Vector<int32_t> ConvertDimensions(const Vector<uint32_t>& input_dimensions) {
   return output_dimensions;
 }
 
-tflite::TensorType BlinkOperandTypeToTFLite(V8MLOperandType::Enum type) {
-  switch (type) {
-    case V8MLOperandType::Enum::kFloat32:
+tflite::TensorType BlinkOperandTypeToTFLite(
+    V8MLOperandDataType::Enum data_type) {
+  switch (data_type) {
+    case V8MLOperandDataType::Enum::kFloat32:
       return tflite::TensorType_FLOAT32;
-    case V8MLOperandType::Enum::kFloat16:
+    case V8MLOperandDataType::Enum::kFloat16:
       return tflite::TensorType_FLOAT16;
-    case V8MLOperandType::Enum::kInt32:
+    case V8MLOperandDataType::Enum::kInt32:
       return tflite::TensorType_INT32;
-    case V8MLOperandType::Enum::kUint32:
+    case V8MLOperandDataType::Enum::kUint32:
       return tflite::TensorType_UINT32;
-    case V8MLOperandType::Enum::kInt8:
+    case V8MLOperandDataType::Enum::kInt8:
       return tflite::TensorType_INT8;
-    case V8MLOperandType::Enum::kUint8:
+    case V8MLOperandDataType::Enum::kUint8:
       return tflite::TensorType_UINT8;
   }
   NOTREACHED_NORETURN();
@@ -272,7 +273,7 @@ int32_t MLGraphTfLiteConverter::SerializeTensor(
   // Create `Tensor` with operand shape, the index of buffer and the name.
   const auto dimensions =
       builder_.CreateVector<int32_t>(ConvertDimensions(operand->Dimensions()));
-  const auto operand_type = BlinkOperandTypeToTFLite(operand->Type());
+  const auto operand_type = BlinkOperandTypeToTFLite(operand->DataType());
   const auto operand_name =
       name.has_value() ? builder_.CreateString(name->Utf8()) : 0;
   tensors_.emplace_back(tflite::CreateTensor(builder_, std::move(dimensions),

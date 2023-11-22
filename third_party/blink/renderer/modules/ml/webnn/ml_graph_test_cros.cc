@@ -244,13 +244,13 @@ struct ElementWiseAddTester {
     auto* builder =
         CreateMLGraphBuilder(scope.GetExecutionContext(),
                              scope.GetScriptState(), scope.GetExceptionState());
-    auto* input = BuildInput(builder, "input", lhs.dimensions, lhs.type,
+    auto* input = BuildInput(builder, "input", lhs.dimensions, lhs.data_type,
                              scope.GetExceptionState());
-    auto* constant = BuildConstant(builder, rhs.dimensions, rhs.type,
+    auto* constant = BuildConstant(builder, rhs.dimensions, rhs.data_type,
                                    rhs.values, scope.GetExceptionState());
     auto* output = BuildElementWiseBinary(
         scope, builder, ElementWiseBinaryKind::kAdd, input, constant);
-    EXPECT_EQ(output->Type(), expected.type);
+    EXPECT_EQ(output->DataType(), expected.data_type);
     auto [graph, exception] =
         helper.BuildGraph(scope, builder, {{"output", output}});
     EXPECT_NE(graph, nullptr);
@@ -297,14 +297,14 @@ struct ElementWiseAddTester {
     // A list of all tflite |Tensor| used in this model.
     Vector<flatbuffers::Offset<tflite::Tensor>> tensors;
     // Create tflite |Tensor| for constant tensor.
-    CHECK(lhs.type == V8MLOperandType::Enum::kFloat32);
+    CHECK(lhs.data_type == V8MLOperandDataType::Enum::kFloat32);
     uint32_t lhs_buffer_index = 0;
     tensors.emplace_back(tflite::CreateTensor(
         builder,
         builder.CreateVector<int32_t>(ConvertDimensions(lhs.dimensions)), type,
         lhs_buffer_index, builder.CreateString("input")));
     // Create tflite |Tensor| for input tensor.
-    CHECK(rhs.type == V8MLOperandType::Enum::kFloat32);
+    CHECK(rhs.data_type == V8MLOperandDataType::Enum::kFloat32);
     uint32_t rhs_buffer_index = 1;
     tensors.emplace_back(tflite::CreateTensor(
         builder,
@@ -358,13 +358,13 @@ TEST_P(MLGraphTestCrOS, BuildGraphWithTfliteModel) {
   {
     // Test element-wise add operator for two 1-D tensors.
     ElementWiseAddTester<float>{
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2},
                 .values = {1.0, 2.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2},
                 .values = {3.0, 4.0}},
-        .expected = {.type = V8MLOperandType::Enum::kFloat32,
+        .expected = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {2},
                      .values = {4.0, 6.0}}}
         .Test(*this, scope);
@@ -373,13 +373,13 @@ TEST_P(MLGraphTestCrOS, BuildGraphWithTfliteModel) {
     // Test element-wise add operator for 1-D tensor broadcasting to 2-D
     // tensor.
     ElementWiseAddTester<float>{
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2, 2},
                 .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2},
                 .values = {5.0, 6.0}},
-        .expected = {.type = V8MLOperandType::Enum::kFloat32,
+        .expected = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {2, 2},
                      .values = {6.0, 8.0, 8.0, 10.0}}}
         .Test(*this, scope);

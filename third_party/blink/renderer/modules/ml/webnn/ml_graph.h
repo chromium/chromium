@@ -44,7 +44,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // MLOperandDescriptor because neither byte length calculation from dimensions
   // nor GC support is needed for the implementation.
   struct ResourceInfo {
-    V8MLOperandType::Enum type;
+    V8MLOperandDataType::Enum data_type;
     size_t byte_length;
   };
   const HashMap<String, ResourceInfo>& GetInputResourcesInfo() const;

@@ -6,20 +6,21 @@
 
 namespace blink {
 
-V8MLOperandType::Enum ToV8MLOperandType(webnn_proto::MLOperandType type) {
-  switch (type) {
-    case webnn_proto::MLOperandType::FLOAT32:
-      return V8MLOperandType::Enum::kFloat32;
-    case webnn_proto::MLOperandType::FLOAT16:
-      return V8MLOperandType::Enum::kFloat16;
-    case webnn_proto::MLOperandType::INT32:
-      return V8MLOperandType::Enum::kInt32;
-    case webnn_proto::MLOperandType::UINT32:
-      return V8MLOperandType::Enum::kUint32;
-    case webnn_proto::MLOperandType::INT8:
-      return V8MLOperandType::Enum::kInt8;
-    case webnn_proto::MLOperandType::UINT8:
-      return V8MLOperandType::Enum::kUint8;
+V8MLOperandDataType::Enum ToV8MLOperandDataType(
+    webnn_proto::MLOperandDataType data_type) {
+  switch (data_type) {
+    case webnn_proto::MLOperandDataType::FLOAT32:
+      return V8MLOperandDataType::Enum::kFloat32;
+    case webnn_proto::MLOperandDataType::FLOAT16:
+      return V8MLOperandDataType::Enum::kFloat16;
+    case webnn_proto::MLOperandDataType::INT32:
+      return V8MLOperandDataType::Enum::kInt32;
+    case webnn_proto::MLOperandDataType::UINT32:
+      return V8MLOperandDataType::Enum::kUint32;
+    case webnn_proto::MLOperandDataType::INT8:
+      return V8MLOperandDataType::Enum::kInt8;
+    case webnn_proto::MLOperandDataType::UINT8:
+      return V8MLOperandDataType::Enum::kUint8;
   }
 }
 

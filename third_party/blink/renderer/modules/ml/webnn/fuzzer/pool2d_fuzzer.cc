@@ -79,9 +79,9 @@ DEFINE_PROTO_FUZZER(const webnn_proto::pool2d& pool2d) {
       exception_state);
   CHECK(builder);
 
-  auto* input =
-      BuildInput(builder, "input", Vector<uint32_t>(pool2d.input_dimensions()),
-                 ToV8MLOperandType(pool2d.input_type()), exception_state);
+  auto* input = BuildInput(
+      builder, "input", Vector<uint32_t>(pool2d.input_dimensions()),
+      ToV8MLOperandDataType(pool2d.input_data_type()), exception_state);
   auto* pool2d_options = blink::MLPool2dOptions::Create();
   if (pool2d.has_pool2d_options()) {
     ProtobufToPool2dOptions(pool2d.pool2d_options(), pool2d_options);

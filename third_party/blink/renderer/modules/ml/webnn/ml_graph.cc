@@ -49,12 +49,13 @@ bool ValidateNamedArrayBufferViews(
       return false;
     }
     const auto& info = resources_info.at(name);
-    if (array_buffer_view->GetType() != GetArrayBufferViewType(info.type)) {
+    if (array_buffer_view->GetType() !=
+        GetArrayBufferViewType(info.data_type)) {
       error_message = String::Format(
           "The type (%s) of the array buffer view with name \"%s\" doesn't "
-          "match the expected operand type (%s).",
+          "match the expected operand data type (%s).",
           array_buffer_view->TypeName(), name.Utf8().c_str(),
-          V8MLOperandType(info.type).AsCStr());
+          V8MLOperandDataType(info.data_type).AsCStr());
       return false;
     }
     if (array_buffer_view->byteLength() != info.byte_length) {
@@ -197,7 +198,7 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
     }
     // Setup resource info for this output operand.
     output_resources_info_.insert(
-        name, ResourceInfo({.type = operand->Type(),
+        name, ResourceInfo({.data_type = operand->DataType(),
                             .byte_length = operand->ByteLength()}));
     // Mark its dependent operator is visited.
     visited_operators.insert(operand->Operator());
@@ -242,7 +243,7 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
           // Setup resource info for this input operand.
           input_resources_info_.insert(
               operand->Name(),
-              ResourceInfo({.type = operand->Type(),
+              ResourceInfo({.data_type = operand->DataType(),
                             .byte_length = operand->ByteLength()}));
           break;
         case MLOperand::OperandKind::kConstant:
