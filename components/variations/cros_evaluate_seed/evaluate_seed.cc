@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -47,7 +48,8 @@ constexpr char kDefaultLocalStatePath[] = "/home/chronos/Local State";
 
 bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
                          SafeSeed&& safe_seed,
-                         featured::ComputedState* computed_state) {
+                         featured::ComputedState* computed_state,
+                         GetCrOSVariationsFieldTrialCreator get_creator) {
   // In the null seed case, featured just won't exec() evaluate_seed.
   SeedType seed_type =
       safe_seed.use_safe_seed ? SeedType::kSafeSeed : SeedType::kRegularSeed;
@@ -59,8 +61,9 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
   }
 
   CrosVariationsServiceClient client;
-  auto field_trial_creator =
-      GetFieldTrialCreator(local_state.get(), &client, safe_seed_details);
+
+  std::unique_ptr<CrOSVariationsFieldTrialCreator> field_trial_creator =
+      std::move(get_creator).Run(local_state.get(), &client, safe_seed_details);
 
   EarlyBootEnabledStateProvider enabled_state_provider;
 
@@ -80,41 +83,42 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
 
   variations::PlatformFieldTrials platform_field_trials;
 
-  if (!field_trial_creator.SetUpFieldTrials(
-          // TODO(http://b/297251107): implement overrides via chrome://flags.
-          /*variation_ids=*/std::vector<std::string>(),
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              variations::switches::kForceVariationIds),
-          /*extra_overrides=*/
-          std::vector<base::FeatureList::FeatureOverrideInfo>(),
-          std::move(feature_list), metrics_state_manager.get(),
-          &platform_field_trials, &safe_seed_manager,
-          /*add_entropy_source_to_variations_ids=*/false)) {
-    LOG(ERROR) << "Failed to set up field trials!";
-    return false;
-  }
+  // Despite documentation, SetUpFieldTrials returns false if it didn't use the
+  // seed (e.g. if it used fieldtrial_testing_config), *not* just on failures.
+  bool used_seed = field_trial_creator->SetUpFieldTrials(
+      // TODO(http://b/297251107): implement overrides via chrome://flags.
+      /*variation_ids=*/std::vector<std::string>(),
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          variations::switches::kForceVariationIds),
+      /*extra_overrides=*/
+      std::vector<base::FeatureList::FeatureOverrideInfo>(),
+      std::move(feature_list), metrics_state_manager.get(),
+      &platform_field_trials, &safe_seed_manager,
+      /*add_entropy_source_to_variations_ids=*/false);
 
-  if (seed_type == SeedType::kRegularSeed) {
-    // We use the safe seed manager here because the
-    // CrOSVariationsFieldTrialCreator (in the parent class's
-    // CreateTrialsFromSeed) calls CrOSSafeSeedManager::SetActiveSeedState when
-    // it marks a seed as active (NOT when it marks a seed as safe). This
-    // is just to retrieve that active state, and doesn't necessarily indicate
-    // that the seed is safe yet (we wait for ash to start to determine that).
-    std::optional<featured::SeedDetails> details =
-        safe_seed_manager.GetUsedSeed();
-    if (details.has_value()) {
-      computed_state->mutable_used_seed()->CopyFrom(details.value());
+  if (used_seed) {
+    if (seed_type == SeedType::kRegularSeed) {
+      // We use the safe seed manager here because the
+      // CrOSVariationsFieldTrialCreator (in the parent class's
+      // CreateTrialsFromSeed) calls CrOSSafeSeedManager::SetActiveSeedState
+      // when it marks a seed as active (NOT when it marks a seed as safe). This
+      // is just to retrieve that active state, and doesn't necessarily indicate
+      // that the seed is safe yet (we wait for ash to start to determine that).
+      std::optional<featured::SeedDetails> details =
+          safe_seed_manager.GetUsedSeed();
+      if (details.has_value()) {
+        computed_state->mutable_used_seed()->CopyFrom(details.value());
+      } else {
+        LOG(ERROR) << "Couldn't retrieve seed details; proceeding without them";
+      }
     } else {
-      LOG(ERROR) << "Couldn't retrieve seed details; proceeding without them";
+      // In this case, CrOSSafeSeedManager::SetActiveSeedState is never called,
+      // so use the seed we requested to be used.
+      CHECK_EQ(seed_type, SeedType::kSafeSeed);
+      // Set above, at start of function.
+      CHECK(safe_seed_details.has_value());
+      computed_state->mutable_used_seed()->CopyFrom(safe_seed_details.value());
     }
-  } else {
-    // In this case, CrOSSafeSeedManager::SetActiveSeedState is never called, so
-    // use the seed we requested to be used.
-    CHECK_EQ(seed_type, SeedType::kSafeSeed);
-    // Set above, at start of function.
-    CHECK(safe_seed_details.has_value());
-    computed_state->mutable_used_seed()->CopyFrom(safe_seed_details.value());
   }
 
   // TODO(b/297870545): serialize correctly.
@@ -266,7 +270,7 @@ std::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
   return SafeSeed{false, std::move(safe_seed)};
 }
 
-CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
+std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
     PrefService* local_state,
     CrosVariationsServiceClient* client,
     const std::optional<featured::SeedDetails>& safe_seed_details) {
@@ -280,10 +284,18 @@ CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
   auto seed_store =
       std::make_unique<VariationsSeedStore>(local_state, std::move(safe_seed));
 
-  return CrOSVariationsFieldTrialCreator(client, std::move(seed_store));
+  return std::make_unique<CrOSVariationsFieldTrialCreator>(
+      client, std::move(seed_store));
 }
 
 int EvaluateSeedMain(FILE* in_stream, FILE* out_stream) {
+  return EvaluateSeedMain(in_stream, out_stream,
+                          base::BindOnce(&GetFieldTrialCreator));
+}
+
+int EvaluateSeedMain(FILE* in_stream,
+                     FILE* out_stream,
+                     GetCrOSVariationsFieldTrialCreator get_creator) {
   std::optional<SafeSeed> safe_seed = GetSafeSeedData(in_stream);
   if (!safe_seed.has_value()) {
     LOG(ERROR) << "Failed to read seed from stdin";
@@ -306,7 +318,7 @@ int EvaluateSeedMain(FILE* in_stream, FILE* out_stream) {
 
   featured::ComputedState computed_state;
   if (!DetermineTrialState(std::move(local_state), std::move(safe_seed.value()),
-                           &computed_state)) {
+                           &computed_state, std::move(get_creator))) {
     LOG(ERROR) << "Failed to determine trial state; will use defaults";
     return EXIT_FAILURE;
   }

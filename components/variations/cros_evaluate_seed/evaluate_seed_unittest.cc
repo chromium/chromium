@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -24,9 +25,11 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
+#include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
 #include "components/version_info/version_info.h"
@@ -79,15 +82,102 @@ const SignedSeedData kEarlyBootTestData{
     kEarlyBootTestSeed_StudyNames, kEarlyBootTestSeed_Uncompressed,
     kEarlyBootTestSeed_Compressed, kEarlyBootTestSeed_Signature};
 
+// Create mock testing config equivalent to:
+// {
+//   "CrOSEarlyBootTestStudy": [
+//       {
+//           "platforms": [
+//               "android",
+//               "android_weblayer",
+//               "android_webview",
+//               "chromeos",
+//               "chromeos_lacros",
+//               "fuchsia",
+//               "ios",
+//               "linux",
+//               "mac",
+//               "windows"
+//           ],
+//           "experiments": [
+//               {
+//                   "name": "Enabled",
+//                   "params": {
+//                       "fieldtrial_test_key": "fieldtrial_test_value"
+//                   },
+//                   "enable_features": [
+//                       "CrOSEarlyBootTestFeature"
+//                   ]
+//               }
+//           ]
+//       }
+//   ]
+// }
+
+const Study::Platform array_kEarlyBootFieldTrialConfig_platforms[] = {
+    Study::PLATFORM_ANDROID,
+    Study::PLATFORM_ANDROID_WEBLAYER,
+    Study::PLATFORM_ANDROID_WEBVIEW,
+    Study::PLATFORM_CHROMEOS,
+    Study::PLATFORM_CHROMEOS_LACROS,
+    Study::PLATFORM_FUCHSIA,
+    Study::PLATFORM_IOS,
+    Study::PLATFORM_LINUX,
+    Study::PLATFORM_MAC,
+    Study::PLATFORM_WINDOWS,
+};
+
+const char* early_boot_enable_features[] = {"CrOSEarlyBootTestFeature"};
+const FieldTrialTestingExperimentParams
+    array_kEarlyBootFieldTrialConfig_params[] = {
+        {
+            "fieldtrial_test_key",
+            "fieldtrial_test_value",
+        },
+};
+
+const FieldTrialTestingExperiment
+    array_kEarlyBootFieldTrialConfig_experiments[] = {
+        {/*name=*/"Enabled",
+         /*platforms=*/array_kEarlyBootFieldTrialConfig_platforms,
+         /*platforms_size=*/
+         std::size(array_kEarlyBootFieldTrialConfig_platforms),
+         /*form_factors=*/{},
+         /*form_factors_size=*/0,
+         /*is_low_end_device=*/absl::nullopt,
+         /*min_os_version=*/nullptr,
+         /*params=*/array_kEarlyBootFieldTrialConfig_params,
+         /*params_size=*/std::size(array_kEarlyBootFieldTrialConfig_params),
+         /*enable_features=*/early_boot_enable_features,
+         /*enable_features_size=*/std::size(early_boot_enable_features),
+         /*disable_features=*/nullptr,
+         /*disable_features_size=*/0,
+         /*forcing_flag=*/nullptr,
+         /*override_ui_string=*/nullptr,
+         /*override_ui_string_size=*/0},
+};
+
+const FieldTrialTestingStudy array_kEarlyBootFieldTrialConfig_studies[] = {
+    {/*name=*/"CrOSEarlyBootTestStudy",
+     /*experiments=*/array_kEarlyBootFieldTrialConfig_experiments,
+     /*experiments_size=*/
+     std::size(array_kEarlyBootFieldTrialConfig_experiments)},
+};
+
+const FieldTrialTestingConfig kEarlyBootTestingConfig = {
+    array_kEarlyBootFieldTrialConfig_studies,
+    std::size(array_kEarlyBootFieldTrialConfig_studies),
+};
+
 std::unique_ptr<ClientFilterableState> GetBasicClientFilterableState() {
   CrosVariationsServiceClient client;
   TestingPrefServiceSimple prefs;
   metrics::MetricsService::RegisterPrefs(prefs.registry());
   ::variations::VariationsService::RegisterPrefs(prefs.registry());
-  CrOSVariationsFieldTrialCreator creator =
+  std::unique_ptr<CrOSVariationsFieldTrialCreator> creator =
       GetFieldTrialCreator(&prefs, &client, /*safe_seed_details=*/std::nullopt);
 
-  return creator.GetClientFilterableStateForVersion(version_info::GetVersion());
+  return creator->GetClientFilterableStateForVersion(
+      version_info::GetVersion());
 }
 
 // Largely copied from
@@ -125,6 +215,49 @@ std::optional<std::string> DecodeBase64AndDecompress(
     return std::nullopt;
   }
   return result;
+}
+
+class TestCrOSVariationsFieldTrialCreator
+    : public CrOSVariationsFieldTrialCreator {
+ public:
+  TestCrOSVariationsFieldTrialCreator(
+      VariationsServiceClient* client,
+      std::unique_ptr<VariationsSeedStore> seed_store)
+      : CrOSVariationsFieldTrialCreator(client, std::move(seed_store)) {}
+
+  TestCrOSVariationsFieldTrialCreator(
+      const TestCrOSVariationsFieldTrialCreator&) = delete;
+  TestCrOSVariationsFieldTrialCreator& operator=(
+      const TestCrOSVariationsFieldTrialCreator&) = delete;
+
+  ~TestCrOSVariationsFieldTrialCreator() override = default;
+
+ protected:
+  // We override this method so that a mock testing config is used instead of
+  // the one defined in fieldtrial_testing_config.json.
+  void ApplyFieldTrialTestingConfig(base::FeatureList* feature_list) override {
+    AssociateParamsFromFieldTrialConfig(kEarlyBootTestingConfig,
+                                        base::DoNothing(), GetPlatform(),
+                                        GetCurrentFormFactor(), feature_list);
+  }
+};
+
+// Create a TestCrOSVariationsFieldTrialCreator. Exposed to use as a callback.
+std::unique_ptr<CrOSVariationsFieldTrialCreator>
+CreateTestCrOSVariationsFieldTrialCreator(
+    PrefService* local_state,
+    CrosVariationsServiceClient* client,
+    const std::optional<featured::SeedDetails>& safe_seed_details) {
+  // This argument is not needed. It is only included for compatibility with the
+  // non-test signature.
+  (void)safe_seed_details;
+
+  auto safe_seed =
+      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state);
+  auto seed_store =
+      std::make_unique<VariationsSeedStore>(local_state, std::move(safe_seed));
+  return std::make_unique<TestCrOSVariationsFieldTrialCreator>(
+      client, std::move(seed_store));
 }
 
 }  // namespace
@@ -504,6 +637,48 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_SafeSeed_Evaluate) {
   EXPECT_EQ(read_output.used_seed().signature(), kEarlyBootTestSeed_Signature);
 }
 
+// Verify that the FieldTrialTestingConfig is applied, rather than any seeds.
+TEST_F(VariationsCrosEvaluateSeedMainTest, Main_FieldTrialConfig) {
+  // This should be ignored.
+  WriteSeedData(local_state_writer_.get(), kEarlyBootTestData,
+                kRegularSeedPrefKeys);
+  task_environment_.RunUntilIdle();
+
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kDisableFieldTrialTestingConfig);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableFieldTrialTestingConfig);
+
+  // This is required so that we can use our hard-coded fake
+  // fieldtrial_testing_config (see kEarlyBootTestingConfig), rather than the
+  // actual fieldtrial_testing_config.json.
+  base::OnceCallback get_field_trial_creator =
+      base::BindOnce(&CreateTestCrOSVariationsFieldTrialCreator);
+
+  FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
+  ASSERT_NE(out_stream, nullptr);
+  EXPECT_EQ(EXIT_SUCCESS, EvaluateSeedMain(nullptr, out_stream,
+                                           std::move(get_field_trial_creator)));
+
+  // Check that the feature was correctly serialized.
+  std::string serialized_proto;
+  ASSERT_TRUE(base::ReadFileToString(out_file_.path(), &serialized_proto));
+
+  featured::ComputedState read_output;
+  ASSERT_TRUE(read_output.ParseFromString(serialized_proto));
+  ASSERT_EQ(read_output.overrides_size(), 1);
+  const featured::FeatureOverride& feature = read_output.overrides(0);
+  EXPECT_EQ(feature.name(), "CrOSEarlyBootTestFeature");
+  EXPECT_TRUE(feature.enabled());
+  EXPECT_EQ(feature.trial_name(), "CrOSEarlyBootTestStudy");
+  EXPECT_EQ(feature.group_name(), "Enabled");
+  ASSERT_EQ(feature.params_size(), 1);
+  EXPECT_EQ(feature.params(0).key(), "fieldtrial_test_key");
+  EXPECT_EQ(feature.params(0).value(), "fieldtrial_test_value");
+
+  EXPECT_FALSE(read_output.has_used_seed());
+}
+
 TEST_F(VariationsCrosEvaluateSeedMainTest, Main_BadJson) {
   ASSERT_TRUE(base::WriteFile(local_state_.path(), "{"));
 
@@ -525,7 +700,7 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_EmptyLocalState) {
 
   FILE* out_stream = fopen(out_file_.path().value().c_str(), "w");
   ASSERT_NE(out_stream, nullptr);
-  EXPECT_EQ(EXIT_FAILURE, EvaluateSeedMain(nullptr, out_stream));
+  EXPECT_EQ(EXIT_SUCCESS, EvaluateSeedMain(nullptr, out_stream));
 }
 
 TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoStdin) {

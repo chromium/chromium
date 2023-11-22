@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/cros_evaluate_seed/cros_variations_field_trial_creator.h"
@@ -64,10 +65,16 @@ std::optional<SafeSeed> GetSafeSeedData(FILE* stream);
 // Return a CrOSVariationsFieldTrialCreator for either the safe seed or the
 // local-state-based seed, depending on whether |safe_seed_details| has a safe
 // seed specified.
-CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
+std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
     PrefService* local_state,
     CrosVariationsServiceClient* client,
     const std::optional<featured::SeedDetails>& safe_seed_details);
+
+typedef base::OnceCallback<std::unique_ptr<CrOSVariationsFieldTrialCreator>(
+    PrefService* local_state,
+    CrosVariationsServiceClient* client,
+    const std::optional<featured::SeedDetails>& safe_seed_details)>
+    GetCrOSVariationsFieldTrialCreator;
 
 // Evaluate the seed state, writing serialized computed output to stdout.
 // In most cases, this will read seed state from the local state file as
@@ -76,8 +83,16 @@ CrOSVariationsFieldTrialCreator GetFieldTrialCreator(
 // If kSafeSeedSwitch is specified, read SeedDetails from |in_stream| for safe
 // seed and associated data.
 // Writes a serialized ComputedState proto to |out_stream|.
+// Uses |GetFieldTrialCreator| to get a CrOSVariationsFieldTrialCreator.
 // Return values are standard for main methods (EXIT_SUCCESS / EXIT_FAILURE).
 int EvaluateSeedMain(FILE* in_stream, FILE* out_stream);
+
+// |get_creator| is a callback that will be invoked instead of
+// |GetFieldTrialCreator| to get a CrOSVariationsFieldTrialCreator. Otherwise,
+// the same as EvaluateSeedMain.
+int EvaluateSeedMain(FILE* in_stream,
+                     FILE* out_stream,
+                     GetCrOSVariationsFieldTrialCreator get_creator);
 
 }  // namespace variations::cros_early_boot::evaluate_seed
 
