@@ -70,9 +70,10 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         mTabModelSelector = tabModelSelector;
         mProfile = profile;
     }
+
     @Override
     public void downloadPage(String url) {
-        RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
+        RequestCoordinatorBridge.getForProfile(mProfile)
                 .savePageLater(
                         url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* user requested*/);
     }
@@ -159,14 +160,22 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
-            BottomSheetController bottomSheetController, WindowAndroid windowAndroid) {
-            SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
-            SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
-            SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
-                    windowAndroid, DeviceLockActivityLauncherImpl.get(), bottomSheetController,
-                    Profile.getLastUsedRegularProfile(), null, null, signinAccessPoint);
-            signinCoordinator.show();
+    public void showSignInInterstitial(
+            @SigninAccessPoint int signinAccessPoint,
+            BottomSheetController bottomSheetController,
+            WindowAndroid windowAndroid) {
+        SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
+        SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
+        SigninBottomSheetCoordinator signinCoordinator =
+                new SigninBottomSheetCoordinator(
+                        windowAndroid,
+                        DeviceLockActivityLauncherImpl.get(),
+                        bottomSheetController,
+                        mProfile,
+                        null,
+                        null,
+                        signinAccessPoint);
+        signinCoordinator.show();
     }
 
     /**
