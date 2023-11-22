@@ -1203,7 +1203,8 @@ TEST_F(NightLightTest, ManualStatusToggleCanPersistAfterResumeFromSuspend) {
 
 // Fixture for testing behavior of Night Light when displays support hardware
 // CRTC matrices.
-class NightLightCrtcTest : public NightLightTest {
+class NightLightCrtcTest : public NightLightTest,
+                           display::NativeDisplayObserver {
  public:
   NightLightCrtcTest()
       : logger_(std::make_unique<display::test::ActionLogger>()) {}
@@ -1224,6 +1225,7 @@ class NightLightCrtcTest : public NightLightTest {
     display_manager()->configurator()->SetDelegateForTesting(
         std::unique_ptr<display::NativeDisplayDelegate>(
             native_display_delegate_));
+    native_display_delegate_->AddObserver(this);
     display_change_observer_ =
         std::make_unique<display::DisplayChangeObserver>(display_manager());
     test_api_ = std::make_unique<display::DisplayConfigurator::TestApi>(
@@ -1234,8 +1236,13 @@ class NightLightCrtcTest : public NightLightTest {
     // DisplayChangeObserver access DeviceDataManager in its destructor, so
     // destroy it first.
     display_change_observer_ = nullptr;
+    native_display_delegate_->RemoveObserver(this);
     NightLightTest::TearDown();
   }
+
+  // NativeDisplayObserver:
+  void OnConfigurationChanged() override {}
+  void OnDisplaySnapshotsInvalidated() override { cached_snapshots_.clear(); }
 
   struct TestSnapshotParams {
     bool has_ctm_support;
@@ -1248,6 +1255,8 @@ class NightLightCrtcTest : public NightLightTest {
   std::vector<display::DisplaySnapshot*> BuildAndGetDisplaySnapshots(
       const std::vector<TestSnapshotParams>& snapshot_params) {
     DCHECK_EQ(2u, snapshot_params.size());
+    std::move(begin(owned_snapshots_), end(owned_snapshots_),
+              std::back_inserter(cached_snapshots_));
     owned_snapshots_.clear();
     owned_snapshots_.emplace_back(
         display::FakeDisplaySnapshot::Builder()
@@ -1327,6 +1336,10 @@ class NightLightCrtcTest : public NightLightTest {
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
 
   std::vector<std::unique_ptr<display::DisplaySnapshot>> owned_snapshots_;
+  // Outputs which have been removed from |owned_snapshots_| but cannot be
+  // deleted because they may still be referenced by the DisplayConfigurator
+  // cache.
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> cached_snapshots_;
 };
 
 // static
