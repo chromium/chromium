@@ -76,20 +76,30 @@ class FormCacheBrowserTest : public content::RenderViewTest {
                             base::Unretained(this)));
     scoped_feature_list_.InitAndEnableFeature(
         features::kAutofillEnableSelectList);
+    field_data_manager_ = base::MakeRefCounted<FieldDataManager>();
   }
   ~FormCacheBrowserTest() override = default;
   FormCacheBrowserTest(const FormCacheBrowserTest&) = delete;
   FormCacheBrowserTest& operator=(const FormCacheBrowserTest&) = delete;
+
+  FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
+    return form_cache.UpdateFormCache(GetFieldDataManager());
+  }
 
  protected:
   std::string GetFocusLog() {
     return focus_test_utils_->GetFocusLog(GetMainFrame()->GetDocument());
   }
 
+  FieldDataManager& GetFieldDataManager() const {
+    return *field_data_manager_.get();
+  }
+
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_refptr<FieldDataManager> field_data_manager_;
 };
 
 TEST_F(FormCacheBrowserTest, UpdatedForms) {
@@ -412,6 +422,7 @@ FormFieldData* FindFieldByName(FormData& form_data,
 // autofill.
 void FillAndCheckState(
     const FormData& form_data,
+    FieldDataManager& field_data_manager,
     const blink::WebFormControlElement& autofill_initiating_element,
     const std::vector<FillElementData>& form_to_fill,
     absl::optional<blink::WebInputElement> checkbox_element = absl::nullopt,
@@ -436,7 +447,8 @@ void FillAndCheckState(
 
   form_util::ApplyFormAction(values_to_fill.fields, autofill_initiating_element,
                              mojom::ActionType::kFill,
-                             mojom::ActionPersistence::kFill);
+                             mojom::ActionPersistence::kFill,
+                             field_data_manager);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
     EXPECT_EQ(field_to_fill.value, field_to_fill.element.Value().Utf16());
@@ -474,14 +486,14 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   auto select_element = GetFormControlElementById(doc, "select");
   auto selectlist_element = GetFormControlElementById(doc, "selectlist");
 
-  FillAndCheckState(forms.updated_forms[0], text,
+  FillAndCheckState(forms.updated_forms[0], GetFieldDataManager(), text,
                     {{text, u"test"},
                      {select_element, u"first"},
                      {selectlist_element, u"uno"}});
 
   // Validate that clearing works, in particular that the previous values
   // were saved correctly.
-  form_cache.ClearSectionWithElement(text);
+  form_cache.ClearSectionWithElement(text, GetFieldDataManager());
 
   EXPECT_EQ("", text.Value().Ascii());
   EXPECT_EQ("second", select_element.Value().Ascii());
@@ -520,10 +532,11 @@ TEST_F(FormCacheBrowserTest,
 
   // Simulate filling the form using Autofill.
   form_util::ApplyFormAction(values_to_fill, fname, mojom::ActionType::kFill,
-                             mojom::ActionPersistence::kFill);
+                             mojom::ActionPersistence::kFill,
+                             GetFieldDataManager());
 
   // Simulate clearing the form.
-  form_cache.ClearSectionWithElement(fname);
+  form_cache.ClearSectionWithElement(fname, GetFieldDataManager());
 
   // Expected Result in order:
   // - from filling

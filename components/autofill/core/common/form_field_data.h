@@ -350,8 +350,8 @@ struct FormFieldData {
   // serialised for storage.
   bool is_enabled = false;
   bool is_readonly = false;
-  // Contains value that was either manually typed or autofilled on user
-  // trigger.
+  // Contains password, username or credit card number value that was either
+  // manually typed or autofilled on user trigger into a text-mode input field.
   std::u16string user_input;
 
   // The options of a select box.

@@ -769,17 +769,10 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
   return ShowSuggestions(element, ShowAll(false));
 }
 
-void PasswordAutofillAgent::UpdateStateForTextChange(
+void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element) {
-  if (!element.IsTextField())
-    return;
   // TODO(crbug.com/415449): Do this through const WebInputElement.
   WebInputElement mutable_element = element;  // We need a non-const.
-
-  const std::u16string element_value = element.Value().Utf16();
-  field_data_manager().UpdateFieldDataMap(
-      form_util::GetFieldRendererId(element), element_value,
-      FieldPropertiesFlags::kUserTyped);
 
   InformBrowserAboutUserInput(element.Form(), element);
 
@@ -805,6 +798,7 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
   // to be characters/digits of OTPs.
   // Exclude too large inputs, as they are usually not usernames.
+  const std::u16string element_value = element.Value().Utf16();
   if (element_value.size() == 1 || element_value.size() > 100) {
     return;
   }

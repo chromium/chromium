@@ -147,6 +147,9 @@ bool IsMonthInput(const blink::WebInputElement& element);
 // Returns true if |element| is a text input element.
 bool IsTextInput(const blink::WebInputElement& element);
 
+// Returns true if |element| is a text input element.
+bool IsTextInput(const blink::WebFormControlElement& element);
+
 // Returns true if `element` is either a select or a selectlist element.
 bool IsSelectOrSelectListElement(const blink::WebFormControlElement& element);
 
@@ -357,7 +360,8 @@ std::vector<FieldRef> ApplyFormAction(
     base::span<const FormFieldData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
-    mojom::ActionPersistence action_persistence);
+    mojom::ActionPersistence action_persistence,
+    FieldDataManager& field_data_manager);
 
 // Clears the suggested values in `previewed_elements`.
 // `initiating_element` is the element that initiated the preview operation.

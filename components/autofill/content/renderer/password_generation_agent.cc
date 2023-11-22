@@ -386,7 +386,8 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // has changed. Without this we will overwrite the generated
     // password with an Autofilled password when saving.
     // https://crbug.com/493455
-    password_agent_->UpdateStateForTextChange(password_element);
+    password_agent_->autofill_agent().UpdateStateForTextChange(
+        password_element, FieldPropertiesFlags::kUserTyped);
   }
 }
 
@@ -629,7 +630,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     // password fields.
     for (const auto& password_element :
          current_generation_item_->password_elements_) {
-      password_agent_->UpdateStateForTextChange(password_element);
+      password_agent_->autofill_agent().UpdateStateForTextChange(
+          password_element, FieldPropertiesFlags::kUserTyped);
     }
   }
   return true;

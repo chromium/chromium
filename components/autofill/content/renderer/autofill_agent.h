@@ -168,6 +168,13 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Instructs `form_tracker_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
+  // Function that should be called whenever the value of |element| changes due
+  // to user input. This is separate from OnTextFieldDidChange() as that
+  // function may trigger UI and should only be called when other UI won't be
+  // shown.
+  void UpdateStateForTextChange(const blink::WebFormControlElement& element,
+                                FieldPropertiesFlags flag);
+
   FormTracker* form_tracker_for_testing() { return &form_tracker_; }
 
   bool is_heavy_form_data_scraping_enabled() {
@@ -475,7 +482,8 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Map WebFormControlElement to the pair of:
   // 1) The most recent text that user typed or autofilled in input elements.
-  // Used for storing username/password before JavaScript changes them.
+  // Used for storing credit card number/username/password before JavaScript
+  // changes them.
   // 2) Field properties mask, i.e. whether the field was autofilled, modified
   // by user, etc. (see FieldPropertiesMask).
   scoped_refptr<FieldDataManager> field_data_manager_;

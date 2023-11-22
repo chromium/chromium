@@ -160,11 +160,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // be used for any other autofill activity.
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
-  // Function that should be called whenever the value of |element| changes due
-  // to user input. This is separate from TextDidChangeInTextField() as that
-  // function may trigger UI and should only be called when other UI won't be
-  // shown.
-  void UpdateStateForTextChange(const blink::WebInputElement& element);
+  // Called from AutofillAgent::UpdateStateForTextChange() to do
+  // password-manager specific work.
+  void UpdatePasswordStateForTextChange(const blink::WebInputElement& element);
 
   // Instructs `autofill_agent_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -251,6 +249,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     CHECK(autofill_agent_);
     return autofill_agent_->focused_element();
   }
+
+  AutofillAgent& autofill_agent() { return *autofill_agent_; }
 
  private:
   using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;

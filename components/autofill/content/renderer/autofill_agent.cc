@@ -548,11 +548,9 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
   // showing up.
   ClearPreviewedForm();
 
-  const auto input_element = element.DynamicTo<WebInputElement>();
-  if (!input_element.IsNull()) {
-    password_autofill_agent_->UpdateStateForTextChange(input_element);
-  }
+  UpdateStateForTextChange(element, FieldPropertiesFlags::kUserTyped);
 
+  const auto input_element = element.DynamicTo<WebInputElement>();
   if (password_generation_agent_ && !input_element.IsNull() &&
       password_generation_agent_->TextDidChangeInTextField(input_element)) {
     is_popup_possibly_visible_ = true;
@@ -698,14 +696,16 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     query_node_autofill_state_ = last_queried_element.GetAutofillState();
     previewed_elements_ = form_util::ApplyFormAction(
-        form.fields, last_queried_element, action_type, action_persistence);
+        form.fields, last_queried_element, action_type, action_persistence,
+        field_data_manager());
   } else {
     was_last_action_fill_ = true;
 
     query_node_autofill_state_ = last_queried_element.GetAutofillState();
     bool filled_some_fields =
         !form_util::ApplyFormAction(form.fields, last_queried_element,
-                                    action_type, action_persistence)
+                                    action_type, action_persistence,
+                                    field_data_manager())
              .empty();
 
     if (!last_queried_element.Form().IsNull()) {
@@ -746,7 +746,8 @@ void AutofillAgent::ClearSection() {
   if (last_queried_element.IsNull() || !form_cache_) {
     return;
   }
-  form_cache_->ClearSectionWithElement(last_queried_element);
+  form_cache_->ClearSectionWithElement(last_queried_element,
+                                       field_data_manager());
 }
 
 void AutofillAgent::ClearPreviewedForm() {
@@ -1133,11 +1134,10 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
 
   element.SetAutofillValue(blink::WebString::FromUTF16(value), autofill_state);
 
-  WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  // `input_element` can be null for textarea elements.
-  if (!input_element.IsNull()) {
-    password_autofill_agent_->UpdateStateForTextChange(input_element);
-  }
+  UpdateStateForTextChange(element,
+                           autofill_state == WebAutofillState::kAutofilled
+                               ? FieldPropertiesFlags::kAutofilled
+                               : FieldPropertiesFlags::kUserTyped);
 
   form_tracker_.set_ignore_control_changes(false);
 }
@@ -1652,6 +1652,20 @@ void AutofillAgent::RemoveFormObserver(Observer* observer) {
 void AutofillAgent::TrackAutofilledElement(
     const blink::WebFormControlElement& element) {
   form_tracker_.TrackAutofilledElement(element);
+}
+
+void AutofillAgent::UpdateStateForTextChange(
+    const WebFormControlElement& element,
+    FieldPropertiesFlags flag) {
+  const auto input_element = element.DynamicTo<WebInputElement>();
+  if (input_element.IsNull() || !input_element.IsTextField()) {
+    return;
+  }
+
+  field_data_manager_->UpdateFieldDataMap(
+      form_util::GetFieldRendererId(element), element.Value().Utf16(), flag);
+
+  password_autofill_agent_->UpdatePasswordStateForTextChange(input_element);
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm() const {

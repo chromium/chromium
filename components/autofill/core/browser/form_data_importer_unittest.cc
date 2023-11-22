@@ -1800,6 +1800,41 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_InvalidCardNumber) {
   ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
 }
 
+// Tests that FormFieldData::user_input is preferred over FormFieldData::value
+// for credit card numbers.
+// Using FormFieldData::user_input enables showing the save-card prompt for
+// sites which use JavaScript to set the credit-card <input> to '***'.
+TEST_F(FormDataImporterTest,
+       ExtractCreditCard_PreferUserInputForCreditCardNumber) {
+  FormData form = CreateFullCreditCardForm("Jim Johansen", "4111111111111111",
+                                           "02", "2999");
+
+  FormFieldData* card_number_field = form.FindFieldByName(u"card_number");
+  ASSERT_TRUE(card_number_field != nullptr);
+  card_number_field->user_input = u"4444333322221111";
+
+  // FormFieldData::user_input for non-credit card fields should be ignored.
+  ASSERT_EQ(nullptr, form.FindFieldByName(u"cvc"));
+  FormFieldData cvc_field =
+      CreateTestFormField("CVC", "cvc", "001", FormControlType::kInputText);
+  cvc_field.user_input = u"002";
+  form.fields.push_back(cvc_field);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                         nullptr);
+  absl::optional<CreditCard> extracted_credit_card =
+      ExtractCreditCard(form_structure);
+  EXPECT_TRUE(extracted_credit_card);
+
+  personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
+
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Jim Johansen", "4444333322221111", "02", "2999", "", u"001");
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
+}
+
 // Tests that a credit card with an empty expiration can be extracted due to the
 // expiration date fix flow.
 TEST_F(FormDataImporterTest,

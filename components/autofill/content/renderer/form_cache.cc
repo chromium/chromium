@@ -227,7 +227,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 }
 
 void FormCache::ClearElement(WebFormControlElement& control_element,
-                             const WebFormControlElement& trigger_element) {
+                             const WebFormControlElement& trigger_element,
+                             FieldDataManager& field_data_manager) {
   // Don't modify the value of disabled fields.
   if (!control_element.IsEnabled())
     return;
@@ -248,10 +249,15 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
 
   WebInputElement web_input_element =
       control_element.DynamicTo<WebInputElement>();
-  if (form_util::IsTextInput(web_input_element) ||
-      form_util::IsMonthInput(web_input_element)) {
+  bool is_text_input = form_util::IsTextInput(web_input_element);
+  if (is_text_input || form_util::IsMonthInput(web_input_element)) {
     web_input_element.SetAutofillValue(blink::WebString(),
                                        WebAutofillState::kNotFilled);
+    if (is_text_input) {
+      field_data_manager.UpdateFieldDataMap(
+          form_util::GetFieldRendererId(web_input_element), std::u16string(),
+          FieldPropertiesFlags::kNoFlags);
+    }
 
     // Clearing the value in the focused node (above) can cause the selection
     // to be lost. We force the selection range to restore the text cursor.
@@ -281,7 +287,8 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
   }
 }
 
-bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
+bool FormCache::ClearSectionWithElement(const WebFormControlElement& element,
+                                        FieldDataManager& field_data_manager) {
   // The intended behaviour is:
   // * Clear the currently focused element.
   // * Send the blur event.
@@ -300,7 +307,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   if (control_elements.size() < 2 && control_elements[0].Focused()) {
     // If there is no other field to be cleared, sending the blur event and then
     // the focus event for the currently focused element does not make sense.
-    ClearElement(control_elements[0], element);
+    ClearElement(control_elements[0], element, field_data_manager);
     return true;
   }
 
@@ -308,7 +315,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   for (WebFormControlElement& control_element : control_elements) {
     if (control_element.Focused()) {
       initially_focused_element = &control_element;
-      ClearElement(control_element, element);
+      ClearElement(control_element, element, field_data_manager);
       // A blur event is emitted for the focused element if it is an initiating
       // element before the clearing happens.
       initially_focused_element->DispatchBlurEvent();
@@ -319,7 +326,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   for (WebFormControlElement& control_element : control_elements) {
     if (control_element.Focused())
       continue;
-    ClearElement(control_element, element);
+    ClearElement(control_element, element, field_data_manager);
   }
 
   // A focus event is emitted for the initiating element after clearing is

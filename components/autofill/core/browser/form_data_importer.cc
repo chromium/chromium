@@ -941,13 +941,10 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
 
   ServerFieldTypeSet types_seen;
   for (const auto& field : form) {
-    std::u16string value;
-    base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
-
-    // If we don't know the type of the field, or the user hasn't entered any
-    // information into the field, then skip it.
-    if (!field->IsFieldFillable() || value.empty())
+    // If we don't know the type of the field, then skip it.
+    if (!field->IsFieldFillable()) {
       continue;
+    }
 
     AutofillType field_type = field->Type();
     // Field was not identified as a credit card field.
@@ -955,6 +952,25 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       continue;
 
     ServerFieldType server_field_type = field_type.GetStorableType();
+
+    std::u16string value_view = field->value;
+    std::u16string_view user_input_view =
+        base::TrimWhitespace(field->user_input, base::TRIM_ALL);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillUseTypedCreditCardNumber) &&
+        server_field_type == ServerFieldType::CREDIT_CARD_NUMBER &&
+        !user_input_view.empty()) {
+      value_view = user_input_view;
+    }
+    value_view = base::TrimWhitespace(value_view, base::TRIM_ALL);
+
+    // If the user hasn't entered any information into the field, then skip it.
+    if (value_view.empty()) {
+      continue;
+    }
+
+    std::u16string value = value_view;
+
     result.has_duplicate_credit_card_field_type |=
         types_seen.contains(server_field_type);
     types_seen.insert(server_field_type);
