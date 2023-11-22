@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
@@ -88,8 +89,9 @@ class RenderFrameImplTest : public RenderViewTest {
   explicit RenderFrameImplTest(
       RenderFrameImpl::CreateRenderFrameImplFunction hook_function = nullptr)
       : RenderViewTest(/*hook_render_frame_creation=*/!hook_function) {
-    if (hook_function)
+    if (hook_function) {
       RenderFrameImpl::InstallCreateHook(hook_function);
+    }
   }
   ~RenderFrameImplTest() override = default;
 
@@ -177,9 +179,7 @@ class RenderFrameImplTest : public RenderViewTest {
             mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
         /*is_for_nested_main_frame=*/false);
 
-    frame_ = static_cast<TestRenderFrame*>(
-        RenderFrameImpl::FromRoutingID(kSubframeRouteId));
-    EXPECT_FALSE(frame_->is_main_frame_);
+    EXPECT_FALSE(child_frame().is_main_frame_);
   }
 
   void TearDown() override {
@@ -195,10 +195,13 @@ class RenderFrameImplTest : public RenderViewTest {
     return static_cast<TestRenderFrame*>(RenderViewTest::GetMainRenderFrame());
   }
 
-  TestRenderFrame* frame() { return frame_; }
+  TestRenderFrame& child_frame() const {
+    return CHECK_DEREF(static_cast<TestRenderFrame*>(
+        RenderFrameImpl::FromRoutingID(kSubframeRouteId)));
+  }
 
   blink::WebFrameWidget* frame_widget() const {
-    return frame_->GetLocalRootWebFrameWidget();
+    return child_frame().GetLocalRootWebFrameWidget();
   }
 
   mojo::AssociatedRemote<blink::mojom::Widget>& widget_remote() {
@@ -209,12 +212,11 @@ class RenderFrameImplTest : public RenderViewTest {
     return url::Origin(frame->GetWebFrame()->GetSecurityOrigin());
   }
 
-  static int32_t AutoplayFlagsForFrame(TestRenderFrame* frame) {
-    return frame->GetWebView()->AutoplayFlagsForTest();
+  static int32_t AutoplayFlagsForFrame(const TestRenderFrame& frame) {
+    return frame.GetWebView()->AutoplayFlagsForTest();
   }
 
  private:
-  raw_ptr<TestRenderFrame, DanglingUntriaged> frame_;
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote_;
 };
 
@@ -298,7 +300,7 @@ TEST_F(RenderFrameImplTest, FrameResize) {
 
 // Verify a subframe RenderWidget properly processes a WasShown message.
 TEST_F(RenderFrameImplTest, FrameWasShown) {
-  RenderFrameTestObserver observer(frame());
+  RenderFrameTestObserver observer(&child_frame());
 
   widget_remote()->WasShown(
       /* was_evicted=*/false,
@@ -364,7 +366,7 @@ class RenderViewImplDownloadURLTest : public RenderFrameImplTest {
             &DownloadURLTestRenderFrame::CreateTestRenderFrame) {}
 
   DownloadURLMockLocalFrameHost* download_url_mock_local_frame_host() {
-    return static_cast<DownloadURLTestRenderFrame*>(frame())
+    return static_cast<DownloadURLTestRenderFrame*>(&child_frame())
         ->download_url_mock_local_frame_host();
   }
 };
@@ -379,14 +381,14 @@ TEST_F(RenderViewImplDownloadURLTest, DownloadUrlLimit) {
   EXPECT_CALL(*download_url_mock_local_frame_host(), DownloadURL(testing::_))
       .Times(10);
   for (int i = 0; i < 10; ++i) {
-    frame()->GetWebFrame()->DownloadURL(
+    child_frame().GetWebFrame()->DownloadURL(
         request, network::mojom::RedirectMode::kManual, mojo::NullRemote());
     base::RunLoop().RunUntilIdle();
   }
 
   EXPECT_CALL(*download_url_mock_local_frame_host(), DownloadURL(testing::_))
       .Times(0);
-  frame()->GetWebFrame()->DownloadURL(
+  child_frame().GetWebFrame()->DownloadURL(
       request, network::mojom::RedirectMode::kManual, mojo::NullRemote());
   base::RunLoop().RunUntilIdle();
 }
@@ -395,13 +397,13 @@ TEST_F(RenderViewImplDownloadURLTest, DownloadUrlLimit) {
 // text finding, and then delete the frame immediately before the text finding
 // returns any text match.
 TEST_F(RenderFrameImplTest, NoCrashWhenDeletingFrameDuringFind) {
-  frame()->GetWebFrame()->FindForTesting(
+  child_frame().GetWebFrame()->FindForTesting(
       1, "foo", true /* match_case */, true /* forward */,
       true /* new_session */, true /* force */, false /* wrap_within_frame */,
       false /* async */);
 
-  static_cast<mojom::Frame*>(frame())->Delete(
-      mojom::FrameDeleteIntention::kNotMainFrame);
+  static_cast<mojom::Frame*>(&child_frame())
+      ->Delete(mojom::FrameDeleteIntention::kNotMainFrame);
 }
 
 TEST_F(RenderFrameImplTest, AutoplayFlags) {
@@ -415,16 +417,16 @@ TEST_F(RenderFrameImplTest, AutoplayFlags) {
 
   // Check the flags have been set correctly.
   EXPECT_EQ(blink::mojom::kAutoplayFlagHighMediaEngagement,
-            AutoplayFlagsForFrame(GetMainRenderFrame()));
+            AutoplayFlagsForFrame(*GetMainRenderFrame()));
 
   // Navigate the child frame.
   LoadChildFrame();
 
   // Check the flags are set on both frames.
   EXPECT_EQ(blink::mojom::kAutoplayFlagHighMediaEngagement,
-            AutoplayFlagsForFrame(GetMainRenderFrame()));
+            AutoplayFlagsForFrame(*GetMainRenderFrame()));
   EXPECT_EQ(blink::mojom::kAutoplayFlagHighMediaEngagement,
-            AutoplayFlagsForFrame(frame()));
+            AutoplayFlagsForFrame(child_frame()));
 
   // Navigate the top frame.
   LoadHTMLWithUrlOverride(kParentFrameHTML, "https://www.example.com");
@@ -432,8 +434,9 @@ TEST_F(RenderFrameImplTest, AutoplayFlags) {
 
   // Check the flags have been cleared.
   EXPECT_EQ(blink::mojom::kAutoplayFlagNone,
-            AutoplayFlagsForFrame(GetMainRenderFrame()));
-  EXPECT_EQ(blink::mojom::kAutoplayFlagNone, AutoplayFlagsForFrame(frame()));
+            AutoplayFlagsForFrame(*GetMainRenderFrame()));
+  EXPECT_EQ(blink::mojom::kAutoplayFlagNone,
+            AutoplayFlagsForFrame(child_frame()));
 }
 
 TEST_F(RenderFrameImplTest, AutoplayFlags_WrongOrigin) {
@@ -446,7 +449,7 @@ TEST_F(RenderFrameImplTest, AutoplayFlags_WrongOrigin) {
 
   // Check the flags have been not been set.
   EXPECT_EQ(blink::mojom::kAutoplayFlagNone,
-            AutoplayFlagsForFrame(GetMainRenderFrame()));
+            AutoplayFlagsForFrame(*GetMainRenderFrame()));
 }
 
 TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
@@ -474,9 +477,9 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
 }
 
 TEST_F(RenderFrameImplTest, MainFrameIntersectionRecorded) {
-  RenderFrameTestObserver observer(frame());
+  RenderFrameTestObserver observer(&child_frame());
   gfx::Rect mainframe_intersection(0, 0, 200, 140);
-  frame()->OnMainFrameIntersectionChanged(mainframe_intersection);
+  child_frame().OnMainFrameIntersectionChanged(mainframe_intersection);
   // Setting a new frame intersection in a local frame triggers the render frame
   // observer call.
   EXPECT_EQ(observer.last_intersection_rect(), mainframe_intersection);
@@ -571,8 +574,9 @@ class TestSimpleBrowserInterfaceBrokerImpl
  private:
   // blink::mojom::BrowserInterfaceBroker:
   void GetInterface(mojo::GenericPendingReceiver receiver) override {
-    if (receiver.interface_name().value() == interface_name_)
+    if (receiver.interface_name().value() == interface_name_) {
       binder_callback_.Run(receiver.PassPipe());
+    }
   }
 
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> receiver_;
@@ -669,8 +673,9 @@ class FrameCommitWaiter : public RenderFrameObserver {
   FrameCommitWaiter& operator=(const FrameCommitWaiter&) = delete;
 
   void Wait() {
-    if (did_commit_)
+    if (did_commit_) {
       return;
+    }
     run_loop_.Run();
   }
 
@@ -711,8 +716,9 @@ class FrameCreationObservingRendererClient : public ContentRendererClient {
  protected:
   void RenderFrameCreated(RenderFrame* render_frame) override {
     ContentRendererClient::RenderFrameCreated(render_frame);
-    if (callback_)
+    if (callback_) {
       callback_.Run(static_cast<TestRenderFrame*>(render_frame));
+    }
   }
 
  private:
@@ -1090,6 +1096,7 @@ TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
   common_params->base_url_for_data_url = GURL("about:blank");
   auto commit_params = blink::CreateCommitNavigationParams();
   auto waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
+
   GetMainRenderFrame()->Navigate(std::move(common_params),
                                  std::move(commit_params));
   waiter->Wait();

@@ -3960,7 +3960,7 @@ void WebViewImpl::ClearAutoplayFlags() {
   page_->ClearAutoplayFlags();
 }
 
-int32_t WebViewImpl::AutoplayFlagsForTest() {
+int32_t WebViewImpl::AutoplayFlagsForTest() const {
   return page_->AutoplayFlags();
 }
 

@@ -523,7 +523,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void AddAutoplayFlags(int32_t) override;
   void ClearAutoplayFlags() override;
-  int32_t AutoplayFlagsForTest() override;
+  int32_t AutoplayFlagsForTest() const override;
   gfx::Size GetPreferredSizeForTest() override;
 
   gfx::Size Size();
@@ -533,9 +533,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   gfx::Vector2dF ElasticOverscroll() const { return elastic_overscroll_; }
 
-  class ChromeClient& GetChromeClient() const {
-    return *chrome_client_.Get();
-  }
+  class ChromeClient& GetChromeClient() const { return *chrome_client_.Get(); }
 
   // Allows main frame updates to occur if they were previously blocked. They
   // are blocked during loading a navigation, to allow Blink to proceed without

@@ -63,7 +63,7 @@ class PointF;
 class Rect;
 class Size;
 class SizeF;
-}
+}  // namespace gfx
 
 namespace blink {
 struct ColorProviderColorMaps;
@@ -413,7 +413,7 @@ class BLINK_EXPORT WebView {
   // third_party/blink/public/platform/autoplay.mojom
   virtual void AddAutoplayFlags(int32_t flags) = 0;
   virtual void ClearAutoplayFlags() = 0;
-  virtual int32_t AutoplayFlagsForTest() = 0;
+  virtual int32_t AutoplayFlagsForTest() const = 0;
   virtual gfx::Size GetPreferredSizeForTest() = 0;
 
   // Non-composited support -----------------------------------------------
