@@ -18764,6 +18764,26 @@
             ]
         }
     ],
+    "TrackingProtection3pcd": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TrackingProtection3pcd"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrackingProtectionRollback": [
         {
             "platforms": [
