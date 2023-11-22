@@ -121,9 +121,9 @@ import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
-import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
@@ -856,8 +856,9 @@ public class RootUiCoordinator
                                 Profile.getLastUsedRegularProfile()))) {
             // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
             if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
-                mActivityTabProvider.get().loadIfNeeded(
-                        LoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION);
+                mActivityTabProvider
+                        .get()
+                        .loadIfNeeded(TabLoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION);
             }
         }
 

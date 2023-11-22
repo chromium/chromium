@@ -64,26 +64,6 @@ public class TabUtils {
         int OTHER = 400;
     }
 
-    /**
-     * Define the callers of TabImpl#loadIfNeeded.
-     */
-    @IntDef({LoadIfNeededCaller.SET_TAB, LoadIfNeededCaller.ON_ACTIVITY_SHOWN,
-            LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW, LoadIfNeededCaller.REQUEST_TO_SHOW_TAB,
-            LoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW,
-            LoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION,
-            LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE, LoadIfNeededCaller.OTHER})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface LoadIfNeededCaller {
-        int SET_TAB = 0;
-        int ON_ACTIVITY_SHOWN = 1;
-        int ON_ACTIVITY_SHOWN_THEN_SHOW = 2;
-        int REQUEST_TO_SHOW_TAB = 3;
-        int REQUEST_TO_SHOW_TAB_THEN_SHOW = 4;
-        int ON_FINISH_NATIVE_INITIALIZATION = 5;
-        int MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE = 6;
-        int OTHER = 7;
-    }
-
     // Do not instantiate this class.
     private TabUtils() {}
 

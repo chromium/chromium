@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -961,7 +960,7 @@ public class RequestDesktopUtils {
         Tab tab = currentTabSupplier.get();
         // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
         if (tab != null && !tab.isDestroyed()) {
-            tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE);
+            tab.loadIfNeeded(TabLoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE);
         }
     }
 

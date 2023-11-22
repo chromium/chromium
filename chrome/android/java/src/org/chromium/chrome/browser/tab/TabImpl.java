@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -629,7 +628,7 @@ public class TabImpl implements Tab {
     }
 
     @Override
-    public boolean loadIfNeeded(@LoadIfNeededCaller int caller) {
+    public boolean loadIfNeeded(@TabLoadIfNeededCaller int caller) {
         if (getActivity() == null) {
             Log.e(TAG, "Tab couldn't be loaded because Context was null.");
             return false;
@@ -752,7 +751,7 @@ public class TabImpl implements Tab {
     }
 
     @Override
-    public final void show(@TabSelectionType int type, @LoadIfNeededCaller int caller) {
+    public final void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
         try {
             TraceEvent.begin("Tab.show");
             if (!isHidden()) return;
@@ -1598,7 +1597,7 @@ public class TabImpl implements Tab {
      * the load codepath is the same (run in loadIfNecessary()) and the same caching policies of
      * history load are used.
      */
-    private void restoreIfNeeded(@LoadIfNeededCaller int caller) {
+    private void restoreIfNeeded(@TabLoadIfNeededCaller int caller) {
         // Attempts to display the Paint Preview representation of this Tab.
         if (isFrozen()) StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
 

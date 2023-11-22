@@ -13,8 +13,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tab.TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
-import static org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 
 import android.app.PictureInPictureParams;
 import android.os.Build;

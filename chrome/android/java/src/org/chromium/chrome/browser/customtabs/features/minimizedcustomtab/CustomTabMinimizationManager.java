@@ -8,8 +8,8 @@ import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.FAVICON;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.TITLE;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.URL;
+import static org.chromium.chrome.browser.tab.TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
-import static org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 
 import android.app.PictureInPictureParams;
 import android.os.Build.VERSION;

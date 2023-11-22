@@ -24,7 +24,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
-import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -65,7 +64,7 @@ public class SadTabTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = sActivityTestRule.getActivity().getActivityTab();
-                    tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
+                    tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
                     SadTab sadTab = SadTab.from(tab);
                     sadTab.removeIfPresent();
                 });
