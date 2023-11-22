@@ -243,11 +243,11 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
     case ScreenAIInstallState::State::kFailed:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR);
       if (send_always_active_state_when_service_is_ready_) {
-        // Update the PDF OCR pref to be false to toggle off the button.
-        profile_->GetPrefs()->SetBoolean(
-            prefs::kAccessibilityPdfOcrAlwaysActive, false);
         send_always_active_state_when_service_is_ready_ = false;
       }
+      // Update the PDF OCR pref to be false to toggle off the button.
+      profile_->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
+                                       false);
       break;
 
     case ScreenAIInstallState::State::kDownloaded:
