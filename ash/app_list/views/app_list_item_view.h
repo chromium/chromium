@@ -172,6 +172,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Sets the icon of this image.
   void SetIcon(const gfx::ImageSkia& icon);
 
+  // Returns the main app icon size for the associated item.
+  gfx::Size GetIconSize() const;
+
   // Whether the icon use on this item is a placeholder icon for a promise app.
   bool HasPromiseIconPlaceholder();
 
