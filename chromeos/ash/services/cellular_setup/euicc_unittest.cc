@@ -145,8 +145,7 @@ class EuiccTest_SmdsSupportDisabled : public EuiccTest {
   EuiccTest_SmdsSupportDisabled()
       : EuiccTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsDbusMigration,
-                                   ash::features::kSmdsSupport,
+            /*disabled_features=*/{ash::features::kSmdsSupport,
                                    ash::features::kSmdsSupportEuiccUpload}) {}
   ~EuiccTest_SmdsSupportDisabled() override = default;
 };
@@ -160,8 +159,7 @@ class EuiccTest_SmdsSupportEnabled : public EuiccTest {
  protected:
   EuiccTest_SmdsSupportEnabled()
       : EuiccTest(
-            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport,
+            /*enabled_features=*/{ash::features::kSmdsSupport,
                                   ash::features::kSmdsSupportEuiccUpload},
             /*disabled_features=*/{}) {}
   ~EuiccTest_SmdsSupportEnabled() override = default;
@@ -329,7 +327,7 @@ TEST_F(EuiccTest_SmdsSupportDisabled, RequestPendingProfiles) {
       "Network.Cellular.ESim.ProfileDiscovery.Latency", 1);
   histogram_tester.ExpectBucketCount(
       kOperationResultMetric, Euicc::RequestPendingProfilesResult::kSuccess,
-      /*expected_count=*/1);
+      /*expected_count=*/0);
 }
 
 TEST_F(EuiccTest_SmdsSupportDisabled, GetEidQRCode) {
@@ -354,8 +352,7 @@ TEST_F(EuiccTest_SmdsSupportDisabled, GetEidQRCode) {
 TEST_F(EuiccTest_SmdsSupportDisabled, RequestAvailableProfiles) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
+      {ash::features::kSmdsSupport, ash::features::kSmdsSupportEuiccUpload},
       {});
 
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
@@ -397,8 +394,7 @@ TEST_F(EuiccTest_SmdsSupportDisabled, RequestAvailableProfiles) {
 TEST_F(EuiccTest_SmdsSupportDisabled, RequestAvailableProfiles_FailToInhibit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
+      {ash::features::kSmdsSupport, ash::features::kSmdsSupportEuiccUpload},
       {});
 
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
@@ -666,8 +662,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, GetEidQRCode) {
 TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
+      {ash::features::kSmdsSupport, ash::features::kSmdsSupportEuiccUpload},
       {});
 
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
@@ -709,8 +704,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles) {
 TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles_FailToInhibit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
+      {ash::features::kSmdsSupport, ash::features::kSmdsSupportEuiccUpload},
       {});
 
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);

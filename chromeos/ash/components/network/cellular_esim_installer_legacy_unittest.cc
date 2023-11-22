@@ -88,8 +88,7 @@ class CellularESimInstallerLegacyTest : public testing::Test {
   CellularESimInstallerLegacyTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{ash::features::kSmdsDbusMigration,
-                               ash::features::kSmdsSupport,
+        /*disabled_features=*/{ash::features::kSmdsSupport,
                                ash::features::kSmdsSupportEuiccUpload});
   }
   ~CellularESimInstallerLegacyTest() override = default;

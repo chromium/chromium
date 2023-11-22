@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -63,17 +62,11 @@ absl::optional<dbus::ObjectPath> GetProfilePath(const std::string& eid,
     return absl::nullopt;
 
   const std::vector<dbus::ObjectPath>& profile_paths =
-      ash::features::IsSmdsDbusMigrationEnabled()
-          ? euicc_properties->profiles().value()
-          : euicc_properties->installed_carrier_profiles().value();
+      euicc_properties->profiles().value();
   for (const auto& profile_path : profile_paths) {
     HermesProfileClient::Properties* profile_properties =
         HermesProfileClient::Get()->GetProperties(profile_path);
     if (profile_properties && profile_properties->iccid().value() == iccid) {
-      const hermes::profile::State state = profile_properties->state().value();
-      DCHECK(state == hermes::profile::State::kInactive ||
-             state == hermes::profile::State::kActive ||
-             ash::features::IsSmdsDbusMigrationEnabled());
       return profile_path;
     }
   }

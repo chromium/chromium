@@ -305,21 +305,12 @@ void Euicc::PerformRequestPendingProfiles(
   }
 
   NET_LOG(EVENT) << "Requesting pending profiles";
-
-  if (ash::features::IsSmdsDbusMigrationEnabled()) {
-    HermesEuiccClient::Get()->RefreshSmdxProfiles(
-        path_, /*activation_code=*/ESimManager::GetRootSmdsAddress(),
-        /*restore_slot=*/true,
-        base::BindOnce(&Euicc::OnRefreshSmdxProfilesResult,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(inhibit_lock)));
-  } else {
-    HermesEuiccClient::Get()->RequestPendingProfiles(
-        path_, /*root_smds=*/ESimManager::GetRootSmdsAddress(),
-        base::BindOnce(&Euicc::OnRequestPendingProfilesResult,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(inhibit_lock)));
-  }
+  HermesEuiccClient::Get()->RefreshSmdxProfiles(
+      path_, /*activation_code=*/ESimManager::GetRootSmdsAddress(),
+      /*restore_slot=*/true,
+      base::BindOnce(&Euicc::OnRefreshSmdxProfilesResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(inhibit_lock)));
 }
 
 void Euicc::OnRequestAvailableProfiles(
@@ -360,35 +351,6 @@ void Euicc::OnRefreshSmdxProfilesResult(
                          ? mojom::ESimOperationResult::kSuccess
                          : mojom::ESimOperationResult::kFailure),
       kPendingProfileRefreshDelay);
-}
-
-void Euicc::OnRequestPendingProfilesResult(
-    RequestPendingProfilesCallback callback,
-    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-    HermesResponseStatus status) {
-  hermes_metrics::LogRequestPendingProfilesResult(status);
-
-  RequestPendingProfilesResult metrics_result;
-  mojom::ESimOperationResult operation_result;
-
-  if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "Request Pending events failed status=" << status;
-    metrics_result = RequestPendingProfilesResult::kHermesRequestFailed;
-    operation_result = mojom::ESimOperationResult::kFailure;
-  } else {
-    metrics_result = RequestPendingProfilesResult::kSuccess;
-    operation_result = mojom::ESimOperationResult::kSuccess;
-  }
-
-  RecordRequestPendingProfilesResult(metrics_result);
-
-  // TODO(crbug.com/1216693) Update with more robust way of waiting for eSIM
-  // profile objects to be loaded.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(std::move(callback), operation_result),
-      kPendingProfileRefreshDelay);
-
-  // inhibit_lock goes out of scope and will uninhibit automatically.
 }
 
 mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(

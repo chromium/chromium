@@ -8690,10 +8690,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSmdsSupportEuiccUploadDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSmdsSupportEuiccUpload)},
 
-    {"smds-dbus-migration", flag_descriptions::kSmdsDbusMigrationName,
-     flag_descriptions::kSmdsDbusMigrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSmdsDbusMigration)},
-
     {"tethering-experimental-functionality",
      flag_descriptions::kTetheringExperimentalFunctionalityName,
      flag_descriptions::kTetheringExperimentalFunctionalityDescription, kOsCrOS,

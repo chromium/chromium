@@ -472,8 +472,7 @@ class CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled
  protected:
   CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled()
       : CellularPolicyHandlerTest(
-            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport,
+            /*enabled_features=*/{ash::features::kSmdsSupport,
                                   ash::features::kSmdsSupportEuiccUpload},
             /*disabled_features=*/{ash::features::kCellularUseSecondEuicc}) {}
   ~CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled() override =
@@ -494,7 +493,6 @@ class CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled
   CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled()
       : CellularPolicyHandlerTest(
             /*enabled_features=*/{ash::features::kCellularUseSecondEuicc,
-                                  ash::features::kSmdsDbusMigration,
                                   ash::features::kSmdsSupport,
                                   ash::features::kSmdsSupportEuiccUpload},
             /*disabled_features=*/{}) {}

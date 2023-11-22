@@ -399,9 +399,7 @@ class ESimFeatureUsageMetrics
         continue;
       }
       const std::vector<dbus::ObjectPath>& profiles =
-          ash::features::IsSmdsDbusMigrationEnabled()
-              ? euicc_properties->profiles().value()
-              : euicc_properties->installed_carrier_profiles().value();
+          euicc_properties->profiles().value();
       for (const dbus::ObjectPath& profile_path : profiles) {
         HermesProfileClient::Properties* profile_properties =
             HermesProfileClient::Get()->GetProperties(profile_path);

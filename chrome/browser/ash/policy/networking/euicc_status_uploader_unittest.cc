@@ -491,8 +491,7 @@ class EuiccStatusUploaderTest_SmdsSupportDisabled
   EuiccStatusUploaderTest_SmdsSupportDisabled()
       : EuiccStatusUploaderTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsDbusMigration,
-                                   ash::features::kSmdsSupport,
+            /*disabled_features=*/{ash::features::kSmdsSupport,
                                    ash::features::kSmdsSupportEuiccUpload}) {}
   ~EuiccStatusUploaderTest_SmdsSupportDisabled() override = default;
 };
@@ -508,8 +507,7 @@ class EuiccStatusUploaderTest_SmdsSupportEnabled
  protected:
   EuiccStatusUploaderTest_SmdsSupportEnabled()
       : EuiccStatusUploaderTest(
-            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport,
+            /*enabled_features=*/{ash::features::kSmdsSupport,
                                   ash::features::kSmdsSupportEuiccUpload},
             /*disabled_features=*/{}) {}
   ~EuiccStatusUploaderTest_SmdsSupportEnabled() override = default;

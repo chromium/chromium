@@ -4186,9 +4186,6 @@ extern const char kSmdsSupportDescription[];
 extern const char kSmdsSupportEuiccUploadName[];
 extern const char kSmdsSupportEuiccUploadDescription[];
 
-extern const char kSmdsDbusMigrationName[];
-extern const char kSmdsDbusMigrationDescription[];
-
 extern const char kTetheringExperimentalFunctionalityName[];
 extern const char kTetheringExperimentalFunctionalityDescription[];
 

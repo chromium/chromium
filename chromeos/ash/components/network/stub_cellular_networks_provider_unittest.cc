@@ -155,8 +155,7 @@ TEST_F(StubCellularNetworksProviderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{ash::features::kSmdsDbusMigration,
-                             ash::features::kSmdsSupport,
+      /*disabled_features=*/{ash::features::kSmdsSupport,
                              ash::features::kSmdsSupportEuiccUpload});
 
   SetPSimSlotInfo(kTestPSimIccid);
@@ -245,8 +244,7 @@ TEST_F(StubCellularNetworksProviderTest,
        AddOrRemoveStubCellularNetworks_SmdsSupportEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                            ash::features::kSmdsSupport,
+      /*enabled_features=*/{ash::features::kSmdsSupport,
                             ash::features::kSmdsSupportEuiccUpload},
       /*disabled_features=*/{});
 

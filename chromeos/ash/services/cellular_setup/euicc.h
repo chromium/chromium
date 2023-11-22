@@ -99,10 +99,6 @@ class Euicc : public mojom::Euicc {
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths);
-  void OnRequestPendingProfilesResult(
-      RequestPendingProfilesCallback callback,
-      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-      HermesResponseStatus status);
   mojom::ProfileInstallResult GetPendingProfileInfoFromActivationCode(
       const std::string& activation_code,
       ESimProfile** profile_info);

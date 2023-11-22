@@ -349,42 +349,8 @@ class CellularMetricsLoggerTest : public ::testing::Test {
       mock_managed_network_configuration_handler_;
 };
 
-TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles_DBusMigrationDisabled) {
+TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kSmdsDbusMigration);
-
-  // Chrome caches eSIM profile information from Hermes so that this information
-  // is available even when Hermes is not. Simulate the situation where Chrome
-  // has eSIM information cached in prefs and Hermes being unavailable and
-  // confirm that ESimFeatureUsageMetrics still behaves as expected. This is a
-  // regression test for b/291812699.
-  const CellularESimProfile esim_profile(
-      CellularESimProfile::State::kActive, dbus::ObjectPath("profile_path"),
-      std::string("eid"), std::string("iccid"), std::u16string(u"name"),
-      std::u16string(u"nickname"), std::u16string(u"service_provider"),
-      std::string("activation_code"));
-  base::Value::List esim_profiles;
-  esim_profiles.Append(esim_profile.ToDictionaryValue());
-
-  TestingPrefServiceSimple device_prefs;
-  CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-      device_prefs.registry());
-  device_prefs.Set(prefs::kESimProfiles, base::Value(std::move(esim_profiles)));
-
-  ClearEuicc();
-
-  InitMetricsLogger();
-
-  histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 1);
-  histogram_tester_->ExpectBucketCount(
-      kESimFeatureUsageMetric,
-      static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kEligible),
-      1);
-}
-
-TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles_DBusMigrationEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
 
   // Chrome caches eSIM profile information from Hermes so that this information
   // is available even when Hermes is not. Simulate the situation where Chrome
@@ -1396,8 +1362,7 @@ TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEnrolled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsDbusMigration,
-                            ash::features::kSmdsSupport,
+      /*enable_features=*/{{ash::features::kSmdsSupport,
                             ash::features::kSmdsSupportEuiccUpload}},
       /*disable_features=*/{{}});
 
@@ -1415,8 +1380,7 @@ TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEligible) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsDbusMigration,
-                            ash::features::kSmdsSupport,
+      /*enable_features=*/{{ash::features::kSmdsSupport,
                             ash::features::kSmdsSupportEuiccUpload}},
       /*disable_features=*/{{}});
 
@@ -1437,8 +1401,7 @@ TEST_F(CellularMetricsLoggerTest,
 TEST_F(CellularMetricsLoggerTest, EnterpriseESimFeatureUsageMetrics_Eligible) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsDbusMigration,
-                            ash::features::kSmdsSupport,
+      /*enable_features=*/{{ash::features::kSmdsSupport,
                             ash::features::kSmdsSupportEuiccUpload}},
       /*disable_features=*/{{}});
 
@@ -1471,8 +1434,7 @@ TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_Accessible) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsDbusMigration,
-                            ash::features::kSmdsSupport,
+      /*enable_features=*/{{ash::features::kSmdsSupport,
                             ash::features::kSmdsSupportEuiccUpload}},
       /*disable_features=*/{{}});
 
@@ -1516,8 +1478,7 @@ TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EnabledAndUsage) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enable_features=*/{{ash::features::kSmdsDbusMigration,
-                            ash::features::kSmdsSupport,
+      /*enable_features=*/{{ash::features::kSmdsSupport,
                             ash::features::kSmdsSupportEuiccUpload}},
       /*disable_features=*/{{}});
 
