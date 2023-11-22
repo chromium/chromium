@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {$} from '//resources/ash/common/util.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Oobe} from '../../cr_ui.js';
+import {Oobe} from '../cr_ui.js';
 
 /**
  * @fileoverview Common testing utils methods used for OOBE tast tests.
