@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/substring_set_matcher/matcher_string_pattern.h"
-#include "chrome/browser/enterprise/data_controls/dlp_rules_manager_base.h"
 #include "components/enterprise/data_controls/action_context.h"
+#include "components/enterprise/data_controls/dlp_rules_manager_base.h"
 #include "components/enterprise/data_controls/rule.h"
 #include "components/enterprise/data_controls/verdict.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,7 +26,7 @@ namespace data_controls {
 class ChromeDlpRulesManagerTest;
 
 // Implementation of DlpRulesManagerBase common to all desktop platforms.
-class ChromeDlpRulesManager : public policy::DlpRulesManagerBase {
+class ChromeDlpRulesManager : public DlpRulesManagerBase {
  public:
   using RuleId = int;
   using UrlConditionId = base::MatcherStringPattern::ID;

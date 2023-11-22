@@ -53,7 +53,8 @@ bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
     policy::DlpRulesManager::RuleMetadata out_rule_metadata;
     if (rules_manager->IsRestrictedComponent(
             GURL(src), component,
-            policy::DlpRulesManagerBase::Restriction::kFiles, &out_src_pattern,
+            data_controls::DlpRulesManagerBase::Restriction::kFiles,
+            &out_src_pattern,
             &out_rule_metadata) == policy::DlpRulesManager::Level::kBlock) {
       return true;
     }

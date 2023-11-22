@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DLP_RULES_MANAGER_BASE_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DLP_RULES_MANAGER_BASE_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_DLP_RULES_MANAGER_BASE_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_DLP_RULES_MANAGER_BASE_H_
 
 #include <map>
 #include <set>
@@ -13,7 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
-namespace policy {
+namespace data_controls {
 
 // DlpRulesManagerBase is the generic interface to parse the rules set in the
 // DataLeakPreventionRulesList policy and serves as an available service which
@@ -95,6 +95,6 @@ class DlpRulesManagerBase : public KeyedService {
       RuleMetadata* out_rule_metadata) const = 0;
 };
 
-}  // namespace policy
+}  // namespace data_controls
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DLP_RULES_MANAGER_BASE_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_DLP_RULES_MANAGER_BASE_H_

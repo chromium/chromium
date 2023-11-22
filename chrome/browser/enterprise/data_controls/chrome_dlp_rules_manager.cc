@@ -15,7 +15,7 @@
 namespace data_controls {
 namespace {
 
-using Level = policy::DlpRulesManagerBase::Level;
+using Level = DlpRulesManagerBase::Level;
 using RuleId = ChromeDlpRulesManager::RuleId;
 using UrlConditionId = ChromeDlpRulesManager::UrlConditionId;
 using RulesConditionsMap = std::map<RuleId, UrlConditionId>;
@@ -149,7 +149,7 @@ Level ChromeDlpRulesManager::IsRestrictedDestination(
   return rule_info.level;
 }
 
-policy::DlpRulesManagerBase::AggregatedDestinations
+DlpRulesManagerBase::AggregatedDestinations
 ChromeDlpRulesManager::GetAggregatedDestinations(
     const GURL& source,
     Restriction restriction) const {
