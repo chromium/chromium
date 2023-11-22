@@ -20,9 +20,9 @@ extern const char kLocationSettingsBackoffLevelDSE[];
 extern const char kLocationSettingsBackoffLevelDefault[];
 extern const char kLocationSettingsNextShowDSE[];
 extern const char kLocationSettingsNextShowDefault[];
-#else
-extern const char kOneTimePermissionPromptsDecidedCount[];
 #endif
+
+extern const char kOneTimePermissionPromptsDecidedCount[];
 
 // The pref is used only when kSafetyHub flag is on.
 // Currently Safety Hub is available only on desktop.

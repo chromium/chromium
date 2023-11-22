@@ -357,6 +357,9 @@ public abstract class ChromeFeatureList {
             "PasskeyManagementUsingAccountSettingsAndroid";
     public static final String PASSWORD_GENERATION_BOTTOM_SHEET = "PasswordGenerationBottomSheet";
     public static final String PASSWORD_EDIT_DIALOG_WITH_DETAILS = "PasswordEditDialogWithDetails";
+    public static final String PERMISSION_PROMPT_SURVEY = "PermissionPromptSurvey";
+    public static final String PORTALS = "Portals";
+    public static final String PORTALS_CROSS_ORIGIN = "PortalsCrossOrigin";
     public static final String PREEMPTIVE_LINK_TO_TEXT_GENERATION =
             "PreemptiveLinkToTextGeneration";
     public static final String PRERENDER2 = "Prerender2";

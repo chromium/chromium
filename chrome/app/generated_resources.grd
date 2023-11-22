@@ -15472,22 +15472,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       }
     </message>
 
-    <!-- User happiness tracking survey UI -->
-    <if expr="not is_android">
-      <if expr="use_titlecase">
-        <message name="IDS_HATS_BUBBLE_OK_LABEL" translateable="false" desc="Button label on Happiness Tracking Survey's invitation banner, clicking the button gives the user's consent on taking the survey.">
-          Take Survey
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_HATS_BUBBLE_OK_LABEL" translateable="false" desc="Button label on Happiness Tracking Survey's invitation banner, clicking the button gives the user's consent on taking the survey.">
-          Take survey
-        </message>
-      </if>
-      <message name="IDS_HATS_BUBBLE_TEXT" translateable="false" desc="The text in Happiness Tracking Survey's invitation banner, it explains why users should take our survey.">
-        Your feedback is important to us.
-      </message>
-    </if>
     <message name="IDS_NOTIFICATION_DEFAULT_HELPFUL_BUTTON_TEXT" desc="Text body for the helpful button in notifications sent from notification scheduler.">
       Helpful
     </message>

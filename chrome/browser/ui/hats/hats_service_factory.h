@@ -7,8 +7,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/ui/hats/hats_service.h"
 
-class HatsService;
 class Profile;
 
 class HatsServiceFactory : public ProfileKeyedServiceFactory {
@@ -17,6 +17,7 @@ class HatsServiceFactory : public ProfileKeyedServiceFactory {
   HatsServiceFactory& operator=(const HatsServiceFactory&) = delete;
 
   static HatsService* GetForProfile(Profile* profile, bool create_if_necessary);
+
   static HatsServiceFactory* GetInstance();
 
  private:

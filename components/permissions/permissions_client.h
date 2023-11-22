@@ -161,9 +161,8 @@ class PermissionsClient {
 
   using QuietUiReason = PermissionUiSelector::QuietUiReason;
 
-#if !BUILDFLAG(IS_ANDROID)
   virtual void TriggerPromptHatsSurveyIfEnabled(
-      content::BrowserContext* context,
+      content::WebContents* web_contents,
       permissions::RequestType request_type,
       absl::optional<permissions::PermissionAction> action,
       permissions::PermissionPromptDisposition prompt_disposition,
@@ -173,7 +172,6 @@ class PermissionsClient {
       bool is_post_prompt,
       const GURL& gurl,
       base::OnceCallback<void()> hats_shown_callback_);
-#endif
 
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(

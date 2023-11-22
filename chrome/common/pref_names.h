@@ -3615,10 +3615,8 @@ inline constexpr char kSharingVapidKey[] = "sharing.vapid_key";
 inline constexpr char kSharingFCMRegistration[] = "sharing.fcm_registration";
 inline constexpr char kSharingLocalSharingInfo[] = "sharing.local_sharing_info";
 
-#if !BUILDFLAG(IS_ANDROID)
-// Dictionary that contains all of the Hats Survey Metadata.
+// Dictionary that contains all of the Hats Survey Metadata for desktop surveys.
 inline constexpr char kHatsSurveyMetadata[] = "hats.survey_metadata";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 inline constexpr char kExternalProtocolDialogShowAlwaysOpenCheckbox[] =
     "external_protocol_dialog.show_always_open_checkbox";
