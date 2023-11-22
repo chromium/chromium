@@ -169,6 +169,10 @@ TEST(LanguagePacksUtil, ResolveLocaleTts) {
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-es"), "es-es");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-US"), "es-us");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-us"), "es-us");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "pt-BR"), "pt-br");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "pt-br"), "pt-br");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "pt-PT"), "pt-pt");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "pt-pt"), "pt-pt");
 
   // For all other locales we only keep the language.
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "bn-bd"), "bn");

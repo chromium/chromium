@@ -37,7 +37,9 @@ const std::string ResolveLocaleForTts(const std::string& input_locale) {
       base::EqualsCaseInsensitiveASCII(input_locale, "en-gb") ||
       base::EqualsCaseInsensitiveASCII(input_locale, "en-us") ||
       base::EqualsCaseInsensitiveASCII(input_locale, "es-es") ||
-      base::EqualsCaseInsensitiveASCII(input_locale, "es-us")) {
+      base::EqualsCaseInsensitiveASCII(input_locale, "es-us") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "pt-br") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "pt-pt")) {
     return base::ToLowerASCII(input_locale);
   }
   return std::string(language::ExtractBaseLanguage(input_locale));
