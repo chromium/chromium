@@ -670,7 +670,7 @@ XInputType GamepadIdList::GetXInputType(uint16_t vendor_id,
   return entry ? entry->xtype : kXInputTypeNone;
 }
 
-GamepadId GamepadIdList::GetGamepadId(base::StringPiece product_name,
+GamepadId GamepadIdList::GetGamepadId(std::string_view product_name,
                                       uint16_t vendor_id,
                                       uint16_t product_id) const {
   const auto* entry = GetGamepadInfo(vendor_id, product_id);

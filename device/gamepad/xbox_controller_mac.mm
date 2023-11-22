@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <string_view>
 
 #include "base/apple/foundation_util.h"
 #include "base/check_op.h"
@@ -378,7 +379,7 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
   // elsewhere.
   xinput_type_ = GamepadIdList::Get().GetXInputType(vendor_id_, product_id_);
   DCHECK_NE(xinput_type_, kXInputTypeNone);
-  gamepad_id_ = GamepadIdList::Get().GetGamepadId(base::StringPiece(),
+  gamepad_id_ = GamepadIdList::Get().GetGamepadId(std::string_view(),
                                                   vendor_id_, product_id_);
   RecordConnectedGamepad(gamepad_id_);
 
