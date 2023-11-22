@@ -21,6 +21,7 @@ include_rules = [
   "+components/constrained_window",
   "+components/content_settings/core/browser",
   "+components/contextual_search/core/browser",
+  "+components/custom_handlers",
   "+components/crash/core/app",
   "+components/domain_reliability",
   "+components/download/public/common",

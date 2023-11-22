@@ -10361,6 +10361,7 @@ if (!is_android) {
       "//components/captive_portal/core:buildflags",
       "//components/commerce/core:feature_list",
       "//components/content_settings/core/browser",
+      "//components/custom_handlers:test_support",
       "//components/embedder_support",
       "//components/feature_engagement",
       "//components/feature_engagement/test:test_support",

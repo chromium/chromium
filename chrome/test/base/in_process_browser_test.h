@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -404,6 +405,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Quits all open browsers and waits until there are no more browsers.
   void QuitBrowsers();
 
+  // This is called to set up the test factories for each browser context.
+  // It ensures that ProtocolHandlerRegistry instances use
+  // TestProtocolHandlerRegistryDelegate, which prevents browser tests
+  // from changing the OS integration of protocols.
+  void SetupProtocolHandlerTestFactories(content::BrowserContext* context);
+
   static SetUpBrowserFunction* global_browser_set_up_function_;
 
   // Usually references the browser created in BrowserMain().
@@ -462,6 +469,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #endif
 
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
+
+  // Used to set up test factories for each browser context.
+  base::CallbackListSubscription create_services_subscription_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS does not create a browser by default when the full restore feature
