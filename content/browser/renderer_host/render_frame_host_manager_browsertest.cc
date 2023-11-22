@@ -3237,10 +3237,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                             ->GetPrimaryFrameTree()
                             .root();
 
-  // Give an initial page an unload handler that never completes.
+  // Give an initial page a pagehide handler that never completes.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  EXPECT_TRUE(ExecJs(root, "window.onunload=function(e){ while(1); };\n"));
+  EXPECT_TRUE(ExecJs(root, "window.onpagehide=function(e){ while(1); };\n"));
 
   // With BackForwardCache, swapped out RenderFrameHost won't have a
   // replacement proxy as the document is stored in cache.
@@ -5687,12 +5687,12 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 }
 
 // Ensure that after a main frame with a cross-site iframe is navigated
-// cross-site, and the iframe had an unload handler which never finishes, the
-// iframe's process eventually exits.
+// cross-site, and the iframe had a pagehide handler which never finishes,
+// the iframe's process eventually exits.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        SubframeProcessGoesAwayAfterUnloadTimeout) {
   // See BackForwardCache::DisableForTestingReason for explanation.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_USES_UNLOAD_EVENT);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -5702,8 +5702,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                             .root();
   RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
 
-  // Add an unload handler which never finishes to b.com subframe.
-  AddUnloadEventHandler(child_rfh, "unload", "window", "while(1);");
+  // Add a pagehide handler which never finishes to b.com subframe.
+  AddUnloadEventHandler(child_rfh, "pagehide", "window", "while(1);");
 
   // Navigate the main frame to c.com and wait for the subframe process to
   // shut down.  This should happen when the subframe unload timeout happens,

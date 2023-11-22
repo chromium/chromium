@@ -3188,9 +3188,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       SitePerProcessBrowserTest,
       IsDetachedSubframeObservableDuringUnloadHandlerCrossProcess);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessSSLBrowserTest,
-                           UnloadHandlersArePowerful);
+                           PagehideHandlersArePowerful);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessSSLBrowserTest,
-                           UnloadHandlersArePowerfulGrandChild);
+                           PagehideHandlersArePowerfulGrandChild);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest, ExpectedMainWorldOrigin);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
                            RendererInitiatedCloseIsCancelledIfPageIsntPrimary);

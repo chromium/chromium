@@ -1453,7 +1453,7 @@ class SitePerProcessSSLBrowserTest : public SitePerProcessBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-// Unload handlers should be able to do things that might require for instance
+// Pagehide handlers should be able to do things that might require for instance
 // the RenderFrameHostImpl to stay alive.
 // - use console.log (handled via RFHI::DidAddMessageToConsole).
 // - use history.replaceState (handled via RFHI::OnUpdateState).
@@ -1461,20 +1461,19 @@ class SitePerProcessSSLBrowserTest : public SitePerProcessBrowserTest {
 // - use localStorage
 //
 // Test case:
-//  1. Start on A1(B2). B2 has an unload handler.
+//  1. Start on A1(B2). B2 has a pagehide handler.
 //  2. Go to A3.
 //  3. Go back to A4(B5).
 //
 // TODO(https://crbug.com/960976): history.replaceState is broken in OOPIFs.
 //
-// This test is similar to UnloadHandlersArePowerfulGrandChild, but with a
+// This test is similar to PagehideHandlersArePowerfulGrandChild, but with a
 // different frame hierarchy.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
-                       UnloadHandlersArePowerful) {
-  // With BackForwardCache, old document doesn't fire unload handlers as the
-  // page is stored in BackForwardCache on navigation.
+                       PagehideHandlersArePowerful) {
+  // The test expects the previous document to be deleted on navigation.
   DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Navigate to a page hosting a cross-origin frame.
   GURL url =
       https_server()->GetURL("a.com", "/cross_site_iframe_factory.html?a(b)");
@@ -1484,14 +1483,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
 
   // Increase Unload timeout to prevent the previous document from
-  // being deleleted before it has finished running B2 unload handler.
+  // being deleted before it has finished running B2 pagehide handler.
   A1->DisableUnloadTimerForTesting();
   B2->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
-  // Add an unload handler to the subframe and try in that handler to preserve
+  // Add a pagehide handler to the subframe and try in that handler to preserve
   // state that we will try to recover later.
   ASSERT_TRUE(ExecJs(B2, R"(
-    window.addEventListener("unload", function() {
+    window.addEventListener("pagehide", function() {
       // Waiting for 100ms, to give more time for browser-side things to go bad
       // and delete RenderFrameHostImpl prematurely.
       var start = (new Date()).getTime();
@@ -1544,7 +1543,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   RenderFrameHostImpl* B5 = A4->child_at(0)->current_frame_host();
 
   // Verify that we can recover the data that should have been persisted by the
-  // unload handler.
+  // pagehide handler.
   EXPECT_EQ("localstorage_test_value",
             EvalJs(B5, "localStorage.localstorage_test_key"));
   EXPECT_EQ("cookie_test_key=cookie_test_value", EvalJs(B5, "document.cookie"));
@@ -1557,7 +1556,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   }
 }
 
-// Unload handlers should be able to do things that might require for instance
+// Pagehide handlers should be able to do things that might require for instance
 // the RenderFrameHostImpl to stay alive.
 // - use console.log (handled via RFHI::DidAddMessageToConsole).
 // - use history.replaceState (handled via RFHI::OnUpdateState).
@@ -1571,14 +1570,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
 //
 // TODO(https://crbug.com/960976): history.replaceState is broken in OOPIFs.
 //
-// This test is similar to UnloadHandlersArePowerful, but with a different frame
-// hierarchy.
+// This test is similar to PagehideHandlersArePowerful, but with a different
+// frame hierarchy.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
-                       UnloadHandlersArePowerfulGrandChild) {
-  // With BackForwardCache, old document doesn't fire unload handlers as the
-  // page is stored in BackForwardCache on navigation.
+                       PagehideHandlersArePowerfulGrandChild) {
+  // The test expects the previous document to be deleted on navigation.
   DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Navigate to a page hosting a cross-origin frame.
   GURL url = https_server()->GetURL("a.com",
                                     "/cross_site_iframe_factory.html?a(b(c))");
@@ -1594,10 +1592,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   B2->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
   C3->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
 
-  // Add an unload handler to the subframe and try in that handler to preserve
+  // Add a pagehide handler to the subframe and try in that handler to preserve
   // state that we will try to recover later.
   ASSERT_TRUE(ExecJs(C3, R"(
-    window.addEventListener("unload", function() {
+    window.addEventListener("pagehide", function() {
       // Waiting for 100ms, to give more time for browser-side things to go bad
       // and delete RenderFrameHostImpl prematurely.
       var start = (new Date()).getTime();
@@ -1653,7 +1651,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   RenderFrameHostImpl* C7 = B6->child_at(0)->current_frame_host();
 
   // Verify that we can recover the data that should have been persisted by the
-  // unload handler.
+  // pagehide handler.
   EXPECT_EQ("localstorage_test_value",
             EvalJs(C7, "localStorage.localstorage_test_key"));
   EXPECT_EQ("cookie_test_key=cookie_test_value", EvalJs(C7, "document.cookie"));

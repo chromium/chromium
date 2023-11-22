@@ -1538,8 +1538,6 @@ crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/navigate-to-abo
 crbug.com/1488371 virtual/deprecate-unload/http/tests/notifications/close-on-document-unload.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/notifications/notification-creation-detached-context.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/notifications/request-permission-detached-context.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/security/window-events-clear-domain.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/security/window-events-clear-port.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/frame-load-cancelled-abort.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/frame-unload-abort-crash.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/xmlhttprequest/xhr-onunload.html [ Failure Skip Timeout ]

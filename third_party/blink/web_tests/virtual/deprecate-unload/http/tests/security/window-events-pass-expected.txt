@@ -1,5 +1,0 @@
-CONSOLE ERROR: Permissions policy violation: unload is not allowed in this document.
-Test that window event handlers set for initial document are kept if security check passes. There will be 2 'PASS' messages below if the test passes:
-
-FAIL
-PASS: load fired.
