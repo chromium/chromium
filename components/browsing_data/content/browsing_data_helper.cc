@@ -246,7 +246,7 @@ int GetUniqueThirdPartyCookiesHostCount(
         (!top_frame_domain.empty() && !url::DomainIs(host, top_frame_domain))) {
       for (auto storage_type : entry.data_details->storage_types) {
         if (browsing_data_model.IsBlockedByThirdPartyCookieBlocking(
-                storage_type)) {
+                entry.data_key.get(), storage_type)) {
           unique_hosts.insert(*entry.data_owner);
           break;
         }

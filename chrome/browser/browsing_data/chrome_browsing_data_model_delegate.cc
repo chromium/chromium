@@ -94,7 +94,7 @@ ChromeBrowsingDataModelDelegate::CreateForStoragePartition(
 // static
 void ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
     content::RenderFrameHost* rfh,
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     StorageType storage_type,
     bool blocked) {
   content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
@@ -129,7 +129,7 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
 }
 
 void ChromeBrowsingDataModelDelegate::RemoveDataKey(
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageTypeSet storage_types,
     base::OnceClosure callback) {
   auto dynamic_barrier_closure =
@@ -168,7 +168,7 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
 
 absl::optional<BrowsingDataModel::DataOwner>
 ChromeBrowsingDataModelDelegate::GetDataOwner(
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
   switch (static_cast<StorageType>(storage_type)) {
     case StorageType::kIsolatedWebApp:
@@ -193,6 +193,7 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
 
 absl::optional<bool>
 ChromeBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
   // Values below the first delegate type are handled in the model itself.
   if (static_cast<int>(storage_type) <
