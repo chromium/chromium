@@ -1243,7 +1243,6 @@
       // Finch over 119 and 120. For now, it is enabled in code, and will be
       // removed from code starting in M121, assuming things go well.
       name: "DeprecatedNonStreamingDeclarativeShadowDOM",
-      status: "stable",
     },
     {
       name: "DesktopCaptureDisableLocalEchoControl",

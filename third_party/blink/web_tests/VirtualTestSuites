@@ -1124,17 +1124,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "non-streaming-declarative-shadow-dom-enabled",
-    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/shadow-dom/declarative",
-      "http/tests/inspector-protocol/issues/non-streaming-declarative-shadow-dom-issue.js"
-    ],
-    "args": ["--enable-features=DeprecatedNonStreamingDeclarativeShadowDOM"],
-    "expires": "Feb 1, 2024"
-  },
-  {
     "prefix": "dom-parts-disabled",
     "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux"],
