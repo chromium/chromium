@@ -19,9 +19,6 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_bindings_generator",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
-            "inputs": [
-                "mojo/public/tools/bindings/mojom_bindings_generator.py",
-            ],
             "indirect_inputs": {
                 "includes": [
                     "*.js",
