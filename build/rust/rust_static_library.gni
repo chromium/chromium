@@ -145,12 +145,50 @@ import("//build/rust/rust_target.gni")
 template("rust_static_library") {
   _target_name = target_name
 
+  _configs = []
+  _all_dependent_configs = []
+
+  if (defined(invoker.configs)) {
+    _configs += invoker.configs
+  }
+
+  # TODO(dcheng): Is there any value in allowing rust_shared_library() to also
+  # set `is_gtest_unittest` to true?
+  if (defined(invoker.is_gtest_unittests) && invoker.is_gtest_unittests) {
+    config("${_target_name}_alwayslink") {
+      # Targets using the #[gtest(...)] proc macro register their tests with
+      # static initializers. A rust library target generates a .rlib, which is
+      # a regular static library with extra metadata. However, if nothing
+      # outside the .rlib references functions in the .rlib—as is often the
+      # case with a target containing only tests—the linker will not pull in
+      # the .rlib into the final test binary at all, so the tests won't run.
+      #
+      # C++ works around this by using source sets and directly pass the .o
+      # files to the linker, but Rust does not have a parallel to this. Instead,
+      # force the linker to always include the whole archive.
+      #
+      # The library name is hardcoded here, since `get_target_outputs()` can't
+      # be used with a target that doesn't exist yet!
+      _rlib_path = "lib${_target_name}.rlib"
+      if (current_os == "aix") {
+        # The AIX linker does not implement an option for this.
+      } else if (is_win) {
+        ldflags = [ "/WHOLEARCHIVE:${_rlib_path}" ]
+      } else {
+        ldflags = [ "-LinkWrapper,add-whole-archive=${_rlib_path}" ]
+      }
+    }
+    _all_dependent_configs += [ ":${target_name}_alwayslink" ]
+    _configs += [ "//build/rust:is_gtest_unittests" ]
+  }
+
   rust_target(_target_name) {
     forward_variables_from(invoker,
                            "*",
                            TESTONLY_AND_VISIBILITY + [ "configs" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    library_configs = invoker.configs
+    library_configs = _configs
+    all_dependent_configs = _all_dependent_configs
     target_type = "rust_library"
   }
 }

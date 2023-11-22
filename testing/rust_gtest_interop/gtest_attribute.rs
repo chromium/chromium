@@ -253,6 +253,11 @@ pub fn gtest(
     let file_c_bytes = CStringLiteral(file!());
 
     let output = quote! {
+        #[cfg(not(is_gtest_unittests))]
+        compile_error!(
+            "#[gtest(...)] can only be used in targets where the GN \
+            variable `is_gtest_unittests` is set to `true`.");
+
         mod #test_mod {
             use super::*;
 

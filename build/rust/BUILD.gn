@@ -92,3 +92,10 @@ config("panic_immediate_abort") {
     ]
   }
 }
+
+config("is_gtest_unittests") {
+  rustflags = [
+    "--cfg",
+    "is_gtest_unittests",
+  ]
+}
