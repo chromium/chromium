@@ -16,7 +16,6 @@
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
-using web_contents_delegate_android::WebContentsDelegateAndroid;
 
 namespace wolvic {
 
@@ -45,13 +44,14 @@ void JNI_Tab_SetWebContentsDelegate(
     const JavaParamRef<jobject>& jweb_contents,
     const JavaParamRef<jobject>& jweb_contents_delegate) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
-  static std::unique_ptr<WebContentsDelegateAndroid> web_contents_delegate;
-
   DCHECK(web_contents);
 
-  web_contents_delegate =
-      std::make_unique<WebContentsDelegateAndroid>(env, jweb_contents_delegate);
-  web_contents->SetDelegate(web_contents_delegate.get());
+  auto* wolvic_contents = WolvicContents::FromWebContents(web_contents);
+  DCHECK(wolvic_contents);
+
+  auto web_contents_delegate =
+    std::make_unique<web_contents_delegate_android::WebContentsDelegateAndroid>(env, jweb_contents_delegate);
+  wolvic_contents->SetDelegate(std::move(web_contents_delegate));
 }
 
 }  // namespace wolvic
