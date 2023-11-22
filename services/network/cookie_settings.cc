@@ -297,6 +297,12 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
       }
+      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
+          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+        cookie.access_result.status.AddExclusionReason(
+            net::CookieInclusionStatus::
+                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+      }
     }
   }
   const auto to_be_moved = base::ranges::stable_partition(
