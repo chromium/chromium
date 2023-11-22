@@ -155,6 +155,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".VrServicesUpgrade"/>
 </variants>
 
+<variants name="ScrollScenarios">
+  <variant name="FeedScrolling" summary="feed"/>
+  <variant name="WebviewScrolling" summary="web contents"/>
+</variants>
+
 <variants name="TaskType">
   <variant name="BackgroundSyncOneShot" summary="BackgroundSyncOneShot"/>
   <variant name="ChromeMinidumpUploading" summary="ChromeMinidumpUploading"/>
@@ -194,6 +199,23 @@ chromium-metrics-reviews@google.com.
 <variants name="ThumbnailProvider_ClientType">
   <variant name=".DownloadHome" summary="Download home"/>
   <variant name=".NTPSnippets" summary="NTP snippets"/>
+</variants>
+
+<variants name="WVScrollJankOperator">
+  <variant name="Max"
+      summary="maximum number of vsyncs a frame was delayed by"/>
+  <variant name="Sum" summary="sum of missed vsyncs across all frames"/>
+</variants>
+
+<variants name="WVScrollLength">
+  <variant name="" summary="all scrolls"/>
+  <variant name=".Large"
+      summary="large scrolls - number of presented frames more than 64"/>
+  <variant name=".Medium"
+      summary="medium length scrolls - number of presented frames between
+               [17,64]"/>
+  <variant name=".Small"
+      summary="small scrolls - number of presented frames between [1,16]"/>
 </variants>
 
 <histogram name="Android.ActivityStop.NumberOfTabsUsed" units="count"
@@ -1502,6 +1524,49 @@ chromium-metrics-reviews@google.com.
     have been producing frames during that time.
   </summary>
   <token key="JankScenario" variants="AndroidFrameTimelineJankScenario"/>
+</histogram>
+
+<histogram
+    name="Android.FrameTimelineJank.{Scenario}.DelayedFramesPercentage.PerScroll{Length}"
+    units="%" expires_after="2024-04-30">
+  <owner>kartarsingh@chromium.org</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Percentage of janky frames in a {Scenario} scroll.
+
+    This metric is computed based on Android FrameMetrics. A frame is deemed
+    janky if time taken to render frame(FrameMetrics.TOTAL_DURATION) exceeds the
+    time available to app(FrameMetrics.DEADLINE). The metric is reported for
+    {Length}, at the end of scroll.
+
+    Note: For similar metric in chrome for web contents scrolling please check
+    Event.ScrollJank.DelayedFramesPercentage.PerScroll*
+  </summary>
+  <token key="Length" variants="WVScrollLength"/>
+  <token key="Scenario" variants="ScrollScenarios"/>
+</histogram>
+
+<histogram
+    name="Android.FrameTimelineJank.{Scenario}.MissedVsyncs{Operator}.PerScroll{Length}"
+    units="counts" expires_after="2024-04-30">
+  <owner>kartarsingh@chromium.org</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    This metric reports the {Operator} in {Scenario} scroll.
+
+    This metric is computed based on Android FrameMetrics. Missed vsyncs of
+    janky frame is estimated as `ceil((total_duration -
+    deadline)/vsync_interval)`, where total_duration is time taken to render
+    frame(FrameMetrics.TOTAL_DURATION) and deadline is time available to
+    app(FrameMetrics.DEADLINE). The metric is reported for {Length}, at the end
+    of scroll.
+
+    Note: For similar metric in chrome for web contents scrolling please check
+    Event.ScrollJank.MissedVsyncs*.PerScroll*
+  </summary>
+  <token key="Length" variants="WVScrollLength"/>
+  <token key="Operator" variants="WVScrollJankOperator"/>
+  <token key="Scenario" variants="ScrollScenarios"/>
 </histogram>
 
 <histogram base="true"
