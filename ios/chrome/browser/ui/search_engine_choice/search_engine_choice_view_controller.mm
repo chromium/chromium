@@ -384,6 +384,9 @@ UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
   SetConfigurationTitle(
       _primaryButton,
       l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
+  SetConfigurationFont(
+      _primaryButton,
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_primaryButton addTarget:self
                      action:@selector(primaryButtonAction)

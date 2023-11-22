@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/command_line.h"
 #import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -44,6 +48,9 @@
   BOOL _firstRun;
   // First run screen delegate.
   __weak id<FirstRunScreenDelegate> _first_run_delegate;
+  // The promos manager used to deregister the promo once the default search
+  // engine is set.
+  PromosManager* _promosManager;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -70,6 +77,10 @@
     _first_run_delegate = delegate;
   }
   return self;
+}
+
+- (void)setPromosManagerForTesting:(PromosManager*)promosManager {
+  _promosManager = promosManager;
 }
 
 - (void)start {
@@ -112,6 +123,9 @@
     search_engines::RecordChoiceScreenEvent(
         search_engines::SearchEngineChoiceScreenEvents::
             kChoiceScreenWasDisplayed);
+  }
+  if (!_promosManager) {
+    _promosManager = PromosManagerFactory::GetForBrowserState(browserState);
   }
 }
 
@@ -170,6 +184,11 @@
   } else {
     search_engines::RecordChoiceScreenEvent(
         search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
+  }
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
+    _promosManager->DeregisterPromo(promos_manager::Promo::Choice);
   }
   [_searchEnginesTableMediator saveDefaultSearchEngine];
   [self dismissChoiceScreen];

@@ -8,6 +8,7 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+class PromosManager;
 @protocol FirstRunScreenDelegate;
 
 // Coordinator for the search engine choice screen.
@@ -24,6 +25,9 @@
                                            firstRunDelegate:
                                                (id<FirstRunScreenDelegate>)
                                                    delegate;
+
+- (void)setPromosManagerForTesting:(PromosManager*)promosManager;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_COORDINATOR_H_

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -78,6 +79,7 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
         ios::HistoryServiceFactory::GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    promos_manager_ = std::make_unique<MockPromosManager>();
 
     mocked_browser_coordinator_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
@@ -103,6 +105,7 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
     coordinator_ = [[SearchEngineChoiceCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
+    [coordinator_ setPromosManagerForTesting:promos_manager_.get()];
     [coordinator_ start];
 
     search_engine_choice_view_controller_ =
@@ -122,6 +125,7 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
         initForFirstRunWithBaseNavigationController:base_navigation_controller_
                                             browser:browser_.get()
                                    firstRunDelegate:first_run_delegate_];
+    [coordinator_ setPromosManagerForTesting:promos_manager_.get()];
     [coordinator_ start];
 
     // `base_navigation_controller_` needs to be presented to make sure the view
@@ -146,6 +150,9 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
 
   // Select the first visible search engine and set it as the default.
   void SelectAndSetAsDefault() {
+    EXPECT_CALL(*promos_manager_.get(),
+                DeregisterPromo(promos_manager::Promo::Choice))
+        .Times(1);
     [table_view_controller_.delegate selectSearchEngineAtRow:0];
     [search_engine_choice_view_controller_.actionDelegate didTapPrimaryButton];
   }
@@ -194,6 +201,7 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   UIViewController* root_view_controller_ = nil;
@@ -206,7 +214,7 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   id mocked_browser_coordinator_commands_handler_;
   FirstRunScreenTestDelegate* first_run_delegate_ = nil;
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<MockPromosManager> promos_manager_;
 };
 
 // Checks that the correct metrics are recorded and that the screen gets
