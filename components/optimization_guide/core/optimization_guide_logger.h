@@ -109,6 +109,8 @@ class OptimizationGuideLogger {
   base::circular_deque<LogMessage> recent_log_messages_;
 
   base::ObserverList<OptimizationGuideLogger::Observer> observers_;
+
+  bool command_line_flag_enabled_ = false;
 };
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_LOGGER_H_
