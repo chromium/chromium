@@ -271,6 +271,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
   void UpdateCookieJarAccountsAndWait(std::vector<CoreAccountInfo> accounts,
                                       bool expected_cookie_jar_mismatch) {
     signin::AccountsInCookieJarInfo cookies;
+    cookies.accounts_are_fresh = true;
     for (const CoreAccountInfo& account : accounts) {
       cookies.signed_in_accounts.emplace_back();
       cookies.signed_in_accounts.back().id = account.account_id;
