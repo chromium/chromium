@@ -82,8 +82,6 @@ void AutoAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
-  // TODO(crbug.com/1503010): Delete the WebAppInstallDialogCallback callback
-  // on FetchManifestAndInstall entirely and test the prod behavior better.
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   std::move(acceptance_callback)
       .Run(

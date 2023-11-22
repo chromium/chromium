@@ -144,7 +144,7 @@ class LaunchWebAppWithFirstRunServiceBrowserTest
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        base::BindOnce(test::TestAcceptInstallDialogCallback),
+        base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {
           EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);

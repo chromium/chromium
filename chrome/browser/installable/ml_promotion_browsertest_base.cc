@@ -86,11 +86,9 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
   base::test::TestFuture<const webapps::AppId&, InstallResultCode>
       install_future;
 
-  // TODO(crbug.com/1504023): Use OMNIBOX_INSTALL_ICON and
-  // TestAcceptInstallDialogCallback to represent a real installation.
   provider->scheduler().FetchManifestAndInstall(
-      WebappInstallSource::MENU_CREATE_SHORTCUT, web_contents()->GetWeakPtr(),
-      base::BindOnce(web_app::test::TestAcceptCreateShortcutDialogCallback),
+      WebappInstallSource::OMNIBOX_INSTALL_ICON, web_contents()->GetWeakPtr(),
+      base::BindOnce(web_app::test::TestAcceptDialogCallback),
       install_future.GetCallback(), /*use_fallback=*/false);
 
   bool success = install_future.Wait();
