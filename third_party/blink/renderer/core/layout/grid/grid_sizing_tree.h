@@ -199,6 +199,8 @@ class GridSizingSubtree
   }
 };
 
+constexpr GridSizingSubtree kNoGridSizingSubtree;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_SIZING_TREE_H_

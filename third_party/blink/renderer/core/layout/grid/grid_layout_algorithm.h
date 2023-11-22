@@ -43,6 +43,8 @@ class CORE_EXPORT GridLayoutAlgorithm
   const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
+  MinMaxSizesResult ComputeMinMaxSizes(const GridSizingSubtree& sizing_subtree);
+
   // Computes the containing block rect of out of flow items from stored data in
   // |GridLayoutData|.
   static LogicalRect ComputeOutOfFlowItemContainingRect(
@@ -167,7 +169,8 @@ class CORE_EXPORT GridLayoutAlgorithm
   // algorithm to invoke the callback with.
   template <typename CallbackFunc>
   void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
-                      const CallbackFunc& callback_func) const;
+                      const CallbackFunc& callback_func,
+                      bool should_compute_min_max_sizes = true) const;
 
   LayoutUnit ComputeSubgridContributionSize(
       const GridSizingSubtree& sizing_subtree,
