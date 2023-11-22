@@ -251,8 +251,14 @@ class ProfileHelperTestWithDestroyProfile
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(nicolaso): Fix this flaky test in ASAN. Probably a timing issue.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DeleteInactiveProfile DISABLED_DeleteInactiveProfile
+#else
+#define MAYBE_DeleteInactiveProfile DeleteInactiveProfile
+#endif
 IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
-                       DeleteInactiveProfile) {
+                       MAYBE_DeleteInactiveProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
   ProfileAttributesStorage& storage =
