@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
@@ -854,12 +855,45 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   chrome::ExecuteCommand(browser_, command_id);
 }
 
+void AppMenuModel::LogSafetyHubInteractionMetrics(
+    absl::optional<safety_hub::SafetyHubModuleType> expected_module) {
+  auto const* safety_hub_menu_notification_service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(
+          browser_->profile());
+  absl::optional<safety_hub::SafetyHubModuleType> sh_module =
+      safety_hub_menu_notification_service->GetModuleOfActiveNotification();
+  if (sh_module.has_value() && (!expected_module.has_value() ||
+                                expected_module.value() == sh_module.value())) {
+    base::UmaHistogramEnumeration("Settings.SafetyHub.Interaction",
+                                  safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+    base::UmaHistogramEnumeration(
+        "Settings.SafetyHub.EntryPointInteraction",
+        safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+    base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
+                                  sh_module.value());
+  }
+}
+
 void AppMenuModel::LogMenuMetrics(int command_id) {
   base::TimeDelta delta = timer_.Elapsed();
 
   switch (command_id) {
     case IDC_UPGRADE_DIALOG:
       LogMenuAction(MENU_ACTION_UPGRADE_DIALOG);
+      break;
+    case IDC_SHOW_PASSWORD_CHECKUP:
+      if (!uma_action_recorded_) {
+        LogSafetyHubInteractionMetrics(
+            safety_hub::SafetyHubModuleType::PASSWORDS);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_PASSWORD_CHECKUP);
+      break;
+    case IDC_OPEN_SAFETY_HUB:
+      if (!uma_action_recorded_) {
+        // Multiple Safety Hub module types can result in opening Safety Hub UI.
+        LogSafetyHubInteractionMetrics();
+      }
+      LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
       break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_LACROS_DATA_MIGRATION:
@@ -1084,6 +1118,17 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Tools menu.
     case IDC_MANAGE_EXTENSIONS:
       if (!uma_action_recorded_) {
+        // TODO(crbug.com/1443466): Use a callback instead to log the metrics to
+        // reduce coupling with Safety Hub notification service.
+        // See crrev.com/c/5012653/comments/4f038126_bb7cb0fe for more details.
+        if (features::IsExtensionMenuInRootAppMenu()) {
+          LogSafetyHubInteractionMetrics();
+        } else {
+          // The command can originate from either Safety Hub notification or
+          // extension menu.
+          LogSafetyHubInteractionMetrics(
+              safety_hub::SafetyHubModuleType::EXTENSIONS);
+        }
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ManageExtensions",
                                    delta);
       }
@@ -1481,6 +1526,18 @@ void AppMenuModel::Build() {
     absl::optional<MenuNotificationEntry> notification =
         safety_hub_menu_notification_service->GetNotificationToShow();
     if (notification.has_value()) {
+      base::UmaHistogramEnumeration(
+          "Settings.SafetyHub.Impression",
+          safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+      base::UmaHistogramEnumeration(
+          "Settings.SafetyHub.EntryPointImpression",
+          safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+      absl::optional<safety_hub::SafetyHubModuleType> sh_module =
+          safety_hub_menu_notification_service->GetModuleOfActiveNotification();
+      if (sh_module.has_value()) {
+        base::UmaHistogramEnumeration(
+            "Settings.SafetyHub.MenuNotificationImpression", sh_module.value());
+      }
       const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
           kSecurityIcon, ui::kColorMenuIcon, kDefaultIconSize);
       AddItemWithIcon(notification->command, notification->label,

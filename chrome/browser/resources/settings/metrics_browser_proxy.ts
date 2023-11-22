@@ -225,7 +225,7 @@ export enum PrivacyGuideSettingsStates {
  * numeric values should never be reused.
  *
  * Must be kept in sync with SettingsPrivacyGuideStepsEligibleAndReached in
- * emus.xml and PrivacyGuideStepsEligibleAndReached in
+ * enums.xml and PrivacyGuideStepsEligibleAndReached in
  * privacy_guide/privacy_guide.h.
  */
 export enum PrivacyGuideStepsEligibleAndReached {
@@ -260,6 +260,20 @@ export enum DeleteBrowsingDataAction {
   QUICK_DELETE = 6,
   PAGE_INFO_RESET_PERMISSIONS = 7,
   MAX_VALUE = 8,
+}
+
+/**
+ * This enum contains the different surfaces of Safety Hub that users can
+ * interact with, or on which they can observe a Safety Hub feature.
+ *
+ * Must be kept in sync with the `safety_hub::SafetyHubSurfaces` enum in
+ * chrome/browser/ui/safety_hub/safety_hub_constants.h and `SafetyHubSurfaces`
+ * in enums.xml
+ */
+export enum SafetyHubSurfaces {
+  THREE_DOT_MENU = 0,
+  SAFETY_HUB_PAGE = 1,
+  MAX_VALUE = 2,
 }
 
 export interface MetricsBrowserProxy {
@@ -376,6 +390,18 @@ export interface MetricsBrowserProxy {
    * recordDeleteBrowsingDataAction backend function.
    */
   recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction): void;
+
+  /**
+   * Helper function that calls records an impression of the provided Safety Hub
+   * surface.
+   */
+  recordSafetyHubImpression(surface: SafetyHubSurfaces): void;
+
+  /**
+   * Helper function that calls records an interaction of the provided Safety
+   * Hub surface.
+   */
+  recordSafetyHubInteraction(surface: SafetyHubSurfaces): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -513,6 +539,22 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Privacy.DeleteBrowsingData.Action',
       action,
       DeleteBrowsingDataAction.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubImpression(surface: SafetyHubSurfaces): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.Impression',
+      surface,
+      SafetyHubSurfaces.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubInteraction(surface: SafetyHubSurfaces): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.Interaction',
+      surface,
+      SafetyHubSurfaces.MAX_VALUE,
     ]);
   }
 

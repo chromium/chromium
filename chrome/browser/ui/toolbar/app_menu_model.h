@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -102,7 +103,11 @@ enum AppMenuAction {
   MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE = 80,
   MENU_ACTION_SHOW_SEARCH_COMPANION = 81,
   MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL = 82,
-
+  MENU_ACTION_SHOW_PERFORMANCE_SETTINGS = 83,
+  MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL = 84,
+  MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL = 85,
+  MENU_ACTION_SHOW_SAFETY_HUB = 86,
+  MENU_ACTION_SHOW_PASSWORD_CHECKUP = 87,
   LIMIT_MENU_ACTION
 };
 
@@ -241,6 +246,14 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Logs UMA metrics about which command was chosen and how long the user
   // took to select the command.
   void LogMenuMetrics(int command_id);
+
+  // Logs UMA metrics when the user interacted with a Safety Hub notification
+  // in the menu. When an expected module is provided, the metrics will only be
+  // logged when the module matches the one for which there is an active menu
+  // notification.
+  void LogSafetyHubInteractionMetrics(
+      absl::optional<safety_hub::SafetyHubModuleType> expected_module =
+          absl::nullopt);
 
  private:
   // Adds actionable global error menu items to the menu.

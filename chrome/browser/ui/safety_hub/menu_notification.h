@@ -22,7 +22,8 @@ constexpr int kSafetyHubMenuNotificationMinImpressionCount = 5;
 // Chrome menu.
 class SafetyHubMenuNotification {
  public:
-  SafetyHubMenuNotification();
+  SafetyHubMenuNotification() = delete;
+  explicit SafetyHubMenuNotification(safety_hub::SafetyHubModuleType type);
   explicit SafetyHubMenuNotification(const base::Value::Dict& dict,
                                      safety_hub::SafetyHubModuleType type);
 
@@ -72,6 +73,9 @@ class SafetyHubMenuNotification {
   // three-dot menu.
   int GetNotificationCommandId() const;
 
+  // Returns the module type this menu notification is for.
+  safety_hub::SafetyHubModuleType GetModuleType() const;
+
   SafetyHubService::Result* GetResultForTesting() const;
 
  private:
@@ -111,6 +115,8 @@ class SafetyHubMenuNotification {
   absl::optional<base::Time> show_only_after_;
   // The total number of time in total that a notification has been shown.
   int all_time_notification_count_ = 0;
+  // The type of the module this menu notification is for.
+  safety_hub::SafetyHubModuleType module_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_H_

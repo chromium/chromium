@@ -96651,6 +96651,28 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="SAFE"/>
 </enum>
 
+<enum name="SafetyHubEntryPoint">
+  <int value="0" label="Privacy page (safe)"/>
+  <int value="1" label="Privacy page (warning)"/>
+  <int value="2" label="Site settings"/>
+  <int value="3" label="Three-dot menu notification"/>
+  <int value="4" label="Notification settings"/>
+</enum>
+
+<enum name="SafetyHubModuleType">
+  <int value="0" label="Unused site permissions"/>
+  <int value="1" label="Notification permissions"/>
+  <int value="2" label="Safe browsing"/>
+  <int value="3" label="Extensions"/>
+  <int value="4" label="Passwords"/>
+  <int value="5" label="Version"/>
+</enum>
+
+<enum name="SafetyHubSurfaces">
+  <int value="0" label="Three-dot menu"/>
+  <int value="1" label="Safety Hub page"/>
+</enum>
+
 <enum name="SafetyTipInteraction">
   <int value="0" label="User dismissed the Safety Tip"/>
   <int value="1" label="User left the site with the Safety Tip"/>
@@ -119734,6 +119756,11 @@ Called by update_scheduler_enums.py.-->
   <int value="80" label="Switch directly to other profile"/>
   <int value="81" label="Show search companion"/>
   <int value="82" label="Show bookmark side panel"/>
+  <int value="83" label="Show performance settings"/>
+  <int value="84" label="Show history cluster side panel"/>
+  <int value="85" label="Show reading mode side panel"/>
+  <int value="86" label="Open Safety Menu settings UI"/>
+  <int value="87" label="Show password manager checkup"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">

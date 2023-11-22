@@ -767,6 +767,72 @@ chromium-metrics-reviews@google.com.
   <summary>Resulting state of the safety check updates check.</summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.EntryPointImpression"
+    enum="SafetyHubEntryPoint" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the impressions of the different entry points of Safety Hub.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.EntryPointInteraction"
+    enum="SafetyHubEntryPoint" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the interaction with an entry point of Safety Hub, that will
+    eventually lead to the Safety Check page, password manager checkup page or
+    the extensions page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.Impression" enum="SafetyHubSurfaces"
+    expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures Safety Hub page visits and three dot menu impressions for any
+    Safety Hub module.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.Interaction" enum="SafetyHubSurfaces"
+    expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures Safety Hub page visits and three dot menu clicks for any Safety Hub
+    module.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.MenuNotificationClicked"
+    enum="SafetyHubModuleType" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the Safety Hub module of which the three-dot menu notification was
+    clicked.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.MenuNotificationImpression"
+    enum="SafetyHubModuleType" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the Safety Hub module for which a notification was shown in the
+    three-dot menu.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
     enum="SafetyHubCardState" expires_after="2024-04-08">
   <owner>sideyilmaz@chromium.org</owner>
