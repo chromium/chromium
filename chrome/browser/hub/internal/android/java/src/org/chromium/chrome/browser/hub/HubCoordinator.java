@@ -76,7 +76,7 @@ public class HubCoordinator implements BackPressHandler {
         mContainerView.addView(mMainHubParent);
 
         HubToolbarView hubToolbarView = mContainerView.findViewById(R.id.hub_toolbar);
-        mHubToolbarCoordinator = new HubToolbarCoordinator(hubToolbarView);
+        mHubToolbarCoordinator = new HubToolbarCoordinator(hubToolbarView, paneManager);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         mHubPaneHostCoordinator =

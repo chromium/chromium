@@ -15,11 +15,12 @@ public class HubToolbarCoordinator {
      * Eagerly creates the component, but will not be rooted in the view tree yet.
      *
      * @param hubToolbarView The root view of this component. Inserted into hierarchy for us.
+     * @param paneManager Interact with the current and all {@link Pane}s.
      */
-    public HubToolbarCoordinator(HubToolbarView hubToolbarView) {
+    public HubToolbarCoordinator(HubToolbarView hubToolbarView, PaneManager paneManager) {
         PropertyModel model = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);
-        mMediator = new HubToolbarMediator(model);
+        mMediator = new HubToolbarMediator(model, paneManager);
     }
 
     /** Cleans up observers and resources. */

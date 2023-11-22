@@ -8,8 +8,11 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import java.util.Objects;
 
 /** Resolves data by reading from Android resources on demand. */
 public class ResourceButtonData implements DisplayButtonData {
@@ -30,5 +33,22 @@ public class ResourceButtonData implements DisplayButtonData {
     @Override
     public Drawable resolveIcon(Context context) {
         return AppCompatResources.getDrawable(context, mIconRes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mTextRes, mIconRes);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ResourceButtonData)) {
+            return false;
+        }
+        ResourceButtonData that = (ResourceButtonData) o;
+        return mTextRes == that.mTextRes && mIconRes == that.mIconRes;
     }
 }

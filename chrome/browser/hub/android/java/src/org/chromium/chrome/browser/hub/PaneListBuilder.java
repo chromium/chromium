@@ -36,6 +36,11 @@ public class PaneListBuilder {
         mPaneOrderController = paneOrderController;
     }
 
+    /** Returns an object that holds the authoritative order of panes. */
+    public PaneOrderController getPaneOrderController() {
+        return mPaneOrderController;
+    }
+
     /**
      * Register a new Pane for the Hub. This operation is invalid if {@link #build()} was invoked.
      *

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import android.content.Context;
@@ -11,7 +14,6 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,11 +24,44 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class ResourceButtonDataUnitTest {
     @Test
     @SmallTest
-    public void testFocusChangesPane() {
+    public void testResolveTextAndIcon() {
         Context context = ApplicationProvider.getApplicationContext();
         DisplayButtonData buttonData =
                 new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
-        Assert.assertNotEquals(0, buttonData.resolveText(context).length());
+        assertNotEquals(0, buttonData.resolveText(context).length());
         assertNotNull(buttonData.resolveIcon(context));
+    }
+
+    @Test
+    @SmallTest
+    public void testHashCode() {
+        DisplayButtonData buttonData1 =
+                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+        DisplayButtonData buttonData2 =
+                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+        // Only test positive case, since we're not guaranteed to get different hash codes for
+        // different values.
+        assertEquals(buttonData1.hashCode(), buttonData2.hashCode());
+    }
+
+    @Test
+    @SmallTest
+    public void testEquals() {
+        DisplayButtonData buttonData =
+                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+        assertEquals(buttonData, buttonData);
+        assertEquals(
+                buttonData, new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add));
+        assertNotEquals(
+                buttonData,
+                new ResourceButtonData(R.string.button_new_incognito_tab, R.drawable.ic_add));
+        assertNotEquals(
+                buttonData,
+                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_history_24dp));
+
+        // assert*Equals will not invoke #equals on a null object, manually call it instead.
+        assertFalse(buttonData.equals(null));
+
+        assertNotEquals(buttonData, new Object());
     }
 }

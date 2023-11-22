@@ -73,9 +73,17 @@ public class HubCoordinatorUnitTest {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mTabSwitcherBackPressSupplier);
+        when(mTabSwitcherPane.getActionButtonDataSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
+        when(mTabSwitcherPane.getReferenceButtonDataSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mIncognitoTabSwitcherBackPressSupplier);
+        when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
+        when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.isIncognito()).thenReturn(false);
         when(mIncognitoTab.getId()).thenReturn(INCOGNITO_TAB_ID);

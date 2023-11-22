@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,6 +41,7 @@ public class PaneManagerImplUnitTest {
     @Mock private Supplier<Pane> mPaneSupplier;
     private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
             new ObservableSupplierImpl<>();
+    @Mock private Runnable mRunnable;
 
     @Before
     public void setUp() {
@@ -234,5 +236,29 @@ public class PaneManagerImplUnitTest {
         verify(mTabSwitcherPane, times(2)).notifyLoadHint(eq(LoadHint.WARM));
 
         paneManager.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetPaneById() {
+        LazyOneshotSupplierImpl<Pane> supplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {
+                        mRunnable.run();
+                        // Don't call set. We'll do that manually. Call mRunnable so we can verify
+                        // called.
+                    }
+                };
+
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(PaneId.TAB_SWITCHER, supplier);
+        PaneManager paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        assertNull(paneManager.getPaneForId(PaneId.TAB_SWITCHER));
+        verify(mRunnable).run();
+
+        supplier.set(mTabSwitcherPane);
+        assertEquals(mTabSwitcherPane, paneManager.getPaneForId(PaneId.TAB_SWITCHER));
     }
 }

@@ -9,7 +9,11 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.ObservableSupplier;
 
 /** Interface for managing {@link Pane}s. */
-public interface PaneManager {
+public interface PaneManager extends PaneLookup {
+    /** Returns the authoritative source of the order of panes. */
+    @NonNull
+    PaneOrderController getPaneOrderController();
+
     /** Returns an observable version of the current pane. */
     @NonNull
     ObservableSupplier<Pane> getFocusedPaneSupplier();

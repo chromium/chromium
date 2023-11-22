@@ -15,14 +15,14 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
 /** Implementation of {@link PaneManager} for managing {@link Pane}s. */
-public class PaneManagerImpl implements PaneManager, PaneLookup {
-    private final ImmutableMap<Integer, LazyOneshotSupplier<Pane>> mPanes;
+public class PaneManagerImpl implements PaneManager {
     private final ObservableSupplierImpl<Pane> mCurrentPaneSupplierImpl =
             new ObservableSupplierImpl<>();
-    private final Callback<Boolean> mHubVisbilityObserver;
-    private final PaneTransitionHelper mPaneTransitionHelper;
-
+    private final ImmutableMap<Integer, LazyOneshotSupplier<Pane>> mPanes;
     private final ObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private final Callback<Boolean> mHubVisibilityObserver;
+    private final PaneTransitionHelper mPaneTransitionHelper;
+    private final PaneOrderController mPaneOrderController;
 
     /**
      * Create a {@link PaneManagerImpl}.
@@ -35,15 +35,21 @@ public class PaneManagerImpl implements PaneManager, PaneLookup {
             PaneListBuilder paneListBuilder, ObservableSupplier<Boolean> hubVisibilitySupplier) {
         mPanes = paneListBuilder.build();
         mHubVisibilitySupplier = hubVisibilitySupplier;
-        mHubVisbilityObserver = this::onHubVisibilityChanged;
-        mHubVisibilitySupplier.addObserver(mHubVisbilityObserver);
+        mHubVisibilityObserver = this::onHubVisibilityChanged;
+        mHubVisibilitySupplier.addObserver(mHubVisibilityObserver);
         mPaneTransitionHelper = new PaneTransitionHelper(this);
+        mPaneOrderController = paneListBuilder.getPaneOrderController();
     }
 
     /** Destroys the {@link PaneManager}. */
     public void destroy() {
-        mHubVisibilitySupplier.removeObserver(mHubVisbilityObserver);
+        mHubVisibilitySupplier.removeObserver(mHubVisibilityObserver);
         mPaneTransitionHelper.destroy();
+    }
+
+    @Override
+    public @NonNull PaneOrderController getPaneOrderController() {
+        return mPaneOrderController;
     }
 
     @Override
