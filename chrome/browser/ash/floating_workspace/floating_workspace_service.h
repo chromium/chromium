@@ -107,8 +107,6 @@ class FloatingWorkspaceService : public KeyedService,
 
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
-  // Indicate if it is a testing class.
-  bool is_testing_ = false;
 
  private:
   // ash::SessionObserver:

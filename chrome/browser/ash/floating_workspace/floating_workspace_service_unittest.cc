@@ -16,11 +16,15 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
@@ -33,8 +37,11 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +55,7 @@ namespace {
 constexpr char kLocalSessionName[] = "local_session";
 constexpr char kRemoteSessionOneName[] = "remote_session_1";
 constexpr char kRemoteSession2Name[] = "remote_session_2";
+constexpr char kTestAccount[] = "usertest@gmail.com";
 const base::Time most_recent_time = base::Time::FromSecondsSinceUnixEpoch(15);
 const base::Time more_recent_time = base::Time::FromSecondsSinceUnixEpoch(10);
 const base::Time least_recent_time = base::Time::FromSecondsSinceUnixEpoch(5);
@@ -184,7 +192,6 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
       raw_ptr<syncer::TestSyncService> mock_sync_service,
       floating_workspace_util::FloatingWorkspaceVersion version)
       : FloatingWorkspaceService(profile, version) {
-    is_testing_ = true;
     Init(mock_sync_service, fake_desk_sync_service);
     mock_open_tabs_ = std::make_unique<MockOpenTabsUIDelegate>();
     mock_desks_client_ = std::make_unique<MockDesksClient>();
@@ -252,7 +259,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
  public:
   FloatingWorkspaceServiceTest() = default;
 
-  ~FloatingWorkspaceServiceTest() override = default;
+  ~FloatingWorkspaceServiceTest() override { profile_ = nullptr; }
 
   TestingProfile* profile() const { return profile_.get(); }
 
@@ -279,6 +286,11 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   ui::UserActivityDetector* user_activity_detector() {
     return user_activity_detector_.get();
   }
+
+  user_manager::FakeUserManager* fake_user_manager() const {
+    return fake_user_manager_.Get();
+  }
+
   bool HasNotificationFor(const std::string& id) {
     absl::optional<message_center::Notification> notification =
         display_service()->GetNotification(id);
@@ -310,13 +322,19 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
     TestingProfile::Builder profile_builder;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    profile_builder.SetProfileName("user.test@gmail.com");
-    profile_builder.SetPath(
-        temp_dir.GetPath().AppendASCII("TestFloatingWorkspace"));
-    profile_ = profile_builder.Build();
+    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(prefs->registry());
+    profile_ = profile_manager_->CreateTestingProfile(
+        kTestAccount, std::move(prefs), std::u16string(), /*avatar_id=*/0,
+        TestingProfile::TestingFactories());
     fake_desk_sync_service_ =
         std::make_unique<desks_storage::FakeDeskSyncService>(
             /*skip_engine_connection=*/true);
@@ -329,7 +347,14 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     user_activity_detector_->set_last_activity_time_for_test(
         base::TimeTicks::Now());
     cache_ = std::make_unique<apps::AppRegistryCache>();
-    account_id_ = multi_user_util::GetAccountIdFromProfile(profile_.get());
+    account_id_ = AccountId::FromUserEmail(kTestAccount);
+    const std::string username_hash =
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_);
+    fake_user_manager()->AddUser(account_id_);
+
+    fake_user_manager()->UserLoggedIn(account_id_, username_hash,
+                                      /*browser_restart=*/false,
+                                      /*is_child=*/false);
     apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
                                                              cache_.get());
   }
@@ -337,7 +362,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
   std::unique_ptr<desks_storage::FakeDeskSyncService> fake_desk_sync_service_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -346,6 +371,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
 };
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {

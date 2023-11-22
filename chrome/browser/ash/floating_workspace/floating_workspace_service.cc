@@ -18,7 +18,6 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -48,7 +47,6 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
-#include "floating_workspace_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -130,17 +128,6 @@ void FloatingWorkspaceService::OnSyncShutdown(syncer::SyncService* sync) {
 void FloatingWorkspaceService::Init(
     syncer::SyncService* sync_service,
     desks_storage::DeskSyncService* desk_sync_service) {
-  if (is_testing_) {
-    CHECK_IS_TEST();
-    if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
-                        kFloatingWorkspaceV1Enabled) {
-      InitForV1();
-    } else {
-      InitForV2(sync_service, desk_sync_service);
-    }
-    return;
-  }
-
   if (ash::SessionController::Get()) {
     ash::SessionController::Get()->AddObserver(this);
   }
