@@ -182,12 +182,6 @@ void URLRequest::Delegate::OnResponseStarted(URLRequest* request,
 URLRequest::~URLRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Log the redirect count during destruction, to ensure that it is only
-  // recorded at the end of following all redirect chains.
-  UMA_HISTOGRAM_EXACT_LINEAR("Net.RedirectChainLength",
-                             kMaxRedirects - redirect_limit_,
-                             kMaxRedirects + 1);
-
   Cancel();
 
   if (network_delegate()) {
