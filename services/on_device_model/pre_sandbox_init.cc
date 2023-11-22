@@ -11,7 +11,7 @@
 #include "services/on_device_model/on_device_model_service.h"
 
 #if defined(ENABLE_ML_INTERNAL)
-#include "services/on_device_model/chrome_ml_instance.h"  // nogncheck
+#include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
 #endif
 
 namespace on_device_model {
@@ -20,7 +20,7 @@ namespace on_device_model {
 bool OnDeviceModelService::PreSandboxInit() {
 #if defined(ENABLE_ML_INTERNAL)
   // Ensure the library is loaded before the sandbox is initialized.
-  if (!GetChromeMLInstance()) {
+  if (!ml::ChromeML::Get()) {
     LOG(ERROR) << "Unable to load ChromeML.";
     return false;
   }
