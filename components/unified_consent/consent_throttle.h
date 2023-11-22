@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
