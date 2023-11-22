@@ -549,13 +549,12 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
   }
 }
 
-template <typename TextPaintInfo>
-void GraphicsContext::DrawTextInternal(const Font& font,
-                                       const TextPaintInfo& text_info,
-                                       const gfx::PointF& point,
-                                       const cc::PaintFlags& flags,
-                                       DOMNodeId node_id,
-                                       const AutoDarkMode& auto_dark_mode) {
+void GraphicsContext::DrawText(const Font& font,
+                               const NGTextFragmentPaintInfo& text_info,
+                               const gfx::PointF& point,
+                               const cc::PaintFlags& flags,
+                               DOMNodeId node_id,
+                               const AutoDarkMode& auto_dark_mode) {
   DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
   if (sk_sp<SkTextBlob> text_blob = paint_controller_->CachedTextBlob()) {
     canvas_->drawTextBlob(text_blob, point.x(), point.y(), node_id,
@@ -565,24 +564,6 @@ void GraphicsContext::DrawTextInternal(const Font& font,
   font.DrawText(canvas_, text_info, point, node_id, dark_mode_flags,
                 printing_ ? Font::DrawType::kGlyphsAndClusters
                           : Font::DrawType::kGlyphsOnly);
-}
-
-void GraphicsContext::DrawText(const Font& font,
-                               const TextRunPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               const cc::PaintFlags& flags,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-}
-
-void GraphicsContext::DrawText(const Font& font,
-                               const NGTextFragmentPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               const cc::PaintFlags& flags,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
 }
 
 template <typename DrawTextFunc>
@@ -606,22 +587,12 @@ void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
 }
 
 void GraphicsContext::DrawText(const Font& font,
-                               const TextRunPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
-    DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-  });
-}
-
-void GraphicsContext::DrawText(const Font& font,
                                const NGTextFragmentPaintInfo& text_info,
                                const gfx::PointF& point,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
-    DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
+    DrawText(font, text_info, point, flags, node_id, auto_dark_mode);
   });
 }
 
@@ -671,18 +642,6 @@ void GraphicsContext::DrawBidiText(
           paint_controller_->SetTextPainted();
         }
       });
-}
-
-void GraphicsContext::DrawHighlightForText(const Font& font,
-                                           const TextRun& run,
-                                           const gfx::PointF& point,
-                                           int h,
-                                           const Color& background_color,
-                                           const AutoDarkMode& auto_dark_mode,
-                                           int from,
-                                           int to) {
-  FillRect(font.SelectionRectForText(run, point, h, from, to), background_color,
-           auto_dark_mode);
 }
 
 void GraphicsContext::DrawImage(
