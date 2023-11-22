@@ -5880,15 +5880,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IncompatibleApplicationsPage.NumApplications"
-    units="applications" expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The number of incompatible applications detected by Chrome at the time the
-    chrome://settings/incompatibleApplications page was opened.
-  </summary>
-</histogram>
-
 <histogram name="InertialSensor.AccelerometerAndroidAvailable"
     enum="BooleanAvailable" expires_after="M95">
   <owner>timvolodine@chromium.org</owner>

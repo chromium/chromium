@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -105,9 +104,6 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
     dict.Set("url", application.blocklist_action->message_url());
     application_list.Append(std::move(dict));
   }
-
-  UMA_HISTOGRAM_COUNTS_100("IncompatibleApplicationsPage.NumApplications",
-                           incompatible_applications.size());
 
   const base::Value& callback_id = args.front();
   ResolveJavascriptCallback(callback_id, application_list);
