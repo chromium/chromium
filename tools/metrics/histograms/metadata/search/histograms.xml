@@ -697,16 +697,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.HistoryReport.UsageReportsBuffer.LevelDBEntries"
-    units="entries" expires_after="2019-06-01">
-  <owner>wychen@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    The number of entries in the usage report level DB for Icing. This is
-    measured on cold start.
-  </summary>
-</histogram>
-
 <histogram name="Search.IcingContextReportingStatus"
     enum="IcingContextReportingStatus" expires_after="M77">
   <owner>donnd@chromium.org</owner>
