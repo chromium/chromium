@@ -20,14 +20,17 @@ void FakeRecentSource::AddFile(const RecentFile& file) {
   canned_files_.emplace_back(file);
 }
 
-void FakeRecentSource::GetRecentFiles(Params params) {
-  timer_.Start(FROM_HERE, lag_,
-               base::BindOnce(&FakeRecentSource::OnFilesReady,
-                              base::Unretained(this), std::move(params)));
+void FakeRecentSource::GetRecentFiles(Params params,
+                                      GetRecentFilesCallback callback) {
+  timer_.Start(
+      FROM_HERE, lag_,
+      base::BindOnce(&FakeRecentSource::OnFilesReady, base::Unretained(this),
+                     params, std::move(callback)));
 }
 
-void FakeRecentSource::OnFilesReady(Params params) {
-  std::move(params.callback()).Run(GetMatchingFiles(params));
+void FakeRecentSource::OnFilesReady(const Params& params,
+                                    GetRecentFilesCallback callback) {
+  std::move(callback).Run(GetMatchingFiles(params));
 }
 
 void FakeRecentSource::SetLag(const base::TimeDelta& lag) {

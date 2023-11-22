@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/fileapi/recent_source.h"
 
-#include <utility>
-
-#include "base/check.h"
-
 namespace ash {
 
 RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
@@ -15,23 +11,25 @@ RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
                              const std::string& query,
                              const base::Time& cutoff_time,
                              const base::TimeTicks& end_time,
-                             FileType file_type,
-                             GetRecentFilesCallback callback)
+                             FileType file_type)
     : file_system_context_(file_system_context),
       origin_(origin),
       query_(query),
       cutoff_time_(cutoff_time),
       file_type_(file_type),
-      end_time_(end_time),
-      callback_(std::move(callback)) {
-  DCHECK(!callback_.is_null());
-}
+      end_time_(end_time) {}
+
+RecentSource::Params::Params(const Params& params)
+    : file_system_context_(params.file_system_context_),
+      origin_(params.origin_),
+      query_(params.query_),
+      cutoff_time_(params.cutoff_time_),
+      file_type_(params.file_type_),
+      end_time_(params.end_time_) {}
 
 bool RecentSource::Params::IsLate() const {
   return base::TimeTicks::Now() > end_time_;
 }
-
-RecentSource::Params::Params(Params&& other) = default;
 
 RecentSource::Params::~Params() = default;
 

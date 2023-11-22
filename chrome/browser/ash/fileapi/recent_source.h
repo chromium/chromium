@@ -44,7 +44,7 @@ class RecentSource {
     kVideo,
   };
 
-  // Parameters passed to GetRecentFiles().
+  // Parameters passed to GetRecentFiles(). May be copied.
   class Params {
    public:
     Params(storage::FileSystemContext* file_system_context,
@@ -52,13 +52,10 @@ class RecentSource {
            const std::string& query,
            const base::Time& cutoff_time,
            const base::TimeTicks& end_time,
-           FileType file_type,
-           GetRecentFilesCallback callback);
+           FileType file_type);
+    Params(const Params& params);
 
-    Params(const Params& other) = delete;
-    Params(Params&& other);
     ~Params();
-    Params& operator=(const Params& other) = delete;
 
     // FileSystemContext that can be used for file system operations.
     storage::FileSystemContext* file_system_context() const {
@@ -91,17 +88,13 @@ class RecentSource {
     // duration was never set, this method always returns false.
     bool IsLate() const;
 
-    // Callback to be called for the result of GetRecentFiles().
-    GetRecentFilesCallback& callback() { return callback_; }
-
    private:
     scoped_refptr<storage::FileSystemContext> file_system_context_;
-    GURL origin_;
-    std::string query_;
-    base::Time cutoff_time_;
-    FileType file_type_;
+    const GURL origin_;
+    const std::string query_;
+    const base::Time cutoff_time_;
+    const FileType file_type_;
     const base::TimeTicks end_time_;
-    GetRecentFilesCallback callback_;
   };
 
   virtual ~RecentSource();
@@ -111,7 +104,8 @@ class RecentSource {
   // You can assume that, once this function is called, it is not called again
   // until the callback is invoked. This means that you can safely save internal
   // states to compute recent files in member variables.
-  virtual void GetRecentFiles(Params params) = 0;
+  virtual void GetRecentFiles(Params params,
+                              GetRecentFilesCallback callback) = 0;
 
  protected:
   RecentSource();

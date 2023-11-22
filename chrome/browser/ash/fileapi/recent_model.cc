@@ -169,12 +169,14 @@ void RecentModel::GetRecentFiles(
       scan_timeout_duration_ ? base::TimeTicks::Now() + *scan_timeout_duration_
                              : base::TimeTicks::Max();
 
+  const RecentSource::Params params(file_system_context, origin, query,
+                                    cutoff_time, end_time, file_type);
   for (const auto& source : sources_) {
-    source->GetRecentFiles(RecentSource::Params(
-        file_system_context, origin, query, cutoff_time, end_time, file_type,
+    source->GetRecentFiles(
+        params,
         base::BindOnce(&RecentModel::OnGetRecentFiles,
                        weak_ptr_factory_.GetWeakPtr(), run_on_sequence_id,
-                       cutoff_time, search_criteria)));
+                       cutoff_time, search_criteria));
   }
   if (scan_timeout_duration_) {
     deadline_timer_.Start(

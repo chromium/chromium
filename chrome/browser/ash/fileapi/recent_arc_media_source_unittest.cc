@@ -193,18 +193,19 @@ class RecentArcMediaSourceTest : public testing::Test {
 
     base::RunLoop run_loop;
 
-    source_->GetRecentFiles(RecentSource::Params(
-        /*file_system_context=*/nullptr, /*origin=*/GURL(), query,
-        /*cutoff_time=*/base::Time(),
-        /*end_time=*/base::TimeTicks::Max(),
-        /*file_type=*/file_type,
+    source_->GetRecentFiles(
+        RecentSource::Params(
+            /*file_system_context=*/nullptr, /*origin=*/GURL(), query,
+            /*cutoff_time=*/base::Time(),
+            /*end_time=*/base::TimeTicks::Max(),
+            /*file_type=*/file_type),
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
                std::vector<RecentFile> files) {
               run_loop->Quit();
               *out_files = std::move(files);
             },
-            &run_loop, &files)));
+            &run_loop, &files));
 
     run_loop.Run();
 
