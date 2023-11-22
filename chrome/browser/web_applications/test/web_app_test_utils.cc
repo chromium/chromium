@@ -956,10 +956,25 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   return app;
 }
 
-void TestAcceptDialogCallback(
+void TestAcceptInstallDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
+  // TODO(crbug.com/1503010): Delete the WebAppInstallDialogCallback callback
+  // entirely and test the prod behavior better.
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(acceptance_callback), true /*accept*/,
+                                std::move(web_app_info)));
+}
+
+void TestAcceptCreateShortcutDialogCallback(
+    content::WebContents* initiator_web_contents,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    WebAppInstallationAcceptanceCallback acceptance_callback) {
+  // TODO(crbug.com/1503010): Delete the WebAppInstallDialogCallback callback
+  // entirely and test the prod behavior better.
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(acceptance_callback), true /*accept*/,
                                 std::move(web_app_info)));

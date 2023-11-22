@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(test::TestAcceptInstallDialogCallback),
       future_first_install.GetCallback(),
       /*use_fallback=*/false);
 
@@ -323,7 +323,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   EXPECT_EQ(second_install_code,
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(second_app_id));
-  EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
+
+  // UserDisplayMode is not updated as it's not a manifest field and policy only
+  // sets a default.
+  EXPECT_EQ(mojom::UserDisplayMode::kStandalone,
             provider()
                 .registrar_unsafe()
                 .GetAppUserDisplayMode(second_app_id)

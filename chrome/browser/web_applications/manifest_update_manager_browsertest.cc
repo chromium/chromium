@@ -358,8 +358,6 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
         &ManifestUpdateManagerBrowserTest::RequestHandlerOverride,
         base::Unretained(this)));
     ASSERT_TRUE(http_server_.Start());
-    // Suppress globally to avoid OS hooks deployed for system web app during
-    // WebAppProvider setup.
     WebAppControllerBrowserTest::SetUp();
   }
 
@@ -489,7 +487,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindOnce(test::TestAcceptCreateShortcutDialogCallback),
         install_future.GetCallback(),
         /*use_fallback=*/true);
     EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
@@ -506,7 +504,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindOnce(test::TestAcceptInstallDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {
           EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -528,7 +526,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::PRELOADED_OEM,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindOnce(test::TestAcceptInstallDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {
           EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -672,9 +670,14 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
         .set_time_override_for_testing(time_override);
   }
 
-  ManifestUpdateResult GetResultAfterPageLoad(const GURL& url) {
+  ManifestUpdateResult GetResultAfterPageLoad(
+      const GURL& url,
+      Browser* browser_to_navigate = nullptr) {
     UpdateCheckResultAwaiter awaiter(url);
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    if (!browser_to_navigate) {
+      browser_to_navigate = browser();
+    }
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser_to_navigate, url));
     return std::move(awaiter).AwaitNextResult();
   }
 
@@ -763,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   webapps::AppId app_id = InstallWebApp();
 
-  EXPECT_EQ(GetResultAfterPageLoad(GURL("http://example.org")),
+  EXPECT_EQ(GetResultAfterPageLoad(GURL("https://example.org")),
             ManifestUpdateResult::kNoAppInScope);
 
   histogram_tester_.ExpectTotalCount(kUpdateHistogramName, 0);
@@ -4565,16 +4568,20 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
   base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
       SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
-  // Setup the web app, install it and immediately update the manifest.
+  // Setup the web app, install it, and wait for it to open in a dedicated PWA
+  // window (due to installation as a standalone app).
   OverrideManifest(kManifestTemplate, {"Test app name", kIconList});
+  BrowserWaiter browser_waiter;
   webapps::AppId app_id = InstallWebApp();
+  Browser* web_app_browser = browser_waiter.AwaitAdded();
+
+  // Update the manifest.
   OverrideManifest(kManifestTemplate,
                    {"Different app name", kUpdatedSingleIconList});
 
-  // Navigate to the app in a dedicated PWA window. Note that this opens a
-  // second browser window.
+  // Navigate the app to trigger an update check.
   GURL url = GetAppURL();
-  Browser* web_app_browser = LaunchWebAppBrowserAndWait(app_id);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(web_app_browser, url));
 
   // Wait for the PWA to a) detect that an update is needed and b) start waiting
   // on its window to close.
@@ -4632,16 +4639,22 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
       "background_color": "$2"
     }
   )";
+
+  // Setup the web app, install it, and wait for it to open in a dedicated PWA
+  // window (due to installation as a standalone app).
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
+  BrowserWaiter browser_waiter;
   webapps::AppId app_id = InstallWebApp();
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppBackgroundColor(app_id),
             SK_ColorBLUE);
+  Browser* web_app_browser = browser_waiter.AwaitAdded();
+
+  // Update the manifest.
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
 
-  // Navigate to the app in a dedicated PWA window. Note that this opens a
-  // second browser window.
+  // Navigate the app to trigger an update check.
   GURL url = GetAppURL();
-  Browser* web_app_browser = LaunchWebAppBrowserAndWait(app_id);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(web_app_browser, url));
 
   // Wait for the PWA to a) detect that an update is needed and b) start waiting
   // on its window to close.
@@ -4954,7 +4967,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   )";
 
   OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
+  BrowserWaiter browser_waiter;
   webapps::AppId app_id = InstallWebApp();
+  Browser* app_browser = browser_waiter.AwaitAdded();
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
@@ -4964,7 +4979,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
 
   OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
-            GetResultAfterPageLoad(GetAppURL()));
+            GetResultAfterPageLoad(GetAppURL(), app_browser));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
   EXPECT_TRUE(web_app->tab_strip().has_value());
@@ -5043,7 +5058,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   )";
 
   OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
+  BrowserWaiter browser_waiter;
   webapps::AppId app_id = InstallWebApp();
+  Browser* app_browser = browser_waiter.AwaitAdded();
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
@@ -5053,7 +5070,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL()));
+            GetResultAfterPageLoad(GetAppURL(), app_browser));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_FALSE(web_app->tab_strip().has_value());

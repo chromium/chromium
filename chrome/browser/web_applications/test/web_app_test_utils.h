@@ -63,7 +63,14 @@ struct CreateRandomWebAppParams {
 };
 std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params);
 
-void TestAcceptDialogCallback(
+// Mock dialog for the "install web app" flow.
+void TestAcceptInstallDialogCallback(
+    content::WebContents* initiator_web_contents,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    WebAppInstallationAcceptanceCallback acceptance_callback);
+
+// Mock dialog for the "create shortcut" flow.
+void TestAcceptCreateShortcutDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback);

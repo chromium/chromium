@@ -1676,7 +1676,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindOnce(test::TestAcceptInstallDialogCallback),
       install_future.GetCallback(),
       /*use_fallback=*/false);
 
