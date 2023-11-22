@@ -1283,8 +1283,17 @@ function provideAdditionalBids(seller, nonce, bidStringList,
 }
 
 (async function() {
+  let auctionConfig = %s;
+  // Our test bots can get kinda slow, so bump script execution time limits
+  // in tests that don't specifically configure them.
+  if (!("perBuyerTimeouts" in auctionConfig)) {
+    auctionConfig.perBuyerTimeouts = { '*': 150 };
+  }
+  if (!("sellerTimeout" in auctionConfig)) {
+    auctionConfig.sellerTimeout = 150;
+  }
   try {
-    return await navigator.runAdAuction(%s);
+    return await navigator.runAdAuction(auctionConfig);
   } catch (e) {
     return e.toString();
   }
