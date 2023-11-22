@@ -6,9 +6,10 @@ source_set("model") {
   public = [
     "image_file_manager.h",
     "snapshot_browser_agent.h",
-    "snapshot_generator_delegate.h",
     "snapshot_id.h",
     "snapshot_lru_cache.h",
+    "snapshot_manager.h",
+    "snapshot_manager_delegate.h",
     "snapshot_storage+Testing.h",
     "snapshot_storage.h",
     "snapshot_storage_observer.h",
@@ -17,9 +18,8 @@ source_set("model") {
   sources = [
     "image_file_manager.mm",
     "snapshot_browser_agent.mm",
-    "snapshot_generator.h",
-    "snapshot_generator.mm",
     "snapshot_lru_cache.mm",
+    "snapshot_manager.mm",
     "snapshot_storage.mm",
     "snapshot_tab_helper.mm",
   ]
@@ -47,8 +47,8 @@ source_set("model") {
 source_set("test_utils") {
   testonly = true
   sources = [
-    "fake_snapshot_generator_delegate.h",
-    "fake_snapshot_generator_delegate.mm",
+    "fake_snapshot_manager_delegate.h",
+    "fake_snapshot_manager_delegate.mm",
   ]
   deps = [ ":model" ]
 }

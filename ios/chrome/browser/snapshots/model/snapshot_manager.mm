@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_manager.h"
 
 #import <algorithm>
 
@@ -15,7 +15,7 @@
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_manager_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -56,10 +56,10 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
 }  // namespace
 
-@interface SnapshotGenerator () <CRWWebStateObserver>
+@interface SnapshotManager () <CRWWebStateObserver>
 @end
 
-@implementation SnapshotGenerator {
+@implementation SnapshotManager {
   // The associated WebState.
   web::WebState* _webState;
 
@@ -104,7 +104,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 - (void)retrieveGreySnapshot:(void (^)(UIImage*))callback {
   DCHECK(callback);
 
-  __weak SnapshotGenerator* weakSelf = self;
+  __weak SnapshotManager* weakSelf = self;
   void (^wrappedCallback)(UIImage*) = ^(UIImage* image) {
     if (!image) {
       image = [weakSelf generateUIViewSnapshotWithOverlays];
@@ -136,13 +136,13 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
     }
     return;
   }
-  [_delegate snapshotGenerator:self willUpdateSnapshotForWebState:_webState];
+  [_delegate snapshotManager:self willUpdateSnapshotForWebState:_webState];
 
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   CGRect snapshotFrameInWebView =
       [_webState->GetView() convertRect:snapshotInfo.snapshotFrameInBaseView
                                fromView:snapshotInfo.baseView];
-  __weak SnapshotGenerator* weakSelf = self;
+  __weak SnapshotManager* weakSelf = self;
   _webState->TakeSnapshot(
       gfx::RectF(snapshotFrameInWebView),
       base::BindRepeating(^(const gfx::Image& image) {
@@ -173,7 +173,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   if (![self canTakeSnapshot]) {
     return nil;
   }
-  [_delegate snapshotGenerator:self willUpdateSnapshotForWebState:_webState];
+  [_delegate snapshotManager:self willUpdateSnapshotForWebState:_webState];
 
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   // Ideally, generate an UIImage by one step with `UIGraphicsImageRenderer`,
@@ -202,7 +202,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
 // Returns NO if WebState or the view is not ready for snapshot.
 - (BOOL)canTakeSnapshot {
-  // This allows for easier unit testing of classes that use SnapshotGenerator.
+  // This allows for easier unit testing of classes that use SnapshotManager.
   if (!_delegate) {
     return NO;
   }
@@ -213,7 +213,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
     return NO;
   }
 
-  return [_delegate snapshotGenerator:self
+  return [_delegate snapshotManager:self
            canTakeSnapshotForWebState:_webState];
 }
 
@@ -399,18 +399,18 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
 // Retrieves the overlays laid down on the WebState.
 - (NSArray<UIView*>*)overlays {
-  return [_delegate snapshotGenerator:self
+  return [_delegate snapshotManager:self
           snapshotOverlaysForWebState:_webState];
 }
 
 // Retrieves information needed for snapshotting.
 - (SnapshotInfo)snapshotInfo {
   SnapshotInfo snapshotInfo;
-  snapshotInfo.baseView = [_delegate snapshotGenerator:self
+  snapshotInfo.baseView = [_delegate snapshotManager:self
                                    baseViewForWebState:_webState];
   DCHECK(snapshotInfo.baseView);
 
-  UIEdgeInsets baseViewInsets = [_delegate snapshotGenerator:self
+  UIEdgeInsets baseViewInsets = [_delegate snapshotManager:self
                                snapshotEdgeInsetsForWebState:_webState];
   snapshotInfo.snapshotFrameInBaseView =
       UIEdgeInsetsInsetRect(snapshotInfo.baseView.bounds, baseViewInsets);

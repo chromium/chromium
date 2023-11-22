@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_GENERATOR_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_GENERATOR_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_MANAGER_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_MANAGER_H_
 
 #import <UIKit/UIKit.h>
 
 class SnapshotID;
 @class SnapshotStorage;
-@protocol SnapshotGeneratorDelegate;
+@protocol SnapshotManagerDelegate;
 
 namespace web {
 class WebState;
@@ -17,14 +17,14 @@ class WebState;
 
 // A class that takes care of creating, storing and returning snapshots of a
 // tab's web page. This lives on the UI thread.
-@interface SnapshotGenerator : NSObject
+@interface SnapshotManager : NSObject
 
 // Weak reference to the snapshot storage which is used to store and retrieve
-// snapshots for the WebState associated with this SnapshotGenerator.
+// snapshots for the WebState associated with this SnapshotManager.
 @property(nonatomic, weak) SnapshotStorage* snapshotStorage;
 
-// The SnapshotGenerator delegate.
-@property(nonatomic, weak) id<SnapshotGeneratorDelegate> delegate;
+// The SnapshotManager delegate.
+@property(nonatomic, weak) id<SnapshotManagerDelegate> delegate;
 
 // The snapshot ID.
 @property(nonatomic, readonly) SnapshotID snapshotID;
@@ -72,4 +72,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_GENERATOR_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_MANAGER_H_

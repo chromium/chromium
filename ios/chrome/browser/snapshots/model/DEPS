@@ -11,7 +11,7 @@ specific_include_rules = {
     "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
     "+ios/chrome/browser/tabs/model/features.h",
   ],
-  "^snapshot_generator.mm": [
+  "^snapshot_manager.mm": [
     "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
   ],
 }

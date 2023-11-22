@@ -17,14 +17,13 @@ class PrerenderService;
 @class PrintCoordinator;
 @protocol RepostFormTabHelperDelegate;
 @class SadTabCoordinator;
-@protocol SnapshotGeneratorDelegate;
+@protocol SnapshotManagerDelegate;
 class TabInsertionBrowserAgent;
 class WebStateList;
 @protocol NetExportTabHelperDelegate;
 @protocol NewTabPageTabHelperDelegate;
 @protocol OverscrollActionsControllerDelegate;
 @protocol PriceNotificationsIPHPresenter;
-@protocol SnapshotGeneratorDelegate;
 
 // Mediator that handles the setup of tab helpers that require UI-layer
 // dependencies not available when AttachTabHelpers() is called.
@@ -51,8 +50,7 @@ class WebStateList;
     overscrollActionsDelegate;
 @property(nonatomic, weak) id<PasswordControllerDelegate>
     passwordControllerDelegate;
-@property(nonatomic, weak) id<SnapshotGeneratorDelegate>
-    snapshotGeneratorDelegate;
+@property(nonatomic, weak) id<SnapshotManagerDelegate> snapshotManagerDelegate;
 @property(nonatomic, weak) id<AppLauncherTabHelperBrowserPresentationProvider>
     appLauncherBrowserPresentationProvider;
 

@@ -8,7 +8,7 @@
 #import "base/run_loop.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_manager_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -23,34 +23,34 @@
 using ui::test::uiimage_utils::UIImagesAreEqual;
 using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
-// SnapshotGeneratorDelegate used to test SnapshotTabHelper by allowing to
+// SnapshotManagerDelegate used to test SnapshotTabHelper by allowing to
 // count the number of snapshot generated and control whether capturing a
 // snapshot is possible.
-@interface TabHelperSnapshotGeneratorDelegate : FakeSnapshotGeneratorDelegate
+@interface TabHelperSnapshotManagerDelegate : FakeSnapshotManagerDelegate
 
 // Returns the number of times a snapshot was captured (count the number of
 // calls to -willUpdateSnapshotForWebState:).
 @property(nonatomic, readonly) NSUInteger snapshotTakenCount;
 
 // This property controls the value returned by -canTakeSnapshotForWebState:
-// method of the SnapshotGeneratorDelegate protocol.
+// method of the SnapshotManagerDelegate protocol.
 @property(nonatomic, assign) BOOL canTakeSnapshot;
 
 @end
 
-@implementation TabHelperSnapshotGeneratorDelegate
+@implementation TabHelperSnapshotManagerDelegate
 
 @synthesize snapshotTakenCount = _snapshotTakenCount;
 @synthesize canTakeSnapshot = _canTakeSnapshot;
 
-#pragma mark - SnapshotGeneratorDelegate
+#pragma mark - SnapshotManagerDelegate
 
-- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+- (BOOL)snapshotManager:(SnapshotManager*)snapshotManager
     canTakeSnapshotForWebState:(web::WebState*)webState {
   return !_canTakeSnapshot;
 }
 
-- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+- (void)snapshotManager:(SnapshotManager*)snapshotManager
     willUpdateSnapshotForWebState:(web::WebState*)webState {
   ++_snapshotTakenCount;
 }
@@ -81,7 +81,7 @@ class SnapshotTabHelperTest : public PlatformTest {
  public:
   SnapshotTabHelperTest() {
     // Create the SnapshotTabHelper with a fake delegate.
-    delegate_ = [[TabHelperSnapshotGeneratorDelegate alloc] init];
+    delegate_ = [[TabHelperSnapshotManagerDelegate alloc] init];
     SnapshotTabHelper::CreateForWebState(&web_state_);
     SnapshotTabHelper::FromWebState(&web_state_)->SetDelegate(delegate_);
 
@@ -132,7 +132,7 @@ class SnapshotTabHelperTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
-  TabHelperSnapshotGeneratorDelegate* delegate_ = nil;
+  TabHelperSnapshotManagerDelegate* delegate_ = nil;
   SnapshotStorage* snapshot_storage_ = nil;
   web::FakeWebState web_state_;
 };

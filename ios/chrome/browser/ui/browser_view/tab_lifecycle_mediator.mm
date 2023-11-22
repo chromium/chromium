@@ -80,9 +80,9 @@
   // Only realized webstates should have dependencies installed.
   DCHECK(webState->IsRealized());
 
-  DCHECK(_snapshotGeneratorDelegate);
+  DCHECK(_snapshotManagerDelegate);
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(
-      _snapshotGeneratorDelegate);
+      _snapshotManagerDelegate);
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);

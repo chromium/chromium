@@ -287,7 +287,7 @@ enum class ToolbarKind {
     RepostFormTabHelperDelegate,
     SaveToPhotosCommands,
     SigninPresenter,
-    SnapshotGeneratorDelegate,
+    SnapshotManagerDelegate,
     StoreKitCoordinatorDelegate,
     ToolbarAccessoryCoordinatorDelegate,
     UnitConversionCommands,
@@ -1454,7 +1454,7 @@ enum class ToolbarKind {
   tabLifecycleMediator.repostFormDelegate = self;
   tabLifecycleMediator.tabInsertionBrowserAgent =
       TabInsertionBrowserAgent::FromBrowser(browser);
-  tabLifecycleMediator.snapshotGeneratorDelegate = self;
+  tabLifecycleMediator.snapshotManagerDelegate = self;
   tabLifecycleMediator.overscrollActionsDelegate = self;
   tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
 
@@ -2768,12 +2768,12 @@ enum class ToolbarKind {
       baseViewController:self.viewController];
 }
 
-#pragma mark - SnapshotGeneratorDelegate methods
-// TODO(crbug.com/1272491): Refactor snapshot generation into (probably) a
+#pragma mark - SnapshotManagerDelegate methods
+// TODO(crbug.com/1272491): Refactor SnapshotManager into (probably) a
 // mediator with a narrowly-defined API to get UI-layer information from the
 // BVC.
 
-- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+- (BOOL)snapshotManager:(SnapshotManager*)snapshotManager
     canTakeSnapshotForWebState:(web::WebState*)webState {
   DCHECK(webState);
   PagePlaceholderTabHelper* pagePlaceholderTabHelper =
@@ -2782,7 +2782,7 @@ enum class ToolbarKind {
          !pagePlaceholderTabHelper->will_add_placeholder_for_next_navigation();
 }
 
-- (UIEdgeInsets)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+- (UIEdgeInsets)snapshotManager:(SnapshotManager*)snapshotManager
     snapshotEdgeInsetsForWebState:(web::WebState*)webState {
   DCHECK(webState);
 
@@ -2816,8 +2816,8 @@ enum class ToolbarKind {
   }
 }
 
-- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-           snapshotOverlaysForWebState:(web::WebState*)webState {
+- (NSArray<UIView*>*)snapshotManager:(SnapshotManager*)snapshotManager
+         snapshotOverlaysForWebState:(web::WebState*)webState {
   DCHECK(webState);
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK_NE(webStateList->GetIndexOfWebState(webState),
@@ -2876,7 +2876,7 @@ enum class ToolbarKind {
   return overlays;
 }
 
-- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+- (void)snapshotManager:(SnapshotManager*)snapshotManager
     willUpdateSnapshotForWebState:(web::WebState*)webState {
   DCHECK(webState);
 
@@ -2886,8 +2886,8 @@ enum class ToolbarKind {
   OverscrollActionsTabHelper::FromWebState(webState)->Clear();
 }
 
-- (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-         baseViewForWebState:(web::WebState*)webState {
+- (UIView*)snapshotManager:(SnapshotManager*)snapshotManager
+       baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
     // If NTPCoordinator is not started yet, fall back to using the

@@ -2199,7 +2199,6 @@ enum HeaderBehaviour {
   // Add animations only if the tab strip isn't shown.
   UIView* snapshotView = [self.view snapshotViewAfterScreenUpdates:NO];
 
-  // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
   SwipeView* swipeView = [[SwipeView alloc]
       initWithFrame:self.contentArea.frame
           topMargin:[self snapshotEdgeInsetsForNTPHelper:NTPHelper].top];

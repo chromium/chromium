@@ -14,8 +14,8 @@
 #include "ios/web/public/web_state_user_data.h"
 
 @class SnapshotStorage;
-@class SnapshotGenerator;
-@protocol SnapshotGeneratorDelegate;
+@class SnapshotManager;
+@protocol SnapshotManagerDelegate;
 
 namespace web {
 class WebState;
@@ -32,7 +32,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   // Sets the delegate. Capturing snapshot before setting a delegate will
   // results in failures. The delegate is not owned by the tab helper.
-  void SetDelegate(id<SnapshotGeneratorDelegate> delegate);
+  void SetDelegate(id<SnapshotManagerDelegate> delegate);
 
   // Sets the snapshot storage to be used to store and retrieve snapshots. This
   // is not owned by the tab helper.
@@ -92,7 +92,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   web::WebState* web_state_ = nullptr;
-  SnapshotGenerator* snapshot_generator_ = nil;
+  SnapshotManager* snapshot_manager_ = nil;
 
   // Manages this object as an observer of `web_state_`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
