@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_MOCK_SHOPPING_LIST_UI_TAB_HELPER_H_
-#define CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_MOCK_SHOPPING_LIST_UI_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_UI_COMMERCE_MOCK_COMMERCE_UI_TAB_HELPER_H_
+#define CHROME_BROWSER_UI_COMMERCE_MOCK_COMMERCE_UI_TAB_HELPER_H_
 
-#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -16,11 +16,11 @@ namespace views {
 class View;
 }  // namespace views
 
-class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
+class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
  public:
   static void CreateForWebContents(content::WebContents* content);
-  explicit MockShoppingListUiTabHelper(content::WebContents* content);
-  ~MockShoppingListUiTabHelper() override;
+  explicit MockCommerceUiTabHelper(content::WebContents* content);
+  ~MockCommerceUiTabHelper() override;
 
   const gfx::Image& GetValidProductImage();
 
@@ -53,4 +53,4 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
   gfx::Image empty_product_image_;
 };
 
-#endif  // CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_MOCK_SHOPPING_LIST_UI_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_UI_COMMERCE_MOCK_COMMERCE_UI_TAB_HELPER_H_

@@ -153,7 +153,7 @@ missing_new_fields,chrome/browser/supervised_user/supervised_user_service.cc
 missing_new_fields,chrome/browser/sync_file_system/drive_backend/sync_engine.cc
 missing_new_fields,chrome/browser/ui/ash/ambient/ambient_client_impl.cc
 missing_new_fields,chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc
-missing_new_fields,chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.cc
+missing_new_fields,chrome/browser/ui/commerce/commerce_ui_tab_helper.cc
 missing_new_fields,chrome/browser/ui/global_media_controls/cast_media_notification_item.cc
 missing_new_fields,chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc
 missing_new_fields,chrome/browser/ui/passwords/account_avatar_fetcher.cc

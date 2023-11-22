@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
@@ -393,7 +393,7 @@ void BookmarkBubbleView::ShowBubble(
   if (shopping_service->IsShoppingListEligible()) {
     product_info = shopping_service->GetAvailableProductInfoForUrl(url);
     auto* tab_helper =
-        commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+        commerce::CommerceUiTabHelper::FromWebContents(web_contents);
     if (tab_helper) {
       product_image = tab_helper->GetProductImage();
     }

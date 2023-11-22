@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -109,7 +109,7 @@ void PriceTrackingIconView::OnExecuting(
   auto* web_contents = GetWebContents();
   DCHECK(web_contents);
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
   const gfx::Image& product_image = tab_helper->GetProductImage();
@@ -153,7 +153,7 @@ bool PriceTrackingIconView::ShouldShow() {
   if (!web_contents)
     return false;
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
 
   return tab_helper && tab_helper->ShouldShowPriceTrackingIconView();
 }
@@ -268,7 +268,7 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
   }
 
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
+      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
   CHECK(tab_helper);
 
   tab_helper->SetPriceTrackingState(
@@ -311,7 +311,7 @@ bool PriceTrackingIconView::IsPriceTracking() const {
     return false;
 
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
+      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
   CHECK(tab_helper);
 
   return tab_helper->IsPriceTracking();
@@ -331,7 +331,7 @@ void PriceTrackingIconView::MaybeShowPageActionLabel() {
   }
 
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
+      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
 
   if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
                          PageActionIconType::kPriceTracking)) {

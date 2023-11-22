@@ -184,7 +184,7 @@
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
-#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -689,7 +689,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
   if (!profile->IsIncognitoProfile()) {
     // TODO(1360846): Consider using the in-memory cache instead.
-    commerce::ShoppingListUiTabHelper::CreateForWebContents(
+    commerce::CommerceUiTabHelper::CreateForWebContents(
         web_contents,
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
         BookmarkModelFactory::GetForBrowserContext(profile),

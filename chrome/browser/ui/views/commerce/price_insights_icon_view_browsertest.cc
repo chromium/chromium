@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -34,11 +34,11 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
 
   // UiBrowserTest:
   void PreShow() override {
-    MockShoppingListUiTabHelper::CreateForWebContents(
+    MockCommerceUiTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    MockShoppingListUiTabHelper* mock_tab_helper =
-        static_cast<MockShoppingListUiTabHelper*>(
-            MockShoppingListUiTabHelper::FromWebContents(
+    MockCommerceUiTabHelper* mock_tab_helper =
+        static_cast<MockCommerceUiTabHelper*>(
+            MockCommerceUiTabHelper::FromWebContents(
                 browser()->tab_strip_model()->GetActiveWebContents()));
     EXPECT_CALL(*mock_tab_helper, ShouldShowPriceInsightsIconView)
         .Times(testing::AnyNumber());
@@ -69,9 +69,9 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
         .WillRepeatedly(testing::Return(label_type));
   }
 
-  MockShoppingListUiTabHelper* getTabHelper() {
-    return static_cast<MockShoppingListUiTabHelper*>(
-        MockShoppingListUiTabHelper::FromWebContents(
+  MockCommerceUiTabHelper* getTabHelper() {
+    return static_cast<MockCommerceUiTabHelper*>(
+        MockCommerceUiTabHelper::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
   }
 

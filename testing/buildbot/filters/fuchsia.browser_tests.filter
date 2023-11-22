@@ -532,8 +532,8 @@
 # yet identified.
 -CrSettingsPrivacyPageTest.PrivacyPageTests
 
-# TODO(crbug.com/1402833): cannot find ShoppingListUiTabHelper
--All/PriceTrackingEntryPointFeatureFlagTest.ShoppingListUiTabHelperCreation/ShoppingListEnabled
+# TODO(crbug.com/1402833): cannot find CommerceUiTabHelper
+-All/PriceTrackingEntryPointFeatureFlagTest.CommerceUiTabHelperCreation/ShoppingListEnabled
 -BookmarkBubbleViewBrowserTest.InvokeUi_bookmark_details*
 -BookmarkBubbleViewTest.SyncPromo*
 

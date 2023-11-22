@@ -13,7 +13,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -139,20 +139,20 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
     }
   }
 
-  MockShoppingListUiTabHelper* GetTabHelper() { return mock_tab_helper_.get(); }
+  MockCommerceUiTabHelper* GetTabHelper() { return mock_tab_helper_.get(); }
 
  protected:
-  raw_ptr<MockShoppingListUiTabHelper, DanglingUntriaged> mock_tab_helper_;
+  raw_ptr<MockCommerceUiTabHelper, DanglingUntriaged> mock_tab_helper_;
   base::UserActionTester user_action_tester_;
 
  private:
   base::test::ScopedFeatureList test_features_;
 
-  MockShoppingListUiTabHelper* AttachTabHelperToWebContents(
+  MockCommerceUiTabHelper* AttachTabHelperToWebContents(
       content::WebContents* web_contents) {
-    MockShoppingListUiTabHelper::CreateForWebContents(web_contents);
-    return static_cast<MockShoppingListUiTabHelper*>(
-        MockShoppingListUiTabHelper::FromWebContents(web_contents));
+    MockCommerceUiTabHelper::CreateForWebContents(web_contents);
+    return static_cast<MockCommerceUiTabHelper*>(
+        MockCommerceUiTabHelper::FromWebContents(web_contents));
   }
 };
 
