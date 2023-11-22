@@ -4005,8 +4005,9 @@ void DragSingleTabToSeparateWindowInSecondDisplayStep2(
 }  // namespace
 
 // Drags from browser to a second display and releases input.
+// TODO(crbug.com/1499240): Test is flaky on multiple bots.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
-                       DragSingleTabToSeparateWindowInSecondDisplay) {
+                       DISABLED_DragSingleTabToSeparateWindowInSecondDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
