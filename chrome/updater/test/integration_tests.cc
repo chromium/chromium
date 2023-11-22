@@ -62,10 +62,6 @@
 #include "chrome/updater/util/posix_util.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/updater/util/mac_util.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
@@ -484,8 +480,7 @@ class IntegrationTest : public ::testing::Test {
 
 #if BUILDFLAG(IS_MAC)
   void PrivilegedHelperInstall() { test_commands_->PrivilegedHelperInstall(); }
-  void DeleteLegacyUpdater() { test_commands_->DeleteLegacyUpdater(); }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
   void ExpectAppInstalled(const std::string& appid,
                           const base::Version& expected_version) {
@@ -1369,21 +1364,6 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test2"));
 
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
-// The updater shims are only repaired by the server on macOS.
-TEST_F(IntegrationTest, RepairUpdater) {
-  ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(DeleteLegacyUpdater());
-  std::optional<base::FilePath> ksadmin_path = GetKSAdminPath(GetTestScope());
-  ASSERT_TRUE(ksadmin_path.has_value());
-  ASSERT_FALSE(base::PathExists(*ksadmin_path));
-  ASSERT_NO_FATAL_FAILURE(RunWake(0));
-  ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_TRUE(base::PathExists(*ksadmin_path));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

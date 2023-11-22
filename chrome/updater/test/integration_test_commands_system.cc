@@ -415,10 +415,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void PrivilegedHelperInstall() const override {
     RunCommand("privileged_helper_install");
   }
-
-  void DeleteLegacyUpdater() const override {
-    RunCommand("delete_legacy_updater");
-  }
 #endif  // BUILDFLAG(IS_WIN)
 
   void ExpectLegacyUpdaterMigrated() const override {

@@ -141,12 +141,6 @@ void Clean(UpdaterScope scope) {
   }
 }
 
-void DeleteLegacyUpdater(UpdaterScope scope) {
-  std::optional<base::FilePath> keystone = GetKeystoneFolderPath(scope);
-  ASSERT_TRUE(keystone);
-  ASSERT_TRUE(base::DeletePathRecursively(*keystone));
-}
-
 void ExpectClean(UpdaterScope scope) {
   ExpectCleanProcesses();
 
