@@ -1421,10 +1421,22 @@ ClientTagBasedModelTypeProcessor::GetWeakPtr() {
 
 void ClientTagBasedModelTypeProcessor::ClearMetadataWhileStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If a model error has been encountered, the local model is assumed to be
+  // unusable, so no way to clear anything.
+  if (model_error_.has_value()) {
+    return;
+  }
+
+  // If Sync is not actually stopped, ignore this call.
+  if (activation_request_.IsValid()) {
+    return;
+  }
+
   if (!model_ready_to_sync_) {
     // Defer clearing metadata until ModelReadyToSync() is invoked.
     pending_clear_metadata_ = true;
-  } else if (!model_error_ && IsTrackingMetadata()) {
+  } else if (IsTrackingMetadata()) {
     // Proceed only if there is metadata to clear and no error has been reported
     // yet.
     LogClearMetadataWhileStoppedHistogram(type_, /*is_delayed_call=*/false);

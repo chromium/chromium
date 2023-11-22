@@ -491,8 +491,8 @@ void NigoriModelTypeProcessor::ClearMetadataAndReset() {
 }
 
 void NigoriModelTypeProcessor::ClearMetadataWhileStopped() {
-  NOTREACHED() << "Nigori has a separate load callback and way to clear data. "
-                  "This method should not have been called.";
+  // Nigori has a separate load callback and way to clear data. In particular,
+  // Nigori is never considered to be stopped.
 }
 
 }  // namespace syncer

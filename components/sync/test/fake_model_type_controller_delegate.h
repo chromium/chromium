@@ -50,7 +50,9 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   void SimulateModelError(const ModelError& error);
 
   // The number of times sync metadata was cleared, via either
-  // OnSyncStopping(CLEAR_METADATA) or ClearMetadataWhileStopped().
+  // OnSyncStopping(CLEAR_METADATA) or ClearMetadataWhileStopped() while sync
+  // was actually stopped.
+  // TODO(crbug.com/1504481): Replace this with something like "HasMetadata".
   int clear_metadata_count() const;
 
   // ModelTypeControllerDelegate overrides
@@ -71,6 +73,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
 
   const ModelType type_;
   bool manual_model_start_enabled_ = false;
+  bool sync_started_ = false;
   int clear_metadata_count_ = 0;
   DataTypeActivationResponse activation_response_;
   absl::optional<ModelError> model_error_;

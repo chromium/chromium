@@ -55,7 +55,8 @@ class ModelTypeControllerDelegate {
   // histograms.
   virtual void RecordMemoryUsageAndCountsHistograms() = 0;
 
-  // Clear metadata given the model is stopped.
+  // Clear metadata if the model is stopped.
+  // TODO(crbug.com/1502832): Rename to ClearMetadataIfStopped.
   virtual void ClearMetadataWhileStopped() = 0;
 };
 

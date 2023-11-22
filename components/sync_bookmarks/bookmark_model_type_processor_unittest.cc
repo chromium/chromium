@@ -1646,6 +1646,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
   // Should clear the tracker even if already stopped.
   EXPECT_FALSE(processor()->IsTrackingMetadata());
   // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
 }
@@ -1662,6 +1663,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // the flag for a pending clearing of metadata.
   processor()->ClearMetadataWhileStopped();
   // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -1680,10 +1682,26 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Tracker should have not been set.
   EXPECT_FALSE(processor()->IsTrackingMetadata());
   // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest, ShouldNotClearMetadataIfNotStopped) {
+  // Initialize and start the processor with some metadata.
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
+
+  base::HistogramTester histogram_tester;
+
+  processor()->ClearMetadataWhileStopped();
+
+  // Should NOT have cleared the metadata since the processor is not stopped.
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -1700,6 +1718,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   processor()->ClearMetadataWhileStopped();
   // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
@@ -1867,6 +1886,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Expect no call to save metadata upon ClearMetadataWhileStopped().
   EXPECT_CALL(*schedule_save_closure(), Run).Times(0);
   // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
@@ -1885,6 +1905,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   // Nothing recorded to the histograms.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -1914,6 +1935,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Should clear the tracker even if already stopped.
   EXPECT_FALSE(processor()->IsTrackingMetadata());
   // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
 
@@ -1935,6 +1957,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // the flag for a pending clearing of metadata.
   processor()->ClearMetadataWhileStopped();
   // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -1966,6 +1989,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Tracker should have not been set.
   EXPECT_FALSE(processor()->IsTrackingMetadata());
   // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(

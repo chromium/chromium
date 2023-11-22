@@ -12,7 +12,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -3165,6 +3164,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
   EXPECT_EQ(0U, db()->model_type_state().ByteSizeLong());
   EXPECT_EQ(0U, db()->metadata_count());
   // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
 
@@ -3180,6 +3180,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   type_processor()->ClearMetadataWhileStopped();
 
   // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3202,6 +3203,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_EQ(0U, db()->model_type_state().ByteSizeLong());
   EXPECT_EQ(0U, db()->metadata_count());
   // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3219,6 +3221,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   type_processor()->ClearMetadataWhileStopped();
 
   // Nothing recorded to the histograms yet.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3234,6 +3237,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_EQ(0U, db()->model_type_state().ByteSizeLong());
   ASSERT_EQ(0U, db()->metadata_count());
   // Expect recording of the delayed clear.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(
@@ -3241,6 +3245,27 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 
   // Metadata clearing logic should not trigger bridge's OnSyncStarting().
   EXPECT_FALSE(bridge()->sync_started());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotClearMetadataIfNotStopped) {
+  // Initialize the processor with some metadata.
+  InitializeToReadyState();
+  WritePrefItem(bridge(), kKey1, kValue1);
+
+  // Metadata is being kept and tracked.
+  ASSERT_TRUE(type_processor()->IsTrackingMetadata());
+  ASSERT_EQ(1U, db()->metadata_count());
+
+  base::HistogramTester histogram_tester;
+
+  // Should NOT clear the metadata since the processor is not stopped.
+  type_processor()->ClearMetadataWhileStopped();
+  EXPECT_TRUE(type_processor()->IsTrackingMetadata());
+  EXPECT_NE(0U, db()->model_type_state().ByteSizeLong());
+  EXPECT_NE(0U, db()->metadata_count());
+  // Expect no entries in the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
@@ -3257,6 +3282,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // Should do nothing since there's nothing to clear.
   type_processor()->ClearMetadataWhileStopped();
   // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
@@ -3273,6 +3299,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // Since there's no metadata, this should do nothing.
   type_processor()->ClearMetadataWhileStopped();
   // Expect no entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
@@ -3288,6 +3315,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
       sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   ASSERT_FALSE(type_processor()->IsTrackingMetadata());
   // Nothing recorded to the histograms.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
   histogram_tester.ExpectTotalCount(

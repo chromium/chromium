@@ -786,6 +786,12 @@ void BookmarkModelTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
 
 void BookmarkModelTypeProcessor::ClearMetadataWhileStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If Sync is not actually stopped, ignore this call.
+  if (!cache_uuid_.empty()) {
+    return;
+  }
+
   if (!bookmark_model_) {
     // Defer the clearing until ModelReadyToSync() is invoked.
     pending_clear_metadata_ = true;
