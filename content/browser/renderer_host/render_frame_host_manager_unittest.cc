@@ -553,13 +553,13 @@ class RenderFrameHostManagerTest
   // Exposes RenderFrameHostManager::CollectOpenerFrameTrees for testing.
   void CollectOpenerFrameTrees(
       FrameTreeNode* node,
-      SiteInstanceImpl* site_instance,
+      SiteInstanceGroup* site_instance_group,
       std::vector<FrameTree*>* opener_frame_trees,
       std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
       std::unordered_set<FrameTreeNode*>*
           cross_browsing_context_group_openers) {
     node->render_manager()->CollectOpenerFrameTrees(
-        site_instance, opener_frame_trees, nodes_with_back_links,
+        site_instance_group, opener_frame_trees, nodes_with_back_links,
         cross_browsing_context_group_openers);
   }
 
@@ -2679,8 +2679,8 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
   std::unordered_set<FrameTreeNode*> nodes_with_back_links;
   std::unordered_set<FrameTreeNode*> cross_browsing_context_group_openers;
 
-  CollectOpenerFrameTrees(root1, /*site_instance=*/nullptr, &opener_frame_trees,
-                          &nodes_with_back_links,
+  CollectOpenerFrameTrees(root1, /*site_instance_group=*/nullptr,
+                          &opener_frame_trees, &nodes_with_back_links,
                           &cross_browsing_context_group_openers);
 
   EXPECT_EQ(4U, opener_frame_trees.size());

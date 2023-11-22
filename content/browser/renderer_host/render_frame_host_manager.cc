@@ -4917,7 +4917,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
 }
 
 void RenderFrameHostManager::CollectOpenerFrameTrees(
-    SiteInstanceImpl* site_instance,
+    SiteInstanceGroup* site_instance_group,
     std::vector<FrameTree*>* opener_frame_trees,
     std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
     std::unordered_set<FrameTreeNode*>* cross_browsing_context_group_openers) {
@@ -4950,10 +4950,11 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
       // TODO(https://crbug.com/1440642): It is not clear that this iteration is
       // actually useful for outer delegate proxies. See if this can be
       // prevented to simplify logic here.
-      SiteInstanceImpl* opener_si =
-          node->opener()->current_frame_host()->GetSiteInstance();
-      if (site_instance && !site_instance->IsRelatedSiteInstance(opener_si) &&
-          site_instance->IsCoopRelatedSiteInstance(opener_si)) {
+      SiteInstanceGroup* opener_sig =
+          node->opener()->current_frame_host()->GetSiteInstance()->group();
+      if (site_instance_group &&
+          !site_instance_group->IsRelatedSiteInstanceGroup(opener_sig) &&
+          site_instance_group->IsCoopRelatedSiteInstanceGroup(opener_sig)) {
         cross_browsing_context_group_openers->insert(node->opener());
         continue;
       }
@@ -4992,7 +4993,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
   std::unordered_set<FrameTreeNode*> nodes_with_back_links;
   std::unordered_set<FrameTreeNode*> cross_browsing_context_group_openers;
 
-  CollectOpenerFrameTrees(instance, &opener_frame_trees, &nodes_with_back_links,
+  CollectOpenerFrameTrees(instance->group(), &opener_frame_trees,
+                          &nodes_with_back_links,
                           &cross_browsing_context_group_openers);
 
   // Create the proxies for openers outside of this BrowsingInstance. They are

@@ -891,12 +891,12 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // the node is added to `nodes_with_back_links`.
   //
   // This function does not recursively iterate on trees living in a different
-  // BrowsingInstance from `site_instance`, which may have maintained an opener
-  // using COOP: restrict-properties. When such openers are encountered, they
-  // are added to `cross_browsing_context_group_openers`. Tests can set
-  // `site_instance` to null to iterate through all trees.
+  // BrowsingInstance from `site_instance_group`, which may have maintained an
+  // opener using COOP: restrict-properties. When such openers are encountered,
+  // they are added to `cross_browsing_context_group_openers`. Tests can set
+  // `site_instance_group` to null to iterate through all trees.
   void CollectOpenerFrameTrees(
-      SiteInstanceImpl* site_instance,
+      SiteInstanceGroup* site_instance_group,
       std::vector<FrameTree*>* opener_frame_trees,
       std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
       std::unordered_set<FrameTreeNode*>* cross_browsing_context_group_openers);
