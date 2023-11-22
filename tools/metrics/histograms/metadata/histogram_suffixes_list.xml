@@ -2248,34 +2248,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Navigation.TimeToReadyToCommit2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NavigationItemSerializedSize" separator=".">
-  <suffix name="SerializedDisplayStateSize"
-      label="Estimated size of DisplayState in serialized session item used
-             to persist single NavigationItem DisplayState in session
-             history."/>
-  <suffix name="SerializedReferrerURLSize"
-      label="Estimated size of referrer's URL in serialized session item used
-             to persist single NavigationItem referrer's URL in session
-             history."/>
-  <suffix name="SerializedRequestHeadersSize"
-      label="Estimated size of HTTP request headers in serialized session
-             item used to persist single NavigationItem headers in session
-             history."/>
-  <suffix name="SerializedSize"
-      label="Estimated size of serialized session item used to persist single
-             NavigationItem in session history."/>
-  <suffix name="SerializedTitleSize"
-      label="Estimated size of title in serialized session item used to
-             persist single NavigationItem title in session history."/>
-  <suffix name="SerializedURLSize"
-      label="Estimated size of URL in serialized session item used to persist
-             single NavigationItem URL in session history."/>
-  <suffix name="SerializedVirtualURLSize"
-      label="Estimated size of virtual URL in serialized session item used to
-             persist single NavigationItem virtual URL in session history."/>
-  <affected-histogram name="Session.WebStates.NavigationItem"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NavigationProcessType" separator=".">
   <suffix name="CrossProcess" label="Cross process navigation."/>
   <suffix name="SameProcess" label="Same process navigation."/>
