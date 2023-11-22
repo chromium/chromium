@@ -123,7 +123,7 @@ function parseWifi(s: string): WifiConfig|null {
           wifiConfig.ssid = val;
         } else if (key === 'P') {
           wifiConfig.password = val;
-        } else if (key === 'H') {
+        } else if (key === 'H' && val === 'true') {
           wifiConfig.hidden = true;
         }
         component = '';
