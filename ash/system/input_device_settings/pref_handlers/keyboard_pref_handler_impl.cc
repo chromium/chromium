@@ -585,6 +585,8 @@ void UpdateKeyboardSettingsImpl(
       devices_dict.FindDict(keyboard.device_key);
   base::Value::Dict settings_dict = ConvertSettingsToDict(
       keyboard, keyboard_policies, force_persistence, existing_settings_dict);
+  const base::Time time_stamp = base::Time::Now();
+  settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
 
   if (existing_settings_dict) {
     // Merge all settings except modifier remappings. Modifier remappings need

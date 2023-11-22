@@ -331,6 +331,33 @@ TEST_F(PointingStickPrefHandlerTest, PreservesOldSettings) {
   EXPECT_EQ(kDictFakeValue, *value);
 }
 
+TEST_F(PointingStickPrefHandlerTest, LastUpdated) {
+  CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1,
+                                  /*is_external=*/true);
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
+          .Clone();
+  auto* settings_dict = devices_dict.FindDict(kPointingStickKey1);
+  ASSERT_NE(nullptr, settings_dict);
+  auto* time_stamp1 = settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, time_stamp1);
+
+  mojom::PointingStickSettingsPtr updated_settings =
+      kPointingStickSettings1.Clone();
+  updated_settings->swap_right = !updated_settings->swap_right;
+  CallUpdatePointingStickSettings(kPointingStickKey1, *updated_settings);
+
+  const auto& updated_devices_dict =
+      pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
+  const auto* updated_settings_dict =
+      updated_devices_dict.FindDict(kPointingStickKey1);
+  ASSERT_NE(nullptr, updated_settings_dict);
+  auto* updated_time_stamp1 =
+      updated_settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, updated_time_stamp1);
+  ASSERT_NE(time_stamp1, updated_time_stamp1);
+}
+
 TEST_F(PointingStickPrefHandlerTest, UpdateSettings) {
   CallUpdatePointingStickSettings(kPointingStickKey1, kPointingStickSettings1);
   CallUpdatePointingStickSettings(kPointingStickKey2, kPointingStickSettings2);

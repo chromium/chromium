@@ -164,6 +164,9 @@ inline constexpr char kButtonRemappingModifiers[] = "modifiers";
 inline constexpr char kButtonRemappingStaticShortcutAction[] =
     "static_shortcut_action";
 
+// Last updated dictionary keys.
+inline constexpr char kLastUpdatedKey[] = "last_updated";
+
 }  // namespace ash::prefs
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_PREF_NAMES_H_
