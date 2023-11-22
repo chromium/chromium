@@ -207,7 +207,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // base::FieldTrialList::Observer:
   // This will add the variation ID associated with |trial_name| and
   // |group_name| to the variation ID cache.
-  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
+  void OnFieldTrialGroupFinalized(const std::string& trial_name,
                                   const std::string& group_name) override;
 
   // metrics::SyntheticTrialObserver:

@@ -29,9 +29,9 @@ class TrialLogger : public base::FieldTrialList::Observer {
   TrialLogger(const TrialLogger&) = delete;
   TrialLogger& operator=(const TrialLogger&) = delete;
 
-  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
+  void OnFieldTrialGroupFinalized(const std::string& trial_name,
                                   const std::string& group_name) override {
-    Log(trial.trial_name(), group_name);
+    Log(trial_name, group_name);
   }
 
   static void Log(const std::string& trial_name,

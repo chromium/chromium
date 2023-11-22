@@ -9,16 +9,21 @@
 namespace {
 crosapi::mojom::FieldTrialGroupInfoPtr CreateFieldTrialGroupInfo(
     const std::string& trial_name,
-    const std::string& group_name,
-    bool is_overridden) {
+    const std::string& group_name) {
   auto info = crosapi::mojom::FieldTrialGroupInfo::New();
   info->trial_name = trial_name;
   info->group_name = group_name;
-  info->is_overridden = is_overridden;
   return info;
 }
 
 static crosapi::FieldTrialServiceAsh* g_field_trial_service_ash = nullptr;
+
+void OnFieldTrialGroupFinalizedCallback(const std::string& trial_name,
+                                        const std::string& group_name) {
+  if (g_field_trial_service_ash)
+    g_field_trial_service_ash->OnFieldTrialGroupFinalized(trial_name,
+                                                          group_name);
+}
 
 }  // namespace
 
@@ -54,8 +59,8 @@ void FieldTrialServiceAsh::AddFieldTrialObserver(
   base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   std::vector<mojom::FieldTrialGroupInfoPtr> infos;
   for (const auto& group : active_groups) {
-    infos.push_back(CreateFieldTrialGroupInfo(
-        group.trial_name, group.group_name, group.is_overridden));
+    infos.push_back(
+        CreateFieldTrialGroupInfo(group.trial_name, group.group_name));
   }
   remote->OnFieldTrialGroupActivated(std::move(infos));
 
@@ -63,32 +68,19 @@ void FieldTrialServiceAsh::AddFieldTrialObserver(
 }
 
 void FieldTrialServiceAsh::OnFieldTrialGroupFinalized(
-    const base::FieldTrial& trial,
+    const std::string& trial_name,
     const std::string& group_name) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](const std::string& trial_name,
-                          const std::string& group_name, bool is_overridden) {
-                         if (g_field_trial_service_ash) {
-                           g_field_trial_service_ash->FieldTrialActivated(
-                               trial_name, group_name, is_overridden);
-                         }
-                       },
-                       trial.trial_name(), group_name, trial.IsOverridden()));
+        FROM_HERE, base::BindOnce(&OnFieldTrialGroupFinalizedCallback,
+                                  trial_name, group_name));
     return;
   }
-  FieldTrialActivated(trial.trial_name(), group_name, trial.IsOverridden());
-}
 
-void FieldTrialServiceAsh::FieldTrialActivated(const std::string& trial_name,
-                                               const std::string& group_name,
-                                               bool is_overridden) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (auto& observer : observers_) {
     std::vector<mojom::FieldTrialGroupInfoPtr> infos;
-    infos.push_back(
-        CreateFieldTrialGroupInfo(trial_name, group_name, is_overridden));
+    infos.push_back(CreateFieldTrialGroupInfo(trial_name, group_name));
     observer->OnFieldTrialGroupActivated(std::move(infos));
   }
 }

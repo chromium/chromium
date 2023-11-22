@@ -71,9 +71,9 @@ class TestFieldTrialObserver : public FieldTrialList::Observer {
 
   ~TestFieldTrialObserver() override { FieldTrialList::RemoveObserver(this); }
 
-  void OnFieldTrialGroupFinalized(const FieldTrial& trial,
+  void OnFieldTrialGroupFinalized(const std::string& trial,
                                   const std::string& group) override {
-    trial_name_ = trial.trial_name();
+    trial_name_ = trial;
     group_name_ = group;
   }
 
@@ -105,7 +105,7 @@ class FieldTrialObserverAccessingGroup : public FieldTrialList::Observer {
     FieldTrialList::RemoveObserver(this);
   }
 
-  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
+  void OnFieldTrialGroupFinalized(const std::string& trial,
                                   const std::string& group) override {
     trial_to_access_->Activate();
   }
@@ -137,9 +137,9 @@ class TestFieldTrialObserverIncludingLowAnonymity
     FieldTrialListIncludingLowAnonymity::RemoveObserver(this);
   }
 
-  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
+  void OnFieldTrialGroupFinalized(const std::string& trial,
                                   const std::string& group) override {
-    trial_name_ = trial.trial_name();
+    trial_name_ = trial;
     group_name_ = group;
   }
 
@@ -376,7 +376,7 @@ TEST_F(FieldTrialTest, SaveAll) {
       CreateFieldTrial("Some name", 10, "Default some name");
   EXPECT_EQ("", trial->group_name_internal());
   FieldTrialList::AllStatesToString(&save_string);
-  EXPECT_EQ("Some name/Default some name", save_string);
+  EXPECT_EQ("Some name/Default some name/", save_string);
   // Getting all states should have finalized the trial.
   EXPECT_EQ("Default some name", trial->group_name_internal());
   save_string.clear();
@@ -386,7 +386,7 @@ TEST_F(FieldTrialTest, SaveAll) {
   trial->AppendGroup("Winner", 10);
   trial->Activate();
   FieldTrialList::AllStatesToString(&save_string);
-  EXPECT_EQ("Some name/Default some name/*trial2/Winner", save_string);
+  EXPECT_EQ("Some name/Default some name/*trial2/Winner/", save_string);
   save_string.clear();
 
   // Create a second trial and winning group.
@@ -396,7 +396,7 @@ TEST_F(FieldTrialTest, SaveAll) {
 
   FieldTrialList::AllStatesToString(&save_string);
   // We assume names are alphabetized... though this is not critical.
-  EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy",
+  EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/",
             save_string);
   save_string.clear();
 
@@ -404,12 +404,12 @@ TEST_F(FieldTrialTest, SaveAll) {
   scoped_refptr<FieldTrial> trial3 = CreateFieldTrial("zzz", 10, "default");
 
   FieldTrialList::AllStatesToString(&save_string);
-  EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/zzz/default",
+  EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/zzz/default/",
             save_string);
 
   save_string.clear();
   FieldTrialList::AllStatesToString(&save_string);
-  EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/zzz/default",
+  EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/zzz/default/",
             save_string);
 }
 
@@ -423,13 +423,11 @@ TEST_F(FieldTrialTest, Restore) {
   ASSERT_NE(static_cast<FieldTrial*>(nullptr), trial);
   EXPECT_EQ("Winner", trial->group_name());
   EXPECT_EQ("Some_name", trial->trial_name());
-  EXPECT_FALSE(trial->IsOverridden());
 
   trial = FieldTrialList::Find("xxx");
   ASSERT_NE(static_cast<FieldTrial*>(nullptr), trial);
   EXPECT_EQ("yyyy", trial->group_name());
   EXPECT_EQ("xxx", trial->trial_name());
-  EXPECT_FALSE(trial->IsOverridden());
 }
 
 TEST_F(FieldTrialTest, RestoreNotEndingWithSlash) {
@@ -457,7 +455,7 @@ TEST_F(FieldTrialTest, DuplicateRestore) {
   std::string save_string;
   FieldTrialList::AllStatesToString(&save_string);
   // * prefix since it is activated.
-  EXPECT_EQ("*Some name/Winner", save_string);
+  EXPECT_EQ("*Some name/Winner/", save_string);
 
   // It is OK if we redundantly specify a winner.
   EXPECT_TRUE(FieldTrialList::CreateTrialsFromString(save_string));
@@ -795,9 +793,8 @@ TEST_F(FieldTrialTest, FloatBoundariesGiveEqualGroupSizes) {
   for (int i = 0; i < kBucketCount; ++i) {
     const double entropy = i / static_cast<double>(kBucketCount);
 
-    scoped_refptr<FieldTrial> trial(
-        new FieldTrial("test", kBucketCount, "default", entropy,
-                       /*is_low_anonymity=*/false, /*is_overridden=*/false));
+    scoped_refptr<FieldTrial> trial(new FieldTrial(
+        "test", kBucketCount, "default", entropy, /*is_low_anonymity=*/false));
     for (int j = 0; j < kBucketCount; ++j)
       trial->AppendGroup(NumberToString(j), 1);
 
@@ -809,9 +806,8 @@ TEST_F(FieldTrialTest, DoesNotSurpassTotalProbability) {
   const double kEntropyValue = 1.0 - 1e-9;
   ASSERT_LT(kEntropyValue, 1.0);
 
-  scoped_refptr<FieldTrial> trial(
-      new FieldTrial("test", 2, "default", kEntropyValue,
-                     /*is_low_anonymity=*/false, /*is_overridden=*/false));
+  scoped_refptr<FieldTrial> trial(new FieldTrial(
+      "test", 2, "default", kEntropyValue, /*is_low_anonymity=*/false));
   trial->AppendGroup("1", 1);
   trial->AppendGroup("2", 1);
 
@@ -1110,7 +1106,7 @@ TEST_F(FieldTrialListTest, ClearParamsFromSharedMemory) {
   FieldTrialList::CreateTrialsFromSharedMemoryMapping(std::move(shm_mapping));
   std::string check_string;
   FieldTrialList::AllStatesToString(&check_string);
-  EXPECT_EQ("*Trial1/Group1", check_string);
+  EXPECT_EQ("*Trial1/Group1/", check_string);
 }
 
 TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
@@ -1122,8 +1118,6 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
   scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
 
   FieldTrialList::CreateFieldTrial(trial_name, group_name);
-  FieldTrialList::CreateFieldTrial("Trial2", "Group2", false,
-                                   /*is_overridden=*/true);
   std::map<std::string, std::string> params;
   params["key1"] = "value1";
   params["key2"] = "value2";
@@ -1144,30 +1138,22 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
       FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(allocator);
 
   // Check that we have the entry we put in.
-  EXPECT_EQ(2u, entries.size());
-  const FieldTrial::FieldTrialEntry* entry1 = entries[0];
-  const FieldTrial::FieldTrialEntry* entry2 = entries[1];
+  EXPECT_EQ(1u, entries.size());
+  const FieldTrial::FieldTrialEntry* entry = entries[0];
 
-  // Check that the trial information matches.
+  // Check that the trial and group names match.
   StringPiece shm_trial_name;
   StringPiece shm_group_name;
-  bool overridden;
-  ASSERT_TRUE(entry1->GetState(shm_trial_name, shm_group_name, overridden));
+  entry->GetTrialAndGroupName(&shm_trial_name, &shm_group_name);
   EXPECT_EQ(trial_name, shm_trial_name);
   EXPECT_EQ(group_name, shm_group_name);
-  EXPECT_FALSE(overridden);
 
   // Check that the params match.
   std::map<std::string, std::string> shm_params;
-  entry1->GetParams(&shm_params);
+  entry->GetParams(&shm_params);
   EXPECT_EQ(2u, shm_params.size());
   EXPECT_EQ("value1", shm_params["key1"]);
   EXPECT_EQ("value2", shm_params["key2"]);
-
-  ASSERT_TRUE(entry2->GetState(shm_trial_name, shm_group_name, overridden));
-  EXPECT_EQ("Trial2", shm_trial_name);
-  EXPECT_EQ("Group2", shm_group_name);
-  EXPECT_TRUE(overridden);
 }
 
 #if BUILDFLAG(USE_BLINK)
@@ -1370,68 +1356,6 @@ TEST_F(FieldTrialTest, ObserveIncludingLowAnonymity) {
   EXPECT_EQ("", observer.group_name());
   EXPECT_EQ(kTrialName, low_anonymity_observer.trial_name());
   EXPECT_EQ(kDefaultGroupName, low_anonymity_observer.group_name());
-}
-
-TEST_F(FieldTrialTest, ParseFieldTrialsString) {
-  std::vector<FieldTrial::State> entries;
-  ASSERT_TRUE(FieldTrial::ParseFieldTrialsString("Trial1/Group1", entries));
-
-  ASSERT_EQ(entries.size(), 1ul);
-  const FieldTrial::State& entry = entries[0];
-  EXPECT_EQ("Trial1", entry.trial_name);
-  EXPECT_EQ("Group1", entry.group_name);
-  EXPECT_EQ(false, entry.activated);
-  EXPECT_EQ(false, entry.is_overridden);
-}
-
-TEST_F(FieldTrialTest, ParseFieldTrialsStringTwoStudies) {
-  std::vector<FieldTrial::State> entries;
-  ASSERT_TRUE(FieldTrial::ParseFieldTrialsString(
-      "Trial1/Group1/*Trial2/Group2/", entries));
-
-  ASSERT_EQ(entries.size(), 2ul);
-  const FieldTrial::State& entry1 = entries[0];
-  EXPECT_EQ("Trial1", entry1.trial_name);
-  EXPECT_EQ("Group1", entry1.group_name);
-  EXPECT_EQ(false, entry1.activated);
-  EXPECT_EQ(false, entry1.is_overridden);
-
-  const FieldTrial::State& entry2 = entries[1];
-  EXPECT_EQ("Trial2", entry2.trial_name);
-  EXPECT_EQ("Group2", entry2.group_name);
-  EXPECT_EQ(true, entry2.activated);
-  EXPECT_EQ(false, entry2.is_overridden);
-}
-
-TEST_F(FieldTrialTest, ParseFieldTrialsStringEmpty) {
-  std::vector<FieldTrial::State> entries;
-  ASSERT_TRUE(FieldTrial::ParseFieldTrialsString("", entries));
-
-  ASSERT_EQ(entries.size(), 0ul);
-}
-
-TEST_F(FieldTrialTest, ParseFieldTrialsStringInvalid) {
-  std::vector<FieldTrial::State> entries;
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("A/", entries));
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("/A", entries));
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("//", entries));
-  EXPECT_FALSE(FieldTrial::ParseFieldTrialsString("///", entries));
-}
-
-TEST_F(FieldTrialTest, BuildFieldTrialStateString) {
-  FieldTrial::State state1;
-  state1.trial_name = "Trial";
-  state1.group_name = "Group";
-  state1.activated = false;
-
-  FieldTrial::State state2;
-  state2.trial_name = "Foo";
-  state2.group_name = "Bar";
-  state2.activated = true;
-
-  EXPECT_EQ("Trial/Group", FieldTrial::BuildFieldTrialStateString({state1}));
-  EXPECT_EQ("Trial/Group/*Foo/Bar",
-            FieldTrial::BuildFieldTrialStateString({state1, state2}));
 }
 
 }  // namespace base

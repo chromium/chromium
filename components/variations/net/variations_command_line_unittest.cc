@@ -15,7 +15,7 @@
 namespace variations {
 
 TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
-  std::string trial_list = "trial1/group1/*trial2/group2";
+  std::string trial_list = "trial1/group1/*trial2/group2/";
   std::string param_list = "trial1.group1:p1/v1/p2/2";
   std::string enable_feature_list = "feature1<trial1";
   std::string disable_feature_list = "feature2<trial2";
