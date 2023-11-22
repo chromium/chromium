@@ -83,6 +83,13 @@ class TestCascadeResolver {
   CascadeResolver resolver_;
 };
 
+struct AddOptions {
+  CascadeOrigin origin = CascadeOrigin::kAuthor;
+  unsigned link_match_type = CSSSelector::kMatchAll;
+  bool is_inline_style = false;
+  bool is_fallback_style = false;
+};
+
 class TestCascade {
   STACK_ALLOCATED();
 
@@ -105,34 +112,32 @@ class TestCascade {
   //  Note that because of how MatchResult works, declarations must be added
   //  in "origin order", i.e. UserAgent first, then User, then Author.
 
-  void Add(String block,
-           CascadeOrigin origin = CascadeOrigin::kAuthor,
-           unsigned link_match_type = CSSSelector::kMatchAll,
-           bool is_inline_style = false,
-           bool is_fallback_style = false) {
-    CSSParserMode mode =
-        origin == CascadeOrigin::kUserAgent ? kUASheetMode : kHTMLStandardMode;
-    Add(ParseDeclarationBlock(block, mode), origin, link_match_type,
-        is_inline_style, is_fallback_style);
+  void Add(String block, AddOptions options = {}) {
+    CSSParserMode mode = options.origin == CascadeOrigin::kUserAgent
+                             ? kUASheetMode
+                             : kHTMLStandardMode;
+    Add(ParseDeclarationBlock(block, mode), options);
+  }
+
+  void Add(String block, CascadeOrigin origin) {
+    Add(block, {.origin = origin});
   }
 
   void Add(String name, String value, CascadeOrigin origin = Origin::kAuthor) {
     Add(name + ":" + value, origin);
   }
 
-  void Add(const CSSPropertyValueSet* set,
-           CascadeOrigin origin = CascadeOrigin::kAuthor,
-           unsigned link_match_type = CSSSelector::kMatchAll,
-           bool is_inline_style = false,
-           bool is_fallback_style = false) {
-    DCHECK_LE(origin, CascadeOrigin::kAuthor) << "Animations not supported";
-    DCHECK_LE(current_origin_, origin) << "Please add declarations in order";
-    EnsureAtLeast(origin);
+  void Add(const CSSPropertyValueSet* set, AddOptions options = {}) {
+    DCHECK_LE(options.origin, CascadeOrigin::kAuthor)
+        << "Animations not supported";
+    DCHECK_LE(current_origin_, options.origin)
+        << "Please add declarations in order";
+    EnsureAtLeast(options.origin);
     cascade_.MutableMatchResult().AddMatchedProperties(
-        set, origin,
-        {.link_match_type = link_match_type,
-         .is_inline_style = is_inline_style,
-         .is_fallback_style = is_fallback_style});
+        set, options.origin,
+        {.link_match_type = options.link_match_type,
+         .is_inline_style = options.is_inline_style,
+         .is_fallback_style = options.is_fallback_style});
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
@@ -2567,7 +2572,7 @@ TEST_F(StyleCascadeTest, AnimatedVisitedImportantOverride) {
   cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
 
   cascade.Add(ParseDeclarationBlock("background-color:red !important"),
-              CascadeOrigin::kAuthor, CSSSelector::kMatchVisited);
+              {.link_match_type = CSSSelector::kMatchVisited});
   cascade.Add("animation-name:test");
   cascade.Add("animation-duration:10s");
   cascade.Add("animation-timing-function:linear");
@@ -3135,8 +3140,9 @@ TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceWithoutVar) {
 
 TEST_F(StyleCascadeTest, InternalVisitedColorLonghand) {
   TestCascade cascade(GetDocument());
-  cascade.Add("color:green", CascadeOrigin::kAuthor);
-  cascade.Add("color:red", CascadeOrigin::kAuthor, CSSSelector::kMatchVisited);
+  cascade.Add("color:green");
+  cascade.Add("color:red", {.origin = CascadeOrigin::kAuthor,
+                            .link_match_type = CSSSelector::kMatchVisited});
 
   cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
   cascade.Apply();
@@ -3150,11 +3156,11 @@ TEST_F(StyleCascadeTest, InternalVisitedColorLonghand) {
 
 TEST_F(StyleCascadeTest, VarInInternalVisitedColorShorthand) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--x:red", CascadeOrigin::kAuthor);
-  cascade.Add("outline:medium solid var(--x)", CascadeOrigin::kAuthor,
-              CSSSelector::kMatchVisited);
-  cascade.Add("outline-color:green", CascadeOrigin::kAuthor,
-              CSSSelector::kMatchLink);
+  cascade.Add("--x:red");
+  cascade.Add("outline:medium solid var(--x)",
+              {.link_match_type = CSSSelector::kMatchVisited});
+  cascade.Add("outline-color:green",
+              {.link_match_type = CSSSelector::kMatchLink});
 
   cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
   cascade.Apply();
@@ -3790,28 +3796,26 @@ TEST_F(StyleCascadeTest, RevertOrigin) {
 TEST_F(StyleCascadeTest, InlineStyleWonCascade) {
   TestCascade cascade(GetDocument());
   cascade.Add("top:1px", CascadeOrigin::kUserAgent);
-  cascade.Add("top:2px", CascadeOrigin::kAuthor, CSSSelector::kMatchAll,
-              /*is_inline_style=*/true);
+  cascade.Add("top:2px",
+              {.origin = CascadeOrigin::kAuthor, .is_inline_style = true});
   cascade.Apply();
   EXPECT_FALSE(cascade.InlineStyleLostCascade());
 }
 
 TEST_F(StyleCascadeTest, InlineStyleLostCascade) {
   TestCascade cascade(GetDocument());
-  cascade.Add("top:1px !important", CascadeOrigin::kUserAgent);
-  cascade.Add("top:2px", CascadeOrigin::kAuthor, CSSSelector::kMatchAll,
-              /*is_inline_style=*/true);
+  cascade.Add("top:1px !important", {.origin = CascadeOrigin::kUserAgent});
+  cascade.Add("top:2px",
+              {.origin = CascadeOrigin::kAuthor, .is_inline_style = true});
   cascade.Apply();
   EXPECT_TRUE(cascade.InlineStyleLostCascade());
 }
 
 TEST_F(StyleCascadeTest, FallbackStyle) {
   TestCascade cascade(GetDocument());
-  cascade.Add("top:1px", CascadeOrigin::kAuthor);
-  cascade.Add("top:2px", CascadeOrigin::kAuthor, CSSSelector::kMatchAll,
-              /*is_inline_style=*/true);
-  cascade.Add("top:3px", CascadeOrigin::kAuthor, CSSSelector::kMatchAll,
-              /*is_inline_style=*/false, /*is_fallback_style=*/true);
+  cascade.Add("top:1px");
+  cascade.Add("top:2px", {.is_inline_style = true});
+  cascade.Add("top:3px", {.is_fallback_style = true});
   cascade.Apply();
   EXPECT_EQ("3px", cascade.ComputedValue("top"));
 }
