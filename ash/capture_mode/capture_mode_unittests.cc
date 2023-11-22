@@ -101,6 +101,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/events/event_constants.h"
@@ -3394,7 +3395,7 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   // Enter tablet mode and test the bar buttons.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   ClickOnView(GetImageToggleButton(), event_generator);
   histogram_tester.ExpectBucketCount(
@@ -3546,7 +3547,7 @@ TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
   // should be remembered.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   StartImageRegionCapture();
   ASSERT_EQ(target_region, controller->user_capture_region());
 
@@ -4997,9 +4998,8 @@ class CaptureModeCursorOverlayTest : public CaptureModeTest {
       CaptureModeController* controller) {
     EXPECT_EQ(controller->type(), CaptureModeType::kImage);
 
-    auto* shell = Shell::Get();
-    auto* cursor_manager = shell->cursor_manager();
-    bool in_tablet_mode = shell->tablet_mode_controller()->InTabletMode();
+    auto* cursor_manager = Shell::Get()->cursor_manager();
+    bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
     // The capture mode session locks the cursor for the whole active session
     // except in the tablet mode unless the cursor is visible.

@@ -30,6 +30,10 @@ namespace aura {
 class Window;
 }
 
+namespace display {
+enum class TabletState;
+}  // namespace display
+
 namespace ash {
 
 ASH_EXPORT chromeos::OrientationType GetCurrentScreenOrientation();
@@ -45,6 +49,7 @@ class ASH_EXPORT ScreenOrientationController
       public aura::WindowObserver,
       public AccelerometerReader::Observer,
       public TabletModeObserver,
+      public display::DisplayObserver,
       public display::DisplayManagerObserver {
  public:
   // Observer that reports changes to the state of ScreenOrientationProvider's
@@ -149,9 +154,10 @@ class ASH_EXPORT ScreenOrientationController
   void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
   // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
   void OnTabletPhysicalStateChanged() override;
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // display::DisplayManagerObserver:
   void OnWillProcessDisplayChanges() override;
@@ -288,6 +294,8 @@ class ASH_EXPORT ScreenOrientationController
   base::ScopedObservation<display::DisplayManager,
                           display::DisplayManagerObserver>
       display_manager_observation_{this};
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   std::unique_ptr<WindowStateChangeNotifier> window_state_change_notifier_;
 };

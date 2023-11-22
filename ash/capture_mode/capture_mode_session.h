@@ -15,7 +15,6 @@
 #include "ash/capture_mode/capture_mode_toast_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -30,6 +29,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace gfx {
 class Canvas;
@@ -58,7 +61,6 @@ class ASH_EXPORT CaptureModeSession
     : public BaseCaptureModeSession,
       public ui::LayerDelegate,
       public ui::EventHandler,
-      public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
       public FolderSelectionDialogController::Delegate,
@@ -176,14 +178,11 @@ class ASH_EXPORT CaptureModeSession
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
   // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 

@@ -33,6 +33,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/display/test/test_screen.h"
 
 namespace arc {
 namespace {
@@ -149,6 +150,8 @@ class ArcMetricsServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
 
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;

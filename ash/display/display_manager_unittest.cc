@@ -3398,8 +3398,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopTabletMode) {
   // the destruction of the Unified host when we switched to mirror mode
   // asynchronously.
   auto* app_list_controller = Shell::Get()->app_list_controller();
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(
       app_list_controller->IsVisible(display_manager()->first_display_id()));
 
@@ -3411,7 +3410,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopTabletMode) {
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Home Launcher should be dismissed.
-  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(
       app_list_controller->IsVisible(display_manager()->first_display_id()));
 }
@@ -4950,7 +4949,7 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
         SetSoftwareMirrorMode(true);
 
         ASSERT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
-        ASSERT_FALSE(tablet_mode_controller->IsInTabletMode());
+        ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
         break;
       }
     }

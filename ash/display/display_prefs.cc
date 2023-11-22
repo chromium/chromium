@@ -12,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -31,6 +30,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/json_converter.h"
 #include "ui/display/manager/util/display_manager_util.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -570,7 +570,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
     // https://crbug.com/733092.
     // But we should keep any original value so that it can be restored when
     // exiting tablet mode.
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       const base::Value::Dict* original_property =
           pref_data.FindDict(base::NumberToString(id));
       if (original_property) {
@@ -875,7 +875,7 @@ void DisplayPrefs::MaybeStoreDisplayPrefs() {
   // Don't save certain display properties when in tablet mode, so if
   // the device is rebooted in clamshell mode, it won't have an unexpected
   // mirroring layout. https://crbug.com/733092.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     StoreCurrentDisplayLayoutPrefs(local_state_);
     StoreExternalDisplayMirrorInfo(local_state_);
     StoreCurrentDisplayMixedMirrorModeParams(local_state_);

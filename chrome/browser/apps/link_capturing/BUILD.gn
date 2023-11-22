@@ -101,6 +101,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
     "//ui/base:base",
+    "//ui/display:test_support",
     "//url",
   ]
 

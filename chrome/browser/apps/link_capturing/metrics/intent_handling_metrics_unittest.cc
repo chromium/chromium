@@ -18,6 +18,7 @@
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "ui/display/test/test_screen.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
@@ -202,6 +203,8 @@ class IntentHandlingMetricsTestWithMetricsService : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
   arc::ArcServiceManager arc_service_manager_;
   TestingPrefServiceSimple local_state_;
   TestingProfile profile_;

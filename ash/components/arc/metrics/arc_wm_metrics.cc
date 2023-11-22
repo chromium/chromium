@@ -7,7 +7,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
@@ -21,6 +20,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace arc {
 
@@ -110,7 +111,7 @@ class ArcWmMetrics::WindowStateChangeObserver
   void RecordWindowStateChangeDelay(ash::WindowState* state) {
     const ash::AppType app_type =
         static_cast<ash::AppType>(window_->GetProperty(aura::client::kAppType));
-    if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       // When entering tablet mode, we only collect the data of visible window.
       if (state->IsMaximized() && window_->IsVisible()) {
         base::UmaHistogramCustomTimes(
@@ -196,11 +197,6 @@ ArcWmMetrics::ArcWmMetrics() {
   if (aura::Env::HasInstance()) {
     env_observation_.Observe(aura::Env::GetInstance());
   }
-
-  if (ash::Shell::HasInstance()) {
-    tablet_mode_observation_.Observe(
-        ash::Shell::Get()->tablet_mode_controller());
-  }
 }
 
 ArcWmMetrics::~ArcWmMetrics() = default;
@@ -276,7 +272,7 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -330,7 +326,12 @@ void ArcWmMetrics::OnWindowDestroying(aura::Window* window) {
   }
 }
 
-void ArcWmMetrics::OnTabletModeStarting() {
+void ArcWmMetrics::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (state == display::TabletState::kInTabletMode ||
+      state == display::TabletState::kInClamshellMode) {
+    return;
+  }
+
   aura::Window* top_window = ash::window_util::GetTopNonFloatedWindow();
   if (!top_window) {
     return;
@@ -338,25 +339,17 @@ void ArcWmMetrics::OnTabletModeStarting() {
 
   chromeos::WindowStateType window_state_type =
       ash::WindowState::Get(top_window)->GetStateType();
-  if (IsNormalWindowStateType(window_state_type)) {
+
+  if (state == display::TabletState::kEnteringTabletMode &&
+      IsNormalWindowStateType(window_state_type)) {
     state_change_observing_windows_.emplace(
         top_window,
         std::make_unique<WindowStateChangeObserver>(
             top_window, top_window->GetProperty(aura::client::kShowStateKey),
             base::BindOnce(&ArcWmMetrics::OnOperationCompleted,
                            base::Unretained(this), top_window)));
-  }
-}
-
-void ArcWmMetrics::OnTabletModeEnding() {
-  aura::Window* top_window = ash::window_util::GetTopNonFloatedWindow();
-  if (!top_window) {
-    return;
-  }
-
-  chromeos::WindowStateType window_state_type =
-      ash::WindowState::Get(top_window)->GetStateType();
-  if (window_state_type == chromeos::WindowStateType::kMaximized) {
+  } else if (state == display::TabletState::kExitingTabletMode &&
+             window_state_type == chromeos::WindowStateType::kMaximized) {
     exiting_tablet_mode_observing_windows_.emplace(
         top_window,
         std::make_unique<WindowStateChangeObserver>(
@@ -364,10 +357,6 @@ void ArcWmMetrics::OnTabletModeEnding() {
             base::BindOnce(&ArcWmMetrics::OnOperationCompleted,
                            base::Unretained(this), top_window)));
   }
-}
-
-void ArcWmMetrics::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void ArcWmMetrics::OnOperationCompleted(aura::Window* window) {

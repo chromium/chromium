@@ -999,7 +999,7 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   update.Set(ACCELEROMETER_SOURCE_SCREEN, 0.0f, base::kMeanGravityFloat, 0.0f);
   TabletModeController* controller = Shell::Get()->tablet_mode_controller();
   controller->OnAccelerometerUpdated(update);
-  EXPECT_TRUE(controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   // Trigger 90 degree rotation
   update.Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, base::kMeanGravityFloat,
@@ -1138,7 +1138,7 @@ TEST_F(DisplayPrefsTest, LoadRotationNoLogin) {
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->OnAccelerometerUpdated(update);
-  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   bool screen_orientation_rotation_lock = IsRotationLocked();
   display::Display::Rotation tablet_mode_rotation =
       GetCurrentInternalDisplayRotation();
@@ -1627,7 +1627,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
   const int64_t id0 = display::test::DisplayManagerTestApi(display_manager())
                           .SetFirstDisplayAsInternalDisplay();
 
-  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   const base::Value::Dict* properties = ReadPropertiesForDisplay(id0);
   EXPECT_THAT(properties->FindDouble("display_zoom_factor"),
               Optional(DoubleEq(1.25f)));
@@ -1639,7 +1639,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
   // Turn on tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   // Change display settings.
   display_manager()->UpdateZoomFactor(id0, 1.5);
@@ -1661,7 +1661,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
   // Turn off tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   // Zoom should stay at the new value.
   EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(id0).zoom_factor(), 1.5);
   // Rotation should restore to the original value.
@@ -1706,7 +1706,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
   ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
 
-  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
 
   // Verify initial stored display prefs.
   const base::Value::Dict* properties = ReadPropertiesForDisplay(ids[0]);
@@ -1732,7 +1732,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   // Turn on tablet mode and make display changes.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
   EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
@@ -1758,7 +1758,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   display_manager()->UpdateDisplays();
 
   // Things should stay in tablet mode.
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
   // Currently, restarting in tablet mode reverts back to the original mixed
@@ -1806,7 +1806,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   // Turn off tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
   EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),

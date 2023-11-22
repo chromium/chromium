@@ -33,7 +33,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -65,6 +64,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -1514,10 +1514,10 @@ void CaptureModeController::OnImageCaptured(
     const CaptureModeBehavior* behavior,
     scoped_refptr<base::RefCountedMemory> png_bytes) {
   if (!was_cursor_originally_blocked) {
-    auto* shell = Shell::Get();
-    auto* cursor_manager = shell->cursor_manager();
-    if (!shell->tablet_mode_controller()->InTabletMode())
+    auto* cursor_manager = Shell::Get()->cursor_manager();
+    if (!display::Screen::GetScreen()->InTabletMode()) {
       cursor_manager->ShowCursor();
+    }
     cursor_manager->UnlockCursor();
   }
 

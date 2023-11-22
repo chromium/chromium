@@ -21,6 +21,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/test_screen.h"
 
 namespace arc {
 
@@ -73,6 +74,8 @@ class ArcCpuThrottleObserverTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
   TestingPrefServiceSimple local_state_;
   raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh>
       arc_metrics_service_ = nullptr;

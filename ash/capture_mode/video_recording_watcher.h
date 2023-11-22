@@ -9,7 +9,6 @@
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/display/cursor_window_controller.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/window_dimmer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -28,6 +27,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace wm {
 class CursorManager;
@@ -60,7 +63,6 @@ class ASH_EXPORT VideoRecordingWatcher
       public display::DisplayObserver,
       public WindowDimmer::Delegate,
       public ui::EventHandler,
-      public TabletModeObserver,
       public CursorWindowController::Observer,
       public ui::ColorProviderSourceObserver {
  public:
@@ -136,6 +138,7 @@ class ASH_EXPORT VideoRecordingWatcher
                          aura::Window* lost_active) override;
 
   // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
@@ -147,10 +150,6 @@ class ASH_EXPORT VideoRecordingWatcher
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
 
   // CursorWindowController::Observer:
   void OnCursorCompositingStateChanged(bool enabled) override;

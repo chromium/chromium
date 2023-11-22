@@ -380,34 +380,42 @@ void ScreenOrientationController::OnAccelerometerUpdated(
     HandleScreenRotation(update.get(ACCELEROMETER_SOURCE_SCREEN));
 }
 
-void ScreenOrientationController::OnTabletModeStarted() {
-  // Observe window activation only while in UI tablet mode, since this the only
-  // mode in which we apply apps' requested orientation locks.
-  Shell::Get()->activation_client()->AddObserver(this);
+void ScreenOrientationController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      // Observe window activation only while in UI tablet mode, since this the
+      // only mode in which we apply apps' requested orientation locks.
+      Shell::Get()->activation_client()->AddObserver(this);
 
-  if (!display::HasInternalDisplay())
-    return;
-  ApplyLockForTopMostWindowOnInternalDisplay();
-}
+      if (display::HasInternalDisplay()) {
+        ApplyLockForTopMostWindowOnInternalDisplay();
+      }
+      break;
+    case display::TabletState::kInClamshellMode:
+      Shell::Get()->activation_client()->RemoveObserver(this);
+      if (!display::HasInternalDisplay()) {
+        break;
+      }
+      if (!IsAutoRotationAllowed()) {
+        // Rotation locks should have been cleared already in
+        // `OnTabletPhysicalStateChanged()`.
+        DCHECK(!rotation_locked());
+        DCHECK_EQ(rotation_locked_orientation_,
+                  chromeos::OrientationType::kAny);
+        break;
+      }
 
-void ScreenOrientationController::OnTabletModeEnded() {
-  Shell::Get()->activation_client()->RemoveObserver(this);
-  if (!display::HasInternalDisplay())
-    return;
-
-  if (!IsAutoRotationAllowed()) {
-    // Rotation locks should have been cleared already in
-    // `OnTabletPhysicalStateChanged()`.
-    DCHECK(!rotation_locked());
-    DCHECK_EQ(rotation_locked_orientation_, chromeos::OrientationType::kAny);
-    return;
+      // Auto-rotation is still allowed (since device is still in a physical
+      // tablet state). We no-longer apply app's requested orientation locks, so
+      // we'll call `ApplyLockForTopMostWindowOnInternalDisplay()` to apply the
+      // `user_locked_orientation_` if any.
+      ApplyLockForTopMostWindowOnInternalDisplay();
+      break;
   }
-
-  // Auto-rotation is still allowed (since device is still in a physical tablet
-  // state). We no-longer apply app's requested orientation locks, so we'll
-  // call `ApplyLockForTopMostWindowOnInternalDisplay()` to apply the
-  // `user_locked_orientation_` if any.
-  ApplyLockForTopMostWindowOnInternalDisplay();
 }
 
 void ScreenOrientationController::OnTabletPhysicalStateChanged() {
