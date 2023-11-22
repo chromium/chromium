@@ -432,7 +432,7 @@ public class TabSwitcherCoordinator
                                     mActivity,
                                     mTabModelSelector,
                                     () -> {
-                                        initTabSelectionEditor();
+                                        initTabSelectionEditor(/* isItemTypeSelectable= */ false);
                                         return mTabSelectionEditorCoordinator.getController();
                                     });
                     mTabSuggestionsOrchestrator.addObserver(tabSuggestionMessageService);
@@ -473,16 +473,31 @@ public class TabSwitcherCoordinator
         }
     }
 
-    private void initTabSelectionEditor() {
+    private void initTabSelectionEditor(boolean isItemTypeSelectable) {
+        // TODO(crbug.com/1504606): Ensure the lifecycle of the mTabSelectionEditorCoordinator is
+        // properly destroyed between the closable and selectable variations that lazily instantiate
+        // it.
         if (mTabSelectionEditorCoordinator == null) {
             // For tab switcher in carousel mode, the selection editor should still follow grid
             // style.
             int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
-            mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
-                    mCoordinatorView, mBrowserControlsStateProvider, mTabModelSelector,
-                    mTabContentManager, mTabListCoordinator::setRecyclerViewPosition,
-                    selectionEditorMode, mRootView,
-                    /*displayGroups=*/true, mTabSelectionEditorSnackbarManager);
+            int selectionEditorItemType =
+                    isItemTypeSelectable
+                            ? TabProperties.UiType.SELECTABLE
+                            : TabProperties.UiType.CLOSABLE;
+            mTabSelectionEditorCoordinator =
+                    new TabSelectionEditorCoordinator(
+                            mActivity,
+                            mCoordinatorView,
+                            mBrowserControlsStateProvider,
+                            mTabModelSelector,
+                            mTabContentManager,
+                            mTabListCoordinator::setRecyclerViewPosition,
+                            selectionEditorMode,
+                            mRootView,
+                            /* displayGroups= */ true,
+                            mTabSelectionEditorSnackbarManager,
+                            selectionEditorItemType);
             mMediator.setTabSelectionEditorController(
                     mTabSelectionEditorCoordinator.getController());
         }
@@ -490,7 +505,7 @@ public class TabSwitcherCoordinator
 
     private void showTabSelectionEditor() {
         // Lazy initialize if required.
-        initTabSelectionEditor();
+        initTabSelectionEditor(/* isItemTypeSelectable= */ true);
 
         if (mTabSelectionEditorActions == null) {
             mTabSelectionEditorActions = new ArrayList<>();

@@ -165,7 +165,8 @@ public class TabSelectionEditorTest {
                                             .getActivity()
                                             .getCompositorViewHolderForTesting(),
                                     /* displayGroups= */ true,
-                                    mSnackbarManager);
+                                    mSnackbarManager,
+                                    TabProperties.UiType.SELECTABLE);
 
                     mTabSelectionEditorController = mTabSelectionEditorCoordinator.getController();
                     mTabSelectionEditorLayout =

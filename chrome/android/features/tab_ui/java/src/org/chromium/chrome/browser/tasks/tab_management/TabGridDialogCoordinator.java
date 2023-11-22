@@ -135,11 +135,19 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             int mode = TabUiFeatureUtilities.shouldUseListMode(mActivity)
                     ? TabListCoordinator.TabListMode.LIST
                     : TabListCoordinator.TabListMode.GRID;
-            mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
-                    mDialogView.findViewById(R.id.dialog_container_view),
-                    mBrowserControlsStateProvider, mTabModelSelector, mTabContentManager,
-                    mTabListCoordinator::setRecyclerViewPosition, mode, mRootView,
-                    /*displayGroups=*/false, mSnackbarManager);
+            mTabSelectionEditorCoordinator =
+                    new TabSelectionEditorCoordinator(
+                            mActivity,
+                            mDialogView.findViewById(R.id.dialog_container_view),
+                            mBrowserControlsStateProvider,
+                            mTabModelSelector,
+                            mTabContentManager,
+                            mTabListCoordinator::setRecyclerViewPosition,
+                            mode,
+                            mRootView,
+                            /* displayGroups= */ false,
+                            mSnackbarManager,
+                            TabProperties.UiType.SELECTABLE);
         }
 
         return mTabSelectionEditorCoordinator.getController();

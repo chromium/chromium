@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -147,12 +148,18 @@ class TabSelectionEditorCoordinator {
     private final Callback<RecyclerViewPosition> mClientTabListRecyclerViewPositionSetter;
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
 
-    public TabSelectionEditorCoordinator(Activity activity, ViewGroup parentView,
+    public TabSelectionEditorCoordinator(
+            Activity activity,
+            ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
-            TabModelSelector tabModelSelector, TabContentManager tabContentManager,
+            TabModelSelector tabModelSelector,
+            TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
-            @TabListMode int mode, ViewGroup rootView, boolean displayGroups,
-            SnackbarManager snackbarManager) {
+            @TabListMode int mode,
+            ViewGroup rootView,
+            boolean displayGroups,
+            SnackbarManager snackbarManager,
+            @UiType int itemType) {
         try (TraceEvent e = TraceEvent.scoped("TabSelectionEditorCoordinator.constructor")) {
             mActivity = activity;
             mParentView = parentView;
@@ -175,10 +182,24 @@ class TabSelectionEditorCoordinator {
             // the Coordinator hosting the TabSelectionEditorCoordinator could share and reconfigure
             // its TabListCoordinator to work with the editor as an optimization.
             mTabListCoordinator =
-                    new TabListCoordinator(mode, activity, mBrowserControlsStateProvider,
-                            mTabModelSelector, thumbnailProvider, titleProvider, displayGroups,
-                            null, null, TabProperties.UiType.SELECTABLE, this::getSelectionDelegate,
-                            null, mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView, null);
+                    new TabListCoordinator(
+                            mode,
+                            activity,
+                            mBrowserControlsStateProvider,
+                            mTabModelSelector,
+                            thumbnailProvider,
+                            titleProvider,
+                            displayGroups,
+                            null,
+                            null,
+                            itemType,
+                            this::getSelectionDelegate,
+                            null,
+                            mTabSelectionEditorLayout,
+                            false,
+                            COMPONENT_NAME,
+                            rootView,
+                            null);
 
             // Note: The TabSelectionEditorCoordinator is always created after native is
             // initialized.
@@ -254,10 +275,19 @@ class TabSelectionEditorCoordinator {
             };
             // TODO(crbug.com/1393679): Refactor SnackbarManager to support multiple overridden
             // parentViews in a stack to avoid contention and using new snackbar managers.
-            mTabSelectionEditorMediator = new TabSelectionEditorMediator(mActivity,
-                    mTabModelSelector, mTabListCoordinator, resetHandler, mModel,
-                    mSelectionDelegate, mTabSelectionEditorLayout.getToolbar(), displayGroups,
-                    snackbarManager, mTabSelectionEditorLayout);
+            mTabSelectionEditorMediator =
+                    new TabSelectionEditorMediator(
+                            mActivity,
+                            mTabModelSelector,
+                            mTabListCoordinator,
+                            resetHandler,
+                            mModel,
+                            mSelectionDelegate,
+                            mTabSelectionEditorLayout.getToolbar(),
+                            displayGroups,
+                            snackbarManager,
+                            mTabSelectionEditorLayout,
+                            itemType);
         }
     }
 

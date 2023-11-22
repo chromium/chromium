@@ -16,10 +16,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -70,12 +72,18 @@ class TabSelectionEditorMediator
         }
     };
 
-    TabSelectionEditorMediator(Context context, TabModelSelector tabModelSelector,
+    TabSelectionEditorMediator(
+            Context context,
+            TabModelSelector tabModelSelector,
             TabListCoordinator tabListCoordinator,
-            TabSelectionEditorCoordinator.ResetHandler resetHandler, PropertyModel model,
+            TabSelectionEditorCoordinator.ResetHandler resetHandler,
+            PropertyModel model,
             SelectionDelegate<Integer> selectionDelegate,
-            TabSelectionEditorToolbar tabSelectionEditorToolbar, boolean actionOnRelatedTabs,
-            SnackbarManager snackbarManager, TabSelectionEditorLayout tabSelectionEditorLayout) {
+            TabSelectionEditorToolbar tabSelectionEditorToolbar,
+            boolean actionOnRelatedTabs,
+            SnackbarManager snackbarManager,
+            TabSelectionEditorLayout tabSelectionEditorLayout,
+            @UiType int itemType) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mTabListCoordinator = tabListCoordinator;
@@ -96,23 +104,40 @@ class TabSelectionEditorMediator
             });
         }
 
-        mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
-            @Override
-            public void didAddTab(Tab tab, int type, @TabCreationState int creationState,
-                    boolean markedForSelection) {
-                if (!mTabModelSelector.isTabStateInitialized()) return;
-                // When tab is added due to multi-window close or moving between multiple windows,
-                // force hiding the selection editor.
-                if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING) {
-                    hide();
-                }
-            }
+        mTabModelObserver =
+                new TabModelSelectorTabModelObserver(mTabModelSelector) {
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        if (!mTabModelSelector.isTabStateInitialized()) return;
+                        // When tab is added due to multi-window close or moving between multiple
+                        // windows, force hiding the selection editor.
+                        if (type == TabLaunchType.FROM_RESTORE
+                                || type == TabLaunchType.FROM_REPARENTING) {
+                            hide();
+                        }
+                    }
 
-            @Override
-            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                hide();
-            }
-        };
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        if (itemType != TabProperties.UiType.CLOSABLE) {
+                            hide();
+                        }
+                    }
+
+                    // TODO(crbug.com/1504605): Revisit after adding the inactive tab model for
+                    // using a custom click handler when selecting tabs.
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        if (itemType == TabProperties.UiType.CLOSABLE
+                                && type == TabSelectionType.FROM_USER) {
+                            hide();
+                        }
+                    }
+                };
 
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
