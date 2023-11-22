@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -205,4 +206,18 @@ TEST_F(PasswordDetailsCoordinatorTest, VisitMetricsAreLoggedOnlyOnce) {
 
   // Validate no new visits were logged.
   CheckPasswordDetailsVisitMetricsCount(1, histogram_tester);
+}
+
+// Tests that onShareButtonPressed will result in metrics logged.
+TEST_F(PasswordDetailsCoordinatorTest, OnShareButtonPressedMetricsLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Call the tested function.
+  ASSERT_TRUE(
+      [coordinator_ conformsToProtocol:@protocol(PasswordDetailsHandler)]);
+  [(id<PasswordDetailsHandler>)coordinator_ onShareButtonPressed];
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordSharingIOS.UserAction",
+      PasswordSharingInteraction::kPasswordDetailsShareButtonClicked, 1);
 }

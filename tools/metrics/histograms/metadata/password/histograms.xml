@@ -2687,6 +2687,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordSharingIOS.UserAction"
+    enum="PasswordManager.PasswordSharingIOSUserAction"
+    expires_after="2024-03-01">
+  <owner>rgod@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records user interactions with the elements of password sharing flow in the
+    iOS settings.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordSharingRecipients.FetchAccessTokenResult"
     enum="GoogleServiceAuthError" expires_after="2024-09-15">

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -675,6 +676,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [self.faviconAppearingAnimation stopAnimation:YES];
 
   [self.sharingCancelledAnimation startAnimation];
+
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kSharingConfirmationCancelClicked);
 }
 
 // Handles done buttons clicks by dismissing the view.

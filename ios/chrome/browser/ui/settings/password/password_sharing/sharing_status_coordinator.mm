@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_mediator.h"
@@ -116,6 +117,9 @@
 #pragma mark - SharingStatusViewControllerPresentationDelegate
 
 - (void)sharingStatusWasDismissed:(SharingStatusViewController*)controller {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kSharingConfirmationDoneClicked);
+
   [self.delegate sharingStatusCoordinatorWasDismissed:self];
 }
 
@@ -123,14 +127,19 @@
   [self.delegate startPasswordSharing];
 }
 
-// TODO(crbug.com/1463882): Add EG tests for opening links.
 - (void)learnMoreLinkWasTapped {
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kSharingConfirmationLearnMoreClicked);
+
   [self openURLInNewTabAndCloseSettings:GURL(kPasswordSharingLearnMoreURL)];
   [self.delegate sharingStatusCoordinatorWasDismissed:self];
 }
 
 - (void)changePasswordLinkWasTapped {
   CHECK(_changePasswordURL.has_value());
+
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kSharingConfirmationChangePasswordClicked);
 
   [self openURLInNewTabAndCloseSettings:_changePasswordURL.value()];
   [self.delegate sharingStatusCoordinatorWasDismissed:self];

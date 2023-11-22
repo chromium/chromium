@@ -36,6 +36,7 @@ source_set("password_sharing") {
   ]
   deps = [
     ":password_sharing_constants",
+    ":password_sharing_metrics",
     ":password_sharing_ui",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
@@ -95,6 +96,7 @@ source_set("password_sharing_ui") {
   ]
   deps = [
     ":password_sharing_constants",
+    ":password_sharing_metrics",
     "resources:password_sharing_family_promo",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
@@ -125,6 +127,14 @@ source_set("password_sharing_constants") {
   ]
 }
 
+source_set("password_sharing_metrics") {
+  sources = [
+    "password_sharing_metrics.h",
+    "password_sharing_metrics.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -153,12 +163,17 @@ source_set("eg2_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "family_picker_coordinator_unittest.mm",
     "family_picker_view_controller_unittest.mm",
+    "family_promo_coordinator_unittest.mm",
     "password_picker_view_controller_unittest.mm",
+    "password_sharing_first_run_coordinator_unittest.mm",
+    "sharing_status_coordinator_unittest.mm",
     "sharing_status_mediator_unittest.mm",
   ]
   deps = [
     ":password_sharing",
+    ":password_sharing_metrics",
     ":password_sharing_ui",
     "//base/test:test_support",
     "//components/password_manager/core/browser",
@@ -167,7 +182,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -179,7 +196,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
     "//ios/web/public/test",
+    "//third_party/ocmock:ocmock",
     "//ui/base",
   ]
 }
