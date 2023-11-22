@@ -104,6 +104,21 @@ absl_source_set("flat_hash_map") {
   ]
 }
 
+absl_test("flat_hash_map_test") {
+  sources = [ "flat_hash_map_test.cc" ]
+  deps = [
+    ":flat_hash_map",
+    ":hash_generator_testing",
+    ":unordered_map_constructor_test",
+    ":unordered_map_lookup_test",
+    ":unordered_map_members_test",
+    ":unordered_map_modifiers_test",
+    "//third_party/abseil-cpp/absl/log:check",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/types:any",
+  ]
+}
+
 absl_source_set("flat_hash_set") {
   public = [ "flat_hash_set.h" ]
   deps = [
@@ -168,6 +183,17 @@ absl_source_set("container_memory") {
     "//third_party/abseil-cpp/absl/utility",
   ]
 }
+
+# Disabled because container_memory_test requires -frtti
+# absl_test("container_memory_test") {
+#  sources = [ "internal/container_memory_test.cc" ]
+#  deps = [
+#    ":container_memory",
+#    ":test_instance_tracker",
+#    "//third_party/abseil-cpp/absl/meta:type_traits",
+#    "//third_party/abseil-cpp/absl/strings",
+#  ]
+# }
 
 absl_source_set("hash_function_defaults") {
   public = [ "internal/hash_function_defaults.h" ]

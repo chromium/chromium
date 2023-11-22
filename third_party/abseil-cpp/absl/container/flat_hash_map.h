@@ -579,9 +579,9 @@ struct FlatHashMapPolicy {
   }
 
   template <class Allocator>
-  static void transfer(Allocator* alloc, slot_type* new_slot,
+  static auto transfer(Allocator* alloc, slot_type* new_slot,
                        slot_type* old_slot) {
-    slot_policy::transfer(alloc, new_slot, old_slot);
+    return slot_policy::transfer(alloc, new_slot, old_slot);
   }
 
   template <class F, class... Args>

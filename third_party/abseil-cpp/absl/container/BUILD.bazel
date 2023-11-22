@@ -268,6 +268,7 @@ cc_test(
         ":unordered_map_members_test",
         ":unordered_map_modifiers_test",
         "//absl/log:check",
+        "//absl/meta:type_traits",
         "//absl/types:any",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -401,6 +402,7 @@ cc_test(
     deps = [
         ":container_memory",
         ":test_instance_tracker",
+        "//absl/meta:type_traits",
         "//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

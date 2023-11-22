@@ -305,6 +305,7 @@ absl_cc_test(
     absl::check
     absl::flat_hash_map
     absl::hash_generator_testing
+    absl::type_traits
     absl::unordered_map_constructor_test
     absl::unordered_map_lookup_test
     absl::unordered_map_members_test
@@ -450,6 +451,7 @@ absl_cc_test(
     absl::container_memory
     absl::strings
     absl::test_instance_tracker
+    absl::type_traits
     GTest::gmock_main
 )
 

@@ -19,6 +19,11 @@
 #ifndef ABSL_HASH_INTERNAL_HASH_H_
 #define ABSL_HASH_INTERNAL_HASH_H_
 
+#ifdef __APPLE__
+#include <Availability.h>
+#include <TargetConditionals.h>
+#endif
+
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -55,6 +60,11 @@
 #include "absl/types/optional.h"
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L && \
+    !defined(_LIBCPP_HAS_NO_FILESYSTEM_LIBRARY)
+#include <filesystem>  // NOLINT
+#endif
 
 #ifdef ABSL_HAVE_STD_STRING_VIEW
 #include <string_view>
@@ -577,6 +587,29 @@ H AbslHashValue(H hash_state, std::basic_string_view<Char> str) {
 }
 
 #endif  // ABSL_HAVE_STD_STRING_VIEW
+
+#if defined(__cpp_lib_filesystem) && __cpp_lib_filesystem >= 201703L && \
+    !defined(_LIBCPP_HAS_NO_FILESYSTEM_LIBRARY) && \
+    (!defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) ||        \
+     __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 130000)
+
+#define ABSL_INTERNAL_STD_FILESYSTEM_PATH_HASH_AVAILABLE 1
+
+// Support std::filesystem::path. The SFINAE is required because some string
+// types are implicitly convertible to std::filesystem::path.
+template <typename Path, typename H,
+          typename = absl::enable_if_t<
+              std::is_same_v<Path, std::filesystem::path>>>
+H AbslHashValue(H hash_state, const Path& path) {
+  // This is implemented by deferring to the standard library to compute the
+  // hash.  The standard library requires that for two paths, `p1 == p2`, then
+  // `hash_value(p1) == hash_value(p2)`. `AbslHashValue` has the same
+  // requirement. Since `operator==` does platform specific matching, deferring
+  // to the standard library is the simplest approach.
+  return H::combine(std::move(hash_state), std::filesystem::hash_value(path));
+}
+
+#endif  // ABSL_INTERNAL_STD_FILESYSTEM_PATH_HASH_AVAILABLE
 
 // -----------------------------------------------------------------------------
 // AbslHashValue for Sequence Containers
