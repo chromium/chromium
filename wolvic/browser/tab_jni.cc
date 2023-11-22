@@ -4,12 +4,12 @@
 
 #include "wolvic/jni_headers/Tab_jni.h"
 
-#include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "wolvic/browser/wolvic_contents.h"
+#include "wolvic/browser/wolvic_web_contents_delegate.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
 
@@ -47,10 +47,8 @@ void JNI_Tab_SetWebContentsDelegate(
   DCHECK(web_contents);
 
   auto* wolvic_contents = WolvicContents::FromWebContents(web_contents);
-  DCHECK(wolvic_contents);
-
   auto web_contents_delegate =
-    std::make_unique<web_contents_delegate_android::WebContentsDelegateAndroid>(env, jweb_contents_delegate);
+      std::make_unique<WolvicWebContentsDelegate>(env, jweb_contents_delegate);
   wolvic_contents->SetDelegate(std::move(web_contents_delegate));
 }
 

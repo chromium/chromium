@@ -5,10 +5,11 @@
 #ifndef WOLVIC_BROWSER_WOLVIC_CONTENTS_H_
 #define WOLVIC_BROWSER_WOLVIC_CONTENTS_H_
 
-#include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace wolvic {
+
+class WolvicWebContentsDelegate;
 
 class WolvicContents : public content::WebContentsObserver {
  public:
@@ -24,11 +25,11 @@ class WolvicContents : public content::WebContentsObserver {
 
   void DidFinishNavigation(content::NavigationHandle*) override;
 
-  void SetDelegate(std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid> delegate);
+  void SetDelegate(std::unique_ptr<WolvicWebContentsDelegate>);
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid> web_contents_delegate_;
+  std::unique_ptr<WolvicWebContentsDelegate> web_contents_delegate_;
 };
 
 }  // namespace content

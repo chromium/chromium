@@ -36,8 +36,6 @@ shared_library("libcontent_native") {
     "browser/session_settings.cc",
     "browser/session_settings.h",
     "browser/session_settings_jni.cc",
-    "browser/wolvic_contents.cc",
-    "browser/wolvic_contents.h",
     "browser/tab_jni.cc",
     "browser/vr/moz_external_vr.h",
     "browser/vr/wolvic_xr_integration_client.cc",
@@ -54,6 +52,10 @@ shared_library("libcontent_native") {
     "browser/vr/wvr_manager.h",
     "browser/vr/wvr_thread.cc",
     "browser/vr/wvr_thread.h",
+    "browser/wolvic_contents.cc",
+    "browser/wolvic_contents.h",
+    "browser/wolvic_web_contents_delegate.cc",
+    "browser/wolvic_web_contents_delegate.h",
     "renderer/browser_exposed_renderer_interfaces.cc",
     "renderer/browser_exposed_renderer_interfaces.h",
     "renderer/wolvic_content_renderer_client.cc",
@@ -214,6 +216,7 @@ generate_jni("jni_headers") {
     "java/org/chromium/wolvic/Tab.java",
     "java/org/chromium/wolvic/VRManager.java",
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
+    "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
   ]
 }
 
@@ -225,6 +228,7 @@ android_library("wolvic_java") {
     "java/org/chromium/wolvic/TabCompositorView.java",
     "java/org/chromium/wolvic/VRManager.java",
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
+    "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
   ]
   srcjar_deps = [ ":jni_headers" ]
   deps = [

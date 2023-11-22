@@ -10,6 +10,7 @@
 
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
+#include "wolvic/browser/wolvic_web_contents_delegate.h"
 
 using content::WebContents;
 
@@ -75,7 +76,7 @@ WolvicContents::DidFinishNavigation(content::NavigationHandle* navigation_handle
 }
 
 void
-WolvicContents::SetDelegate(std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid> delegate) {
+WolvicContents::SetDelegate(std::unique_ptr<WolvicWebContentsDelegate> delegate) {
   web_contents_delegate_ = std::move(delegate);
   web_contents_->SetDelegate(web_contents_delegate_.get());
 }
