@@ -52,7 +52,7 @@ export enum SafeBrowsingSetting {
  * the enum of the same name located in:
  * chrome/browser/ssl/https_first_mode_settings_tracker.h
  */
-enum HttpsFirstModeSetting {
+export enum HttpsFirstModeSetting {
   DISABLED = 0,
   ENABLED_INCOGNITO = 1,
   ENABLED_FULL = 2,
@@ -146,6 +146,14 @@ export class SettingsSecurityPageElement extends
         value: HttpsFirstModeSetting,
       },
 
+      enableHttpsFirstModeNewSettings_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableHttpsFirstModeNewSettings');
+        },
+      },
+
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
@@ -202,6 +210,7 @@ export class SettingsSecurityPageElement extends
   private showDisableSafebrowsingDialog_: boolean;
   private enableFriendlierSafeBrowsingSettings_: boolean;
   private enableHashPrefixRealTimeLookups_: boolean;
+  private enableHttpsFirstModeNewSettings_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -244,9 +253,13 @@ export class SettingsSecurityPageElement extends
         this.$.safeBrowsingStandard.expanded = true;
       }
 
-      assert(
-          this.getPref('generated.https_first_mode_enabled').value !==
-          HttpsFirstModeSetting.ENABLED_INCOGNITO);
+      // The HTTPS-First Mode generated pref should never be set to
+      // ENABLED_INCOGNITO if the feature flag is not enabled.
+      if (!loadTimeData.getBoolean('enableHttpsFirstModeNewSettings')) {
+        assert(
+            this.getPref('generated.https_first_mode_enabled').value !==
+            HttpsFirstModeSetting.ENABLED_INCOGNITO);
+      }
     });
 
     this.registerHelpBubble(

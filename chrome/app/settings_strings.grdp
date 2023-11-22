@@ -2259,6 +2259,18 @@
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
     Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
   </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Title for HTTPS-First Mode section in Security settings">
+    Warn before using insecure connections
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_LABEL" desc="Label for radio button to fully enable HTTPS-First Mode">
+    See warnings before going to insecure sites (recommended)
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_INCOGNITO_LABEL" desc="Label for radio button to enable HTTPS-First Mode in Incognito">
+    See warnings before going to insecure sites in Incognito mode
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_LABEL" desc="Label for radio button to disable HTTPS-First Mode">
+    Don't see any warnings before going to insecure sites
+  </message>
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates
   </message>

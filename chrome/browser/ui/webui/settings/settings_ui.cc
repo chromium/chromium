@@ -379,6 +379,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               IsHashRealTimeLookupEligibleInSession());
 
   html_source->AddBoolean(
+      "enableHttpsFirstModeNewSettings",
+      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito));
+
+  html_source->AddBoolean(
       "enablePageContentSetting",
       base::FeatureList::IsEnabled(features::kPageContentOptIn) ||
           base::FeatureList::IsEnabled(

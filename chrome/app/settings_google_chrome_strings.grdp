@@ -413,4 +413,18 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_RELAUNCH_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This string is for the accesibility label for the card to call out the click on card will result restarting the browser.">
     Relaunch Chrome
   </message>
+
+    <!-- HTTPS-First Mode -->
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUBTITLE" desc="Subtitle for HTTPS-First Mode section in Security settings">
+    Chrome will try to upgrade navigations to HTTPS
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_SUBLABEL" desc="Sublabel for radio button to fully enable HTTPS-First Mode">
+    Chrome will warn you before loading any site using an insecure connection
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_INCOGNITO_SUBLABEL" desc="Sublabel for radio button to enable HTTPS-First Mode in Incognito">
+    When browsing in Incognito mode, Chrome will warn you before loading a site using an insecure connection
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_SUBLABEL" desc="Sublabel for radio button to disable HTTPS-First Mode">
+    When HTTPS isn't available, Chrome will use an insecure connection without warning you
+  </message>
 </grit-part>
