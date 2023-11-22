@@ -531,12 +531,12 @@ TestingProfile::~TestingProfile() {
 
   // Make sure SharedProtoDatabase doesn't post delayed tasks anymore.
   ForEachLoadedStoragePartition(
-      base::BindRepeating([](content::StoragePartition* storage_partition) {
+      [](content::StoragePartition* storage_partition) {
         if (auto* provider =
                 storage_partition->GetProtoDatabaseProviderForTesting()) {
           provider->SetSharedDBDeleteObsoleteDelayForTesting(base::TimeDelta());
         }
-      }));
+      });
 
   // Shutdown storage partitions before we post a task to delete
   // the resource context.

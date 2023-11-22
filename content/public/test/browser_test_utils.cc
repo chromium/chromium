@@ -3855,12 +3855,12 @@ int LoadBasicRequest(RenderFrameHost* frame, const GURL& url) {
 
 void EnsureCookiesFlushed(BrowserContext* browser_context) {
   browser_context->ForEachLoadedStoragePartition(
-      base::BindRepeating([](StoragePartition* partition) {
+      [](StoragePartition* partition) {
         base::RunLoop run_loop;
         partition->GetCookieManagerForBrowserProcess()->FlushCookieStore(
             run_loop.QuitClosure());
         run_loop.Run();
-      }));
+      });
 }
 
 bool TestGuestAutoresize(WebContents* embedder_web_contents,

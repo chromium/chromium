@@ -91,9 +91,6 @@ class ServiceWorkerInternalsHandler : public WebUIMessageHandler {
   bool GetServiceWorkerContext(
       int partition_id,
       scoped_refptr<ServiceWorkerContextWrapper>* context);
-  void FindStoragePartitionById(int partition_id,
-                                StoragePartition** result_partition,
-                                StoragePartition* storage_partition) const;
 
   void StopWorkerWithId(scoped_refptr<ServiceWorkerContextWrapper> context,
                         int64_t version_id,

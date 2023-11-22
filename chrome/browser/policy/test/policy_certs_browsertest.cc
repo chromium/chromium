@@ -259,9 +259,7 @@ class UserPolicyCertsHelper {
     // CertVerifierServiceUpdaters for `profile`, to ensure any earlier
     // messages on the mojo pipes have been processed.
     profile->ForEachLoadedStoragePartition(
-        base::BindRepeating([](content::StoragePartition* storage_partition) {
-          storage_partition->FlushCertVerifierInterfaceForTesting();
-        }));
+        &content::StoragePartition::FlushCertVerifierInterfaceForTesting);
   }
 
   // Server Certificate which is signed by authority specified in |kRootCaCert|.

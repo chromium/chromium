@@ -127,8 +127,7 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
     return;
   will_be_destroyed_soon_ = true;
 
-  self_->ForEachLoadedStoragePartition(
-      base::BindRepeating(NotifyContextWillBeDestroyed));
+  self_->ForEachLoadedStoragePartition(&NotifyContextWillBeDestroyed);
 
   // Also forcibly release keep alive refcounts on RenderProcessHosts, to ensure
   // they destruct before the BrowserContext does.

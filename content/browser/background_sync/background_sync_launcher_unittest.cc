@@ -99,16 +99,12 @@ class BackgroundSyncLauncherTest : public testing::Test {
         [&]() { num_invocations_fire_background_sync_events_++; });
 
     test_browser_context_.ForEachLoadedStoragePartition(
-        base::BindRepeating(
-            [](base::OnceClosure done_closure,
-               StoragePartition* storage_partition) {
-              BackgroundSyncContext* sync_context =
-                  storage_partition->GetBackgroundSyncContext();
-              sync_context->FireBackgroundSyncEvents(
-                  blink::mojom::BackgroundSyncType::ONE_SHOT,
-                  std::move(done_closure));
-            },
-            std::move(done_closure)));
+        [&](StoragePartition* storage_partition) {
+          BackgroundSyncContext* sync_context =
+              storage_partition->GetBackgroundSyncContext();
+          sync_context->FireBackgroundSyncEvents(
+              blink::mojom::BackgroundSyncType::ONE_SHOT, done_closure);
+        });
 
     task_environment_.RunUntilIdle();
   }

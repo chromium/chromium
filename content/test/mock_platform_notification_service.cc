@@ -107,9 +107,9 @@ void MockPlatformNotificationService::ScheduleTrigger(base::Time timestamp) {
     return;
 
   context_->ForEachLoadedStoragePartition(
-      base::BindRepeating([](content::StoragePartition* partition) {
+      [](content::StoragePartition* partition) {
         partition->GetPlatformNotificationContext()->TriggerNotifications();
-      }));
+      });
 }
 
 base::Time MockPlatformNotificationService::ReadNextTriggerTimestamp() {

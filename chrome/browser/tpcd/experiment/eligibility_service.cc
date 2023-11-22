@@ -139,13 +139,13 @@ void EligibilityService::UpdateCookieDeprecationLabel() {
   // For each storage partition, update the cookie deprecation label to the
   // updated value from the CookieDeprecationLabelManager.
   profile_->ForEachLoadedStoragePartition(
-      base::BindRepeating([](content::StoragePartition* storage_partition) {
+      [](content::StoragePartition* storage_partition) {
         if (auto* cookie_deprecation_label_manager =
                 storage_partition->GetCookieDeprecationLabelManager()) {
           storage_partition->GetNetworkContext()->SetCookieDeprecationLabel(
               cookie_deprecation_label_manager->GetValue());
         }
-      }));
+      });
 }
 
 void EligibilityService::OnTrackingProtectionOnboardingUpdated(
