@@ -4,11 +4,9 @@
 
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 
-#include "base/i18n/time_formatting.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "components/invalidation/public/invalidator_state.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "google_apis/gaia/gaia_constants.h"
 
 namespace invalidation {
 
@@ -43,11 +41,6 @@ void FCMInvalidationService::Init() {
 }
 
 void FCMInvalidationService::OnActiveAccountLogin() {
-  diagnostic_info_.active_account_login = base::Time::Now();
-  diagnostic_info_.was_already_started_on_login = IsStarted();
-  diagnostic_info_.was_ready_to_start_on_login = IsReadyToStart();
-  diagnostic_info_.active_account_id = identity_provider_->GetActiveAccountId();
-
   if (IsStarted()) {
     return;
   }
@@ -57,15 +50,12 @@ void FCMInvalidationService::OnActiveAccountLogin() {
 }
 
 void FCMInvalidationService::OnActiveAccountRefreshTokenUpdated() {
-  diagnostic_info_.active_account_token_updated = base::Time::Now();
   if (!IsStarted() && IsReadyToStart()) {
     StartInvalidator();
   }
 }
 
 void FCMInvalidationService::OnActiveAccountLogout() {
-  diagnostic_info_.active_account_logged_out = base::Time::Now();
-  diagnostic_info_.active_account_id = CoreAccountId();
   if (IsStarted()) {
     StopInvalidatorPermanently();
   }
