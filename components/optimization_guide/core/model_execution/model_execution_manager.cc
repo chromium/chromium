@@ -245,13 +245,6 @@ void ModelExecutionManager::ExecuteModel(
         optimization_guide_logger_)
         << "ExecuteModel: " << proto::ModelExecutionFeature_Name(feature);
     switch (feature) {
-      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED: {
-        break;
-      }
-      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE: {
-        // TOOD(b/309486492): Add logging for request/response for compose.
-        break;
-      }
       case proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION: {
         proto::Any any;
@@ -272,9 +265,7 @@ void ModelExecutionManager::ExecuteModel(
 
         break;
       }
-      case proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH: {
-        // TOOD(b/309486807): Add logging for request/response for wallpapers.
+      default: {
         break;
       }
     }
@@ -363,14 +354,12 @@ void ModelExecutionManager::OnModelExecuteResponse(
   }
 
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_logger_)
+        << "ExecuteModel Response: "
+        << proto::ModelExecutionFeature_Name(feature);
     switch (feature) {
-      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED: {
-        break;
-      }
-      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE: {
-        // TOOD(b/309486492): Add logging for request/response for compose.
-        break;
-      }
       case proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION: {
         std::string message = "";
@@ -398,9 +387,7 @@ void ModelExecutionManager::OnModelExecuteResponse(
         scoped_logger.set_message(message);
         break;
       }
-      case proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH: {
-        // TOOD(b/309486807): Add logging for request/response for wallpapers.
+      default: {
         break;
       }
     }
