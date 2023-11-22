@@ -90,11 +90,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->OnCreditCardFetched(result, credit_card);
   }
 
-  bool WillFillCreditCardNumber(const FormData& form,
-                                const FormFieldData& field) {
-    return manager_->WillFillCreditCardNumber(form, field);
-  }
-
   void FillOrPreviewDataModelForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,

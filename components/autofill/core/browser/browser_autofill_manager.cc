@@ -1347,40 +1347,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 }
 
-bool BrowserAutofillManager::WillFillCreditCardNumber(
-    const FormData& form,
-    const FormFieldData& triggered_field_data) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* triggered_field = nullptr;
-  if (!GetCachedFormAndField(form, triggered_field_data, &form_structure,
-                             &triggered_field)) {
-    return false;
-  }
-
-  if (triggered_field->Type().GetStorableType() == CREDIT_CARD_NUMBER)
-    return true;
-
-  // `form` is the latest version of the form received from the renderer and may
-  // be more up to date than the `form_structure` in the cache. Therefore, we
-  // need to validate for each `field` in the cache we try to fill whether
-  // it still exists in the renderer and whether it is fillable.
-  auto IsFillableField = [&form](FieldGlobalId id) {
-    auto it = base::ranges::find(form.fields, id, &FormFieldData::global_id);
-    return it != form.fields.end() && it->value.empty() && !it->is_autofilled;
-  };
-
-  auto IsFillableCreditCardNumberField = [&triggered_field,
-                                          &IsFillableField](const auto& field) {
-    return field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
-           field->section == triggered_field->section &&
-           IsFillableField(field->global_id());
-  };
-
-  // This runs O(N^2) in the worst case, but usually there aren't too many
-  // credit card number fields in a form.
-  return base::ranges::any_of(*form_structure, IsFillableCreditCardNumberField);
-}
-
 void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
@@ -1400,8 +1366,10 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       (autofill_field->Type().GetStorableType() ==
        CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   bool should_fetch_card =
-      !is_preview && (WillFillCreditCardNumber(form, field) ||
-                      is_virtual_card_standalone_cvc_field);
+      !is_preview &&
+      (WillFillCreditCardNumber(form.fields, form_structure->fields(),
+                                *autofill_field) ||
+       is_virtual_card_standalone_cvc_field);
 
   if (should_fetch_card) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(

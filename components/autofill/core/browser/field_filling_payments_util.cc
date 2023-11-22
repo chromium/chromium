@@ -7,13 +7,16 @@
 #include <optional>
 
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -522,6 +525,35 @@ std::optional<std::u16string> GetValueForCreditCard(
              ? GetValueForCreditCardSelectControl(*value, app_locale, field,
                                                   failure_to_fill)
              : value;
+}
+
+bool WillFillCreditCardNumber(
+    base::span<const FormFieldData> form_fields,
+    base::span<const std::unique_ptr<AutofillField>> autofill_fields,
+    const AutofillField& triggered_autofill_field) {
+  if (triggered_autofill_field.Type().GetStorableType() == CREDIT_CARD_NUMBER) {
+    return true;
+  }
+
+  // `form_fields` are received from the renderer and may be more up to date
+  // than the `autofill_fields` stored in the cache. Therefore, we need
+  // to validate for each `field` in the cache we try to fill whether it still
+  // exists in the renderer and whether it is fillable.
+  auto IsFillableField = [&form_fields](FieldGlobalId id) {
+    auto it = base::ranges::find(form_fields, id, &FormFieldData::global_id);
+    return it != form_fields.end() && it->value.empty() && !it->is_autofilled;
+  };
+
+  auto IsFillableCreditCardNumberField = [&triggered_autofill_field,
+                                          &IsFillableField](const auto& field) {
+    return field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
+           field->section == triggered_autofill_field.section &&
+           IsFillableField(field->global_id());
+  };
+
+  // This runs O(N^2) in the worst case, but usually there aren't too many
+  // credit card number fields in a form.
+  return base::ranges::any_of(autofill_fields, IsFillableCreditCardNumberField);
 }
 
 }  // namespace autofill

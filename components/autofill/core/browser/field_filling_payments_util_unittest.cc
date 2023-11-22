@@ -22,12 +22,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -1409,6 +1411,72 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCardholderName) {
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
   EXPECT_EQ(name, value_to_fill);
+}
+
+// Verify that `WillFillCreditCardNumber` return false on the form with no
+// credit card number fields.
+TEST_F(FieldFillingPaymentsUtilTest, WillFillCreditCardNumber_NoCCNumberField) {
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .label = u"First Name on Card"}}});
+
+  FormStructure form_structure(form_data);
+  test_api(form_structure).SetFieldTypes({NAME_FIRST});
+
+  EXPECT_FALSE(WillFillCreditCardNumber(
+      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+}
+
+// Verify that `WillFillCreditCardNumber` return false on the form where the
+// credit card number field is present but it is not empty.
+TEST_F(FieldFillingPaymentsUtilTest,
+       WillFillCreditCardNumber_CCNumberFieldNotEmpty) {
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .label = u"First Name on Card"},
+                                    {.role = CREDIT_CARD_NUMBER,
+                                     .label = u"Card Number",
+                                     .value = u"field is not empty"}}});
+
+  FormStructure form_structure(form_data);
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
+  EXPECT_FALSE(WillFillCreditCardNumber(
+      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+}
+
+// Verify that `WillFillCreditCardNumber` return false on the form where the
+// credit card number field is present but it's autofilled.
+TEST_F(FieldFillingPaymentsUtilTest,
+       WillFillCreditCardNumber_CCNumberFieldIsAutofilled) {
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .label = u"First Name on Card"},
+                                    {.role = CREDIT_CARD_NUMBER,
+                                     .label = u"Card Number",
+                                     .is_autofilled = true}}});
+
+  FormStructure form_structure(form_data);
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
+  EXPECT_FALSE(WillFillCreditCardNumber(
+      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+}
+
+// Verify that `WillFillCreditCardNumber` return true on the form where the
+// credit card number field is present and is both empty and not autofilled.
+TEST_F(FieldFillingPaymentsUtilTest,
+       WillFillCreditCardNumber_CCNumberFieldPresent) {
+  FormData form_data = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .label = u"First Name on Card"},
+           {.role = CREDIT_CARD_NUMBER, .label = u"Card Number"}}});
+
+  FormStructure form_structure(form_data);
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
+  EXPECT_TRUE(WillFillCreditCardNumber(
+      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
 }
 
 }  // namespace

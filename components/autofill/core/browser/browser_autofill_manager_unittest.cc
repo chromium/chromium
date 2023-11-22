@@ -865,12 +865,6 @@ class BrowserAutofillManagerTest : public testing::Test {
     return response_data;
   }
 
-  bool WillFillCreditCardNumber(const FormData& form,
-                                const FormFieldData& field) {
-    return test_api(*browser_autofill_manager_)
-        .WillFillCreditCardNumber(form, field);
-  }
-
   FormData CreateTestCreditCardFormData(bool is_https, bool use_month_type) {
     FormData form;
     CreateTestCreditCardFormData(&form, is_https, use_month_type);
@@ -3941,54 +3935,6 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 0);
   }
-}
-
-TEST_F(BrowserAutofillManagerTest, WillFillCreditCardNumber) {
-  // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
-  FormsSeen({form});
-
-  FormFieldData* number_field = nullptr;
-  FormFieldData* name_field = nullptr;
-  FormFieldData* month_field = nullptr;
-  for (auto& field : form.fields) {
-    if (field.name == u"cardnumber") {
-      number_field = &field;
-    } else if (field.name == u"nameoncard") {
-      name_field = &field;
-    } else if (field.name == u"ccmonth") {
-      month_field = &field;
-    }
-  }
-
-  // Empty form - whole form is Autofilled.
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *number_field));
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *name_field));
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *month_field));
-
-  // If the user has entered a value, it won't be overridden.
-  number_field->value = u"gibberish";
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *number_field));
-  EXPECT_FALSE(WillFillCreditCardNumber(form, *name_field));
-  EXPECT_FALSE(WillFillCreditCardNumber(form, *month_field));
-
-  // But if that value is removed, it will be Autofilled.
-  number_field->value.clear();
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *name_field));
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *month_field));
-
-  // When the number is already autofilled, we won't fill it.
-  number_field->is_autofilled = true;
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *number_field));
-  EXPECT_FALSE(WillFillCreditCardNumber(form, *name_field));
-  EXPECT_FALSE(WillFillCreditCardNumber(form, *month_field));
-
-  // If another field is filled, we would still fill other non-filled fields in
-  // the section.
-  number_field->is_autofilled = false;
-  name_field->is_autofilled = true;
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *name_field));
-  EXPECT_TRUE(WillFillCreditCardNumber(form, *month_field));
 }
 
 // Test that we correctly log FIELD_WAS_AUTOFILLED event in UserHappiness.

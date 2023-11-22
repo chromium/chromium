@@ -480,12 +480,6 @@ class BrowserAutofillManager
   // profile does not exist.
   AutofillProfile* GetProfile(Suggestion::BackendId unique_id);
 
-  // Determines whether a fill on |form| initiated from |triggered_field| will
-  // wind up filling a credit card number. This is useful to determine if we
-  // will need to unmask a card.
-  bool WillFillCreditCardNumber(const FormData& form,
-                                const FormFieldData& triggered_field);
-
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.
   void FillOrPreviewDataModelForm(
