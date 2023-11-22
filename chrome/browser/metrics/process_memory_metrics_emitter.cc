@@ -25,7 +25,6 @@
 #include "chrome/browser/metrics/tab_footprint_aggregator.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/metrics/metrics_data_validation.h"
-#include "components/metrics/system_memory_stats_recorder.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -674,6 +673,10 @@ const Metric kPartitionAllocAddressSpaceMetrics[] = {
     },
 };
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// Record a memory size in megabytes, over a potential interval up to 32 GB.
+#define UMA_HISTOGRAM_LARGE_MEMORY_MB(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 32768, 50)
 
 #define EXPERIMENTAL_UMA_PREFIX "Memory.Experimental."
 #define VERSION_SUFFIX_PERCENT "2."
