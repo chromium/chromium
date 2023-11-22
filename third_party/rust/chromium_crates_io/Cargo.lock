@@ -157,7 +157,7 @@ dependencies = [
 
 [[package]]
 name = "font-types"
-version = "0.4.1"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -284,7 +284,7 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.13.2"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "font-types",
@@ -387,7 +387,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "serde"
-version = "1.0.193"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "serde_derive",
@@ -395,7 +395,7 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.193"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
@@ -425,7 +425,7 @@ dependencies = [
 
 [[package]]
 name = "skrifa"
-version = "0.13.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "read-fonts",
