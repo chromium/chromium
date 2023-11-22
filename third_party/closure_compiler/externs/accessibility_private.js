@@ -376,6 +376,7 @@ chrome.accessibilityPrivate.DlcType = {
   TTS_NL_NL: 'ttsNlNl',
   TTS_PL_PL: 'ttsPlPl',
   TTS_PT_BR: 'ttsPtBr',
+  TTS_PT_PT: 'ttsPtPt',
   TTS_SI_LK: 'ttsSiLk',
   TTS_SK_SK: 'ttsSkSk',
   TTS_SV_SE: 'ttsSvSe',

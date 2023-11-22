@@ -2744,23 +2744,23 @@ void AccessibilityManager::GetTtsDlcContents(
     GetTtsDlcContentsCallback callback) {
   static constexpr auto kTtsDlcTypeToLocale =
       base::MakeFixedFlatMap<DlcType, const char*>(
-          {{DlcType::kTtsBnBd, "bn-bd"},  {DlcType::kTtsCsCz, "cs-cz"},
-           {DlcType::kTtsDaDk, "da-dk"},  {DlcType::kTtsDeDe, "de-de"},
-           {DlcType::kTtsElGr, "el-gr"},  {DlcType::kTtsEnAu, "en-au"},
-           {DlcType::kTtsEnGb, "en-gb"},  {DlcType::kTtsEnUs, "en-us"},
-           {DlcType::kTtsEsEs, "es-es"},  {DlcType::kTtsEsUs, "es-us"},
-           {DlcType::kTtsFiFi, "fi-fi"},  {DlcType::kTtsFilPh, "fil-ph"},
-           {DlcType::kTtsFrFr, "fr-fr"},  {DlcType::kTtsHiIn, "hi-in"},
-           {DlcType::kTtsHuHu, "hu-hu"},  {DlcType::kTtsIdId, "id-id"},
-           {DlcType::kTtsItIt, "it-it"},  {DlcType::kTtsJaJp, "ja-jp"},
-           {DlcType::kTtsKmKh, "km-kh"},  {DlcType::kTtsKoKr, "ko-kr"},
-           {DlcType::kTtsNbNo, "nb-no"},  {DlcType::kTtsNeNp, "ne-np"},
-           {DlcType::kTtsNlNl, "nl-nl"},  {DlcType::kTtsPlPl, "pl-pl"},
-           {DlcType::kTtsPtBr, "pt-br"},  {DlcType::kTtsSiLk, "si-lk"},
-           {DlcType::kTtsSkSk, "sk-sk"},  {DlcType::kTtsSvSe, "sv-se"},
-           {DlcType::kTtsThTh, "th-th"},  {DlcType::kTtsTrTr, "tr-tr"},
-           {DlcType::kTtsUkUa, "uk-ua"},  {DlcType::kTtsViVn, "vi-vn"},
-           {DlcType::kTtsYueHk, "yue-hk"}});
+          {{DlcType::kTtsBnBd, "bn-bd"}, {DlcType::kTtsCsCz, "cs-cz"},
+           {DlcType::kTtsDaDk, "da-dk"}, {DlcType::kTtsDeDe, "de-de"},
+           {DlcType::kTtsElGr, "el-gr"}, {DlcType::kTtsEnAu, "en-au"},
+           {DlcType::kTtsEnGb, "en-gb"}, {DlcType::kTtsEnUs, "en-us"},
+           {DlcType::kTtsEsEs, "es-es"}, {DlcType::kTtsEsUs, "es-us"},
+           {DlcType::kTtsFiFi, "fi-fi"}, {DlcType::kTtsFilPh, "fil-ph"},
+           {DlcType::kTtsFrFr, "fr-fr"}, {DlcType::kTtsHiIn, "hi-in"},
+           {DlcType::kTtsHuHu, "hu-hu"}, {DlcType::kTtsIdId, "id-id"},
+           {DlcType::kTtsItIt, "it-it"}, {DlcType::kTtsJaJp, "ja-jp"},
+           {DlcType::kTtsKmKh, "km-kh"}, {DlcType::kTtsKoKr, "ko-kr"},
+           {DlcType::kTtsNbNo, "nb-no"}, {DlcType::kTtsNeNp, "ne-np"},
+           {DlcType::kTtsNlNl, "nl-nl"}, {DlcType::kTtsPlPl, "pl-pl"},
+           {DlcType::kTtsPtBr, "pt-br"}, {DlcType::kTtsPtPt, "pt-pt"},
+           {DlcType::kTtsSiLk, "si-lk"}, {DlcType::kTtsSkSk, "sk-sk"},
+           {DlcType::kTtsSvSe, "sv-se"}, {DlcType::kTtsThTh, "th-th"},
+           {DlcType::kTtsTrTr, "tr-tr"}, {DlcType::kTtsUkUa, "uk-ua"},
+           {DlcType::kTtsViVn, "vi-vn"}, {DlcType::kTtsYueHk, "yue-hk"}});
 
   // Use LanguagePackManager to get the path of the DLC.
   std::string locale = kTtsDlcTypeToLocale.find(dlc)->second;
