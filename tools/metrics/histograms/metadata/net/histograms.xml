@@ -1848,14 +1848,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="net.HttpIdentSrcURL" units="requests" expires_after="M85">
-  <owner>tsepez@chromium.org</owner>
-  <summary>
-    Count of requests which contained a basic auth username and password
-    embedded in the URL itself.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpJob.CanIncludeCookies" enum="Boolean"
     expires_after="2024-06-18">
   <owner>cfredric@chromium.org</owner>
