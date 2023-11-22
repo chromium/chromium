@@ -231,14 +231,15 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   }
 }
 
-bool HTMLDialogElement::IsFocusable(UpdateBehavior update_behavior) const {
-  // TODO(crbug.com/1499838) HTMLDialogElement should only need to override
-  // SupportsFocus() to be always-true, and should not need to override
-  // IsFocusable() at all. Dialog focus behavior is to focus the dialog itself
-  // if there are no focusable descendants, which means they support focus.
-  // However, making SupportsFocus always true makes dialogs always keyboard
-  // focusable, and that breaks things.
-  return isConnected() && IsFocusableStyle(update_behavior);
+bool HTMLDialogElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  if (!IsFocusable(update_behavior)) {
+    return false;
+  }
+  // This handles cases such as <dialog tabindex=0>, <dialog contenteditable>,
+  // etc.
+  return Element::SupportsFocus(update_behavior) &&
+         GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0;
 }
 
 class DialogCloseWatcherEventListener : public NativeEventListener {

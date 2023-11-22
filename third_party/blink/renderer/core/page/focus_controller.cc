@@ -526,6 +526,9 @@ inline bool IsNonFocusableFocusScopeOwner(Element& element) {
 }
 
 inline bool ShouldVisit(Element& element) {
+  DCHECK(!element.IsKeyboardFocusable() ||
+         FocusController::AdjustedTabIndex(element) >= 0)
+      << "Keyboard focusable element with negative tabindex" << element;
   return element.IsKeyboardFocusable() || element.DelegatesFocus() ||
          IsNonFocusableFocusScopeOwner(element);
 }
