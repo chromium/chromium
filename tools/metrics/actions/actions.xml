@@ -30178,6 +30178,18 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ScreenlockMonitor_ScreenLocked">
+  <owner>kron@chromium.org</owner>
+  <description>Screen was locked. Supported on Win/MacOS/ChromeOS.</description>
+</action>
+
+<action name="ScreenlockMonitor_ScreenUnlocked">
+  <owner>kron@chromium.org</owner>
+  <description>
+    Screen was unlocked. Supported on Win/MacOS/ChromeOS.
+  </description>
+</action>
+
 <action name="ScreenOrientationChange">
   <owner>avayvod@chromium.org</owner>
   <owner>zqzhang@chromium.org</owner>

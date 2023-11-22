@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 
@@ -44,6 +45,7 @@ void ScreenlockMonitor::NotifyScreenLocked() {
                        "ScreenlockMonitor::NotifyScreenLocked",
                        TRACE_EVENT_SCOPE_GLOBAL);
   DVLOG(1) << "Screen Locked";
+  RecordAction(base::UserMetricsAction("ScreenlockMonitor_ScreenLocked"));
   ReportLockUnlockDuration(/*is_locked=*/true);
   observers_->Notify(FROM_HERE, &ScreenlockObserver::OnScreenLocked);
 }
@@ -53,6 +55,7 @@ void ScreenlockMonitor::NotifyScreenUnlocked() {
                        "ScreenlockMonitor::NotifyScreenUnlocked",
                        TRACE_EVENT_SCOPE_GLOBAL);
   DVLOG(1) << "Screen Unlocked";
+  RecordAction(base::UserMetricsAction("ScreenlockMonitor_ScreenUnlocked"));
   ReportLockUnlockDuration(/*is_locked=*/false);
   observers_->Notify(FROM_HERE, &ScreenlockObserver::OnScreenUnlocked);
 }
