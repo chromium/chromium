@@ -79,7 +79,12 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void OnBlur();
 
  private:
-  enum class ButtonTextState { kNotShowing, kShowingName, kShowingSigninText };
+  enum class ButtonTextState {
+    kNotShowing,
+    kWaitingForImage,
+    kShowingName,
+    kShowingSigninText
+  };
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

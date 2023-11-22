@@ -219,7 +219,8 @@ bool AvatarToolbarButtonDelegate::IsHighlightAnimationVisible() const {
 
 void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation(
     const gfx::Image& gaia_account_image) {
-  if (gaia_account_image.IsEmpty()) {
+  if (button_text_state_ != ButtonTextState::kWaitingForImage ||
+      gaia_account_image.IsEmpty()) {
     return;
   }
 
@@ -369,6 +370,11 @@ void AvatarToolbarButtonDelegate::OnSyncShutdown(syncer::SyncService*) {
 
 void AvatarToolbarButtonDelegate::OnUserIdentityChanged() {
   signin_ui_util::RecordAnimatedIdentityTriggered(profile_);
+  button_text_state_ = ButtonTextState::kWaitingForImage;
+  // If we already have a gaia image, the pill will be immediately displayed by
+  // `UpdateIcon()`. If not, it can still be displayed later, since the button
+  // text state is now set to `ButtonTextState::kWaitingForImage`. This state
+  // will trigger the animation in `MaybeShowIdentityAnimation(...)`.
   avatar_toolbar_button_->UpdateIcon();
 }
 

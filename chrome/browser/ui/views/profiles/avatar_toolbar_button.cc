@@ -116,6 +116,9 @@ void AvatarToolbarButton::UpdateIcon() {
   gfx::Image gaia_account_image = delegate_->GetGaiaAccountImage();
   for (auto state : kButtonStates)
     SetImageModel(state, GetAvatarIcon(state, gaia_account_image));
+  // If `OnUserIdentityChanged()` has been called and the image is not empty,
+  // show the animation. If the animation is shown, also resets the delegate's
+  // ButtonTextState so that the animation will not be triggered again.
   delegate_->MaybeShowIdentityAnimation(gaia_account_image);
 
   SetInsets();
