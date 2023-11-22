@@ -99,7 +99,9 @@ WebGPUImplementation::~WebGPUImplementation() {
   // memory blocks are in use. Calling |FreeMappedResources| marks all
   // blocks that are no longer in use as free.
 #if BUILDFLAG(USE_DAWN)
-  dawn_wire_->FreeMappedResources(helper_);
+  if (dawn_wire_) {
+    dawn_wire_->FreeMappedResources(helper_);
+  }
 #endif
 
   // Wait for commands to finish before we continue destruction.
@@ -112,7 +114,9 @@ WebGPUImplementation::~WebGPUImplementation() {
 void WebGPUImplementation::LoseContext() {
   lost_ = true;
 #if BUILDFLAG(USE_DAWN)
-  dawn_wire_->Disconnect();
+  if (dawn_wire_) {
+    dawn_wire_->Disconnect();
+  }
 #endif
 }
 
