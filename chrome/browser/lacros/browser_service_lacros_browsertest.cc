@@ -149,12 +149,14 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(new_tab_future.Get(), expected_result);
   }
 
-  void LaunchSync() {
+  void LaunchSync(absl::optional<uint64_t> profile_id,
+                  CreationResult expected_result) {
     base::test::TestFuture<CreationResult> launch_future;
-    browser_service()->Launch(0, /*profile_id=*/absl::nullopt,
-                              launch_future.GetCallback());
+    browser_service()->Launch(
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
+        profile_id, launch_future.GetCallback());
     ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
-    EXPECT_EQ(launch_future.Get(), CreationResult::kSuccess);
+    EXPECT_EQ(launch_future.Get(), expected_result);
   }
 
   BrowserServiceLacros* browser_service() const {
@@ -222,6 +224,52 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   // Try to create a new browser window with non-exist profile.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false,
                 /*profile_id=*/1, CreationResult::kProfileNotExist);
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest, LaunchWithProfileId) {
+  // Keep the browser process running during the test while the browser is
+  // closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+
+  // Start in a state with no browser windows opened.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Prepare the main profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const base::FilePath main_profile_path =
+      ProfileManager::GetPrimaryUserProfilePath();
+  Profile* main_profile = profile_manager->GetProfileByPath(main_profile_path);
+  const uint64_t main_profile_id =
+      HashProfilePathToProfileId(main_profile_path);
+
+  // Prepare the secondary profile.
+  const base::FilePath secondary_profile_path =
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
+  Profile& profile = profiles::testing::CreateProfileSync(
+      profile_manager, secondary_profile_path);
+  Profile* secondary_profile = &profile;
+  const uint64_t secondary_profile_id =
+      HashProfilePathToProfileId(secondary_profile_path);
+
+  // Launch a new browser tab with main profile by profile ID zero.
+  LaunchSync(/*profile_id=*/0, CreationResult::kSuccess);
+  ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(1u, chrome::GetBrowserCount(main_profile));
+
+  // Launch a new browser tab with main profile by main profile ID.
+  LaunchSync(main_profile_id, CreationResult::kSuccess);
+  EXPECT_EQ(1u, chrome::GetBrowserCount(main_profile));
+
+  // Launch a new browser window with secondary profile by secondary profile ID.
+  LaunchSync(secondary_profile_id, CreationResult::kSuccess);
+  ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(1u, chrome::GetBrowserCount(secondary_profile));
+
+  // Try to launch a new browser window with non-exist profile.
+  LaunchSync(/*profile_id=*/1, CreationResult::kProfileNotExist);
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
@@ -499,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   base::test::TestFuture<void> restore_waiter_future;
   testing::SessionsRestoredWaiter restore_waiter(
       restore_waiter_future.GetCallback(), 1);
-  LaunchSync();
+  LaunchSync(/*profile_id=*/absl::nullopt, CreationResult::kSuccess);
   ASSERT_TRUE(restore_waiter_future.Wait())
       << "restore_waiter did not trigger the callback.";
 
@@ -516,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
 
   // A second call to Launch() ignores session restore and adds a new tab to the
   // existing browser.
-  LaunchSync();
+  LaunchSync(/*profile_id=*/absl::nullopt, CreationResult::kSuccess);
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(3, new_tab_strip->count());
 }

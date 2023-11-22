@@ -332,6 +332,18 @@ void BrowserServiceLacros::Launch(int64_t target_display_id,
     std::move(callback).Run(crosapi::mojom::CreationResult::kBrowserShutdown);
     return;
   }
+
+  if (profile_id.has_value()) {
+    LoadProfileWithId(
+        base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*should_trigger_session_restore=*/true,
+                       target_display_id, std::move(callback),
+                       /*is_new_tab=*/false),
+        /*can_trigger_fre=*/true, profile_id.value());
+    return;
+  }
+
   if (ShowProfilePickerIfNeeded(false)) {
     std::move(callback).Run(
         crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
