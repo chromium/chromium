@@ -9,6 +9,8 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 
+<!-- This test should be merged with disabled-event-dispatch.tentative.html after interop2023 is over. -->
+
 <div id=targetparent>
   <button disabled>
     hello world
@@ -25,7 +27,7 @@ customElements.define('my-control', class extends HTMLElement {
   static get formAssociated() { return true; }
 });
 
-['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'click'].forEach(eventName => {
+['dblclick', 'auxclick'].forEach(eventName => {
   [true, false].forEach(clickChildElement => {
     for (const target of targetparent.children) {
       promise_test(async () => {
@@ -39,14 +41,29 @@ customElements.define('my-control', class extends HTMLElement {
         let targetchild = target.firstElementChild;
         targetchild.addEventListener(eventName, () => childReceivedEvent = true);
 
-        await test_driver.click(clickChildElement ? targetchild : target);
+        const elementToClick = clickChildElement ? targetchild : target;
+        if (eventName === 'dblclick') {
+          await (new test_driver.Actions()
+            .pointerMove(1, 1, {origin: elementToClick})
+            .pointerDown()
+            .pointerUp()
+            .pointerDown()
+            .pointerUp())
+            .send();
+        } else if (eventName === 'auxclick') {
+          const actions = new test_driver.Actions();
+          await actions
+            .pointerMove(1, 1, {origin: elementToClick})
+            .pointerDown({button: actions.ButtonType.MIDDLE})
+            .pointerUp({button: actions.ButtonType.MIDDLE})
+            .send();
+        }
 
-        const parentShouldReceiveEvents = eventName.startsWith('pointer');
-        assert_equals(parentReceivedEvent, parentShouldReceiveEvents,
+
+        const shouldReceiveEvents = eventName.startsWith('pointer') || eventName === 'auxclick';
+        assert_equals(parentReceivedEvent, shouldReceiveEvents,
                       `parent element received ${eventName} events`);
-
-        const targetShouldReceiveEvents = eventName.startsWith('pointer');
-        assert_equals(targetReceivedEvent, targetShouldReceiveEvents,
+        assert_equals(targetReceivedEvent, shouldReceiveEvents,
                       `target element received ${eventName} events`);
         assert_equals(childReceivedEvent, clickChildElement,
                       `child element received ${eventName} events`);
