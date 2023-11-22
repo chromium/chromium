@@ -4774,12 +4774,12 @@ TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
 class EventRewriterSixPackKeysTest : public EventRewriterTest {
  public:
   void SetUp() override {
-    EventRewriterTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {features::kInputDeviceSettingsSplit,
          features::kAltClickAndSixPackCustomization,
          ::features::kDeprecateAltBasedSixPack},
         /*disabled_features=*/{});
+    EventRewriterTest::SetUp();
   }
 };
 
@@ -4790,57 +4790,42 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysSearchVariants) {
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
-  TestNonAppleKeyboardVariants({
-      // Search+Shift+Backspace -> Insert
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
-        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::DomKey::BACKSPACE},
-       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_NONE, ui::DomKey::INSERT}},
-      // Search+Backspace -> Delete
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BACKSPACE},
-       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_NONE, ui::DomKey::DEL}},
-      // Search+Up -> Prior (aka PageUp)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ARROW_UP},
-       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP, ui::EF_NONE,
-        ui::DomKey::PAGE_UP}},
-      // Search+Down -> Next (aka PageDown)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ARROW_DOWN},
-       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN, ui::EF_NONE,
-        ui::DomKey::PAGE_DOWN}},
-      // Search+Left -> Home
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LEFT, ui::DomCode::ARROW_LEFT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ARROW_LEFT},
-       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_NONE, ui::DomKey::HOME}},
-      // Search+Right -> End
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ARROW_RIGHT},
-       {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
-      // Search+Shift+Down -> Shift+Next (aka PageDown)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
-        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::DomKey::ARROW_DOWN},
-       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN, ui::EF_SHIFT_DOWN,
-        ui::DomKey::PAGE_DOWN}},
-      // Search+Ctrl+Up -> Ctrl+Prior (aka PageUp)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
-        ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN, ui::DomKey::ARROW_UP},
-       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP, ui::EF_CONTROL_DOWN,
-        ui::DomKey::PAGE_UP}},
-      // Search+Alt+Left -> Alt+Home
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LEFT, ui::DomCode::ARROW_LEFT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_LEFT},
-       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_ALT_DOWN, ui::DomKey::HOME}},
-  });
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Search+Shift+Backspace -> Insert
+    EXPECT_EQ(
+        InsertPressed(),
+        RunRewriter(BackspacePressed(ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
+    // Search+Backspace -> Delete
+    EXPECT_EQ(DeletePressed(),
+              RunRewriter(BackspacePressed(ui::EF_COMMAND_DOWN)));
+    // Search+Up -> Prior (aka PageUp)
+    EXPECT_EQ(PageUpPressed(),
+              RunRewriter(ArrowUpPressed(ui::EF_COMMAND_DOWN)));
+    // Search+Down -> Next (aka PageDown)
+    EXPECT_EQ(PageDownPressed(),
+              RunRewriter(ArrowDownPressed(ui::EF_COMMAND_DOWN)));
+    // Search+Left -> Home
+    EXPECT_EQ(HomePressed(),
+              RunRewriter(ArrowLeftPressed(ui::EF_COMMAND_DOWN)));
+    // Search+Right -> End
+    EXPECT_EQ(EndPressed(),
+              RunRewriter(ArrowRightPressed(ui::EF_COMMAND_DOWN)));
+    // Search+Shift+Down -> Shift+Next (aka PageDown)
+    EXPECT_EQ(
+        PageDownPressed(ui::EF_SHIFT_DOWN),
+        RunRewriter(ArrowDownPressed(ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
+    // Search+Ctrl+Up -> Ctrl+Prior (aka PageUp)
+    EXPECT_EQ(
+        PageUpPressed(ui::EF_CONTROL_DOWN),
+        RunRewriter(ArrowUpPressed(ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN)));
+    // Search+Alt+Left -> Alt+Home
+    EXPECT_EQ(
+        HomePressed(ui::EF_ALT_DOWN),
+        RunRewriter(ArrowLeftPressed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysAltVariants) {
@@ -4861,47 +4846,33 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysAltVariants) {
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
-  TestNonAppleKeyboardVariants({
-      // Alt+Backspace -> Delete
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-        ui::DomKey::BACKSPACE},
-       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_NONE, ui::DomKey::DEL}},
-      // Alt+Up -> Prior
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_UP},
-       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP, ui::EF_NONE,
-        ui::DomKey::PAGE_UP}},
-      // Alt+Down -> Next
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_DOWN},
-       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN, ui::EF_NONE,
-        ui::DomKey::PAGE_DOWN}},
-      // Ctrl+Alt+Up -> Home
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
-        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_UP},
-       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_NONE, ui::DomKey::HOME}},
-      // Ctrl+Alt+Down -> End
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
-        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_DOWN},
-       {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
-      // Ctrl+Alt+Shift+Up -> Shift+Home
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
-        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-        ui::DomKey::ARROW_UP},
-       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_SHIFT_DOWN, ui::DomKey::HOME}},
-      // Ctrl+Alt+Search+Down -> Search+End
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
-        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::ARROW_DOWN},
-       {ui::VKEY_END, ui::DomCode::END, ui::EF_COMMAND_DOWN, ui::DomKey::END}},
-  });
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // Alt+Backspace -> Delete
+    EXPECT_EQ(DeletePressed(), RunRewriter(BackspacePressed(ui::EF_ALT_DOWN)));
+    // Alt+Up -> Prior
+    EXPECT_EQ(PageUpPressed(), RunRewriter(ArrowUpPressed(ui::EF_ALT_DOWN)));
+    // Alt+Down -> Next
+    EXPECT_EQ(PageDownPressed(),
+              RunRewriter(ArrowDownPressed(ui::EF_ALT_DOWN)));
+    // Ctrl+Alt+Up -> Home
+    EXPECT_EQ(HomePressed(), RunRewriter(ArrowUpPressed(ui::EF_CONTROL_DOWN |
+                                                        ui::EF_ALT_DOWN)));
+    // Ctrl+Alt+Down -> End
+    EXPECT_EQ(EndPressed(), RunRewriter(ArrowDownPressed(ui::EF_CONTROL_DOWN |
+                                                         ui::EF_ALT_DOWN)));
+    // Ctrl+Alt+Shift+Up -> Shift+Home
+    EXPECT_EQ(HomePressed(ui::EF_SHIFT_DOWN),
+              RunRewriter(ArrowUpPressed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
+                                         ui::EF_SHIFT_DOWN)));
+    // Ctrl+Alt+Search+Down -> Search+End
+    EXPECT_EQ(
+        EndPressed(ui::EF_COMMAND_DOWN),
+        RunRewriter(ArrowDownPressed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
+                                     ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
@@ -4914,38 +4885,26 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
       .WillRepeatedly(testing::Return(&settings));
   // No rewrite should occur since the search-based rewrite is the setting for
   // the "Delete" 6-pack key.
-  TestInternalChromeKeyboard({
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-        ui::DomKey::BACKSPACE},
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-        ui::DomKey::BACKSPACE},
-       kKeyboardDeviceId,
-       /*triggers_notification=*/true},
-  });
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(BackspacePressed(ui::EF_ALT_DOWN),
+            RunRewriter(BackspacePressed(ui::EF_ALT_DOWN)));
+  EXPECT_EQ(1u, message_center_.NotificationCount());
+  ClearNotifications();
+
   settings.six_pack_key_remappings->del =
       ui::mojom::SixPackShortcutModifier::kAlt;
   // Rewrite should occur now that the alt rewrite is the current setting.
-  TestInternalChromeKeyboard({
-      // Alt+Backspace -> Delete
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-        ui::DomKey::BACKSPACE},
-       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_NONE, ui::DomKey::DEL}},
-  });
+  // Alt+Backspace -> Delete
+  EXPECT_EQ(DeletePressed(), RunRewriter(BackspacePressed(ui::EF_ALT_DOWN)));
+
   settings.six_pack_key_remappings->del =
       ui::mojom::SixPackShortcutModifier::kNone;
   // No rewrite should occur since remapping a key event to the "Delete"
   // 6-pack key is disabled.
-  TestInternalChromeKeyboard({
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-        ui::DomKey::BACKSPACE},
-       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-        ui::DomKey::BACKSPACE},
-       kKeyboardDeviceId,
-       /*triggers_notification=*/true},
-  });
+  EXPECT_EQ(BackspacePressed(ui::EF_ALT_DOWN),
+            RunRewriter(BackspacePressed(ui::EF_ALT_DOWN)));
+  EXPECT_EQ(1u, message_center_.NotificationCount());
+  ClearNotifications();
 }
 
 class EventRewriterExtendedFkeysTest : public EventRewriterTest {
