@@ -4,23 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Properties for the folder picker activity. */
 class BookmarkFolderPickerProperties {
-    @IntDef({ItemType.NORMAL})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ItemType {
-        int NORMAL = 0;
-    }
-
     static final WritableObjectPropertyKey<String> TOOLBAR_TITLE =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Runnable> CANCEL_CLICK_LISTENER =
