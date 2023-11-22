@@ -4985,9 +4985,9 @@ TEST_F(EventRewriterExtendedFkeysTest, TestRewriteExtendedFkeysTopRowAreFkeys) {
 class EventRewriterSettingsSplitTest : public EventRewriterTest {
  public:
   void SetUp() override {
-    EventRewriterTest::SetUp();
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kInputDeviceSettingsSplit);
+    EventRewriterTest::SetUp();
   }
 };
 
@@ -4996,20 +4996,15 @@ TEST_F(EventRewriterSettingsSplitTest, TopRowAreFKeys) {
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
+  SetUpKeyboard(kExternalGenericKeyboard);
 
   settings.top_row_are_fkeys = false;
   settings.suppress_meta_fkey_rewrites = false;
-  TestExternalGenericKeyboard(
-      {{ui::ET_KEY_PRESSED,
-        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-        {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-         ui::DomKey::BROWSER_BACK}}});
+
+  EXPECT_EQ(BrowserBackPressed(), RunRewriter(F1Pressed()));
 
   settings.top_row_are_fkeys = true;
-  TestExternalGenericKeyboard(
-      {{ui::ET_KEY_PRESSED,
-        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}}});
+  EXPECT_EQ(F1Pressed(), RunRewriter(F1Pressed()));
 }
 
 TEST_F(EventRewriterSettingsSplitTest, RewriteMetaTopRowKeyComboEvents) {
@@ -5018,19 +5013,14 @@ TEST_F(EventRewriterSettingsSplitTest, RewriteMetaTopRowKeyComboEvents) {
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
+  SetUpKeyboard(kExternalGenericKeyboard);
 
   settings.suppress_meta_fkey_rewrites = false;
-  TestExternalGenericKeyboard(
-      {{ui::ET_KEY_PRESSED,
-        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-        {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-         ui::DomKey::BROWSER_BACK}}});
+  EXPECT_EQ(BrowserBackPressed(), RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN)));
 
   settings.suppress_meta_fkey_rewrites = true;
-  TestExternalGenericKeyboard(
-      {{ui::ET_KEY_PRESSED,
-        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1}}});
+  EXPECT_EQ(F1Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN)));
 }
 
 TEST_F(EventRewriterSettingsSplitTest, ModifierRemapping) {
@@ -5038,45 +5028,23 @@ TEST_F(EventRewriterSettingsSplitTest, ModifierRemapping) {
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
+  SetUpKeyboard(kExternalGenericKeyboard);
 
   settings.modifier_remappings = {
       {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl},
       {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kBackspace}};
 
   // Test remapping modifier keys.
-  TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED,
-                                {ui::VKEY_MENU, ui::DomCode::ALT_RIGHT,
-                                 ui::EF_ALT_DOWN, ui::DomKey::ALT},
-                                {ui::VKEY_CONTROL, ui::DomCode::CONTROL_RIGHT,
-                                 ui::EF_CONTROL_DOWN, ui::DomKey::CONTROL}},
-                               {ui::ET_KEY_PRESSED,
-                                {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-                                 ui::EF_COMMAND_DOWN, ui::DomKey::META},
-                                {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
-                                 ui::EF_NONE, ui::DomKey::BACKSPACE}},
-                               {ui::ET_KEY_PRESSED,
-                                {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                                 ui::EF_CONTROL_DOWN, ui::DomKey::CONTROL},
-                                {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                                 ui::EF_CONTROL_DOWN, ui::DomKey::CONTROL}}});
+  EXPECT_EQ(RControlPressed(), RunRewriter(RAltPressed()));
+  EXPECT_EQ(BackspacePressed(), RunRewriter(LWinPressed()));
+  EXPECT_EQ(LControlPressed(), RunRewriter(LControlPressed()));
 
   // Test remapping modifier flags.
-  TestExternalGenericKeyboard(
-      {{ui::ET_KEY_PRESSED,
-        {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN,
-         ui::DomKey::Constant<'a'>::Character},
-        {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-         ui::DomKey::Constant<'a'>::Character}},
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_A, ui::DomCode::US_A, ui::EF_COMMAND_DOWN,
-         ui::DomKey::Constant<'a'>::Character},
-        {ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE,
-         ui::DomKey::Constant<'a'>::Character}},
-       {ui::ET_KEY_PRESSED,
-        {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-         ui::DomKey::Constant<'a'>::Character},
-        {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-         ui::DomKey::Constant<'a'>::Character}}});
+  EXPECT_EQ(APressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(APressed(ui::EF_ALT_DOWN)));
+  EXPECT_EQ(APressed(), RunRewriter(APressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(APressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(APressed(ui::EF_CONTROL_DOWN)));
 }
 
 class KeyEventRemappedToSixPackKeyTest
