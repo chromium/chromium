@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,8 +33,10 @@ static constexpr char kTestMountPoint[] = "testfs";
 class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
  public:
   FileSystemAccessLockManagerTest() {
-    scoped_feature_list.InitAndEnableFeature(
-        blink::features::kFileSystemAccessLockingScheme);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFileSystemAccessBFCache,
+         blink::features::kFileSystemAccessLockingScheme},
+        {});
   }
 
   void SetUp() override {
@@ -180,7 +183,7 @@ class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FileSystemAccessLockManagerTest, ExclusiveLock) {

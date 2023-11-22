@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -110,9 +111,12 @@ class Lock {
       return child;
     }
 
-    // Evict on contention is only enabled when FSA Locking Scheme is enabled.
-    bool evict_on_contention = base::FeatureList::IsEnabled(
-        blink::features::kFileSystemAccessLockingScheme);
+    // Evict on contention is only enabled when both FSA Locking Scheme and
+    // BFCache are enabled.
+    bool evict_on_contention =
+        base::FeatureList::IsEnabled(
+            blink::features::kFileSystemAccessLockingScheme) &&
+        base::FeatureList::IsEnabled(features::kFileSystemAccessBFCache);
 
     // Start eviction if we can. Otherwise, we can not take this lock since it
     // is in contention with a lock held by an active page.
