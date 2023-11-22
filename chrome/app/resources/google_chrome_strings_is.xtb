@@ -110,7 +110,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2649768380733403658">Chrome athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
 <translation id="2665296953892887393">Hjálpaðu til við að bæta Google Chrome með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google.</translation>
-<translation id="2689103672227170538">Þessi viðbót hefur breytt því hvaða síða birtist þegar þú ræsir Chrome.</translation>
 <translation id="2712234843277364121">Endurræstu til að uppfæra – fliparnir þínir opnast aftur</translation>
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2742320827292110288">Viðvörun: Google Chrome getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
@@ -180,7 +179,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3703994572283698466">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex útgáfa</translation>
 <translation id="3718181793972440140">Þetta mun eyða einu atriði úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
-<translation id="3735758079232443276">Viðbótin „<ph name="EXTENSION_NAME" />“ hefur breytt því hvaða síða birtist þegar þú ræsir Chrome.</translation>
 <translation id="3744202345691150878">Fá hjálp með ChromeOS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
@@ -477,7 +475,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8823341990149967727">Chrome er úrelt</translation>
 <translation id="8825634023950448068">Til að gæta persónuverndar þinnar eyðum við áhugasviðunum þínum sem eru eldri en 4 vikna sjálfkrafa. Áhugasvið kann að birtast aftur á listanum þegar þú heldur áfram að vafra. Ef Chrome skjátlast eða ef þú vilt ekki sjá tilteknar auglýsingar geturðu fjarlægt áhugasvið.</translation>
 <translation id="8834965163890861871">Google Chrome er að reyna að breyta aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
-<translation id="884296878221830158">Hún stýrir því einnig hvaða síða birtist þegar þú ræsir Chrome eða smellir á heimahnappinn.</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>

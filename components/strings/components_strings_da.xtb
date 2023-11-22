@@ -324,7 +324,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1593359183944365958">270 grader</translation>
 <translation id="1594030484168838125">Vælg</translation>
 <translation id="1596296697375291157">Thrillere, kriminal- og mysteriefilm</translation>
-<translation id="1597473228022844713">Du holder øje med dette produkt. Denne side er gemt i <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Adgangsnøgle fra Windows Hello</translation>
 <translation id="1599199147673445968">Har du fået nyt kort? <ph name="BEGIN_LINK" />Angiv kortoplysningerne<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Spil Dino Run-spillet i Chrome</translation>
@@ -517,6 +516,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1997484222658892567"><ph name="URL" /> anmoder om at gemme store mængder data permanent på din lokale computer</translation>
 <translation id="1997774360448418989">Papir (let)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{og 1 mere}one{og # mere}other{og # mere}}</translation>
+<translation id="2001469757375372617">Noget gik galt. Din ændring blev ikke gemt.</translation>
 <translation id="2003709556000175978">Nulstil din adgangskode nu</translation>
 <translation id="2003775180883135320">Fire huller øverst</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
@@ -722,6 +722,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2395840535409704129">Vandsport</translation>
 <translation id="2396249848217231973">&amp;Fortryd sletning</translation>
 <translation id="2397836504670957718">Bærbare computere og notebooks</translation>
+<translation id="2399868464369312507">Google Chrome forsøger at redigere betalingsmetoder.</translation>
 <translation id="2400600116338235695">Websitet kan anmode om tilladelse til at oprette forbindelse til serieporte</translation>
 <translation id="2404884497378469141">Prøv at kopiere dine filer igen</translation>
 <translation id="2413155254802890957">Gammel</translation>
@@ -1115,6 +1116,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3250640885957938546">Reklame og marketing</translation>
 <translation id="3252772880526154546">Arkitektur</translation>
 <translation id="3254301855501243548">18 x 22 tommer</translation>
+<translation id="3255926992597692024">Chromium forsøger at ændre indstillinger for udfyldning af betalingsmetoder.</translation>
 <translation id="3256863843508922226">Fratrædelse og pension</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
 <translation id="3261488570342242926">Få flere oplysninger om virtuelle kort</translation>
@@ -1498,6 +1500,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4047351652147966654">18 x 24 tommer</translation>
 <translation id="404831776305217138">Opdateringswebadressen for udvidelsen med id'et "<ph name="EXTENSION_ID" />" er ugyldig eller anvender et ikke-understøttet skema. De understøttede skemaer er: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> og <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Du kan bruge den i Google-produkter</translation>
+<translation id="4050599136622776556">Chromium forsøger at redigere betalingsmetoder.</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Giv Google tilladelse til at hjælpe dig med at finde rabatter til din kurv</translation>
@@ -1620,6 +1623,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-shirts</translation>
 <translation id="4253168017788158739">Note</translation>
+<translation id="4255487295905690262">Du får underretninger via mail, hvis prisen falder på et website.</translation>
 <translation id="425582637250725228">Ændringer, du har foretaget, gemmes muligvis ikke.</translation>
 <translation id="4258748452823770588">Forkert signatur</translation>
 <translation id="4261046003697461417">Beskyttede dokumenter kan ikke annoteres</translation>
@@ -2974,7 +2978,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6999480632062519056">Fitnesstræning og personlig træning</translation>
 <translation id="6999969238895751684">Underholdningsindustri</translation>
 <translation id="7003278537452757231">Tæpper</translation>
-<translation id="7003335073762455340">Du holder øje med dette produkt. Denne side er gemt i <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="7004499039102548441">Seneste faner</translation>
 <translation id="7004583254764674281">Brug Windows Hello til at bekræfte kort hurtigere</translation>
 <translation id="7006930604109697472">Send alligevel</translation>
@@ -3030,7 +3033,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7108819624672055576">Tilladt med en udvidelse</translation>
 <translation id="7109510814665441393">Køre- og væddeløbsspil</translation>
 <translation id="7110116949943042888">Vikar- og sæsonjobs</translation>
-<translation id="7110553203952632623">Du får underretninger via mail, hvis prisen falder på et website</translation>
 <translation id="7111012039238467737">(gyldigt)</translation>
 <translation id="7111507312244504964">Bygningsinspektion og vurderinger</translation>
 <translation id="7112327784801341716">Kan du ikke se dine aktuelle oplysninger? Kontakt din bank for at få dem opdateret.</translation>
@@ -3149,7 +3151,6 @@ Yderligere oplysninger:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalingshandlers</translation>
 <translation id="7367985555340314048">De emner, som det estimeres, at du kan være interesseret i, er baseret på din seneste browserhistorik og anvendes af websites til at vise dig personligt tilpassede annoncer</translation>
-<translation id="7368169244533796604">Slet website</translation>
 <translation id="7372526636730851647">Foto (blankt)</translation>
 <translation id="7372973238305370288">søgeresultat</translation>
 <translation id="7374461526650987610">Protokolhåndtering</translation>
@@ -3572,7 +3573,6 @@ Yderligere oplysninger:
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8134058435519644366">Rekruttering og personale</translation>
 <translation id="8135546115396015134">venstre tast</translation>
-<translation id="8144303576836498784">Noget gik galt. Din ændring blev ikke gemt</translation>
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Din computer gik i dvale.</translation>
 <translation id="8150722005171944719">Filen i <ph name="URL" /> kan ikke læses. Den kan være blevet fjernet, flyttet, eller også forhindrer filtilladelser muligvis adgangen.</translation>
@@ -3785,6 +3785,7 @@ Yderligere oplysninger:
 <translation id="8542014550340843547">Trehæftning nederst</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Du kan <ph name="BEGIN_ERROR_LINK" />rapportere et registreringsproblem<ph name="END_ERROR_LINK" /> eller, hvis du forstår den sikkerhedsrisiko, du udsætter dig for, <ph name="BEGIN_LINK" />kan du gå til dette usikre website<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome forsøger at ændre indstillinger for udfyldning af betalingsmetoder.</translation>
 <translation id="8544303911974837265">Polyester</translation>
 <translation id="854548366864113872">Købsmulighed med høj pris</translation>
 <translation id="8546254312340305428">Angiv årsag til upload (påkrævet)</translation>

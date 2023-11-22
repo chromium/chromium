@@ -408,6 +408,7 @@
 <translation id="3080525922482950719">你可以儲存頁面以便稍後閱讀或離線閱讀</translation>
 <translation id="3081338492074632642">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3087734570205094154">置底</translation>
+<translation id="3090455602619185166">使用代管帳戶登入</translation>
 <translation id="309710370695886264">你有 1 組重複使用的密碼，請立即修正以確保安全。</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
@@ -572,6 +573,7 @@
 <translation id="4002066346123236978">標題</translation>
 <translation id="4004204301268239848">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼。</translation>
 <translation id="4018310736049373830">管理活動</translation>
+<translation id="4021931095789478915">將 ${url} 加入閱讀清單</translation>
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="40433179647657191">反白標示頁面上的某個部分，然後建立可以直接連結的網址，輕鬆與其他人分享頁面上的內容。</translation>
@@ -1445,6 +1447,7 @@
 <translation id="8556590991644167667">{count,plural, =1{你已忽略 {count} 則警告}other{你已忽略 {count} 則警告}}</translation>
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
 <translation id="8560253818350321773">優先顯示常用項目。</translation>
+<translation id="8569721750632860947">你想將哪個網址加入閱讀清單？</translation>
 <translation id="8588404856427128947">關閉</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8593565399399144771">你可以在這裡開啟新分頁。</translation>

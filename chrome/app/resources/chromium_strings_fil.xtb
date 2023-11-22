@@ -71,10 +71,8 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
 <translation id="2329088755516916767">Kapag naka-on, magpe-preload ang Chromium ng mga page na magpapabilis sa pag-browse at paghahanap.</translation>
 <translation id="2343156876103232566">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chromium sa parehong device.</translation>
-<translation id="2347108572062610441">Binago ng extension na ito ang ipinapakitang page kapag sinimulan mo ang Chronium.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2384373936468275798">Hindi ma-sync ng ChromiumOS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
-<translation id="2396765026452590966">Binago ng extension na "<ph name="EXTENSION_NAME" />" ang ipinapakitang page kapag sinimulan mo ang Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device ang ina-access ng isa o higit pang extension ng Chromium}=1{1 HID device ang ina-access ng isa o higit pang extension ng Chromium}one{# HID device ang ina-access ng isa o higit pang extension ng Chromium}other{# HID device ang ina-access ng isa o higit pang extension ng Chromium}}</translation>
 <translation id="2401032172288869980">Kailangan ng Chromium ng pahintulot sa camera at mikropono para sa site na ito</translation>
 <translation id="2440750600860946460">Gamit ang <ph name="BEGIN_LINK" />mga tool mula sa Chromium<ph name="END_LINK" />, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
@@ -277,6 +275,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6129621093834146363">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chromium.</translation>
 <translation id="6132897690380286411">Magsasara at magde-delete na ng data ang Chromium sa ilang saglit</translation>
 <translation id="6134968993075716475">Naka-off ang Ligtas na Pag-browse. Inirerekomenda ng Chromium na i-on ito.</translation>
+<translation id="6144416395842701622">Mag-sign in para masulit ang Chromium</translation>
 <translation id="6145820983052037069">Puwede kang magpalipat-lipat sa mga profile sa Chromium dito</translation>
 <translation id="615103374448673771">Kung papayagan mo ang cookies, posibleng gamitin ng Chromium ang mga ito kapag nagpi-preload.</translation>
 <translation id="6175304430031192654">Depende sa iyong mga setting, posible ring magpadala ang Chromium ng cookies at kasalukuyang URL mo</translation>
@@ -435,6 +434,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8648201657708811153">Hindi puwedeng gawing default na browser mo ang Google Chrome na Pang-test.</translation>
 <translation id="8697124171261953979">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium o naghanap mula sa Omnibox.</translation>
 <translation id="8704119203788522458">Ito ang iyong Chromium</translation>
+<translation id="8719993436687031146">Mag-sign in sa Chromium?</translation>
 <translation id="878572486461146056">Error sa pag-install: Nag-apply ang administrator ng network mo ng Group Policy na pumipigil sa pag-install: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera at mikropono para sa site na ito</translation>
 <translation id="8826492472752484139">I-click ang “Password Manager”</translation>
@@ -442,7 +442,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chromium sa device na ito.</translation>
 <translation id="8862326446509486874">Wala kang naaangkop na mga karapatan para sa pag-install sa antas ng system. Subukan muling patakbuhin ang installer bilang Administrator.</translation>
 <translation id="8880203542552872219">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chromium para tumugma ito sa bago mong password.</translation>
-<translation id="8897323336392112261">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium o na-click ang button ng Home.</translation>
 <translation id="8907580949721785412">Sinusubukan ng Chromium na ipakita ang mga password. I-type ang password sa Windows upang payagan ito.</translation>
 <translation id="8931379085695076764">Puwedeng tantyahin ng Chromium ang iyong mga interes batay sa history ng pag-browse mo mula sa mga nakalipas na ilang linggo. Mananatili ang impormasyong ito sa iyong device.</translation>
 <translation id="8941642502866065432">Hindi ma-update ang Chromium</translation>

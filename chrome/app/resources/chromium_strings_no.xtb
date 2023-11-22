@@ -69,10 +69,8 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="2329088755516916767">Når dette er på, forhåndslaster Chromium sider, slik at det går raskere å surfe og søke.</translation>
 <translation id="2343156876103232566">For å sende numre herfra til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
-<translation id="2347108572062610441">Denne utvidelsen har endret hvilken side som vises når du starter Chromium.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2384373936468275798">ChromiumOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
-<translation id="2396765026452590966">Utvidelsen «<ph name="EXTENSION_NAME" />» har endret hvilken side som vises når du starter Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chromium-utvidelser}=1{1 HID-enhet brukes av en eller flere Chromium-utvidelser}other{# HID-enheter brukes av en eller flere Chromium-utvidelser}}</translation>
 <translation id="2401032172288869980">Chromium trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />verktøy fra Chromium<ph name="END_LINK" /> kan du surfe trygt og ha kontroll</translation>
@@ -441,7 +439,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Disse dataene brukes:<ph name="END_BOLD" /> nettleserloggen din, som er en logg over nettsteder du har besøkt med Chromium på denne enheten.</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettighetene for å installere på systemnivå. Prøv å kjøre installasjonsprogrammet som administrator.</translation>
 <translation id="8880203542552872219">I så fall bør du endre det lagrede passordet i Chromium så det samsvarer med det nye passordet.</translation>
-<translation id="8897323336392112261">Den styrer også hvilken side som vises når du starter Chromium eller klikker på Startside-knappen.</translation>
 <translation id="8907580949721785412">Chromium forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="8931379085695076764">Chromium kan anslå interessene dine basert på nettleserloggen din fra de siste ukene. Denne informasjonen blir værende på enheten din.</translation>
 <translation id="8941642502866065432">Kan ikke oppdatere Chromium</translation>

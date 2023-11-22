@@ -410,6 +410,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3080525922482950719">Poți să salvezi pagini ca să le citești offline sau mai târziu</translation>
 <translation id="3081338492074632642">Asigură-te că parola pe care o salvezi este aceeași cu parola pentru <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Jos</translation>
+<translation id="3090455602619185166">Conectează-te cu un cont gestionat</translation>
 <translation id="309710370695886264">Ai o parolă refolosită. Remediază problema acum pentru a rămâne în siguranță.</translation>
 <translation id="3112556859945124369">Marchează…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4004204301268239848">Parolele sunt salvate în Contul tău Google, astfel încât să le poți folosi pe orice dispozitiv</translation>
 <translation id="4018310736049373830">Gestionează activitatea</translation>
+<translation id="4021931095789478915">Adaugă ${url} în lista de lecturi</translation>
 <translation id="4038354071007134711">Aplicațiile de pe dispozitiv nu deschid fișierul.</translation>
 <translation id="4042870976416480368">Găsește în pagină</translation>
 <translation id="40433179647657191">Creează și trimite un link direct către o parte a unei pagini pe care ai evidențiat-o.</translation>
@@ -1447,6 +1449,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8556590991644167667">{count,plural, =1{Ai respins {count} avertisment}few{Ai respins {count} avertismente}other{Ai respins {count} de avertismente}}</translation>
 <translation id="8558480467877843976">Acum poți folosi Chrome oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="8560253818350321773">Afișează mai întâi elementele folosite frecvent.</translation>
+<translation id="8569721750632860947">Ce adresă URL dorești să adaugi în lista de lecturi?</translation>
 <translation id="8588404856427128947">Stinsă</translation>
 <translation id="8591976964826315682">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="8593565399399144771">Poți deschide o filă nouă aici.</translation>

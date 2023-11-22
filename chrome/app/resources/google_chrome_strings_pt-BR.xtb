@@ -24,6 +24,7 @@
 <translation id="139993653570221430">É possível mudar isso a qualquer momento nas configurações do Chrome. Os testes são realizados junto à veiculação dos anúncios atuais, então você não verá mudanças imediatamente.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas.}=1{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua janela anônima não será aberta novamente.}one{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua # janela anônima não será aberta novamente.}other{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1434626383986940139">Aplicativos Canary do Google Chrome</translation>
+<translation id="146866447420868597">Fazer login no Chrome?</translation>
 <translation id="1492280395845991349">Reinicialize para concluir a atualização do Chrome</translation>
 <translation id="1497802159252041924">Erro de instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalize seu novo perfil do Chrome</translation>
@@ -106,7 +107,6 @@
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as configurações mais seguras. Avisaremos se algo precisar da sua análise.</translation>
 <translation id="2652691236519827073">Abrir link em nova &amp;guia do Chrome</translation>
 <translation id="2665296953892887393">Ajude a melhorar o Google Chrome. Envie relatórios de erros e  <ph name="UMA_LINK" /> para o Google</translation>
-<translation id="2689103672227170538">Esta extensão alterou a página que é exibida quando você inicia o Chrome.</translation>
 <translation id="2712234843277364121">Reinicializar para atualizar (as guias serão reabertas)</translation>
 <translation id="2738871930057338499">Não foi possível conectar à Internet. HTTP 403 Proibido. Verifique sua configuração do proxy.</translation>
 <translation id="2742320827292110288">Aviso: o Google Chrome não impede que as extensões registrem seu histórico de navegação. Para desativar a extensão no modo de navegação anônima, desmarque esta opção.</translation>
@@ -176,7 +176,6 @@
 <translation id="3703994572283698466">A criação do ChromeOS só foi possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versão do ChromeOS Flex</translation>
 <translation id="3718181793972440140">Essa ação excluirá 1 item desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">A extensão "<ph name="EXTENSION_NAME" />" alterou a página que é exibida quando você inicia o Chrome.</translation>
 <translation id="3744202345691150878">Ajuda com o ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">O ChromeOS Flex não pôde sincronizar seus dados devido a um erro ao fazer login.</translation>
@@ -469,7 +468,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8823341990149967727">O Google Chrome está desatualizado</translation>
 <translation id="8825634023950448068">Para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Se o Chrome se enganar ou você não quiser ver certos anúncios, você pode remover um interesse.</translation>
 <translation id="8834965163890861871">O Google Chrome está tentando editar senhas. Digite a senha do Windows para permitir essa ação.</translation>
-<translation id="884296878221830158">Controla também qual página deve ser exibida quando você inicia o Chrome ou clica no botão "Página inicial".</translation>
 <translation id="8862326446509486874">Você não tem os direitos adequados para instalação no nível do sistema. Tente executar o instalador novamente como administrador.</translation>
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> ao seu smartphone Android, faça login no Chrome nos dois dispositivos.</translation>

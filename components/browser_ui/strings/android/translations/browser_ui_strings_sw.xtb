@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Kisimbuaji cha picha</translation>
 <translation id="1785415724048343560">Inapendekezwa kwa ajili ya hali bora ya utumiaji</translation>
 <translation id="1818308510395330587">Ili uruhusu <ph name="APP_NAME" /> itumie Uhalisia Ulioboreshwa, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Tovuti zinazohusiana zinaweza kuona shughuli zako kwenye kikundi</translation>
 <translation id="1887786770086287077">Kipengele cha mahali kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Kata simu</translation>
 <translation id="1919950603503897840">Chagua anwani</translation>
@@ -63,7 +62,6 @@
 <translation id="2182457891543959921">Uliza kabla ya kuruhusu tovuti zibuni ramani ya 3D ya mazingira yako au kufuatilia mkao wa kamera (inapendekezwa)</translation>
 <translation id="2185965788978862351">Hatua hii itafuta data ya ukubwa wa <ph name="DATASIZE" /> na vidakuzi vilivyohifadhiwa na tovuti au programu kwenye Skrini yako ya kwanza.</translation>
 <translation id="2194856509914051091">Mambo ya kuzingatia</translation>
-<translation id="2212565012507486665">Ruhusu vidakuzi</translation>
 <translation id="2228071138934252756">Ili uruhusu <ph name="APP_NAME" /> ifikie kamera yako, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Vidakuzi vya washirika wengine vimezuiwa</translation>
 <translation id="2238944249568001759">Utafutaji unaopendekezwa kulingana na kichupo chako ulichofungua mara ya mwisho</translation>
@@ -104,7 +102,6 @@
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2678468611080193228">Jaribu kuruhusu kwa muda vidakuzi vya mshirika mwingine, jambo linalomaanisha ulinzi mdogo lakini vipengele vina uwezekano mkubwa wa kufanya kazi.</translation>
 <translation id="2683434792633810741">Je, ungependa kufuta na kuweka upya?</translation>
-<translation id="2687403674020088961">Zuia vidakuzi vyote (haipendekezwi)</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2717722538473713889">Anwani za barua pepe</translation>
 <translation id="2750481671343847896">Tovuti inaweza kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
@@ -156,7 +153,6 @@
 <translation id="3586500876634962664">Matumizi ya kamera na maikrofoni</translation>
 <translation id="358794129225322306">Ruhusu tovuti ipakue faili nyingi kiotomatiki.</translation>
 <translation id="3594780231884063836">Zima video</translation>
-<translation id="3596414637720633074">Zuia vidakuzi vya watu au kampuni nyingine katika Hali Fiche</translation>
 <translation id="3600792891314830896">Zima sauti katika tovuti</translation>
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3628308229821498208">Utafutaji unaopendekezwa</translation>
@@ -184,7 +180,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
 <translation id="4002066346123236978">Kichwa</translation>
-<translation id="4008040567710660924">Ruhusu vidakuzi katika tovuti maalum.</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
 <translation id="4149890623864272035">Je, una uhakika ungependa kufuta data yote iliyo kwenye kifaa, ikiwa ni pamoja na vidakuzi na kuweka upya ruhusa zote za tovuti hii?</translation>
 <translation id="4149994727733219643">Mwonekano uliorahisishwa kwa ajili ya kurasa za wavuti</translation>
@@ -225,7 +220,6 @@
 <translation id="4883854917563148705">Huwezi kubadilisha mipangilio inayodhibitiwa</translation>
 <translation id="4887024562049524730">Uliza kabla ya kuruhusu tovuti zitumie data na kifaa chako cha uhalisia pepe (inapendekezwa)</translation>
 <translation id="4953688446973710931">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kupakua faili nyingi kiotomatiki. Kikizimwa, tovuti haziwezi kupakua faili nyingi kiotomatiki.</translation>
-<translation id="4955223779495905865">Tovuti unayotembelea inaweza kupachika maudhui kutoka tovuti nyingine, kwa mfano picha, matangazo na maandishi. Tovuti zozote kati ya hizi zinaweza kuhifadhi vidakuzi na data nyingine ili kuweka mapendeleo ya hali yako ya utumiaji.</translation>
 <translation id="4962975101802056554">Batilisha ruhusa zote za kifaa</translation>
 <translation id="497421865427891073">Nenda mbele</translation>
 <translation id="4976702386844183910">Ilitembelewa mara ya mwisho <ph name="DATE" /></translation>
@@ -426,7 +420,6 @@
 <translation id="8117244575099414087">Kikiwashwa, tovuti zinaweza kutumia vitambuzi vya kifaa chako. Kikizimwa, tovuti haziwezi kutumia vitambuzi.</translation>
 <translation id="813082847718468539">Angalia maelezo ya tovuti</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
-<translation id="8154912474061769055">Huenda vipengele kwenye tovuti nyingi visifanye kazi</translation>
 <translation id="8168435359814927499">Maudhui</translation>
 <translation id="8186479265534291036">Je, tovuti haifanyi kazi? Vidakuzi vya washirika wengine vimezuiwa</translation>
 <translation id="8197286292360124385">Umeruhusu <ph name="PERMISSION_1" /></translation>
@@ -440,7 +433,6 @@
 <translation id="8324158725704657629">Usiniulize tena</translation>
 <translation id="8362795839483915693">Unaweza kuvuta karibu au kusogeza mbali kwenye tovuti unazotembelea</translation>
 <translation id="8372893542064058268">Ruhusu Usawazishaji wa Chini Chini wa tovuti mahususi.</translation>
-<translation id="8376384591331888629">Vikiwemo vidakuzi vya wengine kwenye tovuti hii</translation>
 <translation id="83792324527827022">Tovuti inatumia kamera na maikrofoni yako</translation>
 <translation id="8380167699614421159">Tovuti hii inaonyesha matangazo yanayopotosha au yanayokatiza huduma</translation>
 <translation id="8394832520002899662">Gusa ili urudi kwenye tovuti</translation>
@@ -488,7 +480,6 @@
 <translation id="8926666909099850184">Kipengele cha NFC kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Zuia tovuti zisione wala kubadilisha maelezo kwenye vifaa vya NFC</translation>
 <translation id="8944485226638699751">Kwa wachache</translation>
-<translation id="8958424370300090006">Zuia vidakuzi katika tovuti maalum.</translation>
 <translation id="8959122750345127698">Kudurusu hakufikiki: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Sahau</translation>
 <translation id="8990043154272859344">Utaondolewa kwenye akaunti za tovuti zote</translation>

@@ -1468,7 +1468,7 @@ Neuinstallation</translation>
 <translation id="6961840794482373852">Die Tastenkombination Alt + Aufwärtspfeil hat sich geändert. Wenn du jetzt die Seite-nach-oben-Taste benötigst, drücke <ph name="LAUNCHER_KEY_NAME" />-Taste + Aufwärtspfeil.</translation>
 <translation id="696267987219125751">Die Kamerafunktion „Automatischer Bildausschnitt“ ist deaktiviert.</translation>
 <translation id="6965382102122355670">Ok</translation>
-<translation id="6972754398087986839">Erste Schritte</translation>
+<translation id="6972754398087986839">Ok</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">Einfügen</translation>
 <translation id="6981291220124935078">Zugriff aktivieren</translation>
@@ -1683,6 +1683,13 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7893503627044934815">Ich möchte nicht, dass diese Datei angezeigt wird</translation>
 <translation id="7895348134893321514">Schnellzugriff</translation>
 <translation id="7897375687985782769">Du hast die Tastenkombination zum Drehen des Bildschirms gedrückt. Möchtest du den Bildschirm drehen?</translation>
+<translation id="7897626842031123113">Statusleiste, Uhrzeit <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Fenster tauschen</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Fingerabdrucksensor berühren</translation>

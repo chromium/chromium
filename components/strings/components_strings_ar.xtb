@@ -324,7 +324,6 @@
 <translation id="1593359183944365958">270 درجة</translation>
 <translation id="1594030484168838125">اختيار</translation>
 <translation id="1596296697375291157">أفلام تشويق وغموض وجرائم</translation>
-<translation id="1597473228022844713">يتم حاليًا تتبُّع سعر هذا المنتج. تم حفظ هذه الصفحة في "<ph name="LAST_BOOKMARKS_FOLDER" />"</translation>
 <translation id="1598816256585174656">‏مفتاح المرور من Windows Hello</translation>
 <translation id="1599199147673445968">هل تريد تعديل معلومات بطاقة الائتمان الجديدة؟ <ph name="BEGIN_LINK" />إدخال تفاصيل البطاقة<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">‏تشغيل لعبة الديناصور في Chrome</translation>
@@ -517,6 +516,7 @@
 <translation id="1997484222658892567">يريد <ph name="URL" /> تخزين حجم كبير من البيانات على جهاز الكمبيوتر المحلي بشكل دائم.</translation>
 <translation id="1997774360448418989">ورق (خفيف الوزن)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{وتطبيق آخر}zero{و# تطبيق آخر}two{وتطبيقان (#) آخران}few{و# تطبيقات أخرى}many{و# تطبيقًا آخر}other{و# تطبيق آخر}}</translation>
+<translation id="2001469757375372617">حدث خطأ، ولم يتم حفظ التغيير الذي أجريته.</translation>
 <translation id="2003709556000175978">إعادة ضبط كلمة المرورالآن</translation>
 <translation id="2003775180883135320">عمل أربعة ثقوب بالأعلى</translation>
 <translation id="2004697686368036666">قد لا تعمل ميزات بعض المواقع الإلكترونية</translation>
@@ -722,6 +722,7 @@
 <translation id="2395840535409704129">رياضات مائية</translation>
 <translation id="2396249848217231973">تراجع عن الحذ&amp;ف</translation>
 <translation id="2397836504670957718">أجهزة كمبيوتر محمولة ودفترية</translation>
+<translation id="2399868464369312507">‏يحاول Google Chrome تعديل طُرق الدفع.</translation>
 <translation id="2400600116338235695">السماح للموقع الإلكتروني بطلب الاتصال بمنافذ تسلسلية</translation>
 <translation id="2404884497378469141">حاوِل نسخ ملفاتك مرة أخرى.</translation>
 <translation id="2413155254802890957">قديم</translation>
@@ -1116,6 +1117,7 @@
 <translation id="3250640885957938546">إعلان وتسويق</translation>
 <translation id="3252772880526154546">هندسة معمارية</translation>
 <translation id="3254301855501243548">18 × 22 بوصة</translation>
+<translation id="3255926992597692024">‏يحاول Chromium تعديل إعدادات ميزة "الملء التلقائي" لبيانات طُرق الدفع.</translation>
 <translation id="3256863843508922226">خطط تقاعد</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء حدث جديد في "تقويم Google" بسرعة.</translation>
 <translation id="3261488570342242926">تعرّف على البطاقات الافتراضية.</translation>
@@ -1500,6 +1502,7 @@
 <translation id="4047351652147966654">18 × 24 بوصة</translation>
 <translation id="404831776305217138">‏عنوان URL الخاص بتحديث الإضافة التي تتضمّن رقم التعريف <ph name="EXTENSION_ID" /> إما أنّه عنوان غير صالح أو يستخدم مخططًا غير متوافق. المخطَّطات المتوافقة هي: <ph name="HTTP_SCHEME" /> و<ph name="HTTPS_SCHEME" /> و<ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">‏سيكون بإمكانك استخدامه في جميع منتجات Google.</translation>
+<translation id="4050599136622776556">‏يحاول Chromium تعديل طُرق الدفع.</translation>
 <translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="4056223980640387499">بني داكن</translation>
 <translation id="4063063121357725926">‏السماح لشركة Google بمساعدتك في البحث عن الخصومات لتظهر في سلّات التسوّق</translation>
@@ -1622,6 +1625,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">قمصان</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
+<translation id="4255487295905690262">ستتلقّى تنبيهات عبر البريد الإلكتروني في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="425582637250725228">قد لا يتم حفظ التغييرات التي أجريتها.</translation>
 <translation id="4258748452823770588">توقيع غير صالح</translation>
 <translation id="4261046003697461417">يتعذّر إضافة تعليق توضيحي إلى المستندات المحمية</translation>
@@ -2978,7 +2982,6 @@
 <translation id="6999480632062519056">دروس في اللياقة البدنية وتدريب شخصي</translation>
 <translation id="6999969238895751684">مجال الوسائط الترفيهية</translation>
 <translation id="7003278537452757231">بِساط وسجاد</translation>
-<translation id="7003335073762455340">يتم حاليًا تتبُّع سعر هذا المنتج. تم حفظ هذه الصفحة في مجلد "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
 <translation id="7004583254764674281">‏استخدام Windows Hello للتأكد من البطاقات بشكلٍ أسرع</translation>
 <translation id="7006930604109697472">إرسال على أيّ حال</translation>
@@ -3034,7 +3037,6 @@
 <translation id="7108819624672055576">تم السماح بواسطة إحدى الإضافات</translation>
 <translation id="7109510814665441393">ألعاب قيادة وسباقات</translation>
 <translation id="7110116949943042888">وظائف مؤقتة وموسمية</translation>
-<translation id="7110553203952632623">ستتلقّى تنبيهات عبر البريد الإلكتروني في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="7111012039238467737">(صالح)</translation>
 <translation id="7111507312244504964">معاينات عقارات وتقييماتها</translation>
 <translation id="7112327784801341716">إذا لم تظهر معلوماتك الحديثة، يُرجى التواصل مع المصرف الذي تتعامل معه لتعديلها.</translation>
@@ -3153,7 +3155,6 @@
 <translation id="7366117520888504990">‏‎198 × 275 ملم</translation>
 <translation id="7366362069757178916">معالِجات الدفع</translation>
 <translation id="7367985555340314048">يتم تحديد المواضيع التي تهمُّك استنادًا إلى سجلّ التصفُّح الأخير، وتستخدمها المواقع الإلكترونية لعرض إعلانات مخصّصة لك.</translation>
-<translation id="7368169244533796604">حذف الموقع الإلكتروني</translation>
 <translation id="7372526636730851647">تصوير (لامع)</translation>
 <translation id="7372973238305370288">نتيجة البحث</translation>
 <translation id="7374461526650987610">معالجات البروتوكول</translation>
@@ -3576,7 +3577,6 @@
 <translation id="8131740175452115882">التأكيد</translation>
 <translation id="8134058435519644366">توظيف وعمالة</translation>
 <translation id="8135546115396015134">السهم المتجّه لليسار</translation>
-<translation id="8144303576836498784">حدث خطأ. لم يتم حفظ التغيير</translation>
 <translation id="8148608574971654810">‏نسخة PDF:</translation>
 <translation id="8149426793427495338">خضع جهاز الكمبيوتر إلى وضع السكون.</translation>
 <translation id="8150722005171944719">الملف الموجود على <ph name="URL" /> غير قابل للقراءة. ربما تمت إزالته، أو ربما تكون أذونات الملف هي التي تمنع الدخول.</translation>
@@ -3791,6 +3791,7 @@
 <translation id="8542014550340843547">وضع ثلاثة دبابيس في الأسفل</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">يمكنك <ph name="BEGIN_ERROR_LINK" />الإبلاغ عن اكتشاف مشكلة<ph name="END_ERROR_LINK" /> أو، إذا كنت تدرك المخاطر المتعلقة بالأمان، يمكنك <ph name="BEGIN_LINK" />زيارة هذا الموقع غير الآمن<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">‏يحاول Google Chrome تعديل إعدادات ميزة "الملء التلقائي" لبيانات طُرق الدفع.</translation>
 <translation id="8544303911974837265">بوليستر</translation>
 <translation id="854548366864113872">خيار السعر العالي</translation>
 <translation id="8546254312340305428">أدخِل سببًا للتحميل (مطلوب).</translation>

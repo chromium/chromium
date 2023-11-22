@@ -325,7 +325,6 @@
 <translation id="1593359183944365958">270 ڈگریز</translation>
 <translation id="1594030484168838125">منتخب کریں</translation>
 <translation id="1596296697375291157">ہیجانی، جرم اور پُراسرار فلمیں</translation>
-<translation id="1597473228022844713">آپ اس پروڈکٹ کو ٹریک کر رہے ہیں۔ یہ صفحہ <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہے</translation>
 <translation id="1598816256585174656">‏"Windows Hello" کی جانب سے پاس کی</translation>
 <translation id="1599199147673445968">نیا کارڈ؟ <ph name="BEGIN_LINK" />کارڈ کی تفصیلات درج کریں<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">‏Chrome میں Dino Run گیم کھیلیں</translation>
@@ -518,6 +517,7 @@
 <translation id="1997484222658892567"><ph name="URL" /> آپ کے مقامی کمپیوٹر پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="1997774360448418989">کاغذ (لائٹ ویٹ)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{اور 1 مزید}other{اور # مزید}}</translation>
+<translation id="2001469757375372617">کچھ غلط ہو گیا۔ آپ کی تبدیلی محفوظ نہیں ہوئی۔</translation>
 <translation id="2003709556000175978">اپنا پاس ورڈ ابھی ری سیٹ کریں</translation>
 <translation id="2003775180883135320">اوپر مستطیل سوراخ</translation>
 <translation id="2004697686368036666">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں</translation>
@@ -723,6 +723,7 @@
 <translation id="2395840535409704129">پانی والے کھیل کود</translation>
 <translation id="2396249848217231973">حذف کردہ کو &amp;کالعدم کریں</translation>
 <translation id="2397836504670957718">لیپ ٹاپس اور نوٹ بُکس</translation>
+<translation id="2399868464369312507">‏Google Chrome ادائیگی کے طریقوں میں ترمیم کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="2400600116338235695">سائٹ سیریل پورٹس سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="2404884497378469141">اپنی فائلز کو دوبارہ کاپی کرنے کی کوشش کریں</translation>
 <translation id="2413155254802890957">پرانا</translation>
@@ -1117,6 +1118,7 @@
 <translation id="3250640885957938546">تشہیر اور مارکیٹنگ</translation>
 <translation id="3252772880526154546">فن تعمیر</translation>
 <translation id="3254301855501243548">‏‎18 x 22 انچ</translation>
+<translation id="3255926992597692024">‏ادائیگی کے طریقوں پُر کرنے کی خاطر ترتیبات میں ترمیم کرنے کے لیے Chromium کوشش کر رہا ہے۔</translation>
 <translation id="3256863843508922226">سبکدوشی اور پینشن</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="3261488570342242926">ورچوئل کارڈز کے بارے میں جانیں</translation>
@@ -1500,6 +1502,7 @@
 <translation id="4047351652147966654">‏‎18 x 24 انچ</translation>
 <translation id="404831776305217138">‏ID "<ph name="EXTENSION_ID" />" کے ساتھ ایکسٹینشن کے لیے اپ ڈیٹ URL غلط ہے یا ایک غیر تعاون یافتہ اسکیم استعمال کرتا ہے۔ تعاون یافتہ اسکیمیں: <ph name="HTTP_SCHEME" />، <ph name="HTTPS_SCHEME" /> اور <ph name="FILE_SCHEME" /> ہیں۔</translation>
 <translation id="4050392779074832022">‏آپ اسے تمام Google پروڈکٹس میں استعمال کر سکیں گے</translation>
+<translation id="4050599136622776556">‏Chromium ادائیگی کے طریقوں میں ترمیم کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="405399507749852140">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں</translation>
 <translation id="4056223980640387499">سیپیا</translation>
 <translation id="4063063121357725926">‏Google کو اپنی کارٹس کے لیے رعایتیں تلاش کرنے میں آپ کی مدد کرنے دیں</translation>
@@ -1622,6 +1625,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">ٹی شرٹس</translation>
 <translation id="4253168017788158739">نوٹ</translation>
+<translation id="4255487295905690262">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر آپ کو ای میل الرٹس ملیں گے۔</translation>
 <translation id="425582637250725228">ممکن ہے کہ آپ کی تبدیلیاں محفوظ نہ ہوں۔</translation>
 <translation id="4258748452823770588">غلط دستخط</translation>
 <translation id="4261046003697461417">تحفظ یافتہ دستاویزات کی تشریح نہیں کی جا سکتی</translation>
@@ -2977,7 +2981,6 @@
 <translation id="6999480632062519056">تندرستی سے متعلق ہدایت اور ذاتی تربیت</translation>
 <translation id="6999969238895751684">تفریح کی انڈسٹری</translation>
 <translation id="7003278537452757231">نمدے اور قالینیں</translation>
-<translation id="7003335073762455340">آپ اس پروڈکٹ کو ٹریک کر رہے ہیں۔ یہ صفحہ <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہے۔</translation>
 <translation id="7004499039102548441">حالیہ ٹیبز</translation>
 <translation id="7004583254764674281">‏تیزی سے کاڈرز کی تصدیق کرنے کیلئے Windows Hello کا استعمال کریں</translation>
 <translation id="7006930604109697472">بہر صورت بھیجیں</translation>
@@ -3033,7 +3036,6 @@
 <translation id="7108819624672055576">ایک ایکسٹینشین کی جانب سے اجازت یافتہ</translation>
 <translation id="7109510814665441393">ڈرائیونگ اور دوڑ والی گیمز</translation>
 <translation id="7110116949943042888">عارضی اور موسمی جابز</translation>
-<translation id="7110553203952632623">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر آپ کو ای میل الرٹس ملیں گے</translation>
 <translation id="7111012039238467737">(درست)</translation>
 <translation id="7111507312244504964">املاک کے معائنے اور تخمینے</translation>
 <translation id="7112327784801341716">آپ کی موجودہ معلومات نظر نہیں آ رہی ہے؟ اپنے بینک سے رابطہ کر کے اسے اپ ڈیٹ کریں۔</translation>
@@ -3152,7 +3154,6 @@
 <translation id="7366117520888504990">‏‎198 x 275 مل میٹر</translation>
 <translation id="7366362069757178916">ادائیگی کے ہینڈلرز</translation>
 <translation id="7367985555340314048">دلچسپی کے موضوعات آپ کی حالیہ براؤزنگ کی سرگزشت پر مبنی ہیں اور سائٹس آپ کو ذاتی نوعیت کے اشتہارات دکھانے کے لیے ان کا استعمال کرتی ہیں</translation>
-<translation id="7368169244533796604">سائٹ حذف کریں</translation>
 <translation id="7372526636730851647">تصویر (گلوسی)</translation>
 <translation id="7372973238305370288">تلاش کا نتیجہ</translation>
 <translation id="7374461526650987610">پروٹوکول ہینڈلرز</translation>
@@ -3575,7 +3576,6 @@
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8134058435519644366">تقرری اور عملہ سازی</translation>
 <translation id="8135546115396015134">بائیں کلید</translation>
-<translation id="8144303576836498784">کچھ غلط ہو گیا۔ آپ کی تبدیلی محفوظ نہیں ہوئی</translation>
 <translation id="8148608574971654810">‏PDF ورژن:</translation>
 <translation id="8149426793427495338">آپ کا کمپیوٹر سلیپ وضع میں چلا گیا۔</translation>
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>
@@ -3788,6 +3788,7 @@
 <translation id="8542014550340843547">نیچے تین سٹیپل</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">آپ <ph name="BEGIN_ERROR_LINK" />پتا لگانے کے مسئلہ کی اطلاع<ph name="END_ERROR_LINK" /> دے سکتے ہیں یا اگر آپ اپنی سیکیورٹی کے خطروں کو سمجھتے ہيں تو آپ <ph name="BEGIN_LINK" />یہ غیر محفوظ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
+<translation id="8544217240017914508">‏ادائیگی کے طریقوں کو پُر کرنے کی خاطر ترتیبات میں ترمیم کرنے کے لیے Google Chrome کوشش کر رہا ہے۔</translation>
 <translation id="8544303911974837265">پولی ایسٹر</translation>
 <translation id="854548366864113872">زیادہ قیمت والا اختیار</translation>
 <translation id="8546254312340305428">اپ لوڈ کرنے کی وجہ فراہم کریں (درکار ہے)</translation>

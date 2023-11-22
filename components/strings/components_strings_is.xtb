@@ -324,7 +324,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1593359183944365958">270 gráður</translation>
 <translation id="1594030484168838125">Velja</translation>
 <translation id="1596296697375291157">Spennumyndir, glæpamyndir og morðgátur</translation>
-<translation id="1597473228022844713">Þú ert að fylgjast með þessari vöru. Þessi síða er vistuð í <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Aðgangslykill úr Windows Hello</translation>
 <translation id="1599199147673445968">Nýtt kort? <ph name="BEGIN_LINK" />Setja inn kortaupplýsingar<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Spila Dino Run-leikinn í Chrome</translation>
@@ -517,6 +516,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1997484222658892567"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tölvunni þinni</translation>
 <translation id="1997774360448418989">Pappír (þunnur)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{og eitt í viðbót}one{og # í viðbót}other{og # í viðbót}}</translation>
+<translation id="2001469757375372617">Eitthvað fór úrskeiðis. Breytingin var ekki vistuð.</translation>
 <translation id="2003709556000175978">Endurstilltu aðgangsorðið þitt núna</translation>
 <translation id="2003775180883135320">Fjögur göt efst</translation>
 <translation id="2004697686368036666">Óvíst er að eiginleikar á sumum vefsvæðum virki</translation>
@@ -722,6 +722,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2395840535409704129">Vatnsíþróttir</translation>
 <translation id="2396249848217231973">&amp;Afturkalla eyðingu</translation>
 <translation id="2397836504670957718">Fartölvur og fistölvur</translation>
+<translation id="2399868464369312507">Google Chrome er að reyna að breyta greiðslumátum.</translation>
 <translation id="2400600116338235695">Getur beðið um að tengjast raðtengjum</translation>
 <translation id="2404884497378469141">Prófaðu að afrita skrárnar þínar aftur</translation>
 <translation id="2413155254802890957">Gamalt</translation>
@@ -1115,6 +1116,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3250640885957938546">Auglýsingar og markaðsmál</translation>
 <translation id="3252772880526154546">Arkitektúr</translation>
 <translation id="3254301855501243548">18 x 22 to.</translation>
+<translation id="3255926992597692024">Chromium er að reyna að breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
 <translation id="3256863843508922226">Starfslok og lífeyrir</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýjan viðburð í Google dagatali á skjótan hátt</translation>
 <translation id="3261488570342242926">Nánar um sýndarkort</translation>
@@ -1498,6 +1500,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4047351652147966654">18 x 24 to.</translation>
 <translation id="404831776305217138">Uppfærsluvefslóð fyrir viðbót með kennið „<ph name="EXTENSION_ID" />“ er ógild eða notar óstutt skema. Studd skemu eru: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> og <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Þú getur notað það í Google-vörum.</translation>
+<translation id="4050599136622776556">Chromium er að reyna að breyta greiðslumátum.</translation>
 <translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
 <translation id="4063063121357725926">Leyfðu Google að hjálpa þér að finna afslætti fyrir körfurnar þínar</translation>
@@ -1620,6 +1623,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Bolir</translation>
 <translation id="4253168017788158739">Athugasemd</translation>
+<translation id="4255487295905690262">Þú færð tilkynningu í tölvupósti ef verðlækkun verður á einhverju vefsvæði.</translation>
 <translation id="425582637250725228">Hugsanlegt er að breytingarnar þínar séu ekki vistaðar.</translation>
 <translation id="4258748452823770588">Röng undirskrift</translation>
 <translation id="4261046003697461417">Ekki er hægt að skrifa skýringar á varin skjöl</translation>
@@ -2974,7 +2978,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6999480632062519056">Líkamsrækt og einkaþjálfun</translation>
 <translation id="6999969238895751684">Skemmtanaiðnaðurinn</translation>
 <translation id="7003278537452757231">Mottur og gólfteppi</translation>
-<translation id="7003335073762455340">Þú ert að fylgjast með þessari vöru. Þessi síða er vistuð í <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
 <translation id="7004583254764674281">Notaðu Windows Hello til að staðfesta kort hraðar</translation>
 <translation id="7006930604109697472">Senda samt</translation>
@@ -3030,7 +3033,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7108819624672055576">Leyft af viðbót</translation>
 <translation id="7109510814665441393">Aksturs- og kappakstursleikir</translation>
 <translation id="7110116949943042888">Tímabundin og árstíðabundin störf</translation>
-<translation id="7110553203952632623">Þú færð tilkynningu í tölvupósti ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="7111012039238467737">(gilt)</translation>
 <translation id="7111507312244504964">Fasteignaskoðun og -mat</translation>
 <translation id="7112327784801341716">Sérðu ekki núverandi upplýsingar? Hafðu samband við bankann þinn til að uppfæra upplýsingarnar.</translation>
@@ -3149,7 +3151,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Greiðslumiðlarar</translation>
 <translation id="7367985555340314048">Áhugasvið byggjast á nýlegum vafraferli og vefsvæði nota þau til að birta þér sérsniðnar auglýsingar</translation>
-<translation id="7368169244533796604">Eyða vefsvæði</translation>
 <translation id="7372526636730851647">Ljósmynd (glans)</translation>
 <translation id="7372973238305370288">leitarniðurstaða</translation>
 <translation id="7374461526650987610">Hjálparforrit fyrir samskiptareglur</translation>
@@ -3572,7 +3573,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8134058435519644366">Ráðningar og starfsmannamál</translation>
 <translation id="8135546115396015134">vinstri lykill</translation>
-<translation id="8144303576836498784">Eitthvað fór úrskeiðis. Breytingin var ekki vistuð</translation>
 <translation id="8148608574971654810">PDF-útgáfa:</translation>
 <translation id="8149426793427495338">Tölvan þín fór að sofa.</translation>
 <translation id="8150722005171944719">Skráin á <ph name="URL" /> er ekki læsileg. Hún kann að hafa verið fjarlægð, færð eða skrárheimildir gætu hindrað aðgang að henni.</translation>
@@ -3785,6 +3785,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8542014550340843547">Þrjú hefti neðst</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Þú getur <ph name="BEGIN_ERROR_LINK" />tilkynnt vandamál við greiningu<ph name="END_ERROR_LINK" /> eða, ef þú skilur hvaða hættu þetta hefur í för með sér fyrir öryggi þitt, <ph name="BEGIN_LINK" />opnað þetta ótrausta vefsvæði<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome er að reyna að breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
 <translation id="8544303911974837265">Pólýester</translation>
 <translation id="854548366864113872">Hátt verð</translation>
 <translation id="8546254312340305428">Gefðu upp ástæðu upphleðslu (áskilið)</translation>

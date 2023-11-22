@@ -2673,6 +2673,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3021065318976393105">Gjatë kohës me bateri</translation>
 <translation id="3021066826692793094">Flutur</translation>
 <translation id="3021678814754966447">&amp;Shiko burimin e kornizës</translation>
+<translation id="3021902017511220299">Skanimi dështoi. Ky veprim është bllokuar nga administratori yt.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> do të hiqet nga ky Chromebook dhe nuk do të ruhet te <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nuk e kuptova.</translation>
 <translation id="3023464535986383522">Zgjidh që të thuhet</translation>
@@ -4044,7 +4045,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4124935795427217608">Njëbrirësh</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Ditari i pajisjes</translation>
-<translation id="4130207949184424187">Kjo shtesë ka ndryshuar se cila faqe shfaqet kur kërkon nga Omnibox.</translation>
 <translation id="4130750466177569591">Jam dakord</translation>
 <translation id="413121957363593859">Përbërësit</translation>
 <translation id="4131283654370308898">Lejo <ph name="EXTENSION_NAME" /> në këtë sajt</translation>
@@ -5550,7 +5550,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="5355498626146154079">Duhet të aktivizosh flamurin “Borealis Enabled”</translation>
 <translation id="5355501370336370394">Regjistro pajisjen e ndërmarrjes</translation>
-<translation id="5355926466126177564">Shtesa <ph name="EXTENSION_NAME" /> ka ndryshuar se cila faqe shfaqet kur kërkon nga Omnibox.</translation>
 <translation id="5356155057455921522">Ky përditësim nga administratori yt do t'i bëjë aplikacionet e organizatës sate të hapen më shpejt. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="5359910752122114278">1 rezultat</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> skedë</translation>
@@ -5892,7 +5891,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5624120631404540903">Menaxho fjalëkalimet</translation>
 <translation id="5625225435499354052">Modifiko në Google Pay</translation>
 <translation id="5626134646977739690">Emri:</translation>
-<translation id="5627086634964711283">Kontrollon po ashtu se cila faqe shfaqet kur klikon te butoni "Kreu".</translation>
 <translation id="5627832140542566187">Orientimi i ekranit</translation>
 <translation id="5628434207686266338">Cakto fjalëkalimin e pajisjes</translation>
 <translation id="562935524653278697">Administratori yt ka çaktivizuar sinkronizimin e faqeshënuesve, historikut, fjalëkalimeve dhe cilësimeve të tua të tjera.</translation>
@@ -6296,14 +6294,12 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5955304353782037793">aplikacion</translation>
 <translation id="5955721306465922729">Një uebsajt dëshiron që ta hapë këtë aplikacion.</translation>
 <translation id="5955809630138889698">Kjo pajisje mund të jetë e përshtatshme vetëm për modalitetin e demonstrimit online. Kontakto me përfaqësuesin e ekipit të mbështetjes për më shumë detaje.</translation>
-<translation id="5956585768868398362">A është kjo faqja e kërkimit që prisje?</translation>
 <translation id="5957987129450536192">Trokit ikonën e "Zgjidh që të thuhet" pranë imazhit të profilit tënd, më pas zgjidh atë që dëshiron të dëgjosh.</translation>
 <translation id="5959471481388474538">Rrjeti nuk ofrohet</translation>
 <translation id="5963413905009737549">Seksioni</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maksimumi <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Hapi të gjitha në &amp;dritare të re}=1{Hape në &amp;dritare të re}other{Hapi të gjitha ({COUNT}) në &amp;dritare të re}}</translation>
 <translation id="5964247741333118902">Përmbajtjet e integruara</translation>
-<translation id="5965661248935608907">Ai kontrollon po ashtu se çfarë faqeje shfaqet kur klikon te butoni "Faqja kryesore" ose kur kërkon nga "Omnibox".</translation>
 <translation id="5966511985653515929">Të dhënat e sajteve fshihen nga pajisja jote kur i mbyll të gjitha dritaret</translation>
 <translation id="5968022600320704045">Asnjë rezultat kërkimi</translation>
 <translation id="5969364029958154283">Mëso më shumë rreth rivendosjes së cilësimeve</translation>
@@ -6740,7 +6736,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6309510305002439352">Mikrofoni është çaktivizuar</translation>
 <translation id="6310141306111263820">Profili i kartës eSIM nuk mund të instalohej. Për ndihmë, kontakto me operatorin celular.</translation>
 <translation id="6311220991371174222">Chrome nuk mund të niset sepse ka ndodhur një gabim gjatë hapjes së profilit tënd. Provo ta rinisësh Chrome.</translation>
-<translation id="6311708879134408222">Mund të provosh përsëri nesër.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Kontrolli i sigurisë u ekzekutua 1 ditë më parë}other{Kontrolli i sigurisë u ekzekutua {NUM_DAYS} ditë më parë}}</translation>
 <translation id="6312638141433622592">Ofro shfaqjen e artikujve në modalitetin e lexuesit, kur mbështetet</translation>
 <translation id="6313641880021325787">DIL NGA VR</translation>
@@ -7265,7 +7260,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6749473226660745022">Fotografitë</translation>
 <translation id="6750757184909117990">Çaktivizo "Rrjetin celular"</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (e fshehtë)</translation>
-<translation id="6756059675436942777">Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="6756157672127672536">Aplikacioni "Skedarët" siguron qasje të shpejtë te skedarët që ke ruajtur në "Diskun e Google", në hapësirën ruajtëse të jashtme ose në pajisjen tënde me ChromeOS.</translation>
 <translation id="6756643207511618722">Motorët e ligjërimit</translation>
 <translation id="6757431299485455321">Ndihmoji pajisjet e tjera të gjejnë këtë zonë të qasjes për internet.</translation>
@@ -7669,7 +7663,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7047059339731138197">Zgjidh një sfond</translation>
 <translation id="7049293980323620022">Të mbahet skedari?</translation>
 <translation id="7050037487872780845">Konfigurimi i zonës së qasje për internet është i pavlefshëm</translation>
-<translation id="7051551856857948729">Fshih vlerën e numrit IBAN</translation>
 <translation id="7052237160939977163">Dërgo të dhënat e gjurmimit të performancës</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
@@ -8555,7 +8548,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7757787379047923882">Teksti u nda nga <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Rregullo kufijtë e ekranit tënd</translation>
-<translation id="7760004034676677601">A është kjo faqja e fillimit që prisje?</translation>
 <translation id="7762024824096060040">Kjo llogari nuk mund të përdoret</translation>
 <translation id="7762243782113123335">Më vjen keq, ndodhi një gabim. Jep komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Shto adresë</translation>
@@ -8656,7 +8648,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7828642077514646543">Gabim: Certifikata nuk mund të dekodohet</translation>
 <translation id="7829877209233347340">Kërkoji prindit që të të japë leje për të shtuar një llogari shkolle</translation>
 <translation id="7830833461614351956">Të kopjohen <ph name="NUM_OF_FILES" /> skedarë te <ph name="CLOUD_PROVIDER" /> për t'i hapur?</translation>
-<translation id="783088158898934992">Gjuha e aplikacionit</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Nëse Google gjen një ulje çmimi, do ta shikosh atë në këtë faqe</translation>
 <translation id="7833720883933317473">Fjalët e personalizuara të ruajtura do të shfaqen këtu</translation>
@@ -9040,6 +9031,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="811994229154425014">Hapësirë e dyfishtë për të shkruar pikë</translation>
 <translation id="8120505434908124087">Instalo profilin e kartës eSIM</translation>
 <translation id="8121750884985440809">Po transmeton aktualisht ekranin tënd</translation>
+<translation id="8122898034710982882">Phone Hub, "<ph name="FEATURE_NAME" />"</translation>
 <translation id="81238879832906896">Lule e verdhë dhe e bardhë</translation>
 <translation id="8123975449645947908">Lëviz prapa</translation>
 <translation id="8124313775439841391">ONC-ja e menaxhuar</translation>
@@ -9075,6 +9067,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8148760431881541277">Kufizo identifikimin</translation>
 <translation id="8149564499626272569">Verifikoje përmes telefonit me një kabllo USB</translation>
 <translation id="8149870652370242480">Për të përdorur fjalëkalimet e ruajtura në telefonin tënd, shkarko Chrome për iOS dhe identifikohu në "Llogarinë tënde të Google".</translation>
+<translation id="8151057139207656239">Detajet e ndërtimit u kopjuan</translation>
 <translation id="815114315010033526">Përdor kodin QR më mirë</translation>
 <translation id="8151638057146502721">Konfiguro</translation>
 <translation id="8154790740888707867">Asnjë skedar</translation>
@@ -9861,7 +9854,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="876956356450740926">Ekzekuto veglat e zhvilluesve, IDE-të dhe modifikuesit. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Direktoria rrënjë e shtesës</translation>
 <translation id="8771300903067484968">Sfondi i faqes së nisjes është rivendosur në sfondin e parazgjedhur.</translation>
-<translation id="8773280816776735812">Shfaq vlerën e numrit IBAN</translation>
 <translation id="8774379074441005279">Konfirmo restaurimin</translation>
 <translation id="8774934320277480003">Kufiri i sipërm</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>
@@ -10040,6 +10032,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8910987510378294980">Fshih listën e pajisjeve</translation>
 <translation id="8912362522468806198">Llogaria e Google</translation>
 <translation id="8912810933860534797">Aktivizo skanimin automatik</translation>
+<translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8915307125957890427">Kliko me butonin djathtas në një skedë, zgjidh "Shto skedën te grupi" dhe më pas zgjidh "Grup i ri"</translation>
 <translation id="8915370057835397490">Po ngarkon sugjerimin</translation>
 <translation id="8916476537757519021">Nënkorniza "e fshehtë": <ph name="SUBFRAME_SITE" /></translation>

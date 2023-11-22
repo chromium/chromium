@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">നിങ്ങൾക്ക് പിന്നീട് ഏതുസമയത്തും മൈക്കിന്റെ സ്വഭാവം മാറ്റാം.</translation>
 <translation id="3659814201068740063">ഏതാണ്ട് <ph name="TIME_LEFT" /> ശേഷിക്കുന്നു (<ph name="PERCENTAGE" />%).
 നിങ്ങളുടെ ഉപകരണം വൈദ്യുതി സ്രോതസ്സിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" />-ന്റെ ഉയർന്ന ദൃശ്യപരത ടോഗിൾ ചെയ്യുക</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">നിങ്ങളുടെ ഫ്ലോട്ടിംഗ് വിൻഡോ മറയ്ക്കാൻ സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="367531336287639526">വിലാസ ബാറിന്റെ ഇടതുവശത്തുള്ള ആദ്യ ഐക്കൺ തിരഞ്ഞെടുക്കുക</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" />-ന് പരിഷ്‌കരിച്ചു</translation>
 <translation id="4987738733603015246">ഡെസ്‌ക് 16</translation>
 <translation id="4989163558385430922">എല്ലാം കാണുക</translation>
 <translation id="5003993274120026347">അടുത്ത വാചകം</translation>
@@ -1440,6 +1442,7 @@
 <translation id="6827049576281411231">ഇവന്റ് പാനൽ അടയ്ക്കുക</translation>
 <translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> ബട്ടണിലേക്ക് പോകുക.</translation>
 <translation id="6836499262298959512">അപകടകരമായ ഫയൽ</translation>
+<translation id="6837621009301897464">സ്ക്രീൻഷോട്ട് എടുക്കാൻ, അമർത്തുക</translation>
 <translation id="6852052252232534364">ക്ലിക്ക് ചെയ്ത് സജീവമാക്കൂ</translation>
 <translation id="6855029042976311970">ഇപ്പോൾ എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="6856708615407876657">തിരയൽ ഫലത്തിന്റെ വിഭാഗങ്ങൾ ടോഗിൾ ചെയ്യുക</translation>

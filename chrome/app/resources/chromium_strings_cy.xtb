@@ -71,10 +71,8 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="2329088755516916767">Pan y bydd wedi'i droi ymlaen, bydd Chromium yn rhaglwytho tudalennau sy'n gwneud pori a chwilio'n gyflymach.</translation>
 <translation id="2343156876103232566">I anfon rhif oddi yma i'ch ffôn Android, mewngofnodwch i Chromium ar y ddwy ddyfais.</translation>
-<translation id="2347108572062610441">Mae'r estyniad hwn wedi newid y dudalen a ddangosir pan fyddwch yn dechrau Chromium.</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2384373936468275798">Ni allai ChromiumOS gysoni'ch data gan fod manylion mewngofnodi eich cyfrif yn hen.</translation>
-<translation id="2396765026452590966">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi newid pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Roedd 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}=1{Mae 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}two{Mae # ddyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}few{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}many{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}other{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}}</translation>
 <translation id="2401032172288869980">Mae angen caniatâd camera a meicroffon ar Chromium ar gyfer y wefan hon</translation>
 <translation id="2440750600860946460">Gydag <ph name="BEGIN_LINK" />offer o Chromium<ph name="END_LINK" />, gallwch bori'n ddiogel ac aros mewn rheolaeth</translation>
@@ -444,7 +442,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chromium ar y ddyfais hon.</translation>
 <translation id="8862326446509486874">Nid oes gennych yr hawliau priodol ar gyfer gosod ar lefel system. Rhowch gynnig arall ar redeg y gosodwr fel Gweinyddwr.</translation>
 <translation id="8880203542552872219">Os felly, golygwch eich cyfrinair sydd wedi'i gadw yn Chromium fel ei fod yn cyd-fynd â'ch cyfrinair newydd.</translation>
-<translation id="8897323336392112261">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chromium neu'n clicio'r botwm Hafan.</translation>
 <translation id="8907580949721785412">Mae Chromium yn ceisio dangos cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="8931379085695076764">Gall Chromium amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori o'r ychydig wythnosau diwethaf. Mae'r wybodaeth hon yn aros ar eich dyfais.</translation>
 <translation id="8941642502866065432">Methu â diweddaru Chromium</translation>

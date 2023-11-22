@@ -650,6 +650,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3659667652322717492">Mikrofoni käitumist saate hiljem igal ajal muuta.</translation>
 <translation id="3659814201068740063">Umbes <ph name="TIME_LEFT" /> jäänud (<ph name="PERCENTAGE" />%).
 Ühendage seade toiteallikaga.</translation>
+<translation id="3660860940251915011">Lülitage funktsiooni <ph name="FEATURE_NAME" /> hea nähtavuse režiim sisse/välja</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
 <translation id="3666266999138159418">Pühkige ujuva akna peitmiseks</translation>
 <translation id="367531336287639526">Vali aadressiribast vasakul esimene ikoon</translation>
@@ -981,6 +982,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Muudeti <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Töölaud 16</translation>
 <translation id="4989163558385430922">Kuva kõik</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
@@ -1684,6 +1686,13 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7893503627044934815">Ei soovi seda faili näha</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vajutasite ekraanikuva pööramise otseteed. Kas soovite ekraanikuva pöörata?</translation>
+<translation id="7897626842031123113">Olekusalv, aeg <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Vaheta aknad</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Puudutage sõrmejäljeandurit</translation>

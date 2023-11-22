@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">ඔබට පසුව ඕනෑම වේලාවක මයික් හැසිරීම වෙනස් කළ හැක.</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> පමණ ඉතිරිව ඇත (<ph name="PERCENTAGE" />%).
 ඔබගේ උපාංගය බලයට සම්බන්ධ කරන්න.</translation>
+<translation id="3660860940251915011">ඉහළ දෘශ්‍යතා <ph name="FEATURE_NAME" /> ටොගල් කරන්න</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> කළමනා කරන පරිශීලකයා</translation>
 <translation id="3666266999138159418">ඔබේ පාවෙන කවුළුව සැඟවීමට ස්වයිප් කරන්න</translation>
 <translation id="367531336287639526">ලිපින තීරුවේ වම් පස පළමු නිරූපකය තෝරන්න</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> ට වෙනස් කරන ලදි</translation>
 <translation id="4987738733603015246">16 වෙනි මේසය</translation>
 <translation id="4989163558385430922">සියල්ල බලන්න</translation>
 <translation id="5003993274120026347">ඊළඟ වාක්‍යය</translation>

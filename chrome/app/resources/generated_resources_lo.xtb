@@ -682,6 +682,7 @@
 <translation id="1536754031901697553">ກຳລັງຕັດການເຊື່ອມຕໍ່...</translation>
 <translation id="1537254971476575106">ແວ່ນຂະຫຍາຍເຕັມຈໍ</translation>
 <translation id="15373452373711364">ເຄີເຊີເມົາສ໌ໃຫຍ່</translation>
+<translation id="1539727654733007771">ບໍ່ໄດ້ຕັ້ງຄ່າເຄືອຂ່າຍມືຖື. ດາວໂຫຼດ <ph name="BEGIN_LINK" />ໂປຣໄຟລ໌<ph name="END_LINK" /> ໃໝ່.</translation>
 <translation id="1540265419569299117">ບໍລິການແອັບ ChromeOS</translation>
 <translation id="1540605929960647700">ເປີດນຳໃຊ້ໂໝດສາທິດ</translation>
 <translation id="1541346352678737112">ບໍ່ພົບເຄືອຂ່າຍ</translation>
@@ -1259,6 +1260,7 @@
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
 <translation id="1954597385941141174">ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ໄດ້</translation>
 <translation id="1954813140452229842">ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ການແບ່ງປັນ. ກະລຸນາກວດເບິ່ງຂໍ້ມູນປະຈຳຕົວຂອງທ່ານ ແລະ ລອງອີກຄັ້ງ.</translation>
+<translation id="1955313993396968525">ຊອກຫາເຟຣມວິດີໂອດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">ໄຟລ໌ມີຫຼາຍໃບຢັ້ງຢືນ, ບໍ່ມີອັນໃດທີ່ຖືກນໍາເຂົ້າມາ:</translation>
 <translation id="1956167375087861299">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ຕົວລະບຸເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງ</translation>
 <translation id="1956390763342388273">ນີ້ຈະອັບໂຫຼດໄຟລ໌ທັງໝົດຈາກ "<ph name="FOLDER_PATH" />". ພຽງແຕ່ເຮັດສິ່ງນີ້ຖ້າທ່ານເຊື່ອຖືເວັບໄຊເທົ່ານັ້ນ.</translation>
@@ -1834,6 +1836,7 @@
 <translation id="237828693408258535">ແປໜ້ານີ້ບໍ?</translation>
 <translation id="2378982052244864789">ເລືອກໄດເຣັກຕໍຣີສ່ວນຂະຫຍາຍ.</translation>
 <translation id="2379281330731083556">ພິມ​ດ້ວຍການໃຊ້​ກ່ອງ​ລະ​ບົບ... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">ນີ້ອາດເຮັດໃຫ້ເຄືອຂ່າຍມືຖືຂອງທ່ານຕັດການເຊື່ອມຕໍ່ເປັນເວລາສອງສາມນາທີ</translation>
 <translation id="2381499968174336913">ຕົວຢ່າງຂອງແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="2382875860893882175">ປັດຈຸບັນການສົ່ງສັນຍານຖືກຢຸດຊົ່ວຄາວ. ທ່ານສາມາດສືບຕໍ່ສົ່ງສັນຍານ ຫຼື ຢຸດສົ່ງສັນຍານຕອນໃດກໍໄດ້.</translation>
 <translation id="2383825469508278924">ປ່ຽນການແມັບປຸ່ມແປ້ນພິມ, ປຸ່ມຟັງຊັນ ແລະ ອື່ນໆ</translation>
@@ -4061,7 +4064,6 @@
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">ບັນ​ທຶກ​ອຸ​ປະ​ກອນ</translation>
-<translation id="4130207949184424187">ສ່ວນຂະຫຍາຍໄດ້ປ່ຽນວ່າຈະໃຫ້ໜ້າໃດສະແດງຂຶ້ນ ເມື່ອທ່ານຄົ້ນຫາຈາກ Omnibox.</translation>
 <translation id="4130750466177569591">ຂ້ອຍເຫັນ​ດີ</translation>
 <translation id="413121957363593859">ອົງ​ປະ​ກອບ</translation>
 <translation id="4131283654370308898">ອະນຸຍາດ <ph name="EXTENSION_NAME" /> ຢູ່ເວັບໄຊນີ້</translation>
@@ -5568,7 +5570,6 @@
 <translation id="5355191726083956201">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
 <translation id="5355498626146154079">ທ່ານຈະຕ້ອງເປີດໃຊ້ທຸງ “Borealis Enabled”</translation>
 <translation id="5355501370336370394">ລົງທະບຽນອຸປະກອນອົງກອນ</translation>
-<translation id="5355926466126177564">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນວ່າຈະໃຫ້ໜ້າໃດປະກົດຂຶ້ນ ເມື່ອທ່ານຄົ້ນຫາຈາກ Omnibox.</translation>
 <translation id="5356155057455921522">ການອັບເດດນີ້ຈາກຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະເຮັດໃຫ້ແອັບຂອງອົງການທ່ານເປີດໄດ້ໄວຂຶ້ນ. ຂັ້ນຕອນນີ້ອາດຈະໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="5359910752122114278">ຜົນການຊອກຫາ 1 ລາຍການ</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> ແຖບ</translation>
@@ -5909,7 +5910,6 @@
 <translation id="5624120631404540903">ຈັດການລະ​ຫັດ​ຜ່ານ​</translation>
 <translation id="5625225435499354052">ແກ້ໄຂໃນ Google Pay</translation>
 <translation id="5626134646977739690">ຊື່:</translation>
-<translation id="5627086634964711283">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານຄລິກປຸ່ມໜ້າຫຼັກ.</translation>
 <translation id="5627832140542566187">ທິດທາງການສະແດງຜົນ</translation>
 <translation id="5628434207686266338">ຕັ້ງລະຫັດຜ່ານອຸປະກອນ</translation>
 <translation id="562935524653278697">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ປິດນຳໃຊ້ການຊິ້ງຂໍ້ມູນບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານແລ້ວ.</translation>
@@ -6313,14 +6313,12 @@
 <translation id="5955304353782037793">ແອັບ</translation>
 <translation id="5955721306465922729">ເວັບໄຊຕ້ອງການເປີດແອັບພລິເຄຊັນນີ້.</translation>
 <translation id="5955809630138889698">ອຸປະກອນນີ້ອາດຈະມີສິດສຳລັບໂໝດສາທິດອອນລາຍເທົ່ານັ້ນ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ຕາງໜ້າຝ່າຍຊ່ວຍເຫຼືອຂອງທ່ານສຳລັບລາຍລະອຽດເພີ່ມເຕີມ.</translation>
-<translation id="5956585768868398362">ນີ້ແມ່ນໜ້າຄົ້ນຫາທີ່ທ່ານຄາດໄວ້ບໍ?</translation>
 <translation id="5957987129450536192">ແຕະໄອຄອນເລືອກເພື່ອເວົ້າທີ່ຢູ່ໃກ້ຮູບໂປຣໄຟລ໌ຂອງທ່ານ, ແລ້ວເລືອກສິ່ງທີ່ທ່ານຕ້ອງການຮັບຟັງ.</translation>
 <translation id="5959471481388474538">ບໍ່​ມີເຄືອ​ຂ່າຍ​ຢູ່</translation>
 <translation id="5963413905009737549">ຕອນ</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ສູງ​ສຸດ​)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
 <translation id="5964247741333118902">ເນື້ອຫາທີ່ຝັງໄວ້</translation>
-<translation id="5965661248935608907">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານຄລິກປຸ່ມໜ້າຫຼັກ ຫຼືຄົ້ນຫາຈາກ Omnibox.</translation>
 <translation id="5966511985653515929">ລະບົບຈະລຶບຂໍ້ມູນເວັບໄຊອອກຈາກອຸປະກອນຂອງທ່ານເມື່ອທ່ານປິດໜ້າຈໍທັງໝົດ</translation>
 <translation id="5968022600320704045">ບໍ່​ມີ​ຜົນ​​ການ​ຊອກຫາ​</translation>
 <translation id="5969364029958154283">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຣີເຊັດການຕັ້ງຄ່າ</translation>
@@ -6757,7 +6755,6 @@
 <translation id="6309510305002439352">ປິດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="6310141306111263820">ບໍ່ສາມາດຕິດຕັ້ງໂປຣໄຟລ໌ eSIM ໄດ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານເພື່ອຂໍຄວາມຊ່ວຍເຫຼືອ.</translation>
 <translation id="6311220991371174222">ບໍ່ສາມາດເລີ່ມ Chrome ໄດ້ເພາະວ່າມີບາງຢ່າງຜິດພາດໃນເວລາເປີດໂປຣໄຟລ໌ຂອງທ່ານ. ກະລຸນາລອງປິດເປີດ Chrome ຄືນໃໝ່.</translation>
-<translation id="6311708879134408222">ທ່ານສາມາດລອງໃໝ່ໄດ້ໃນມື້ອື່ນ.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{ດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອ 1 ມື້ກ່ອນ}other{ດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອ {NUM_DAYS} ມື້ກ່ອນ}}</translation>
 <translation id="6312638141433622592">ສະເໜີສະແດງບົດຄວາມໃນໂໝດຜູ້ອ່ານ, ເມື່ອຮອງຮັບ</translation>
 <translation id="6313641880021325787">ອອກຈາກ VR</translation>
@@ -6795,6 +6792,7 @@
 <translation id="6344576354370880196">ເຄື່ອງພິມທີ່ບັນທຶກໄວ້</translation>
 <translation id="6344608411615208519">ຜູ້ປົກຄອງຂອງທ່ານເປັນຜູ້ <ph name="BEGIN_LINK" />ຈັດການໂປຣແກຣມທ່ອງເວັບ<ph name="END_LINK" /> ຂອງທ່ານ</translation>
 <translation id="6344622098450209924">ການປ້ອງກັນການຕິດຕາມ</translation>
+<translation id="6345203628032613660">ຊອກຫາເຟຣມວິດີໂອດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">ຈຳເປັນຕ້ອງມີຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານສຳລັບພຣັອກຊີ <ph name="PROXY" /> ເພື່ອໃຫ້ຜູ້ເບິ່ງແຍງສາມາດຕັ້ງຄ່າເຄືອຂ່າຍຂອງທ່ານໄດ້</translation>
 <translation id="6345566021391290381">ມີລະຫັດຜ່ານທີ່ແບ່ງປັນກັບທ່ານສຳລັບ <ph name="WEBSITE_NAME" />. ທ່ານສາມາດໃຊ້ພວກມັນໃນແບບຟອມເຂົ້າສູ່ລະບົບໄດ້.</translation>
 <translation id="6345878117466430440">ໝາຍວ່າອ່ານແລ້ວ</translation>
@@ -7282,7 +7280,6 @@
 <translation id="6749473226660745022">ຮູບພາບ</translation>
 <translation id="6750757184909117990">ປິດການນຳໃຊ້ເຄືອຂ່າຍມືຖື</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ບໍ່ເປີດເຜີຍຕົນຕົວ)</translation>
-<translation id="6756059675436942777">ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="6756157672127672536">ແອັບໄຟລ໌ຈະມອບການເຂົ້າເຖິງດ່ວນໄປຫາໄຟລ໌ທີ່ທ່ານບັນທຶກໄວ້ຢູ່ Google Drive, ບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກ ຫຼື ອຸປະກອນ ChromeOS ຂອງທ່ານ.</translation>
 <translation id="6756643207511618722">ໂປຣແກຣມສຽງເວົ້າ</translation>
 <translation id="6757431299485455321">ຊ່ວຍອຸປະກອນອື່ນຊອກຫາຮັອດສະປອດນີ້.</translation>
@@ -7311,6 +7308,7 @@
 <translation id="6777817260680419853">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ</translation>
 <translation id="6777845730143344223">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການສະໝັກສະມາຊິກ Passpoint</translation>
 <translation id="6779092717724412415">ເພື່ອສ້າງໄຮໄລ້ແບບນີ້, ໃຫ້ເລືອກຂໍ້ຄວາມໃດກໍໄດ້ແລ້ວຄລິກຂວາ.</translation>
+<translation id="6779348349813025131">ຕົວຈັດການລະຫັດຜ່ານ Google ຕ້ອງການສິດເຂົ້າເຖິງ Keychain ຂອງ MacOS</translation>
 <translation id="6779447100905857289">ກະຕ່າຂອງທ່ານ</translation>
 <translation id="677965093459947883">ນ້ອຍຫຼາຍ</translation>
 <translation id="6781005693196527806">&amp;ຈັດການໂປຣແກຣມຊອກຫາ...</translation>
@@ -7686,7 +7684,6 @@
 <translation id="7047059339731138197">ເລືອກພາບພື້ນຫຼັງ</translation>
 <translation id="7049293980323620022">ເກັບໄຟລ໌ໄວ້ບໍ?</translation>
 <translation id="7050037487872780845">ການຕັ້ງຄ່າຮັອດສະປອດບໍ່ຖືກຕ້ອງ</translation>
-<translation id="7051551856857948729">ເຊື່ອງຄ່າ IBAN</translation>
 <translation id="7052237160939977163">ສົ່ງ​ຂໍ້​ມູນຕິດຕາມການ​ປະ​ຕິ​ບັດ</translation>
 <translation id="7053983685419859001">ບລັອກ</translation>
 <translation id="7055152154916055070">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ:</translation>
@@ -8571,7 +8568,6 @@
 <translation id="7757787379047923882">ຂໍ້ຄວາມທີ່ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ປັບຂອບເຂດຂອງຈໍສະແດງຜົນຂອງທ່ານ</translation>
-<translation id="7760004034676677601">ນີ້ແມ່ນໜ້າເລີ່ມຕົ້ນທີ່ທ່ານຄາດໄວ້ບໍ?</translation>
 <translation id="7762024824096060040">ບໍ່ສາມາດໃຊ້ບັນຊີນີ້ໄດ້</translation>
 <translation id="7762243782113123335">ຂໍອະໄພ, ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາສົ່ງຄຳຕິຊົມພ້ອມໃສ່ #bruschetta ໃນຄຳອະທິບາຍ. ລະຫັດຂໍ້ຜິດພາດແມ່ນ <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">ເພີ່ມ​ທີ່​ຢູ່</translation>
@@ -8672,7 +8668,6 @@
 <translation id="7828642077514646543">ຜິດພາດ: ບໍ່ສາມາດຖອດລະຫັດໃບຮັບຮອງໄດ້</translation>
 <translation id="7829877209233347340">ຂໍໃຫ້ພໍ່ແມ່ເຂົ້າສູ່ລະບົບເພື່ອອະນຸຍາດໃຫ້ເພີ່ມບັນຊີໂຮງຮຽນ</translation>
 <translation id="7830833461614351956">ສຳເນົາ <ph name="NUM_OF_FILES" /> ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" /> ເພື່ອເປີດບໍ?</translation>
-<translation id="783088158898934992">ພາສາຂອງແອັບ</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">ຫາກ Google ພົບສ່ວນຫຼຸດ, ທ່ານຈະເຫັນມັນຢູ່ໜ້ານີ້</translation>
 <translation id="7833720883933317473">ຄຳສັບກຳນົດເອງທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
@@ -9879,7 +9874,6 @@
 <translation id="876956356450740926">ໃຊ້ເຄື່ອງມືນັກພັດທະນາ, IDE ແລະ ຕົວແກ້ໄຂ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ໄດເຣັກທໍຣີພື້ນຖານຂອງສ່ວນຂະຫຍາຍ</translation>
 <translation id="8771300903067484968">ພາບພື້ນຫຼັງຂອງໜ້າເລີ່ມຕົ້ນໄດ້ຖືກຣີເຊັດເປັນພາບພື້ນຫຼັງເລີ່ມຕົ້ນແລ້ວ.</translation>
-<translation id="8773280816776735812">ສະແດງຄ່າ IBAN</translation>
 <translation id="8774379074441005279">ຢືນຢັນກູ້ຄືນ</translation>
 <translation id="8774934320277480003">ຂອບເທິງ</translation>
 <translation id="8775144690796719618">URL ໃຊ້ບໍ່ໄດ້</translation>
@@ -10058,6 +10052,7 @@
 <translation id="8910987510378294980">ເຊື່ອງລາຍຊື່ອຸປະກອນ</translation>
 <translation id="8912362522468806198">ບັນຊີ Google</translation>
 <translation id="8912810933860534797">ເປີດນຳໃຊ້ການສະແກນອັດຕະໂນມັດ</translation>
+<translation id="8914504000324227558">ເປີດໃຊ້ Chrome ຄືນໃໝ່</translation>
 <translation id="8915307125957890427">ຄລິກຂວາໃສ່ແຖບໃດໜຶ່ງແລ້ວເລືອກ "ເພີ່ມແຖບໃສ່ກຸ່ມ" ແລະ ຫຼັງຈາກນັ້ນໃຫ້ເລືອກ "ກຸ່ມໃໝ່"</translation>
 <translation id="8915370057835397490">ກໍາລັງໂຫຼດຄໍາແນະນໍາ</translation>
 <translation id="8916476537757519021">ຂອບຍ່ອຍທີ່ບໍ່ເຜີຍຕົນຕົວ​: <ph name="SUBFRAME_SITE" /></translation>

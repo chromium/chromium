@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">Можете да използвате паролите, които сте запазили в мениджъра на паролите в Google, в други приложения на вашия iPhone.</translation>
 <translation id="2689064829982324496">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome не можа да провери за актуализации. Опитайте отново по-късно.</translation>
+<translation id="2702250627063295552">Добавяне на елемент към списъка за четене в Chrome</translation>
 <translation id="2736805085127235148">Понастоящем известията в Chrome са изключени от настройките на устройството ви.</translation>
 <translation id="2767464022270041271">Няма запазени пароли. Google Мениджър на пароли може да проверява паролите ви, когато ги запазите.</translation>
 <translation id="2868822340714096138">Изчистване на данните за сърфирането в Chrome</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">Управление на паролите в Chrome</translation>
 <translation id="3827545470516145620">Разполагате със стандартно ниво на защита на това устройство</translation>
 <translation id="384394811301901750">В момента Google Chrome не може да използва камерата ви</translation>
+<translation id="3863841106411295595">Добавя въведените URL адреси към списъка ви за четене в Chrome.</translation>
 <translation id="3901001113120561395">Възползвайте се максимално от Chrome.</translation>
 <translation id="3967382818307165056">Управление на начините на плащане в Chrome</translation>
 <translation id="3980220367029651214">Заменяте настоящия профил за синхронизиране (<ph name="USER_EMAIL1" />) с друг (<ph name="USER_EMAIL2" />). Съществуващите ви данни в Chrome се управляват от <ph name="DOMAIN" />. Те ще се изтрият от това устройство, но ще останат в профила <ph name="USER_EMAIL1" />.</translation>

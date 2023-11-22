@@ -410,6 +410,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3080525922482950719">Anda dapat menyimpan halaman untuk dibaca nanti atau saat offline</translation>
 <translation id="3081338492074632642">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bawah</translation>
+<translation id="3090455602619185166">Login dengan Akun Terkelola</translation>
 <translation id="309710370695886264">Anda memiliki 1 sandi yang digunakan ulang. Perbaiki sekarang agar tetap terlindungi.</translation>
 <translation id="3112556859945124369">Tandai…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Lihat Apa Saja yang Dapat Anda Sinkronkan<ph name="END_LINK" />.</translation>
@@ -574,6 +575,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4002066346123236978">Judul</translation>
 <translation id="4004204301268239848">Sandi disimpan di Akun Google Anda agar Anda dapat menggunakannya di perangkat mana pun.</translation>
 <translation id="4018310736049373830">Kelola Aktivitas</translation>
+<translation id="4021931095789478915">Tambahkan ${url} ke daftar bacaan</translation>
 <translation id="4038354071007134711">Tidak ada aplikasi di perangkat ini yang dapat membuka file.</translation>
 <translation id="4042870976416480368">Cari di Halaman</translation>
 <translation id="40433179647657191">Buat dan bagikan link langsung ke bagian halaman yang telah Anda tandai.</translation>
@@ -1447,6 +1449,7 @@ Data Anda dienkripsi dengan frasa sandi pada <ph name="TIME" />. Masukkan frasa 
 <translation id="8556590991644167667">{count,plural, =1{Anda menolak {count} peringatan}other{Anda menolak {count} peringatan}}</translation>
 <translation id="8558480467877843976">Anda kini dapat menggunakan Chrome kapan saja dengan mengakses atau mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="8560253818350321773">Tampilkan item yang sering digunakan terlebih dahulu.</translation>
+<translation id="8569721750632860947">URL apa yang ingin Anda tambahkan ke daftar bacaan?</translation>
 <translation id="8588404856427128947">Nonaktif</translation>
 <translation id="8591976964826315682">Blokir Cookie Pihak Ketiga dalam Mode Samaran</translation>
 <translation id="8593565399399144771">Anda dapat membuka tab baru di sini.</translation>

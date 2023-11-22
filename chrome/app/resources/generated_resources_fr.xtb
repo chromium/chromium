@@ -2676,6 +2676,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3021065318976393105">Lorsque l'appareil est sur batterie</translation>
 <translation id="3021066826692793094">Papillon</translation>
 <translation id="3021678814754966447">&amp;Afficher le code source du cadre</translation>
+<translation id="3021902017511220299">Échec de l'analyse. Votre administrateur a bloqué cette action.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> sera supprimé de ce Chromebook et ne sera pas enregistré dans <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Je n'ai pas compris.</translation>
 <translation id="3023464535986383522">Sélectionner pour prononcer</translation>
@@ -4047,7 +4048,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="412730574613779332">Super-héros</translation>
 <translation id="4130199216115862831">Journal d'appareils</translation>
-<translation id="4130207949184424187">Cette extension a modifié la page qui s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="4130750466177569591">J'accepte</translation>
 <translation id="413121957363593859">Composants</translation>
 <translation id="4131283654370308898">Autoriser <ph name="EXTENSION_NAME" /> sur ce site</translation>
@@ -5553,7 +5553,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5355498626146154079">Vous devez activer le flag "Borealis Enabled"</translation>
 <translation id="5355501370336370394">Enregistrer un appareil d'entreprise</translation>
-<translation id="5355926466126177564">L'extension <ph name="EXTENSION_NAME" /> a modifié la page qui s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5356155057455921522">Cette mise à jour de votre administrateur permettra aux applis de votre organisation de s'ouvrir plus rapidement. Cela peut prendre quelques minutes.</translation>
 <translation id="5359910752122114278">1 résultat</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> onglet</translation>
@@ -5896,7 +5895,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
 <translation id="5625225435499354052">Modifier dans Google Pay</translation>
 <translation id="5626134646977739690">Nom :</translation>
-<translation id="5627086634964711283">Elle contrôle également la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="5627832140542566187">Orientation de l'écran</translation>
 <translation id="5628434207686266338">Définir le mot de passe de l'appareil</translation>
 <translation id="562935524653278697">Votre administrateur a désactivé la synchronisation de vos favoris, de votre historique, de vos mots de passe et d'autres paramètres.</translation>
@@ -6300,14 +6298,12 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5955304353782037793">application</translation>
 <translation id="5955721306465922729">Un site Web souhaite ouvrir cette application.</translation>
 <translation id="5955809630138889698">Il se peut que cet appareil soit seulement compatible avec le mode de démonstration en ligne. Pour en savoir plus, veuillez contacter le service d'assistance.</translation>
-<translation id="5956585768868398362">Est-ce la page de recherche que vous attendiez ?</translation>
 <translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour prononcer, située à côté de votre image de profil, puis choisissez ce que vous voulez entendre.</translation>
 <translation id="5959471481388474538">Réseau indisponible</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pic : <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5964247741333118902">Contenu intégré</translation>
-<translation id="5965661248935608907">Elle contrôle également la page qui s'affiche lorsque vous cliquez sur le bouton Accueil ou lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5966511985653515929">Les données des sites sont supprimées de votre appareil lorsque vous fermez toutes les fenêtres</translation>
 <translation id="5968022600320704045">Aucun résultat de recherche</translation>
 <translation id="5969364029958154283">En savoir plus sur la réinitialisation des paramètres</translation>
@@ -6744,7 +6740,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6309510305002439352">Micro désactivé</translation>
 <translation id="6310141306111263820">Impossible d'installer le profil eSIM. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
 <translation id="6311220991371174222">Impossible de démarrer Chrome, car une erreur s'est produite lors de l'ouverture de votre profil. Essayez de relancer Chrome.</translation>
-<translation id="6311708879134408222">Vous pourrez réessayer demain.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Contrôle de sécurité effectué il y a 1 jour}one{Contrôle de sécurité effectué il y a {NUM_DAYS} jour}other{Contrôle de sécurité effectué il y a {NUM_DAYS} jours}}</translation>
 <translation id="6312638141433622592">Proposer d'afficher les articles en mode Lecteur, s'il est disponible</translation>
 <translation id="6313641880021325787">QUITTER LA RV</translation>
@@ -7271,7 +7266,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">Désactiver le réseau mobile</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navigation privée)</translation>
-<translation id="6756059675436942777">Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="6756157672127672536">L'appli Fichiers vous permet d'accéder rapidement aux fichiers que vous avez enregistrés dans Google Drive, sur un périphérique de stockage externe ou sur votre appareil Chrome OS.</translation>
 <translation id="6756643207511618722">Moteurs de synthèse vocale</translation>
 <translation id="6757431299485455321">Aidez d'autres appareils à détecter ce point d'accès.</translation>
@@ -7676,7 +7670,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7047059339731138197">Choisissez un arrière-plan</translation>
 <translation id="7049293980323620022">Conserver le fichier ?</translation>
 <translation id="7050037487872780845">Configuration de point d'accès non valide</translation>
-<translation id="7051551856857948729">Masquer la valeur de l'IBAN</translation>
 <translation id="7052237160939977163">Envoyer des informations relatives au suivi des performances</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
@@ -8562,7 +8555,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7757787379047923882">Texte partagé par <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Adaptez les dimensions de l'écran</translation>
-<translation id="7760004034676677601">Est-ce la page de démarrage que vous attendiez ?</translation>
 <translation id="7762024824096060040">Impossible d'utiliser ce compte</translation>
 <translation id="7762243782113123335">Désolé, un problème est survenu. Veuillez envoyer vos commentaires en incluant #bruschetta dans la description. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
@@ -8664,7 +8656,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7828642077514646543">Erreur : Impossible de décoder le certificat</translation>
 <translation id="7829877209233347340">Demande à un parent de t'autoriser à ajouter un compte scolaire</translation>
 <translation id="7830833461614351956">Copier <ph name="NUM_OF_FILES" /> fichiers dans <ph name="CLOUD_PROVIDER" /> et les ouvrir ?</translation>
-<translation id="783088158898934992">Langue de l'appli</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Si Google trouve une remise, vous la verrez sur cette page</translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
@@ -9049,6 +9040,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="811994229154425014">Appuyer deux fois sur la barre d'espace pour saisir un point</translation>
 <translation id="8120505434908124087">Installer le profil eSIM</translation>
 <translation id="8121750884985440809">Vous castez actuellement votre écran</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Fleur jaune et blanche</translation>
 <translation id="8123975449645947908">Vers l'arrière</translation>
 <translation id="8124313775439841391">ONC géré</translation>
@@ -9084,6 +9076,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8148760431881541277">Limiter les connexions</translation>
 <translation id="8149564499626272569">Valider via votre téléphone avec un câble USB</translation>
 <translation id="8149870652370242480">Pour utiliser vos mots de passe enregistrés sur votre téléphone, téléchargez Chrome pour iOS et connectez-vous à votre compte Google.</translation>
+<translation id="8151057139207656239">Détails du build copiés</translation>
 <translation id="815114315010033526">Utiliser un code QR à la place</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
@@ -9870,7 +9863,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="876956356450740926">Exécutez les outils pour les développeurs, les IDE et les éditeurs. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Répertoire racine de l'extension</translation>
 <translation id="8771300903067484968">L'arrière-plan par défaut de la page d'accueil a été rétabli.</translation>
-<translation id="8773280816776735812">Afficher la valeur de l'IBAN</translation>
 <translation id="8774379074441005279">Confirmer la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide.</translation>
@@ -10050,6 +10042,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8910987510378294980">Masquer la liste des appareils</translation>
 <translation id="8912362522468806198">Compte Google</translation>
 <translation id="8912810933860534797">Activer la recherche automatique</translation>
+<translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8915307125957890427">Effectuez un clic droit sur un onglet, sélectionnez "Ajouter l'onglet à un groupe", puis "Nouveau groupe"</translation>
 <translation id="8915370057835397490">Chargement des suggestions en cours…</translation>
 <translation id="8916476537757519021">Sous-cadre de navigation privée : <ph name="SUBFRAME_SITE" /></translation>

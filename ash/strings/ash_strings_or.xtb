@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">ଆପଣ ପରେ ଯେ କୌଣସି ସମୟରେ ମାଇକର ଆଚରଣ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="3659814201068740063">ପ୍ରାୟ <ph name="TIME_LEFT" /> ବାକି ଅଛି (<ph name="PERCENTAGE" />%)।
 ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାର ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" />ର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ପରିଚାଳିତ ୟୁଜର</translation>
 <translation id="3666266999138159418">ଆପଣଙ୍କ ଫ୍ଲୋଟିଂ ୱିଣ୍ଡୋକୁ ଲୁଚାଇବା ପାଇଁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
 <translation id="367531336287639526">ଠିକଣା ବାରର ବାମରେ ଥିବା ପ୍ରଥମ ଆଇକନକୁ ଚୟନ କରନ୍ତୁ</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" />ରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="4987738733603015246">ଡେସ୍କ 16</translation>
 <translation id="4989163558385430922">ସବୁ ଦେଖନ୍ତୁ</translation>
 <translation id="5003993274120026347">ପରବର୍ତ୍ତୀ ବାକ୍ୟ</translation>

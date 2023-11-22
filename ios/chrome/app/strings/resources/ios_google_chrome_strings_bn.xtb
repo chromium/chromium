@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">আপনার iPhone-এর অন্যান্য অ্যাপে Google পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="2689064829982324496">সব ওয়েবসাইটে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করতে, <ph name="BEGIN_LINK" />Chrome থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="2695886661449553974">Chrome-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
+<translation id="2702250627063295552">Chrome-এ পড়ার তালিকার আইটেম যোগ করুন</translation>
 <translation id="2736805085127235148">আপনার ডিভাইস সেটিংসে বর্তমান Chrome বিজ্ঞপ্তিগুলি বন্ধ করা আছে।</translation>
 <translation id="2767464022270041271">কোনও সেভ করা পাসওয়ার্ড নেই। আপনি পাসওয়ার্ড সেভ করলে Google Password Manager সেটি চেক করতে পারবে।</translation>
 <translation id="2868822340714096138">Chrome-এ ব্রাউজ করা ডেটা মুছুন</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">Chrome-এ পাসওয়ার্ড ম্যানেজ করুন</translation>
 <translation id="3827545470516145620">এই ডিভাইসে আপনি স্টান্ডার্ড নিরাপত্তামূলক সুরক্ষা পাচ্ছেন</translation>
 <translation id="384394811301901750">Google Chrome এই মুহূর্তে আপনার ক্যামেরা ব্যবহার করতে পারছে না</translation>
+<translation id="3863841106411295595">Chrome-এ আপনার পড়ার তালিকাতে ইনপুট করা URL যোগ করে।</translation>
 <translation id="3901001113120561395">Chrome থেকে সবচেয়ে বেশি সুবিধা পান।</translation>
 <translation id="3967382818307165056">Chrome থেকে পেমেন্ট পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="3980220367029651214">আপনি সিঙ্ক অ্যাকাউন্টগুলিকে <ph name="USER_EMAIL1" /> থেকে <ph name="USER_EMAIL2" /> এ সুইচ করছেন। আপনার বিদ্যমান Chrome ডেটা <ph name="DOMAIN" /> দ্বারা পরিচালিত হয়। এটি এই ডিভাইস থেকে আপনার ডেটা মুছে দেবে, কিন্তু <ph name="USER_EMAIL1" /> এ আপনার ডেটা থাকবে।</translation>

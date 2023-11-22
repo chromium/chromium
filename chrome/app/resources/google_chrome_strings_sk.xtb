@@ -26,6 +26,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="139993653570221430">Svoje rozhodnutie môžete kedykoľvek zmeniť v nastaveniach Chromu. Skúšobné obdobia prebiehajú popri aktuálnemu spôsobu zobrazovania reklám, takže zmeny hneď neuvidíte.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria.}=1{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria. Vaše okno inkognito sa neotvorí.}few{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria. Vaše # okná inkognito sa neotvoria.}many{Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen. Your # Incognito windows won't reopen.}other{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria. Vašich # okien inkognito sa neotvorí.}}</translation>
 <translation id="1434626383986940139">Aplikácie Chrome Canary</translation>
+<translation id="146866447420868597">Chcete sa prihlásiť do Chromu?</translation>
 <translation id="1492280395845991349">Ak chcete dokončiť aktualizáciu Chromu, znova ho spustite</translation>
 <translation id="1497802159252041924">Chyba inštalácie: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Prispôsobte svoj nový profil Chromu</translation>
@@ -108,7 +109,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2649768380733403658">Chrome vykonáva pravidelné kontroly s cieľom uistiť sa, že v prehliadači máte najbezpečnejšie nastavenia. Ak bude treba, aby ste niečo skontrolovali, oznámime vám to.</translation>
 <translation id="2652691236519827073">Otvoriť odkaz na novej &amp;karte Chromu</translation>
 <translation id="2665296953892887393">Pomôcť zlepšiť prehliadač Google Chrome odosielaním správ o zlyhaní a <ph name="UMA_LINK" /> spoločnosti Google</translation>
-<translation id="2689103672227170538">Toto rozšírenie zmenilo stránku, ktorá sa zobrazí pri spustení prehliadača Chrome.</translation>
 <translation id="2712234843277364121">Aktualizujete opätovným spustením (karty sa znova otvoria)</translation>
 <translation id="2738871930057338499">Nepodarilo sa pripojiť k internetu. Chyba odmietnutia prístupu HTTP 403. Skontrolujte konfiguráciu servera proxy.</translation>
 <translation id="2742320827292110288">Upozornenie: Google Chrome nemôže zabrániť rozšíreniam v zaznamenávaní vašej histórie prehliadania. Ak chcete dané rozšírenie v režime inkognito zakázať, zrušte výber tejto možnosti.</translation>
@@ -178,7 +178,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3703994572283698466">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzia systému Chrome OS Flex</translation>
 <translation id="3718181793972440140">Táto akcia odstráni zo zariadenia jednu položku. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Rozšírenie „<ph name="EXTENSION_NAME" />“ zmenilo stránku, ktorá sa zobrazí pri spustení prehliadača Chrome.</translation>
 <translation id="3744202345691150878">Získať pomoc so systémom Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože sa pri prihlasovaní vyskytla chyba.</translation>
@@ -475,7 +474,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8823341990149967727">Prehliadač Chrome je zastaraný</translation>
 <translation id="8825634023950448068">V rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. A ak sa to Chromu nepodarí správne alebo ak nechcete zobrazovať určité reklamy, môžete ľubovoľný záujem odstrániť.</translation>
 <translation id="8834965163890861871">Google Chrome sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
-<translation id="884296878221830158">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chrome alebo po kliknutí na tlačidlo Domovská stránka.</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>
 <translation id="8914504000324227558">Znova spustiť prehliadač Chrome</translation>
 <translation id="8922193594870374009">Ak chcete zo zariadenia <ph name="ORIGIN" /> odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>

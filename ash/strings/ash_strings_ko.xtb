@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">나중에 언제든지 마이크 동작을 변경할 수 있습니다.</translation>
 <translation id="3659814201068740063">약 <ph name="TIME_LEFT" /> 남았습니다(<ph name="PERCENTAGE" />%).
 기기를 전원에 연결하세요.</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> 높은 공개 상태 전환</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="3666266999138159418">스와이프하여 플로팅 창 숨기기</translation>
 <translation id="367531336287639526">주소 표시줄 왼쪽에 있는 첫 번째 아이콘 선택</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" />에 수정됨</translation>
 <translation id="4987738733603015246">데스크 16</translation>
 <translation id="4989163558385430922">모두 보기</translation>
 <translation id="5003993274120026347">다음 문장</translation>

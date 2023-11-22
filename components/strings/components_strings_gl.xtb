@@ -324,7 +324,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1593359183944365958">270 graos</translation>
 <translation id="1594030484168838125">Escoller</translation>
 <translation id="1596296697375291157">Películas de intriga, policiais e de suspense</translation>
-<translation id="1597473228022844713">Estás facendo un seguimento deste produto. Gardouse esta páxina en <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Clave de acceso de Windows Hello</translation>
 <translation id="1599199147673445968">Tes unha tarxeta nova? Podes <ph name="BEGIN_LINK" />poñer os seus datos<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
@@ -517,6 +516,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1997484222658892567">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu ordenador local</translation>
 <translation id="1997774360448418989">Papel (lixeiro)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
+<translation id="2001469757375372617">Produciuse un erro. Non se gardou o cambio.</translation>
 <translation id="2003709556000175978">Restablecer o teu contrasinal agora</translation>
 <translation id="2003775180883135320">Catro perforacións na parte superior</translation>
 <translation id="2004697686368036666">As funcións dalgúns sitios poden deixar de funcionar</translation>
@@ -722,6 +722,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2395840535409704129">Deportes acuáticos</translation>
 <translation id="2396249848217231973">&amp;Desfacer eliminación</translation>
 <translation id="2397836504670957718">Ordenadores notebook e portátiles</translation>
+<translation id="2399868464369312507">Google Chrome está tentando editar os métodos de pago.</translation>
 <translation id="2400600116338235695">Pode pedirche permiso para conectarse a portos en serie</translation>
 <translation id="2404884497378469141">Proba a copiar os ficheiros de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
@@ -1115,6 +1116,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3250640885957938546">Publicidade e márketing</translation>
 <translation id="3252772880526154546">Arquitectura</translation>
 <translation id="3254301855501243548">18 x 22 polgadas</translation>
+<translation id="3255926992597692024">Chromium está tentando modificar a configuración para completar os métodos de pago.</translation>
 <translation id="3256863843508922226">Xubilación e pensión</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un novo evento en Google Calendar</translation>
 <translation id="3261488570342242926">Máis información sobre as tarxetas virtuais</translation>
@@ -1498,6 +1500,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4047351652147966654">18 × 24 in</translation>
 <translation id="404831776305217138">O URL de actualización da extensión co código <ph name="EXTENSION_ID" /> non é válido ou usa un esquema non compatible. Os esquemas compatibles son: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Poderás usalo nos diferentes produtos de Google</translation>
+<translation id="4050599136622776556">Chromium está tentando editar os métodos de pago.</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Permite que Google te axude a atopar descontos para os teus carros</translation>
@@ -1620,6 +1623,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Camisetas</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255487295905690262">Recibirás alertas por correo electrónico se baixa o prezo en calquera sitio.</translation>
 <translation id="425582637250725228">É posible que non se gardasen os cambios que fixeches.</translation>
 <translation id="4258748452823770588">Sinatura incorrecta</translation>
 <translation id="4261046003697461417">Non se poden anotar os documentos protexidos</translation>
@@ -2974,7 +2978,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6999480632062519056">Clases de forma física e adestramento persoal</translation>
 <translation id="6999969238895751684">Industria do entretemento</translation>
 <translation id="7003278537452757231">Alfombras</translation>
-<translation id="7003335073762455340">Estás facendo un seguimento deste produto. Gardouse esta páxina en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Pestanas recentes</translation>
 <translation id="7004583254764674281">Usar Windows Hello para confirmar as tarxetas máis rápido</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
@@ -3030,7 +3033,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7108819624672055576">Permitido por unha extensión</translation>
 <translation id="7109510814665441393">Xogos de condución e carreiras</translation>
 <translation id="7110116949943042888">Postos temporais e estacionais</translation>
-<translation id="7110553203952632623">Recibirás alertas por correo electrónico se baixa o prezo en calquera sitio</translation>
 <translation id="7111012039238467737">(Válido)</translation>
 <translation id="7111507312244504964">Inspeccións e valoracións de propiedades</translation>
 <translation id="7112327784801341716">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
@@ -3149,7 +3151,6 @@ Detalles adicionais:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Controladores de pago</translation>
 <translation id="7367985555340314048">Os temas de interese baséanse no teu historial de navegación recente e os sitios utilízanos para mostrarche anuncios personalizados</translation>
-<translation id="7368169244533796604">Eliminar o sitio</translation>
 <translation id="7372526636730851647">Foto (brillo)</translation>
 <translation id="7372973238305370288">resultado da busca</translation>
 <translation id="7374461526650987610">Controladores de protocolo</translation>
@@ -3572,7 +3573,6 @@ Detalles adicionais:
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8134058435519644366">Contratación e persoal</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
-<translation id="8144303576836498784">Produciuse un erro. O cambio non se gardou</translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>
 <translation id="8149426793427495338">O teu ordenador entrou no modo de suspensión.</translation>
 <translation id="8150722005171944719">Non se pode ler o ficheiro que se encontra en <ph name="URL" />. É posible que se eliminase, movese ou que os permisos do ficheiro estean impedindo o acceso.</translation>
@@ -3785,6 +3785,7 @@ Detalles adicionais:
 <translation id="8542014550340843547">Tres grampas na parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Podes <ph name="BEGIN_ERROR_LINK" />notificar un problema de detección<ph name="END_ERROR_LINK" /> ou, se aceptas os riscos que supón para a túa seguranza, <ph name="BEGIN_LINK" />visita este sitio non seguro<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome está tentando modificar a configuración para completar os métodos de pago.</translation>
 <translation id="8544303911974837265">Poliéster</translation>
 <translation id="854548366864113872">Opción cara</translation>
 <translation id="8546254312340305428">Indica o motivo polo que queres facer a carga (obrigatorio)</translation>

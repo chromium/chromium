@@ -107,7 +107,6 @@
 <translation id="2649768380733403658">Chrome redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
 <translation id="2652691236519827073">Otvori vezu na novoj &amp;kartici Chromea</translation>
 <translation id="2665296953892887393">Pomognite nam poboljšati Google Chrome šaljući izvješća o rušenju programa i <ph name="UMA_LINK" /> Googleu</translation>
-<translation id="2689103672227170538">Ovo proširenje promijenilo je stranicu koja se prikazuje prilikom pokretanja Chromea.</translation>
 <translation id="2712234843277364121">Ponovno pokrenite da biste ažurirali – kartice će se ponovno otvoriti</translation>
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u anonimnom načinu, poništite odabir te opcije.</translation>
@@ -177,7 +176,6 @@
 <translation id="3703994572283698466">Chrome OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojnim okruženjem Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
 <translation id="3718181793972440140">Time će se izbrisati jedna stavka s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Proširenje "<ph name="EXTENSION_NAME" />" promijenilo je stranicu koja se prikazuje prilikom pokretanja Chromea.</translation>
 <translation id="3744202345691150878">Potraži pomoć za upotrebu Chrome OS-a</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
@@ -470,7 +468,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8823341990149967727">Chrome je zastario</translation>
 <translation id="8825634023950448068">Da bismo zaštitili vašu privatnost, automatski brišemo vaše interese starije od četiri tjedna. Tijekom vašeg daljnjeg pregledavanja neki se interes može ponovo pojaviti na popisu. A ako Chrome pogriješi ili ne želite vidjeti određene oglase, možete ukloniti interes.</translation>
 <translation id="8834965163890861871">Google Chrome pokušava urediti zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
-<translation id="884296878221830158">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromea ili kada se klikne gumb Početna.</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instaliranje na razini sustava. Pokušajte ponovno pokrenuti program za instalaciju kao administrator.</translation>
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>

@@ -110,7 +110,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2649768380733403658">Chrome checkt regelmatig of je browser de veiligste instellingen heeft. We laten het je weten als je iets moet controleren.</translation>
 <translation id="2652691236519827073">Link openen op een nieuw Chrome-&amp;tabblad</translation>
 <translation id="2665296953892887393">Help ons Google Chrome te verbeteren door crashrapporten en <ph name="UMA_LINK" /> naar Google te verzenden</translation>
-<translation id="2689103672227170538">Deze extensie heeft gewijzigd welke pagina wordt getoond wanneer je Chrome start.</translation>
 <translation id="2712234843277364121">Herstarten om te updaten, je tabbladen worden opnieuw geopend</translation>
 <translation id="2738871930057338499">Kan geen verbinding maken met internet. HTTP 403 Verboden. Check je proxyconfiguratie.</translation>
 <translation id="2742320827292110288">Waarschuwing: Google Chrome kan niet voorkomen dat extensies je browsegeschiedenis registreren. Als je deze extensie in de incognitomodus wilt uitzetten, vink je deze optie uit.</translation>
@@ -180,7 +179,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3703994572283698466">Chrome OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex-versie</translation>
 <translation id="3718181793972440140">Hiermee wordt 1 item verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">De extensie <ph name="EXTENSION_NAME" /> heeft gewijzigd welke pagina je ziet als je Chrome start.</translation>
 <translation id="3744202345691150878">Hulp bij Chrome OS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex kan je gegevens niet synchroniseren door een fout tijdens het inloggen.</translation>
@@ -475,7 +473,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8823341990149967727">Chrome is verouderd</translation>
 <translation id="8825634023950448068">Ter bescherming van je privacy verwijderen we automatisch interesses die ouder zijn dan 4 weken. Het kan gebeuren dat een interesse weer in de lijst komt te staan als je blijft browsen. Je kunt interesses ook verwijderen als Chrome die verkeerd inschat of je bepaalde advertenties niet wilt zien.</translation>
 <translation id="8834965163890861871">Google Chrome probeert wachtwoorden te bewerken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
-<translation id="884296878221830158">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chrome start of op de Homepage-knop klikt.</translation>
 <translation id="8862326446509486874">Je hebt geen rechten om op systeemniveau te installeren. Meld je aan als beheerder en voer het installatieprogramma opnieuw uit.</translation>
 <translation id="8914504000324227558">Chrome opnieuw starten</translation>
 <translation id="8922193594870374009">Als je een nummer vanaf <ph name="ORIGIN" /> naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>

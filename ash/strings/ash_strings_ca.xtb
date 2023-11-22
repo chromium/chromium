@@ -294,6 +294,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2224075387478458881">No es permet la gravació de pantalla quan es mostra contingut protegit</translation>
 <translation id="2227179592712503583">Suprimeix el suggeriment</translation>
 <translation id="2248634276911611268">Obre l'enllaç en una pestanya nova i canvia a aquesta pestanya nova</translation>
+<translation id="2253808149208613283">Instal·la l'aplicació per personalitzar aquest dispositiu</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2257486738914982088">S'ha produït un error en baixar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fitxers suggerits</translation>
@@ -1440,6 +1441,7 @@ Instal·lació nova</translation>
 <translation id="6827049576281411231">Tanca el tauler d'esdeveniments</translation>
 <translation id="6831561626108366035">Ves al botó <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Fitxer perillós</translation>
+<translation id="6837621009301897464">Per fer una captura de pantalla, prem</translation>
 <translation id="6852052252232534364">Clic per activar</translation>
 <translation id="6855029042976311970">Editat fa un moment</translation>
 <translation id="6856708615407876657">Commuta les categories dels resultats de la cerca</translation>
@@ -1683,6 +1685,13 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7893503627044934815">No vull que es mostri aquest fitxer</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Has premut la tecla de drecera de la rotació de la pantalla. Vols girar la pantalla?</translation>
+<translation id="7897626842031123113">Safata d'estat; hora: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Canvia les finestres</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor d'empremtes digitals</translation>

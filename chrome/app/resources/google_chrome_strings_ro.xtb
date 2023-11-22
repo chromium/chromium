@@ -106,7 +106,6 @@
 <translation id="2649768380733403658">Chrome verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
 <translation id="2652691236519827073">Deschide linkul într-o &amp;filă Chrome nouă</translation>
 <translation id="2665296953892887393">Contribuie la îmbunătățirea browserului Google Chrome trimițând rapoarte de blocare și <ph name="UMA_LINK" /> la Google</translation>
-<translation id="2689103672227170538">Această extensie a modificat ce pagină se afișează când pornești Chrome.</translation>
 <translation id="2712234843277364121">Relansează pentru a actualiza. Filele se vor redeschide.</translation>
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
 <translation id="2742320827292110288">Avertisment: Google Chrome nu poate împiedica extensiile să înregistreze istoricul navigării. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
@@ -176,7 +175,6 @@
 <translation id="3703994572283698466">Sistemul de operare Chrome este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versiunea sistemului de operare Chrome Flex</translation>
 <translation id="3718181793972440140">Astfel, se va șterge 1 element de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Extensia „<ph name="EXTENSION_NAME" />” a modificat ce pagină se afișează când pornești Chrome.</translation>
 <translation id="3744202345691150878">Solicită ajutor privind sistemul de operare Chrome</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Sistemul de operare Chrome Flex nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
@@ -469,7 +467,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8823341990149967727">Chrome nu este actualizat</translation>
 <translation id="8825634023950448068">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Iar dacă Chrome alege opțiunea greșită sau nu vrei să vezi anumite anunțuri, poți să elimini o categorie de interese.</translation>
 <translation id="8834965163890861871">Google Chrome încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
-<translation id="884296878221830158">Stabilește și ce pagină se afișează când pornești Chrome sau dai clic pe butonul Pagina principală.</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8914504000324227558">Relansați Chrome</translation>
 <translation id="8922193594870374009">Pentru a trimite un număr de pe <ph name="ORIGIN" /> pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>

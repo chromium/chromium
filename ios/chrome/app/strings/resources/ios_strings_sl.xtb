@@ -410,6 +410,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3080525922482950719">Strani lahko shranite, če želite brati pozneje ali brez povezave</translation>
 <translation id="3081338492074632642">Geslo, ki ga želite shraniti, se mora ujemati z geslom za <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Na dno</translation>
+<translation id="3090455602619185166">Prijava z upravljanim računom</translation>
 <translation id="309710370695886264">Imate 1 znova uporabljeno geslo. Popravite ga, če se želite zavarovati.</translation>
 <translation id="3112556859945124369">Označi …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Oglejte si, kaj lahko sinhronizirate.<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4004204301268239848">Gesla so shranjena v Google Računu, da jih lahko uporabite v kateri koli napravi.</translation>
 <translation id="4018310736049373830">Upravljanje dejavnosti</translation>
+<translation id="4021931095789478915">Dodajanje ${url} na bralni seznam</translation>
 <translation id="4038354071007134711">Nobena aplikacija v tej napravi ne more odpreti datoteke.</translation>
 <translation id="4042870976416480368">Najdi na strani</translation>
 <translation id="40433179647657191">Ustvarite in delite neposredno povezavo do dela strani, ki ste ga označili.</translation>
@@ -1447,6 +1449,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8556590991644167667">{count,plural, =1{Opustili ste {count} opozorilo}one{Opustili ste {count} opozorilo}two{Opustili ste {count} opozorili}few{Opustili ste {count} opozorila}other{Opustili ste {count} opozoril}}</translation>
 <translation id="8558480467877843976">Zdaj lahko uporabljate Chrome, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="8560253818350321773">Najprej prikaz pogosto uporabljenih elementov.</translation>
+<translation id="8569721750632860947">Kateri URL želite dodati na bralni seznam?</translation>
 <translation id="8588404856427128947">Izklop</translation>
 <translation id="8591976964826315682">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
 <translation id="8593565399399144771">Tukaj lahko odprete nov zavihek.</translation>

@@ -326,7 +326,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1593359183944365958">270 degrees</translation>
 <translation id="1594030484168838125">Pumili</translation>
 <translation id="1596296697375291157">Mga pelikulang thriller, krimen, at misteryo</translation>
-<translation id="1597473228022844713">Sinusubaybayan mo ang produktong ito. Naka-save ang page na ito sa <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Passkey mula sa Windows Hello</translation>
 <translation id="1599199147673445968">Bagong card? <ph name="BEGIN_LINK" />Ilagay ang Mga Detalye ng Card<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Laruin ang Dino Run sa Chrome</translation>
@@ -412,6 +411,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Paano namin ginagamit ang data na ito:<ph name="END_BOLD" /> Nagtatala ang Chrome ng mga paksa kung saan ka interesado habang nagba-browse ka. Naka-predefine ang mga label ng paksa at kasama sa mga ito ang mga bagay tulad ng Sining at Entertainment, Shopping, at Sports. Sa ibang pagkakataon, puwedeng humingi sa Chrome ang site na binibisita mo ng ilan sa iyong mga paksa (pero hindi ang history ng pag-browse mo) para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="1746113442205726301">Pag-shift ng larawan Y</translation>
 <translation id="1746531169546376413">0 degrees</translation>
+<translation id="1751544761369730824">I-delete ang site na <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Pakikipag-date at mga personal na bagay</translation>
 <translation id="1753706481035618306">Numero ng page</translation>
@@ -520,6 +520,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1997484222658892567">Gusto ng <ph name="URL" /> na permanenteng mag-store ng malaking data sa iyong lokal na computer</translation>
 <translation id="1997774360448418989">Papel (Lightweight)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{at 1 pa}one{at # pa}other{at # pa}}</translation>
+<translation id="2001469757375372617">Nagkaproblema. Hindi na-save ang pagbabagong ginawa mo.</translation>
 <translation id="2003709556000175978">I-reset na ang iyong password</translation>
 <translation id="2003775180883135320">Quad punch top</translation>
 <translation id="2004697686368036666">Posibleng hindi gumana ang mga feature sa ilang site</translation>
@@ -725,6 +726,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2395840535409704129">Water Sports</translation>
 <translation id="2396249848217231973">&amp;I-undo ang pagtanggal</translation>
 <translation id="2397836504670957718">Mga laptop at notebook</translation>
+<translation id="2399868464369312507">Sinusubukan ng Google Chrome na i-edit ang mga paraan ng pagbabayad.</translation>
 <translation id="2400600116338235695">Puwedeng hilinging kumonekta sa mga serial port</translation>
 <translation id="2404884497378469141">Subukang kopyahin ulit ang iyong mga file</translation>
 <translation id="2413155254802890957">Luma</translation>
@@ -1119,6 +1121,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3250640885957938546">Advertising at marketing</translation>
 <translation id="3252772880526154546">Arkitektura</translation>
 <translation id="3254301855501243548">18 x 22 in</translation>
+<translation id="3255926992597692024">Sinusubukan ng Chromium na baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
 <translation id="3256863843508922226">Pagreretiro at pension</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong event sa Google Calendar nang mabilis</translation>
 <translation id="3261488570342242926">Matuto pa tungkol sa mga virtual card</translation>
@@ -1504,6 +1507,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4047351652147966654">18 x 24 in</translation>
 <translation id="404831776305217138">Invalid o gumagamit ng hindi sinusuportahang scheme ang URL ng update para sa extension na may ID na "<ph name="EXTENSION_ID" />." Ang mga sinusuportahang scheme ay: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> at <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Magagamit mo ito sa lahat ng produkto ng Google</translation>
+<translation id="4050599136622776556">Sinusubukan ng Chromium na i-edit ang mga paraan ng pagbabayad.</translation>
 <translation id="405399507749852140">Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Hayaan ang Google na tulungan kang makahanap ng mga diskwento para sa iyong mga cart</translation>
@@ -1626,6 +1630,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Mga Kamiseta</translation>
 <translation id="4253168017788158739">Tala</translation>
+<translation id="4255487295905690262">Makakatanggap ka ng mga alerto sa email kung bababa ang presyo sa anumang site.</translation>
 <translation id="425582637250725228">Maaaring hindi ma-save ang mga pagbabagong ginawa mo.</translation>
 <translation id="4258748452823770588">Maling lagda</translation>
 <translation id="4261046003697461417">Hindi maaaring i-annotate ang mga protektadong dokumento</translation>
@@ -2982,7 +2987,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6999480632062519056">Pagtuturo ng Fitness at Personal na Pagsasanay</translation>
 <translation id="6999969238895751684">Industriya ng entertainment</translation>
 <translation id="7003278537452757231">Mga Basahan at Karpet</translation>
-<translation id="7003335073762455340">Tina-track mo ang produktong ito. Naka-save ang page na ito sa <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Mga Kamakailang Tab</translation>
 <translation id="7004583254764674281">Gamitin ang Windows Hello para kumpirmahin nang mas mabilis ang mga card</translation>
 <translation id="7006930604109697472">Ipadala pa rin</translation>
@@ -3039,7 +3043,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7108819624672055576">Pinayagan ng isang extension</translation>
 <translation id="7109510814665441393">Mga Larong Pagmamaneho at Karera</translation>
 <translation id="7110116949943042888">Mga Pansamantala at Pana-panahong Trabaho</translation>
-<translation id="7110553203952632623">Makakatanggap ka ng mga alerto sa email kung bababa ang presyo sa anumang site</translation>
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7111507312244504964">Mga Pagsisiyasat at Pagtataya ng Halaga ng Ari-arian</translation>
 <translation id="7112327784801341716">Hindi mo nakikita ang kasalukuyan mong impormasyon? Makipag-ugnayan sa iyong bangko para ma-update ito.</translation>
@@ -3158,7 +3161,6 @@ Mga karagdagang detalye:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Mga tagapangasiwa ng pagbabayad</translation>
 <translation id="7367985555340314048">Ang mga kinaiinteresang paksa ay batay sa iyong history ng pag-browse at ginagamit ng mga site para magpakita sa iyo ng mga naka-personalize na ad</translation>
-<translation id="7368169244533796604">I-delete ang site</translation>
 <translation id="7372526636730851647">Photo (Glossy)</translation>
 <translation id="7372973238305370288">resulta ng paghahanap</translation>
 <translation id="7374461526650987610">Mga tagapangasiwa ng protocol</translation>
@@ -3581,7 +3583,6 @@ Mga karagdagang detalye:
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8134058435519644366">Pag-recruit at Pagpapasok ng Tauhan</translation>
 <translation id="8135546115396015134">pakaliwang key</translation>
-<translation id="8144303576836498784">Nagkaproblema. Hindi na-save ang pagbabagong ginawa mo</translation>
 <translation id="8148608574971654810">Bersyon ng PDF:</translation>
 <translation id="8149426793427495338">Nag-sleep ang iyong computer.</translation>
 <translation id="8150722005171944719">Hindi nababasa ang file sa <ph name="URL" />. Maaaring ito ay naalis, nalipat, o maaaring pinipigilan ng mga pagpapahintulot ng file ang access.</translation>
@@ -3794,6 +3795,7 @@ Mga karagdagang detalye:
 <translation id="8542014550340843547">Triple staple bottom</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Maaari kang <ph name="BEGIN_ERROR_LINK" />mag-ulat ng problema sa pagtukoy<ph name="END_ERROR_LINK" /> o, kung nauunawaan mo ang mga panganib sa iyong seguridad, <ph name="BEGIN_LINK" />bisitahin ang hindi ligtas na site na ito<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Sinusubukan ng Google Chrome na baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
 <translation id="8544303911974837265">Polyester</translation>
 <translation id="854548366864113872">Mahal na Opsyon</translation>
 <translation id="8546254312340305428">Magbigay ng dahilan para sa pag-upload (nire-require)</translation>
@@ -3817,6 +3819,7 @@ Mga karagdagang detalye:
 <translation id="8576310925653847813">Mga home theater system</translation>
 <translation id="8577192028579836704">Karaniwang <ph name="TYPICAL_PRICE" /> ang lahat ng opsyon</translation>
 <translation id="8577348305244205642">Hindi available ang virtual card</translation>
+<translation id="8581064022803799721">Naka-save ang page na ito sa <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Kagamitan sa Squash at Racquetball</translation>
 <translation id="858637041960032120">Magdagdag ng numero ng telepono</translation>
 <translation id="8589998999637048520">Pinakamahusay na kalidad</translation>
@@ -4115,6 +4118,7 @@ Mga karagdagang detalye:
 <translation id="9207861905230894330">Hindi naidagdag ang artikulo.</translation>
 <translation id="9213433120051936369">I-customize ang hitsura</translation>
 <translation id="9215416866750762878">Pinipigilan ng isang application na makakonekta nang ligtas ang Chrome sa site na ito</translation>
+<translation id="92178312226016010">Sinusubaybayan mo ang produktong ito.</translation>
 <translation id="9218430445555521422">Itakda bilang default</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="922152298093051471">I-customize ang Chrome</translation>

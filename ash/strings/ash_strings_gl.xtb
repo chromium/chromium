@@ -1684,6 +1684,13 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7893503627044934815">Non quero que se mostre este ficheiro</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Premiches o atallo de teclado para xirar a pantalla. Queres realizar esta acción?</translation>
+<translation id="7897626842031123113">Bandexa de estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Cambiar as ventás</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca o sensor de impresión dixital</translation>

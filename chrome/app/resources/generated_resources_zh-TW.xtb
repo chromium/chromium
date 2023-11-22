@@ -681,6 +681,7 @@
 <translation id="1536754031901697553">正在中斷連線…</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
+<translation id="1539727654733007771">尚未設定行動網路。請下載新的<ph name="BEGIN_LINK" />設定檔<ph name="END_LINK" />。</translation>
 <translation id="1540265419569299117">ChromeOS 應用程式服務</translation>
 <translation id="1540605929960647700">啟用示範模式</translation>
 <translation id="1541346352678737112">找不到網路</translation>
@@ -1055,7 +1056,7 @@
     <ph name="LINE_BREAKS2" />
     這項操作不會影響其他裝置上的應用程式或內容。</translation>
 <translation id="1809734401532861917">將我的書籤、歷史記錄、密碼和其他設定新增至 <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">如要在手機上使用儲存的密碼，請依序掃描 QR code、下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
+<translation id="1810070166657251157">如要在手機上使用儲存的密碼，請掃描 QR code 下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
 <translation id="1810366086647840386">映像檔伺服器</translation>
 <translation id="1811908311154949291">無痕模式下的 Fenced Frame：<ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
@@ -1250,6 +1251,7 @@
 <translation id="1951012854035635156">小幫手</translation>
 <translation id="1954597385941141174">網站可以要求連線至 USB 裝置</translation>
 <translation id="1954813140452229842">掛接共用裝置時發生錯誤。請檢查你的憑證，然後再試一次。</translation>
+<translation id="1955313993396968525">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋影片畫面</translation>
 <translation id="1956050014111002555">檔案含有多個憑證，但全都無法匯入：</translation>
 <translation id="1956167375087861299">禁止使用 ID 來播放受保護的內容</translation>
 <translation id="1956390763342388273">你即將上傳「<ph name="FOLDER_PATH" />」中的所有檔案。除非你信任該網站，否則請勿這麼做。</translation>
@@ -1820,6 +1822,7 @@
 <translation id="237828693408258535">要翻譯這個網頁嗎？</translation>
 <translation id="2378982052244864789">選取擴充功能目錄。</translation>
 <translation id="2379281330731083556">使用系統對話方塊進行列印... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">這可能會導致你的行動網路中斷幾分鐘</translation>
 <translation id="2381499968174336913">共用分頁的預覽畫面</translation>
 <translation id="2382875860893882175">目前已暫停投放。你隨時可以繼續或停止投放。</translation>
 <translation id="2383825469508278924">變更鍵盤按鍵對應、功能鍵等等</translation>
@@ -4046,7 +4049,6 @@
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="412730574613779332">彈力俠</translation>
 <translation id="4130199216115862831">裝置記錄</translation>
-<translation id="4130207949184424187">這個擴充功能已變更您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="413121957363593859">元件</translation>
 <translation id="4131283654370308898">允許在這個網站上執行 <ph name="EXTENSION_NAME" /></translation>
@@ -5552,7 +5554,6 @@
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
 <translation id="5355498626146154079">必須啟用「Borealis Enabled」旗標</translation>
 <translation id="5355501370336370394">註冊企業裝置</translation>
-<translation id="5355926466126177564">擴充功能「<ph name="EXTENSION_NAME" />」已變更您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5356155057455921522">系統管理員提供的這項更新會加快貴機構應用程式的開啟速度。更新作業可能需要幾分鐘才會完成。</translation>
 <translation id="5359910752122114278">1 項搜尋結果</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> 個分頁</translation>
@@ -5892,7 +5893,6 @@
 <translation id="5624120631404540903">管理密碼</translation>
 <translation id="5625225435499354052">在 Google Pay 中編輯</translation>
 <translation id="5626134646977739690">名稱：</translation>
-<translation id="5627086634964711283">這個擴充功能也會控管你點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="5627832140542566187">螢幕方向</translation>
 <translation id="5628434207686266338">設定裝置密碼</translation>
 <translation id="562935524653278697">你的管理員停用了書籤、歷史記錄、密碼和其他設定的同步功能。</translation>
@@ -6295,14 +6295,12 @@
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5955721306465922729">有個網站想要開啟這個應用程式。</translation>
 <translation id="5955809630138889698">這個裝置可能只能使用線上示範模式。如需詳情，請與你的產品支援代表聯絡。</translation>
-<translation id="5956585768868398362">這是你想要的搜尋頁面嗎？</translation>
 <translation id="5957987129450536192">輕觸靠近設定檔圖片的「隨選朗讀」圖示，然後選取你要聆聽的內容。</translation>
 <translation id="5959471481388474538">網路無法使用</translation>
 <translation id="5963413905009737549">區段</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 個 (最多 <ph name="NUM_KILOBYTES_LIVE" /> 個)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="5964247741333118902">嵌入的內容</translation>
-<translation id="5965661248935608907">這個擴充功能也會控管你點選 [首頁] 按鈕或使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5966511985653515929">當你關閉所有視窗時，系統會刪除裝置上的網站資料</translation>
 <translation id="5968022600320704045">找不到相符的搜尋結果</translation>
 <translation id="5969364029958154283">進一步瞭解重設設定</translation>
@@ -6655,7 +6653,7 @@
 <translation id="6242852299490624841">將焦點移至這個分頁</translation>
 <translation id="6243774244933267674">無法與伺服器連線</translation>
 <translation id="6244245036423700521">匯入 ONC 檔案</translation>
-<translation id="6245523954602476652">你可以在 Google 密碼管理工具中取得這個密碼。</translation>
+<translation id="6245523954602476652">你可以透過 Google 密碼管理工具使用這組密碼。</translation>
 <translation id="6246790815526961700">從裝置上傳</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6247620186971210352">找不到應用程式</translation>
@@ -6738,7 +6736,6 @@
 <translation id="6309510305002439352">麥克風已關閉</translation>
 <translation id="6310141306111263820">無法安裝 eSIM 卡設定檔。如需協助，請與你的電信業者聯絡。</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
-<translation id="6311708879134408222">請等到明天再試一次。</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前已執行安全檢查}other{{NUM_DAYS} 天前已執行安全檢查}}</translation>
 <translation id="6312638141433622592">詢問是否以閱讀器模式顯示支援這項功能的文章</translation>
 <translation id="6313641880021325787">結束 VR</translation>
@@ -6776,6 +6773,7 @@
 <translation id="6344576354370880196">已儲存的印表機</translation>
 <translation id="6344608411615208519">你的<ph name="BEGIN_LINK" />瀏覽器由家長管理<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">追蹤防護</translation>
+<translation id="6345203628032613660">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋影片畫面</translation>
 <translation id="6345418402353744910">Proxy <ph name="PROXY" /> 要求你提供使用者名稱和密碼，以便管理員為你設定網路</translation>
 <translation id="6345566021391290381">有多個與你分享的「<ph name="WEBSITE_NAME" />」密碼，可用於登入表單中。</translation>
 <translation id="6345878117466430440">標示為已讀取</translation>
@@ -7263,7 +7261,6 @@
 <translation id="6749473226660745022">相片</translation>
 <translation id="6750757184909117990">停用行動數據</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>
-<translation id="6756059675436942777">請檢查網路連線，然後再試一次。</translation>
 <translation id="6756157672127672536">「檔案」應用程式可讓你快速存取儲存在 Google 雲端硬碟、外部儲存空間或 Chrome OS 裝置中的檔案。</translation>
 <translation id="6756643207511618722">語音引擎</translation>
 <translation id="6757431299485455321">協助其他裝置找到這個無線基地台。</translation>
@@ -7292,6 +7289,7 @@
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6777845730143344223">進一步瞭解 Passpoint 訂閱</translation>
 <translation id="6779092717724412415">如要建立其他醒目標示內容，請選取所需文字後按一下滑鼠右鍵。</translation>
+<translation id="6779348349813025131">Google 密碼管理工具需要 macOS 鑰匙圈存取權</translation>
 <translation id="6779447100905857289">你的購物車</translation>
 <translation id="677965093459947883">非常小</translation>
 <translation id="6781005693196527806">管理搜尋引擎...(&amp;M)</translation>
@@ -7668,7 +7666,6 @@
 <translation id="7047059339731138197">選擇背景</translation>
 <translation id="7049293980323620022">要保留檔案嗎？</translation>
 <translation id="7050037487872780845">無效的無線基地台設定</translation>
-<translation id="7051551856857948729">隱藏 IBAN 值</translation>
 <translation id="7052237160939977163">傳送效能追蹤資料</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
@@ -8554,7 +8551,6 @@
 <translation id="7757787379047923882">透過「<ph name="DEVICE_NAME" />」分享的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">調整顯示畫面邊界</translation>
-<translation id="7760004034676677601">這是你想要的起始網頁嗎？</translation>
 <translation id="7762024824096060040">無法使用這個帳戶</translation>
 <translation id="7762243782113123335">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">新增地址</translation>
@@ -8656,7 +8652,6 @@
 <translation id="7828642077514646543">錯誤：無法將憑證解碼</translation>
 <translation id="7829877209233347340">請要求家長登入，授予新增學校帳戶的權限</translation>
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
-<translation id="783088158898934992">應用程式語言</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">如果 Google 找到相關折扣，會顯示在這個頁面上</translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>
@@ -9864,7 +9859,6 @@
 <translation id="876956356450740926">執行開發人員工具、IDE 和編輯器。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">擴充功能根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景已重設為預設背景。</translation>
-<translation id="8773280816776735812">顯示 IBAN 值</translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>
@@ -10043,6 +10037,7 @@
 <translation id="8910987510378294980">隱藏裝置清單</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912810933860534797">啟用自動掃描</translation>
+<translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8915307125957890427">在分頁標籤上按一下滑鼠右鍵，然後依序選取「將分頁加入群組」和「新群組」</translation>
 <translation id="8915370057835397490">正在載入建議</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>

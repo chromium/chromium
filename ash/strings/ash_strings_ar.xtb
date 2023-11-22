@@ -1686,6 +1686,13 @@
 <translation id="7893503627044934815">لا أريد رؤية هذا الملف.</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">لقد ضغطت على اختصار لوحة المفاتيح لتدوير الشاشة. هل ترغب في تدوير الشاشة؟</translation>
+<translation id="7897626842031123113">شريط الحالة، الوقت <ph name="TIME" />،
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />،
+        <ph name="NETWORK" />،
+        <ph name="MANAGED" />،
+        <ph name="IME" />،
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">تبديل النوافذ</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">المس أداة استشعار بصمات الإصبع.</translation>
@@ -1889,7 +1896,7 @@
 <translation id="880709030178078220">"مساعدة"</translation>
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="881757059229893486">إعدادات أساليب الإدخال</translation>
-<translation id="8819728065740986820">ميزة "الشحن التكيُّفي" مفعّلة</translation>
+<translation id="8819728065740986820">ميزة "الشحن الذكي" مفعّلة</translation>
 <translation id="8825863694328519386">التمرير السريع من اليسار للرجوع</translation>
 <translation id="8832513206237979203">إظهار شريط الإشارات أو إخفاؤه</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>

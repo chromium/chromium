@@ -71,10 +71,8 @@
 <translation id="2313870531055795960">使用儲存在 Chromium 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="2329088755516916767">開啟後，Chromium 會預先載入網頁，加快瀏覽和搜尋速度。</translation>
 <translation id="2343156876103232566">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
-<translation id="2347108572062610441">擴充功能已變更 Chromium 啟動時所顯示的網頁。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2384373936468275798">您的帳戶登入詳情已過時，因此 Chromium 作業系統無法同步處理您的資料。</translation>
-<translation id="2396765026452590966">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chromium 啟動時所顯示的網頁。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
 <translation id="2440750600860946460">透過 <ph name="BEGIN_LINK" />Chromium 工具<ph name="END_LINK" />，你可安全瀏覽網絡，一切盡在掌握</translation>
@@ -443,7 +441,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />需要使用什麼資料：<ph name="END_BOLD" />您的瀏覽記錄，亦即您在此裝置上使用 Chromium 瀏覽過的網站記錄。</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
 <translation id="8880203542552872219">如密碼已變更，請編輯 Chromium 中已儲存的密碼，確保兩者相符。</translation>
-<translation id="8897323336392112261">這個擴充功能也會管制 Chromium 啟動時或您按一下 [主頁] 按鈕時所顯示的網頁。</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果您同意的話，請輸入您的 Windows 密碼。</translation>
 <translation id="8931379085695076764">Chromium 可根據最近幾星期的瀏覽記錄推測您的興趣。這些資料會儲存在您的裝置上。</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>

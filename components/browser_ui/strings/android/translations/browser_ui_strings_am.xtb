@@ -41,7 +41,6 @@
 <translation id="1779089405699405702">ስውር ምስል መፍቻ</translation>
 <translation id="1785415724048343560">ለምርጥ ተሞክሮ የሚመከር</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ኤአር እንዲጠቀም ለማስቻል፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
-<translation id="187227595286001730">ተያያዥ ጣቢያዎች በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ ማየት ይችላሉ</translation>
 <translation id="1887786770086287077">የአካባቢ መዳረሻ ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="1915307458270490472">ዝጋ</translation>
 <translation id="1919950603503897840">ዕውቂያዎችን ምረጥ</translation>
@@ -64,7 +63,6 @@
 <translation id="2182457891543959921">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዲፈጥሩ ወይም የካሜራ ቦታን እንዲከታተል ከመፍቀድ በፊት ጠይቅ (የሚመከር)</translation>
 <translation id="2185965788978862351">ይህ በጣቢያዎች ወይም በመነሻ ገፅዎ ላይ ባሉ መተግበሪያዎች የተከማቹ <ph name="DATASIZE" /> ውሂብ እና ኩኪዎችን ይሰርዛል።</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
-<translation id="2212565012507486665">ኩኪዎችን ፍቀድ</translation>
 <translation id="2228071138934252756">የእርስዎን ካሜራ <ph name="APP_NAME" /> እንዲደርስበት ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
 <translation id="2235344399760031203">የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
 <translation id="2238944249568001759">በእርስዎ የመጨረሻ ትር ላይ በመመስረት የተጠቆሙ ፍለጋዎች</translation>
@@ -105,7 +103,6 @@
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2678468611080193228">በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ያነሰ ጥበቃ ነው ማለት ነው ነገር ግን የጣቢያ ባህሪያት የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="2683434792633810741">ይሰረዝ እና ዳግም ይጀመር?</translation>
-<translation id="2687403674020088961">ሁሉንም ኩኪዎች አግድ (አይመከርም)</translation>
 <translation id="2713106313042589954">ካሜራ አጥፋ</translation>
 <translation id="2717722538473713889">ኢሜይል አድራሻዎች</translation>
 <translation id="2750481671343847896">ጣቢያዎች ከማንነት አገልግሎቶች የመግቢያ ጥያቄዎችን ማሳየት ይችላሉ።</translation>
@@ -157,7 +154,6 @@
 <translation id="3586500876634962664">የካሜራ እና ማይክሮፎን ጥቅም</translation>
 <translation id="358794129225322306">አንድ ጣቢያ በራስ-ሰር በርካታ ፋይሎችን እንዲያወርድ ይፍቀዱ።</translation>
 <translation id="3594780231884063836">ቪዲዮ ላይ ድምጸ-ከል አድርግ</translation>
-<translation id="3596414637720633074">ማንነትን በማያሳውቅ ሁነታ ሦስተኛ ወገን ኩኪዎች ያግዱ</translation>
 <translation id="3600792891314830896">ድምጽን በሚያጫውቱ ጣቢያዎች ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3628308229821498208">የተጠቆሙ ፍለጋዎች</translation>
@@ -185,7 +181,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">ስለዚህ ገፅ</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
-<translation id="4008040567710660924">የተወሰነ ጣቢያ ኩኪዎችን ፍቀድ።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
 <translation id="4149890623864272035">ኩኪዎችን ጨምሮ ሁሉንም የአካባቢ ውሂብ መሰረዝ እና ሁሉንም የዚህ ድር ጣቢያ ፈቃዶችን ዳግም ማስጀመር እንደሚፈልጉ እርግጠኛ ነዎት?</translation>
 <translation id="4149994727733219643">ለድረ-ገጾች የተቃለለ ዕይታ</translation>
@@ -226,7 +221,6 @@
 <translation id="4883854917563148705">የሚተዳደሩ ቅንብሮች ዳግም ሊጀመሩ አይችሉም</translation>
 <translation id="4887024562049524730">ጣቢያዎች የእርስዎን የምናባዊ እውነታ መሣሪያ እና ውሂብ እንዲጠቀሙ ፈቃድ ከማግኘታቸው በፊት ይጠይቁ (የሚመከር)</translation>
 <translation id="4953688446973710931">ሲበራ፣ ጣቢያዎች ብዙ ፋይሎችን በራስ ሰር እንዲያወርዱ መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር ማውረድ አይችሉም።</translation>
-<translation id="4955223779495905865">የሚጎበኙት ጣቢያ ከሌሎች ጣቢያዎች ይዘትን ሊከት ይችላል፣ ለምሳሌ፣ ምስሎች፣ ማስታወቂያዎች እና ጽሁፍ። ከእነዚህ ጣቢያዎች ውስጥ ማናቸውም ተሞክሮዎን ግላዊነት ለማላበስ ኩኪዎችን እና ሌላ ውሂብን ማስቀመጥ ይችላሉ።</translation>
 <translation id="4962975101802056554">ሁሉንም የመሣሪያ ፈቃዶች ይሻሩ</translation>
 <translation id="497421865427891073">ወደ ፊት ሂድ</translation>
 <translation id="4976702386844183910">ለመጨረሻ ጊዜ የተጎበኘው በ<ph name="DATE" /></translation>
@@ -429,7 +423,6 @@
 <translation id="8117244575099414087">ሲበራ፣ ጣቢያዎች የመሣሪያዎን ዳሳሾች መጠቀም ይችላሉ። ሲጠፋ፣ ጣቢያዎች ዳሳሾችን መጠቀም አይችሉም።</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
-<translation id="8154912474061769055">በበርካታ ጣቢያዎች ላይ ያሉ ባህሪያት ላይሰሩ ይችላሉ</translation>
 <translation id="8168435359814927499">ይዘት</translation>
 <translation id="8186479265534291036">ጣቢያው እየሰራ አይደለም? የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ተፈቅዷል</translation>
@@ -443,7 +436,6 @@
 <translation id="8324158725704657629">ዳግም አትጠይቅ</translation>
 <translation id="8362795839483915693">እርስዎ በሚገበኟቸው ጣቢያዎች ላይ ማጉላት ወይም ማሳነስ ይችላሉ</translation>
 <translation id="8372893542064058268">ለአንድ የተወሰነ ጣቢያ የጀርባ ስምረትን ይፍቀዱ።</translation>
-<translation id="8376384591331888629">በዚህ ጣቢያ ላይ የሶስተኛ ወገን ኩኪዎችን ጨምሮ</translation>
 <translation id="83792324527827022">አንድ ጣቢያ የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="8380167699614421159">ይህ ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል</translation>
 <translation id="8394832520002899662">ወደ ጣቢያው ለመመለስ መታ ያድርጉ</translation>
@@ -491,7 +483,6 @@
 <translation id="8926666909099850184">NFC ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንበሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="8928445016601307354">ጣቢያዎች በኤንኤፍሲ መሣሪያዎች ላይ መረጃን እንዳያዩ እና እንዳይቀይሩ ያግዱ</translation>
 <translation id="8944485226638699751">የተወሰነ</translation>
-<translation id="8958424370300090006">የአንድ የተወሰነ ጣቢያ ኩኪዎችን ያግዱ።</translation>
 <translation id="8959122750345127698">ዳሰሳ ሊደረስበት አይችልም፦ <ph name="URL" /></translation>
 <translation id="8986362086234534611">እርሳ</translation>
 <translation id="8990043154272859344">ከሁሉም ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ</translation>

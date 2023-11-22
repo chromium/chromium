@@ -69,10 +69,8 @@
 <translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="2329088755516916767">开启此设置后，Chromium 会预加载网页，以便您更快速地浏览和搜索。</translation>
 <translation id="2343156876103232566">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
-<translation id="2347108572062610441">此扩展程序更改了 Chromium 启动后系统显示的页面。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2384373936468275798">由于您的账号登录详细信息已过期，Chromium 操作系统无法同步您的数据。</translation>
-<translation id="2396765026452590966">“<ph name="EXTENSION_NAME" />”扩展程序更改了 Chromium 启动后系统显示的页面。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
 <translation id="2440750600860946460">借助 <ph name="BEGIN_LINK" />Chromium 中的工具<ph name="END_LINK" />，您可以安全地浏览并掌控个人数据的安全</translation>
@@ -441,7 +439,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chromium 访问过的网站的记录。</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8880203542552872219">如果是的话，请修改您在 Chromium 中保存的密码，使它与您的新密码保持一致。</translation>
-<translation id="8897323336392112261">它还能够控制您启动Chromium或点击“主页”按钮后系统显示的页面。</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8931379085695076764">Chromium 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>

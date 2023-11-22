@@ -686,6 +686,7 @@
 <translation id="1536754031901697553">ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1537254971476575106">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
 <translation id="15373452373711364">ದೊಡ್ಡ ಮೌಸ್ ಕರ್ಸರ್</translation>
+<translation id="1539727654733007771">ಯಾವುದೇ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗಿಲ್ಲ. ಹೊಸ <ph name="BEGIN_LINK" />ಪ್ರೊಫೈಲ್<ph name="END_LINK" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="1540265419569299117">ChromeOS ಆ್ಯಪ್ ಸೇವೆ</translation>
 <translation id="1540605929960647700">ಡೆಮೊ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1541346352678737112">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
@@ -1255,6 +1256,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954597385941141174">ಸೈಟ್‌ಗಳು USB ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="1954813140452229842">ಹಂಚಿಕೆಯನ್ನು ಅಳವಡಿಸುವುದರಲ್ಲಿ ದೋಷವಿದೆ. ನಿಮ್ಮ ರುಜುವಾತುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="1955313993396968525"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ವೀಡಿಯೊ ಫ್ರೇಮ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="1956050014111002555">ಫೈಲ್ ಬಹು ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಒಳಗೊಂಡಿದೆ, ಅವುಗಳಲ್ಲಿ ಯಾವುದನ್ನೂ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿಲ್ಲ: </translation>
 <translation id="1956167375087861299">ಸಂರಕ್ಷಿತ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡಲು ಗುರುತಿಸುವಿಕೆಗಳನ್ನು ಬಳಸಲು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="1956390763342388273">ಇದು "<ph name="FOLDER_PATH" />" ನಿಂದ ಎಲ್ಲ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡುತ್ತದೆ. ಸೈಟ್ ಕುರಿತು ನಿಮಗೆ ನಂಬಿಕೆಯಿದ್ದರೆ ಮಾತ್ರ ಇದನ್ನು ಮಾಡಿ.</translation>
@@ -1828,6 +1830,7 @@
 <translation id="237828693408258535">ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸುವುದೇ?</translation>
 <translation id="2378982052244864789">ವಿಸ್ತರಣೆ ಡೈರೆಕ್ಟರಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="2379281330731083556">ಸಿಸ್ಟಂ ಸಂವಾದವನ್ನು ಬಳಸಿ ಮುದ್ರಿಸಿ... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">ಇದು ನಿಮ್ಮ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಲು ಕಾರಣವಾಗಬಹುದು</translation>
 <translation id="2381499968174336913">ಹಂಚಿದ ಟ್ಯಾಬ್‌ನ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="2382875860893882175">ಬಿತ್ತರಿಸುವಿಕೆಯನ್ನು ಪ್ರಸ್ತುತ ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ. ನೀವು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಬಿತ್ತರಿಸುವಿಕೆಯನ್ನು ಪುನರಾರಂಭಿಸಬಹುದು ಅಥವಾ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು.</translation>
 <translation id="2383825469508278924">ಕೀಬೋರ್ಡ್ ಕೀ ಮ್ಯಾಪಿಂಗ್, ಫಂಕ್ಷನ್ ಕೀಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -4056,7 +4059,6 @@
 <translation id="4124935795427217608">ಯುನಿಕಾರ್ನ್</translation>
 <translation id="412730574613779332">ಸ್ಪ್ಯಾಂಡೆಕ್ಸ್</translation>
 <translation id="4130199216115862831">ಸಾಧನದ ಲಾಗ್</translation>
-<translation id="4130207949184424187">ಆಮ್ನಿಬಾಕ್ಸ್‌ನಿಂದ ನೀವು ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಈ ವಿಸ್ತರಣೆಯು ಬದಲಾಯಿಸಿದೆ.</translation>
 <translation id="4130750466177569591">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
 <translation id="413121957363593859">ಘಟಕಾಂಶಗಳು</translation>
 <translation id="4131283654370308898">ಈ ಸೈಟ್‌ನಲ್ಲಿ <ph name="EXTENSION_NAME" /> ಅನ್ನು ಅನುಮತಿಸಿ</translation>
@@ -5563,7 +5565,6 @@
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5355498626146154079">ನೀವು "Borealis Enabled" ಫ್ಲ್ಯಾಗ್ ಅನ್ನು ಆನ್ ಮಾಡಬೇಕು</translation>
 <translation id="5355501370336370394">ಎಂಟರ್‌ಪ್ರೈಸ್ ಸಾಧನವನ್ನು ನೋಂದಾಯಿಸಿ</translation>
-<translation id="5355926466126177564">ಓಮ್ನಿಬಾಕ್ಸ್‌ನಿಂದ ನೀವು ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯು ಬದಲಾಯಿಸಿದೆ.</translation>
 <translation id="5356155057455921522">ನಿಮ್ಮ ನಿರ್ವಾಹಕರ ಈ ಅಪ್‌ಡೇಟ್ ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಆ್ಯಪ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ತೆರೆಯುವಂತೆ ಮಾಡುತ್ತದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="5359910752122114278">1 ಫಲಿತಾಂಶ</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> ಟ್ಯಾಬ್</translation>
@@ -5906,7 +5907,6 @@
 <translation id="5624120631404540903">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5625225435499354052">Google Pay ನಲ್ಲಿ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5626134646977739690">ಹೆಸರು:</translation>
-<translation id="5627086634964711283">ನೀವು ಹೋಮ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="5627832140542566187">ಡಿಸ್‌ಪ್ಲೇ ಓರಿಯಂಟೇಶನ್</translation>
 <translation id="5628434207686266338">ಸಾಧನದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="562935524653278697">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
@@ -6310,14 +6310,12 @@
 <translation id="5955304353782037793">ಅಪ್ಲಿಕೇಶನ್‌</translation>
 <translation id="5955721306465922729">ಒಂದು ವೆಬ್‌ಸೈಟ್ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ತೆರೆಯಲು ಬಯಸುತ್ತಿದೆ.</translation>
 <translation id="5955809630138889698">ಈ ಸಾಧನವು ಆನ್‌ಲೈನ್ ಡೆಮೊ ಮೋಡ್‌ಗೆ ಮಾತ್ರ ಅರ್ಹವಾಗಿರಬಹುದು. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ಬೆಂಬಲ ಪ್ರತಿನಿಧಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
-<translation id="5956585768868398362">ಇದು ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿರುವ ಹುಡುಕಾಟ ಪುಟವೇ?</translation>
 <translation id="5957987129450536192">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಚಿತ್ರದ ಬಳಿಯಿರುವ 'ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ' ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ, ನಂತರ ನೀವು ಆಲಿಸಲು ಬಯಸಿರುವುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5959471481388474538">ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="5963413905009737549">ವಿಭಾಗ</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ಪೀಕ್)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="5964247741333118902">ಎಂಬೆಡ್ ಮಾಡಲಾದ ಕಂಟೆಂಟ್</translation>
-<translation id="5965661248935608907">ನೀವು ಹೋಮ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಅಥವಾ ಆಮ್ನಿಬಾಕ್ಸ್ ‌ನಿಂದ ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="5966511985653515929">ನೀವು ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿದಾಗ ನಿಮ್ಮ ಸಾಧನದಿಂದ ಸೈಟ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5968022600320704045">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="5969364029958154283">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -6754,7 +6752,6 @@
 <translation id="6309510305002439352">ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6310141306111263820">eSIM ಪ್ರೊಫೈಲ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸಹಾಯಕ್ಕಾಗಿ, ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="6311220991371174222">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ತೆರೆಯುವಾಗ ಏನೋ ತಪ್ಪು ಸಂಭವಿಸಿರುವ ಕಾರಣದಿಂದ Chrome ಆರಂಭಿಸಲಾಗುವುದಿಲ್ಲ. Chrome ಮರುಆರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="6311708879134408222">ನೀವು ನಾಳೆ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 ದಿನದ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}one{{NUM_DAYS} ದಿನಗಳ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}other{{NUM_DAYS} ದಿನಗಳ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}}</translation>
 <translation id="6312638141433622592">ರೀಡರ್ ಮೋಡ್ ಅನ್ನು ಬೆಂಬಲಿಸುತ್ತಿದ್ದರೆ, ಲೇಖನಗಳನ್ನು ರೀಡರ್ ಮೋಡ್‌ನಲ್ಲಿ ತೋರಿಸುವ ಸೌಲಭ್ಯ ಒದಗಿಸಿ</translation>
 <translation id="6313641880021325787">VR ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -6792,6 +6789,7 @@
 <translation id="6344576354370880196">ಉಳಿಸಿದ ಪ್ರಿಂಟರ್‌ಗಳು</translation>
 <translation id="6344608411615208519">ನಿಮ್ಮ ಪೋಷಕರು ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಾರೆ<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">ಟ್ರ್ಯಾಕಿಂಗ್ ರಕ್ಷಣೆಗಳು</translation>
+<translation id="6345203628032613660"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ವೀಡಿಯೊ ಫ್ರೇಮ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6345418402353744910"><ph name="PROXY" /> ಪ್ರಾಕ್ಸಿಗಾಗಿ ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ನ ಅಗತ್ಯವಿದೆ. ಇದರಿಂದ ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನಿರ್ವಾಹಕರು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು</translation>
 <translation id="6345566021391290381"><ph name="WEBSITE_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ. ನೀವು ಅವುಗಳನ್ನು ಸೈನ್ ಇನ್ ಫಾರ್ಮ್‌ನಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
 <translation id="6345878117466430440">ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ</translation>
@@ -7281,7 +7279,6 @@
 <translation id="6749473226660745022">ಫೋಟೋಗಳು</translation>
 <translation id="6750757184909117990">ಸೆಲ್ಯುಲರ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ಅದೃಶ್ಯ)</translation>
-<translation id="6756059675436942777">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6756157672127672536">ನೀವು Google Drive, ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆ ಅಥವಾ ನಿಮ್ಮ ChromeOS ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿರುವ ಫೈಲ್‌ಗಳಿಗೆ Files ಆ್ಯಪ್ ತ್ವರಿತ ಆ್ಯಕ್ಸೆಸ್ ಒದಗಿಸುತ್ತದೆ.</translation>
 <translation id="6756643207511618722">ಧ್ವನಿ ಎಂಜಿನ್‌ಗಳು</translation>
 <translation id="6757431299485455321">ಈ ಹಾಟ್‌ಸ್ಪಾಟ್ ಹುಡುಕಲು ಇತರ ಸಾಧನಗಳಿಗೆ ಸಹಾಯ ಮಾಡಿ.</translation>
@@ -7310,6 +7307,7 @@
 <translation id="6777817260680419853">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6777845730143344223">Passpoint ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6779092717724412415">ಈ ರೀತಿಯ ಹೈಲೈಟ್ ರಚಿಸಲು, ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
+<translation id="6779348349813025131">Google Password Manager ಗೆ MacOS Keychain ನ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6779447100905857289">ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳು</translation>
 <translation id="677965093459947883">ತುಂಬಾ ಚಿಕ್ಕದು</translation>
 <translation id="6781005693196527806">ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳನ್ನು &amp;ನಿರ್ವಹಿಸಿ...</translation>
@@ -7687,7 +7685,6 @@
 <translation id="7047059339731138197">ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7049293980323620022">ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="7050037487872780845">ಅಮಾನ್ಯ ಹಾಟ್‌ಸ್ಪಾಟ್ ಕಾನ್ಫಿಗರೇಶನ್</translation>
-<translation id="7051551856857948729">IBAN ಮೌಲ್ಯವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7052237160939977163">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್‌ ಡೇಟಾ ಕಳುಹಿಸಿ</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7055152154916055070">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ:</translation>
@@ -8572,7 +8569,6 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ಮೂಲಕ ಪಠ್ಯವನ್ನು ಹಂಚಲಾಗಿದೆ</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ನಿಮ್ಮ ಡಿಸ್‌ಪ್ಲೇನ ಗಡಿಗಳನ್ನು ಹೊಂದಿಸಿ</translation>
-<translation id="7760004034676677601">ಇದು ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿರುವ ಆರಂಭಿಕ ಪುಟವೇ?</translation>
 <translation id="7762024824096060040">ಈ ಖಾತೆಯನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7762243782113123335">ಕ್ಷಮಿಸಿ, ಏನೋ ತಪ್ಪಾಗಿದೆ. ವಿವರಣೆಯಲ್ಲಿ #bruschetta ಎಂಬುದರ ಜೊತೆಗೆ ಪ್ರತಿಕ್ರಿಯೆ ಸಲ್ಲಿಸಿ. ದೋಷದ ಕೋಡ್ <ph name="ERROR" /> ಆಗಿದೆ.</translation>
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
@@ -8673,7 +8669,6 @@
 <translation id="7828642077514646543">ದೋಷ: ಪ್ರಮಾಣಪತ್ರವನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="7829877209233347340">ಶಾಲಾ ಖಾತೆಯನ್ನು ಸೇರಿಸುವುದಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅನುಮತಿ ನೀಡುವುದಕ್ಕೆ ಪೋಷಕರಿಗೆ ಹೇಳಿ</translation>
 <translation id="7830833461614351956">ತೆರೆಯಲು <ph name="NUM_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಕಾಪಿ ಮಾಡಬೇಕೆ?</translation>
-<translation id="783088158898934992">ಆ್ಯಪ್ ಭಾಷೆ</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google ಗೆ ರಿಯಾಯಿತಿ ಕಂಡುಬಂದರೆ, ನೀವು ಅದನ್ನು ಈ ಪುಟದಲ್ಲಿ ನೋಡಬಹುದು</translation>
 <translation id="7833720883933317473">ಉಳಿಸಲಾದ ಕಸ್ಟಮ್ ಪದಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
@@ -9113,7 +9108,7 @@
 <translation id="8163708146810922598">ತುಂಬಾ ಹಳೆಯದು</translation>
 <translation id="8165997195302308593">Crostini ಪೋರ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{ಒಂದು ಫೋನ್ ಸಂಖ್ಯೆ}one{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}other{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}}</translation>
-<translation id="8168435359814927499">ವಿಷಯ</translation>
+<translation id="8168435359814927499">ಕಂಟೆಂಟ್‍</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ}one{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="8171334254070436367">ಎಲ್ಲಾ ಕಾರ್ಡ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8174047975335711832">ಸಾಧನದ ಮಾಹಿತಿ</translation>
@@ -9878,7 +9873,6 @@
 <translation id="876956356450740926">ಡೆವಲಪರ್ ಟೂಲ್‌ಗಳು, IDE ಗಳು ಮತ್ತು ಎಡಿಟರ್‌ಗಳನ್ನು ರನ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="8771300903067484968">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
-<translation id="8773280816776735812">IBAN ಮೌಲ್ಯವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8774379074441005279">ಮರುಸ್ಥಾಪನೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8774934320277480003">ಮೇಲಿನ ಅಂಚು</translation>
 <translation id="8775144690796719618">ಅಮಾನ್ಯ URL</translation>
@@ -10058,6 +10052,7 @@
 <translation id="8910987510378294980">ಸಾಧನದ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8912362522468806198">Google ಖಾತೆ</translation>
 <translation id="8912810933860534797">ಸ್ವಯಂ ಸ್ಕ್ಯಾನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="8914504000324227558">Chrome ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="8915307125957890427">ಟ್ಯಾಬ್ ಮೇಲೆ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು "ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ" ಆಯ್ಕೆಮಾಡಿ ನಂತರ "ಹೊಸ ಗುಂಪು" ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8915370057835397490">ಸಲಹೆಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8916476537757519021">ಅದೃಶ್ಯ ಉಪಫ್ರೇಮ್: <ph name="SUBFRAME_SITE" /></translation>

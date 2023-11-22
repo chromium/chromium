@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Datgodiwr lluniau</translation>
 <translation id="1785415724048343560">Argymhellir ar gyfer y profiad gorau</translation>
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Gall gwefannau cysylltiedig weld eich gweithgarwch yn y grŵp</translation>
 <translation id="1887786770086287077">Mae mynediad lleoliad wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1919950603503897840">Dewis cysylltiadau</translation>
@@ -63,7 +62,6 @@
 <translation id="2182457891543959921">Gofyn cyn caniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle eich camera (argymhellir)</translation>
 <translation id="2185965788978862351">Bydd hyn yn dileu <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau neu gan apiau ar eich sgrîn Hafan.</translation>
 <translation id="2194856509914051091">Pethau i'w hystyried</translation>
-<translation id="2212565012507486665">Caniatáu cwcis</translation>
 <translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
 <translation id="2238944249568001759">Chwiliadau a awgrymir yn seiliedig ar eich tab diwethaf</translation>
@@ -104,7 +102,6 @@
 <translation id="2677748264148917807">Gadael</translation>
 <translation id="2678468611080193228">Rhowch gynnig ar ganiatáu cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad ond mae nodweddion y wefan yn fwy tebygol o weithio</translation>
 <translation id="2683434792633810741">Dileu ac ailosod?</translation>
-<translation id="2687403674020088961">Rhwystro pob cwci (ni argymhellir)</translation>
 <translation id="2713106313042589954">Diffodd y camera</translation>
 <translation id="2717722538473713889">Cyfeiriadau e-bost</translation>
 <translation id="2750481671343847896">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
@@ -156,7 +153,6 @@
 <translation id="3586500876634962664">Defnyddio camera a meicroffon</translation>
 <translation id="358794129225322306">Caniatáu i wefan lawrlwytho mwy nag un ffeil yn awtomatig.</translation>
 <translation id="3594780231884063836">Mudo'r fideo</translation>
-<translation id="3596414637720633074">Rhwystro cwcis gan drydydd parti yn y Modd Anhysbys</translation>
 <translation id="3600792891314830896">Distewi gwefannau sy'n chwarae sain</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
 <translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
@@ -184,7 +180,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
 <translation id="4002066346123236978">Teitl</translation>
-<translation id="4008040567710660924">Caniatáu cwcis ar gyfer gwefan benodol.</translation>
 <translation id="4046123991198612571">Trac nesaf</translation>
 <translation id="4149890623864272035">Ydych chi'n siŵr eich bod chi am ddileu'r holl ddata lleol, gan gynnwys cwcis, ac ailosod yr holl ganiatadau ar gyfer y wefan hon?</translation>
 <translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
@@ -225,7 +220,6 @@
 <translation id="4883854917563148705">Methu ag ailosod gosodiadau a reolir</translation>
 <translation id="4887024562049524730">Gofyn cyn caniatáu i wefannau ddefnyddio'ch dyfais rhithwirionedd a'ch data (argymhellir)</translation>
 <translation id="4953688446973710931">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig. Pan fydd wedi'i ddiffodd, ni all gwefannau lawrlwytho mwy nag un ffeil yn awtomatig.</translation>
-<translation id="4955223779495905865">Gall gwefan rydych yn ymweld â hi fewnosod cynnwys o wefannau eraill, er enghraifft lluniau, hysbysebion a thestun. Gall unrhyw un o'r gwefannau hyn arbed cwcis a data eraill i bersonoleiddio'ch profiad.</translation>
 <translation id="4962975101802056554">Dirymu pob caniatâd ar gyfer y ddyfais</translation>
 <translation id="497421865427891073">Mynd ymlaen</translation>
 <translation id="4976702386844183910">Ymwelwyd ddiwethaf <ph name="DATE" /></translation>
@@ -426,7 +420,6 @@
 <translation id="8117244575099414087">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio synwyryddion eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio synwyryddion.</translation>
 <translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
-<translation id="8154912474061769055">Mae'n bosib na fydd nodweddion ar lawer o wefannau yn gweithio</translation>
 <translation id="8168435359814927499">Cynnwys</translation>
 <translation id="8186479265534291036">Gwefan ddim yn gweithio? Mae cwcis trydydd parti wedi'u rhwystro</translation>
 <translation id="8197286292360124385">Caniateir <ph name="PERMISSION_1" /></translation>
@@ -440,7 +433,6 @@
 <translation id="8324158725704657629">Peidio â gofyn eto</translation>
 <translation id="8362795839483915693">Gallwch chwyddo neu bellhau ar wefannau rydych yn ymweld â nhw</translation>
 <translation id="8372893542064058268">Caniatáu Cysoni yn y Cefndir ar gyfer wefan benodol.</translation>
-<translation id="8376384591331888629">Gan gynnwys cwcis trydydd parti ar y wefan hon</translation>
 <translation id="83792324527827022">Mae gwefan yn defnyddio'ch camera a'ch meicroffon</translation>
 <translation id="8380167699614421159">Mae'r wefan hon yn dangos hysbysebion ymwthiol neu gamarweiniol</translation>
 <translation id="8394832520002899662">Tapiwch i ddychwelyd i'r wefan</translation>
@@ -488,7 +480,6 @@
 <translation id="8926666909099850184">Mae NFC wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Rhwystro gwefannau rhag gweld a newid gwybodaeth ar ddyfeisiau NFC</translation>
 <translation id="8944485226638699751">Cyfyngedig</translation>
-<translation id="8958424370300090006">Rhwystro cwcis ar gyfer gwefan benodol.</translation>
 <translation id="8959122750345127698">Mae llywio yn anghyraeddadwy: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Anghofio</translation>
 <translation id="8990043154272859344">Byddwch yn cael eich allgofnodi o bob gwefan</translation>

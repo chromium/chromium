@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">Та Google-н Нууц үгний менежерт хадгалсан нууц үгнүүдээ iPhone дээрх бусад аппад ашиглах боломжтой.</translation>
 <translation id="2689064829982324496">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK" />Chrome-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
+<translation id="2702250627063295552">Унших жагсаалтын зүйлийг Chrome-д нэмэх</translation>
 <translation id="2736805085127235148">Chrome-н мэдэгдлийг одоогоор таны төхөөрөмжийн тохиргоонд унтраасан байна.</translation>
 <translation id="2767464022270041271">Хадгалсан ямар ч нууц үг алга. Google Password Manager таныг нууц үгнүүдээ хадгалсан үед тэдгээрийг шалгах боломжтой.</translation>
 <translation id="2868822340714096138">Chrome-н интернэтээр үзсэн өгөгдлийг арилгах</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">Нууц үгнүүдийг Chrome-д удирдах</translation>
 <translation id="3827545470516145620">Та энэ төхөөрөмжид аюулгүй байдлын стандарт хамгаалалтыг авч байна</translation>
 <translation id="384394811301901750">Google Chrome таны камерыг одоогоор ашиглах боломжгүй</translation>
+<translation id="3863841106411295595">Таны Chrome-н унших жагсаалтад оруулсан URL-уудыг нэмнэ.</translation>
 <translation id="3901001113120561395">Chrome-г бүрэн ашиглаарай.</translation>
 <translation id="3967382818307165056">Chrome-д төлбөрийн хэрэгслүүдийг удирдах</translation>
 <translation id="3980220367029651214">Та синк хийх бүртгэлийг <ph name="USER_EMAIL1" />-с <ph name="USER_EMAIL2" /> рүү шилжүүлж байна. Таны одоогийн Chrome-н өгөгдлийг <ph name="DOMAIN" />-с удирддаг. Энэ нь таны өгөгдлийг төхөөрөмжөөс устгах хэдий ч таны өгөгдөл <ph name="USER_EMAIL1" />-д хадгалагдсан хэвээр байна.</translation>

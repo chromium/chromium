@@ -326,7 +326,6 @@
 <translation id="1593359183944365958">۲۷۰ درجه</translation>
 <translation id="1594030484168838125">انتخاب</translation>
 <translation id="1596296697375291157">فیلم‌های هیجان‌انگیز، جنایی، و رازآلود</translation>
-<translation id="1597473228022844713">این محصول را ردیابی می‌کنید. این صفحه در <ph name="LAST_BOOKMARKS_FOLDER" /> ذخیره شده است</translation>
 <translation id="1598816256585174656">‏گذرکلید از Windows Hello</translation>
 <translation id="1599199147673445968">کارت جدیدی دارید؟ <ph name="BEGIN_LINK" />جزئیات کارت را وارد کنید<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">‏بازی کردن بازی دویدن دایناسور در Chrome</translation>
@@ -520,6 +519,7 @@
 <translation id="1997484222658892567"><ph name="URL" /> می‌خواهد داده‌های بزرگ را برای همیشه در رایانه محلی‌تان ذخیره کند</translation>
 <translation id="1997774360448418989">کاغذ (سبک)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{و ۱ برنامه دیگر}one{و # برنامه دیگر}other{و # برنامه دیگر}}</translation>
+<translation id="2001469757375372617">مشکلی پیش آمد. تغییر ذخیره نشد.</translation>
 <translation id="2003709556000175978">هم‌اکنون گذرواژه‌تان را بازنشانی کنید</translation>
 <translation id="2003775180883135320">چهار سوراخ در بالا</translation>
 <translation id="2004697686368036666">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند</translation>
@@ -725,6 +725,7 @@
 <translation id="2395840535409704129">ورزش‌های آبی</translation>
 <translation id="2396249848217231973">&amp;واگرد حذف</translation>
 <translation id="2397836504670957718">رایانه کیفی و نوت‌بوک</translation>
+<translation id="2399868464369312507">‏Google Chrome می‌خواهد روش‌های پرداخت را ویرایش کند.</translation>
 <translation id="2400600116338235695">می‌تواند برای اتصال به درگاه‌های سریال درخواست دهد</translation>
 <translation id="2404884497378469141">فایل‌ها را دوباره کپی کنید</translation>
 <translation id="2413155254802890957">قدیمی</translation>
@@ -1119,6 +1120,7 @@
 <translation id="3250640885957938546">تبلیغات و بازاریابی</translation>
 <translation id="3252772880526154546">معماری</translation>
 <translation id="3254301855501243548">۲۲ × ۱۸ اینچ</translation>
+<translation id="3255926992597692024">‏Chromebook می‌خواهد تنظیمات تکمیل روش‌های پرداخت را اصلاح کند.</translation>
 <translation id="3256863843508922226">بازنشستگی و مستمری</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع رویداد جدید در «تقویم Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3261488570342242926">درباره کارت‌های مجازی بیشتر بدانید</translation>
@@ -1504,6 +1506,7 @@
 <translation id="4047351652147966654">۲۴ × ۱۸ اینچ</translation>
 <translation id="404831776305217138">نشانی اینترنتی به‌روزرسانی برای افزونه با شناسه «<ph name="EXTENSION_ID" />» نامعتبر است یا از طرح پشتیبانی‌نشده استفاده می‌کند. طرح‌های پشتیبانی‌شده این‌ها هستند: <ph name="HTTP_SCHEME" />، <ph name="HTTPS_SCHEME" />، و <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">‏می‌توانید از آن در محصولات Google استفاده کنید.</translation>
+<translation id="4050599136622776556">‏Chromium می‌خواهد روش‌های پرداخت را ویرایش کند.</translation>
 <translation id="405399507749852140">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید</translation>
 <translation id="4056223980640387499">سپیا</translation>
 <translation id="4063063121357725926">‏به Google اجازه دهید در پیدا کردن تخفیف‌های مربوط به سبدهای خریدتان به شما کمک کند</translation>
@@ -1626,6 +1629,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">تی‌شرت</translation>
 <translation id="4253168017788158739">یادداشت</translation>
+<translation id="4255487295905690262">اگر قیمت در هر سایتی کاهش پیدا کند، هشدار ایمیلی دریافت خواهید کرد.</translation>
 <translation id="425582637250725228">تغییراتی که انجام داده‌اید ممکن است ذخیره نشده باشند.</translation>
 <translation id="4258748452823770588">امضای نادرست</translation>
 <translation id="4261046003697461417">نمی‌توان در سند محافظت‌شده حاشیه‌نویسی کرد</translation>
@@ -2982,7 +2986,6 @@
 <translation id="6999480632062519056">آموزش تناسب اندام و تعلیم شخصی</translation>
 <translation id="6999969238895751684">صنعت سرگرمی</translation>
 <translation id="7003278537452757231">فرش و قالیچه</translation>
-<translation id="7003335073762455340">این محصول را ردیابی می‌کنید. این صفحه در <ph name="LAST_BOOKMARKS_FOLDER" /> ذخیره شده است.</translation>
 <translation id="7004499039102548441">برگه‌های جدید</translation>
 <translation id="7004583254764674281">‏برای به‌تأیید رساندن سریع‌تر کارت‌ها، از Windows Hello استفاده شود</translation>
 <translation id="7006930604109697472">در هر حال فرستاده شود</translation>
@@ -3039,7 +3042,6 @@
 <translation id="7108819624672055576">توسط افزونه مجاز شده است</translation>
 <translation id="7109510814665441393">بازی‌های رانندگی و مسابقه‌ای</translation>
 <translation id="7110116949943042888">مشاغل موقت و فصلی</translation>
-<translation id="7110553203952632623">اگر قیمت در سایتی کاهش پیدا کند، هشدار ایمیلی دریافت خواهید کرد</translation>
 <translation id="7111012039238467737">(معتبر)</translation>
 <translation id="7111507312244504964">بازرسی و ارزیابی املاک</translation>
 <translation id="7112327784801341716">اطلاعات کنونی‌تان را نمی‌بینید؟ برای به‌روزرسانی آن، با بانکتان تماس بگیرید.</translation>
@@ -3158,7 +3160,6 @@
 <translation id="7366117520888504990">۲۷۵ × ۱۹۸ میلی‌متر</translation>
 <translation id="7366362069757178916">کنترل‌کننده‌های پرداخت</translation>
 <translation id="7367985555340314048">موضوعات موردعلاقه براساس سابقه مرور اخیرتان است و سایت‌ها برای نشان دادن آگهی‌های شخصی‌سازی‌شده از آن‌ها استفاده می‌کنند</translation>
-<translation id="7368169244533796604">حذف سایت</translation>
 <translation id="7372526636730851647">عکس (براق)</translation>
 <translation id="7372973238305370288">نتیجه جستجو</translation>
 <translation id="7374461526650987610">کنترل‌کننده‌های پروتکل</translation>
@@ -3581,7 +3582,6 @@
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8134058435519644366">استخدام و تأمین نیرو</translation>
 <translation id="8135546115396015134">کلید چپ</translation>
-<translation id="8144303576836498784">مشکلی پیش آمد. تغییر ذخیره نشد</translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
 <translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابجا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
@@ -3794,6 +3794,7 @@
 <translation id="8542014550340843547">سه منگنه در پایین</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">می‌توانید <ph name="BEGIN_ERROR_LINK" />یک مشکل شناسایی‌شده را گزارش کنید<ph name="END_ERROR_LINK" /> یا اگر از خطراتی که امنیت شما را تهدید می‌کنند مطلع شدید، <ph name="BEGIN_LINK" />از این سایت ناامن دیدن کنید<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">‏Google Chrome می‌خواهد تنظیمات تکمیل روش‌های پرداخت را اصلاح کند.</translation>
 <translation id="8544303911974837265">پلی‌استر</translation>
 <translation id="854548366864113872">گزینه گران‌قیمت</translation>
 <translation id="8546254312340305428">دلیلی برای بارگذاری ارائه دهید (الزامی)</translation>

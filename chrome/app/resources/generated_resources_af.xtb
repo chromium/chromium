@@ -4062,7 +4062,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4124935795427217608">Eenhoring</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Toestelloglêer</translation>
-<translation id="4130207949184424187">Hierdie uitbreiding het verander watter bladsy gewys word wanneer jy van die omniboks af soek.</translation>
 <translation id="4130750466177569591">Ek stem in</translation>
 <translation id="413121957363593859">Komponente</translation>
 <translation id="4131283654370308898">Laat <ph name="EXTENSION_NAME" /> op hierdie werf toe</translation>
@@ -5569,7 +5568,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5355191726083956201">Verbeterde Beskerming is aan</translation>
 <translation id="5355498626146154079">Jy moet die “Borealis Enabled”-vlag aanskakel</translation>
 <translation id="5355501370336370394">Skryf ondernemingtoestel in</translation>
-<translation id="5355926466126177564">Die uitbreiding "<ph name="EXTENSION_NAME" />" het verander watter program gewys word wanneer jy van die omniboks af soek.</translation>
 <translation id="5356155057455921522">Hierdie opdatering deur jou administrateur sal veroorsaak dat jou organisasie se programme vinniger oopmaak. Dit kan 'n paar minute neem.</translation>
 <translation id="5359910752122114278">1 resultaat</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> oortjie</translation>
@@ -5912,7 +5910,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5624120631404540903">Bestuur wagwoorde</translation>
 <translation id="5625225435499354052">Wysig op Google Pay</translation>
 <translation id="5626134646977739690">Naam:</translation>
-<translation id="5627086634964711283">Dit beheer ook watter bladsy gewys word wanneer jy die Tuis-knoppie klik.</translation>
 <translation id="5627832140542566187">Skermoriëntasie</translation>
 <translation id="5628434207686266338">Stel toestelwagwoord</translation>
 <translation id="562935524653278697">Jou administrateur het die sinkronisering van jou boekmerke, geskiedenis, wagwoorde en ander instellings gedeaktiveer.</translation>
@@ -6316,14 +6313,12 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5955304353782037793">program</translation>
 <translation id="5955721306465922729">'n Webwerf wil hierdie program oopmaak.</translation>
 <translation id="5955809630138889698">Hierdie toestel kwalifiseer dalk vir aanlyn demonstrasiemodus. Kontak jou steundiensverteenwoordiger vir meer besonderhede.</translation>
-<translation id="5956585768868398362">Is dit die soekbladsy wat jy verwag het?</translation>
 <translation id="5957987129450536192">Tik op die Hardoplees-ikoon naby jou profielprent en kies wat jy wil hoor.</translation>
 <translation id="5959471481388474538">Netwerk nie beskikbaar nie</translation>
 <translation id="5963413905009737549">Afdeling</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> piek)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Maak almal in &amp;nuwe venster oop}=1{Maak in &amp;nuwe venster oop}other{Maak almal ({COUNT}) in &amp;nuwe venster oop}}</translation>
 <translation id="5964247741333118902">Ingebedde inhoud</translation>
-<translation id="5965661248935608907">Dit beheer ook watter bladsy gewys word wanneer jy die Tuisknoppie klik of vanuit die omnikassie soek.</translation>
 <translation id="5966511985653515929">Werfdata op jou toestel word uitgevee wanneer jy alle vensters toemaak</translation>
 <translation id="5968022600320704045">Geen soekresultate nie</translation>
 <translation id="5969364029958154283">Kom meer te wete oor die terugstel van instellings</translation>
@@ -6760,7 +6755,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6309510305002439352">Mikrofoon is afgeskakel</translation>
 <translation id="6310141306111263820">Kon nie e-SIM-profiel installeer nie. Kontak jou diensverskaffer vir hulp.</translation>
 <translation id="6311220991371174222">Kan nie Chrome begin nie omdat iets verkeerd geloop het met die oopmaak van jou profiel. Probeer om Chrome te herbegin.</translation>
-<translation id="6311708879134408222">Jy kan môre weer probeer.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Veiligheidskontrole het 1 dag gelede plaasgevind}other{Veiligheidskontrole het {NUM_DAYS} dae gelede plaasgevind}}</translation>
 <translation id="6312638141433622592">Bied aan om artikels in lesermodus te wys, as dit gesteun word</translation>
 <translation id="6313641880021325787">VERLAAT VR</translation>
@@ -7285,7 +7279,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6750757184909117990">Deaktiveer sellulêre netwerk</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
-<translation id="6756059675436942777">Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="6756157672127672536">Die Lêers-program bied vinnige toegang tot lêers wat jy op Google Drive, eksterne berging of jou Chrome-bedryfstelseltoestel gestoor het.</translation>
 <translation id="6756643207511618722">Spraakenjins</translation>
 <translation id="6757431299485455321">Help ander toestelle om hierdie warmkol te kry.</translation>
@@ -7689,7 +7682,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7047059339731138197">Kies 'n agtergrond</translation>
 <translation id="7049293980323620022">Hou lêer?</translation>
 <translation id="7050037487872780845">Ongeldige warmkolopstelling</translation>
-<translation id="7051551856857948729">Versteek IBAN-waarde</translation>
 <translation id="7052237160939977163">Stuur prestasienasporingdata</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7055152154916055070">Herleiding is geblokkeer:</translation>
@@ -8575,7 +8567,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7757787379047923882">Teks gedeel vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Verstel jou skerm se grense</translation>
-<translation id="7760004034676677601">Is dit die afskopbladsy wat jy verwag het?</translation>
 <translation id="7762024824096060040">Kan nie hierdie rekening gebruik nie</translation>
 <translation id="7762243782113123335">Jammer, iets is fout. Dien asseblief terugvoer in met #bruschetta in die beskrywing. Foutkode is <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Voeg adres by</translation>
@@ -8677,7 +8668,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7828642077514646543">Fout: Kan nie sertifikaat dekodeer nie</translation>
 <translation id="7829877209233347340">Vra 'n ouer om aan te meld om toestemming te gee om 'n skoolrekening by te voeg</translation>
 <translation id="7830833461614351956">Kopieer <ph name="NUM_OF_FILES" /> lêers na <ph name="CLOUD_PROVIDER" /> om oop te maak?</translation>
-<translation id="783088158898934992">Apptaal</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Jy sal dit op hierdie bladsy sien as Google afslag vind</translation>
 <translation id="7833720883933317473">Gestoorde gepasmaakte woorde sal hier verskyn</translation>
@@ -9884,7 +9874,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="876956356450740926">Laat loop ontwikkelaarnutsdinge, IDE’s en redigeerders. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Uitbreidingwortelgids</translation>
 <translation id="8771300903067484968">Beginbladsy se agtergrond is na die verstekagtergrond toe teruggestel.</translation>
-<translation id="8773280816776735812">Wys IBAN-waarde</translation>
 <translation id="8774379074441005279">Bevestig terugstelling</translation>
 <translation id="8774934320277480003">Boonste kantlyn</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>
@@ -10063,6 +10052,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8910987510378294980">Versteek toestellys</translation>
 <translation id="8912362522468806198">Google-rekening</translation>
 <translation id="8912810933860534797">Aktiveer outoskandering</translation>
+<translation id="8914504000324227558">Herbegin Chrome</translation>
 <translation id="8915307125957890427">Regsklik ’n oortjie en kies "Voeg oortjie by groep", en kies dan "Nuwe groep"</translation>
 <translation id="8915370057835397490">Laai tans voorstel</translation>
 <translation id="8916476537757519021">Incognitosubraam: <ph name="SUBFRAME_SITE" /></translation>

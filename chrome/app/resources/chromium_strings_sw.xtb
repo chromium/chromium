@@ -71,10 +71,8 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="2313870531055795960">Hukagua URL ili kuona iwapo zipo kwenye orodha ya tovuti zisizo salama zilizohifadhiwa katika Chromium. Ikiwa tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chromium inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwa kipengele cha Kuvinjari Salama.</translation>
 <translation id="2329088755516916767">Chromium ikiwashwa, huwa inapakia mapema kurasa, hali inayofanya shughuli za utafutaji na kuvinjari ziwe za haraka zaidi.</translation>
 <translation id="2343156876103232566">Ili uweze kutuma nambari kwa simu yako ya Android kutoka hapa, ingia katika akaunti kwenye Chromium ukitumia vifaa vyote viwili.</translation>
-<translation id="2347108572062610441">Kiendelezi hiki kimebadilisha ukurasa unaoonyeshwa unapoanzisha Chromium.</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2384373936468275798">Mfumo wa Uendeshaji wa Chromium haukusawazisha data yako kwa sababu maelezo ya kuingia katika akaunti yako yamepitwa na wakati.</translation>
-<translation id="2396765026452590966">Kiendelezi hiki "<ph name="EXTENSION_NAME" />" kimebadilisha ukurasa unaoonyeshwa unapoanzisha Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Kiendelezi kimoja au zaidi cha Chromium kilikuwa kinafikia kifaa 1 cha HID}=1{Kiendelezi kimoja au zaidi cha Chromium kinafikia kifaa 1 cha HID}other{Kiendelezi kimoja au zaidi cha Chromium kinafikia vifaa # vya HID}}</translation>
 <translation id="2401032172288869980">Chromium inahitaji ruhusa ya kufikia kamera na maikrofoni kwa ajili ya tovuti hii</translation>
 <translation id="2440750600860946460">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chromium<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
@@ -444,7 +442,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Data gani inatumiwa:<ph name="END_BOLD" /> Historia yako ya kuvinjari, kumbukumbu ya tovuti ulizozitembelea ukitumia Chromium kwenye kifaa hiki.</translation>
 <translation id="8862326446509486874">Huna haki zifaazo ili kufanya usakinishaji wa kiwango cha mfumo. Jaribu kutumia kisakinishi kama msimamiaji kompyuta.</translation>
 <translation id="8880203542552872219">Iwapo ni hivyo, tafadhali badilisha nenosiri ulilohifadhi kwenye Chromium ili lilingane na nenosiri lako jipya.</translation>
-<translation id="8897323336392112261">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chromium au unapobofya kitufe cha Mwanzo.</translation>
 <translation id="8907580949721785412">Chromium inajaribu kuonyesha manenosiri. Chapa nenosiri lako la Windows ili uruhusu hili.</translation>
 <translation id="8931379085695076764">Chromium inaweza kukadiria mambo yanayokuvutia kulingana na historia ya kuvinjari katika wiki chache zilizopita. Taarifa hizi zinahifadhiwa kwenye kifaa chako.</translation>
 <translation id="8941642502866065432">Imeshindwa kusasisha Chromium</translation>

@@ -650,6 +650,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3659667652322717492">Vėliau bet kada galite pakeisti mikrofono veikimą.</translation>
 <translation id="3659814201068740063">Liko apie <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> proc.).
 Prijunkite įrenginį prie maitinimo šaltinio.</translation>
+<translation id="3660860940251915011">Perjungti funkcijos „<ph name="FEATURE_NAME" />“ didelį matomumą</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> tvarkomas naudotojas</translation>
 <translation id="3666266999138159418">Perbraukite, kad paslėptumėte slankųjį langą</translation>
 <translation id="367531336287639526">Pasirinkti pirmą piktogramą adreso juostos kairėje</translation>
@@ -980,6 +981,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Pakeista <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">16 darbalaukis</translation>
 <translation id="4989163558385430922">Žr. viską</translation>
 <translation id="5003993274120026347">Kitas sakinys</translation>

@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
-<translation id="187227595286001730">Relaterede websites kan se din aktivitet i gruppen</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1919950603503897840">Vælg kontakter</translation>
@@ -63,7 +62,6 @@
 <translation id="2182457891543959921">Spørg, inden websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen (anbefales)</translation>
 <translation id="2185965788978862351">Denne handling sletter <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startside.</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
-<translation id="2212565012507486665">Tillad cookies</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238944249568001759">Foreslåede søgninger baseret på din seneste fane</translation>
@@ -104,7 +102,6 @@
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2678468611080193228">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre beskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer</translation>
 <translation id="2683434792633810741">Vil du slette og gendanne?</translation>
-<translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
@@ -156,7 +153,6 @@
 <translation id="3586500876634962664">Brug af kamera og mikrofon</translation>
 <translation id="358794129225322306">Tillad, at et website kan downloade flere filer automatisk.</translation>
 <translation id="3594780231884063836">Slå lyden i videoen fra</translation>
-<translation id="3596414637720633074">Bloker tredjepartscookies i inkognito</translation>
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
@@ -184,7 +180,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Om denne side</translation>
 <translation id="4002066346123236978">Titel</translation>
-<translation id="4008040567710660924">Tillad cookies for et bestemt website.</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="4149890623864272035">Er du sikker på, at du vil slette alle lokale data, herunder cookies, og nulstille alle tilladelser for dette website?</translation>
 <translation id="4149994727733219643">Enkel visning af websider</translation>
@@ -225,7 +220,6 @@
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
 <translation id="4953688446973710931">Når dette er slået til, kan websites anmode om tilladelse til automatisk at downloade flere filer. Når dette er slået fra, kan websites ikke downloade flere filer automatisk.</translation>
-<translation id="4955223779495905865">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Ethvert af disse websites kan gemme cookies og andre data for at personligt tilpasse din oplevelse.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
@@ -426,7 +420,6 @@
 <translation id="8117244575099414087">Når dette er slået til, kan websites anvende din enheds sensorer. Når dette er slået fra, kan websites ikke anvende sensorer.</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8131740175452115882">Bekræft</translation>
-<translation id="8154912474061769055">Funktionerne på mange websites virker muligvis ikke</translation>
 <translation id="8168435359814927499">Indhold</translation>
 <translation id="8186479265534291036">Fungerer websitet ikke? Tredjepartscookies er blokeret</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> blev tilladt</translation>
@@ -440,7 +433,6 @@
 <translation id="8324158725704657629">Spørg ikke igen</translation>
 <translation id="8362795839483915693">Du kan zoome ind eller ud på websites, du besøger</translation>
 <translation id="8372893542064058268">Tillad synkronisering i baggrunden for et bestemt website.</translation>
-<translation id="8376384591331888629">Medtag tredjepartscookies på dette websites</translation>
 <translation id="83792324527827022">Et website anvender dit kamera og din mikrofon</translation>
 <translation id="8380167699614421159">Dette website viser påtrængende eller vildledende annoncer</translation>
 <translation id="8394832520002899662">Tryk for at vende tilbage til websitet</translation>
@@ -488,7 +480,6 @@
 <translation id="8926666909099850184">NFC er deaktiveret for denne enhed. Aktivér funktionen i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Bloker websites, så de ikke kan få adgang til og ændre oplysninger på NFC-enheder</translation>
 <translation id="8944485226638699751">Begrænset</translation>
-<translation id="8958424370300090006">Bloker cookies for et bestemt website.</translation>
 <translation id="8959122750345127698">Navigationen er ikke mulig: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>

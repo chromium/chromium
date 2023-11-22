@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">Google 비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="2689064829982324496">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="2695886661449553974">Chrome에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="2702250627063295552">Chrome에 읽기 목록 항목 추가</translation>
 <translation id="2736805085127235148">현재 기기 설정에서 Chrome 알림이 사용 중지되어 있습니다.</translation>
 <translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
 <translation id="2868822340714096138">Chrome에서 인터넷 사용 기록 삭제</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">Chrome에서 비밀번호 관리</translation>
 <translation id="3827545470516145620">이 기기에 표준 보안 보호 조치가 적용되고 있습니다.</translation>
 <translation id="384394811301901750">지금 Chrome에서 카메라를 사용할 수 없습니다.</translation>
+<translation id="3863841106411295595">입력한 URL을 Chrome의 읽기 목록에 추가합니다.</translation>
 <translation id="3901001113120561395">Chrome 최대한 활용하기</translation>
 <translation id="3967382818307165056">Chrome에서 결제 수단 관리</translation>
 <translation id="3980220367029651214">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chrome 데이터는 <ph name="DOMAIN" />에서 관리합니다. 이렇게 하면 데이터가 이 기기에서 삭제되지만 <ph name="USER_EMAIL1" />에는 그대로 유지됩니다.</translation>

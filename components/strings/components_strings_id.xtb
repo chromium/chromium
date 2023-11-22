@@ -75,6 +75,7 @@
 <translation id="1142713751288681188">Jenis kertas</translation>
 <translation id="1142846828089312304">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="1147769322402934017">Galeri gambar online</translation>
+<translation id="1149617035358809955">memverifikasi diri Anda agar dapat mengisi info pembayaran</translation>
 <translation id="1150565364351027703">Kacamata Hitam</translation>
 <translation id="1150979032973867961">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh sistem operasi komputer Anda. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="1151972924205500581">Sandi wajib ada</translation>
@@ -93,6 +94,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1175364870820465910">&amp;Cetak...</translation>
 <translation id="1175393348063009671">Foto (Matte)</translation>
 <translation id="1175875016430184367">Tiga jepretan di kanan</translation>
+<translation id="1177548198167638471">Jangan Tanya Lagi</translation>
 <translation id="1177802847690410663">Browser web</translation>
 <translation id="1177863135347784049">Sesuaikan</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -324,7 +326,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1593359183944365958">270 derajat</translation>
 <translation id="1594030484168838125">Pilih</translation>
 <translation id="1596296697375291157">Film thriller, kriminal &amp; misteri</translation>
-<translation id="1597473228022844713">Anda memantau produk ini. Halaman ini disimpan di <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Kunci sandi dari Windows Hello</translation>
 <translation id="1599199147673445968">Kartu baru? <ph name="BEGIN_LINK" />Masukkan Detail Kartu<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Mainkan game Dino Run di Chrome</translation>
@@ -355,6 +356,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1645368109819982629">Protokol yang tidak didukung</translation>
 <translation id="1650602712345345441">Kelola setelan Chrome Anda</translation>
 <translation id="1652415888492971589">JIS B8</translation>
+<translation id="1652862280638399816">Untuk menggunakan Pengelola Sandi dengan Rantai Kunci macOS, luncurkan kembali Chromium dan izinkan akses Rantai Kunci. Tab Anda akan dibuka lagi setelah peluncuran kembali.</translation>
 <translation id="1656024727720460136">Chrome menyederhanakan halaman ini agar lebih mudah dibaca. Chrome mengambil halaman asli melalui koneksi yang aman.</translation>
 <translation id="1656489000284462475">Pengambilan</translation>
 <translation id="1658111267661135323">TV &amp; Video</translation>
@@ -518,6 +520,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1997484222658892567"><ph name="URL" /> ingin menyimpan data berukuran besar di komputer lokal Anda secara permanen</translation>
 <translation id="1997774360448418989">Kertas (Ringan)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{dan 1 lainnya}other{dan # lainnya}}</translation>
+<translation id="2001469757375372617">Terjadi error. Perubahan Anda tidak tersimpan.</translation>
 <translation id="2003709556000175978">Reset sandi Anda sekarang</translation>
 <translation id="2003775180883135320">Empat lubang di atas</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
@@ -723,6 +726,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2395840535409704129">Olahraga Air</translation>
 <translation id="2396249848217231973">&amp;Urungkan penghapusan</translation>
 <translation id="2397836504670957718">Laptop &amp; notebook</translation>
+<translation id="2399868464369312507">Google Chrome mencoba mengedit metode pembayaran.</translation>
 <translation id="2400600116338235695">Dapat meminta untuk terhubung ke port serial</translation>
 <translation id="2404884497378469141">Coba salin file lagi</translation>
 <translation id="2413155254802890957">Lama</translation>
@@ -989,6 +993,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2991174974383378012">Berbagi dengan Situs Web</translation>
 <translation id="299122504639061328">Kelola mesin telusur dan penelusuran situs default Anda</translation>
 <translation id="2991571918955627853">Anda tidak dapat mengunjungi <ph name="SITE" /> sekarang karena situs menggunakan HSTS. Error jaringan dan serangan biasanya bersifat sementara, sehingga halaman ini mungkin akan berfungsi nanti.</translation>
+<translation id="2991865971341174470">Verifikasi diri Anda agar Chrome dapat mengisi info pembayaran.</translation>
 <translation id="2995517112308048736">Ukuran file:</translation>
 <translation id="299990983510665749">Hatchback</translation>
 <translation id="3002501248619246229">Periksa media baki masukan</translation>
@@ -1116,6 +1121,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3250640885957938546">Periklanan &amp; pemasaran</translation>
 <translation id="3252772880526154546">Arsitektur</translation>
 <translation id="3254301855501243548">18 x 22 inci (45 x 55 cm)</translation>
+<translation id="3255926992597692024">Chromium mencoba mengubah setelan pengisian metode pembayaran.</translation>
 <translation id="3256863843508922226">Pensiun</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat acara baru di Google Kalender dengan cepat</translation>
 <translation id="3261488570342242926">Pelajari kartu virtual</translation>
@@ -1363,6 +1369,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3723663469265383848">Selama update, Anda tidak akan dapat menggunakan perangkat selama maksimal 10 menit.</translation>
 <translation id="372429172604983730">Aplikasi yang dapat menyebabkan error ini mencakup antivirus, firewall, dan software proxy atau pemfilteran web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat presentasi Google baru di Slide dengan cepat</translation>
+<translation id="3727850735097852673">Untuk menggunakan Pengelola Sandi Google dengan Rantai Kunci macOS, luncurkan kembali Chrome dan izinkan akses Rantai Kunci. Tab Anda akan dibuka lagi setelah peluncuran kembali.</translation>
 <translation id="3733139489341305600">Kendaraan otonom</translation>
 <translation id="3736520371357197498">Jika Anda memahami risiko terhadap keamanan, Anda dapat <ph name="BEGIN_LINK" />mengunjungi situs tidak aman ini<ph name="END_LINK" /> sebelum program berbahaya tersebut dibuang.</translation>
 <translation id="3736739313435669994">Anda memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="LINK" />.</translation>
@@ -1405,6 +1412,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3807270098669886186">Penyedia layanan telepon</translation>
 <translation id="3807366285948165054">Perpindahan image X</translation>
 <translation id="3807873520724684969">Konten yang berbahaya diblokir.</translation>
+<translation id="3810770279996899697">Pengelola Sandi memerlukan akses ke Rantai Kunci macOS</translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="3812398568375898177">Ini adalah update penting yang meningkatkan performa aplikasi Android di ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 inci (20 x 30 cm)</translation>
@@ -1498,6 +1506,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4047351652147966654">18 x 24 inci (45 x 60 cm)</translation>
 <translation id="404831776305217138">URL update untuk ekstensi dengan ID "<ph name="EXTENSION_ID" />" tidak valid atau menggunakan skema yang tidak didukung. Skema yang didukung adalah: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, dan <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Anda akan dapat menggunakannya di seluruh produk Google</translation>
+<translation id="4050599136622776556">Chromium mencoba mengedit metode pembayaran.</translation>
 <translation id="405399507749852140">Dapatkan notifikasi jika ada diskon di situs mana pun</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Izinkan Google membantu Anda menemukan diskon untuk keranjang Anda</translation>
@@ -1620,6 +1629,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-Shirt</translation>
 <translation id="4253168017788158739">Catatan</translation>
+<translation id="4255487295905690262">Anda akan mendapatkan peringatan email jika ada diskon di situs mana pun.</translation>
 <translation id="425582637250725228">Perubahan yang Anda lakukan mungkin tidak disimpan.</translation>
 <translation id="4258748452823770588">Tanda tangan salah</translation>
 <translation id="4261046003697461417">Dokumen yang dilindungi tidak dapat dianotasi</translation>
@@ -2641,6 +2651,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6349101878882523185">Instal <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tidak ada}=1{1 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}=2{2 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}other{# sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}}</translation>
 <translation id="6355392890578844978">Browser ini tidak dikelola oleh perusahaan atau organisasi lain. Aktivitas di perangkat ini mungkin dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6358088212770985041">mengedit metode pembayaran</translation>
 <translation id="6358450015545214790">Apakah maksud ini?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Lihat log</translation>
@@ -2849,6 +2860,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6767985426384634228">Perbarui Alamat?</translation>
 <translation id="6770747695101757579">Kertas (Katun)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6779348349813025131">Pengelola Sandi Google memerlukan akses ke Rantai Kunci macOS</translation>
 <translation id="6784045420901191374">Pinjaman komersial</translation>
 <translation id="6785990323398321538">Anda dapat mengubah mesin telusur kapan saja di setelan Chrome.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 inci</translation>
@@ -2974,7 +2986,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6999480632062519056">Instruksi Kebugaran &amp; Pelatihan Pribadi</translation>
 <translation id="6999969238895751684">Industri hiburan</translation>
 <translation id="7003278537452757231">Permadani &amp; Karpet</translation>
-<translation id="7003335073762455340">Anda memantau produk ini. Halaman ini disimpan di <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Tab Terbaru</translation>
 <translation id="7004583254764674281">Gunakan Windows Hello untuk mengonfirmasi kartu lebih cepat</translation>
 <translation id="7006930604109697472">Tetap kirim</translation>
@@ -2989,6 +3000,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7023162328967545559">Peringatan admin</translation>
 <translation id="7024932305105294144">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah — seperti Google Safe Browsing, yang <ph name="BEGIN_LINK" />baru-baru ini menemukan phishing<ph name="END_LINK" /> di situs yang Anda coba kunjungi. Situs phishing berpura-pura menjadi situs lain untuk mengelabui Anda.<ph name="NEW_LINE" />Bahkan situs yang biasanya aman terkadang disusupi oleh penyerang. <ph name="BEGIN_ERROR_LINK" />Beri tahu kami<ph name="END_ERROR_LINK" /> jika menurut Anda hal ini merupakan kekeliruan dan situs ini tidak berbahaya.</translation>
 <translation id="7029809446516969842">Sandi</translation>
+<translation id="7030164307377592766">mengubah setelan pengisian metode pembayaran</translation>
 <translation id="7030436163253143341">Sertifikat tidak valid</translation>
 <translation id="7031646650991750659">Aplikasi Google Play yang telah diinstal</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk mengelola setelan privasi Akun Google Anda</translation>
@@ -3030,7 +3042,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7108819624672055576">Diizinkan oleh ekstensi</translation>
 <translation id="7109510814665441393">Game Mengemudi &amp; Balapan</translation>
 <translation id="7110116949943042888">Pekerjaan Sementara &amp; Musiman</translation>
-<translation id="7110553203952632623">Anda akan mendapatkan peringatan email jika ada diskon di situs mana pun</translation>
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7111507312244504964">Inspeksi &amp; Penilaian Properti</translation>
 <translation id="7112327784801341716">Info Anda yang ditampilkan bukan yang terbaru? Hubungi bank untuk memperbaruinya.</translation>
@@ -3147,7 +3158,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Pengendali pembayaran</translation>
 <translation id="7367985555340314048">Topik yang diminati didasarkan pada histori penjelajahan terbaru Anda dan digunakan oleh situs untuk menampilkan iklan yang dipersonalisasi kepada Anda</translation>
-<translation id="7368169244533796604">Hapus situs</translation>
 <translation id="7372526636730851647">Foto (Mengilap)</translation>
 <translation id="7372973238305370288">hasil penelusuran</translation>
 <translation id="7374461526650987610">Penangan protokol</translation>
@@ -3570,7 +3580,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8134058435519644366">Perekrutan &amp; Ketenagakerjaan</translation>
 <translation id="8135546115396015134">tombol kiri</translation>
-<translation id="8144303576836498784">Terjadi error. Perubahan Anda tidak tersimpan</translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
 <translation id="8149426793427495338">Komputer Anda sedang dalam mode tidur.</translation>
 <translation id="8150722005171944719">File pada <ph name="URL" /> tidak dapat dibaca.  File mungkin telah dihapus, dipindahkan, atau izin file mungkin mencegah akses.</translation>
@@ -3781,6 +3790,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8542014550340843547">Tiga jepretan di bawah</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Anda dapat <ph name="BEGIN_ERROR_LINK" />melaporkan masalah pendeteksian<ph name="END_ERROR_LINK" /> atau, jika memahami risiko bagi keamanan, Anda dapat <ph name="BEGIN_LINK" />mengunjungi situs yang tidak aman<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome mencoba mengubah setelan pengisian metode pembayaran.</translation>
 <translation id="8544303911974837265">Poliester</translation>
 <translation id="854548366864113872">Opsi Harga Tinggi</translation>
 <translation id="8546254312340305428">Berikan alasan mengupload (wajib)</translation>
@@ -3795,6 +3805,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8555010941760982128">Gunakan kode ini saat checkout</translation>
 <translation id="8556297087315686325">Pemantauan &amp; Pengelolaan Jaringan</translation>
 <translation id="8557066899867184262">CVC terletak di bagian belakang kartu Anda.</translation>
+<translation id="8557412555245662180">Pelajari lebih lanjut Fitur Anti-Pelacakan</translation>
 <translation id="8558347880669160417">Kamera dan mikrofon diizinkan kali ini</translation>
 <translation id="8559762987265718583">Sambungan pribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak dapat dibuat karena tanggal dan waktu (<ph name="DATE_AND_TIME" />) perangkat tidak benar.</translation>
 <translation id="8564182942834072828">Dokumen terpisah/Salinan tidak tersusun</translation>

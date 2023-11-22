@@ -294,6 +294,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2224075387478458881">Hindi pinapayagan ang pag-record ng screen kapag may nakikitang protektadong content</translation>
 <translation id="2227179592712503583">Alisin ang suhestyon</translation>
 <translation id="2248634276911611268">Buksan ang link sa bagong tab at lumipat sa bagong tab na ito</translation>
+<translation id="2253808149208613283">I-install ang app para i-customize ang device na ito</translation>
 <translation id="225680501294068881">Nag-i-scan para sa mga device...</translation>
 <translation id="2257486738914982088">Nagkaproblema habang dina-download ang <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Mga iminumungkahing file</translation>
@@ -1442,6 +1443,7 @@ Kaka-install lang</translation>
 <translation id="6827049576281411231">Isara ang panel ng event</translation>
 <translation id="6831561626108366035">Pumunta sa button na <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Mapanganib na file</translation>
+<translation id="6837621009301897464">Para kumuha ng screenshot, pindutin</translation>
 <translation id="6852052252232534364">I-activate</translation>
 <translation id="6855029042976311970">Kaka-edit lang</translation>
 <translation id="6856708615407876657">I-toggle ang mga kategorya ng resulta ng paghahanap</translation>
@@ -1684,6 +1686,13 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7893503627044934815">Ayaw ipakita ang file na ito</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Napindot mo ang keyboard shortcut para sa pag-rotate ng screen. Gusto mo bang i-rotate ang screen?</translation>
+<translation id="7897626842031123113">Status tray, oras <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Ipagpalit ang mga window</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Pindutin ang fingerprint sensor</translation>

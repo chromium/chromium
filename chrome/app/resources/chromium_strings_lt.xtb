@@ -71,10 +71,8 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2313870531055795960">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chromium“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chromium“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="2329088755516916767">Įjungus, „Chromium“ iš anksto įkelia puslapius, kad būtų galima sparčiau naršyti ir ieškoti.</translation>
 <translation id="2343156876103232566">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chromium“ abiejuose įrenginiuose.</translation>
-<translation id="2347108572062610441">Šis plėtinys pakeitė, kuris puslapis rodomas paleidus „Chromium“.</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2384373936468275798">„Chromium“ OS nepavyko sinchronizuoti duomenų, nes išsami paskyros prisijungimo informacija pasenusi.</translation>
-<translation id="2396765026452590966">Plėtinys „<ph name="EXTENSION_NAME" />“ pakeitė, kuris puslapis rodomas paleidus „Chromium“.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Vienas ŽSĮ įrenginys buvo pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}=1{Vienas ŽSĮ įrenginys pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}one{# ŽSĮ įrenginys pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}few{# ŽSĮ įrenginiai pasiekiami naudojant vieną ar daugiau „Chromium“ plėtinių}many{# ŽSĮ įrenginio pasiekiama naudojant vieną ar daugiau „Chromium“ plėtinių}other{# ŽSĮ įrenginių pasiekiama naudojant vieną ar daugiau „Chromium“ plėtinių}}</translation>
 <translation id="2401032172288869980">„Chromium“ reikalingi fotoaparato ir mikrofono leidimai šioje svetainėje</translation>
 <translation id="2440750600860946460">Naudodami <ph name="BEGIN_LINK" />„Chromium“ įrankius<ph name="END_LINK" /> galite saugiai naršyti ir valdyti situaciją</translation>
@@ -444,7 +442,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Kokie duomenys naudojami:<ph name="END_BOLD" /> jūsų naršymo istorija, svetainių, kuriose lankėtės naudodami „Chromium“ šiame įrenginyje, įrašas.</translation>
 <translation id="8862326446509486874">Neturite reikiamų teisių sistemai įdiegti. Pamėginkite įdiegimo priemonę dar kartą paleisti kaip administratorius.</translation>
 <translation id="8880203542552872219">Jei taip, redaguokite išsaugotą slaptažodį naršyklėje „Chromium“, kad jis atitiktų naują.</translation>
-<translation id="8897323336392112261">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chromium“ arba spustelėjate pagrindinio puslapio mygtuką.</translation>
 <translation id="8907580949721785412">„Chromium“ bando rodyti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="8931379085695076764">„Chromium“ gali numatyti jūsų pomėgius pagal pastarųjų kelių savaičių naršymo istoriją. Ši informacija lieka jūsų įrenginyje.</translation>
 <translation id="8941642502866065432">Nepavyko atnaujinti „Chromium“</translation>

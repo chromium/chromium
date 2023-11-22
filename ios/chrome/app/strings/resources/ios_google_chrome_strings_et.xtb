@@ -58,6 +58,7 @@ Tasub teada
 <translation id="2671426118752779020">Saate Google'i paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>
 <translation id="2689064829982324496">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK" />logige välja Chrome'ist<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
+<translation id="2702250627063295552">Lisa Chrome'i lugemisloendi üksus</translation>
 <translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="2767464022270041271">Salvestatud paroole ei ole. Google'i paroolihaldur saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="2868822340714096138">Tühjenda Chrome'i sirvimisandmed</translation>
@@ -83,6 +84,7 @@ Tasub teada
 <translation id="3744018071945602754">Paroolide haldamine Chrome'is</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
+<translation id="3863841106411295595">Lisab sisestatud URL-id Chrome'is teie lugemisloendisse.</translation>
 <translation id="3901001113120561395">Kasutage Chrome’i parimal moel.</translation>
 <translation id="3967382818307165056">Makseviiside haldamine Chrome'is</translation>
 <translation id="3980220367029651214">Vahetate kontode sünkroonimise kontolt <ph name="USER_EMAIL1" /> kontole <ph name="USER_EMAIL2" />. Olemasolevaid Chrome'i andmeid haldab domeen <ph name="DOMAIN" />. See kustutab teie andmed sellest seadmest, kuid teie andmed jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>

@@ -324,7 +324,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1593359183944365958">270 gradë</translation>
 <translation id="1594030484168838125">Zgjidh</translation>
 <translation id="1596296697375291157">Filmat melodramë, krim dhe mister</translation>
-<translation id="1597473228022844713">Po e monitoron këtë produkt. Kjo faqe është ruajtur te <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Çelësi i kalimit nga Windows Hello</translation>
 <translation id="1599199147673445968">Kartë e re? <ph name="BEGIN_LINK" />Fut detajet e kartës<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Luaj lojën Dino Run në Chrome</translation>
@@ -517,6 +516,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="1997774360448418989">Letër (e lehtë)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
+<translation id="2001469757375372617">Ndodhi një gabim. Ndryshimi yt nuk u ruajt.</translation>
 <translation id="2003709556000175978">Rivendos fjalëkalimin tënd tani</translation>
 <translation id="2003775180883135320">Katër shpime lart</translation>
 <translation id="2004697686368036666">Veçoritë në disa sajte mund të mos funksionojnë</translation>
@@ -722,6 +722,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2395840535409704129">Sporte ujore</translation>
 <translation id="2396249848217231973">&amp;Zhbëje fshirjen</translation>
 <translation id="2397836504670957718">Laptopët dhe kompjuterët portativë</translation>
+<translation id="2399868464369312507">Google Chrome po përpiqet të modifikojë mënyrat e pagesës.</translation>
 <translation id="2400600116338235695">Mund të kërkojë të lidhet me portat seriale</translation>
 <translation id="2404884497378469141">Provo t'i kopjosh përsëri skedarët e tu</translation>
 <translation id="2413155254802890957">I vjetër</translation>
@@ -1115,6 +1116,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3250640885957938546">Reklamimi dhe marketingu</translation>
 <translation id="3252772880526154546">Arkitekturë</translation>
 <translation id="3254301855501243548">18 x 22 inç</translation>
+<translation id="3255926992597692024">Chromium po përpiqet të modifikojë cilësimet për plotësimin e mënyrave të pagesave.</translation>
 <translation id="3256863843508922226">Dalja në pension dhe pensioni</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një ngjarje të re në "Google Calendar"</translation>
 <translation id="3261488570342242926">Mëso rreth kartave virtuale</translation>
@@ -1498,6 +1500,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4047351652147966654">18 x 24 inç</translation>
 <translation id="404831776305217138">URL-ja e përditësimit për shtesën me ID "<ph name="EXTENSION_ID" />" është e pavlefshme ose përdor një skemë që nuk mbështetet. Skemat e mbështetura janë: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dhe <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Do të mund ta përdorësh atë nëpër produktet e Google</translation>
+<translation id="4050599136622776556">Chromium po përpiqet të modifikojë mënyrat e pagesës.</translation>
 <translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Lejo që Google të të ndihmojë të gjesh ulje për karrocat e tua</translation>
@@ -1620,6 +1623,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Bluza</translation>
 <translation id="4253168017788158739">Shënim</translation>
+<translation id="4255487295905690262">Do të marrësh sinjalizime me email nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="425582637250725228">Ndryshimet që ke bërë mund të mos ruhen.</translation>
 <translation id="4258748452823770588">Nënshkrim i gabuar</translation>
 <translation id="4261046003697461417">Dokumentet e mbrojtura nuk mund të shënohen</translation>
@@ -2973,7 +2977,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6999480632062519056">Kurse fitnesi dhe trajnime personale</translation>
 <translation id="6999969238895751684">Industria e argëtimit</translation>
 <translation id="7003278537452757231">Sixhade dhe tapete</translation>
-<translation id="7003335073762455340">Po e monitoron këtë produkt. Kjo faqe është ruajtur te "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
 <translation id="7004583254764674281">Përdor Windows Hello për t'i konfirmuar kartat më shpejt</translation>
 <translation id="7006930604109697472">Dërgoje gjithsesi</translation>
@@ -3029,7 +3032,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7108819624672055576">Lejuar nga një shtesë</translation>
 <translation id="7109510814665441393">Lojëra me gara makinash</translation>
 <translation id="7110116949943042888">Punë të përkohshme dhe sezonale</translation>
-<translation id="7110553203952632623">Do të marrësh sinjalizime me email nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="7111012039238467737">(E vlefshme)</translation>
 <translation id="7111507312244504964">Inspektime dhe vlerësime pronash</translation>
 <translation id="7112327784801341716">Nuk shfaqen informacionet aktuale? Kontakto bankën për t'i përditësuar ato.</translation>
@@ -3148,7 +3150,6 @@ Detaje shtesë:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Përpunuesit e pagesave</translation>
 <translation id="7367985555340314048">Temat e interesit bazohen në historikun tënd të shfletimit së fundi dhe përdoren nga sajtet për të të shfaqur reklama të personalizuara</translation>
-<translation id="7368169244533796604">Fshi sajtin</translation>
 <translation id="7372526636730851647">Fotografi (me shkëlqim)</translation>
 <translation id="7372973238305370288">rezultati i kërkimit</translation>
 <translation id="7374461526650987610">Përpunuesit e protokollit</translation>
@@ -3571,7 +3572,6 @@ Detaje shtesë:
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8134058435519644366">Rekrutimi i personelit</translation>
 <translation id="8135546115396015134">tasti majtas</translation>
-<translation id="8144303576836498784">Ndodhi një gabim. Ndryshimi yt nuk është ruajtur</translation>
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>
 <translation id="8149426793427495338">Kompjuteri yt kaloi në gjumë.</translation>
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>
@@ -3784,6 +3784,7 @@ Detaje shtesë:
 <translation id="8542014550340843547">Tri kapje me tel poshtë</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Mund <ph name="BEGIN_ERROR_LINK" />të raportosh një problem të zbulimit<ph name="END_ERROR_LINK" /> ose, nëse i kupton rreziqet ndaj sigurisë tënde, <ph name="BEGIN_LINK" />vizito këtë sajt të pasigurt<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome po përpiqet të modifikojë cilësimet për plotësimin e mënyrave të pagesës.</translation>
 <translation id="8544303911974837265">Poliestër</translation>
 <translation id="854548366864113872">Opsion me çmim të lartë</translation>
 <translation id="8546254312340305428">Jep arsyen për ngarkimin (e detyrueshme)</translation>

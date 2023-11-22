@@ -324,7 +324,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Escolher</translation>
 <translation id="1596296697375291157">Filmes de suspense, crime e mistério</translation>
-<translation id="1597473228022844713">Você está monitorando esse produto. Esta página foi salva em <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Chave de acesso do Windows Hello</translation>
 <translation id="1599199147673445968">Novo cartão? <ph name="BEGIN_LINK" />Insira os detalhes dele<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Iniciar o jogo do Dinossauro do Chrome</translation>
@@ -517,6 +516,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1997484222658892567"><ph name="URL" /> quer armazenar permanentemente dados grandes no computador local</translation>
 <translation id="1997774360448418989">Papel (fino)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e mais um}one{e mais #}other{e mais #}}</translation>
+<translation id="2001469757375372617">Algo deu errado. A mudança não foi salva.</translation>
 <translation id="2003709556000175978">Redefinir sua senha agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
@@ -722,6 +722,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2395840535409704129">Esportes aquáticos</translation>
 <translation id="2396249848217231973">&amp;Desfazer exclusão</translation>
 <translation id="2397836504670957718">Laptops e notebooks</translation>
+<translation id="2399868464369312507">O Google Chrome está tentando editar formas de pagamento.</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
@@ -1115,6 +1116,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3250640885957938546">Publicidade e marketing</translation>
 <translation id="3252772880526154546">Arquitetura</translation>
 <translation id="3254301855501243548">18 x 22 pol.</translation>
+<translation id="3255926992597692024">O Chromium está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="3256863843508922226">Aposentadoria e pensões</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo evento no Google Agenda</translation>
 <translation id="3261488570342242926">Saiba mais sobre cartões virtuais</translation>
@@ -1498,6 +1500,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4047351652147966654">18 x 24 pol.</translation>
 <translation id="404831776305217138">O URL de atualização da extensão com o ID "<ph name="EXTENSION_ID" />" é inválido ou usa um esquema sem suporte. Os esquemas com suporte são: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ele poderá ser usado em todos os produtos do Google</translation>
+<translation id="4050599136622776556">O Chromium está tentando editar formas de pagamento.</translation>
 <translation id="405399507749852140">Receba alertas se houver uma redução no preço em algum site</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4063063121357725926">Deixe o Google ajudar você a encontrar descontos para seus carrinhos</translation>
@@ -1620,6 +1623,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Camisetas</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255487295905690262">Você vai receber alertas por e-mail se houver uma redução no preço em algum site.</translation>
 <translation id="425582637250725228">É possível que as alterações feitas não sejam salvas.</translation>
 <translation id="4258748452823770588">Assinatura inválida</translation>
 <translation id="4261046003697461417">Não é possível fazer anotações em documentos protegidos</translation>
@@ -2974,7 +2978,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6999480632062519056">Instrução para atividades físicas e personal trainers</translation>
 <translation id="6999969238895751684">Indústria do entretenimento</translation>
 <translation id="7003278537452757231">Tapetes e carpetes</translation>
-<translation id="7003335073762455340">Você está monitorando esse produto. Esta página foi salva em <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Guias recentes</translation>
 <translation id="7004583254764674281">Use o Windows Hello para confirmar o uso de cartões mais rapidamente</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
@@ -3030,7 +3033,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7108819624672055576">Permitida por uma extensão</translation>
 <translation id="7109510814665441393">Jogos de pilotagem e corrida</translation>
 <translation id="7110116949943042888">Vagas de emprego temporário</translation>
-<translation id="7110553203952632623">Você vai receber alertas por e-mail se houver uma redução no preço em algum site</translation>
 <translation id="7111012039238467737">(válido)</translation>
 <translation id="7111507312244504964">Inspeções e avaliações de propriedade</translation>
 <translation id="7112327784801341716">Suas informações atuais não são mostradas? Entre em contato com seu banco para atualizar esses dados.</translation>
@@ -3149,7 +3151,6 @@ Mais detalhes:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gerenciadores de pagamento</translation>
 <translation id="7367985555340314048">Os temas de interesse são baseados no seu histórico de navegação recente e são usados por sites para mostrar anúncios personalizados</translation>
-<translation id="7368169244533796604">Excluir site</translation>
 <translation id="7372526636730851647">Foto (brilhante)</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374461526650987610">Manipuladores de protocolo</translation>
@@ -3572,7 +3573,6 @@ Mais detalhes:
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8134058435519644366">Recrutamento e contratação</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
-<translation id="8144303576836498784">Algo deu errado. A mudança não foi salva</translation>
 <translation id="8148608574971654810">Versão do PDF:</translation>
 <translation id="8149426793427495338">Seu computador entrou em modo de suspensão.</translation>
 <translation id="8150722005171944719">O arquivo em <ph name="URL" /> não está legível. Ele pode ter sido removido ou movido, ou as permissões do arquivo podem estar impedindo o acesso.</translation>
@@ -3785,6 +3785,7 @@ Mais detalhes:
 <translation id="8542014550340843547">Três grampos na parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Você pode <ph name="BEGIN_ERROR_LINK" />denunciar um problema de detecção<ph name="END_ERROR_LINK" /> ou, se entende os riscos à sua segurança, <ph name="BEGIN_LINK" />acessar este site não seguro<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">O Google Chrome está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="8544303911974837265">Poliéster</translation>
 <translation id="854548366864113872">Opção com preço alto</translation>
 <translation id="8546254312340305428">Informe o motivo do upload (obrigatório)</translation>

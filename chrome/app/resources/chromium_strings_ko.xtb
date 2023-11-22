@@ -71,10 +71,8 @@
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2329088755516916767">사용 설정하면 Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
-<translation id="2347108572062610441">Chromium을 시작하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2384373936468275798">계정의 로그인 세부정보가 오래되어 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
-<translation id="2396765026452590966">Chromium을 시작하면 표시되는 페이지가 '<ph name="EXTENSION_NAME" />' 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 HID 기기 #대에 액세스 중}}</translation>
 <translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium의 도구<ph name="END_LINK" />로 안전하게 탐색하고 관리할 수 있습니다.</translation>
@@ -444,7 +442,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chromium을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
 <translation id="8880203542552872219">그렇다면 Chromium에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
-<translation id="8897323336392112261">또한 Chromium을 시작하거나 홈 버튼을 클릭할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="8907580949721785412">Chromium에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8931379085695076764">Chromium은 지난 몇 주간의 방문 기록을 토대로 내 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>
 <translation id="8941642502866065432">Chromium을 업데이트하지 못함</translation>

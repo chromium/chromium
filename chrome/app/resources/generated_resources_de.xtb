@@ -2672,6 +2672,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3021065318976393105">Im Akkubetrieb</translation>
 <translation id="3021066826692793094">Schmetterling</translation>
 <translation id="3021678814754966447">Frame-Quelltext &amp;anzeigen</translation>
+<translation id="3021902017511220299">Fehler beim Scannen. Diese Aktion wird von deinem Administrator blockiert.</translation>
 <translation id="3022361196600037287">„<ph name="DEVICE" />“ wird von diesem Chromebook entfernt und nicht in „<ph name="PRIMARY_EMAIL" />“ gespeichert.</translation>
 <translation id="3022978424994383087">Nicht verstanden.</translation>
 <translation id="3023464535986383522">Vorlesen</translation>
@@ -4043,7 +4044,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Geräteprotokoll</translation>
-<translation id="4130207949184424187">Diese Erweiterung hat die Seite geändert, die bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="413121957363593859">Komponenten</translation>
 <translation id="4131283654370308898">„<ph name="EXTENSION_NAME" />“ auf dieser Website zulassen</translation>
@@ -5549,7 +5549,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5355498626146154079">Du musst das Flag „Borealis enabled“ aktivieren</translation>
 <translation id="5355501370336370394">Enterprise-Gerät anmelden</translation>
-<translation id="5355926466126177564">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Seite geändert, die bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="5356155057455921522">Durch dieses Update von deinem Administrator öffnen sich die Apps deiner Organisation schneller. Das kann einige Minuten dauern.</translation>
 <translation id="5359910752122114278">1 Ergebnis</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> Tab</translation>
@@ -5889,7 +5888,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="5625225435499354052">In Google Pay bearbeiten</translation>
 <translation id="5626134646977739690">Name:</translation>
-<translation id="5627086634964711283">Die Erweiterung legt auch fest, welche Seite beim Klicken auf die Schaltfläche "Startseite" erscheint.</translation>
 <translation id="5627832140542566187">Displayausrichtung</translation>
 <translation id="5628434207686266338">Gerätepasswort festlegen</translation>
 <translation id="562935524653278697">Dein Administrator hat die Synchronisierung des Verlaufs sowie deiner Lesezeichen, Passwörter und sonstigen Einstellungen deaktiviert.</translation>
@@ -6292,14 +6290,12 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Eine Website möchte diese Anwendung öffnen.</translation>
 <translation id="5955809630138889698">Dieses Gerät kann möglicherweise nur für den Onlinedemomodus verwendet werden. Weitere Informationen erhältst du bei deinem Support-Mitarbeiter.</translation>
-<translation id="5956585768868398362">Ist das deine erwartete Seite für die Suche?</translation>
 <translation id="5957987129450536192">Tippe auf das Symbol "Vorlesen" in der Nähe deines Profilbilds und wähle aus, was vorgelesen werden soll.</translation>
 <translation id="5959471481388474538">Netzwerk nicht verfügbar</translation>
 <translation id="5963413905009737549">Section-Element</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (Spitzenwert <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="5964247741333118902">Eingebettete Inhalte</translation>
-<translation id="5965661248935608907">Die Erweiterung legt auch fest, welche Seite bei der Suche über die Omnibox angezeigt wird oder wenn du auf die Schaltfläche „Startseite“ klickst.</translation>
 <translation id="5966511985653515929">Websitedaten werden von deinem Gerät gelöscht, wenn du alle Fenster schließt</translation>
 <translation id="5968022600320704045">Keine Suchergebnisse</translation>
 <translation id="5969364029958154283">Weitere Informationen zum Zurücksetzen der Einstellungen</translation>
@@ -6736,7 +6732,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6309510305002439352">Mikrofon ausgeschaltet</translation>
 <translation id="6310141306111263820">eSIM-Profil konnte nicht installiert werden. Wende dich für Unterstützung an deinen Mobilfunkanbieter.</translation>
 <translation id="6311220991371174222">Chrome kann nicht gestartet werden, da beim Öffnen deines Profils ein Fehler aufgetreten ist. Versuche, Chrome neu zu starten.</translation>
-<translation id="6311708879134408222">Versuch es morgen noch einmal.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Der Sicherheitscheck wurde vor 1 Tag durchgeführt}other{Der Sicherheitscheck wurde vor {NUM_DAYS} Tagen durchgeführt}}</translation>
 <translation id="6312638141433622592">Anbieten, Artikel im Lesemodus anzuzeigen, falls unterstützt</translation>
 <translation id="6313641880021325787">VR BEENDEN</translation>
@@ -7261,7 +7256,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Mobilfunknetz deaktivieren</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (anonym)</translation>
-<translation id="6756059675436942777">Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="6756157672127672536">Mit der App „Dateien“ erhältst du schnellen Zugriff auf Dateien, die du in Google Drive, auf externen Speichermedien oder auf deinem Chrome OS-Gerät gespeichert hast.</translation>
 <translation id="6756643207511618722">Sprach-Engines</translation>
 <translation id="6757431299485455321">Hilf anderen Geräten, diesen Hotspot zu finden.</translation>
@@ -7561,7 +7555,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6970856801391541997">Bestimmte Seiten drucken</translation>
 <translation id="6970861306198150268">Speichere dein aktuelles Passwort für diese Website</translation>
 <translation id="6971184043765343932">Dein hochgeladenes Bild</translation>
-<translation id="6972754398087986839">Erste Schritte</translation>
+<translation id="6972754398087986839">Ok</translation>
 <translation id="697312151395002334">Dürfen Pop-ups senden und Weiterleitungen verwenden</translation>
 <translation id="6973611239564315524">Ein Upgrade auf Debian 10 (Buster) ist verfügbar</translation>
 <translation id="69739764870135975">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>
@@ -7666,7 +7660,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7047059339731138197">Hintergrund auswählen</translation>
 <translation id="7049293980323620022">Datei beibehalten?</translation>
 <translation id="7050037487872780845">Ungültige Hotspot-Konfiguration</translation>
-<translation id="7051551856857948729">IBAN-Wert ausblenden</translation>
 <translation id="7052237160939977163">Daten der Leistungsnachverfolgung senden</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7055152154916055070">Weiterleitung blockiert:</translation>
@@ -8552,7 +8545,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7757787379047923882">Text geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Bildschirmränder anpassen</translation>
-<translation id="7760004034676677601">Ist das deine erwartete "Beim Start"-Seite?</translation>
 <translation id="7762024824096060040">Dieses Konto kann nicht verwendet werden</translation>
 <translation id="7762243782113123335">Ein Fehler ist aufgetreten. Gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" /></translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
@@ -8654,7 +8646,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7828642077514646543">Fehler: Zertifikat konnte nicht entschlüsselt werden</translation>
 <translation id="7829877209233347340">Es muss sich zuerst ein Elternteil anmelden und seine Zustimmung geben, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann</translation>
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> Dateien zu <ph name="CLOUD_PROVIDER" /> kopieren, um sie zu öffnen?</translation>
-<translation id="783088158898934992">App-Sprache</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Wenn Google einen Rabatt entdeckt, siehst du ihn auf dieser Seite</translation>
 <translation id="7833720883933317473">Hier werden gespeicherte benutzerdefinierte Wörter angezeigt</translation>
@@ -9039,6 +9030,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="811994229154425014">Punkteingabe durch Doppeltippen auf die Leertaste</translation>
 <translation id="8120505434908124087">eSIM-Profil einrichten</translation>
 <translation id="8121750884985440809">Du streamst gerade deinen Bildschirm</translation>
+<translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Gelbe und weiße Blume</translation>
 <translation id="8123975449645947908">Zurückscrollen</translation>
 <translation id="8124313775439841391">Verwaltete ONC-Eigenschaften</translation>
@@ -9074,6 +9066,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8148760431881541277">Anmeldung einschränken</translation>
 <translation id="8149564499626272569">Mit einem USB-Kabel über mein Smartphone bestätigen</translation>
 <translation id="8149870652370242480">Wenn du deine gespeicherten Passwörter auf deinem Smartphone verwenden möchtest, lade Chrome für iOS herunter und melde dich in deinem Google-Konto an.</translation>
+<translation id="8151057139207656239">Kopierte Build-Details</translation>
 <translation id="815114315010033526">Stattdessen QR-Code verwenden</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154790740888707867">Keine Datei</translation>
@@ -9860,7 +9853,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="876956356450740926">Entwicklertools, IDEs und Editoren ausführen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Stammverzeichnis der Erweiterung</translation>
 <translation id="8771300903067484968">Der Hintergrund der Startseite wurde auf den standardmäßigen Hintergrund zurückgesetzt.</translation>
-<translation id="8773280816776735812">IBAN-Wert einblenden</translation>
 <translation id="8774379074441005279">Wiederherstellung bestätigen</translation>
 <translation id="8774934320277480003">Oberer Rand</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
@@ -10039,6 +10031,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8910987510378294980">Geräteliste ausblenden</translation>
 <translation id="8912362522468806198">Google-Konto</translation>
 <translation id="8912810933860534797">Automatischen Scan aktivieren</translation>
+<translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8915307125957890427">Klicke mit der rechten Maustaste auf einen Tab, wähle „Tab zu Gruppe hinzufügen“ aus und klicke dann auf „Neue Gruppe“</translation>
 <translation id="8915370057835397490">Vorschläge werden geladen</translation>
 <translation id="8916476537757519021">Inkognito-Subframe: <ph name="SUBFRAME_SITE" /></translation>

@@ -1685,6 +1685,13 @@
 <translation id="7893503627044934815">אני לא רוצה שהקובץ יוצג</translation>
 <translation id="7895348134893321514">מדף</translation>
 <translation id="7897375687985782769">הקשת על מקש הקיצור של סיבוב המסך. לסובב את המסך?</translation>
+<translation id="7897626842031123113">מגש סטטוס, שעה <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">החלפה בין החלונות</translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7902625623987030061">יש לגעת בחיישן טביעות האצבע</translation>

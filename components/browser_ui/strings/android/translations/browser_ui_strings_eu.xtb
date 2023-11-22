@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1448064542941920355">Gutxitu zooma</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webgune}other{<ph name="SITE_COUNT" /> webgune}}</translation>
 <translation id="1510341833810331442">Webguneek ez dute zure gailuan datuak gordetzeko baimenik</translation>
 <translation id="1547123415014299762">Hirugarrenen cookieak onartzen dira</translation>
 <translation id="1568470248891039841">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Halaber, webgune horiek arakatu bitartean zuri buruz gorde duten informazioa erabiltzeko baimena eska dezakete. <ph name="BEGIN_LINK" />Lortu eduki kapsulatuari buruzko informazio gehiago<ph name="END_LINK" /></translation>
@@ -40,7 +41,6 @@
 <translation id="1779089405699405702">Irudi-deskodetzailea</translation>
 <translation id="1785415724048343560">Zerbitzurik onena jasotzeko gomendatua</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari errealitate areagotua erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Erlazionatutako webguneek taldean egiten dituzun jarduerak ikus ditzakete</translation>
 <translation id="1887786770086287077">Kokapenerako sarbidea desaktibatuta dago gailuan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1919950603503897840">Hautatu kontaktuak</translation>
@@ -63,7 +63,6 @@
 <translation id="2182457891543959921">Eskatu zure baimena webguneei inguruaren 3D-ko mapa bat sortu edo kameraren posizioaren jarraipena egiteko baimena eman aurretik (gomendatua)</translation>
 <translation id="2185965788978862351">Webguneek edo hasierako pantailako aplikazioek gorde dituzten datu eta cookieen <ph name="DATASIZE" /> ezabatuko dira.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
-<translation id="2212565012507486665">Onartu cookieak</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> aplikazioari kamera erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Hirugarrenen cookieak blokeatu dira</translation>
 <translation id="2238944249568001759">Azken fitxaren arabera iradokitako bilaketak</translation>
@@ -104,7 +103,6 @@
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2678468611080193228">Eman hirugarrenen cookieak erabiltzeko baimena aldi baterako. Babes txikiagoa izango duzu, baina webgunearen eginbideek funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="2683434792633810741">Ezabatu eta berrezarri nahi duzu?</translation>
-<translation id="2687403674020088961">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="2713106313042589954">Desaktibatu kamera</translation>
 <translation id="2717722538473713889">Helbide elektronikoak</translation>
 <translation id="2750481671343847896">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek.</translation>
@@ -156,7 +154,6 @@
 <translation id="3586500876634962664">Kamera- eta mikrofono-erabilera</translation>
 <translation id="358794129225322306">Eman hainbat fitxategi automatikoki deskargatzeko baimena webgune bati.</translation>
 <translation id="3594780231884063836">Desaktibatu bideoaren audioa</translation>
-<translation id="3596414637720633074">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="3600792891314830896">Desaktibatu soinua erreproduzitzen duten webguneen audioa</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3628308229821498208">Bilaketa iradokiak</translation>
@@ -184,7 +181,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Orri honi buruz</translation>
 <translation id="4002066346123236978">Izena</translation>
-<translation id="4008040567710660924">Onartu webgune zehatz baten cookieak.</translation>
 <translation id="4046123991198612571">Hurrengo pista</translation>
 <translation id="4149890623864272035">Ziur gailuko datu guztiak ezabatu nahi dituzula, cookieak barne, eta webgune honetako baimen guztiak berrezarri?</translation>
 <translation id="4149994727733219643">Web-orrien ikuspegi sinplifikatua</translation>
@@ -225,7 +221,6 @@
 <translation id="4883854917563148705">Kudeatutako ezarpenak ezin dira berrezarri</translation>
 <translation id="4887024562049524730">Eskatu zure baimena webguneren batek errealitate birtualeko gailuak eta datuak erabili nahi dituenean (gomendatua)</translation>
 <translation id="4953688446973710931">Aktibatuta dagoenean, webguneek fitxategi bat baino gehiago automatikoki deskargatzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute deskargatu fitxategi bat baino gehiago automatikoki.</translation>
-<translation id="4955223779495905865">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Webgune horiek cookieak eta bestelako datuak gorde ditzakete zerbitzua pertsonalizatzeko.</translation>
 <translation id="4962975101802056554">Baliogabetu gailuaren baimen guztiak</translation>
 <translation id="497421865427891073">Aurrera</translation>
 <translation id="4976702386844183910">Azken bisita: <ph name="DATE" /></translation>
@@ -277,6 +272,7 @@
 <translation id="5677928146339483299">Blokeatuta</translation>
 <translation id="5689516760719285838">Kokapena</translation>
 <translation id="5690795753582697420">Kamera erabiltzeko baimena desaktibatuta dago Android-en ezarpenetan</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> webguneak zure informazioa erabil dezake hauek arakatu bitartean:</translation>
 <translation id="5700761515355162635">Hirugarrenen cookieak erabil daitezke</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> webguneko cookieak eta webguneetako bestelako datuak ezabatuko dira</translation>
 <translation id="5723967018671998714">Hirugarrenen cookieak blokeatuta daude ezkutuko moduan</translation>
@@ -320,6 +316,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> blokeatu egin dira</translation>
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> webguneak debekatuta dauka zure informazioa erabiltzea hemen:</translation>
 <translation id="6320088164292336938">Dardara</translation>
 <translation id="6344622098450209924">Jarraipenaren aurkako babesa</translation>
 <translation id="6367753977865761591">Blokeatu webgune jakin batean saioa hasteko aukera hirugarrenei.</translation>
@@ -426,7 +423,6 @@
 <translation id="8117244575099414087">Aktibatuta dagoenean, webguneek gailuaren sentsoreak erabil ditzakete. Desaktibatuta dagoenean, webguneek ezin dute erabili sentsorerik.</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8131740175452115882">Berretsi</translation>
-<translation id="8154912474061769055">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="8168435359814927499">Edukia</translation>
 <translation id="8186479265534291036">Ez al du funtzionatzen webguneak? Hirugarrenen cookieak blokeatuta daude.</translation>
 <translation id="8197286292360124385">Baimena eman zaio honi: <ph name="PERMISSION_1" /></translation>
@@ -440,7 +436,6 @@
 <translation id="8324158725704657629">Ez galdetu berriro</translation>
 <translation id="8362795839483915693">Bisitatzen dituzun webguneak handitu edo txikitu ahal dituzu</translation>
 <translation id="8372893542064058268">Baimendu atzeko planoko sinkronizazioa webgune zehatz batean.</translation>
-<translation id="8376384591331888629">Webgune honetako hirugarrenen cookieak barne</translation>
 <translation id="83792324527827022">Webgune bat kamera eta mikrofonoa erabiltzen ari da</translation>
 <translation id="8380167699614421159">Webgune honek iragarki oztopatzaile edo iruzurrezkoak erakusten ditu</translation>
 <translation id="8394832520002899662">Sakatu hau webgunera itzultzeko</translation>
@@ -488,7 +483,6 @@
 <translation id="8926666909099850184">NFC aukera desaktibatuta dago gailu honetan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Ez utzi webguneei NFC darabilten gailuetako informazioa ikusten eta aldatzen</translation>
 <translation id="8944485226638699751">Mugatuak</translation>
-<translation id="8958424370300090006">Blokeatu webgune jakin bateko cookieak.</translation>
 <translation id="8959122750345127698">Ezin da joan <ph name="URL" /> orrira</translation>
 <translation id="8986362086234534611">Ahaztu</translation>
 <translation id="8990043154272859344">Webgune guztietan amaituko da saioa</translation>

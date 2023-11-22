@@ -410,6 +410,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3080525922482950719">Ungalondoloza amakhasi ukuze uwafunde ngemuva kwesikhathi noma lapho ungaxhunyiwe kwi-inthanethi</translation>
 <translation id="3081338492074632642">Yenza isiqinisekiso sokuthi iphasiwedi oyilondolozayo ifana nephasiwedi ye-<ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Ngaphansi</translation>
+<translation id="3090455602619185166">Ngena Ngemvume Nge-akhawunti Ephethwe</translation>
 <translation id="309710370695886264">Unephasiwedi eyodwa esetshenziswe kabusha. Yilungise manje ukuze uhlale uphephile.</translation>
 <translation id="3112556859945124369">Maka...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Bona Lokho Ongakuvumelanisa<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4002066346123236978">Isihloko</translation>
 <translation id="4004204301268239848">Amaphasiwedi alondolozwe ku-akhawunti yakho ye-Google ngakho-ke ungawasebenzisa kunoma iyiphi idivayisi.</translation>
 <translation id="4018310736049373830">Phatha Umsebenzi</translation>
+<translation id="4021931095789478915">Engeza ${url} ohlwini lokufunda</translation>
 <translation id="4038354071007134711">Alukho uhlelo lokusebenza kule divayisi olungavula ifayela.</translation>
 <translation id="4042870976416480368">Thola ekhasini</translation>
 <translation id="40433179647657191">Sungula futhi wabelane ngelinki eqondile engxenyeni yekhasi oyigqamisile.</translation>
@@ -1447,6 +1449,7 @@ Idatha yakho ibethelwe ngomushwana wakho wokungena ngo-<ph name="TIME" />. Ifake
 <translation id="8556590991644167667">{count,plural, =1{Uchithe isexwayiso esi-{count}}one{Uchithe izexwayiso ezingu-{count}}other{Uchithe izexwayiso ezingu-{count}}}</translation>
 <translation id="8558480467877843976">Manje usungasebenzisa i-Chrome noma kunini uma ubhrawuza noma uthepha amalinki emilayezweni, kumadokhumenti, nakwamanye ama-app.</translation>
 <translation id="8560253818350321773">Veza izinto ezisetshenziswa njalo kuqala.</translation>
+<translation id="8569721750632860947">Iyiphi i-URL ongathanda ukuyengeza ohlwini lwakho lokufunda?</translation>
 <translation id="8588404856427128947">Valiwe</translation>
 <translation id="8591976964826315682">Vimba Amakhukhi Wenkampani Yangaphandle ku-Incognito</translation>
 <translation id="8593565399399144771">Ungavula ithebhu entsha lapha.</translation>

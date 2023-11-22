@@ -410,6 +410,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3080525922482950719">Orriak gorde ditzakezu, geroago edo konexiorik ez daukazunean irakurtzeko</translation>
 <translation id="3081338492074632642">Ziurtatu gordetzera zoazen pasahitza bat datorrela <ph name="WEBSITE" /> webguneko pasahitzarekin</translation>
 <translation id="3087734570205094154">Behekoa</translation>
+<translation id="3090455602619185166">Hasi saioa kontu kudeatu batekin</translation>
 <translation id="309710370695886264">Beste nonbait erabilitako pasahitz bat daukazu. Segurtasuna bermatzeko, alda ezazu.</translation>
 <translation id="3112556859945124369">Markatu…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Ikusi zer sinkroniza dezakezun<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4002066346123236978">Izena</translation>
 <translation id="4004204301268239848">Pasahitzak Google-ko kontuan gordetzen dira, gailu guztietan eskura izan ditzazun.</translation>
 <translation id="4018310736049373830">Kudeatu jarduerak</translation>
+<translation id="4021931095789478915">Gehitu ${url} irakurketa-zerrendan</translation>
 <translation id="4038354071007134711">Ez dago fitxategia ireki dezakeen aplikaziorik gailu honetan.</translation>
 <translation id="4042870976416480368">Bilatu orrian</translation>
 <translation id="40433179647657191">Sortu eta partekatu orri batean nabarmendutako zati baterako zuzeneko esteka.</translation>
@@ -1447,6 +1449,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="8556590991644167667">{count,plural, =1{{count} abisu baztertu duzu}other{{count} abisu baztertu dituzu}}</translation>
 <translation id="8558480467877843976">Orain, Chrome erabili ahalko duzu arakatzen duzunean, edo mezuetako, dokumentuetako eta aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="8560253818350321773">Erakutsi maiz erabiltzen diren elementuak lehenik.</translation>
+<translation id="8569721750632860947">Zer URL gehitu nahi duzu irakurketa-zerrendan?</translation>
 <translation id="8588404856427128947">Itzalita</translation>
 <translation id="8591976964826315682">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="8593565399399144771">Fitxa berri bat hemen ireki dezakezu.</translation>

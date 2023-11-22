@@ -36,6 +36,17 @@
 <translation id="1020006815010587263">這位使用者的垃圾桶已停用。</translation>
 <translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" /> 政策</translation>
 <translation id="1022361784792428773">使用者應避免安裝的擴充功能 ID (使用星號 (*) 排除所有擴充功能)</translation>
+<translation id="1023465280109914543">如果啟用這項政策，系統預設會建議啟用匿名回報功能，將 <ph name="PRODUCT_NAME" /> 的使用情形和當機相關資料以匿名方式回報給 Google。使用者仍可變更這項設定。
+
+如果停用這項政策，系統會停用匿名回報功能，不會將任何使用情形或當機相關資料提供給 Google。使用者將無法變更這項設定。
+
+如果不設定這項政策，使用者可在安裝或初次執行 Chrome 時指定是否啟用匿名回報功能，之後也可以變更這項設定。
+
+在 <ph name="MS_WIN_NAME" /> 上，這項政策適用的執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。
+
+在 <ph name="MAC_OS_NAME" /> 上，這項政策適用的執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。
+
+如果是 <ph name="PRODUCT_OS_NAME" />，請參閱 <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> 的相關說明。</translation>
 <translation id="102492767056134033">設定螢幕小鍵盤在登入畫面中的預設狀態</translation>
 <translation id="1026335125982730097">你可以設定網址模式清單，指定允許設定 Cookie 的網站。
 

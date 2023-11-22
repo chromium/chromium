@@ -650,6 +650,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3659667652322717492">Geroago, edonoiz aldatuko ahalko duzu mikrofonoaren portaera.</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> inguru geratzen dira (% <ph name="PERCENTAGE" />).
 Konektatu gailua korrontera.</translation>
+<translation id="3660860940251915011">Aktibatu/Desaktibatu <ph name="FEATURE_NAME" /> eginbidearen ikusgaitasun handia</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, erabiltzaile kudeatua</translation>
 <translation id="3666266999138159418">Pasatu hatza leiho gainerakorra ezkutatzeko</translation>
 <translation id="367531336287639526">Hautatu helbide-barraren ezkerraldeko lehenengo ikonoa</translation>
@@ -981,6 +982,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Azken aldaketa: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Lan-eremua 16</translation>
 <translation id="4989163558385430922">Ikusi guztiak</translation>
 <translation id="5003993274120026347">Hurrengo esaldia</translation>

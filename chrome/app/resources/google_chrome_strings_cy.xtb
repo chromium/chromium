@@ -111,7 +111,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2649768380733403658">Mae Chrome yn gwirio i sicrhau bod gan eich porwr y gosodiadau mwyaf diogel yn rheolaidd. Byddwn yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth.</translation>
 <translation id="2652691236519827073">Agor Dolen mewn Tab Chrome Newydd</translation>
 <translation id="2665296953892887393">Helpwch i wneud Google Chrome yn well drwy anfon adroddiadau toriadau a <ph name="UMA_LINK" /> at Google</translation>
-<translation id="2689103672227170538">Mae'r estyniad hwn wedi newid y dudalen a ddangosir pan fyddwch yn dechrau Chrome.</translation>
 <translation id="2712234843277364121">Ail-lansiwch i ddiweddaru - bydd eich tabiau'n ailagor</translation>
 <translation id="2738871930057338499">Methu â chysylltu â'r Rhyngrwyd. HTTP 403 Gwaharddedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
 <translation id="2742320827292110288">Rhybudd: Ni all Google Chrome atal estyniadau rhag cofnodi eich hanes pori. I ddiffodd yr estyniad hwn yn y modd Anhysbys, dad-ddewiswch yr opsiwn hwn.</translation>
@@ -181,7 +180,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3703994572283698466">Mae ChromeOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol, fel y mae <ph name="BEGIN_LINK_LINUX_OSS" />amgylchedd datblygu Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Fersiwn ChromeOS Flex</translation>
 <translation id="3718181793972440140">Bydd hyn yn dileu 1 eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi newid pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chrome.</translation>
 <translation id="3744202345691150878">Cael help gyda ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Ni allai ChromeOS Flex gysoni'ch data oherwydd gwall wrth fewngofnodi.</translation>
@@ -478,7 +476,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8823341990149967727">Mae Chrome yn hen</translation>
 <translation id="8825634023950448068">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Ac os yw Chrome yn ei chael yn anghywir neu os nad ydych am weld rhai hysbysebion, gallwch ddileu diddordeb.</translation>
 <translation id="8834965163890861871">Mae Google Chrome yn ceisio golygu cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
-<translation id="884296878221830158">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chrome neu'n clicio'r botwm Hafan.</translation>
 <translation id="8862326446509486874">Nid oes gennych yr hawliau priodol ar gyfer gosod ar lefel system. Rhowch gynnig arall ar redeg y gosodwr fel Gweinyddwr.</translation>
 <translation id="8914504000324227558">Ail-lansio Chrome</translation>
 <translation id="8922193594870374009">I anfon rhif o <ph name="ORIGIN" /> i'ch ffôn Android, mewngofnodwch i Chrome ar y ddwy ddyfais.</translation>

@@ -326,7 +326,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1593359183944365958">270 fok</translation>
 <translation id="1594030484168838125">Kiválaszt</translation>
 <translation id="1596296697375291157">Thrillerek, bűnügyi és misztikus filmek</translation>
-<translation id="1597473228022844713">Nyomon követi ezt a terméket. Az oldal ide van mentve: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Azonosítókulcs a Windows Hello szolgáltatásból</translation>
 <translation id="1599199147673445968">Új kártya? <ph name="BEGIN_LINK" />Adja meg a kártya adatait<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">A Dino Run játék elindítása a Chrome-ban</translation>
@@ -520,6 +519,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1997484222658892567">A(z) <ph name="URL" /> webhely állandó jelleggel nagy méretű adatokat szeretne tárolni a helyi számítógépen</translation>
 <translation id="1997774360448418989">Papír (könnyűsúlyú)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{és 1 további}other{és # további}}</translation>
+<translation id="2001469757375372617">Hiba történt. A módosítás mentése nem történt meg.</translation>
 <translation id="2003709556000175978">Jelszó visszaállítása</translation>
 <translation id="2003775180883135320">Négy lyuk felül</translation>
 <translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően</translation>
@@ -725,6 +725,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2395840535409704129">Vízisportok</translation>
 <translation id="2396249848217231973">&amp;Törlés visszavonása</translation>
 <translation id="2397836504670957718">Laptopok és notebookok</translation>
+<translation id="2399868464369312507">A Google Chrome szerkeszteni próbálja a fizetési módokat.</translation>
 <translation id="2400600116338235695">Engedélyt kérhet a soros portokhoz való csatlakozásra</translation>
 <translation id="2404884497378469141">Próbálja meg újra másolni a fájlokat</translation>
 <translation id="2413155254802890957">Régi</translation>
@@ -1117,6 +1118,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3250640885957938546">Reklám és marketing</translation>
 <translation id="3252772880526154546">Építészet</translation>
 <translation id="3254301855501243548">18 × 22 hüvelyk</translation>
+<translation id="3255926992597692024">A Chromium módosítani próbálja a fizetési módok kitöltési beállításait.</translation>
 <translation id="3256863843508922226">Nyugdíjba vonulás és nyugdíj</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új esemény gyors létrehozásához a Google Naptár szolgáltatással</translation>
 <translation id="3261488570342242926">További információ a virtuális kártyákról</translation>
@@ -1502,6 +1504,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4047351652147966654">18 × 24 hüvelyk</translation>
 <translation id="404831776305217138">A(z) „<ph name="EXTENSION_ID" />” azonosítójú bővítmény frissítési URL-je érvénytelen, vagy nem támogatott sémát használ. Támogatott sémák: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> és <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Használhatja majd a Google-termékekben</translation>
+<translation id="4050599136622776556">A Chromium szerkeszteni próbálja a fizetési módokat.</translation>
 <translation id="405399507749852140">Értesítést kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4063063121357725926">A Google segíthet megtalálni a kosaraihoz kapcsolódó kedvezményeket</translation>
@@ -1624,6 +1627,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Pólók</translation>
 <translation id="4253168017788158739">Jegyzet</translation>
+<translation id="4255487295905690262">E-mailes értesítést küldünk, ha valamelyik webhelyen csökken az ár.</translation>
 <translation id="425582637250725228">Előfordulhat, hogy módosításait nem menti a rendszer.</translation>
 <translation id="4258748452823770588">Rossz aláírás</translation>
 <translation id="4261046003697461417">A védett dokumentumoknál nem lehetséges a jegyzetelés</translation>
@@ -2980,7 +2984,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6999480632062519056">Fitnesztanácsadás és személyi edzés</translation>
 <translation id="6999969238895751684">Szórakoztatóipar</translation>
 <translation id="7003278537452757231">Szőnyegek</translation>
-<translation id="7003335073762455340">Nyomon követi ezt a terméket. Az oldal ide van mentve: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Nemrég megnyitott lapok</translation>
 <translation id="7004583254764674281">A Windows Hello használata a kártyák gyorsabb ellenőrzése érdekében</translation>
 <translation id="7006930604109697472">Küldés mégis</translation>
@@ -3037,7 +3040,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7108819624672055576">Bővítmény engedélyezi</translation>
 <translation id="7109510814665441393">Autós és versenyzős játékok</translation>
 <translation id="7110116949943042888">Alkalmi és idényjellegű állások</translation>
-<translation id="7110553203952632623">E-mailes értesítést küldünk, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="7111012039238467737">(Érvényes)</translation>
 <translation id="7111507312244504964">Ingatlanvizsgálat és -felmérés</translation>
 <translation id="7112327784801341716">Nem látja aktuális adatait? A frissítés érdekében forduljon bankjához.</translation>
@@ -3156,7 +3158,6 @@ További részletek:
 <translation id="7366117520888504990">198 × 275 mm</translation>
 <translation id="7366362069757178916">Fizetéskezelők</translation>
 <translation id="7367985555340314048">Az Önt érdeklő témák a legutóbbi böngészési előzményein alapulnak, a webhelyek pedig arra használják őket, hogy személyre szabott hirdetéseket jelenítsenek meg Önnek</translation>
-<translation id="7368169244533796604">Webhely törlése</translation>
 <translation id="7372526636730851647">Fotó (fényes)</translation>
 <translation id="7372973238305370288">keresési találat</translation>
 <translation id="7374461526650987610">Protokollkezelők</translation>
@@ -3579,7 +3580,6 @@ További részletek:
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8134058435519644366">Toborzás és munkaerő-szervezés</translation>
 <translation id="8135546115396015134">bal billentyű</translation>
-<translation id="8144303576836498784">Hiba történt. A változtatást nem mentettük</translation>
 <translation id="8148608574971654810">PDF-verzió:</translation>
 <translation id="8149426793427495338">Számítógépe alvó üzemmódba váltott.</translation>
 <translation id="8150722005171944719">A fájl (<ph name="URL" />) nem olvasható. Lehet, hogy eltávolították, áthelyezték, vagy a fájlengedélyek megakadályozzák a hozzáférést.</translation>
@@ -3792,6 +3792,7 @@ További részletek:
 <translation id="8542014550340843547">Három kapocs alul</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Lehetősége van arra, hogy <ph name="BEGIN_ERROR_LINK" />jelentse az észlelési problémát<ph name="END_ERROR_LINK" />, ha pedig tisztában van a biztonságát fenyegető kockázatokkal, <ph name="BEGIN_LINK" />felkeresheti a nem biztonságos webhelyet<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">A Google Chrome módosítani próbálja a fizetési módok kitöltési beállításait.</translation>
 <translation id="8544303911974837265">Poliészter</translation>
 <translation id="854548366864113872">Magas árú lehetőség</translation>
 <translation id="8546254312340305428">Adja meg a feltöltés okát (kötelező)</translation>

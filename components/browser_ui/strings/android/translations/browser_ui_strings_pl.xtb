@@ -41,7 +41,6 @@
 <translation id="1779089405699405702">Dekoder obrazów</translation>
 <translation id="1785415724048343560">Polecane dla wygody przeglądania</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Powiązane witryny mają dostęp do danych o Twojej aktywności w tej grupie</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
@@ -64,7 +63,6 @@
 <translation id="2182457891543959921">Pytaj, zanim zezwolisz stronom na tworzenie mapy 3D Twojego otoczenia lub śledzenie pozycji kamery (zalecane)</translation>
 <translation id="2185965788978862351">Spowoduje to usunięcie <ph name="DATASIZE" /> danych i plików cookie zapisanych przez strony lub aplikacje na ekranie głównym.</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
-<translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2238944249568001759">Sugerowane wyszukiwania na podstawie ostatnio otwartej karty</translation>
@@ -105,7 +103,6 @@
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2678468611080193228">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać</translation>
 <translation id="2683434792633810741">Usunąć i zresetować?</translation>
-<translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2717722538473713889">Adresy e-mail</translation>
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
@@ -157,7 +154,6 @@
 <translation id="3586500876634962664">Korzystanie z kamery i mikrofonu</translation>
 <translation id="358794129225322306">Zezwól stronie na automatyczne pobieranie wielu plików.</translation>
 <translation id="3594780231884063836">Wycisz film</translation>
-<translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
@@ -185,7 +181,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
 <translation id="4002066346123236978">Tytuł</translation>
-<translation id="4008040567710660924">Zezwalaj na pliki cookie z określonej strony internetowej.</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="4149890623864272035">Czy na pewno chcesz usunąć wszystkie dane lokalne, w tym pliki cookie, i zresetować wszystkie uprawnienia tej witryny?</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
@@ -226,7 +221,6 @@
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
 <translation id="4887024562049524730">Pytaj, zanim zezwolisz stronom na korzystanie z urządzenia i danych rzeczywistości wirtualnej (zalecane)</translation>
 <translation id="4953688446973710931">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na automatyczne pobieranie kilku plików. Gdy jest wyłączona, strony nie mogą automatycznie pobierać kilku plików.</translation>
-<translation id="4955223779495905865">Witryna, którą odwiedzasz, może wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Każda z tych witryn może zapisywać pliki cookie i inne dane, aby spersonalizować sposób działania.</translation>
 <translation id="4962975101802056554">Anuluj wszystkie uprawnienia urządzenia</translation>
 <translation id="497421865427891073">Dalej</translation>
 <translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
@@ -429,7 +423,6 @@
 <translation id="8117244575099414087">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników urządzenia. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
-<translation id="8154912474061769055">Funkcje w wielu witrynach mogą nie działać</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8186479265534291036">Strona nie działa? Pliki cookie innych firm zostały zablokowane</translation>
 <translation id="8197286292360124385">Dozwolone: <ph name="PERMISSION_1" /></translation>
@@ -443,7 +436,6 @@
 <translation id="8324158725704657629">Nie pytaj ponownie</translation>
 <translation id="8362795839483915693">Możesz powiększać lub pomniejszać odwiedzane witryny</translation>
 <translation id="8372893542064058268">Zezwalaj na synchronizowanie w tle z określoną stroną.</translation>
-<translation id="8376384591331888629">Również pliki cookie innych firm na tej stronie</translation>
 <translation id="83792324527827022">Strona używa kamery i mikrofonu</translation>
 <translation id="8380167699614421159">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy</translation>
 <translation id="8394832520002899662">Kliknij, by wrócić na tę stronę</translation>
@@ -491,7 +483,6 @@
 <translation id="8926666909099850184">Funkcja NFC na tym urządzeniu jest wyłączona. Włącz ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Nie zezwalaj stronom na odczytywanie i zmienianie informacji na urządzeniach z funkcją NFC</translation>
 <translation id="8944485226638699751">Z ograniczeniami</translation>
-<translation id="8958424370300090006">Blokuj pliki cookie z określonej strony internetowej.</translation>
 <translation id="8959122750345127698">Adres nieosiągalny: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Zapomnij</translation>
 <translation id="8990043154272859344">Wylogujemy Cię ze wszystkich stron</translation>

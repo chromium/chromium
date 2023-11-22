@@ -71,10 +71,8 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2313870531055795960">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="2329088755516916767">Když je tato možnost zapnutá, Chromium načítá stránky předběžně, což zrychluje procházení a vyhledávání.</translation>
 <translation id="2343156876103232566">Pokud odtud chcete odeslat číslo do telefonu Android, v obou zařízeních se přihlaste do prohlížeče Chromium.</translation>
-<translation id="2347108572062610441">Toto rozšíření změnilo stránku, která se zobrazí při spuštění prohlížeče Chromium.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2384373936468275798">ChromiumOS nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
-<translation id="2396765026452590966">Rozšíření <ph name="EXTENSION_NAME" /> změnilo stránku, která se zobrazí při spuštění prohlížeče Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 zařízení HID bylo používáno jedním nebo více rozšířeními prohlížeče Chromium}=1{1 zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}few{# zařízení HID jsou používána jedním nebo více rozšířeními prohlížeče Chromium}many{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}other{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}}</translation>
 <translation id="2401032172288869980">Chromium pro tento web potřebuje přístup k fotoaparátu a mikrofonu</translation>
 <translation id="2440750600860946460">S <ph name="BEGIN_LINK" />nástroji v prohlížeči Chromium<ph name="END_LINK" /> budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
@@ -277,6 +275,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6129621093834146363">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="6132897690380286411">Chromium se brzy zavře a smaže data</translation>
 <translation id="6134968993075716475">Bezpečné prohlížení je vypnuté. Chromium ho doporučuje zapnout.</translation>
+<translation id="6144416395842701622">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se</translation>
 <translation id="6145820983052037069">Zde můžete přepínat mezi profily Chromium</translation>
 <translation id="615103374448673771">Pokud máte povolené soubory cookie, může je Chromium při předběžném načítání použít</translation>
 <translation id="6175304430031192654">V závislosti na vašem nastavení může Chromium odesílat také soubory cookie a vaši aktuální adresu URL</translation>
@@ -435,6 +434,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="8697124171261953979">Také řídí, která stránka se zobrazí po spuštění prohlížeče Chromium nebo při vyhledávání v omniboxu.</translation>
 <translation id="8704119203788522458">Toto je váš prohlížeč Chromium</translation>
+<translation id="8719993436687031146">Přihlásit se do prohlížeče Chromium?</translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="8826492472752484139">Klikněte na Správce hesel</translation>
@@ -442,7 +442,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jaké údaje používáme:<ph name="END_BOLD" /> Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromiu na tomto zařízení.</translation>
 <translation id="8862326446509486874">Nemáte práva nutná k provádění instalací na úrovni systému. Zkuste spustit instalační program jako správce.</translation>
 <translation id="8880203542552872219">Pokud ano, upravte uložené heslo v prohlížeči Chromium tak, aby odpovídalo novému heslu.</translation>
-<translation id="8897323336392112261">Také řídí, která stránka se zobrazí při spuštění prohlížeče Chromium nebo po kliknutí na tlačítko Domovská stránka.</translation>
 <translation id="8907580949721785412">Aplikace Chromium se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="8931379085695076764">Chromium dokáže odhadovat vaše zájmy podle historie prohlížení za posledních několik týdnů. Tyto údaje zůstávají v zařízení.</translation>
 <translation id="8941642502866065432">Chromium nelze aktualizovat</translation>

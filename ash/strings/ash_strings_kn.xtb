@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">ನೀವು ನಂತರ ಯಾವಾಗ ಬೇಕಾದರೂ ಮೈಕ್ ವರ್ತನೆಯನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="3659814201068740063">(<ph name="PERCENTAGE" />%) ರ‍ಷ್ಟು ಬ್ಯಾಟರಿ <ph name="TIME_LEFT" /> ಸಮಯ ಉಳಿದಿದೆ.
 ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪವರ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="3660860940251915011">ಹೆಚ್ಚಿನ ಗೋಚರತೆಯ <ph name="FEATURE_NAME" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ನಿರ್ವಹಿಸಲಾದ ಬಳಕೆದಾರರು</translation>
 <translation id="3666266999138159418">ನಿಮ್ಮ ಫ್ಲೋಟಿಂಗ್ ವಿಂಡೋವನ್ನು ಮರೆಮಾಡಲು ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="367531336287639526">ವಿಳಾಸ ಪಟ್ಟಿಯ ಎಡಭಾಗದಲ್ಲಿರುವ ಮೊದಲ ಐಕಾನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> ರಂದು ಮಾರ್ಪಡಿಸಲಾಗಿದೆ</translation>
 <translation id="4987738733603015246">ಡೆಸ್ಕ್ 16</translation>
 <translation id="4989163558385430922">ಎಲ್ಲವನ್ನೂ ನೋಡಿ</translation>
 <translation id="5003993274120026347">ಮುಂದಿನ ವಾಕ್ಯ</translation>

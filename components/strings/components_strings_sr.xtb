@@ -326,7 +326,6 @@
 <translation id="1593359183944365958">270 степени</translation>
 <translation id="1594030484168838125">Одабери</translation>
 <translation id="1596296697375291157">Трилери, криминалистички филмови и филмови мистерије</translation>
-<translation id="1597473228022844713">Пратите овај производ. Ова страница је сачувана у: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Приступни кључ из Windows Hello-а</translation>
 <translation id="1599199147673445968">Нова картица? <ph name="BEGIN_LINK" />Унесите податке о картици<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Играјте игру Диносаурус у Chrome-у</translation>
@@ -520,6 +519,7 @@
 <translation id="1997484222658892567"><ph name="URL" /> жели да трајно складишти велику количину података на вашем локалном рачунару</translation>
 <translation id="1997774360448418989">Папир (лаган)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ и још 1}one{и још #}few{и још #}other{и још #}}</translation>
+<translation id="2001469757375372617">Дошло је до грешке. Промена није сачувана.</translation>
 <translation id="2003709556000175978">Ресетујте лозинку</translation>
 <translation id="2003775180883135320">Четвороструко бушење на врху</translation>
 <translation id="2004697686368036666">Функције на неким сајтовима могу да не раде</translation>
@@ -725,6 +725,7 @@
 <translation id="2395840535409704129">Спортови на води</translation>
 <translation id="2396249848217231973">&amp;Опозови брисање</translation>
 <translation id="2397836504670957718">Лаптопови</translation>
+<translation id="2399868464369312507">Google Chrome покушава да измени начине плаћања.</translation>
 <translation id="2400600116338235695">Може да тражи да се повезује са серијским портовима</translation>
 <translation id="2404884497378469141">Пробајте да поново копирате фајлове</translation>
 <translation id="2413155254802890957">Старо</translation>
@@ -1119,6 +1120,7 @@
 <translation id="3250640885957938546">Оглашавање и маркетинг</translation>
 <translation id="3252772880526154546">Архитектура</translation>
 <translation id="3254301855501243548">18×22 in</translation>
+<translation id="3255926992597692024">Chromium покушава да измени подешавања за попуњавање начина плаћања.</translation>
 <translation id="3256863843508922226">Пензионисање</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов догађај у Google календару</translation>
 <translation id="3261488570342242926">Сазнајте више о виртуелним картицама</translation>
@@ -1504,6 +1506,7 @@
 <translation id="4047351652147966654">18×24 in</translation>
 <translation id="404831776305217138">URL ажурирања за додатак са ИД-ом <ph name="EXTENSION_ID" /> је неважећи или користи неподржану шему. Подржане шеме су: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Моћи ћете да је користите у свим Google производима</translation>
+<translation id="4050599136622776556">Chromium покушава да измени начине плаћања.</translation>
 <translation id="405399507749852140">Добијајте обавештења када се цена снизи на било ком сајту</translation>
 <translation id="4056223980640387499">Сепија</translation>
 <translation id="4063063121357725926">Дозволите Google-у да вам помогне у проналажењу попуста за корпе</translation>
@@ -1626,6 +1629,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Мајице</translation>
 <translation id="4253168017788158739">Напомена</translation>
+<translation id="4255487295905690262">Добијаћете обавештења имејлом ако се цена снизи на било ком сајту.</translation>
 <translation id="425582637250725228">Промене које сте унели можда неће бити сачуване.</translation>
 <translation id="4258748452823770588">Неисправан потпис</translation>
 <translation id="4261046003697461417">Напомене не могу да се додају у заштићене документе</translation>
@@ -2981,7 +2985,6 @@
 <translation id="6999480632062519056">Упутства за фитнес и лични тренинг</translation>
 <translation id="6999969238895751684">Индустрија забаве</translation>
 <translation id="7003278537452757231">Простирке и теписи</translation>
-<translation id="7003335073762455340">Пратите овај производ. Ова страница је сачувана у: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Недавне картице</translation>
 <translation id="7004583254764674281">Користите Windows Hello за бржу потврду картица</translation>
 <translation id="7006930604109697472">Ипак пошаљи</translation>
@@ -3038,7 +3041,6 @@
 <translation id="7108819624672055576">Дозвољава додатак</translation>
 <translation id="7109510814665441393">Возачке и тркачке игре</translation>
 <translation id="7110116949943042888">Привремени и сезонски послови</translation>
-<translation id="7110553203952632623">Добијаћете обавештења имејлом ако се цена снизи на било ком сајту.</translation>
 <translation id="7111012039238467737">(Важећи)</translation>
 <translation id="7111507312244504964">Преглед и процена вредности имовине</translation>
 <translation id="7112327784801341716">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
@@ -3157,7 +3159,6 @@
 <translation id="7366117520888504990">198×275 mm</translation>
 <translation id="7366362069757178916">Обрађивачи плаћања</translation>
 <translation id="7367985555340314048">Теме које вас интересују се заснивају на недавној историји прегледања и сајтови их користе за приказивање персонализованих огласа</translation>
-<translation id="7368169244533796604">Избришите сајт</translation>
 <translation id="7372526636730851647">Слика (сјајна)</translation>
 <translation id="7372973238305370288">резултат претраге</translation>
 <translation id="7374461526650987610">Обрађивачи протокола</translation>
@@ -3580,7 +3581,6 @@
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>
 <translation id="8135546115396015134">леви тастер</translation>
-<translation id="8144303576836498784">Дошло је до грешке. Промена није сачувана</translation>
 <translation id="8148608574971654810">PDF верзија:</translation>
 <translation id="8149426793427495338">Рачунар је прешао у режим спавања.</translation>
 <translation id="8150722005171944719">Датотека на адреси <ph name="URL" /> не може да се чита. Можда је уклоњена или премештена или дозволе за датотеке спречавају приступ.</translation>
@@ -3793,6 +3793,7 @@
 <translation id="8542014550340843547">Троструко спајање на дну</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />пријавите проблем са откривањем<ph name="END_ERROR_LINK" /> или, ако схватате безбедносне ризике, <ph name="BEGIN_LINK" />посетите овај небезбедан сајт<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome покушава да измени подешавања за попуњавање начина плаћања.</translation>
 <translation id="8544303911974837265">Полиестер</translation>
 <translation id="854548366864113872">Опција високе цене</translation>
 <translation id="8546254312340305428">Наведите разлог за отпремање (обавезно)</translation>

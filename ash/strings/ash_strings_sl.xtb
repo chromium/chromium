@@ -294,6 +294,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2224075387478458881">Snemanje zaslona ni dovoljeno, ko je vidna zaščitena vsebina.</translation>
 <translation id="2227179592712503583">Odstrani predlog</translation>
 <translation id="2248634276911611268">Odpiranje povezave na novem zavihku in preklop na ta novi zavihek</translation>
+<translation id="2253808149208613283">Namestite aplikacijo, če želite prilagoditi to napravo</translation>
 <translation id="225680501294068881">Iskanje naprav ...</translation>
 <translation id="2257486738914982088">Pri prenosu datoteke <ph name="FILENAME" /> je prišlo do napake.</translation>
 <translation id="2258734398699965611">Predlagane datoteke</translation>
@@ -650,6 +651,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3659667652322717492">Delovanje mikrofona lahko kadar koli spremenite.</translation>
 <translation id="3659814201068740063">Še približno <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Priklopite napravo v vir napajanja.</translation>
+<translation id="3660860940251915011">Preklop visoke vidnosti funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Upravljani uporabnik</translation>
 <translation id="3666266999138159418">Povlecite, če želite skriti plavajoče okno</translation>
 <translation id="367531336287639526">Izbira prve ikone levo od naslovne vrstice</translation>
@@ -980,6 +982,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Spremenjeno: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Namizje 16</translation>
 <translation id="4989163558385430922">Pokaži vse</translation>
 <translation id="5003993274120026347">Naslednji stavek</translation>
@@ -1683,6 +1686,13 @@ Nova namestitev</translation>
 <translation id="7893503627044934815">Ne želim, da se prikazuje ta datoteka</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Pritisnili ste bližnjično tipko za sukanje zaslona. Ali želite zasukati zaslon?</translation>
+<translation id="7897626842031123113">Vrstica stanja, čas <ph name="TIME" />,
+        <ph name="BATTERY" />,
+        <ph name="CHANNEL" />,
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />,
+        <ph name="IME" />,
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Zamenjava oken</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7902625623987030061">Dotaknite se tipala prstnih odtisov.</translation>

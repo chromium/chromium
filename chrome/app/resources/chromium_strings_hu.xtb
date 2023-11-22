@@ -69,10 +69,8 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="2329088755516916767">Ha be van kapcsolva ez a beállítás, a Chromium előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést.</translation>
 <translation id="2343156876103232566">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chromiumba mindkét eszközén.</translation>
-<translation id="2347108572062610441">Ez a bővítmény módosította, hogy melyik oldal jelenjen meg a Chromium indításakor.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2384373936468275798">A ChromiumOS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
-<translation id="2396765026452590966">A(z) <ph name="EXTENSION_NAME" /> bővítmény módosította, hogy melyik oldal jelenjen meg a Chromium indításakor.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chromium-bővítmény hozzáfért 1 HID-eszközhöz}=1{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér 1 HID-eszközhöz}other{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér # HID-eszközhöz}}</translation>
 <translation id="2401032172288869980">A Chromiumnak kamera- és mikrofonhasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="2440750600860946460">A <ph name="BEGIN_LINK" />Chromium eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
@@ -440,7 +438,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />A felhasznált adatok:<ph name="END_BOLD" /> Böngészési előzményei, az Ön által az ezen az eszközön használt Chromiumban felkeresett webhelyek jegyzéke.</translation>
 <translation id="8862326446509486874">Nincsenek meg a megfelelő jogai a rendszerszintű telepítéshez. Indítsa újra a telepítőt rendszergazdaként.</translation>
 <translation id="8880203542552872219">Ha igen, akkor módosítsa a Chromium böngészőben mentett jelszót az új jelszóra.</translation>
-<translation id="8897323336392112261">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chromium indításakor vagy a Kezdőlap gombra történő kattintáskor.</translation>
 <translation id="8907580949721785412">A Chromium megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="8931379085695076764">A Chromium meg tudja becsülni az Ön érdeklődési köreit a legutóbbi pár hétben végzett böngészési tevékenységei alapján. Ezek az információk nem hagyják el az eszközt.</translation>
 <translation id="8941642502866065432">Nem sikerült a Chromium frissítése</translation>

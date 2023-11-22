@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Bildavkodare</translation>
 <translation id="1785415724048343560">Rekommenderas för bästa upplevelse</translation>
 <translation id="1818308510395330587">Om du vill att <ph name="APP_NAME" /> ska använda AR måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Relaterade webbplatser kan se din aktivitet i gruppen</translation>
 <translation id="1887786770086287077">Platsåtkomst har inaktiverats på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1919950603503897840">Välj kontakter</translation>
@@ -63,7 +62,6 @@
 <translation id="2182457891543959921">Fråga innan webbplatser tillåts att skapa en 3D-karta över dina omgivningar eller registrera kamerans position (rekommenderas)</translation>
 <translation id="2185965788978862351"><ph name="DATASIZE" /> data och cookies som har sparats av webbplatser eller appar på startskärmen raderas.</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
-<translation id="2212565012507486665">Tillåt cookies</translation>
 <translation id="2228071138934252756">Om du vill ge <ph name="APP_NAME" /> åtkomst till kameran måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies från tredje part har blockerats</translation>
 <translation id="2238944249568001759">Föreslagna sökningar utifrån din senaste flik</translation>
@@ -104,7 +102,6 @@
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2678468611080193228">Testa att tillfälligt tillåta cookies från tredje part, vilket innebär mindre skydd men större sannolikhet att webbplatsfunktionerna fungerar</translation>
 <translation id="2683434792633810741">Vill du radera och återställa?</translation>
-<translation id="2687403674020088961">Blockera alla cookies (rekommenderas inte)</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
 <translation id="2750481671343847896">Webbplatser får visa inloggningsmeddelanden från identitetstjänster.</translation>
@@ -156,7 +153,6 @@
 <translation id="3586500876634962664">Kamera- och mikrofonanvändning</translation>
 <translation id="358794129225322306">Tillåt att en webbplats laddar ned flera filer automatiskt.</translation>
 <translation id="3594780231884063836">Stäng av ljudet för videon</translation>
-<translation id="3596414637720633074">Blockera cookies från tredje part med inkognitoläget</translation>
 <translation id="3600792891314830896">Stäng av ljudet på webbplatser</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3628308229821498208">Föreslagna sökningar</translation>
@@ -184,7 +180,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="4002066346123236978">Titel</translation>
-<translation id="4008040567710660924">Tillåt cookies för en enskild webbplats.</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
 <translation id="4149890623864272035">Vill du radera all lokal data, inklusive cookies, och återställa alla behörigheter för den här webbplatsen?</translation>
 <translation id="4149994727733219643">Förenklad vy för webbsidor</translation>
@@ -225,7 +220,6 @@
 <translation id="4883854917563148705">Hanterade inställningar kan inte återställas</translation>
 <translation id="4887024562049524730">Fråga innan webbplatser tillåts att använda VR-enheter och VR-data (rekommenderas)</translation>
 <translation id="4953688446973710931">När detta är aktiverat kan webbplatser be om att ladda ned flera filer automatiskt. När detta är inaktiverat får webbplatser inte ladda ned flera filer automatiskt.</translation>
-<translation id="4955223779495905865">En webbplats som du besöker kan bädda in innehåll från andra webbplatser, till exempel bilder, annonser och text. Dessa webbplatser kan spara cookies och annan data för att anpassa upplevelsen för dig.</translation>
 <translation id="4962975101802056554">Återkalla alla behörigheter för enheten</translation>
 <translation id="497421865427891073">Fortsätt</translation>
 <translation id="4976702386844183910">Besöktes senast <ph name="DATE" /></translation>
@@ -426,7 +420,6 @@
 <translation id="8117244575099414087">När detta är aktiverat kan webbplatser använda enhetens sensorer. När detta är inaktiverat får webbplatser inte använda sensorer.</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
-<translation id="8154912474061769055">Många webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="8186479265534291036">Fungerar inte webbplatsen? Cookies från tredje part har blockerats</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> tillåts</translation>
@@ -440,7 +433,6 @@
 <translation id="8324158725704657629">Fråga inte igen</translation>
 <translation id="8362795839483915693">Du kan zooma in eller ut på webbplatser</translation>
 <translation id="8372893542064058268">Tillåt bakgrundssynkronisering för en specifik webbplats.</translation>
-<translation id="8376384591331888629">Inklusive cookies från tredje part på den här webbplatsen</translation>
 <translation id="83792324527827022">En webbplats använder kameran och mikrofonen</translation>
 <translation id="8380167699614421159">Påträngande eller vilseledande annonser visas på den här webbplatsen</translation>
 <translation id="8394832520002899662">Återgå till webbplatsen genom att trycka här</translation>
@@ -488,7 +480,6 @@
 <translation id="8926666909099850184">NFC är inte aktiverat på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Förhindra att webbplatser visar och ändrar information på NFC-enheter</translation>
 <translation id="8944485226638699751">Begränsade</translation>
-<translation id="8958424370300090006">Blockera cookies för en enskild webbplats.</translation>
 <translation id="8959122750345127698">Det går inte att nå webbadressen: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glöm</translation>
 <translation id="8990043154272859344">Du loggas ut från alla webbplatser</translation>

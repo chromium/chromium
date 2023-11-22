@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL afgekapt</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
 <translation id="1568470248891039841">Sites die je bezoekt, kunnen content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Deze andere sites kunnen toestemming vragen om informatie te gebruiken die ze over jou hebben opgeslagen terwijl je browst op de site. <ph name="BEGIN_LINK" />Meer informatie over ingesloten content<ph name="END_LINK" /></translation>
@@ -40,7 +41,6 @@
 <translation id="1779089405699405702">Image Decoder</translation>
 <translation id="1785415724048343560">Aanbevolen voor de beste functionaliteit</translation>
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Gerelateerde sites kunnen je activiteit in de groep bekijken</translation>
 <translation id="1887786770086287077">Locatietoegang staat uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1919950603503897840">Contacten selecteren</translation>
@@ -63,7 +63,6 @@
 <translation id="2182457891543959921">Vragen voordat sites een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen (aanbevolen)</translation>
 <translation id="2185965788978862351">Hiermee verwijder je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites of apps op je startscherm.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
-<translation id="2212565012507486665">Cookies toestaan</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238944249568001759">Voorgestelde zoekopdrachten op basis van je laatste tabblad</translation>
@@ -104,7 +103,6 @@
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2678468611080193228">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder bescherming hebt, maar dat sitefuncties waarschijnlijk wel werken.</translation>
 <translation id="2683434792633810741">Verwijderen en resetten?</translation>
-<translation id="2687403674020088961">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2717722538473713889">E-mailadressen</translation>
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
@@ -156,7 +154,6 @@
 <translation id="3586500876634962664">Camera- en microfoongebruik</translation>
 <translation id="358794129225322306">Een site toestaan automatisch meerdere bestanden te downloaden.</translation>
 <translation id="3594780231884063836">Geluid van video uitzetten</translation>
-<translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3628308229821498208">Voorgestelde zoekopdrachten</translation>
@@ -184,7 +181,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
 <translation id="3992684624889376114">Over deze pagina</translation>
 <translation id="4002066346123236978">Titel</translation>
-<translation id="4008040567710660924">Cookies voor een specifieke site toestaan.</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="4149890623864272035">Weet je zeker dat je alle lokale gegevens (waaronder cookies) wilt verwijderen en alle rechten voor deze website wilt resetten?</translation>
 <translation id="4149994727733219643">Vereenvoudigde weergave voor webpagina's</translation>
@@ -225,7 +221,6 @@
 <translation id="4883854917563148705">Beheerde instellingen kunnen niet worden gereset</translation>
 <translation id="4887024562049524730">Vragen voordat sites je virtualreality-apparaat en -gegevens mogen gebruiken (aanbevolen)</translation>
 <translation id="4953688446973710931">Als deze optie aanstaat, kunnen sites vragen of ze automatisch meerdere bestanden mogen downloaden. Staat de optie uit, dan kunnen sites niet automatisch meerdere bestanden downloaden.</translation>
-<translation id="4955223779495905865">Een site die je bezoekt, kan content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Al deze sites kunnen cookies en andere gegevens opslaan om je gebruikerservaring te personaliseren.</translation>
 <translation id="4962975101802056554">Alle rechten voor apparaat intrekken</translation>
 <translation id="497421865427891073">Naar voren gaan</translation>
 <translation id="4976702386844183910">Laatst bezocht: <ph name="DATE" /></translation>
@@ -277,6 +272,7 @@
 <translation id="5677928146339483299">Geblokkeerd</translation>
 <translation id="5689516760719285838">Locatie</translation>
 <translation id="5690795753582697420">Camera staat uit in de Android-instellingen</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> kan je informatie gebruiken terwijl je browst</translation>
 <translation id="5700761515355162635">Cookies van derden toegestaan</translation>
 <translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
 <translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
@@ -320,6 +316,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="6270391203985052864">Sites kunnen vragen of ze je meldingen mogen sturen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> mag je gegevens niet gebruiken op</translation>
 <translation id="6320088164292336938">Trillen</translation>
 <translation id="6344622098450209924">Trackingbeveiliging</translation>
 <translation id="6367753977865761591">Externe login blokkeren voor een specifieke site.</translation>
@@ -426,7 +423,6 @@
 <translation id="8117244575099414087">Als deze optie aanstaat, kunnen sites de sensoren van je apparaat gebruiken. Staat de optie uit, dan kunnen sites geen sensoren gebruiken.</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
-<translation id="8154912474061769055">Functies op veel sites werken misschien niet</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8186479265534291036">Werkt de site niet? Cookies van derden geblokkeerd</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> toegestaan</translation>
@@ -440,7 +436,6 @@
 <translation id="8324158725704657629">Niet meer vragen</translation>
 <translation id="8362795839483915693">Je kunt in- of uitzoomen op sites die je bezoekt</translation>
 <translation id="8372893542064058268">Synchronisatie op de achtergrond toestaan voor een specifieke site.</translation>
-<translation id="8376384591331888629">Inclusief cookies van derden op deze site</translation>
 <translation id="83792324527827022">Een site gebruikt de camera en microfoon</translation>
 <translation id="8380167699614421159">Deze site toont opdringerige of misleidende advertenties</translation>
 <translation id="8394832520002899662">Tik hier om terug te gaan naar de site</translation>
@@ -488,7 +483,6 @@
 <translation id="8926666909099850184">NFC staat uit voor dit apparaat. Zet deze functie aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Voorkomen dat sites informatie op NFC-apparaten kunnen zien en wijzigen</translation>
 <translation id="8944485226638699751">Beperkt</translation>
-<translation id="8958424370300090006">Cookies voor een specifieke site blokkeren.</translation>
 <translation id="8959122750345127698">Navigatie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Vergeten</translation>
 <translation id="8990043154272859344">Je wordt uitgelogd van alle sites</translation>

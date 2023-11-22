@@ -110,7 +110,6 @@
 <translation id="2649768380733403658">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
-<translation id="2689103672227170538">擴充功能已變更 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="2712234843277364121">重新啟動即可更新 - 您的分頁將會重新開啟</translation>
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
@@ -180,7 +179,6 @@
 <translation id="3703994572283698466">Chrome OS 得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
 <translation id="3718181793972440140">這會刪除此裝置上的 1 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
-<translation id="3735758079232443276">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="3744202345691150878">取得 Chrome OS 相關說明</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步您的資料。</translation>
@@ -477,7 +475,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>
 <translation id="8825634023950448068">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。如果您認為 Chrome 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果您同意，請輸入 Windows 密碼。</translation>
-<translation id="884296878221830158">這個擴充功能也會管制 Chrome 啟動時或您按一下 [主頁] 按鈕時所顯示的網頁。</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>

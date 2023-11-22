@@ -4047,7 +4047,6 @@
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
 <translation id="412730574613779332">სპანდექსი</translation>
 <translation id="4130199216115862831">მოწყობილობაში შესვლა</translation>
-<translation id="4130207949184424187">ამ გაფართოებამ თქვენ მიერ Omnibox-ში ძიებისას ნაჩვენები გვერდი შეცვალა.</translation>
 <translation id="4130750466177569591">ვეთანხმები</translation>
 <translation id="413121957363593859">კომპონენტები</translation>
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" />-ის დაშვება ამ საიტზე</translation>
@@ -5553,7 +5552,6 @@
 <translation id="5355191726083956201">გაძლიერებული დაცვა ჩართულია</translation>
 <translation id="5355498626146154079">უნდა ჩართოთ ალამი „Borealis Enabled“</translation>
 <translation id="5355501370336370394">კორპორაციული მოწყობილობის რეგისტრაცია</translation>
-<translation id="5355926466126177564">გაფართოებამ „<ph name="EXTENSION_NAME" />“ თქვენ მიერ Omnibox-ში ძიებისას ნაჩვენები გვერდი შეცვალა.</translation>
 <translation id="5356155057455921522">თქვენი ადმინისტრატორის ამ განახლების შემდეგ თქვენი ორგანიზაციის აპები უფრო სწრაფად გაიხსნება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="5359910752122114278">1 შედეგი</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> ჩანართი</translation>
@@ -5895,7 +5893,6 @@
 <translation id="5624120631404540903">პაროლების მართვა</translation>
 <translation id="5625225435499354052">Google Pay-ში რედაქტირება</translation>
 <translation id="5626134646977739690">სახელი:</translation>
-<translation id="5627086634964711283">იგი ასევე აკონტროლებს იმას, თუ რა გვერდებია ნაჩვენები, როდესაც დააწკაპუნებთ მთავარ ღილაკს.</translation>
 <translation id="5627832140542566187">ჩვენების ორიენტაცია</translation>
 <translation id="5628434207686266338">დააყენეთ მოწყობილობის პაროლი</translation>
 <translation id="562935524653278697">თქვენი სანიშნეების, ისტორიის, პაროლების და სხვა პარამეტრების სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
@@ -6299,14 +6296,12 @@
 <translation id="5955304353782037793">პროგრამა</translation>
 <translation id="5955721306465922729">ვებსაიტი ითხოვს ამ აპლიკაციის გახსნას.</translation>
 <translation id="5955809630138889698">შესაძლოა ეს მოწყობილობა შესაფერისი იყოს მხოლოდ ონლაინ დემო-რეჟიმისთვის. დეტალური ინფორმაციისთვის დაუკავშირდეთ მხარდაჭერის გუნდის წარმომადგენელს.</translation>
-<translation id="5956585768868398362">გაამართლა ამ საძიებო გვერდმა თქვენი მოლოდინები?</translation>
 <translation id="5957987129450536192">შეეხეთ თქვენი პროფილის სურათთან მდებარე „წარმოსათქმელად მონიშვნის“ ხატულას, შემდეგ კი აირჩიეთ ის, რისი ხმამაღლა მოსმენაც გსურთ.</translation>
 <translation id="5959471481388474538">ქსელი მიუწვდომელია</translation>
 <translation id="5963413905009737549">სექცია</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> პიკი)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{ყველას ა&amp;ხალ ფანჯარაში გახსნა}=1{ა&amp;ხალ ფანჯარაში გახსნა}other{{COUNT}-ვეს ა&amp;ხალ ფანჯარაში გახსნა}}</translation>
 <translation id="5964247741333118902">ჩაშენებული კონტენტი</translation>
-<translation id="5965661248935608907">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება, როდესაც დააწკაპუნებთ საწყის ღილაკზე ან განახორციელებთ ძიებას Omnibox-იდან.</translation>
 <translation id="5966511985653515929">საიტების მონაცემები წაიშლება თქვენი მოწყობილობიდან  ყველა ფანჯრის დახურვისას</translation>
 <translation id="5968022600320704045">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="5969364029958154283">შეიტყვეთ მეტი პარამეტრების გადაყენების შესახებ</translation>
@@ -6743,7 +6738,6 @@
 <translation id="6309510305002439352">მიკროფონი გამორთულია</translation>
 <translation id="6310141306111263820">eSIM პროფილის ინსტალაცია ვერ მოხერხდა. დახმარებისთვის მიმართეთ თქვენს ოპერატორს.</translation>
 <translation id="6311220991371174222">Chrome-ის გაშვება ვერ მოხერხდა, რადგან თქვენი პროფილის გახსნისას შეფერხება წარმოიქმნა. ცადეთ Chrome-ის ხელახლა გაშვება.</translation>
-<translation id="6311708879134408222">ხელახლა ცდა ხვალ შეგიძლიათ.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{უსაფრთხოების შემოწმება შესრულდა 1 დღის წინ}other{უსაფრთხოების შემოწმება შესრულდა {NUM_DAYS} დღის წინ}}</translation>
 <translation id="6312638141433622592">სტატიების წამკითხველის რეჟიმში ჩვენების შემოთავაზება (თუ მხარდაჭერილია)</translation>
 <translation id="6313641880021325787">VR რეჟიმიდან გამოსვლა</translation>
@@ -7268,7 +7262,6 @@
 <translation id="6749473226660745022">ფოტოები</translation>
 <translation id="6750757184909117990">მობილური კავშირის გათიშვა</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ინკოგნიტო)</translation>
-<translation id="6756059675436942777">შეამოწმეთ კავშირი ინტერნეტთან და ხელახლა ცადეთ.</translation>
 <translation id="6756157672127672536">ფაილების პროგრამა უზრუნველყოფს სწრაფ წვდომას ფაილებზე, რომლებიც შეინახეთ Google Drive-ზე, გარე მეხსიერებაში ან თქვენს ChromeOS მოწყობილობაში.</translation>
 <translation id="6756643207511618722">მეტყველების მოდულები</translation>
 <translation id="6757431299485455321">დაეხმარეთ სხვა მოწყობილობებს უსადენო ქსელის პოვნაში.</translation>
@@ -7672,7 +7665,6 @@
 <translation id="7047059339731138197">ფონის არჩევა</translation>
 <translation id="7049293980323620022">გსურთ ფაილის შენარჩუნება?</translation>
 <translation id="7050037487872780845">უსადენო ქსელის კონფიგურაცია არასწორია</translation>
-<translation id="7051551856857948729">IBAN-ის მნიშვნელობის დამალვა</translation>
 <translation id="7052237160939977163">ეფექტურობის ტრასირების მონაცემების გაგზავნა</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7055152154916055070">გადამისამართება დაიბლოკა:</translation>
@@ -8557,7 +8549,6 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />-დან გაზიარებული ტექსტი</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">თქვენი ეკრანის საზღვრების დარეგულირება</translation>
-<translation id="7760004034676677601">ეს ის გაშვების გვერდია, რომელსაც მოელოდით?</translation>
 <translation id="7762024824096060040">ამ ანგარიშის გამოყენება ვერ ხერხდება</translation>
 <translation id="7762243782113123335">სამწუხაროდ, წარმოიქმნა შეფერხება. გთხოვთ, გამოგვეხმაუროთ ჰეშთეგით #bruschetta აღწერილობაში. შეცდომის კოდია <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">მისამართის დამატება</translation>
@@ -8659,7 +8650,6 @@
 <translation id="7828642077514646543">შეცდომა: სერტიფიკატის დეშიფრაცია ვერ მოხერხდა</translation>
 <translation id="7829877209233347340">სასწავლებლის ანგარიშის დამატების ნებართვის მოსანიჭებლად სთხოვეთ მშობელს სისტემაში შესვლა</translation>
 <translation id="7830833461614351956">დაკოპირდეს <ph name="NUM_OF_FILES" /> ფაილი <ph name="CLOUD_PROVIDER" />-ში გასახსნელად?</translation>
-<translation id="783088158898934992">აპის ენა</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">თუ Google იპოვის ფასდაკლებას, მას ამ გვერდზე იხილავთ</translation>
 <translation id="7833720883933317473">შენახული მორგებული სიტყვები აქ გამოჩნდება</translation>
@@ -9866,7 +9856,6 @@
 <translation id="876956356450740926">გაუშვით დეველოპერთა ხელსაწყოები, IDE-ები და რედაქტორები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">გაფართოების ძირეული დირექტორია</translation>
 <translation id="8771300903067484968">საწყისი გვერდის ფონი გადაყენებულია ნაგულისხმევ ფონზე.</translation>
-<translation id="8773280816776735812">IBAN-ის მნიშვნელობის ჩვენება</translation>
 <translation id="8774379074441005279">დაადასტურეთ აღდგენა</translation>
 <translation id="8774934320277480003">ზედა მინდორი</translation>
 <translation id="8775144690796719618">URL არასწორია</translation>
@@ -10045,6 +10034,7 @@
 <translation id="8910987510378294980">მოწყობილობების სიის დამალვა</translation>
 <translation id="8912362522468806198">Google ანგარიში</translation>
 <translation id="8912810933860534797">ავტომატური სკანირების ჩართვა</translation>
+<translation id="8914504000324227558">Chrome-ის ხელახლა გაშვება</translation>
 <translation id="8915307125957890427">მარჯვენა ღილაკით დააწკაპუნეთ ჩანართზე, აირჩიეთ „ჩანართის დამატება ჯგუფში“, შემდეგ კი — „ახალი ჯგუფი“</translation>
 <translation id="8915370057835397490">შემოთავაზების ჩატვირთვა</translation>
 <translation id="8916476537757519021">ანონიმური ქვეჩარჩო: <ph name="SUBFRAME_SITE" /></translation>

@@ -410,6 +410,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3080525922482950719">Puoi salvare le pagine da leggere in un secondo momento o quando sei offline</translation>
 <translation id="3081338492074632642">Assicurati che la password che stai salvando corrisponda a quella di <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">In basso</translation>
+<translation id="3090455602619185166">Accesso con account gestito</translation>
 <translation id="309710370695886264">Hai 1 password riutilizzata. Sistemala subito per rimanere al sicuro.</translation>
 <translation id="3112556859945124369">Segna come…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4004204301268239848">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo.</translation>
 <translation id="4018310736049373830">Gestisci attività</translation>
+<translation id="4021931095789478915">Aggiungi ${url} all'elenco di lettura</translation>
 <translation id="4038354071007134711">Impossibile aprire il file con le app sul dispositivo.</translation>
 <translation id="4042870976416480368">Trova nella pagina</translation>
 <translation id="40433179647657191">Crea e condividi un link diretto a una porzione di una pagina che hai evidenziato.</translation>
@@ -1447,6 +1449,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8556590991644167667">{count,plural, =1{Hai ignorato {count} avviso}other{Hai ignorato {count} avvisi}}</translation>
 <translation id="8558480467877843976">Ora puoi usare Chrome ogni volta che navighi o tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="8560253818350321773">Mostra prima le voci usate di frequente.</translation>
+<translation id="8569721750632860947">Quale URL vorresti aggiungere al tuo elenco di lettura?</translation>
 <translation id="8588404856427128947">Non attiva</translation>
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="8593565399399144771">Puoi aprire una nuova scheda qui.</translation>

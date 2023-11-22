@@ -106,7 +106,6 @@
 <translation id="2649768380733403658">Chrome では、ブラウザが安全な設定になっているかどうかを定期的に確認しています。お客様による確認が必要な項目がありましたらお知らせします。</translation>
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>
 <translation id="2665296953892887393">障害レポートと<ph name="UMA_LINK" />を Google に自動送信して Google Chrome の機能向上に役立てる</translation>
-<translation id="2689103672227170538">この拡張機能により、Chrome の起動時に表示されるページが変更されました。</translation>
 <translation id="2712234843277364121">再起動して更新 - タブは再度開きます</translation>
 <translation id="2738871930057338499">インターネットに接続できません。HTTP 403 アクセス不可エラーが発生しました。プロキシ設定をご確認ください。</translation>
 <translation id="2742320827292110288">警告: 拡張機能による閲覧履歴の記録を Google Chrome で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
@@ -176,7 +175,6 @@
 <translation id="3703994572283698466">Chrome OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="3716540481907974026">ChromeOS Flex のバージョン</translation>
 <translation id="3718181793972440140">このデバイスから 1 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
-<translation id="3735758079232443276">拡張機能「<ph name="EXTENSION_NAME" />」により、Chrome の起動時に表示されるページが変更されました。</translation>
 <translation id="3744202345691150878">Chrome OS のヘルプを見る</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ログイン時にエラーが発生したため、ChromeOS Flex はデータを同期できませんでした。</translation>
@@ -469,7 +467,6 @@
 <translation id="8823341990149967727">Chrome は古いバージョンです</translation>
 <translation id="8825634023950448068">ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に情報を残したくない場合、または特定の広告を表示させたくない場合は、興味 / 関心を削除できます。</translation>
 <translation id="8834965163890861871">Google Chrome でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
-<translation id="884296878221830158">この拡張機能では、Chrome の起動時、またはホーム ボタンのクリック時に表示されるページも制御されます。</translation>
 <translation id="8862326446509486874">権限が不十分なためシステムレベルのインストールができません。管理者権限でインストールしてください。</translation>
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>

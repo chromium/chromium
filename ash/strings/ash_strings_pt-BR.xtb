@@ -1683,6 +1683,13 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7893503627044934815">Não quero ver este arquivo</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Você pressionou o atalho de teclado para a rotação da tela. Gostaria de girar a tela?</translation>
+<translation id="7897626842031123113">Bandeja de status, horário <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Trocar as janelas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toque no sensor de digital</translation>

@@ -4065,7 +4065,6 @@
 <translation id="4124935795427217608">Єдиноріг</translation>
 <translation id="412730574613779332">Культурист</translation>
 <translation id="4130199216115862831">Журнал пристрою</translation>
-<translation id="4130207949184424187">Це розширення змінило сторінку, яка відкривається під час пошуку в універсальному вікні пошуку.</translation>
 <translation id="4130750466177569591">Прийняти</translation>
 <translation id="413121957363593859">Компоненти</translation>
 <translation id="4131283654370308898">Дозволити розширення "<ph name="EXTENSION_NAME" />" на цьому сайті</translation>
@@ -5572,7 +5571,6 @@
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="5355498626146154079">Увімкніть експериментальний параметр Borealis Enabled</translation>
 <translation id="5355501370336370394">Зареєструвати корпоративний пристрій</translation>
-<translation id="5355926466126177564">Розширення "<ph name="EXTENSION_NAME" />" змінило сторінку, яка відкривається під час пошуку в універсальному вікні пошуку.</translation>
 <translation id="5356155057455921522">Завдяки цьому оновленню від адміністратора додатки вашої організації відкриватимуться швидше. Це може зайняти кілька хвилин.</translation>
 <translation id="5359910752122114278">1 результат</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> вкладка</translation>
@@ -5912,7 +5910,6 @@
 <translation id="5624120631404540903">Керувати паролями</translation>
 <translation id="5625225435499354052">Змінити в Google Pay</translation>
 <translation id="5626134646977739690">Ім'я:</translation>
-<translation id="5627086634964711283">Розширення також змінило сторінку, яка відкривається під натискання кнопки "Домашня сторінка".</translation>
 <translation id="5627832140542566187">Орієнтація дисплея</translation>
 <translation id="5628434207686266338">Налаштувати пароль пристрою</translation>
 <translation id="562935524653278697">Адміністратор вимкнув синхронізацію закладок, історії, паролів та інших налаштувань.</translation>
@@ -6315,14 +6312,12 @@
 <translation id="5955304353782037793">додаток</translation>
 <translation id="5955721306465922729">Веб-сайт просить дозвіл відкрити цей додаток.</translation>
 <translation id="5955809630138889698">Цей пристрій доступний лише для демо-режиму онлайн. Щоб дізнатися більше, зв’яжіться з представником служби підтримки.</translation>
-<translation id="5956585768868398362">Це сторінка пошуку, яку ви очікували?</translation>
 <translation id="5957987129450536192">Торкніться значка "Читання з екрана" біля зображення профілю, а тоді виберіть фрагмент, який хочете почути.</translation>
 <translation id="5959471481388474538">Мережа не доступна</translation>
 <translation id="5963413905009737549">Розділ</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (максимум <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Відкрити всі в &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі ({COUNT}) у &amp;новому вікні}few{Відкрити всі ({COUNT}) у &amp;новому вікні}many{Відкрити всі ({COUNT}) у &amp;новому вікні}other{Відкрити всі ({COUNT}) у &amp;новому вікні}}</translation>
 <translation id="5964247741333118902">Вбудований контент</translation>
-<translation id="5965661248935608907">Також указує сторінку, яка відкривається під час натискання кнопки "Домашня сторінка" чи пошуку в універсальному вікні пошуку.</translation>
 <translation id="5966511985653515929">Дані сайтів буде видалено з пристрою, коли ви закриєте всі вікна</translation>
 <translation id="5968022600320704045">Нічого не знайдено</translation>
 <translation id="5969364029958154283">Докладніше про скидання налаштувань</translation>
@@ -6759,7 +6754,6 @@
 <translation id="6309510305002439352">Мікрофон вимкнено</translation>
 <translation id="6310141306111263820">Не вдалося встановити профіль eSIM-карти. Щоб отримати допомогу, зверніться до оператора.</translation>
 <translation id="6311220991371174222">Не вдається запустити Chrome, оскільки сталася помилка під час відкривання профілю. Спробуйте перезапустити Chrome.</translation>
-<translation id="6311708879134408222">Повторіть спробу завтра.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Перевірку безпеки виконано 1 день тому}one{Перевірку безпеки виконано {NUM_DAYS} день тому}few{Перевірку безпеки виконано {NUM_DAYS} дні тому}many{Перевірку безпеки виконано {NUM_DAYS} днів тому}other{Перевірку безпеки виконано {NUM_DAYS} дня тому}}</translation>
 <translation id="6312638141433622592">Пропонувати статті в режимі читання, якщо ця функція підтримується</translation>
 <translation id="6313641880021325787">Вийти з VR-режиму</translation>
@@ -7290,7 +7284,6 @@
 <translation id="6749473226660745022">Фото</translation>
 <translation id="6750757184909117990">Вимкнути мобільну мережу</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Анонімний перегляд)</translation>
-<translation id="6756059675436942777">Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="6756157672127672536">Додаток Файли надає швидкий доступ до файлів, збережених на Google Диску, у зовнішньому сховищі або на пристрої з ОС Chrome.</translation>
 <translation id="6756643207511618722">Системи синтезу мовлення</translation>
 <translation id="6757431299485455321">Допомагати іншим пристроям знайти цю точку доступу.</translation>
@@ -7695,7 +7688,6 @@
 <translation id="7047059339731138197">Виберіть фон</translation>
 <translation id="7049293980323620022">Завантажити файл?</translation>
 <translation id="7050037487872780845">Недійсна конфігурація точки доступу</translation>
-<translation id="7051551856857948729">Сховати номер IBAN</translation>
 <translation id="7052237160939977163">Надсилати дані відстеження ефективності</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
@@ -8580,7 +8572,6 @@
 <translation id="7757787379047923882">Текст, надісланий із пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Налаштуйте межі дисплея</translation>
-<translation id="7760004034676677601">Це стартова сторінка, яку ви очікували?</translation>
 <translation id="7762024824096060040">Не можна використовувати цей обліковий запис</translation>
 <translation id="7762243782113123335">Сталася помилка. Надішліть відгук і додайте в його опис хештег #bruschetta. Код помилки: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Додати адресу</translation>
@@ -8682,7 +8673,6 @@
 <translation id="7828642077514646543">Помилка: не вдалося розкодувати сертифікат</translation>
 <translation id="7829877209233347340">Щоб додати обліковий запис закладу освіти, попросіть когось із батьків увійти в їхній обліковий запис</translation>
 <translation id="7830833461614351956">Скопіювати файли (<ph name="NUM_OF_FILES" />) у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити їх?</translation>
-<translation id="783088158898934992">Мова додатка</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Якщо Google знайде знижку, вона з’явиться на цій сторінці</translation>
 <translation id="7833720883933317473">Тут відображатимуться збережені спеціальні слова</translation>
@@ -9890,7 +9880,6 @@
 <translation id="876956356450740926">Застосовуйте інструменти розробника, ІСР й редактори. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Кореневий каталог розширення</translation>
 <translation id="8771300903067484968">Фон початкової сторінки було скинуто. Тепер це фон за умовчанням.</translation>
-<translation id="8773280816776735812">Показати номер IBAN</translation>
 <translation id="8774379074441005279">Підтвердити відновлення</translation>
 <translation id="8774934320277480003">Верхнє поле</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>
@@ -10072,6 +10061,7 @@
 <translation id="8910987510378294980">Сховати список пристроїв</translation>
 <translation id="8912362522468806198">Обліковий запис Google</translation>
 <translation id="8912810933860534797">Увімкнути автоматичне сканування</translation>
+<translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8915307125957890427">Натисніть правою кнопкою миші на вкладку й виберіть "Додати вкладку в групу", а потім – "Нова група"</translation>
 <translation id="8915370057835397490">Завантаження пропозиції</translation>
 <translation id="8916476537757519021">Додатковий анонімний фрейм: <ph name="SUBFRAME_SITE" /></translation>

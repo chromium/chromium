@@ -26,6 +26,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="139993653570221430">Puedes cambiar de opinión en cualquier momento en la configuración de Chrome. Las pruebas se realizan de forma paralela al modo en que se publican los anuncios actualmente, por lo que no verás cambios de inmediato.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas.}=1{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirá 1 ventana de Incógnito.}other{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirán # ventanas de Incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
+<translation id="146866447420868597">¿Iniciar sesión en Chrome?</translation>
 <translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
@@ -110,7 +111,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2649768380733403658">Chrome comprueba periódicamente si tu navegador tiene la configuración más segura. Te avisaremos si tienes que revisar algo.</translation>
 <translation id="2652691236519827073">Abrir enlace en una pes&amp;taña nueva de Chrome</translation>
 <translation id="2665296953892887393">Ayudar a mejorar Google Chrome enviando informes sobre fallos y <ph name="UMA_LINK" /> a Google</translation>
-<translation id="2689103672227170538">Esta extensión ha cambiado la página que se muestra al iniciar Chrome.</translation>
 <translation id="2712234843277364121">Reinicia para actualizar: se reabrirán tus pestañas</translation>
 <translation id="2738871930057338499">No se puede conectar a Internet. HTTP 403 no permitido. Comprueba la configuración del proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome no puede evitar que las extensiones registren tu historial de navegación. Para inhabilitar esta extensión en el modo Incógnito, desmarca esta opción.</translation>
@@ -180,7 +180,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3703994572283698466">ChromeOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versión de ChromeOS Flex</translation>
 <translation id="3718181793972440140">Se eliminará un elemento de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">La extensión <ph name="EXTENSION_NAME" /> ha cambiado la página que se muestra al iniciar Chrome.</translation>
 <translation id="3744202345691150878">Obtener ayuda de ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex no ha podido sincronizar tus datos debido a un error de inicio de sesión.</translation>
@@ -477,7 +476,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8823341990149967727">Chrome no está actualizado</translation>
 <translation id="8825634023950448068">Para proteger tu privacidad, eliminamos automáticamente tus intereses que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un interés vuelva a aparecer en la lista. Además, si Chrome se equivoca o no quieres ver ciertos anuncios, puedes eliminar un interés.</translation>
 <translation id="8834965163890861871">Google Chrome está intentando cambiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
-<translation id="884296878221830158">También controla qué página se muestra al iniciar Chrome o hacer clic en el botón de página principal.</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>

@@ -69,10 +69,8 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2313870531055795960">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chromium. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="2329088755516916767">Ja šis iestatījums ir ieslēgts, pārlūkā Chromium tiek iepriekš ielādētas lapas, tādējādi paātrinot pārlūkošanu un meklēšanu.</translation>
 <translation id="2343156876103232566">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chromium.</translation>
-<translation id="2347108572062610441">Šis paplašinājums mainīja iestatījumu, kura lapa tiek parādīta, palaižot pārlūku Chromium.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2384373936468275798">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
-<translation id="2396765026452590966">Paplašinājums “<ph name="EXTENSION_NAME" />” mainīja iestatījumu, kura lapa tiek parādīta, palaižot pārlūku Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Vismaz viens Chromium paplašinājums piekļuva 1 HID ierīcei}=1{Vismaz viens Chromium paplašinājums piekļūst 1 HID ierīcei}zero{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}one{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcei}other{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}}</translation>
 <translation id="2401032172288869980">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru un mikrofonu šajā vietnē.</translation>
 <translation id="2440750600860946460">Izmantojot <ph name="BEGIN_LINK" />Chromium rīkus<ph name="END_LINK" />, varat droši pārlūkot saturu un pārvaldīt jums pieejamās iespējas.</translation>
@@ -275,6 +273,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6129621093834146363">Fails <ph name="FILE_NAME" /> ir bīstams, tādēļ Chromium to bloķēja.</translation>
 <translation id="6132897690380286411">Chromium drīz tiks aizvērts, un dati tiks izdzēsti</translation>
 <translation id="6134968993075716475">Droša pārlūkošana ir izslēgta. Pārlūkā Chromium tiek ieteikts to ieslēgt.</translation>
+<translation id="6144416395842701622">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chromium</translation>
 <translation id="6145820983052037069">Šeit varat pārslēgties starp Chromium profiliem.</translation>
 <translation id="615103374448673771">Ja atļaujat sīkfailus, pārlūks Chromium var tos izmantot iepriekšējai ielādei.</translation>
 <translation id="6175304430031192654">Ja to atļauj jūsu iestatījumi, pārlūks Chromium var arī nosūtīt sīkfailus un jūsu pašreizējo URL</translation>
@@ -430,6 +429,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8648201657708811153">Google Chrome for Testing nevar iestatīt kā noklusējuma pārlūku.</translation>
 <translation id="8697124171261953979">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium vai meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="8704119203788522458">Šis ir jūsu Chromium</translation>
+<translation id="8719993436687031146">Vai pierakstīties pārlūkā Chromium?</translation>
 <translation id="878572486461146056">Instalēšanas kļūda: administrators ir piemērojis grupas politiku, kas neļauj veikt instalēšanu: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796602469536043152">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai un mikrofonam šajā vietnē.</translation>
 <translation id="8826492472752484139">Noklikšķiniet uz vienuma Paroļu pārvaldnieks.</translation>
@@ -437,7 +437,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Kādi dati tiek izmantoti:<ph name="END_BOLD" /> jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chromium.</translation>
 <translation id="8862326446509486874">Jums nav vajadzīgo tiesību, lai instalētu sistēmas līmenī. Mēģiniet vēlreiz palaist instalēšanas programmu kā administrators.</translation>
 <translation id="8880203542552872219">Ja tā ir, lūdzu, rediģējiet saglabāto paroli pārlūkprogrammā Chromium, lai tā atbilstu jūsu jaunajai parolei.</translation>
-<translation id="8897323336392112261">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium vai noklikšķināsiet uz pogas “Sākums”.</translation>
 <translation id="8907580949721785412">Chromium mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="8931379085695076764">Chromium var aptuveni noteikt jūsu intereses, balstoties uz jūsu pēdējo nedēļu pārlūkošanas vēsturi. Šī informācija tiek glabāta jūsu ierīcē.</translation>
 <translation id="8941642502866065432">Nevar atjaunināt Chromium</translation>

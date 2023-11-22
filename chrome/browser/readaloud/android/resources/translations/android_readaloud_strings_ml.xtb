@@ -3,6 +3,8 @@
 <translationbundle lang="ml">
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1921351128855867012">വേഗത്തിൽ <ph name="NUMBER_OF_SECONDS" /> സെക്കൻഡ് മുന്നോട്ട് നീക്കുക</translation>
+<translation id="1984328900355667246">പ്ലേബാക്ക് ലഭ്യമല്ല</translation>
+<translation id="3023502830214299618">നിർഭാഗ്യവശാൽ, ഈ പേജിന് ഇപ്പോൾ പ്ലേബാക്ക് ലഭ്യമല്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3807208219231826020">പ്ലേബാക്ക് സ്‌ക്രബ് ചെയ്യുക</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="4431240646217225907">ടെക്സ്റ്റ് ഹൈലൈറ്റ് ചെയ്യലും സ്വയമേവ സ്ക്രോൾ ചെയ്യലും</translation>
@@ -17,7 +19,7 @@
 <translation id="6846298663435243399">ലോഡുചെയ്യുന്നു...</translation>
 <translation id="7587250070160020374">Chrome ഇപ്പോൾ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="8136852699834914183">ഈ പേജിന് പ്ലേബാക്ക് ലഭ്യമല്ല.</translation>
-<translation id="8264989794233974275">വേഗത <ph name="PLAYBACK_SPEED" />xകൂട്ടുക/കുറയ്‌ക്കുക.</translation>
+<translation id="8264989794233974275">വേഗത <ph name="PLAYBACK_SPEED" />x കൂട്ടുക/കുറയ്‌ക്കുക.</translation>
 <translation id="8407011429883244666">പ്ലേയർ അടയ്ക്കുക.</translation>
 <translation id="8953618380150219653">“ഈ പേജ് കേൾക്കുക” പ്ലേയർ, മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 </translationbundle>

@@ -326,7 +326,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1593359183944365958">270 grader</translation>
 <translation id="1594030484168838125">Velg</translation>
 <translation id="1596296697375291157">Thriller-, krim- og mysteriefilmer</translation>
-<translation id="1597473228022844713">Du sporer dette produktet. Denne siden er lagret i <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">Passnøkkel fra Windows Hello</translation>
 <translation id="1599199147673445968">Nytt kort? <ph name="BEGIN_LINK" />Oppgi kortopplysningene<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Spill Dino Run-spillet i Chrome</translation>
@@ -520,6 +519,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1997484222658892567"><ph name="URL" /> ber om å lagre store mengder data permanent på datamaskinen din</translation>
 <translation id="1997774360448418989">Papir (lett)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
+<translation id="2001469757375372617">Noe gikk galt. Endringen ble ikke lagret.</translation>
 <translation id="2003709556000175978">Tilbakestill passordet ditt nå</translation>
 <translation id="2003775180883135320">Fire hull topp</translation>
 <translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
@@ -725,6 +725,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2395840535409704129">Vannsport</translation>
 <translation id="2396249848217231973">&amp;Angre slettingen</translation>
 <translation id="2397836504670957718">Bærbare datamaskiner</translation>
+<translation id="2399868464369312507">Google Chrome prøver å redigere betalingsmåter.</translation>
 <translation id="2400600116338235695">Kan be om å få koble til serielle porter</translation>
 <translation id="2404884497378469141">Prøv å kopiere filene på nytt</translation>
 <translation id="2413155254802890957">Gamle</translation>
@@ -1119,6 +1120,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3250640885957938546">Reklame og markedsføring</translation>
 <translation id="3252772880526154546">Arkitektur</translation>
 <translation id="3254301855501243548">18 x 22 tommer</translation>
+<translation id="3255926992597692024">Chromium prøver å endre innstillingene for utfylling av betalingsmåter.</translation>
 <translation id="3256863843508922226">Pensjon</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette en ny hendelse i Google Kalender raskt</translation>
 <translation id="3261488570342242926">Finn ut mer om virtuelle kort</translation>
@@ -1504,6 +1506,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4047351652147966654">18 x 24 tommer</translation>
 <translation id="404831776305217138">Oppdateringsnettadressen for utvidelsen med ID-en «<ph name="EXTENSION_ID" />» er ugyldig eller bruker en protokoll som ikke støttes. Disse protokollene støttes: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> og <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Du kan bruke den i alle Google-produkter</translation>
+<translation id="4050599136622776556">Chromium prøver å redigere betalingsmåter.</translation>
 <translation id="405399507749852140">Få varsler hvis prisen settes ned på noe nettsted</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">La Google hjelpe deg med å finne rabatter for handlekurvene dine</translation>
@@ -1626,6 +1629,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-skjorter</translation>
 <translation id="4253168017788158739">Merknad</translation>
+<translation id="4255487295905690262">Du får e-postvarsler hvis prisen settes ned på noe nettsted.</translation>
 <translation id="425582637250725228">Det kan hende endringene dine ikke er lagret.</translation>
 <translation id="4258748452823770588">Dårlig signatur</translation>
 <translation id="4261046003697461417">Beskyttede dokumenter kan ikke annoteres</translation>
@@ -2982,7 +2986,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6999480632062519056">Treningsinstruktører og personlig trening</translation>
 <translation id="6999969238895751684">Underholdningsindustri</translation>
 <translation id="7003278537452757231">Ryer og tepper</translation>
-<translation id="7003335073762455340">Du sporer dette produktet. Denne siden er lagret i <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">Nylige faner</translation>
 <translation id="7004583254764674281">Bruk Windows Hello til å bekrefte kort raskere</translation>
 <translation id="7006930604109697472">Send likevel</translation>
@@ -3039,7 +3042,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7108819624672055576">Tillatt av en utvidelse</translation>
 <translation id="7109510814665441393">Bil- og racingspill</translation>
 <translation id="7110116949943042888">Vikariater og sesongjobber</translation>
-<translation id="7110553203952632623">Du får e-postvarsler hvis prisen settes ned på noe nettsted</translation>
 <translation id="7111012039238467737">(Gyldig)</translation>
 <translation id="7111507312244504964">Verdivurdering og -taksering</translation>
 <translation id="7112327784801341716">Er ikke informasjonen riktig? Kontakt banken for å oppdatere den.</translation>
@@ -3157,7 +3159,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalingsbehandlere</translation>
 <translation id="7367985555340314048">Emner av interesse er basert på den nylige nettleserloggen din og brukes av nettsteder for å vise deg personlig tilpassede annonser</translation>
-<translation id="7368169244533796604">Slett nettstedet</translation>
 <translation id="7372526636730851647">Foto (glans)</translation>
 <translation id="7372973238305370288">søkeresultat</translation>
 <translation id="7374461526650987610">Protokollbehandlere</translation>
@@ -3580,7 +3581,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8134058435519644366">Rekruttering og bemanning</translation>
 <translation id="8135546115396015134">venstretast</translation>
-<translation id="8144303576836498784">Noe gikk galt. Endringen din er ikke lagret</translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>
 <translation id="8149426793427495338">Datamaskinen din gikk inn i hvilemodus.</translation>
 <translation id="8150722005171944719">Kunne ikke lese filen på <ph name="URL" /> Den kan ha blitt fjernet eller flyttet. Det kan også være filtillatelser som forhindrer tilgang.</translation>
@@ -3793,6 +3793,7 @@ Mer informasjon:
 <translation id="8542014550340843547">Tre stifter bunn</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Du kan <ph name="BEGIN_ERROR_LINK" />rapportere et påvisningsproblem<ph name="END_ERROR_LINK" /> eller, hvis du forstår sikkerhetsrisikoen, <ph name="BEGIN_LINK" />gå til dette usikre nettstedet<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome prøver å endre innstillingene for utfylling av betalingsmåter.</translation>
 <translation id="8544303911974837265">Polyester</translation>
 <translation id="854548366864113872">Alternativ med høy pris</translation>
 <translation id="8546254312340305428">Oppgi årsaken til opplastingen (obligatorisk)</translation>

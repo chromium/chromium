@@ -650,6 +650,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3659667652322717492">Vous pouvez toujours modifier le comportement du microphone plus tard.</translation>
 <translation id="3659814201068740063">Il reste environ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Branchez votre appareil sur une source d'alimentation.</translation>
+<translation id="3660860940251915011">Basculer la haute visibilité du <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utilisateur géré : <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Balayez pour masquer votre fenêtre flottante</translation>
 <translation id="367531336287639526">Sélectionner la première icône à gauche de la barre d'adresse</translation>
@@ -979,6 +980,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Dernière modification : <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="4989163558385430922">Tout afficher</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
@@ -1682,6 +1684,13 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7893503627044934815">Ne pas afficher ce fichier</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vous avez appuyé sur le raccourci-clavier de rotation d'écran. Voulez-vous faire pivoter l'écran?</translation>
+<translation id="7897626842031123113">Barre d'état, heure <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Basculez les fenêtres</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Touchez le capteur d'empreintes digitales</translation>

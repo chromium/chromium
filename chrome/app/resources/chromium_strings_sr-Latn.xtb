@@ -71,10 +71,8 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2313870531055795960">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chromium-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chromium može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="2329088755516916767">Kada je ovo uključeno, Chromium predučitava stranice, što ubrzava pregledanje i pretragu.</translation>
 <translation id="2343156876103232566">Da biste poslali broj sa ovog uređaja na Android telefon, prijavite se u Chromium na oba uređaja.</translation>
-<translation id="2347108572062610441">Ovaj dodatak je promenio stranicu koja se prikazuje kada pokrenete Chromium.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2384373936468275798">Chromium OS ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
-<translation id="2396765026452590966">Dodatak „<ph name="EXTENSION_NAME" />“ je promenio stranicu koja se prikazuje kada pokrenete Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Jedan ili više dodataka za Chromium su pristupali 1 HID uređaju}=1{Jedan ili više dodataka za Chromium pristupaju 1 HID uređaju}one{Jedan ili više dodataka za Chromium pristupaju # HID uređaju}few{Jedan ili više dodataka za Chromium pristupaju HID uređajima (#)}other{Jedan ili više dodataka za Chromium pristupaju HID uređajima (#)}}</translation>
 <translation id="2401032172288869980">Chromium-u su potrebne dozvole za kameru i mikrofon za ovaj sajt</translation>
 <translation id="2440750600860946460">Pomoću <ph name="BEGIN_LINK" />Chromium alatki<ph name="END_LINK" /> možete bezbedno da pregledate i zadržite kontrolu</translation>
@@ -444,7 +442,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chromium-a na ovom uređaju.</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Probajte ponovo da pokrenete program za instalaciju, ovoga puta kao administrator.</translation>
 <translation id="8880203542552872219">Ako je tako, izmenite sačuvanu lozinku u Chromium-u tako da se podudara sa novom lozinkom.</translation>
-<translation id="8897323336392112261">Kontroliše i stranicu koja se prikazuje kada pokrenete Chromium ili kliknete na dugme Početak.</translation>
 <translation id="8907580949721785412">Chromium pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="8931379085695076764">Chromium može da proceni interesovanja na osnovu istorije pregledanja iz poslednjih nekoliko nedelja. Te informacije ostaju na uređaju.</translation>
 <translation id="8941642502866065432">Ne možete da ažurirate Chromium</translation>

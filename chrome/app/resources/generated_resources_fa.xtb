@@ -4062,7 +4062,6 @@
 <translation id="4124935795427217608">تک‌شاخ</translation>
 <translation id="412730574613779332">قهرمان</translation>
 <translation id="4130199216115862831">گزارش دستگاه</translation>
-<translation id="4130207949184424187">‏این افزونه، صفحه‌ای را تغییر داده است که هنگام جستجو از Omnibox نشان داده می‌شود.</translation>
 <translation id="4130750466177569591">موافقم</translation>
 <translation id="413121957363593859">مؤلفه‌ها</translation>
 <translation id="4131283654370308898">مجاز کردن <ph name="EXTENSION_NAME" /> در این سایت</translation>
@@ -5569,7 +5568,6 @@
 <translation id="5355191726083956201">«محافظت بهبودیافته» روشن است</translation>
 <translation id="5355498626146154079">‏باید پرچم «Borealis Enabled» را روشن کنید</translation>
 <translation id="5355501370336370394">ثبت‌نام کردن دستگاه شرکتی</translation>
-<translation id="5355926466126177564">‏افزونه «<ph name="EXTENSION_NAME" />»، صفحه‌ای را تغییر داده است که هنگام جستجو از Omnibox نشان داده می‌شود.</translation>
 <translation id="5356155057455921522">این به‌روزرسانی ازسوی سرپرست باعث می‌شود برنامه‌های سازمان سریع‌تر باز شود. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="5359910752122114278">۱ نتیجه</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> برگه</translation>
@@ -5911,7 +5909,6 @@
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
 <translation id="5625225435499354052">‏ویرایش در Google Pay</translation>
 <translation id="5626134646977739690">نام:</translation>
-<translation id="5627086634964711283">این برنامه افزودنی همچنین صفحه‌ای را که هنگام کلیک کردن روی دکمه اصلی نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5627832140542566187">جهت نمایشگر</translation>
 <translation id="5628434207686266338">تنظیم گذرواژه دستگاه</translation>
 <translation id="562935524653278697">سرپرست شما همگام‌سازی نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیماتتان را غیرفعال کرده است.</translation>
@@ -6315,14 +6312,12 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">وب‌سایتی می‌خواهد این برنامه را باز کند.</translation>
 <translation id="5955809630138889698">این دستگاه ممکن است فقط برای حالت نمایشی آنلاین واجد شرایط باشد. برای جزئیات بیشتر، لطفاً با نماینده پشتیبانی‌تان تماس بگیرید.</translation>
-<translation id="5956585768868398362">آیا این همان صفحه جستجویی است که انتظار داشتید؟</translation>
 <translation id="5957987129450536192">در کنار تصویر نمایه‌تان روی نماد «انتخاب برای شنیدن» ضربه بزنید، سپس آنچه را می‌خواهید بشنوید انتخاب کنید.</translation>
 <translation id="5959471481388474538">شبکه در دسترس نیست</translation>
 <translation id="5963413905009737549">بخش</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> اوج مصرف)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{باز کردن همه در پنجره جدید}=1{باز کردن در پنجره جدید}one{باز کردن همه ({COUNT}) در پنجره جدید}other{باز کردن همه ({COUNT}) در پنجره جدید}}</translation>
 <translation id="5964247741333118902">محتوای جاسازی‌شده</translation>
-<translation id="5965661248935608907">‏این برنامه افزودنی همچنین صفحه‌ای را که هنگام کلیک کردن روی دکمه صفحه اصلی یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5966511985653515929">داده‌های سایت با بسته شدن همه پنجره‌ها از دستگاه حذف شود</translation>
 <translation id="5968022600320704045">بدون نتیجه جستجو</translation>
 <translation id="5969364029958154283">درباره بازنشانی تنظیمات بیشتر بدانید</translation>
@@ -6759,7 +6754,6 @@
 <translation id="6309510305002439352">میکروفون خاموش است</translation>
 <translation id="6310141306111263820">نمایه سیم‌کارت داخلی نصب نشد. برای دریافت راهنمایی، لطفاً با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="6311220991371174222">‏راه‌اندازی Chrome ممکن نیست زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. Chrome را راه‌اندازی مجدد کنید.</translation>
-<translation id="6311708879134408222">می‌توانید فردا دوباره امتحان کنید.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{بررسی ایمنی ۱ روز پیش اجرا شده است}one{بررسی ایمنی {NUM_DAYS} روز پیش اجرا شده است}other{بررسی ایمنی {NUM_DAYS} روز پیش اجرا شده است}}</translation>
 <translation id="6312638141433622592">پیشنهاد نمایش مقاله‌ها در «حالت خواننده»، درصورت پشتیبانی</translation>
 <translation id="6313641880021325787">‏خروج از VR</translation>
@@ -7287,7 +7281,6 @@
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">غیرفعال کردن شبکه تلفن همراه</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ناشناس)</translation>
-<translation id="6756059675436942777">اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="6756157672127672536">‏برنامه Files دسترسی سریع به فایل‌هایی را فراهم می‌کند که در Google Drive، فضای ذخیره‌سازی خارجی، یا دستگاه ChromeOS خودتان ذخیره کرده‌اید.</translation>
 <translation id="6756643207511618722">موتورهای گفتار</translation>
 <translation id="6757431299485455321">کمک می‌کند دستگاه‌های دیگر این نقطه اتصال را پیدا کنند.</translation>
@@ -7316,6 +7309,7 @@
 <translation id="6777817260680419853">هدایت کردن مسدود شده است</translation>
 <translation id="6777845730143344223">‏درباره اشتراک‌های Passpoint بیشتر بدانید</translation>
 <translation id="6779092717724412415">برای ایجاد بخش برجسته مثل این، نوشتار موردنظر را انتخاب و کلیک راست کنید.</translation>
+<translation id="6779348349813025131">‏«مدیر گذرواژه Google» باید به MacOS Keychain دسترسی داشته باشد</translation>
 <translation id="6779447100905857289">سبدهای خرید شما</translation>
 <translation id="677965093459947883">خیلی کوچک</translation>
 <translation id="6781005693196527806">مدیریت موتورهای جستجو...</translation>
@@ -7692,7 +7686,6 @@
 <translation id="7047059339731138197">انتخاب پس‌زمینه</translation>
 <translation id="7049293980323620022">فایل حفظ شود؟</translation>
 <translation id="7050037487872780845">پیکربندی نقطه اتصال نامعتبر است</translation>
-<translation id="7051551856857948729">‏پنهان کردن شماره IBAN</translation>
 <translation id="7052237160939977163">ارسال داده‌های ردیابی عملکرد</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
@@ -8578,7 +8571,6 @@
 <translation id="7757787379047923882">نوشتار هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">تنظیم مرزهای نمایشگرتان</translation>
-<translation id="7760004034676677601">آیا این صفحه راه‌اندازی مورد انتظار شماست؟</translation>
 <translation id="7762024824096060040">نمی‌توان از این حساب استفاده کرد</translation>
 <translation id="7762243782113123335">‏متأسفیم، مشکلی پیش آمد. لطفاً بازخوردتان را با هشتگ ‎#bruschetta در توضیحات ارسال کنید. کد خطا <ph name="ERROR" /> است.</translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
@@ -8679,7 +8671,6 @@
 <translation id="7828642077514646543">خطا: گواهینامه رمزگشایی نمی‌شود</translation>
 <translation id="7829877209233347340">از ولی‌تان بخواهید به سیستم وارد شود و با افزودن حساب محل تحصیل موافقت کند</translation>
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> فایل برای باز شدن در <ph name="CLOUD_PROVIDER" /> کپی شود؟</translation>
-<translation id="783088158898934992">زبان برنامه</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">‏اگر Google تخفیفی را پیدا کند، در این صفحه آن را خواهید دید</translation>
 <translation id="7833720883933317473">کلمات سفارشی ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
@@ -9887,7 +9878,6 @@
 <translation id="876956356450740926">ابزار توسعه‌دهندگان، محیط‌های توسعه نرم‌افزار یکپارچه، و ویرایشگرها را اجرا کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">دایرکتوری ریشه افزونه:</translation>
 <translation id="8771300903067484968">پس‌زمینه صفحه شروع روی پس‌زمینه پیش‌فرض بازنشانی شده است.</translation>
-<translation id="8773280816776735812">‏نمایش شماره IBAN</translation>
 <translation id="8774379074441005279">تأیید بازیابی</translation>
 <translation id="8774934320277480003">حاشیه بالا</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>
@@ -10067,6 +10057,7 @@
 <translation id="8910987510378294980">پنهان کردن فهرست دستگاه‌ها</translation>
 <translation id="8912362522468806198">‏حساب Google</translation>
 <translation id="8912810933860534797">فعال کردن اسکن خودکار</translation>
+<translation id="8914504000324227558">‏راه‌اندازی مجدد Chrome</translation>
 <translation id="8915307125957890427">روی یکی از برگه‌ها کلیک راست کنید و «افزودن برگه به گروه» و سپس «گروه جدید» را انتخاب کنید</translation>
 <translation id="8915370057835397490">در حال بارگیری پیشنهادات</translation>
 <translation id="8916476537757519021">قاب فرعی ناشناس: <ph name="SUBFRAME_SITE" /></translation>

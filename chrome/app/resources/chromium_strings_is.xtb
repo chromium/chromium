@@ -71,10 +71,8 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="2313870531055795960">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="2329088755516916767">Þegar kveikt er á Chromium forhleður það síður sem gerir skoðun og leit hraðari.</translation>
 <translation id="2343156876103232566">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chromium í báðum tækjunum.</translation>
-<translation id="2347108572062610441">Þessi viðbót hefur breytt því hvaða síða birtist þegar þú ræsir Chromium.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2384373936468275798">ChromiumOS gat ekki samstillt gögnin vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar.</translation>
-<translation id="2396765026452590966">Viðbótin „<ph name="EXTENSION_NAME" />“ hefur breytt því hvaða síða birtist þegar þú ræsir Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Ein eða fleiri Chromium-viðbætur fengu aðgang að 1 HID-tæki}=1{Ein eða fleiri Chromium-viðbætur hafa aðgang að 1 HID-tæki}one{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tæki}other{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tækjum}}</translation>
 <translation id="2401032172288869980">Chromium verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Verkfæri Chromium<ph name="END_LINK" /> gera þér kleift að vafra á öruggan hátt og vera við stjórnvölinn</translation>
@@ -444,7 +442,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Hvaða gögn eru notuð:<ph name="END_BOLD" /> Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chromium í þessu tæki.</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
 <translation id="8880203542552872219">Ef svo er skaltu breyta vistaða aðgangsorðinu í Chromium í nýja aðgangsorðið.</translation>
-<translation id="8897323336392112261">Hún stýrir því einnig hvaða síða birtist þegar þú ræsir Chromium eða smellir á heimahnappinn.</translation>
 <translation id="8907580949721785412">Chromium er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
 <translation id="8931379085695076764">Chromium getur áætlað áhugasvið þín í samræmi við vafraferil síðustu vikna. Þessi gögn eru aðeins geymd í tækinu.</translation>
 <translation id="8941642502866065432">Ekki var hægt að uppfæra Chromium</translation>

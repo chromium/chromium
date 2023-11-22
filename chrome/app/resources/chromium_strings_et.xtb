@@ -69,10 +69,8 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2313870531055795960">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="2329088755516916767">Kui see on sisse lülitatud, eellaadib Chromium lehed ning see muudab sirvimise ja otsimise kiiremaks.</translation>
 <translation id="2343156876103232566">Numbri saatmiseks siit Android-telefoni logige mõlemas seadmes Chromiumi sisse.</translation>
-<translation id="2347108572062610441">See laiendus muutis seda, milline leht kuvatakse Chromiumi käivitamisel.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2384373936468275798">Chromium OS ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
-<translation id="2396765026452590966">Laiendus „<ph name="EXTENSION_NAME" />” muutis seda, milline leht kuvatakse Chromiumi käivitamisel.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Üks või mitu Chromiumi laiendust kasutasid juurdepääsu ühele HID-seadmele}=1{Üks või mitu Chromiumi laiendust pääsevad juurde ühele HID-seadmele}other{Üks või mitu Chromiumi laiendust pääsevad juurde # HID-seadmele}}</translation>
 <translation id="2401032172288869980">Chromium vajab selle saidi puhul kaamera ja mikrofoni kasutamise luba</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumi tööriistadega<ph name="END_LINK" /> saate ohutult sirvida ja kõik kontrolli all hoida</translation>
@@ -275,6 +273,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> on ohtlik, mistõttu Chromium blokeeris selle.</translation>
 <translation id="6132897690380286411">Chromium sulgub peagi ja kustutab andmed</translation>
 <translation id="6134968993075716475">Google'i ohutu sirvimine on välja lülitatud. Chromium soovitab selle sisse lülitada.</translation>
+<translation id="6144416395842701622">Chromiumi parimal moel kasutamiseks logige sisse</translation>
 <translation id="6145820983052037069">Chromiumi profiili saate vahetada siin</translation>
 <translation id="615103374448673771">Kui lubate küpsised, võib Chromium neid eellaadimise ajal kasutada</translation>
 <translation id="6175304430031192654">Teie seadetest olenevalt võib Chromium saata ka küpsisefaile ja teie praeguse URL-i</translation>
@@ -432,6 +431,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8648201657708811153">Brauserit Google Chrome for Testing ei saa teie vaikebrauseriks määrata.</translation>
 <translation id="8697124171261953979">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel või omnikastikeses otsingu tegemisel.</translation>
 <translation id="8704119203788522458">See on teie Chromium</translation>
+<translation id="8719993436687031146">Kas logida Chromiumi sisse?</translation>
 <translation id="878572486461146056">Installimisviga: teie võrguadministraator on kehtestanud rühmareegli, mis takistab installimist: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium vajab selle saidi puhul luba, et teie kaamerale ja mikrofonile juurde pääseda</translation>
 <translation id="8826492472752484139">Klõpsake valikul „Paroolihaldur“</translation>
@@ -439,7 +439,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chromiumiga külastatud saitide andmed.</translation>
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>
 <translation id="8880203542552872219">Sellisel juhul muutke Chromiumis oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
-<translation id="8897323336392112261">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel või avalehe nupul klõpsamisel.</translation>
 <translation id="8907580949721785412">Chromium proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="8931379085695076764">Chromium suudab prognoosida teie huvisid, võttes aluseks teie viimase mõne nädala sirvimisajaloo. See teave jääb teie seadmesse.</translation>
 <translation id="8941642502866065432">Chromiumi ei saa värskendada</translation>

@@ -324,7 +324,6 @@
 <translation id="1593359183944365958">270 градусов</translation>
 <translation id="1594030484168838125">Выбрать</translation>
 <translation id="1596296697375291157">Триллеры, криминальные и детективные фильмы</translation>
-<translation id="1597473228022844713">Вы следите за ценой на этот товар. Страница сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />"</translation>
 <translation id="1598816256585174656">Ключ доступа из Windows Hello</translation>
 <translation id="1599199147673445968">Новая карта? <ph name="BEGIN_LINK" />Введите реквизиты<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Играть в игру Dino Run в Chrome</translation>
@@ -517,6 +516,7 @@
 <translation id="1997484222658892567">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение большого объема данных на вашем компьютере.</translation>
 <translation id="1997774360448418989">Бумага (легкая)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{и ещё 1}one{и ещё #}few{и ещё #}many{и ещё #}other{и ещё #}}</translation>
+<translation id="2001469757375372617">Произошла ошибка. Изменение не сохранено.</translation>
 <translation id="2003709556000175978">Сброс пароля</translation>
 <translation id="2003775180883135320">Четыре отверстия сверху</translation>
 <translation id="2004697686368036666">Функции некоторых сайтов могут стать недоступными</translation>
@@ -722,6 +722,7 @@
 <translation id="2395840535409704129">Водные виды спорта</translation>
 <translation id="2396249848217231973">&amp;Отменить удаление</translation>
 <translation id="2397836504670957718">Ноутбуки и портативные компьютеры</translation>
+<translation id="2399868464369312507">Google Chrome пытается изменить способы оплаты.</translation>
 <translation id="2400600116338235695">Разрешено отправлять запрос на подключение к последовательным портам</translation>
 <translation id="2404884497378469141">Попробуйте скопировать файлы ещё раз.</translation>
 <translation id="2413155254802890957">Старый</translation>
@@ -1114,6 +1115,7 @@
 <translation id="3250640885957938546">Реклама и маркетинг</translation>
 <translation id="3252772880526154546">Архитектура</translation>
 <translation id="3254301855501243548">18 x 22 дюйма</translation>
+<translation id="3255926992597692024">Chromium пытается изменить настройки заполнения способов оплаты.</translation>
 <translation id="3256863843508922226">Пенсия</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать мероприятие в Google Календаре, нажмите Tab, а затем Ввод.</translation>
 <translation id="3261488570342242926">Подробнее…</translation>
@@ -1497,6 +1499,7 @@
 <translation id="4047351652147966654">18 x 24 дюйма</translation>
 <translation id="404831776305217138">URL для обновления расширений с идентификатором <ph name="EXTENSION_ID" /> недействителен или его схема не поддерживается. Разрешено использовать только схемы <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Вы сможете использовать его в других продуктах Google.</translation>
+<translation id="4050599136622776556">Chromium пытается изменить способы оплаты.</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4063063121357725926">Разрешите Google находить скидки на товары, которые вы добавляете в корзину</translation>
@@ -1619,6 +1622,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Футболки</translation>
 <translation id="4253168017788158739">Примечание</translation>
+<translation id="4255487295905690262">Если на одном из сайтов цена снизится, вы получите оповещение по электронной почте</translation>
 <translation id="425582637250725228">Изменения могут не сохраниться.</translation>
 <translation id="4258748452823770588">Подпись недействительна</translation>
 <translation id="4261046003697461417">Недоступно, так как документ защищен</translation>
@@ -2973,7 +2977,6 @@
 <translation id="6999480632062519056">Фитнес и персональные тренировки</translation>
 <translation id="6999969238895751684">Индустрия развлечений</translation>
 <translation id="7003278537452757231">Ковры и коврики</translation>
-<translation id="7003335073762455340">Вы следите за ценой на этот товар. Страница с ним сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7004583254764674281">Использовать Windows Hello для быстрого подтверждения карт</translation>
 <translation id="7006930604109697472">Все равно отправить</translation>
@@ -3029,7 +3032,6 @@
 <translation id="7108819624672055576">Разрешено расширением</translation>
 <translation id="7109510814665441393">Симуляторы вождения и гоночные игры</translation>
 <translation id="7110116949943042888">Временные и сезонные вакансии</translation>
-<translation id="7110553203952632623">Если цена снизится на любом из сайтов, вы получите оповещение по электронной почте</translation>
 <translation id="7111012039238467737">(действительный)</translation>
 <translation id="7111507312244504964">Инспекция и оценка имущества</translation>
 <translation id="7112327784801341716">Если вы видите устаревшие данные, обратитесь в свой банк.</translation>
@@ -3148,7 +3150,6 @@
 <translation id="7366117520888504990">198 x 275 мм</translation>
 <translation id="7366362069757178916">Обработчики платежей</translation>
 <translation id="7367985555340314048">Интересующие вас темы определяются на основе недавней истории браузера и используются сайтами для показа персонализированной рекламы</translation>
-<translation id="7368169244533796604">Удалить сайт</translation>
 <translation id="7372526636730851647">Фотобумага (глянцевая)</translation>
 <translation id="7372973238305370288">результат поиска</translation>
 <translation id="7374461526650987610">Обработчики протоколов</translation>
@@ -3571,7 +3572,6 @@
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>
 <translation id="8135546115396015134">стрелку влево</translation>
-<translation id="8144303576836498784">Что-то пошло не так. Изменение не сохранено</translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
 <translation id="8149426793427495338">Ваш компьютер перешел в спящий режим.</translation>
 <translation id="8150722005171944719">Файл по адресу <ph name="URL" /> недоступен. Возможно, он был удален или перемещен либо права доступа к нему ограничены.</translation>
@@ -3784,6 +3784,7 @@
 <translation id="8542014550340843547">Три скобы внизу</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Сообщите о зараженном сайте<ph name="END_ERROR_LINK" />. Если вы готовы подвергнуть риску личные данные, то можете <ph name="BEGIN_LINK" />перейти на страницу<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome пытается изменить настройки заполнения способов оплаты.</translation>
 <translation id="8544303911974837265">Полиэстер</translation>
 <translation id="854548366864113872">Дорогой вариант</translation>
 <translation id="8546254312340305428">Укажите, зачем вы хотите загрузить файл (обязательно)</translation>

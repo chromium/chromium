@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">আপুনি পাছত যিকোনো সময়তে মাইকৰ আচৰণ সলনি কৰিব পাৰে।</translation>
 <translation id="3659814201068740063">প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে (<ph name="PERCENTAGE" />%)।
 আপোনাৰ ডিভাইচটো পাৱাৰৰ সৈতে সংযোগ কৰক।</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" />ৰ উচ্চ দৃশ্যমানতা ট’গল কৰক</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />এ পৰিচালনা কৰা ব্যৱহাৰকাৰী</translation>
 <translation id="3666266999138159418">আপোনাৰ উপঙি থকা ৱিণ্ড’ লুকুৱাবলৈ ছোৱাইপ কৰক</translation>
 <translation id="367531336287639526">ঠিকনাৰ বাৰৰ বাওঁফালে থকা প্ৰথম চিহ্নটো বাছনি কৰক</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">সংশোধন কৰাৰ সময় <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">ডেস্ক ১৬</translation>
 <translation id="4989163558385430922">সকলো চাওক</translation>
 <translation id="5003993274120026347">পৰৱৰ্তী বাক্য</translation>
@@ -1683,6 +1685,13 @@
 <translation id="7893503627044934815">এই ফাইলটো দেখুওৱাটো নিবিচাৰোঁ</translation>
 <translation id="7895348134893321514">ট’ট</translation>
 <translation id="7897375687985782769">আপুনি স্ক্রীণখন ঘূৰাবলৈ কীব'ৰ্ডৰ শ্বৰ্টকাটত টিপিলে। আপুনি স্ক্রীণখন ঘূৰাব বিচাৰেনে?</translation>
+<translation id="7897626842031123113">স্থিতিৰ ট্ৰে’, সময় <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">ৱিণ্ড’সমূহ সলনাসলনি কৰক</translation>
 <translation id="7901405293566323524">ফ’ন হাব</translation>
 <translation id="7902625623987030061">ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰক</translation>

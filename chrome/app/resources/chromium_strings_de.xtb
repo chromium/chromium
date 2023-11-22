@@ -69,10 +69,8 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2313870531055795960">Prüft URLs anhand einer Liste unsicherer Websites, die in Chromium gespeichert ist. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="2329088755516916767">Wenn diese Option aktiviert ist, lädt Chromium Seiten vorab, um das Surfen und die Suche zu beschleunigen.</translation>
 <translation id="2343156876103232566">Wenn du eine Nummer von diesem Gerät an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chromium anmelden.</translation>
-<translation id="2347108572062610441">Die beim Start von Chromium angezeigte Seite wurde durch diese Erweiterung geändert.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2384373936468275798">Chromium OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
-<translation id="2396765026452590966">Die beim Start von Chromium angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Auf 1 HID-Gerät wurde von mindestens einer Chromium-Erweiterung zugegriffen}=1{Auf 1 HID-Gerät wird von mindestens einer Chromium-Erweiterung zugegriffen}other{Auf # HID-Geräte wird von mindestens einer Chromium-Erweiterung zugegriffen}}</translation>
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="2440750600860946460">Mit den <ph name="BEGIN_LINK" />Tools von Chromium<ph name="END_LINK" /> kannst du unbeschwert surfen und die Kontrolle behalten</translation>
@@ -275,6 +273,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> ist schädlich und wurde daher von Chromium blockiert.</translation>
 <translation id="6132897690380286411">Browserdaten in Chromium werden bald gelöscht und der Browser geschlossen</translation>
 <translation id="6134968993075716475">Safe Browsing ist deaktiviert. Es wird empfohlen, diese Funktion zu aktivieren.</translation>
+<translation id="6144416395842701622">Wenn du Chromium optimal nutzen möchtest, melde dich an</translation>
 <translation id="6145820983052037069">Hier kannst du zwischen Chromium-Profilen wechseln</translation>
 <translation id="615103374448673771">Wenn du Cookies erlaubst, kann Chromium diese beim Vorabladen verwenden</translation>
 <translation id="6175304430031192654">Abhängig von deinen Einstellungen kann Chromium auch Cookies und deine aktuelle URL versenden</translation>
@@ -432,6 +431,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kann nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="8697124171261953979">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="8704119203788522458">Dies ist dein persönlicher Chromium-Browser</translation>
+<translation id="8719993436687031146">In Chromium anmelden?</translation>
 <translation id="878572486461146056">Installationsfehler: Dein Netzwerkadministrator hat eine Gruppenrichtlinie angewendet, die die Installation verhindert: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796602469536043152">Chromium benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen</translation>
 <translation id="8826492472752484139">Klicke auf „Passwortmanager“</translation>
@@ -439,7 +439,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chromium besuchten Websites.</translation>
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
 <translation id="8880203542552872219">Falls ja, ändere dein gespeichertes Passwort in Chromium, damit es mit dem neuen Passwort übereinstimmt.</translation>
-<translation id="8897323336392112261">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium angezeigt wird oder wenn du auf die Schaltfläche „Startseite“ klickst.</translation>
 <translation id="8907580949721785412">Chromium möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8931379085695076764">Chromium kann auf Grundlage deines Browserverlaufs der letzten Wochen deine Interessen schätzen. Diese Daten bleiben auf deinem Gerät.</translation>
 <translation id="8941642502866065432">Chromium kann nicht aktualisiert werden</translation>

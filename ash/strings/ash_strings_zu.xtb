@@ -650,6 +650,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3659667652322717492">Ungakwazi ukushintsha indlela yokuziphatha ye-mic nganoma yisiphi isikhathi kamuva.</translation>
 <translation id="3659814201068740063">Cishe sekusele <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Xhuma idivayisi yakho emandleni.</translation>
+<translation id="3660860940251915011">Guqula i-<ph name="FEATURE_NAME" /> ukubonakala kwaphezulu</translation>
 <translation id="366222428570480733">U-<ph name="USER_EMAIL_ADDRESS" /> Yomsebenzisi ophethwe</translation>
 <translation id="3666266999138159418">Swayipha ukuze ufihle iwindi lakho elintantayo</translation>
 <translation id="367531336287639526">Khetha isithonjana sokuqala kwesokunxele sebha yekheli</translation>
@@ -980,6 +981,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Kulungiswe ngo-<ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Itafula 16</translation>
 <translation id="4989163558385430922">Buka konke</translation>
 <translation id="5003993274120026347">Umusho olandelayo</translation>
@@ -1683,6 +1685,13 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="7893503627044934815">Angifuni ukuthi leli fayela liboniswe</translation>
 <translation id="7895348134893321514">I-tote</translation>
 <translation id="7897375687985782769">Ucindezele isinqamuleli sekhibhodi sokuzungezisa kwesikrini. Uyafuna ukuzungezisa isikrini?</translation>
+<translation id="7897626842031123113">Isimo sethreyi, isikhathi <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Shintsha amawindi</translation>
 <translation id="7901405293566323524">Ihabhu Yefoni</translation>
 <translation id="7902625623987030061">Thinta inzwa yezigxivizo zeminwe</translation>

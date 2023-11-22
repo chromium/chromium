@@ -69,10 +69,8 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2313870531055795960">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="2329088755516916767">Gdy to ustawienie jest włączone, Chromium wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie.</translation>
 <translation id="2343156876103232566">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chromium na obu urządzeniach.</translation>
-<translation id="2347108572062610441">To rozszerzenie ustawiło inną stronę wyświetlaną po uruchomieniu Chromium.</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2384373936468275798">System operacyjny Chromium nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
-<translation id="2396765026452590966">Rozszerzenie „<ph name="EXTENSION_NAME" />” ustawiło inną stronę wyświetlaną po uruchomieniu Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Co najmniej 1 rozszerzenie do Chromium uzyskiwało dostęp do 1 urządzenia HID}=1{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do 1 urządzenia HID}few{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń HID}many{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń HID}other{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzenia HID}}</translation>
 <translation id="2401032172288869980">Ta strona musi mieć w Chromium dostęp do aparatu i mikrofonu</translation>
 <translation id="2440750600860946460">Dzięki <ph name="BEGIN_LINK" />narzędziom Chromium<ph name="END_LINK" /> możesz bezpiecznie przeglądać internet i mieć nad wszystkim kontrolę</translation>
@@ -439,7 +437,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> używamy Twojej historii przeglądania, czyli rejestru witryn, które odwiedzasz w Chromium na tym urządzeniu.</translation>
 <translation id="8862326446509486874">Nie masz odpowiednich uprawnień do przeprowadzenia instalacji na poziomie systemowym. Uruchom ponownie program instalacyjny jako administrator.</translation>
 <translation id="8880203542552872219">Jeśli tak, zaktualizuj je w Chromium, by zapisane hasło było takie samo.</translation>
-<translation id="8897323336392112261">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub kliknięciu przycisku strony głównej.</translation>
 <translation id="8907580949721785412">Chromium próbuje pokazać hasła. Podaj swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="8931379085695076764">Chromium może oszacować Twoje zainteresowania na podstawie Twojej historii przeglądania z ostatnich kilku tygodni. Te informacje zostają na Twoim urządzeniu.</translation>
 <translation id="8941642502866065432">Nie można zaktualizować Chromium</translation>

@@ -71,10 +71,8 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="2313870531055795960">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="2329088755516916767">Lorsqu'il est activé, Chromium précharge les pages, ce qui accélère la navigation et la recherche.</translation>
 <translation id="2343156876103232566">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chromium sur vos deux appareils.</translation>
-<translation id="2347108572062610441">Cette extension a modifié la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2384373936468275798">Chromium OS n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>
-<translation id="2396765026452590966">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}one{Une ou plusieurs extensions Chromium ont accédé à # appareil HID}other{Une ou plusieurs extensions Chromium ont accédé à # appareils HID}}</translation>
 <translation id="2401032172288869980">Chromium requiert l'autorisation d'accéder au microphone et à l'appareil photo pour ce site</translation>
 <translation id="2440750600860946460">Grâce aux <ph name="BEGIN_LINK" />outils de Chromium<ph name="END_LINK" />, vous pouvez naviguer en toute sécurité et garder le contrôle</translation>
@@ -277,6 +275,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6129621093834146363">Chromium a bloqué le fichier <ph name="FILE_NAME" />, car il est dangereux.</translation>
 <translation id="6132897690380286411">Chromium va bientôt se fermer et supprimer des données</translation>
 <translation id="6134968993075716475">La navigation sécurisée est désactivée. Chromium vous recommande de l'activer.</translation>
+<translation id="6144416395842701622">Connectez-vous pour profiter pleinement de Chromium</translation>
 <translation id="6145820983052037069">Vous pouvez basculer entre les profils Chromium ici</translation>
 <translation id="615103374448673771">Si vous autorisez les témoins, Chromium peut les utiliser pour procéder au préchargement.</translation>
 <translation id="6175304430031192654">Selon vos paramètres, Chromium peut également envoyer des témoins et votre URL actuelle</translation>
@@ -434,6 +433,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ne peut pas être défini comme votre navigateur par défaut.</translation>
 <translation id="8697124171261953979">Elle définit également quelle page s'affiche lorsque vous démarrez Chromium ou que vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="8704119203788522458">Voici votre Chromium</translation>
+<translation id="8719993436687031146">Se connecter à Chromium?</translation>
 <translation id="878572486461146056">Erreur d'installation : votre administrateur réseau a appliqué une politique de groupe qui empêche l'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="8826492472752484139">Cliquez sur « Gestionnaire de mots de passe »</translation>
@@ -441,7 +441,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chromium sur cet appareil.</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour faire une installation sur le système. Relancez l'installation une fois que vous serez connecté comme administrateur.</translation>
 <translation id="8880203542552872219">Dans ce cas, veuillez modifier votre mot de passe enregistré dans Chromium pour qu'il corresponde à votre nouveau mot de passe.</translation>
-<translation id="8897323336392112261">Elle définit également la page qui s'affiche au démarrage de Chromium ou lorsque vous cliquez sur le bouton « Accueil ».</translation>
 <translation id="8907580949721785412">Chromium essaie d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="8931379085695076764">Chromium peut estimer vos centres intérêt en fonction de votre historique de navigation au cours des dernières semaines. Ces renseignements restent sur votre appareil.</translation>
 <translation id="8941642502866065432">Impossible de mettre à jour Chromium</translation>

@@ -24,6 +24,7 @@
 <translation id="139993653570221430">Du kannst deine Meinung jederzeit ändern und deine Chrome-Einstellungen entsprechend anpassen. Die Tests laufen parallel zur aktuellen Auslieferungsart für Werbung, Änderungen werden also nicht sofort sichtbar.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die neueste Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet.}=1{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die neueste Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die neueste Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-Apps</translation>
+<translation id="146866447420868597">In Chrome anmelden?</translation>
 <translation id="1492280395845991349">Neu starten, um das Chrome-Update abzuschließen</translation>
 <translation id="1497802159252041924">Installationsfehler: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalisiere dein neues Chrome-Profil</translation>
@@ -106,7 +107,6 @@
 <translation id="2649768380733403658">Chrome prüft regelmäßig, ob dein Browser die sichersten Einstellungen hat. Solltest du etwas überprüfen müssen, informieren wir dich.</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>
 <translation id="2665296953892887393">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Google Chrome an Google senden</translation>
-<translation id="2689103672227170538">Die beim Start von Chrome angezeigte Seite wurde durch diese Erweiterung geändert.</translation>
 <translation id="2712234843277364121">Zum Aktualisieren neu starten – Tabs werden wieder geöffnet</translation>
 <translation id="2738871930057338499">Internetverbindung kann nicht hergestellt werden. HTTP 403 Forbidden. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="2742320827292110288">Achtung: Google Chrome kann nicht verhindern, dass dein Browser-Verlauf von Erweiterungen aufgezeichnet wird. Schalte diese Option aus, um die Erweiterung im Inkognitomodus zu deaktivieren.</translation>
@@ -176,7 +176,6 @@
 <translation id="3703994572283698466">Chrome OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="3716540481907974026">Chrome OS Flex-Version</translation>
 <translation id="3718181793972440140">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
-<translation id="3735758079232443276">Die beim Start von Chrome angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
 <translation id="3744202345691150878">Chrome OS-Hilfe</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
@@ -469,7 +468,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8823341990149967727">Chrome ist veraltet.</translation>
 <translation id="8825634023950448068">Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Falls Chrome falsch liegt oder du bestimmte Werbung nicht sehen möchtest, kannst du einzelne Interessen entfernen.</translation>
 <translation id="8834965163890861871">Google Chrome versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
-<translation id="884296878221830158">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome angezeigt wird oder wenn du auf die Schaltfläche „Startseite“ klickst.</translation>
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8922193594870374009">Wenn du eine Nummer von <ph name="ORIGIN" /> an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>

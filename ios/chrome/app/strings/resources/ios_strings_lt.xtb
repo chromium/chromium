@@ -410,6 +410,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3080525922482950719">Išsaugoję puslapius galėsite skaityti juos vėliau arba neprisijungę</translation>
 <translation id="3081338492074632642">Įsitikinkite, kad išsaugomas slaptažodis atitinka svetainės <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="3087734570205094154">Apačia</translation>
+<translation id="3090455602619185166">Prisijungimas naudojant valdomą paskyrą</translation>
 <translation id="309710370695886264">Turite vieną pakartotinai naudojamą slaptažodį. Pataisykite dabar, kad užtikrintumėte saugą.</translation>
 <translation id="3112556859945124369">Pažymėti…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Žr., ką galite sinchronizuoti<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4004204301268239848">Slaptažodžiai išsaugomi „Google“ paskyroje, kad galėtumėte juos naudoti bet kuriame įrenginyje.</translation>
 <translation id="4018310736049373830">Tvarkyti veiklą</translation>
+<translation id="4021931095789478915">Pridėti ${url} prie skaitymo sąrašo</translation>
 <translation id="4038354071007134711">Šiame įreng. nėra progr., gal. atidaryti failą.</translation>
 <translation id="4042870976416480368">Rasti puslapyje</translation>
 <translation id="40433179647657191">Sukurkite ir bendrinkite tiesioginę nuorodą į puslapio dalį, kurią paryškinote.</translation>
@@ -1447,6 +1449,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8556590991644167667">{count,plural, =1{Atsisakėte {count} perspėjimo}one{Atsisakėte {count} perspėjimo}few{Atsisakėte {count} perspėjimų}many{Atsisakėte {count} perspėjimo}other{Atsisakėte {count} perspėjimų}}</translation>
 <translation id="8558480467877843976">Dabar galite naudoti „Chrome“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="8560253818350321773">Pirmiausia rodykite dažnai naudojamus elementus.</translation>
+<translation id="8569721750632860947">Kokį URL norėtumėte pridėti prie skaitymo sąrašo?</translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8591976964826315682">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
 <translation id="8593565399399144771">Čia galite atidaryti naują skirtuką.</translation>

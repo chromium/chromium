@@ -69,10 +69,8 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="2313870531055795960">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chromium. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chromium poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="2329088755516916767">Când opțiunea este activată, Chromium preîncarcă paginile, astfel încât navigarea și căutarea să fie mai rapide.</translation>
 <translation id="2343156876103232566">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chromium pe ambele dispozitive.</translation>
-<translation id="2347108572062610441">Această extensie a modificat ce pagină se afișează când pornești Chromium.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2384373936468275798">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul tău nu sunt actualizate.</translation>
-<translation id="2396765026452590966">Extensia „<ph name="EXTENSION_NAME" />” a modificat ce pagină se afișează când pornești Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Un dispozitiv HID a fost accesat de una sau mai multe extensii Chromium}=1{Un dispozitiv HID este accesat de una sau mai multe extensii Chromium}few{# dispozitive HID sunt accesate de una sau mai multe extensii Chromium}other{# de dispozitive HID sunt accesate de una sau mai multe extensii Chromium}}</translation>
 <translation id="2401032172288869980">Chromium are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="2440750600860946460">Cu <ph name="BEGIN_LINK" />instrumentele din Chromium<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
@@ -441,7 +439,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chromium pe acest dispozitiv.</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8880203542552872219">Dacă da, modifică parola salvată în Chromium, astfel încât să corespundă cu noua parolă.</translation>
-<translation id="8897323336392112261">Stabilește și ce pagină se afișează când pornești Chromium sau când dai clic pe butonul Pagina principală.</translation>
 <translation id="8907580949721785412">Chromium încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8931379085695076764">Chromium îți poate estima interesele pe baza istoricului tău de navigare din ultimele câteva săptămâni. Aceste informații rămân pe dispozitivul tău.</translation>
 <translation id="8941642502866065432">Chromium nu se poate actualiza</translation>

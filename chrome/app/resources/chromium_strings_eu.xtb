@@ -71,10 +71,8 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2313870531055795960">URLak Chromium-en gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="2329088755516916767">Piztuta dagoenenean, Chromium-ek orriak aurrez kargatzen ditu, azkarrago arakatu eta bila dezazun.</translation>
 <translation id="2343156876103232566">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chromium-eko saioa bi gailuetan.</translation>
-<translation id="2347108572062610441">Luzapenak aldatu egin du Chromium abiarazten duzunean agertzen den orria.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2384373936468275798">Chromium OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
-<translation id="2396765026452590966"><ph name="EXTENSION_NAME" /> luzapenak aldatu egin du Chromium abiarazten duzunean agertzen den orria.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari ziren}=1{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari dira}other{Chromium-erako luzapen bat edo gehiago giza interfazeko # gailu erabiltzen ari dira}}</translation>
 <translation id="2401032172288869980">Chromium-ek kamera eta mikrofonoa erabiltzeko baimenak behar ditu webgune honetan</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium-en tresnekin<ph name="END_LINK" />, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
@@ -443,7 +441,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Zein datu erabiltzen dira?<ph name="END_BOLD" /> Zure arakatze-historia eta gailu hau erabili bitartean Chromium-en bidez bisitatutako webguneen erregistro bat.</translation>
 <translation id="8862326446509486874">Ez dituzu eskubide egokiak sistema mailako instalazio bat egiteko. Saiatu instalatzailea administratzaile gisa abiarazten.</translation>
 <translation id="8880203542552872219">Hala bada, editatu Chromium-en gordetako pasahitza, berriarekin bat etor dadin.</translation>
-<translation id="8897323336392112261">Chromium abiarazten duzunean edo Hasiera botoia sakatzen duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8907580949721785412">Chromium pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="8931379085695076764">Azken asteetako arakatze-historian oinarrituta estima ditzake gutxi gorabehera zure interesak Chromium-ek. Informazio hori gailuan gelditzen da.</translation>
 <translation id="8941642502866065432">Ezin da eguneratu Chromium</translation>

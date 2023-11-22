@@ -410,6 +410,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3080525922482950719">Možete sačuvati stranice da ih čitate kasnije ili van mreže</translation>
 <translation id="3081338492074632642">Provjerite podudara li se lozinka koju želite sačuvati s lozinkom za web lokaciju <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Dolje</translation>
+<translation id="3090455602619185166">Prijavite se upravljanim računom</translation>
 <translation id="309710370695886264">Imate 1 već korištenu lozinku. Riješite taj problem radi sigurnosti.</translation>
 <translation id="3112556859945124369">Označi…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Pogledajte šta možete sinhronizirati<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4004204301268239848">Lozinke se pohranjuju na vaš Google račun da ih možete koristiti na bilo kojem uređaju.</translation>
 <translation id="4018310736049373830">Upravljajte aktivnostima</translation>
+<translation id="4021931095789478915">Dodaj ${url} na popis za čitanje</translation>
 <translation id="4038354071007134711">Nijedna aplikacija na ovom uređaju ne može otvoriti ovaj fajl.</translation>
 <translation id="4042870976416480368">Pronađi na ovoj stranici</translation>
 <translation id="40433179647657191">Kreirajte i dijelite direktni link dijela stranice koji ste istaknuli.</translation>
@@ -1286,6 +1288,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7744192722284567281">Pronađeno u narušavanju podataka</translation>
 <translation id="7744394900930577716">Lozinke u drugim aplikacijama</translation>
 <translation id="7749790401023484470">Niste odabrali nijedan tekst.</translation>
+<translation id="7752405526771734448">Vizualno pretraživanje Objektiva</translation>
 <translation id="7756478488453921771">Meni → Postavke → Načini plaćanja</translation>
 <translation id="7760127703945531263">Zaključavanje anonimnog načina rada</translation>
 <translation id="7765158879357617694">Pomjeri</translation>
@@ -1447,6 +1450,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="8556590991644167667">{count,plural, =1{Odbacili ste {count} upozorenje}one{Odbacili ste {count} upozorenje}few{Odbacili ste {count} upozorenja}other{Odbacili ste {count} upozorenja}}</translation>
 <translation id="8558480467877843976">Sada možete koristiti Chrome svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="8560253818350321773">Prvo prikažite često korištene stavke.</translation>
+<translation id="8569721750632860947">Koji URL želite dodati na popis za čitanje?</translation>
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8591976964826315682">Blokiraj kolačiće trećih strana u anonimnom načinu rada</translation>
 <translation id="8593565399399144771">Ovdje možete otvoriti novu karticu.</translation>

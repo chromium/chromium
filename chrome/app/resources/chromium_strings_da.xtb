@@ -69,10 +69,8 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2313870531055795960">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chromium. Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chromium muligvis også webadresser og bl.a. mindre mængder sideindhold til Beskyttet browsing.</translation>
 <translation id="2329088755516916767">Når indstillingen er aktiveret, forudindlæser Chromium sider, hvilket gør det hurtigere at browse og søge.</translation>
 <translation id="2343156876103232566">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
-<translation id="2347108572062610441">Denne udvidelse har ændret din startside i Chromium.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2384373936468275798">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
-<translation id="2396765026452590966">Udvidelsen "<ph name="EXTENSION_NAME" />" har ændret din startside i Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 HID-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 HID-enhed}one{En eller flere Chromium-udvidelser har adgang til # HID-enhed}other{En eller flere Chromium-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />værktøjer fra Chromium<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
@@ -442,7 +440,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chromium på denne enhed.</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8880203542552872219">Hvis ja, skal du redigere den gemte adgangskode i Chromium, så den matcher den nye adgangskode.</translation>
-<translation id="8897323336392112261">Den styrer også, hvilken side der vises, når du åbner Chromium eller klikker på knappen Startside.</translation>
 <translation id="8907580949721785412">Chromium forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="8931379085695076764">Chromium kan estimere dine interesser baseret på din browserhistorik de seneste få uger. Disse oplysninger forbliver på din enhed.</translation>
 <translation id="8941642502866065432">Chromium kunne ikke opdateres</translation>

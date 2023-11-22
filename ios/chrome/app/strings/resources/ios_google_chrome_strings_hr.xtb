@@ -58,6 +58,7 @@ Važne napomene:
 <translation id="2671426118752779020">Zaporke koje ste spremili u Google upravitelj zaporki možete koristiti u drugim aplikacijama na iPhoneu.</translation>
 <translation id="2689064829982324496">Da biste se odjavili sa svojeg Google računa na svim web-lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nije uspio provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
+<translation id="2702250627063295552">Dodaj stavku popisa za čitanje u Chrome</translation>
 <translation id="2736805085127235148">Obavijesti Chromea trenutačno su isključene u postavkama uređaja.</translation>
 <translation id="2767464022270041271">Nema nijedne spremljene zaporke. Google upravitelj zaporki može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="2868822340714096138">Brisanje podataka o pregledavanju u Chromeu</translation>
@@ -83,6 +84,7 @@ Važne napomene:
 <translation id="3744018071945602754">Upravljanje zaporkama u Chromeu</translation>
 <translation id="3827545470516145620">Imate standardnu zaštitu sigurnosti na ovom uređaju</translation>
 <translation id="384394811301901750">Google Chrome trenutačno ne može upotrebljavati vaš fotoaparat</translation>
+<translation id="3863841106411295595">Dodaje unesene URL-ove na vaš popis za čitanje u Chromeu.</translation>
 <translation id="3901001113120561395">Iskoristite sve prednosti preglednika Chrome.</translation>
 <translation id="3967382818307165056">Upravljaj načinima plaćanja u Chromeu</translation>
 <translation id="3980220367029651214">Prebacujete sinkronizaciju s računa <ph name="USER_EMAIL1" /> na račun <ph name="USER_EMAIL2" />. Vašim postojećim podacima na Chromeu upravlja <ph name="DOMAIN" />. Vaši će se podaci izbrisati s ovog uređaja, no ostat će na računu <ph name="USER_EMAIL1" />.</translation>

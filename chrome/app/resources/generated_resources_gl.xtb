@@ -2674,6 +2674,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3021065318976393105">Durante o uso da batería</translation>
 <translation id="3021066826692793094">Bolboreta</translation>
 <translation id="3021678814754966447">&amp;Ver fonte do marco</translation>
+<translation id="3021902017511220299">Produciuse un erro durante a análise. A persoa que che administra a conta bloqueou esta acción.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> quitarase deste Chromebook e non se gardará en <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Non se entendeu a mensaxe.</translation>
 <translation id="3023464535986383522">Escoitar selección</translation>
@@ -4048,7 +4049,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Rexistro do dispositivo</translation>
-<translation id="4130207949184424187">Esta extensión cambiou a páxina que se mostra ao buscar desde Omnibox.</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="413121957363593859">Compoñentes</translation>
 <translation id="4131283654370308898">Permitir <ph name="EXTENSION_NAME" /> neste sitio</translation>
@@ -5554,7 +5554,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
 <translation id="5355498626146154079">Debes activar a función experimental Borealis Enabled</translation>
 <translation id="5355501370336370394">Inscribir dispositivo de empresa</translation>
-<translation id="5355926466126177564">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao buscar desde Omnibox.</translation>
 <translation id="5356155057455921522">Con esta actualización do teu administrador, as aplicacións da túa organización abriranse máis rápido. Esta acción pode tardar uns minutos.</translation>
 <translation id="5359910752122114278">1 resultado</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> pestana</translation>
@@ -5894,7 +5893,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5624120631404540903">Xestionar contrasinais</translation>
 <translation id="5625225435499354052">Editar en Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
-<translation id="5627086634964711283">Tamén controla a páxina que se mostra ao facer clic no botón Inicio.</translation>
 <translation id="5627832140542566187">Orientación da pantalla</translation>
 <translation id="5628434207686266338">Establecer o contrasinal do dispositivo</translation>
 <translation id="562935524653278697">O administrador desactivou a sincronización dos marcadores, o historial, os contrasinais e outras opcións de configuración.</translation>
@@ -6297,14 +6295,12 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5955304353782037793">aplicación</translation>
 <translation id="5955721306465922729">Un sitio web quere abrir esta aplicación.</translation>
 <translation id="5955809630138889698">É posible que este dispositivo só sexa adecuado para o modo de demostración en liña. Ponte en contacto co representante do servizo de asistencia para obter máis información.</translation>
-<translation id="5956585768868398362">É esta a páxina de busca que esperabas?</translation>
 <translation id="5957987129450536192">Toca a icona Escoitar selección, situada cerca da túa imaxe do perfil e, a continuación, selecciona o que queiras escoitar.</translation>
 <translation id="5959471481388474538">Rede non dispoñible</translation>
 <translation id="5963413905009737549">Sección</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> máximo)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todos nunha ventá &amp;nova}=1{Abrir nunha ventá &amp;nova}other{Abrir todos ({COUNT}) nunha ventá &amp;nova}}</translation>
 <translation id="5964247741333118902">Contido inserido</translation>
-<translation id="5965661248935608907">Tamén controla que páxina se mostra ao facer clic no botón Inicio ou ao buscar desde Omnibox.</translation>
 <translation id="5966511985653515929">Os datos dos sitios eliminaranse do teu dispositivo cando peches todas as ventás</translation>
 <translation id="5968022600320704045">Non hai resultados da busca</translation>
 <translation id="5969364029958154283">Máis información sobre o restablecemento da configuración</translation>
@@ -6741,7 +6737,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6309510305002439352">Desactivouse o micrófono</translation>
 <translation id="6310141306111263820">Non se puido instalar o perfil de eSIM. Para obter axuda, ponte en contacto co teu operador.</translation>
 <translation id="6311220991371174222">Non se pode iniciar Chrome porque se produciu un erro ao abrir o perfil. Proba a reiniciar Chrome.</translation>
-<translation id="6311708879134408222">Podes tentalo de novo mañá.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{A Comprobación de seguranza executouse hai 1 día}other{A Comprobación de seguranza executouse hai {NUM_DAYS} días}}</translation>
 <translation id="6312638141433622592">Ofrece a opción de mostrar os artigos no modo de lector sempre que sexa posible</translation>
 <translation id="6313641880021325787">SAÍR DA RV</translation>
@@ -7266,7 +7261,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Desactivar rede móbil</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (incógnito)</translation>
-<translation id="6756059675436942777">Comproba a túa conexión a Internet e téntao de novo.</translation>
 <translation id="6756157672127672536">A aplicación Ficheiros permite acceder rapidamente aos ficheiros que gardases en Google Drive, no almacenamento externo ou no dispositivo Chrome OS.</translation>
 <translation id="6756643207511618722">Motores de fala</translation>
 <translation id="6757431299485455321">Axuda a que outros dispositivos atopen esta zona wifi.</translation>
@@ -7670,7 +7664,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7047059339731138197">Escolle un fondo</translation>
 <translation id="7049293980323620022">Queres conservar o ficheiro?</translation>
 <translation id="7050037487872780845">A configuración da zona wifi non é válida</translation>
-<translation id="7051551856857948729">Ocultar o valor do IBAN</translation>
 <translation id="7052237160939977163">Enviar datos de seguimento de rendemento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
@@ -8556,7 +8549,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7757787379047923882">O texto compartiuse desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Axusta os límites da pantalla</translation>
-<translation id="7760004034676677601">Esta é a páxina de inicio que esperabas?</translation>
 <translation id="7762024824096060040">Non se pode usar esta conta</translation>
 <translation id="7762243782113123335">Vaia, produciuse un erro. Envía un comentario que inclúa "#bruschetta" na descrición. Código de erro: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
@@ -8658,7 +8650,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7828642077514646543">Produciuse un erro: non se puido descodificar o certificado</translation>
 <translation id="7829877209233347340">Pídelle a teu pai ou a túa nai que inicie sesión e che dea permiso para engadir unha conta de centro educativo</translation>
 <translation id="7830833461614351956">Queres copiar <ph name="NUM_OF_FILES" /> ficheiros en <ph name="CLOUD_PROVIDER" /> para abrilos?</translation>
-<translation id="783088158898934992">Idioma da aplicación</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Se Google atopa algún desconto, veralo nesta páxina</translation>
 <translation id="7833720883933317473">As palabras personalizadas gardadas aparecerán aquí</translation>
@@ -9042,6 +9033,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="811994229154425014">Escribir punto ao poñer dous espazos</translation>
 <translation id="8120505434908124087">Instalar perfil de eSIM</translation>
 <translation id="8121750884985440809">Estás emitindo a pantalla</translation>
+<translation id="8122898034710982882">O meu teléfono, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Flor branca e amarela</translation>
 <translation id="8123975449645947908">Desprazarse cara atrás</translation>
 <translation id="8124313775439841391">ONC xestionado</translation>
@@ -9077,6 +9069,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8148760431881541277">Limitar inicio de sesión</translation>
 <translation id="8149564499626272569">Verificar mediante o teléfono cun cable USB</translation>
 <translation id="8149870652370242480">Para poder usar no teléfono os contrasinais gardados, escanea o código QR, descarga Chrome para iOS e inicia sesión na túa Conta de Google.</translation>
+<translation id="8151057139207656239">Detalles de compilación copiados</translation>
 <translation id="815114315010033526">Utilizar código QR</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Non hai ningún ficheiro</translation>
@@ -9863,7 +9856,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="876956356450740926">Utiliza editores, contornos de desenvolvemento integrado e ferramentas para programadores. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Directorio raíz da extensión</translation>
 <translation id="8771300903067484968">Restableceuse o fondo predeterminado da pantalla de inicio.</translation>
-<translation id="8773280816776735812">Mostrar o valor do IBAN</translation>
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Marxe superior</translation>
 <translation id="8775144690796719618">URL non válido</translation>
@@ -10042,6 +10034,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8912810933860534797">Activar a exploración automática</translation>
+<translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8915307125957890427">Fai clic co botón dereito nunha pestana e selecciona Engadir pestana ao grupo e despois selecciona Novo grupo</translation>
 <translation id="8915370057835397490">Cargando suxestión</translation>
 <translation id="8916476537757519021">Submarco de incógnito: <ph name="SUBFRAME_SITE" /></translation>

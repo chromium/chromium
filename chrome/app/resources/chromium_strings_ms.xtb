@@ -69,10 +69,8 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2313870531055795960">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium. Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="2329088755516916767">Apabila dihidupkan, Chromium mempramuat halaman yang menjadikan penyemakan imbas dan carian lebih pantas.</translation>
 <translation id="2343156876103232566">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chromium pada kedua-dua peranti.</translation>
-<translation id="2347108572062610441">Sambungan ini telah menukar halaman yang ditunjukkan apabila anda memulakan Chromium.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2384373936468275798">Chromium OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
-<translation id="2396765026452590966">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar halaman yang ditunjukkan apabila anda memulakan Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 peranti HID telah diakses oleh satu atau beberapa sambungan Chromium}=1{1 peranti HID sedang diakses oleh satu atau beberapa sambungan Chromium}other{# peranti HID sedang diakses oleh satu atau beberapa sambungan Chromium}}</translation>
 <translation id="2401032172288869980">Chromium memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
 <translation id="2440750600860946460">Dengan <ph name="BEGIN_LINK" />alatan daripada Chromium<ph name="END_LINK" />, anda boleh menyemak imbas dengan selamat dan mengekalkan kawalan anda</translation>
@@ -442,7 +440,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jenis data yang digunakan:<ph name="END_BOLD" /> Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chromium pada peranti ini.</translation>
 <translation id="8862326446509486874">Anda tidak mempunyai hak wajar untuk pemasangan peringkat sistem. Cuba jalankan pemasang semula sebagai Pentadbir.</translation>
 <translation id="8880203542552872219">Jika ya, sila edit kata laluan yang disimpan dalam Chromium supaya sepadan dengan kata laluan baharu anda.</translation>
-<translation id="8897323336392112261">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chromium atau mengklik butang Laman Utama.</translation>
 <translation id="8907580949721785412">Chromium cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="8931379085695076764">Chromium dapat menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda dari beberapa minggu yang lalu. Maklumat ini kekal pada peranti anda.</translation>
 <translation id="8941642502866065432">Tidak dapat mengemas kini Chromium</translation>

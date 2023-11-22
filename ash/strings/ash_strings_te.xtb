@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">మీరు తర్వాత ఎప్పుడైనా మైక్ పనితీరును మార్చవచ్చు.</translation>
 <translation id="3659814201068740063">సుమారు <ph name="TIME_LEFT" /> మిగిలింది (<ph name="PERCENTAGE" />%).
 మీ పరికరాన్ని పవర్‌కి కనెక్ట్ చేయండి.</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> అధిక విజిబిలిటీ టోగుల్ చేయండి</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> మేనేజ్ చేయబడిన యూజర్</translation>
 <translation id="3666266999138159418">మీ ఫ్లోటింగ్ విండోను దాచడానికి స్వైప్ చేయండి</translation>
 <translation id="367531336287639526">అడ్రస్ బార్‌కు ఎడమ వైపున ఉన్న మొదటి చిహ్నాన్ని ఎంచుకోండి</translation>
@@ -981,6 +982,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" />న ఎడిట్ చేయబడింది</translation>
 <translation id="4987738733603015246">డెస్క్ 16</translation>
 <translation id="4989163558385430922">అన్నీ చూడండి</translation>
 <translation id="5003993274120026347">తర్వాతి వాక్యం</translation>

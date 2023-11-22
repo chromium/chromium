@@ -646,6 +646,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3659667652322717492">Puoi modificare il comportamento del microfono in qualsiasi momento.</translation>
 <translation id="3659814201068740063">Tempo rimanente: circa <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Collega il dispositivo all'alimentazione.</translation>
+<translation id="3660860940251915011">Attiva/disattiva alta visibilità di <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utente gestito <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Scorri per nascondere la finestra mobile</translation>
 <translation id="367531336287639526">Seleziona la prima icona a sinistra della barra degli indirizzi</translation>
@@ -977,6 +978,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Ultima modifica: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Scrivania 16</translation>
 <translation id="4989163558385430922">Mostra tutto</translation>
 <translation id="5003993274120026347">Frase successiva</translation>
@@ -1680,6 +1682,13 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7893503627044934815">Non voglio che venga mostrato questo file</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Hai premuto la scorciatoia da tastiera per la rotazione dello schermo. Vuoi ruotare lo schermo?</translation>
+<translation id="7897626842031123113">Barra di stato, ora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Scambia le finestre</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tocca il sensore di impronte digitali</translation>

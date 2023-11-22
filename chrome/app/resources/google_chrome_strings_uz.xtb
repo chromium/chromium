@@ -24,6 +24,7 @@
 <translation id="139993653570221430">Fikringiz oʻzgarsa, buni istalgan vaqt Chrome sozlamalari orqali oʻzgartirish mumkin. Sinovlar rejadagi reklama bilan bir vaqtda chiqadi, shu sababli oʻzgarishlar darhol koʻrinmaydi.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi.}=1{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. Inkognito oynalar qayta ochilmaydi.}other{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1434626383986940139">Chrome Canary ilovalari</translation>
+<translation id="146866447420868597">Chrome hisobiga kirasizmi?</translation>
 <translation id="1492280395845991349">Chrome yangilanishini yakunlash uchun qayta oching</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Yangi Chrome profilini moslash</translation>
@@ -107,7 +108,6 @@
 <translation id="2649768380733403658">Chrome brauzer sozlamalari xavfsiz ekanini muntazam tekshiradi. Biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qilamiz.</translation>
 <translation id="2652691236519827073">Havolani yangi &amp;varaqda ochish</translation>
 <translation id="2665296953892887393">Google‘ga ishdan chiqishlar hisoboti va <ph name="UMA_LINK" />‘ni jo‘natib Google Chrome yaxshilanishiga yordam berish.</translation>
-<translation id="2689103672227170538">Bu kengaytma Chrome ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
 <translation id="2712234843277364121">Yangilash uchun qayta oching - joriy varaqlar tiklanadi</translation>
 <translation id="2738871930057338499">Internetga ulanmadi. HTTP 403, taqiqlangan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="2742320827292110288">Diqqat: Google Chrome kengaytmalar kezish tarixini yozib olishiga to‘sqinlik qilolmaydi. Bu kengaytmani inkognito rejimida o‘chirish uchun ushbu parametrdan belgini olib tashlang.</translation>
@@ -177,7 +177,6 @@
 <translation id="3703994572283698466">ChromeOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="3716540481907974026">ChromeOS Flex versiyasi</translation>
 <translation id="3718181793972440140">Bu qurilmadagi 1 elementni tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
-<translation id="3735758079232443276">“<ph name="EXTENSION_NAME" />” kengaytmasi Chrome ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
 <translation id="3744202345691150878">ChromeOS yordam markazi</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Hisobga kirishdagi xatolik sababli ChromeOS Flex maʼlumotlarni sinxronlay olmadi.</translation>
@@ -474,7 +473,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8823341990149967727">Chrome versiyasi eskirdi</translation>
 <translation id="8825634023950448068">Maxfiylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan qiziqishlarni avtomatik oʻchiramiz. Sahifalar takroriy ochilganida qiziqish roʻyxatda yana chiqishi mumkin. Chrome foydalanmasligi va tegishli reklama chiqmasligi uchun qiziqishni olib tashlash mumkin.</translation>
 <translation id="8834965163890861871">Google Chrome parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
-<translation id="884296878221830158">Bundan tashqari kengaytma Chrome ochilganida yoki Bosh sahifa tugmasi bosilganida qaysi sahifa ko‘rsatilishini nazorat qiladi.</translation>
 <translation id="8862326446509486874">Sizda tizim darajasida o‘rnatish uchun yetarli ruxsatlar yo‘q. O‘rnatish dasturini administrator nomidan qayta ishga tushiring.</translation>
 <translation id="8914504000324227558">Chrome’ni qayta ishga tushiring</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>

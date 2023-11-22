@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਾਈਕ ਦੇ ਵਿਹਾਰ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3659814201068740063">ਲਗਭਗ <ph name="TIME_LEFT" /> ਬਾਰੇ (<ph name="PERCENTAGE" />%)।
 ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
+<translation id="3660860940251915011">ਉੱਚ ਦਿਖਣਯੋਗਤਾ <ph name="FEATURE_NAME" /> ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ਪ੍ਰਬੰਧਿਤ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="3666266999138159418">ਆਪਣੀ ਫਲੋਟਿੰਗ ਵਿੰਡੋ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="367531336287639526">ਪਤਾ ਬਾਰ ਦੇ ਖੱਬੇ ਪਾਸੇ ਵਾਲੇ ਪਹਿਲੇ ਪ੍ਰਤੀਕ ਨੂੰ ਚੁਣੋ</translation>
@@ -981,6 +982,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> ਨੂੰ ਸੋਧਿਆ ਗਿਆ</translation>
 <translation id="4987738733603015246">ਡੈਸਕ 16</translation>
 <translation id="4989163558385430922">ਸਭ ਦੇਖੋ</translation>
 <translation id="5003993274120026347">ਅਗਲਾ ਵਾਕ</translation>
@@ -1684,6 +1686,13 @@
 <translation id="7893503627044934815">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਦਿਸਣ ਨਹੀਂ ਦੇਣਾ ਚਾਹੁੰਦੇ</translation>
 <translation id="7895348134893321514">ਟੋਟ</translation>
 <translation id="7897375687985782769">ਤੁਸੀਂ ਸਕ੍ਰੀਨ ਘੁਮਾਉਣ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਸਕ੍ਰੀਨ ਘੁਮਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="7897626842031123113">ਸਥਿਤੀ ਟ੍ਰੇਅ, ਸਮਾਂ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">ਵਿੰਡੋਆਂ ਨੂੰ ਸਵੈਪ ਕਰੋ</translation>
 <translation id="7901405293566323524">ਫ਼ੋਨ ਹੱਬ</translation>
 <translation id="7902625623987030061">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>

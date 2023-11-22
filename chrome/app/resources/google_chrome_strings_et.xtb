@@ -24,6 +24,7 @@
 <translation id="139993653570221430">Chrome'i seadetes saate oma valikuid alati muuta. Prooviversioone käitatakse kõrvuti praeguse reklaamide esitamise viisiga, seega ei näe te kohe muutusi.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti.}=1{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti. Teie inkognito akent ei avata uuesti.}other{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary rakendused</translation>
+<translation id="146866447420868597">Kas logida Chrome'i sisse?</translation>
 <translation id="1492280395845991349">Chrome'i värskendamise lõpuleviimiseks käivitage uuesti</translation>
 <translation id="1497802159252041924">Installimisviga: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Kohandage oma uut Chrome'i profiili</translation>
@@ -107,7 +108,6 @@
 <translation id="2649768380733403658">Chrome kontrollib regulaarselt, kas teie brauseril on kõige turvalisemad seaded. Anname teile teada, kui midagi tuleb üle vaadata.</translation>
 <translation id="2652691236519827073">Ava link Chrome'i uuel &amp;vahelehel</translation>
 <translation id="2665296953892887393">Aidake Google Chrome'i täiustada, saates Google'ile krahhiaruandeid ja lingi <ph name="UMA_LINK" /></translation>
-<translation id="2689103672227170538">See laiendus muutis seda, milline leht kuvatakse Chrome'i käivitamisel.</translation>
 <translation id="2712234843277364121">Värskendamiseks käivitage uuesti – teie vahelehed avanevad uuesti</translation>
 <translation id="2738871930057338499">Internetiga ei õnnestu ühendust luua. HTTP 403 on keelatud. Kontrollige puhverserveri seadistust.</translation>
 <translation id="2742320827292110288">Hoiatus: Google Chrome ei saa laiendustel teie sirvimisajaloo salvestamist takistada. Selle laienduse keelamiseks inkognito režiimis tühistage see valik.</translation>
@@ -177,7 +177,6 @@
 <translation id="3703994572283698466">Chrome OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flexi versioon</translation>
 <translation id="3718181793972440140">See kustutab seadmest ühe üksuse. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Laiendus „<ph name="EXTENSION_NAME" />” muutis seda, milline leht kuvatakse Chrome'i käivitamisel.</translation>
 <translation id="3744202345691150878">Chrome OS-i puhul abi hankimine</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex ei saanud sisselogimisvea tõttu teie andmeid sünkroonida.</translation>
@@ -472,7 +471,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8823341990149967727">Chrome on aegunud</translation>
 <translation id="8825634023950448068">Teie privaatsuse kaitsmiseks kustutame automaatselt teie huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Kui Chrome eksib või te ei soovi teatud reklaame näha, võite huvisid eemaldada.</translation>
 <translation id="8834965163890861871">Google Chrome proovib muuta paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
-<translation id="884296878221830158">Lisaks juhib see Chrome'i käivitamise lehte või avalehe nupu  klõpsamist.</translation>
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8922193594870374009">Numbri saatmiseks asukohast <ph name="ORIGIN" /> Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>

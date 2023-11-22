@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">Змяніць налады, звязаныя з мікрафонам, можна ў любы час.</translation>
 <translation id="3659814201068740063">Засталося каля <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Падключыце прыладу да сілкавання.</translation>
+<translation id="3660860940251915011">Уключыць/выключыць высокую бачнасць для функцыі "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, карыстальнік пад кіраваннем</translation>
 <translation id="3666266999138159418">Каб схаваць плаваючае акно, правядзіце пальцам</translation>
 <translation id="367531336287639526">Выбраць першы значок злева ад адраснага радка</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Зменена <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Працоўны стол 16</translation>
 <translation id="4989163558385430922">Паказаць усе</translation>
 <translation id="5003993274120026347">Наступны сказ</translation>
@@ -1683,6 +1685,13 @@
 <translation id="7893503627044934815">Не паказваць гэты файл</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Вы націснулі спалучэнне клавіш для павароту экрана. Павярнуць экран?</translation>
+<translation id="7897626842031123113">Панэль стану, час <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Памяняць вокны</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Дакраніцеся да сканера адбіткаў пальцаў</translation>

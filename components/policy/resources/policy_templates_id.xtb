@@ -36,6 +36,17 @@
 <translation id="1020006815010587263">Sampah dinonaktifkan untuk pengguna.</translation>
 <translation id="1021462144002396313">Kebijakan <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID ekstensi yang tidak diizinkan dipasang pengguna (atau * untuk semua)</translation>
+<translation id="1023465280109914543">Jika kebijakan ini Diaktifkan, pelaporan anonim terkait data penggunaan dan data terkait error <ph name="PRODUCT_NAME" /> ke Google direkomendasikan untuk diaktifkan secara default. Pengguna tetap dapat mengubah setelan ini.
+
+Jika kebijakan ini Dinonaktifkan, pelaporan anonim akan dinonaktifkan dan tidak ada data penggunaan atau data terkait error yang akan dikirim ke Google. Pengguna tidak akan dapat mengubah setelan ini.
+
+Jika kebijakan ini tidak disetel, pengguna dapat memilih perilaku pelaporan anonim saat penginstalan atau pertama kali dijalankan, dan dapat mengubah setelan ini nanti.
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+(Untuk <ph name="PRODUCT_OS_NAME" />, lihat <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)</translation>
 <translation id="102492767056134033">Menyetel status default keyboard di layar di layar masuk</translation>
 <translation id="1026335125982730097">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menyetel cookie.
 

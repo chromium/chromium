@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">图片解码器</translation>
 <translation id="1785415724048343560">建议勾选此选项以获得最佳体验</translation>
 <translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
-<translation id="187227595286001730">相关网站能查看您在该群组中的活动记录</translation>
 <translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="1915307458270490472">中止</translation>
 <translation id="1919950603503897840">选择联系人</translation>
@@ -63,7 +62,6 @@
 <translation id="2182457891543959921">需先询问，得到许可后才允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置（推荐）</translation>
 <translation id="2185965788978862351">此操作会删除网站或其在主屏幕中安装的应用所存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
 <translation id="2194856509914051091">注意事项</translation>
-<translation id="2212565012507486665">允许使用 Cookie</translation>
 <translation id="2228071138934252756">若要允许 <ph name="APP_NAME" /> 使用您的摄像头，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2238944249568001759">根据您上次浏览的标签页建议的搜索</translation>
@@ -104,7 +102,6 @@
 <translation id="2677748264148917807">离开</translation>
 <translation id="2678468611080193228">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
 <translation id="2683434792633810741">删除并重置？</translation>
-<translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
@@ -156,7 +153,6 @@
 <translation id="3586500876634962664">正在使用摄像头和麦克风</translation>
 <translation id="358794129225322306">允许网站自动下载多个文件。</translation>
 <translation id="3594780231884063836">将视频静音</translation>
-<translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3600792891314830896">将播放声音的网站静音</translation>
 <translation id="3602290021589620013">预览</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
@@ -184,7 +180,6 @@
 <translation id="3991845972263764475">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，总大小不明</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="4002066346123236978">标题</translation>
-<translation id="4008040567710660924">允许特定网站使用 Cookie。</translation>
 <translation id="4046123991198612571">下一曲</translation>
 <translation id="4149890623864272035">确定要删除所有本地数据（包括 Cookie）并重置此网站的所有权限吗？</translation>
 <translation id="4149994727733219643">使用简化版视图查看网页</translation>
@@ -225,7 +220,6 @@
 <translation id="4883854917563148705">无法重置受管理的设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟现实设备和数据（推荐）</translation>
 <translation id="4953688446973710931">开启此设置后，网站可以请求自动下载多个文件。关闭此设置后，网站无法自动下载多个文件。</translation>
-<translation id="4955223779495905865">您访问的网站可以嵌入其他网站的内容，例如图片、广告和文字。其中任何网站都可以保存 Cookie 和其他数据来为您提供个性化体验。</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
@@ -426,7 +420,6 @@
 <translation id="8117244575099414087">开启此设置后，网站可以使用设备的传感器。关闭此设置后，网站无法使用传感器。</translation>
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8131740175452115882">确认</translation>
-<translation id="8154912474061769055">很多网站上的功能可能无法正常运行</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="8186479265534291036">网站无法正常运行？这是因为第三方 Cookie 已被屏蔽</translation>
 <translation id="8197286292360124385">已授予“<ph name="PERMISSION_1" />”权限</translation>
@@ -440,7 +433,6 @@
 <translation id="8324158725704657629">别再询问</translation>
 <translation id="8362795839483915693">您可以放大或缩小所访问网站的内容</translation>
 <translation id="8372893542064058268">允许特定网站进行后台同步。</translation>
-<translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
 <translation id="83792324527827022">有一个网站正在使用您的摄像头和麦克风</translation>
 <translation id="8380167699614421159">此网站会展示侵扰性或误导性广告</translation>
 <translation id="8394832520002899662">点按即可返回到网站</translation>
@@ -488,7 +480,6 @@
 <translation id="8926666909099850184">此设备的 NFC 功能处于关闭状态。请在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启此功能。</translation>
 <translation id="8928445016601307354">禁止网站查看和更改 NFC 设备上的信息</translation>
 <translation id="8944485226638699751">受限</translation>
-<translation id="8958424370300090006">阻止特定网站使用 Cookie。</translation>
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8990043154272859344">您将会从所有网站上自动退出账号</translation>

@@ -71,10 +71,8 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2313870531055795960">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chromium. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chromium ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
 <translation id="2329088755516916767">Als deze instelling aanstaat, worden pagina's vooraf geladen door Chromium, zodat je sneller kunt browsen en zoeken.</translation>
 <translation id="2343156876103232566">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chromium op beide apparaten.</translation>
-<translation id="2347108572062610441">Deze extensie heeft gewijzigd welke pagina wordt getoond wanneer je Chromium start.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2384373936468275798">Chromium OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
-<translation id="2396765026452590966">De extensie <ph name="EXTENSION_NAME" /> heeft gewijzigd welke pagina je ziet als je Chromium start.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Een of meer Chromium-extensies hebben toegang gekregen tot 1 HID-apparaat}=1{Een of meer Chromium-extensies hebben toegang tot 1 HID-apparaat}other{Een of meer Chromium-extensies hebben toegang tot # HID-apparaten}}</translation>
 <translation id="2401032172288869980">Chromium heeft camera- en microfoonrechten nodig voor deze site</translation>
 <translation id="2440750600860946460">Met <ph name="BEGIN_LINK" />tools van Chromium<ph name="END_LINK" /> kun je beveiligd browsen en de controle behouden</translation>
@@ -443,7 +441,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je browsegeschiedenis, een lijst van de sites die je via Chromium op dit apparaat hebt bezocht.</translation>
 <translation id="8862326446509486874">Je hebt geen rechten om op systeemniveau te installeren. Meld je aan als beheerder en voer het installatieprogramma opnieuw uit.</translation>
 <translation id="8880203542552872219">Als dit het geval is, bewerk je het opgeslagen wachtwoord in Chromium, zodat het overeenkomt met je nieuwe wachtwoord.</translation>
-<translation id="8897323336392112261">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chromium start of op de Homepage-knop klikt.</translation>
 <translation id="8907580949721785412">Chromium probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8931379085695076764">Chromium kan een schatting van je interesses maken op basis van je browsegeschiedenis van de afgelopen weken. Deze informatie blijft op je apparaat staan.</translation>
 <translation id="8941642502866065432">Kan Chromium niet updaten</translation>

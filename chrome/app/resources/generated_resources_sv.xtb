@@ -4062,7 +4062,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4124935795427217608">Enhörning</translation>
 <translation id="412730574613779332">Superhjälte</translation>
 <translation id="4130199216115862831">Enhetslogg</translation>
-<translation id="4130207949184424187">Det här tillägget har ändrat vilken sida som visas när du söker i adressfältet.</translation>
 <translation id="4130750466177569591">Jag godkänner</translation>
 <translation id="413121957363593859">Komponenter</translation>
 <translation id="4131283654370308898">Tillåt <ph name="EXTENSION_NAME" /> på den här webbplatsen</translation>
@@ -5569,7 +5568,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
 <translation id="5355498626146154079">Du måste aktivera flaggan Borealis Enabled</translation>
 <translation id="5355501370336370394">Registrera företagsenhet</translation>
-<translation id="5355926466126177564">Tillägget <ph name="EXTENSION_NAME" /> har ändrat vilken sida som visas när du söker i adressfältet.</translation>
 <translation id="5356155057455921522">Den här uppdateringen från administratören gör att det går snabbare att öppna organisationens appar. Det kan ta några minuter.</translation>
 <translation id="5359910752122114278">1 resultat</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> flik</translation>
@@ -5911,7 +5909,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5624120631404540903">Hantera lösenord</translation>
 <translation id="5625225435499354052">Redigera i Google Pay</translation>
 <translation id="5626134646977739690">Namn:</translation>
-<translation id="5627086634964711283">Det styr också vilken sida som visas när du klickar på hemknappen.</translation>
 <translation id="5627832140542566187">Skärmriktning</translation>
 <translation id="5628434207686266338">Ange lösenord för enheten</translation>
 <translation id="562935524653278697">Administratören har inaktiverat synkronisering av bokmärken, historik, lösenord och andra inställningar.</translation>
@@ -6315,14 +6312,12 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">En webbplats vill öppna den här appen.</translation>
 <translation id="5955809630138889698">Demoläget kanske bara kan användas online på den här enheten. Kontakta supporten om du vill veta mer.</translation>
-<translation id="5956585768868398362">Är det här den söksida du väntade dig?</translation>
 <translation id="5957987129450536192">Tryck på textuppläsningsikonen nära profilbilden och markera sedan det som du vill få uppläst.</translation>
 <translation id="5959471481388474538">Nätverket är inte tillgängligt</translation>
 <translation id="5963413905009737549">Avsnitt</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> som mest)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Öppna alla i ett &amp;nytt fönster}=1{Öppna i &amp;nytt fönster}other{Öppna alla ({COUNT}) i ett &amp;nytt fönster}}</translation>
 <translation id="5964247741333118902">Inbäddat innehåll</translation>
-<translation id="5965661248935608907">Det styr också vilken sida som visas när du klickar på hemknappen eller söker i adressfältet.</translation>
 <translation id="5966511985653515929">Webbplatsdata raderas från enheten när du stänger alla fönster</translation>
 <translation id="5968022600320704045">Inga sökresultat</translation>
 <translation id="5969364029958154283">Läs mer om hur du återställer inställningarna</translation>
@@ -6759,7 +6754,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6309510305002439352">Mikrofon har inaktiverats</translation>
 <translation id="6310141306111263820">Det gick inte att installera eSIM-profilen. Kontakta operatören och be om hjälp.</translation>
 <translation id="6311220991371174222">Det gick inte att starta Chrome eftersom något gick snett när profilen skulle öppnas. Testa att starta om Chrome.</translation>
-<translation id="6311708879134408222">Du kan försöka igen i morgon.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Säkerhetskontrollen kördes för 1 dag sedan}other{Säkerhetskontrollen kördes för {NUM_DAYS} dagar sedan}}</translation>
 <translation id="6312638141433622592">Erbjud att visa artiklar i läsläge när det stöds</translation>
 <translation id="6313641880021325787">AVSLUTA VR-LÄGET</translation>
@@ -7284,7 +7278,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6749473226660745022">Foton</translation>
 <translation id="6750757184909117990">Inaktivera mobilnätverk</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
-<translation id="6756059675436942777">Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="6756157672127672536">Med appen Filer kommer du snabbt åt filer som du har sparat på Google Drive, externa lagringsenheter eller din Chrome OS-enhet.</translation>
 <translation id="6756643207511618722">Talmotorer</translation>
 <translation id="6757431299485455321">Hjälp andra enheter att hitta surfzonen.</translation>
@@ -7689,7 +7682,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7047059339731138197">Välj bakgrund</translation>
 <translation id="7049293980323620022">Vill du behålla filen?</translation>
 <translation id="7050037487872780845">Ogiltig surfzonskonfiguration</translation>
-<translation id="7051551856857948729">Dölj IBAN-värde</translation>
 <translation id="7052237160939977163">Skicka data från resultatspårning</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
@@ -8575,7 +8567,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7757787379047923882">Texten delades från <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Justera skärmens avgränsning</translation>
-<translation id="7760004034676677601">Är det här den startsida du väntade dig?</translation>
 <translation id="7762024824096060040">Det här kontot kan inte användas</translation>
 <translation id="7762243782113123335">Något gick fel. Skicka feedback och ange #bruschetta i beskrivningen. Felkoden är <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
@@ -8677,7 +8668,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7828642077514646543">Fel: Det gick inte att avkoda certifikatet</translation>
 <translation id="7829877209233347340">Be en förälder att logga in och ge behörighet att lägga till ett skolkonto</translation>
 <translation id="7830833461614351956">Vill du kopiera <ph name="NUM_OF_FILES" /> filer till <ph name="CLOUD_PROVIDER" /> och öppna dem?</translation>
-<translation id="783088158898934992">Appspråk</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Om Google hittar en rabatt visas den på denna sida</translation>
 <translation id="7833720883933317473">Sparade anpassade ord visas här</translation>
@@ -9885,7 +9875,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="876956356450740926">Kör utvecklarverktyg, IDE:er och redigerare. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Tilläggets rotkatalog</translation>
 <translation id="8771300903067484968">Startsidans bakgrund har återställts till standardbakgrunden.</translation>
-<translation id="8773280816776735812">Visa IBAN-värde</translation>
 <translation id="8774379074441005279">Bekräfta återställning</translation>
 <translation id="8774934320277480003">Övre marginal</translation>
 <translation id="8775144690796719618">Ogiltig webbadress</translation>
@@ -10064,6 +10053,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8910987510378294980">Dölj enhetslista</translation>
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8912810933860534797">Aktivera automatisk genomsökning</translation>
+<translation id="8914504000324227558">Starta om Chrome</translation>
 <translation id="8915307125957890427">Högerklicka på en flik och välj Lägg till fliken i gruppen, och välj sedan Ny grupp</translation>
 <translation id="8915370057835397490">Läser in förslag</translation>
 <translation id="8916476537757519021">Underram i inkognitoläge: <ph name="SUBFRAME_SITE" /></translation>

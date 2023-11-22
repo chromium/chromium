@@ -1683,6 +1683,13 @@ Mới cài đặt</translation>
 <translation id="7893503627044934815">Không muốn hiện tệp này</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Bạn đã nhấn phím tắt để xoay màn hình. Bạn có muốn xoay màn hình không?</translation>
+<translation id="7897626842031123113">Khay trạng thái, thời gian <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Hoán đổi cửa sổ</translation>
 <translation id="7901405293566323524">Trung tâm điều khiển điện thoại</translation>
 <translation id="7902625623987030061">Chạm vào cảm biến vân tay</translation>

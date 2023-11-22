@@ -3,6 +3,8 @@
 <translationbundle lang="zh-TW">
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1921351128855867012">快轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
+<translation id="1984328900355667246">無法播放</translation>
+<translation id="3023502830214299618">很抱歉，目前無法播放這個頁面。請稍後再試。</translation>
 <translation id="3807208219231826020">拖曳播放</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="4431240646217225907">醒目顯示文字並自動捲動</translation>

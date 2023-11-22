@@ -1683,6 +1683,13 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7893503627044934815">Nevēlos, lai šis fails tiktu rādīts</translation>
 <translation id="7895348134893321514">Starpliktuve</translation>
 <translation id="7897375687985782769">Jūs nospiedāt ekrāna pagriešanas īsinājumtaustiņu. Vai vēlaties pagriezt ekrānu?</translation>
+<translation id="7897626842031123113">Statusa josla, plkst. <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Apmainīt logus vietām</translation>
 <translation id="7901405293566323524">Tālruņu centrāle</translation>
 <translation id="7902625623987030061">Pieskarieties pirksta nospieduma sensoram</translation>

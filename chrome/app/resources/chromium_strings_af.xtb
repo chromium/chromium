@@ -71,10 +71,8 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2313870531055795960">Vergelyk URL'e met 'n lys onveilige werwe wat in Chromium geberg is. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="2329088755516916767">Wanneer dit aan is, laai Chromium bladsye vooraf wat blaai en soek vinniger maak.</translation>
 <translation id="2343156876103232566">Meld op albei toestelle by Chromium aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
-<translation id="2347108572062610441">Hierdie uitbreiding het verander watter bladsy gewys word wanneer jy Chromium begin.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2384373936468275798">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
-<translation id="2396765026452590966">Die uitbreiding "<ph name="EXTENSION_NAME" />" het verander watter bladsy gewys word wanneer jy Chromium begin.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Een of meer Chromium-uitbreidings het toegang tot 1 MKT-toestel gehad}=1{Een of meer Chromium-uitbreidings het tans toegang tot 1 MKT-toestel}other{Een of meer Chromium-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="2401032172288869980">Chromium het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
 <translation id="2440750600860946460">Met <ph name="BEGIN_LINK" />nutsgoed van Chromium<ph name="END_LINK" /> kan jy veilig blaai en in beheer bly</translation>
@@ -444,7 +442,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Watter data gebruik word:<ph name="END_BOLD" /> Jou blaaigeskiedenis, ’n rekord van werwe wat jy besoek het deur Chromium op hierdie toestel te gebruik.</translation>
 <translation id="8862326446509486874">Jy het nie die gepaste regte vir stelselvlak-installering nie. Probeer om die installeerder weer te laat loop as Administrateur.</translation>
 <translation id="8880203542552872219">Indien wel moet jy asseblief jou gestoorde wagwoord in Chromium wysig sodat dit met jou nuwe wagwoord ooreenstem.</translation>
-<translation id="8897323336392112261">Dit beheer ook watter bladsy gewys word wanneer jy Chromium begin of die Tuisknoppie kies.</translation>
 <translation id="8907580949721785412">Chromium probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8931379085695076764">Chromium kan jou belangstellings op grond van jou blaaigeskiedenis die afgelope paar weke skat. Hierdie inligting bly op jou toestel.</translation>
 <translation id="8941642502866065432">Kan nie Chromium opdateer nie</translation>

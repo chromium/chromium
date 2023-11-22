@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">Μπορείτε όποτε επιθυμείτε να αλλάξετε τη συμπεριφορά του μικροφώνου σε μεταγενέστερο χρόνο.</translation>
 <translation id="3659814201068740063">Απομένουν περίπου <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
+<translation id="3660860940251915011">Εναλλαγή υψηλής ορατότητας στη λειτουργία <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Διαχειριζόμενος χρήστης</translation>
 <translation id="3666266999138159418">Σύρετε για απόκρυψη του κινούμενου παραθύρου</translation>
 <translation id="367531336287639526">Επιλογή πρώτου εικονιδίου στα αριστερά της γραμμής διευθύνσεων</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Τροποποιήθηκε στις <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Γραφείο 16</translation>
 <translation id="4989163558385430922">Εμφάνιση όλων</translation>
 <translation id="5003993274120026347">Επόμενη πρόταση</translation>
@@ -1440,6 +1442,7 @@
 <translation id="6827049576281411231">Κλείσιμο πλαισίου συμβάντων</translation>
 <translation id="6831561626108366035">Μεταβείτε στο κουμπί <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Επικίνδυνο αρχείο</translation>
+<translation id="6837621009301897464">Για να τραβήξετε ένα στιγμιότυπο οθόνης, πατήστε</translation>
 <translation id="6852052252232534364">Κλικ για ενεργ.</translation>
 <translation id="6855029042976311970">Έγινε επεξεργασία μόλις τώρα</translation>
 <translation id="6856708615407876657">Εναλλαγή κατηγοριών αποτελεσμάτων αναζήτησης</translation>
@@ -1683,6 +1686,13 @@
 <translation id="7893503627044934815">Δεν θέλω να εμφανίζεται αυτό το αρχείο</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Πατήσατε τη συντόμευση πληκτρολογίου για την περιστροφή οθόνης. Θέλετε να περιστρέψετε την οθόνη;</translation>
+<translation id="7897626842031123113">Περιοχή κατάστασης, ώρα <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">Εναλλαγή παραθύρων</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Αγγίξτε τον αισθητήρα δακτυλικών αποτυπωμάτων.</translation>

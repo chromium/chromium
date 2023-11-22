@@ -650,6 +650,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3659667652322717492">Poți modifica oricând comportamentul microfonului.</translation>
 <translation id="3659814201068740063">Timp aproximativ rămas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conectează dispozitivul la o sursă de alimentare.</translation>
+<translation id="3660860940251915011">Activează / dezactivează vizibilitatea crescută pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utilizatorul gestionat <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Glisează pentru a ascunde fereastra flotantă</translation>
 <translation id="367531336287639526">Selectează prima pictogramă din stânga barei de adrese</translation>
@@ -980,6 +981,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Ultima modificare: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Biroul 16</translation>
 <translation id="4989163558385430922">Afișează-le pe toate</translation>
 <translation id="5003993274120026347">Propoziția următoare</translation>

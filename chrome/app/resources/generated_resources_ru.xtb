@@ -4049,7 +4049,6 @@
 <translation id="4124935795427217608">Единорог</translation>
 <translation id="412730574613779332">Супергерой</translation>
 <translation id="4130199216115862831">Журнал устройства</translation>
-<translation id="4130207949184424187">Расширение изменило поисковую систему, которая используется по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="4130750466177569591">Принимаю</translation>
 <translation id="413121957363593859">Компоненты</translation>
 <translation id="4131283654370308898">Разрешить расширение "<ph name="EXTENSION_NAME" />" на этом сайте</translation>
@@ -5555,7 +5554,6 @@
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
 <translation id="5355498626146154079">Необходимо включить экспериментальный параметр Borealis Enabled.</translation>
 <translation id="5355501370336370394">Зарегистрировать корпоративное устройство</translation>
-<translation id="5355926466126177564">Расширение "<ph name="EXTENSION_NAME" />" изменило поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="5356155057455921522">После установки предоставленного администратором обновления приложения будут запускаться быстрее. Установка может занять несколько минут.</translation>
 <translation id="5359910752122114278">1 результат</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> вкладка</translation>
@@ -5897,7 +5895,6 @@
 <translation id="5624120631404540903">Настройки паролей</translation>
 <translation id="5625225435499354052">Редактировать в Google Pay</translation>
 <translation id="5626134646977739690">Имя:</translation>
-<translation id="5627086634964711283">Кроме того, расширение изменило страницу, которая отображается при нажатии кнопки "Главная страница".</translation>
 <translation id="5627832140542566187">Ориентация дисплея</translation>
 <translation id="5628434207686266338">Задайте пароль устройства</translation>
 <translation id="562935524653278697">Ваш администратор отключил синхронизацию закладок, истории, паролей и настроек.</translation>
@@ -6301,14 +6298,12 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Один из сайтов собирается открыть это приложение.</translation>
 <translation id="5955809630138889698">Это устройство работает только в демонстрационном офлайн-режиме. Чтобы узнать подробности, обратитесь в службу поддержки.</translation>
-<translation id="5956585768868398362">Другая поисковая система?</translation>
 <translation id="5957987129450536192">Коснитесь значка "Озвучивание при нажатии" рядом с фотографией профиля и выберите текст для прослушивания.</translation>
 <translation id="5959471481388474538">Сеть недоступна</translation>
 <translation id="5963413905009737549">Раздел</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (макс. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>
 <translation id="5964247741333118902">Встроенный контент</translation>
-<translation id="5965661248935608907">Кроме того, расширение изменило страницу, которая отображается при нажатии кнопки "Главная страница", и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="5966511985653515929">Данные сайтов удаляются с устройства при закрытии всех окон</translation>
 <translation id="5968022600320704045">Ничего не найдено.</translation>
 <translation id="5969364029958154283">Подробнее о сбросе настроек</translation>
@@ -6745,7 +6740,6 @@
 <translation id="6309510305002439352">Микрофон отключен</translation>
 <translation id="6310141306111263820">Не удалось установить профиль eSIM. Обратитесь за помощью к своему оператору.</translation>
 <translation id="6311220991371174222">Не удалось открыть профиль. Перезапустите Chrome.</translation>
-<translation id="6311708879134408222">Повторите попытку завтра.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Проверка безопасности выполнена 1 день назад.}one{Проверка безопасности выполнена {NUM_DAYS} день назад.}few{Проверка безопасности выполнена {NUM_DAYS} дня назад.}many{Проверка безопасности выполнена {NUM_DAYS} дней назад.}other{Проверка безопасности выполнена {NUM_DAYS} дня назад.}}</translation>
 <translation id="6312638141433622592">Предлагать просмотр статей в режиме чтения, если эта функция поддерживается</translation>
 <translation id="6313641880021325787">ВЫЙТИ ИЗ VR</translation>
@@ -7276,7 +7270,6 @@
 <translation id="6749473226660745022">Фото</translation>
 <translation id="6750757184909117990">Отключить мобильную сеть</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (инкогнито)</translation>
-<translation id="6756059675436942777">Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="6756157672127672536">С помощью приложения "Файлы" можно быстро открывать документы, сохраненные на Google Диске, внешнем накопителе или устройстве с Chrome OS.</translation>
 <translation id="6756643207511618722">Синтезаторы речи</translation>
 <translation id="6757431299485455321">Помочь другим устройствам найти эту точку доступа</translation>
@@ -7681,7 +7674,6 @@
 <translation id="7047059339731138197">Выберите фон</translation>
 <translation id="7049293980323620022">Сохранить файл?</translation>
 <translation id="7050037487872780845">Неверная конфигурация точки доступа.</translation>
-<translation id="7051551856857948729">Скрыть код IBAN</translation>
 <translation id="7052237160939977163">Отправлять данные отслеживания производительности</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
@@ -8566,7 +8558,6 @@
 <translation id="7757787379047923882">Текст с устройства <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Настройте границы экрана</translation>
-<translation id="7760004034676677601">Другая стартовая страница?</translation>
 <translation id="7762024824096060040">Не удается использовать этот аккаунт</translation>
 <translation id="7762243782113123335">Произошла ошибка. Сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
@@ -8668,7 +8659,6 @@
 <translation id="7828642077514646543">Ошибка: не удалось расшифровать сертификат.</translation>
 <translation id="7829877209233347340">Попросите родителя войти в систему, чтобы дать вам разрешение на добавление учебного аккаунта.</translation>
 <translation id="7830833461614351956">Скопировать файлы (<ph name="NUM_OF_FILES" />) в сервис "<ph name="CLOUD_PROVIDER" />" перед открытием?</translation>
-<translation id="783088158898934992">Язык приложения</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Если скидка будет найдена, она появится на этой странице.</translation>
 <translation id="7833720883933317473">Здесь появятся сохраненные специальные слова</translation>
@@ -9876,7 +9866,6 @@
 <translation id="876956356450740926">Запускайте инструменты разработчика, интегрированные среды разработки и редакторы. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Корневой каталог расширения</translation>
 <translation id="8771300903067484968">Фон стартовой страницы изменен на вариант по умолчанию.</translation>
-<translation id="8773280816776735812">Показать код IBAN</translation>
 <translation id="8774379074441005279">Подтвердите восстановление</translation>
 <translation id="8774934320277480003">Верхнее поле</translation>
 <translation id="8775144690796719618">Недействительный URL</translation>
@@ -10058,6 +10047,7 @@
 <translation id="8910987510378294980">Скрыть список устройств</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8912810933860534797">Включить автосканирование</translation>
+<translation id="8914504000324227558">Перезапустить Chrome</translation>
 <translation id="8915307125957890427">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить вкладку в группу", а затем "Новая группа".</translation>
 <translation id="8915370057835397490">Загрузка подсказки</translation>
 <translation id="8916476537757519021">Субфрейм в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>

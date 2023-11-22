@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Afkóðun mynda</translation>
 <translation id="1785415724048343560">Mælt með fyrir sem besta upplifun</translation>
 <translation id="1818308510395330587">Til að leyfa <ph name="APP_NAME" /> að nota AR þarftu einnig að kveikja á myndavél í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Tengd vefsvæði geta séð virkni þína í hópnum</translation>
 <translation id="1887786770086287077">Slökkt er á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Leggja á</translation>
 <translation id="1919950603503897840">Velja tengiliði</translation>
@@ -63,7 +62,6 @@
 <translation id="2182457891543959921">Spyrja áður en vefsvæðum er leyft að búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar (ráðlagt)</translation>
 <translation id="2185965788978862351">Þetta eyðir <ph name="DATASIZE" /> af gögnum og fótsporum sem vefsvæði og forrit hafa vistað á heimaskjánum.</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
-<translation id="2212565012507486665">Leyfa fótspor</translation>
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="2238944249568001759">Leitartillögur byggðar á síðasta flipa</translation>
@@ -104,7 +102,6 @@
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2678468611080193228">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það skilar minni vernd en eykur líkur á að eiginleikar vefsvæðisins virki</translation>
 <translation id="2683434792633810741">Eyða og endurstilla?</translation>
-<translation id="2687403674020088961">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="2713106313042589954">Slökkva á myndavél</translation>
 <translation id="2717722538473713889">Netföng</translation>
 <translation id="2750481671343847896">Vefsvæði geta nú birt innskráningartilkynningar frá auðkenningarþjónustum.</translation>
@@ -156,7 +153,6 @@
 <translation id="3586500876634962664">Notkun myndavélar og hljóðnema</translation>
 <translation id="358794129225322306">Leyfa vefsvæði að sækja margar skrár sjálfkrafa.</translation>
 <translation id="3594780231884063836">Slökkva á mynd</translation>
-<translation id="3596414637720633074">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="3600792891314830896">Slökkva á hljóði vefsvæða sem spila hljóð</translation>
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3628308229821498208">Leitartillögur</translation>
@@ -184,7 +180,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Um þessa síðu</translation>
 <translation id="4002066346123236978">Heiti</translation>
-<translation id="4008040567710660924">Leyfa fótspor fyrir tiltekið vefsvæði.</translation>
 <translation id="4046123991198612571">Næsta lag</translation>
 <translation id="4149890623864272035">Viltu örugglega eyða öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstilla allar heimildir fyrir þetta vefsvæði?</translation>
 <translation id="4149994727733219643">Einfaldað yfirlit fyrir vefsíður</translation>
@@ -225,7 +220,6 @@
 <translation id="4883854917563148705">Ekki er hægt að endurstilla stýrðar stillingar</translation>
 <translation id="4887024562049524730">Spyrja áður en vefsvæði nota sýndarveruleikatæki og -gögn (ráðlagt)</translation>
 <translation id="4953688446973710931">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að hlaða niður mörgum skrám. Þegar slökkt er á þessu geta vefsvæði ekki hlaðið niður mörgum skrám.</translation>
-<translation id="4955223779495905865">Vefsvæði sem þú skoðar getur fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Öll þessi vefsvæði geta vistað fótspor og önnur vefsvæðagögn til að sérsníða upplifun þína.</translation>
 <translation id="4962975101802056554">Afturkalla allar heimildir fyrir þetta tæki</translation>
 <translation id="497421865427891073">Áfram</translation>
 <translation id="4976702386844183910">Síðast skoðað <ph name="DATE" /></translation>
@@ -426,7 +420,6 @@
 <translation id="8117244575099414087">Þegar kveikt er á þessu geta vefsvæði notað skynjara tækisins þíns. Þegar slökkt er á þessu geta vefsvæði ekki notað skynjara.</translation>
 <translation id="813082847718468539">Skoða upplýsingar um vefsvæði</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
-<translation id="8154912474061769055">Óvíst er að eiginleikar á mörgum vefsvæðum virki</translation>
 <translation id="8168435359814927499">Efni</translation>
 <translation id="8186479265534291036">Virkar vefsvæðið ekki? Lokað fyrir fótspor þriðju aðila</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> leyft</translation>
@@ -440,7 +433,6 @@
 <translation id="8324158725704657629">Ekki spyrja aftur</translation>
 <translation id="8362795839483915693">Þú getur aukið eða minnkað aðdrátt á vefsvæðum sem þú opnar</translation>
 <translation id="8372893542064058268">Leyfa bakgrunnssamstillingu fyrir ákveðið vefsvæði.</translation>
-<translation id="8376384591331888629">Hafa fótspor þriðju aðila á þessu vefsvæði með</translation>
 <translation id="83792324527827022">Vefsvæði er að nota myndavélina þína og hljóðnemann</translation>
 <translation id="8380167699614421159">Þetta vefsvæði sýnir ágengar eða villandi auglýsingar</translation>
 <translation id="8394832520002899662">Ýttu til að fara aftur á vefsvæðið</translation>
@@ -488,7 +480,6 @@
 <translation id="8926666909099850184">Slökkt er á NFC fyrir þetta tæki. Kveiktu á því í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Loka á að vefsvæði sjái og breyti upplýsingum í NFC-tækjum</translation>
 <translation id="8944485226638699751">Takmarkað</translation>
-<translation id="8958424370300090006">Lokaðu á fótspor fyrir tiltekið vefsvæði.</translation>
 <translation id="8959122750345127698">Ekki næst samband: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Gleyma</translation>
 <translation id="8990043154272859344">Þú verður skráð(ur) út af öllum vefsvæðum</translation>

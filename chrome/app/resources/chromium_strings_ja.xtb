@@ -69,10 +69,8 @@
 <translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="2329088755516916767">オンにするとページがプリロードされ、閲覧と検索をすばやく行えるようになります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
-<translation id="2347108572062610441">この拡張機能により、Chromium の起動時に表示されるページが変更されました。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2384373936468275798">アカウントのログイン情報が最新でないため、Chromium OS はデータを同期できませんでした。</translation>
-<translation id="2396765026452590966">拡張機能「<ph name="EXTENSION_NAME" />」により、Chromium の起動時に表示されるページが変更されました。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の HID デバイスにアクセスしています}}</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium のツール<ph name="END_LINK" />を使って、自分で管理しながら安全にブラウジングできます</translation>
@@ -441,7 +439,6 @@
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 閲覧履歴（このデバイスで Chromium を使用してアクセスしたサイトの記録）。</translation>
 <translation id="8862326446509486874">権限が不十分なためシステムレベルのインストールができません。管理者権限でインストールしてください。</translation>
 <translation id="8880203542552872219">その場合は、Chromium に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
-<translation id="8897323336392112261">この拡張機能では、Chromium の起動時、またはホーム ボタンのクリック時に表示されるページも制御されます。</translation>
 <translation id="8907580949721785412">Chromium でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="8931379085695076764">Chromium は、過去数週間の閲覧履歴に基づいてユーザーの興味 / 関心を推定する場合があります。この情報はユーザーのデバイスに保存されます。</translation>
 <translation id="8941642502866065432">Chromium を更新できません</translation>

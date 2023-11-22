@@ -29,6 +29,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
+<translation id="1191518099344003522">APN ເປີດການນຳໃຊ້ຢູ່.</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1195784767091936222">ເປີດໂໝດມືດອັດຕະໂນມັດ</translation>
 <translation id="1196959502276349371">ເວີຊັນ <ph name="VERSION" /></translation>
@@ -81,6 +82,7 @@
 <translation id="1515129336378114413">ໜ້າຫຼັກຂອງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="1526389707933164996">ອະນິເມຊັນພາບພັກໜ້າຈໍ</translation>
 <translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
+<translation id="1539242642795599947">APN ເປັນປະເພດຄ່າເລີ່ມຕົ້ນ ແລະ ການແນບໄຟລ໌.</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
 <translation id="1561927818299383735">ສີຂອງແສງຈາກສາກຫຼັງ</translation>
@@ -440,6 +442,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4333390807948134856">ກົດປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
 <translation id="4354430579665871434">ປຸ່ມ</translation>
+<translation id="4361257691546579041">APN ເປັນປະເພດຄ່າເລີ່ມຕົ້ນ.</translation>
 <translation id="437294888293595148">ຣີເຊັດທາງລັດທັງໝົດ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
@@ -660,6 +663,7 @@
 <translation id="5946538341867151940">ທ່ານຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່ເທື່ອ. ຫາກຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານແນະນຳ APN ແບບກຳນົດເອງ, ໃຫ້ລະບຸຂໍ້ມູນ APN ດັ່ງກ່າວໂດຍເລືອກ "+ APN ໃໝ່"</translation>
 <translation id="5972388717451707488">ອັບເດດລະບົບ</translation>
 <translation id="5984145644188835034">ຮູບພື້ນຫຼັງເລີ່ມຕົ້ນ</translation>
+<translation id="6001235009374883388">APN ເປັນປະເພດການແນບໄຟລ໌.</translation>
 <translation id="6017514345406065928">ສີ​ຂຽວ</translation>
 <translation id="6019566113895157499">ຄີລັດ</translation>
 <translation id="6034694447310538551">ເປີດການນຳໃຊ້ການຣີເຊັດລາຍເດືອນອັດຕະໂນມັດ</translation>
@@ -828,6 +832,7 @@
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7180865173735832675">ກໍານົດເອງ</translation>
 <translation id="7184043045742675738">ຄລິກໃສ່ປຸ່ມໃດກໍໄດ້ເພື່ອປັບແຕ່ງປຸ່ມຂອງທ່ານ. ປ່ຽນຕຳແໜ່ງປຸ່ມດ້ວຍເມົ້າ ຫຼື ປຸ່ມລູກສອນ.</translation>
+<translation id="7212547870105584639">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍໃນ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="725133483556299729">ເລືອກອີເມວ</translation>

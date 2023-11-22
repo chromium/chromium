@@ -107,7 +107,6 @@
 <translation id="2649768380733403658">Chrome tjekker jævnligt, om din browser har de sikreste indstillinger. Vi giver dig besked, hvis der er noget, du skal gennemgå.</translation>
 <translation id="2652691236519827073">Åbn linket i en ny Chrome-&amp;fane</translation>
 <translation id="2665296953892887393">Vær med til at gøre Google Chrome bedre ved at sende fejlrapporter og <ph name="UMA_LINK" /> til Google</translation>
-<translation id="2689103672227170538">Denne udvidelse har ændret din startside i Chrome.</translation>
 <translation id="2712234843277364121">Genstart for at opdatere – dine faner åbnes igen</translation>
 <translation id="2738871930057338499">Der kan ikke oprettes forbindelse til internettet. HTTP 403 (forbudt). Tjek din proxykonfiguration.</translation>
 <translation id="2742320827292110288">Advarsel! Google Chrome kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
@@ -177,7 +176,6 @@
 <translation id="3703994572283698466">ChromeOS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-version</translation>
 <translation id="3718181793972440140">Denne handling sletter ét element på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Udvidelsen "<ph name="EXTENSION_NAME" />" har ændret din startside i Chrome.</translation>
 <translation id="3744202345691150878">Få hjælp til ChromeOS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex kunne ikke synkronisere dine data på grund af en fejl under login.</translation>
@@ -470,7 +468,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8823341990149967727">Chrome er forældet</translation>
 <translation id="8825634023950448068">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Hvis Chrome tager fejl, eller du ikke vil se visse annoncer, kan du fjerne en interesse.</translation>
 <translation id="8834965163890861871">Google Chrome forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
-<translation id="884296878221830158">Den styrer også, hvilken side der vises, når du åbner Chrome eller klikker på knappen Startside.</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>

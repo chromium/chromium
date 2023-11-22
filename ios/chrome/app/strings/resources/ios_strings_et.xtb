@@ -410,6 +410,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3080525922482950719">Saate lehed salvestada, et neid hiljem või võrguühenduseta lugeda</translation>
 <translation id="3081338492074632642">Veenduge, et salvestatav parool ühtiks teie teenuses <ph name="WEBSITE" /> kasutatava parooliga</translation>
 <translation id="3087734570205094154">Alaserv</translation>
+<translation id="3090455602619185166">Sisselogimine hallatud kontoga</translation>
 <translation id="309710370695886264">Teil on 1 korduvalt kasutatud parool. Turvalisuse tagamiseks parandage see kohe.</translation>
 <translation id="3112556859945124369">Märgi …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Vaadake, mida sünkroonida saate<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4004204301268239848">Paroolid salvestatakse teie Google'i kontole, et saaksite neid kasutada mis tahes seadmes.</translation>
 <translation id="4018310736049373830">Halda tegevusi</translation>
+<translation id="4021931095789478915">Lisa ${url} lugemisloendisse</translation>
 <translation id="4038354071007134711">Seadme ükski rakendus ei saa seda faili avada.</translation>
 <translation id="4042870976416480368">Otsi lehelt</translation>
 <translation id="40433179647657191">Looge otselink enda lehe esiletõstetud osale ja jagage seda.</translation>
@@ -1447,6 +1449,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 <translation id="8556590991644167667">{count,plural, =1{Loobusite {count} hoiatusest}other{Loobusite {count} hoiatusest}}</translation>
 <translation id="8558480467877843976">Nüüd saate kasutada Chrome'i iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="8560253818350321773">Sageli kasutatavad üksused kuvatakse eespool.</translation>
+<translation id="8569721750632860947">Millise URL-i soovite oma lugemisloendisse lisada?</translation>
 <translation id="8588404856427128947">Väljas</translation>
 <translation id="8591976964826315682">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="8593565399399144771">Uue vahekaardi saate avada siin.</translation>

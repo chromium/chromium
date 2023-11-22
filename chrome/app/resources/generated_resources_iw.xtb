@@ -2690,6 +2690,7 @@
 <translation id="3021065318976393105">בזמן שימוש בסוללה</translation>
 <translation id="3021066826692793094">פרפר</translation>
 <translation id="3021678814754966447">&amp;הצגת מקור המסגרת</translation>
+<translation id="3021902017511220299">הסריקה נכשלה. לפי הגדרת האדמין, הפעולה הזו חסומה.</translation>
 <translation id="3022361196600037287">‏המכשיר <ph name="DEVICE" /> יוסר מה-Chromebook הזה ולא יישמר בחשבון <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">ההודעה שלך לא ברורה.</translation>
 <translation id="3023464535986383522">הקראה</translation>
@@ -2997,7 +2998,7 @@
 <translation id="3293644607209440645">שליחת הדף הזה</translation>
 <translation id="32939749466444286">‏הקונטיינר של Linux לא הופעל. צריך לנסות שוב.</translation>
 <translation id="3294437725009624529">אורח</translation>
-<translation id="3294686910656423119">סטטיסטיקות שימוש ודוחות קריסה</translation>
+<translation id="3294686910656423119">נתוני שימוש ודוחות קריסה</translation>
 <translation id="3295241308788901889">מתבצעת העברה של כרטיסייה</translation>
 <translation id="3297105622164376095">מורשים להציג בקשות כניסה של צד שלישי</translation>
 <translation id="3297536526040732495">‏כדי להגן עליך בכל האפליקציות של Google, במהלך הכניסה לחשבון, מתבצע קישור זמני של הנתונים האלה לחשבון Google.</translation>
@@ -4061,7 +4062,6 @@
 <translation id="4124935795427217608">חד-קרן</translation>
 <translation id="412730574613779332">סטרץ'</translation>
 <translation id="4130199216115862831">יומן מכשיר</translation>
-<translation id="4130207949184424187">התוסף הזה שינה את הדף שמוצג כשמבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="4130750466177569591">מקובל עליי</translation>
 <translation id="413121957363593859">רכיבים</translation>
 <translation id="4131283654370308898">מתן הרשאה לתוסף <ph name="EXTENSION_NAME" /> באתר הזה</translation>
@@ -5568,7 +5568,6 @@
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="5355498626146154079">‏עליך להפעיל את התכונה הניסיונית Borealis Enabled.</translation>
 <translation id="5355501370336370394">רישום של מכשיר ארגוני</translation>
-<translation id="5355926466126177564">התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג בעת ביצוע חיפוש מסרגל הכתובות.</translation>
 <translation id="5356155057455921522">האפליקציות של הארגון ייפתחו מהר יותר עם העדכון הזה ממנהל המערכת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="5359910752122114278">תוצאה אחת</translation>
 <translation id="5359944933953785675">כרטיסייה אחת (<ph name="NUM" />)</translation>
@@ -5910,7 +5909,6 @@
 <translation id="5624120631404540903">ניהול סיסמאות</translation>
 <translation id="5625225435499354052">‏עריכה ב-Google Pay</translation>
 <translation id="5626134646977739690">שם:</translation>
-<translation id="5627086634964711283">הגדרה זו גם קובעת איזה דף מוצג כשלוחצים על הלחצן 'דף הבית'.</translation>
 <translation id="5627832140542566187">כיוון המסך</translation>
 <translation id="5628434207686266338">הגדרת סיסמה למכשיר</translation>
 <translation id="562935524653278697">מנהל המערכת השבית את הסנכרון של סימניות, היסטוריה, סיסמאות והגדרות אחרות שלך.</translation>
@@ -6314,14 +6312,12 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">אתר מסוים רוצה לפתוח את האפליקציה הזו.</translation>
 <translation id="5955809630138889698">ייתכן שהמכשיר הזה כשיר רק למצב הדגמה אונליין. אפשר לפנות לנציג התמיכה כדי לקבל פרטים נוספים.</translation>
-<translation id="5956585768868398362">האם זהו דף החיפוש שציפית לראות?</translation>
 <translation id="5957987129450536192">יש להקיש על סמל ההקראה לצד תמונת הפרופיל ואז לבחור בטקסט להקראה.</translation>
 <translation id="5959471481388474538">הרשת לא זמינה</translation>
 <translation id="5963413905009737549">קטע</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (שיא של <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{פתיחת כל הכתובות בחלון &amp;חדש}=1{פתיחה בחלון &amp;חדש}one{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}two{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}other{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}}</translation>
 <translation id="5964247741333118902">תוכן מוטמע</translation>
-<translation id="5965661248935608907">הגדרה זו גם קובעת איזה דף מוצג כשלוחצים על הלחצן 'דף הבית' או מבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="5966511985653515929">נתונים מאתרים נמחקים מהמכשיר לאחר סגירת כל החלונות</translation>
 <translation id="5968022600320704045">אין תוצאות חיפוש</translation>
 <translation id="5969364029958154283">מידע נוסף על איפוס ההגדרות</translation>
@@ -6758,7 +6754,6 @@
 <translation id="6309510305002439352">המיקרופון מושבת</translation>
 <translation id="6310141306111263820">‏לא ניתן היה להתקין את פרופיל ה-eSim. עליך לפנות לספק לקבלת עזרה.</translation>
 <translation id="6311220991371174222">‏לא ניתן להפעיל את Chrome מכיוון שמשהו השתבש בפתיחת הפרופיל שלך. יש לנסות להפעיל מחדש את Chrome.</translation>
-<translation id="6311708879134408222">אפשר לנסות שוב מחר.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{בדיקת הבטיחות פעלה לפני יום אחד}one{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}two{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}other{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}}</translation>
 <translation id="6312638141433622592">המערכת מציעה להציג מאמרים במצב קורא, כשיש תמיכה באפשרות הזו</translation>
 <translation id="6313641880021325787">‏יציאה מ-VR</translation>
@@ -7287,7 +7282,6 @@
 <translation id="6749473226660745022">תמונות</translation>
 <translation id="6750757184909117990">ביטול הרשת הסלולרית</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (גלישה בסתר)</translation>
-<translation id="6756059675436942777">צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="6756157672127672536">‏האפליקציה 'קבצים' מעניקה גישה מהירה לקבצים ששמרת ב-Google Drive, בהתקן אחסון חיצוני או במכשיר שלך עם ChromeOS.</translation>
 <translation id="6756643207511618722">מנועי דיבור</translation>
 <translation id="6757431299485455321">עזרה למכשירים אחרים באיתור הנקודה הזו לשיתוף אינטרנט.</translation>
@@ -7692,7 +7686,6 @@
 <translation id="7047059339731138197">בחירת רקע</translation>
 <translation id="7049293980323620022">להשאיר את הקובץ?</translation>
 <translation id="7050037487872780845">הגדרה לא תקינה של נקודה לשיתוף אינטרנט</translation>
-<translation id="7051551856857948729">‏הסתרת ערך IBAN</translation>
 <translation id="7052237160939977163">שליחת נתוני מעקב אחר ביצועים</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
@@ -8578,7 +8571,6 @@
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">התאמת הגבולות של התצוגה</translation>
-<translation id="7760004034676677601">האם זהו דף הפתיחה שציפית לראות?</translation>
 <translation id="7762024824096060040">לא ניתן להשתמש בחשבון הזה</translation>
 <translation id="7762243782113123335">‏מצטערים, משהו השתבש. יש לשלוח משוב ולציין ‎#bruschetta בתיאור. קוד השגיאה הוא <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
@@ -8679,7 +8671,6 @@
 <translation id="7828642077514646543">שגיאה: לא ניתן לפענח את האישור</translation>
 <translation id="7829877209233347340">צריך לבקש מהורה להיכנס לחשבון כדי לאשר הוספה של חשבון בית ספרי</translation>
 <translation id="7830833461614351956">להעתיק <ph name="NUM_OF_FILES" /> קבצים אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותם?</translation>
-<translation id="783088158898934992">שפת האפליקציה</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">‏אם Google תמצא הנחה, היא תוצג בדף הזה</translation>
 <translation id="7833720883933317473">כאן יופיעו המילים המותאמות ששמרת</translation>
@@ -9066,6 +9057,7 @@
 <translation id="811994229154425014">רווח כפול להקלדת נקודה</translation>
 <translation id="8120505434908124087">‏התקנת פרופיל eSim</translation>
 <translation id="8121750884985440809">‏מתבצעת העברה (cast) של המסך</translation>
+<translation id="8122898034710982882">‏Phone Hub,‏ <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">פרח צהוב ולבן</translation>
 <translation id="8123975449645947908">גלילה אחורה</translation>
 <translation id="8124313775439841391">‏ONC מנוהל</translation>
@@ -9101,6 +9093,7 @@
 <translation id="8148760431881541277">הגבלת כניסה</translation>
 <translation id="8149564499626272569">‏אימות באמצעות הטלפון עם כבל USB</translation>
 <translation id="8149870652370242480">‏כדי להשתמש בטלפון בסיסמאות השמורות, סורקים את קוד ה-QR, מורידים את Chrome ל-iOS ונכנסים לחשבון Google.</translation>
+<translation id="8151057139207656239">‏פרטי ה-build הועתקו</translation>
 <translation id="815114315010033526">‏שימוש בקוד QR במקום זאת</translation>
 <translation id="8151638057146502721">הגדרה</translation>
 <translation id="8154790740888707867">אין קובץ</translation>
@@ -9887,7 +9880,6 @@
 <translation id="876956356450740926">‏הפעלת כלים, סביבות פיתוח משולבות (IDE) ועורכים. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ספריית הבסיס של תוסף</translation>
 <translation id="8771300903067484968">רקע דף הפתיחה עבר איפוס לרקע ברירת המחדל.</translation>
-<translation id="8773280816776735812">‏הצגת ערך IBAN</translation>
 <translation id="8774379074441005279">אישור השחזור</translation>
 <translation id="8774934320277480003">שוליים עליונים</translation>
 <translation id="8775144690796719618">כתובת אתר לא חוקית</translation>
@@ -10068,6 +10060,7 @@
 <translation id="8910987510378294980">הסתרת רשימת המכשירים</translation>
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8912810933860534797">הפעלת סריקה אוטומטית</translation>
+<translation id="8914504000324227558">‏הפעלה מחדש של Chrome</translation>
 <translation id="8915307125957890427">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה' ואז באפשרות 'קבוצה חדשה'</translation>
 <translation id="8915370057835397490">טעינת ההצעה מתבצעת...</translation>
 <translation id="8916476537757519021">תת-מסגרת למצב אנונימי: <ph name="SUBFRAME_SITE" /></translation>

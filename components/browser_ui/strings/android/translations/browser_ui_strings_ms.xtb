@@ -41,7 +41,6 @@
 <translation id="1779089405699405702">Penyahkod imej</translation>
 <translation id="1785415724048343560">Disyorkan untuk pengalaman terbaik</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Laman berkaitan boleh melihat aktiviti anda dalam kumpulan</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1919950603503897840">Pilih kenalan</translation>
@@ -64,7 +63,6 @@
 <translation id="2182457891543959921">Tanya sebelum membenarkan tapak membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera (disyorkan)</translation>
 <translation id="2185965788978862351">Tindakan ini akan memadamkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh laman atau apl pada Skrin utama anda.</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
-<translation id="2212565012507486665">Benarkan kuki</translation>
 <translation id="2228071138934252756">Untuk membolehkan <ph name="APP_NAME" /> mengakses kamera anda, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
 <translation id="2238944249568001759">Carian cadangan berdasarkan tab terakhir anda</translation>
@@ -105,7 +103,6 @@
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2678468611080193228">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
 <translation id="2683434792633810741">Padam &amp; tetapkan semula?</translation>
-<translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
 <translation id="2750481671343847896">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti.</translation>
@@ -157,7 +154,6 @@
 <translation id="3586500876634962664">Penggunaan kamera dan mikrofon</translation>
 <translation id="358794129225322306">Benarkan tapak memuat turun berbilang fail secara automatik.</translation>
 <translation id="3594780231884063836">Redam video</translation>
-<translation id="3596414637720633074">Sekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3628308229821498208">Carian cadangan</translation>
@@ -185,7 +181,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Perihal halaman ini</translation>
 <translation id="4002066346123236978">Tajuk</translation>
-<translation id="4008040567710660924">Benarkan kuki untuk tapak tertentu.</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
 <translation id="4149890623864272035">Adakah anda pasti mahu memadamkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk laman web ini?</translation>
 <translation id="4149994727733219643">Paparan ringkas bagi halaman web</translation>
@@ -226,7 +221,6 @@
 <translation id="4883854917563148705">Tetapan yang diurus tidak dapat ditetapkan semula</translation>
 <translation id="4887024562049524730">Tanya sebelum membenarkan tapak menggunakan peranti dan data realiti maya anda (disyorkan)</translation>
 <translation id="4953688446973710931">Apabila dihidupkan, laman dapat meminta untuk memuat turun berbilang fail secara automatik. Apabila dimatikan, laman tidak dapat memuat turun berbilang fail secara automatik.</translation>
-<translation id="4955223779495905865">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Mana-mana laman ini boleh menyimpan kuki dan data lain untuk memperibadikan pengalaman anda.</translation>
 <translation id="4962975101802056554">Batalkan semua kebenaran untuk peranti</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
 <translation id="4976702386844183910">Terakhir dilawati <ph name="DATE" /></translation>
@@ -429,7 +423,6 @@
 <translation id="8117244575099414087">Apabila dihidupkan, laman dapat menggunakan penderia peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia.</translation>
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
 <translation id="8131740175452115882">Sahkan</translation>
-<translation id="8154912474061769055">Ciri pada banyak laman mungkin tidak berfungsi</translation>
 <translation id="8168435359814927499">Kandungan</translation>
 <translation id="8186479265534291036">Laman tidak berfungsi? Kuki pihak ketiga disekat</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> dibenarkan</translation>
@@ -443,7 +436,6 @@
 <translation id="8324158725704657629">Jangan tanya lagi</translation>
 <translation id="8362795839483915693">Anda boleh zum masuk atau keluar pada laman yang anda lawati</translation>
 <translation id="8372893542064058268">Benarkan Penyegerakan Latar Belakang untuk tapak tertentu</translation>
-<translation id="8376384591331888629">Termasuk kuki pihak ketiga pada tapak ini</translation>
 <translation id="83792324527827022">Suatu tapak sedang menggunakan kamera dan mikrofon anda</translation>
 <translation id="8380167699614421159">Tapak ini menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="8394832520002899662">Ketik untuk kembali ke tapak</translation>
@@ -491,7 +483,6 @@
 <translation id="8926666909099850184">NFC dimatikan untuk peranti ini. Hidupkan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Sekat laman daripada melihat dan menukar maklumat pada peranti NFC</translation>
 <translation id="8944485226638699751">Terhad</translation>
-<translation id="8958424370300090006">Sekat kuki untuk tapak tertentu.</translation>
 <translation id="8959122750345127698">Tidak dapat mencapai navigasi: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Lupa</translation>
 <translation id="8990043154272859344">Anda akan dilog keluar daripada semua laman</translation>

@@ -107,7 +107,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as definições mais seguras. Entraremos em contacto consigo se precisar de revisão.</translation>
 <translation id="2652691236519827073">Abrir link num novo &amp;separador do Chrome</translation>
 <translation id="2665296953892887393">Ajudar a melhorar o Google Chrome ao enviar relatórios de falhas e <ph name="UMA_LINK" /> à Google</translation>
-<translation id="2689103672227170538">Esta extensão alterou a página apresentada quando inicia o Chrome.</translation>
 <translation id="2712234843277364121">Reiniciar para atualizar: os separadores vão ser reabertos</translation>
 <translation id="2738871930057338499">Não é possível ligar à Internet. HTTP 403 proibido. Verifique a sua configuração de proxy.</translation>
 <translation id="2742320827292110288">Aviso: o Google Chrome não pode impedir que as extensões gravem o seu histórico de navegação. Para desativar esta extensão no Modo de navegação anónima, desselecione esta opção.</translation>
@@ -177,7 +176,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3703994572283698466">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versão do ChromeOS Flex</translation>
 <translation id="3718181793972440140">Esta ação elimina 1 item deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">A extensão "<ph name="EXTENSION_NAME" />" alterou a página apresentada quando inicia o Chrome.</translation>
 <translation id="3744202345691150878">Obter ajuda relacionada com o ChromeOS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">O ChromeOS Flex não conseguiu sincronizar os dados devido a um erro de início de sessão.</translation>
@@ -470,7 +468,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8823341990149967727">O Chrome Está Desatualizado</translation>
 <translation id="8825634023950448068">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Além disso, pode remover um interesse se o Chrome se enganar ou caso não queira ver determinados anúncios.</translation>
 <translation id="8834965163890861871">O Google Chrome está a tentar editar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
-<translation id="884296878221830158">Também controla a página apresentada quando inicia o Chrome ou clica no botão Página Inicial.</translation>
 <translation id="8862326446509486874">Não tem os direitos adequados para uma instalação ao nível do sistema. Tente executar o programa de instalação novamente como Administrador.</translation>
 <translation id="8914504000324227558">Reiniciar o Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>

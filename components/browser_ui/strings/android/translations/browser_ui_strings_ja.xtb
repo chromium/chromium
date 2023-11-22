@@ -41,7 +41,6 @@
 <translation id="1779089405699405702">画像デコーダー</translation>
 <translation id="1785415724048343560">利便性が向上します（推奨）</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
-<translation id="187227595286001730">関連サイトはグループでのアクティビティを確認できます</translation>
 <translation id="1887786770086287077">位置情報へのアクセスがデバイスでオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1919950603503897840">連絡先を選択</translation>
@@ -64,7 +63,6 @@
 <translation id="2182457891543959921">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可する前に確認します（推奨）</translation>
 <translation id="2185965788978862351">サイトまたはホーム画面のアプリにより保存された <ph name="DATASIZE" /> のデータと Cookie が削除されます。</translation>
 <translation id="2194856509914051091">留意事項</translation>
-<translation id="2212565012507486665">Cookie を許可</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> にカメラへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
 <translation id="2238944249568001759">最後のタブに基づく検索キーワードの候補</translation>
@@ -105,7 +103,6 @@
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2678468611080193228">サードパーティ Cookie を一時的に許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
 <translation id="2683434792633810741">削除してリセットしますか？</translation>
-<translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2717722538473713889">メールアドレス</translation>
 <translation id="2750481671343847896">サイトで ID サービスからのログイン メッセージを表示できるようにします。</translation>
@@ -157,7 +154,6 @@
 <translation id="3586500876634962664">カメラとマイクの使用</translation>
 <translation id="358794129225322306">複数ファイルの自動ダウンロードをサイトに許可します。</translation>
 <translation id="3594780231884063836">動画をミュート</translation>
-<translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3628308229821498208">提案された検索</translation>
@@ -185,7 +181,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ？</translation>
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="4002066346123236978">タイトル</translation>
-<translation id="4008040567710660924">特定のサイトの Cookie を許可します。</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="4149890623864272035">Cookie を含むすべてのローカルデータを削除し、このウェブサイトに対するすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
@@ -226,7 +221,6 @@
 <translation id="4883854917563148705">管理者による設定はリセットできません</translation>
 <translation id="4887024562049524730">サイトにバーチャル リアリティ デバイスとデータの使用を許可する前に確認する（推奨）</translation>
 <translation id="4953688446973710931">オンにすると、サイトは複数のファイルの自動ダウンロードを要求できます。オフにすると、サイトは複数のファイルを自動ダウンロードできません。</translation>
-<translation id="4955223779495905865">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。これらすべてのサイトで Cookie などのデータが保存され、エクスペリエンスのパーソナライズに使用される可能性があります。</translation>
 <translation id="4962975101802056554">デバイスのすべての権限を取り消します</translation>
 <translation id="497421865427891073">次に進む</translation>
 <translation id="4976702386844183910">最終アクセス日: <ph name="DATE" /></translation>
@@ -429,7 +423,6 @@
 <translation id="8117244575099414087">オンにすると、サイトはデバイスのセンサーを使用できます。オフにすると、サイトはセンサーを使用できません。</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
 <translation id="8131740175452115882">確認</translation>
-<translation id="8154912474061769055">多くのサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="8186479265534291036">サイトが動作していない場合 サードパーティ Cookie がブロックされています</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />を許可</translation>
@@ -443,7 +436,6 @@
 <translation id="8324158725704657629">次回から表示しない</translation>
 <translation id="8362795839483915693">アクセスしたサイトを拡大、縮小できます</translation>
 <translation id="8372893542064058268">特定のサイトに対してバックグラウンド同期を許可します。</translation>
-<translation id="8376384591331888629">サイト上のサードパーティ Cookie も対象</translation>
 <translation id="83792324527827022">サイトでカメラとマイクが使用されています</translation>
 <translation id="8380167699614421159">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="8394832520002899662">タップしてサイトに戻る</translation>
@@ -491,7 +483,6 @@
 <translation id="8926666909099850184">このデバイスでは NFC がオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="8928445016601307354">サイトが NFC デバイスの情報を参照および変更することをブロックする</translation>
 <translation id="8944485226638699751">制限付き</translation>
-<translation id="8958424370300090006">特定のサイトの Cookie をブロックします。</translation>
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>
 <translation id="8986362086234534611">削除</translation>
 <translation id="8990043154272859344">すべてのサイトからログアウトします</translation>

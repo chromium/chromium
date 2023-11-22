@@ -324,7 +324,6 @@
 <translation id="1593359183944365958">270 ડિગ્રી</translation>
 <translation id="1594030484168838125">પસંદ કરો</translation>
 <translation id="1596296697375291157">થ્રિલર, ક્રાઇમ અને મિસ્ટ્રી મૂવી</translation>
-<translation id="1597473228022844713">તમે આ પ્રોડક્ટને ટ્રૅક કરી રહ્યાં છો. આ પેજને <ph name="LAST_BOOKMARKS_FOLDER" />માં સાચવવામાં આવે છે</translation>
 <translation id="1598816256585174656">Windows Helloમાંથી પાસકી</translation>
 <translation id="1599199147673445968">નવું કાર્ડ? <ph name="BEGIN_LINK" />કાર્ડની વિગતો દાખલ કરો<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chromeમાં Dino Run ગેમ રમો</translation>
@@ -517,6 +516,7 @@
 <translation id="1997484222658892567"><ph name="URL" /> તમારા સ્થાનિક કમ્પ્યુટર પર કાયમી ધોરણે વિશાળ ડેટા સ્ટોર કરવા માગે છે</translation>
 <translation id="1997774360448418989">પેપર (વજનમાં હળવું)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{અને 1 વધુ}one{અને # વધુ}other{અને # વધુ}}</translation>
+<translation id="2001469757375372617">કંઈક ખોટું થયું. તમારો ફેરફાર સાચવવામાં આવ્યો ન હતો.</translation>
 <translation id="2003709556000175978">તમારો પાસવર્ડ હમણાં જ રીસેટ કરો</translation>
 <translation id="2003775180883135320">ઉપરની બાજુએ ચતુષ્કોણ કાણું પાડો</translation>
 <translation id="2004697686368036666">અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં</translation>
@@ -722,6 +722,7 @@
 <translation id="2395840535409704129">પાણીમાં રમાતી રમતો</translation>
 <translation id="2396249848217231973">&amp;ડિલીટ રદ કરો</translation>
 <translation id="2397836504670957718">લૅપટૉપ અને નોટબુક</translation>
+<translation id="2399868464369312507">Google Chrome ચુકવણી પદ્ધતિઓમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="2400600116338235695">સીરિયલ પોર્ટ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
 <translation id="2404884497378469141">તમારી ફાઇલોની ફરીથી કૉપિ કરવાનો પ્રયાસ કરો</translation>
 <translation id="2413155254802890957">જૂનું</translation>
@@ -1115,6 +1116,7 @@
 <translation id="3250640885957938546">જાહેરાત અને માર્કેટિંગ</translation>
 <translation id="3252772880526154546">સ્થાપત્ય</translation>
 <translation id="3254301855501243548">18 x 22 ઇંચ</translation>
+<translation id="3255926992597692024">ચુકવણી પદ્ધતિઓ ભરવા માટે, Chromium સેટિંગમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="3256863843508922226">નિવૃત્તિ અને પેન્શન</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarમાં ઝડપથી કોઈ નવી ઇવેન્ટ બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3261488570342242926">વર્ચ્યુઅલ કાર્ડ વિશે જાણો</translation>
@@ -1498,6 +1500,7 @@
 <translation id="4047351652147966654">18 x 24 ઇંચ</translation>
 <translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" ધરાવતા એક્સ્ટેન્શનને અપડેટ કરવા માટે ઉપયોગમાં લેવાયેલું URL અમાન્ય છે અથવા અનસપોર્ટેડ સ્કીમનો ઉપયોગ કરે છે. સપોર્ટેડ સ્કીમ આ છે: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> અને <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">તમે Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરી શકશો</translation>
+<translation id="4050599136622776556">Chromium ચુકવણી પદ્ધતિઓમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="405399507749852140">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">તમારા કાર્ટ માટે ડિસ્કાઉન્ટ શોધવામાં Googleને તમારી સહાય કરવા દો</translation>
@@ -1620,6 +1623,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">ટી-શર્ટ</translation>
 <translation id="4253168017788158739">નોંધ</translation>
+<translation id="4255487295905690262">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને ઇમેઇલ દ્વારા અલર્ટ મળશે.</translation>
 <translation id="425582637250725228">તમે કરેલા ફેરફારો સાચવવામાં આવ્યાં ન હોઇ શકે.</translation>
 <translation id="4258748452823770588">ખરાબ હસ્તાક્ષર</translation>
 <translation id="4261046003697461417">સંરક્ષિત દસ્તાવેજ એનોટેટ કરી શકાતા નથી</translation>
@@ -2974,7 +2978,6 @@
 <translation id="6999480632062519056">ફિટનેસ સંબંધિત સૂચના અને વ્યક્તિગત પ્રશિક્ષણ</translation>
 <translation id="6999969238895751684">મનોરંજન ઉદ્યોગ</translation>
 <translation id="7003278537452757231">ગોદડા અને જાજમો</translation>
-<translation id="7003335073762455340">તમે આ પ્રોડક્ટને ટ્રૅક કરી રહ્યાં છો. આ પેજને <ph name="LAST_BOOKMARKS_FOLDER" />માં સાચવવામાં આવે છે.</translation>
 <translation id="7004499039102548441">તાજેતરના ટૅબ્સ</translation>
 <translation id="7004583254764674281">કાર્ડને વધુ ઝડપથી કન્ફર્મ કરવા માટે Windows Helloનો ઉપયોગ કરો</translation>
 <translation id="7006930604109697472">કોઈપણ રીતે મોકલો</translation>
@@ -3030,7 +3033,6 @@
 <translation id="7108819624672055576">એક્સટેન્શન દ્વારા મંજૂર</translation>
 <translation id="7109510814665441393">ડ્રાઇવિંગ અને રેસિંગ ગેમ</translation>
 <translation id="7110116949943042888">હંગામી અને મોસમી નોકરીઓ</translation>
-<translation id="7110553203952632623">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને ઇમેઇલ દ્વારા અલર્ટ મળશે</translation>
 <translation id="7111012039238467737">(માન્ય)</translation>
 <translation id="7111507312244504964">સંપત્તિ નિરીક્ષણ અને મૂલ્યાંકન</translation>
 <translation id="7112327784801341716">શું તમારી હાલની માહિતી દેખાઈ રહી નથી? તેને અપડેટ કરવા માટે તમારી બેંકનો સંપર્ક કરો.</translation>
@@ -3149,7 +3151,6 @@
 <translation id="7366117520888504990">198 x 275 મિમી</translation>
 <translation id="7366362069757178916">ચુકવણી હૅન્ડલર</translation>
 <translation id="7367985555340314048">તમે રુચિ ધરાવતા હો એવા વિષયો તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસ પર આધારિત હોય છે અને તમને મનગમતી બનાવેલી જાહેરાતો બતાવવા માટે વિવિધ સાઇટ દ્વારા તેનો ઉપયોગ કરવામાં આવી શકે છે</translation>
-<translation id="7368169244533796604">સાઇટ ડિલીટ કરો</translation>
 <translation id="7372526636730851647">ફોટો (ગ્લોસી)</translation>
 <translation id="7372973238305370288">શોધ પરિણામ</translation>
 <translation id="7374461526650987610">પ્રોટોકોલ હેન્ડલર્સ</translation>
@@ -3572,7 +3573,6 @@
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8134058435519644366">ભરતી અને કર્મચારીની નિયુક્તિ</translation>
 <translation id="8135546115396015134">ડાબી કી</translation>
-<translation id="8144303576836498784">કંઈક ખોટું થયું. તમારો ફેરફાર સાચવવામાં આવ્યો ન હતો</translation>
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
 <translation id="8149426793427495338">તમારું કમ્પ્યુટર નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> પરની ફાઇલ વાંચનયોગ્ય નથી. તે દૂર કરવામાં, ખસેડવામાં આવી હોઈ શકે છે અથવા ફાઇલ પરવાનગીઓ ઍક્સેસ કરવાથી અટકાવતી હોઈ શકે છે.</translation>
@@ -3785,6 +3785,7 @@
 <translation id="8542014550340843547">નીચેની બાજુએ ત્રણ સ્ટેપલ લગાવો</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">તમે <ph name="BEGIN_ERROR_LINK" />શોધ સમસ્યાની જાણ<ph name="END_ERROR_LINK" /> કરી શકો છો અથવા જો તમે તમારી સુરક્ષા અંગેનાં જોખમોને સમજતાં હોવ, તો <ph name="BEGIN_LINK" />આ અસુરક્ષિત સાઇટની મુલાકાત<ph name="END_LINK" /> લઈ શકો છો.</translation>
+<translation id="8544217240017914508">ચુકવણી પદ્ધતિઓ ભરવા માટે, Google Chrome સેટિંગમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="8544303911974837265">પોલિએસ્ટર</translation>
 <translation id="854548366864113872">વધુ કિંમતનો વિકલ્પ</translation>
 <translation id="8546254312340305428">અપલોડ કરવા માટેનું કારણ આપો (આવશ્યક છે)</translation>

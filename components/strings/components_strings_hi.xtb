@@ -324,7 +324,6 @@
 <translation id="1593359183944365958">270 डिग्री</translation>
 <translation id="1594030484168838125">चुनें</translation>
 <translation id="1596296697375291157">रोमांचक, अपराध, और रहस्य वाली फ़िल्में</translation>
-<translation id="1597473228022844713">इस प्रॉडक्ट को ट्रैक किया जा रहा है. यह पेज <ph name="LAST_BOOKMARKS_FOLDER" /> में सेव किया गया है</translation>
 <translation id="1598816256585174656">Windows Hello की पासकी</translation>
 <translation id="1599199147673445968">नया कार्ड है? <ph name="BEGIN_LINK" />कार्ड की जानकारी डालें<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome में Dino Run गेम चलाएं</translation>
@@ -518,6 +517,7 @@
 <translation id="1997484222658892567"><ph name="URL" /> आपके स्थानीय कंप्यूटर पर हमेशा के लिए बड़ी मात्रा में डेटा संग्रहित करना चाहता है</translation>
 <translation id="1997774360448418989">पेपर (लाइटवेट)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{और 1 ज़्यादा}one{और # ज़्यादा}other{और # ज़्यादा}}</translation>
+<translation id="2001469757375372617">कोई गड़बड़ी हुई. आपने जो बदलाव किया वह सेव नहीं हुआ.</translation>
 <translation id="2003709556000175978">अपना पासवर्ड अभी रीसेट करें</translation>
 <translation id="2003775180883135320">सबसे ऊपर क्वाड पंच</translation>
 <translation id="2004697686368036666">हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें</translation>
@@ -723,6 +723,7 @@
 <translation id="2395840535409704129">वॉटर स्पोर्ट्स</translation>
 <translation id="2396249848217231973">मिटाना &amp;पहले जैसा करें</translation>
 <translation id="2397836504670957718">लैपटॉप और नोटबुक</translation>
+<translation id="2399868464369312507">Google Chrome, पेमेंट के तरीकों में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="2400600116338235695">साइट, सीरियल पोर्ट से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="2404884497378469141">अपनी फ़ाइलें फिर से कॉपी करने की कोशिश करें</translation>
 <translation id="2413155254802890957">पुराना</translation>
@@ -1115,6 +1116,7 @@
 <translation id="3250640885957938546">विज्ञापन और मार्केटिंग</translation>
 <translation id="3252772880526154546">आर्किटेक्चर</translation>
 <translation id="3254301855501243548">18 x 22 इंच</translation>
+<translation id="3255926992597692024">Chromium, पेमेंट के तरीके की जानकारी भरने के लिए, सेटिंग में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="3256863843508922226">रिटायरमेंट और पेंशन</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar में जल्दी से नया इवेंट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="3261488570342242926">वर्चुअल कार्ड के बारे में जानें</translation>
@@ -1498,6 +1500,7 @@
 <translation id="4047351652147966654">18 x 24 इंच</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" आईडी वाले एक्सटेंशन के लिए अपडेट यूआरएल अमान्य है या काम न करने वाली स्कीम का इस्तेमाल करता है. काम करने वाली स्कीम, <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, और <ph name="FILE_SCHEME" /> हैं.</translation>
 <translation id="4050392779074832022">इसे Google के सभी प्रॉडक्ट पर इस्तेमाल किया जा सकेगा</translation>
+<translation id="4050599136622776556">Chromium पेमेंट के तरीकों में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="405399507749852140">किसी भी साइट पर कीमत में कमी होने पर सूचना पाएं</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके कार्ट पर छूट का पता लगा सके</translation>
@@ -1620,6 +1623,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">टी-शर्ट</translation>
 <translation id="4253168017788158739">नोट</translation>
+<translation id="4255487295905690262">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर आपको ईमेल से सूचना मिलेगी.</translation>
 <translation id="425582637250725228">हो सकता है कि किए गए बदलाव सेव ना हों.</translation>
 <translation id="4258748452823770588">खराब हस्ताक्षर</translation>
 <translation id="4261046003697461417">सुरक्षित दस्तावेज़ों को एनोटेट नहीं किया जा सकता</translation>
@@ -2974,7 +2978,6 @@
 <translation id="6999480632062519056">फ़िटनेस से जुड़े निर्देश और पर्सनल ट्रेनिंग</translation>
 <translation id="6999969238895751684">मनोरंजन उद्योग</translation>
 <translation id="7003278537452757231">दरी और कालीन</translation>
-<translation id="7003335073762455340">इस प्रॉडक्ट को ट्रैक किया जा रहा है. यह पेज <ph name="LAST_BOOKMARKS_FOLDER" /> में सेव किया गया है.</translation>
 <translation id="7004499039102548441">हाल के टैब</translation>
 <translation id="7004583254764674281">कार्ड की जल्दी पुष्टि करने के लिए, Windows Hello का इस्तेमाल करें</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
@@ -3030,7 +3033,6 @@
 <translation id="7108819624672055576">किसी एक्सटेंशन ने अनुमति दी है</translation>
 <translation id="7109510814665441393">ड्राइविंग और रेसिंग गेम</translation>
 <translation id="7110116949943042888">अस्थायी और सीज़न के हिसाब से मिलने वाली नौकरियां</translation>
-<translation id="7110553203952632623">किसी भी साइट पर प्रॉडक्ट की कीमत कम होने पर, आपको ईमेल से सूचना मिलेगी</translation>
 <translation id="7111012039238467737">(मान्य)</translation>
 <translation id="7111507312244504964">प्रॉपर्टी की जांच और मूल्यांकन करना</translation>
 <translation id="7112327784801341716">क्या आपको अपनी मौजूदा जानकारी नहीं दिख रही है? इसे अपडेट करने के लिए अपने बैंक से संपर्क करें.</translation>
@@ -3149,7 +3151,6 @@
 <translation id="7366117520888504990">198 x 275 मि॰मी॰</translation>
 <translation id="7366362069757178916">पेमेंट हैंडलर</translation>
 <translation id="7367985555340314048">आपकी पसंद के विषयों की जानकारी, हाल ही के ब्राउज़िंग इतिहास के आधार पर दी जाती है. साथ ही, साइटें इस जानकारी का इस्तेमाल करके, आपको आपकी पसंद के हिसाब से विज्ञापन दिखाती हैं</translation>
-<translation id="7368169244533796604">साइट मिटाएं</translation>
 <translation id="7372526636730851647">फ़ोटो (ग्लॉसी)</translation>
 <translation id="7372973238305370288">खोज नतीजे</translation>
 <translation id="7374461526650987610">प्रोटोकॉल हैंडलर</translation>
@@ -3572,7 +3573,6 @@
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8134058435519644366">रिक्रूटमेंट और स्टाफ़िंग</translation>
 <translation id="8135546115396015134">बाईं ओर मौजूद बटन</translation>
-<translation id="8144303576836498784">कोई गड़बड़ी हुई. आपने जो बदलाव किया वह सेव नहीं हुआ</translation>
 <translation id="8148608574971654810">पीडीएफ़ का वर्शन:</translation>
 <translation id="8149426793427495338">आपका कंप्यूटर निष्क्रिय हो गया है.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> पर मौजूद फ़ाइल पढ़ने के लायक नहीं है.  हो सकता है कि इसे हटा दिया गया हो, कहीं ले जाया गया हो, या फ़ाइल की अनुमतियां एक्सेस को रोक रही हों.</translation>
@@ -3785,6 +3785,7 @@
 <translation id="8542014550340843547">नीचे की ओर ट्रिपल स्टेपल</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">आप <ph name="BEGIN_ERROR_LINK" />पहचान संबंधी समस्‍या की रिपोर्ट<ph name="END_ERROR_LINK" /> कर सकते हैं या अगर आप अपनी सुरक्षा संबंधी जोखिमों को समझते हैं तो, <ph name="BEGIN_LINK" />इस असुरक्षित साइट पर जा<ph name="END_LINK" /> सकते हैं.</translation>
+<translation id="8544217240017914508">Google Chrome, पेमेंट के तरीके की जानकारी भरने के लिए, सेटिंग में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="8544303911974837265">पॉलिएस्टर</translation>
 <translation id="854548366864113872">ज़्यादा कीमत वाला विकल्प</translation>
 <translation id="8546254312340305428">अपलोड करने की वजह बताएं (ज़रूरी है)</translation>

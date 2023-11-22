@@ -324,7 +324,6 @@
 <translation id="1593359183944365958">270 מעלות</translation>
 <translation id="1594030484168838125">בחירה</translation>
 <translation id="1596296697375291157">סרטי מתח, פשע ומסתורין</translation>
-<translation id="1597473228022844713">מתבצע מעקב אחר המוצר הזה. הדף הזה נשמר בתיקייה <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1598816256585174656">‏מפתח הגישה מ-Windows Hello</translation>
 <translation id="1599199147673445968">כרטיס חדש? <ph name="BEGIN_LINK" />להזנת פרטי הכרטיס<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
@@ -517,6 +516,7 @@
 <translation id="1997484222658892567"><ph name="URL" /> רוצה לאחסן כמות גדולה של נתונים במחשב המקומי שלך באופן קבוע</translation>
 <translation id="1997774360448418989">Paper (Lightweight)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ואפליקציה אחת נוספת}one{ו-# אפליקציות נוספות}two{ושתי אפליקציות נוספות}other{ו-# אפליקציות נוספות}}</translation>
+<translation id="2001469757375372617">משהו השתבש. השינוי לא נשמר.</translation>
 <translation id="2003709556000175978">צריך לאפס את הסיסמה עכשיו</translation>
 <translation id="2003775180883135320">4 ניקובים בצד שמאל</translation>
 <translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
@@ -722,6 +722,7 @@
 <translation id="2395840535409704129">ספורט מים</translation>
 <translation id="2396249848217231973">&amp;ביטול מחיקה</translation>
 <translation id="2397836504670957718">מחשבים ניידים ונישאים</translation>
+<translation id="2399868464369312507">‏Google Chrome מנסה לערוך את אמצעי התשלום.</translation>
 <translation id="2400600116338235695">האתר יכול לבקש הרשאה להתחבר ליציאות טוריות</translation>
 <translation id="2404884497378469141">רוצה לנסות שוב להעתיק את הקבצים?</translation>
 <translation id="2413155254802890957">ישנה</translation>
@@ -1115,6 +1116,7 @@
 <translation id="3250640885957938546">פרסום ושיווק</translation>
 <translation id="3252772880526154546">אדריכלות</translation>
 <translation id="3254301855501243548">‏18x22 אינץ'</translation>
+<translation id="3255926992597692024">‏Chromium מנסה לשנות את ההגדרות למילוי אמצעי התשלום.</translation>
 <translation id="3256863843508922226">פרישה ופנסיה</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אירוע חדש ביומן Google</translation>
 <translation id="3261488570342242926">מידע על כרטיסים וירטואליים</translation>
@@ -1498,6 +1500,7 @@
 <translation id="4047351652147966654">‏18x24 אינץ'</translation>
 <translation id="404831776305217138">‏כתובת ה-URL לעדכון של התוסף עם המזהה '<ph name="EXTENSION_ID" />' לא תקינה או שיש בה סכימה שלא נתמכת. הסכימות הנתמכות הן: <ph name="HTTP_SCHEME" />,‏ <ph name="HTTPS_SCHEME" /> ו-<ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">‏ניתן יהיה להשתמש בה בכל מוצרי Google</translation>
+<translation id="4050599136622776556">‏Chromium מנסה לערוך את אמצעי התשלום.</translation>
 <translation id="405399507749852140">קבלת התראות על הנחות באתר כלשהו</translation>
 <translation id="4056223980640387499">חום-ספיה</translation>
 <translation id="4063063121357725926">‏Google תעזור לך למצוא הנחות על מוצרים בעגלות הקניות</translation>
@@ -1620,6 +1623,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">חולצות טי-שירט</translation>
 <translation id="4253168017788158739">הערה</translation>
+<translation id="4255487295905690262">יישלחו אליך התראות באימייל אם תהיה הנחה באתר כלשהו.</translation>
 <translation id="425582637250725228">ייתכן שהשינויים שביצעת לא יישמרו.</translation>
 <translation id="4258748452823770588">חתימה שגויה</translation>
 <translation id="4261046003697461417">לא ניתן להוסיף הערות למסמכים מוגנים</translation>
@@ -2979,7 +2983,6 @@ Del</translation>
 <translation id="6999480632062519056">לימודי כושר והדרכה אישית</translation>
 <translation id="6999969238895751684">תעשיית הבידור</translation>
 <translation id="7003278537452757231">שטיחים ומרבדים</translation>
-<translation id="7003335073762455340">מתבצע מעקב אחר המוצר הזה. הדף הזה נשמר בתיקייה <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004499039102548441">כרטיסיות אחרונות</translation>
 <translation id="7004583254764674281">‏כדי לאשר את הכרטיסים מהר יותר, אפשר להשתמש ב-Windows Hello</translation>
 <translation id="7006930604109697472">לשליחה בכל זאת</translation>
@@ -3035,7 +3038,6 @@ Del</translation>
 <translation id="7108819624672055576">אושרה על-ידי תוסף</translation>
 <translation id="7109510814665441393">משחקי נהיגה ומירוצים</translation>
 <translation id="7110116949943042888">משרות לעובדים זמניים ועונתיים</translation>
-<translation id="7110553203952632623">יישלחו אליך התראות באימייל אם תהיה ירידה במחיר באתר כלשהו</translation>
 <translation id="7111012039238467737">(חוקי)</translation>
 <translation id="7111507312244504964">בדיקה ושמאות לקניין</translation>
 <translation id="7112327784801341716">הפרטים המוצגים לא עדכניים? עליך לפנות לבנק שלך כדי לעדכן אותם.</translation>
@@ -3154,7 +3156,6 @@ Del</translation>
 <translation id="7366117520888504990">‏198x275 מ"מ</translation>
 <translation id="7366362069757178916">‏מעבדי handler לתשלומים</translation>
 <translation id="7367985555340314048">רשימת הנושאים שמעניינים אותך מבוססת על היסטוריית הגלישה שלך מהזמן האחרון, ואתרים נעזרים בנושאים האלה כדי להציג לך מודעות בהתאמה אישית.</translation>
-<translation id="7368169244533796604">מחיקת האתר</translation>
 <translation id="7372526636730851647">Photo (Glossy)</translation>
 <translation id="7372973238305370288">תוצאת חיפוש</translation>
 <translation id="7374461526650987610">תוכניות לטיפול בפרוטוקולים</translation>
@@ -3577,7 +3578,6 @@ Del</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8134058435519644366">גיוס והעסקה</translation>
 <translation id="8135546115396015134">מקש שמאלי</translation>
-<translation id="8144303576836498784">משהו השתבש. השינוי לא נשמר</translation>
 <translation id="8148608574971654810">‏גרסת PDF:</translation>
 <translation id="8149426793427495338">המחשב עבר למצב שינה.</translation>
 <translation id="8150722005171944719">הקובץ הנמצא ב-<ph name="URL" /> לא ניתן לקריאה. ייתכן שהקובץ הוסר או הועבר, או שהרשאות הקובץ מונעות גישה אליו.</translation>
@@ -3790,6 +3790,7 @@ Del</translation>
 <translation id="8542014550340843547">3 סיכות הידוק בחלק התחתון</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">באפשרותך <ph name="BEGIN_ERROR_LINK" />לדווח על בעיית זיהוי<ph name="END_ERROR_LINK" /> או, אם סיכוני האבטחה מובנים לך, <ph name="BEGIN_LINK" />להיכנס לאתר הזה, שאינו מאובטח<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">‏Google Chrome מנסה לשנות את ההגדרות למילוי אמצעי תשלום.</translation>
 <translation id="8544303911974837265">Polyester</translation>
 <translation id="854548366864113872">אפשרות במחיר גבוה</translation>
 <translation id="8546254312340305428">יש לציין את הסיבה להעלאה (חובה)</translation>

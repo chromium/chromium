@@ -71,10 +71,8 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2313870531055795960">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="2329088755516916767">När detta är aktiverat läses sidor in i förväg i Chromium, vilket gör det snabbare att surfa och söka.</translation>
 <translation id="2343156876103232566">Logga in på Chromium på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
-<translation id="2347108572062610441">Det här tillägget har ändrat vilken sida som visas när du startar Chromium.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2384373936468275798">Det gick inte att synkronisera data med Chromium OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
-<translation id="2396765026452590966">Tillägget <ph name="EXTENSION_NAME" /> har ändrat vilken sida som visas när du startar Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Minst ett Chromium-tillägg har fått åtkomst till 1 styrdon}=1{Minst ett Chromium-tillägg har åtkomst till 1 styrdon}other{Minst ett Chromium-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="2401032172288869980">Du behöver ge Chromium kamera- och mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />verktyg från Chromium<ph name="END_LINK" /> kan du surfa säkert och behålla kontrollen</translation>
@@ -444,7 +442,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chromium på den här enheten registreras.</translation>
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>
 <translation id="8880203542552872219">Om så är fallet ska du redigera det sparade lösenordet i Chromium så att det matchar det nya lösenordet.</translation>
-<translation id="8897323336392112261">Det styr också vilken sida som visas när du startar Chromium eller klickar på hemknappen.</translation>
 <translation id="8907580949721785412">Skriv ditt lösenord i Windows om du vill tillåta att lösenord visas i Chromium.</translation>
 <translation id="8931379085695076764">Chromium kan göra en uppskattning av dina intressen utifrån din webbhistorik från de senaste veckorna. Denna information finns kvar på enheten.</translation>
 <translation id="8941642502866065432">Det gick inte att uppdatera Chromium</translation>

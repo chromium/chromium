@@ -343,6 +343,7 @@
 <translation id="3577473026931028326">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="357889014807611375">WiFi са ограничењем</translation>
 <translation id="3583278742022654445">Сигнал је слаб. Пробајте да приђете ближе извору WiFi сигнала.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> је име које је лако за коришћење за: <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
 <translation id="3600339377155080675">Пресликајте екран</translation>
 <translation id="3602290021589620013">Преглед</translation>

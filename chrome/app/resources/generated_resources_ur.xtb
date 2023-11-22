@@ -4049,7 +4049,6 @@
 <translation id="4124935795427217608">یونیکارن</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">آلے کا لاگ</translation>
-<translation id="4130207949184424187">آپ کی جانب سے اومنی باکس سے تلاش کرنے پر دکھائی دینے والے صفحہ کو اس ایکسٹینشن نے تبدیل کر دیا ہے۔</translation>
 <translation id="4130750466177569591">میں متفق ہوں</translation>
 <translation id="413121957363593859">اجزاء</translation>
 <translation id="4131283654370308898">اس سائٹ پر <ph name="EXTENSION_NAME" /> کی اجات دیں</translation>
@@ -5555,7 +5554,6 @@
 <translation id="5355191726083956201">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="5355498626146154079">‏آپ کو "Borealis Enabled" کا پرچم آن کرنے کی ضرورت ہے</translation>
 <translation id="5355501370336370394">انٹرپرائز آلے کا اندراج کریں</translation>
-<translation id="5355926466126177564">آپ کی جانب سے اومنی باکس سے تلاش کرنے پر دکھائی دینے والے صفحہ کو ایکسٹینشن "<ph name="EXTENSION_NAME" />" نے تبدیل کر دیا ہے۔</translation>
 <translation id="5356155057455921522">آپ کے منتظم کی جانب سے یہ اپ ڈیٹ آپ کی تنظیم کی ایپس کو زیادہ تیزی سے کھولنے میں مدد کرے گا۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5359910752122114278">1 نتیجہ</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> ٹیب</translation>
@@ -5896,7 +5894,6 @@
 <translation id="5624120631404540903">پاس ورڈز کا نظم کریں</translation>
 <translation id="5625225435499354052">‏Google Pay میں ترمیم کریں</translation>
 <translation id="5626134646977739690">نام:</translation>
-<translation id="5627086634964711283">یہ آپ کی جانب سے ہوم بٹن کلک کرنے پر دکھائی دینے والے صفحہ کو بھی کنٹرول کرتا ہے۔</translation>
 <translation id="5627832140542566187">ڈسپلے کی سمت بندی</translation>
 <translation id="5628434207686266338">آلہ کا پاس ورڈ سیٹ کریں</translation>
 <translation id="562935524653278697">آپ کے منتظم نے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی مطابقت پذیری غیر فعال کر دی ہے۔</translation>
@@ -6300,14 +6297,12 @@
 <translation id="5955304353782037793">ایپ</translation>
 <translation id="5955721306465922729">ایک ویب سائٹ یہ ایپلیکیشن کھولنا چاہتی ہے۔</translation>
 <translation id="5955809630138889698">ہو سکتا ہے کہ یہ آلہ صرف آن لائن ڈیمو موڈ کیلئے ہی اہل ہو۔ براہ کرم مزید تفصیلات کیلئے اپنے معاون نمائندے سے رابطہ کریں۔</translation>
-<translation id="5956585768868398362">کیا یہی وہ تلاش صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="5957987129450536192">اپنی پروفائل تصویر کے قریب موجود "سننے کیلئے منتخب کریں" آئیکن کو تھپتھپائیں، پھر جو آپ سننا چاہتے ہیں اسے منتخب کریں۔</translation>
 <translation id="5959471481388474538">نیٹ ورک دستیاب نہیں ہے</translation>
 <translation id="5963413905009737549">سیکشن</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> پیک)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{سبھی کو &amp;نئی ونڈو میں کھولیں}=1{&amp;نئی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;نئی ونڈو میں کھولیں}}</translation>
 <translation id="5964247741333118902">سرایت کردہ مواد</translation>
-<translation id="5965661248935608907">یہ اس کو بھی کنٹرول کرتا ہے کہ جب آپ ہوم بٹن پر کلک یا اومنی باکس سے تلاش کرتے ہیں تو کون سا صفحہ دکھایا جاتا ہے۔</translation>
 <translation id="5966511985653515929">آپ کے تمام ونڈوز کو بند کرنے پر آپ کے آلے سے سائٹ کا ڈیٹا ہٹایا جاتا ہے</translation>
 <translation id="5968022600320704045">تلاش کا کوئی نتیجہ نہیں ہے</translation>
 <translation id="5969364029958154283">ترتیبات کو ری سیٹ کرنے کے بارے میں مزید جانیں</translation>
@@ -6744,7 +6739,6 @@
 <translation id="6309510305002439352">مائیکروفون آف ہے</translation>
 <translation id="6310141306111263820">‏eSIM پروفائل انسٹال نہیں کی جا سکی۔ مدد کیلئے، اپنے کیرئیر سے رابطہ کریں۔</translation>
 <translation id="6311220991371174222">‏Chrome کو شروع نہیں کیا جا سکتا ہے کیوںکہ آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ Chrome کو دوبارہ شروع کرنے کی کوشش کریں۔</translation>
-<translation id="6311708879134408222">آپ کل دوبارہ کوشش کر سکتے ہیں۔</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{سیفٹی چیک 1 دن پہلے کیا گیا}other{سیفٹی چیک {NUM_DAYS} دن پہلے کیا گیا}}</translation>
 <translation id="6312638141433622592">تعاون یافتہ ہونے پر، ریڈر وضع میں مضامین دکھانے کی پیشکش کریں</translation>
 <translation id="6313641880021325787">‏VR سے باہر نکلیں</translation>
@@ -7269,7 +7263,6 @@
 <translation id="6749473226660745022">تصاویر</translation>
 <translation id="6750757184909117990">سیلولر کو غیرفعال کریں</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (پوشیدگی)</translation>
-<translation id="6756059675436942777">اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6756157672127672536">‏فائل ایپ ان فائلوں تک فوری رسائی فراہم کرتی ہے جنہیں آپ نے Google Drive، خارجی اسٹوریج یا اپنے ChromeOS آلے پر محفوظ کیا ہے۔</translation>
 <translation id="6756643207511618722">اسپیچ انجنز</translation>
 <translation id="6757431299485455321">اس ہاٹ اسپاٹ کو تلاش کرنے میں دیگر آلات کی مدد کریں۔</translation>
@@ -7673,7 +7666,6 @@
 <translation id="7047059339731138197">ایک پس منظر منتخب کریں</translation>
 <translation id="7049293980323620022">فائل رکھیں؟</translation>
 <translation id="7050037487872780845">ہاٹ اسپاٹ کا غلط کنفیگریشن</translation>
-<translation id="7051551856857948729">‏IBAN قدر کو چھپائیں</translation>
 <translation id="7052237160939977163">کارکردگی کا پتا لگانے کا ڈیٹا بھیجیں</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7055152154916055070">ری ڈائریکٹ مسدود کیا گیا:</translation>
@@ -8559,7 +8551,6 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> سے ٹیکسٹ کا اشتراک کیا گیا ہے</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">اپنے ڈسپلے کی حدود کو ایڈجسٹ کریں</translation>
-<translation id="7760004034676677601">کیا یہی وہ ابتدائی صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="7762024824096060040">یہ اکاؤنٹ استعمال نہیں کیا جا سکتا</translation>
 <translation id="7762243782113123335">‏معذرت، کچھ غلط ہو گیا۔ براہ کرم تفصیل میں bruschetta# کے ساتھ تاثرات درج کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
@@ -8661,7 +8652,6 @@
 <translation id="7828642077514646543">خرابی: سرٹیفکیٹ کو ڈی کوڈ کرنے سے قاصر</translation>
 <translation id="7829877209233347340">والدین سے اسکول اکاؤنٹ شامل کرنے کی اجازت دینے کے ليے سائن ان کرنے کو کہیں</translation>
 <translation id="7830833461614351956">کھولنے کے لیے <ph name="NUM_OF_FILES" /> فائلز کو <ph name="CLOUD_PROVIDER" /> میں کاپی کریں؟</translation>
-<translation id="783088158898934992">ایپ کی زبان</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">‏اگر Google کو کوئی رعایت ملتی ہے تو آپ کو اس صفحے پر دکھائی دے گی</translation>
 <translation id="7833720883933317473">محفوظ کردہ حسب ضرورت الفاظ یہاں ظاہر ہوں گے</translation>
@@ -9868,7 +9858,6 @@
 <translation id="876956356450740926">‏ڈویلپر ٹولز، IDEs اور ایڈیٹرز چلائیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ایکسٹینشن روٹ ڈائرکٹری</translation>
 <translation id="8771300903067484968">ابتدائی صفحہ کے پس منظر کو ڈیفالٹ پس منظر پر دوبارہ ترتیب دے دیا گیا ہے۔</translation>
-<translation id="8773280816776735812">‏IBAN قدر کو دکھائیں</translation>
 <translation id="8774379074441005279">بحالی کی تصدیق کریں</translation>
 <translation id="8774934320277480003">اوپری مارجن</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>
@@ -10047,6 +10036,7 @@
 <translation id="8910987510378294980">آلے کی فہرست چھپائیں</translation>
 <translation id="8912362522468806198">‏Google اکاؤنٹ</translation>
 <translation id="8912810933860534797">خودکار اسکین فعال کریں</translation>
+<translation id="8914504000324227558">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="8915307125957890427">ٹیب پر دایاں کلک کریں اور "گروپ میں ٹیب شامل کریں" کو منتخب کریں اور پھر "نیا گروپ" منتخب کریں</translation>
 <translation id="8915370057835397490">تجویز لوڈ ہو رہی ہے</translation>
 <translation id="8916476537757519021">پوشیدگی کا ذیلی فریم: <ph name="SUBFRAME_SITE" /></translation>

@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">আপনি পরে যেকোনও সময়ে মাইক সম্পর্কিত ফিচারগুলি চালু বা বন্ধ করতে পারবেন।</translation>
 <translation id="3659814201068740063">আর <ph name="TIME_LEFT" /> চলবে (<ph name="PERCENTAGE" />%)।
 ডিভাইসটি চার্জে বসান।</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> হাই ভিজিবিলিটি টগল করুন</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ম্যানেজ করা ব্যবহারকারী</translation>
 <translation id="3666266999138159418">আপনার ফ্লোটিং উইন্ডো লুকাতে সোয়াইপ করুন</translation>
 <translation id="367531336287639526">অ্যাড্রেস বারের বাঁদিকে প্রথম আইকন বেছে নিন</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" />-এ পরিবর্তন করা হয়েছে</translation>
 <translation id="4987738733603015246">ডেস্ক ১৬</translation>
 <translation id="4989163558385430922">সবগুলি দেখুন</translation>
 <translation id="5003993274120026347">পরের বাক্য</translation>
@@ -1684,6 +1686,13 @@
 <translation id="7893503627044934815">এই ফাইলটি দেখাতে চাই না</translation>
 <translation id="7895348134893321514">টোট</translation>
 <translation id="7897375687985782769">স্ক্রিন ঘোরানোর জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি স্ক্রিন ঘোরাতে চান?</translation>
+<translation id="7897626842031123113">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">উইন্ডো পাল্টান</translation>
 <translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7902625623987030061">আঙুলের ছাপের সেন্সর টাচ করুন</translation>

@@ -110,7 +110,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
-<translation id="2689103672227170538">This extension has changed the page that is shown when you start Chrome.</translation>
 <translation id="2712234843277364121">Relaunch to update – Your tabs will reopen</translation>
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2742320827292110288">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
@@ -180,7 +179,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3703994572283698466">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you start Chrome.</translation>
 <translation id="3744202345691150878">Get help with Chrome OS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
@@ -477,7 +475,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8823341990149967727">Chrome is Out of Date</translation>
 <translation id="8825634023950448068">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. And if Chrome gets it wrong or you don't want to see certain ads, you can remove an interest.</translation>
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>
-<translation id="884296878221830158">It also controls what page is shown when you start Chrome or click the Home button.</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>

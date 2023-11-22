@@ -24,6 +24,7 @@
 <translation id="139993653570221430">Voit muuttaa tämän milloin tahansa Chromen asetuksista. Kokeilut ovat voimassa mainosten nykyisen näyttötavan ohessa, joten et heti näe muutoksia.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen.}=1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito-ikkunaasi ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
+<translation id="146866447420868597">Haluatko kirjautua Chromeen?</translation>
 <translation id="1492280395845991349">Viimeistele Chrome-päivitys käynnistämällä se uudelleen</translation>
 <translation id="1497802159252041924">Asennusvirhe: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
@@ -106,7 +107,6 @@
 <translation id="2649768380733403658">Chrome tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
 <translation id="2665296953892887393">Auta parantamaan Google Chromea lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
-<translation id="2689103672227170538">Tämä laajennus on vaihtanut Chromen aloitussivun.</translation>
 <translation id="2712234843277364121">Päivitä käynnistämällä uudelleen – Välilehdet avataan uudelleen</translation>
 <translation id="2738871930057338499">Internetyhteyden muodostaminen ei onnistu. HTTP 403 (kielletty). Tarkista välityspalvelimen asetukset.</translation>
 <translation id="2742320827292110288">Varoitus: Google Chrome ei voi estää laajennuksia tallentamasta selaushistoriaasi. Voit poistaa tämän laajennuksen käytöstä incognito-tilassa poistamalla tämän valinnan.</translation>
@@ -176,7 +176,6 @@
 <translation id="3703994572283698466">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flexin versio</translation>
 <translation id="3718181793972440140">Yksi kohde poistetaan pysyvästi  tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Laajennus <ph name="EXTENSION_NAME" /> on vaihtanut Chromen aloitussivun.</translation>
 <translation id="3744202345691150878">Ohjeita Chrome-käyttöjärjestelmän käyttöön</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex ei voinut synkronoida tietoja kirjautumisvirheen vuoksi.</translation>
@@ -469,7 +468,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8823341990149967727">Chrome on vanhentunut</translation>
 <translation id="8825634023950448068">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Jos Chromen arvio menee pieleen tai jos et halua nähdä tiettyjä mainoksia, voit poistaa tietyn kiinnostuksen kohteen.</translation>
 <translation id="8834965163890861871">Google Chrome yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
-<translation id="884296878221830158">Määrittää myös Chromen aloitussivun ja Etusivu-painikkeella avattavan sivun.</translation>
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8922193594870374009">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>

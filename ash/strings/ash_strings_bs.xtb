@@ -650,6 +650,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3659667652322717492">U svakom trenutku možete promijeniti rad mikrofona.</translation>
 <translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Povežite uređaj na napajanje.</translation>
+<translation id="3660860940251915011">Promijenite visoku vidljivost za <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Korisnik kojim upravlja <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Prevucite da sakrijete plutajući prozor</translation>
 <translation id="367531336287639526">Odaberite prvu ikonu s lijeve strane trake za adresu</translation>
@@ -980,6 +981,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Izmijenjeno <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">16. radna površina</translation>
 <translation id="4989163558385430922">Prikaži sve</translation>
 <translation id="5003993274120026347">Sljedeća rečenica</translation>
@@ -1440,6 +1442,7 @@ Nova instalacija</translation>
 <translation id="6827049576281411231">Zatvaranje ploče događaja</translation>
 <translation id="6831561626108366035">Odlazak na dugme <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Opasan fajl</translation>
+<translation id="6837621009301897464">Da biste izradili snimku zaslona, pritisnite</translation>
 <translation id="6852052252232534364">Kliknite da aktivirate</translation>
 <translation id="6855029042976311970">Upravo uređeno</translation>
 <translation id="6856708615407876657">Aktivirajte/deaktivirajte kategorije rezultata pretraživanja</translation>
@@ -1683,7 +1686,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7893503627044934815">Ne želim da se ovaj fajl prikazuje</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Pritisnuli ste prečicu na tastaturi za rotiranje ekrana. Želite li rotirati ekran?</translation>
-<translation id="7897626842031123113">Traka statusa, vrijeme <ph name="TIME" />,
+<translation id="7897626842031123113">Statusna traka, vrijeme <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
         <ph name="NETWORK" />,

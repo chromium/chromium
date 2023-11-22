@@ -69,10 +69,8 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2313870531055795960">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
 <translation id="2329088755516916767">Quando esta definição está ativada, o Chromium pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas.</translation>
 <translation id="2343156876103232566">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chromium em ambos os dispositivos.</translation>
-<translation id="2347108572062610441">Esta extensão alterou a página apresentada quando inicia o Chromium.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2384373936468275798">O ChromiumOS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
-<translation id="2396765026452590966">A extensão "<ph name="EXTENSION_NAME" />" alterou a página apresentada quando inicia o Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chromium estavam a aceder a 1 dispositivo HID}=1{Uma ou mais extensões do Chromium estão a aceder a 1 dispositivo HID}other{Uma ou mais extensões do Chromium estão a aceder a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">O Chromium necessita de autorizações da câmara e do microfone para este site</translation>
 <translation id="2440750600860946460">Com as <ph name="BEGIN_LINK" />ferramentas do Chromium<ph name="END_LINK" />, pode navegar em segurança e manter o controlo</translation>
@@ -442,7 +440,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> o seu histórico de navegação, um registo dos sites que visitou através do Chromium neste dispositivo.</translation>
 <translation id="8862326446509486874">Não tem os direitos adequados para uma instalação ao nível do sistema. Tente executar o programa de instalação novamente como Administrador.</translation>
 <translation id="8880203542552872219">Em caso afirmativo, edite a sua palavra-passe guardada no Chromium para que corresponda à nova palavra-passe.</translation>
-<translation id="8897323336392112261">Também controla a página apresentada quando inicia o Chromium ou clica no botão Página Inicial.</translation>
 <translation id="8907580949721785412">O Chromium está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="8931379085695076764">O Chromium pode estimar os seus interesses com base no seu histórico de navegação das últimas semanas. Estas informações ficam no seu dispositivo.</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium.</translation>

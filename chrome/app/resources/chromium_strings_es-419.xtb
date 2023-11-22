@@ -69,10 +69,8 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="2313870531055795960">Revisa las URL con una lista de sitios no seguros almacenados en Chromium. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chromium también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="2329088755516916767">Cuando está activado, Chromium precarga páginas, lo que agiliza la navegación y las búsquedas.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí a tu teléfono Android, accede a Chromium en ambos dispositivos.</translation>
-<translation id="2347108572062610441">Esta extensión cambió la página que se muestra al iniciar Chromium.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2384373936468275798">Chromium OS no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>
-<translation id="2396765026452590966">La extensión "<ph name="EXTENSION_NAME" />" cambió la página que se muestra al iniciar Chromium.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o más extensiones de Chromium tenían acceso a 1 dispositivo HID}=1{Una o más extensiones de Chromium tienen acceso a 1 dispositivo HID}other{Una o más extensiones de Chromium tienen acceso a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso al micrófono y la cámara para este sitio.</translation>
 <translation id="2440750600860946460">Con las <ph name="BEGIN_LINK" />herramientas de Chromium<ph name="END_LINK" />, puedes navegar de forma segura y mantener el control</translation>
@@ -273,6 +271,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6129621093834146363">Chromium bloqueó <ph name="FILE_NAME" /> porque es un archivo peligroso.</translation>
 <translation id="6132897690380286411">Chromium se cerrará y borrará los datos pronto</translation>
 <translation id="6134968993075716475">La Navegación segura está desactivada. Chromium recomienda activarla.</translation>
+<translation id="6144416395842701622">Accede a tu cuenta para aprovechar Chromium al máximo</translation>
 <translation id="6145820983052037069">Puedes alternar entre los perfiles de Chromium aquí</translation>
 <translation id="615103374448673771">Si permites las cookies, Chromium puede usarlas cuando realice la precarga</translation>
 <translation id="6175304430031192654">Según tu configuración, es posible que Chromium también envíe cookies y tu URL actual</translation>
@@ -427,6 +426,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8648201657708811153">Google Chrome for Testing no se puede establecer como tu navegador predeterminado.</translation>
 <translation id="8697124171261953979">También controla qué página se muestra al iniciar Chromium o al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="8704119203788522458">Este es tu Chromium</translation>
+<translation id="8719993436687031146">¿Quieres acceder a Chromium?</translation>
 <translation id="878572486461146056">Error de instalación: El administrador de red aplicó una política de grupo que impide la instalación (<ph name="INSTALL_ERROR" />).</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder a tu cámara y micrófono para este sitio</translation>
 <translation id="8826492472752484139">Haz clic en "Administrador de contraseñas"</translation>
@@ -434,7 +434,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Qué información se usa:<ph name="END_BOLD" /> Tu historial de navegación, un registro de los sitios que visitaste con Chromium en este dispositivo.</translation>
 <translation id="8862326446509486874">No tienes los derechos que se requieren para realizar la instalación al nivel del sistema. Intenta ejecutar el instalador nuevamente como Administrador.</translation>
 <translation id="8880203542552872219">En ese caso, edita la contraseña guardada en Chromium para que coincida con la nueva.</translation>
-<translation id="8897323336392112261">También controla qué página se muestra al iniciar Chromium o al hacer clic en el botón de página principal.</translation>
 <translation id="8907580949721785412">Chromium está intentando mostrar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="8931379085695076764">Chromium puede estimar tus intereses en función de tu historial de navegación de las últimas semanas. Esta información permanece en tu dispositivo.</translation>
 <translation id="8941642502866065432">No se puede actualizar Chromium</translation>

@@ -25,6 +25,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="139993653570221430">Vous pouvez changer d'avis à tout moment dans les paramètres Chrome. Les tests étant menés parallèlement à la façon actuelle dont les annonces sont diffusées, vous ne verrez pas tout de suite de changement.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau.}=1{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. La fenêtre de navigation privée ne sera pas rouverte.}one{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. # fenêtre de navigation privée ne sera pas rouverte.}other{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. Les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1434626383986940139">Applications Chrome Canary</translation>
+<translation id="146866447420868597">Se connecter à Chrome ?</translation>
 <translation id="1492280395845991349">Relancer pour terminer la mise à jour de Chrome</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personnalisez votre nouveau profil Chrome</translation>
@@ -109,7 +110,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2649768380733403658">Chrome vérifie régulièrement que les paramètres de votre navigateur sont les plus sûrs possibles. Si vous devez examiner quoi que ce soit, nous vous le signalerons.</translation>
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
-<translation id="2689103672227170538">Cette extension a modifié la page qui s'affiche lorsque vous démarrez Chrome.</translation>
 <translation id="2712234843277364121">Relancer pour mettre à jour – Vos onglets seront rouverts</translation>
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2742320827292110288">Avertissement : Google Chrome ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
@@ -179,7 +179,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3703994572283698466">Chrome OS dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />, et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
 <translation id="3716540481907974026">Version de ChromeOS Flex</translation>
 <translation id="3718181793972440140">Cette action aura pour effet de supprimer 1 élément de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">L'extension <ph name="EXTENSION_NAME" /> a modifié la page qui s'affiche lorsque vous démarrez Chrome.</translation>
 <translation id="3744202345691150878">Obtenir de l'aide avec Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex n'a pas pu synchroniser vos données en raison d'une erreur lors de la connexion.</translation>
@@ -476,7 +475,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8823341990149967727">Version de Chrome obsolète</translation>
 <translation id="8825634023950448068">Pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Si Chrome se trompe ou que vous ne voulez pas voir certaines annonces, vous pouvez supprimer un centre d'intérêt.</translation>
 <translation id="8834965163890861871">Google Chrome tente de modifier les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
-<translation id="884296878221830158">Elle contrôle également la page qui s'affiche au démarrage de Chrome ou lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour installer la version système. Relancez l'installation en vous connectant comme administrateur.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro depuis <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>

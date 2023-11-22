@@ -107,7 +107,6 @@
 <translation id="2649768380733403658">A Chrome rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
 <translation id="2652691236519827073">Link megnyi&amp;tása új Chrome-lapon</translation>
 <translation id="2665296953892887393">Segítse a Google Chrome fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
-<translation id="2689103672227170538">Ez a bővítmény módosította, hogy melyik oldal jelenik meg a Chrome indításakor.</translation>
 <translation id="2712234843277364121">Indítsa újra a frissítéshez – a lapok újra meg fognak nyílni</translation>
 <translation id="2738871930057338499">Nem lehet csatlakozni az internethez. HTTP 403 tiltás. Ellenőrizze a proxybeállításokat.</translation>
 <translation id="2742320827292110288">Figyelmeztetés: A Google Chrome nem tudja megakadályozni, hogy a bővítmények rögzítsék a böngészési előzményeket. A bővítmény inkognitó módban való használatának letiltásához törölje e lehetőség bejelölését.</translation>
@@ -177,7 +176,6 @@
 <translation id="3703994572283698466">A ChromeOS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, ahogyan a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" /> létrejöttéhez is.</translation>
 <translation id="3716540481907974026">ChromeOS Flex verziója</translation>
 <translation id="3718181793972440140">Ezzel egyetlen elemet töröl az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">A(z) <ph name="EXTENSION_NAME" /> bővítmény módosította, hogy melyik oldal jelenjen meg a Chrome indításakor.</translation>
 <translation id="3744202345691150878">Segítség a ChromeOS használatával kapcsolatban</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">A ChromeOS Flex nem tudta szinkronizálni az adatokat, mert hiba történt a bejelentkezés során.</translation>
@@ -470,7 +468,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8823341990149967727">A Chrome elavult</translation>
 <translation id="8825634023950448068">Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Ha pedig a Chrome téved, vagy ha Ön nem szeretne bizonyos típusú hirdetéseket látni, eltávolíthat érdeklődési köröket.</translation>
 <translation id="8834965163890861871">A Google Chrome szerkeszteni próbálja a jelszavakat. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
-<translation id="884296878221830158">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chrome indításakor vagy a Kezdőlap gombra történő kattintáskor.</translation>
 <translation id="8862326446509486874">Nincsenek meg a megfelelő jogai a rendszerszintű telepítéshez. Indítsa újra a telepítőt rendszergazdaként.</translation>
 <translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8922193594870374009">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>

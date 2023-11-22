@@ -26,6 +26,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="139993653570221430">Kadar koli si lahko premislite v nastavitvah za Chrome. Preizkusi potekajo skupaj s trenutnim načinom prikazovanja oglasov, zato spremembe ne bodo takoj vidne.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli.}=1{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. Anonimno okno se ne bo znova odprlo.}one{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimno okno se ne bo znova odprlo.}two{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimni okni se ne bosta znova odprli.}few{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimna okna se ne bodo znova odprla.}other{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="1434626383986940139">Delovne različice aplikacij za Chrome</translation>
+<translation id="146866447420868597">Se želite prijaviti v Chrome?</translation>
 <translation id="1492280395845991349">Znova zaženite, če želite dokončati posodobitev Chroma</translation>
 <translation id="1497802159252041924">Napaka pri namestitvi: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Prilagajanje novega profila v Chromu</translation>
@@ -110,7 +111,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2649768380733403658">Chrome redno preverja, ali so v brskalniku na voljo najvarnejše nastavitve Če boste morali kaj pregledati, vam bomo sporočili.</translation>
 <translation id="2652691236519827073">Odpiranje povezave na novem &amp;zavihku v Chromu</translation>
 <translation id="2665296953892887393">Pomagajte izboljšati Chrome – Googlu pošiljajte poročila o zrušitvah in ta dokument: <ph name="UMA_LINK" />.</translation>
-<translation id="2689103672227170538">Zaradi te razširitve se je spremenila stran, ki je prikazana, ko zaženete Chrome.</translation>
 <translation id="2712234843277364121">Znova zaženite za posodobitev – zavihki se bodo znova odprli</translation>
 <translation id="2738871930057338499">Internetne povezave ni mogoče vzpostaviti. Koda napake HTTP je »403 Forbidden«. Preverite konfiguracijo strežnika proxy configuration.</translation>
 <translation id="2742320827292110288">Opozorilo: Google Chrome razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v anonimnem načinu, počistite to možnost.</translation>
@@ -180,7 +180,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3703994572283698466">Chrome OS omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />, enako kot <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okolje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Različica sistema ChromeOS Flex</translation>
 <translation id="3718181793972440140">S tem bo iz te naprave izbrisan 1 element. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">Zaradi razširitve »<ph name="EXTENSION_NAME" />« se je spremenila stran, ki je prikazana, ko zaženete Chrome.</translation>
 <translation id="3744202345691150878">Pomoč za Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
@@ -234,7 +233,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4633000520311261472">Zaradi večje varnosti smo v Chromu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
 <translation id="4680828127924988555">Prekliči namestitev</translation>
 <translation id="469553575393225953">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo v Spletni trgovini Chrome.</translation>
-<translation id="4724676981607797757">Namestitev ni uspela zaradi napake protokola, ki ni podprta.</translation>
+<translation id="4724676981607797757">Namestitev ni uspela zaradi napake, povezane z nepodprtim protokolom.</translation>
 <translation id="4728575227883772061">Namestitev ni bila izvedena zaradi nedoločene napake. Če je Google Chrome trenutno vklopljen, ga zaprite in poskusite znova.</translation>
 <translation id="4747730611090640388">Chrome lahko oceni vaša zanimanja.  Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -477,7 +476,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8823341990149967727">Chrome je zastarel</translation>
 <translation id="8825634023950448068">Zaradi zaščite vaše varnosti samodejno izbrišemo vaša zanimanja, starejša od 4 tednov. Ko brskate naprej, se zanimanje morda znova prikaže na seznamu. Če se Chrome zmoti in ne želite videti nekaterih oglasov, lahko odstranite zanimanje.</translation>
 <translation id="8834965163890861871">Google Chrome poskuša urejati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
-<translation id="884296878221830158">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali kliknete gumb za domačo stran.</translation>
 <translation id="8862326446509486874">Nimate ustreznih pravic za namestitev na ravni sistema. Poskusite znova zagnati namestitveni program kot skrbnik.</translation>
 <translation id="8914504000324227558">Znova zaženi Chrome</translation>
 <translation id="8922193594870374009">Če želite telefonsko številko iz <ph name="ORIGIN" /> poslati v telefon Android, se prijavite v Chrome v obeh napravah.</translation>

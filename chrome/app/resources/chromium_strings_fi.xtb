@@ -69,10 +69,8 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2313870531055795960">Tarkistaa URL-osoitteet Chromiumiin tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä.</translation>
 <translation id="2329088755516916767">Kun tämä on päällä, Chromium esilataa sivuja, mikä nopeuttaa selaamista ja hakemista.</translation>
 <translation id="2343156876103232566">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromiumiin molemmilla laitteilla.</translation>
-<translation id="2347108572062610441">Tämä laajennus on vaihtanut Chromiumin aloitussivun.</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2384373936468275798">Chromium-käyttöjärjestelmä ei voi synkronoida tietoja, sillä tilin kirjautumistiedot ovat vanhentuneet.</translation>
-<translation id="2396765026452590966">Laajennus <ph name="EXTENSION_NAME" /> on vaihtanut Chromiumin aloitussivun.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chromium-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chromium-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chromium-laajennuksella on pääsy # HID-laitteelle}}</translation>
 <translation id="2401032172288869980">Chromium tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumin työkalujen<ph name="END_LINK" /> avulla voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
@@ -275,6 +273,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> on vaarallinen, joten Chromium on estänyt sen.</translation>
 <translation id="6132897690380286411">Chromium suljetaan ja data poistetaan pian</translation>
 <translation id="6134968993075716475">Selaussuoja on pois päältä. Chromium suosittelee laittamaan sen päälle.</translation>
+<translation id="6144416395842701622">Kirjaudu sisään, niin saat parhaan hyödyn Chromiumista</translation>
 <translation id="6145820983052037069">Voit vaihdella Chromium-profiilien välillä täällä</translation>
 <translation id="615103374448673771">Jos sallit evästeet, Chromium voi käyttää niitä esilataamisen aikana</translation>
 <translation id="6175304430031192654">Asetuksista riippuen Chromium voi myös lähettää evästeitä ja nykyisen URL-osoitteesi</translation>
@@ -433,6 +432,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8648201657708811153">Google Chrome for Testingistä ei voi tehdä oletusselainta.</translation>
 <translation id="8697124171261953979">Määrittää myös Chromiumin ja omnibox-hakujen aloitussivun.</translation>
 <translation id="8704119203788522458">Tämä on oma Chromiumisi</translation>
+<translation id="8719993436687031146">Haluatko kirjautua Chromiumiin?</translation>
 <translation id="878572486461146056">Asennusvirhe: Verkon järjestelmänvalvojan käyttämä ryhmäkäytäntö estää asennuksen: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium tarvitsee oikeuden käyttää kameraasi ja mikrofoniasi tällä sivustolla.</translation>
 <translation id="8826492472752484139">Klikkaa Salasanat</translation>
@@ -440,7 +440,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Selaushistoriaasi eli tietoa sivustoista, jotka olet avannut Chromiumissa tällä laitteella</translation>
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
 <translation id="8880203542552872219">Jos vaihdoit, päivitä muutos Chromiumin tallennettuihin salasanoihin.</translation>
-<translation id="8897323336392112261">Määrittää myös Chromiumin aloitussivun ja Etusivu-painikkeella avattavan sivun.</translation>
 <translation id="8907580949721785412">Chromium yrittää näyttää salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="8931379085695076764">Chromium voi arvioida kiinnostuksen kohteitasi muutaman viime viikon selaushistoriasi perusteella. Tiedot pysyvät laitteellasi.</translation>
 <translation id="8941642502866065432">Chromiumin päivitys epäonnistui</translation>

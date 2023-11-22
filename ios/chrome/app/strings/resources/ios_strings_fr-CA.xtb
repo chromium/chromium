@@ -410,6 +410,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages afin de les lire plus tard ou hors ligne</translation>
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bas</translation>
+<translation id="3090455602619185166">Se connecter avec un compte géré</translation>
 <translation id="309710370695886264">Vous avez 1 mot de passe réutilisé. Réglez ce problème maintenant pour rester en sécurité.</translation>
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Afficher ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
@@ -574,6 +575,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4004204301268239848">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil.</translation>
 <translation id="4018310736049373830">Gérer l'activité</translation>
+<translation id="4021931095789478915">Ajouter ${url} à la Liste de lecture</translation>
 <translation id="4038354071007134711">Auc. app. sur cet appareil ne peut ouv. le fichier</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
 <translation id="40433179647657191">Créez et partagez un lien direct vers une partie d'une page que vous avez mise en surbrillance.</translation>
@@ -1447,6 +1449,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8556590991644167667">{count,plural, =1{Vous avez ignoré {count} avertissement}one{Vous avez ignoré {count} avertissement}other{Vous avez ignoré {count} avertissements}}</translation>
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous naviguez ou que vous touchez des liens dans des messages, des documents et d'autres applications.</translation>
 <translation id="8560253818350321773">Affichez les éléments fréquemment utilisés en premier.</translation>
+<translation id="8569721750632860947">Quelle URL souhaitez-vous ajouter à votre Liste de lecture?</translation>
 <translation id="8588404856427128947">Désactivée</translation>
 <translation id="8591976964826315682">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="8593565399399144771">Vous pouvez ouvrir un nouvel onglet ici.</translation>

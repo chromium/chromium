@@ -4062,7 +4062,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="412730574613779332">Speedy</translation>
 <translation id="4130199216115862831">Device Log</translation>
-<translation id="4130207949184424187">This extension has changed the page that is shown when you search from the Omnibox.</translation>
 <translation id="4130750466177569591">I agree</translation>
 <translation id="413121957363593859">Components</translation>
 <translation id="4131283654370308898">Allow <ph name="EXTENSION_NAME" /> on this site</translation>
@@ -5569,7 +5568,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="5355498626146154079">You need to turn on the 'Borealis Enabled' flag</translation>
 <translation id="5355501370336370394">Enrol enterprise device</translation>
-<translation id="5355926466126177564">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you search from the Omnibox.</translation>
 <translation id="5356155057455921522">This update from your administrator will make your organisation’s apps open faster. This may take a few minutes.</translation>
 <translation id="5359910752122114278">1 result</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> tab</translation>
@@ -5911,7 +5909,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5624120631404540903">Manage passwords</translation>
 <translation id="5625225435499354052">Edit in Google Pay</translation>
 <translation id="5626134646977739690">Name:</translation>
-<translation id="5627086634964711283">It also controls what page is shown when you click the Home button.</translation>
 <translation id="5627832140542566187">Display orientation</translation>
 <translation id="5628434207686266338">Set device password</translation>
 <translation id="562935524653278697">Your administrator has disabled syncing of your bookmarks, history, passwords and other settings.</translation>
@@ -6315,14 +6312,12 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">A website wants to open this application.</translation>
 <translation id="5955809630138889698">This device might be only eligible for online demo mode. Please contact your support representative for more details.</translation>
-<translation id="5956585768868398362">Is this the search page that you were expecting?</translation>
 <translation id="5957987129450536192">Tap the Select-to-Speak icon near your profile image, then select what you want to hear.</translation>
 <translation id="5959471481388474538">Network not available</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> peak)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Open all in &amp;new window}=1{Open in &amp;new window}other{Open all ({COUNT}) in &amp;new window}}</translation>
 <translation id="5964247741333118902">Embedded content</translation>
-<translation id="5965661248935608907">It also controls what page is shown when you click the Home button or search from the Omnibox.</translation>
 <translation id="5966511985653515929">Site data is deleted from your device when you close all windows</translation>
 <translation id="5968022600320704045">No search results</translation>
 <translation id="5969364029958154283">Learn more about resetting settings</translation>
@@ -6759,7 +6754,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6309510305002439352">Microphone turned off</translation>
 <translation id="6310141306111263820">Couldn't install eSIM profile. For help, please contact your operator.</translation>
 <translation id="6311220991371174222">Cannot start Chrome because something went wrong when opening your profile. Try to restart Chrome.</translation>
-<translation id="6311708879134408222">You can try again tomorrow.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Safety check ran 1 day ago}other{Safety check ran {NUM_DAYS} days ago}}</translation>
 <translation id="6312638141433622592">Offer to show articles in reader mode, when supported</translation>
 <translation id="6313641880021325787">EXIT VR</translation>
@@ -7284,7 +7278,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">Disable mobile</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
-<translation id="6756059675436942777">Check your internet connection and try again.</translation>
 <translation id="6756157672127672536">The Files app provides Quick access to files that you've saved on Google Drive, external storage or your Chrome OS device.</translation>
 <translation id="6756643207511618722">Speech engines</translation>
 <translation id="6757431299485455321">Help other devices find this hotspot.</translation>
@@ -7689,7 +7682,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7047059339731138197">Pick a background</translation>
 <translation id="7049293980323620022">Keep file?</translation>
 <translation id="7050037487872780845">Invalid hotspot configuration</translation>
-<translation id="7051551856857948729">Hide IBAN value</translation>
 <translation id="7052237160939977163">Send performance trace data</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
@@ -8575,7 +8567,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Adjust the boundaries of your display</translation>
-<translation id="7760004034676677601">Is this the start-up page that you were expecting?</translation>
 <translation id="7762024824096060040">Can't use this account</translation>
 <translation id="7762243782113123335">Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Add address</translation>
@@ -8677,7 +8668,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7828642077514646543">Error: Unable to decode certificate</translation>
 <translation id="7829877209233347340">Ask a parent to sign in to grant permission to add a school account</translation>
 <translation id="7830833461614351956">Copy <ph name="NUM_OF_FILES" /> files to <ph name="CLOUD_PROVIDER" /> to open?</translation>
-<translation id="783088158898934992">App language</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">If Google finds a discount, you will see it on this page</translation>
 <translation id="7833720883933317473">Saved custom words will appear here</translation>
@@ -9885,7 +9875,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="876956356450740926">Run developer tools, IDEs and editors. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Extension root directory</translation>
 <translation id="8771300903067484968">Start page background has been reset to the default background.</translation>
-<translation id="8773280816776735812">Show IBAN value</translation>
 <translation id="8774379074441005279">Confirm Restore</translation>
 <translation id="8774934320277480003">Top margin</translation>
 <translation id="8775144690796719618">Invalid URL</translation>
@@ -10064,6 +10053,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8910987510378294980">Hide device list</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Enable auto-scan</translation>
+<translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8915307125957890427">Right-click on a tab and select 'Add tab to group' and then select 'New group'</translation>
 <translation id="8915370057835397490">Loading suggestion</translation>
 <translation id="8916476537757519021">Incognito Subframe: <ph name="SUBFRAME_SITE" /></translation>

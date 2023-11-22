@@ -4063,7 +4063,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="412730574613779332">Superhelt</translation>
 <translation id="4130199216115862831">Logfil for enheden</translation>
-<translation id="4130207949184424187">Denne udvidelse har ændret, hvilken side der vises, når du søger via omnifeltet.</translation>
 <translation id="4130750466177569591">Jeg accepterer</translation>
 <translation id="413121957363593859">Komponenter</translation>
 <translation id="4131283654370308898">Tillad <ph name="EXTENSION_NAME" /> på dette website</translation>
@@ -5570,7 +5569,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5355191726083956201">Forbedret beskyttelse er aktiveret</translation>
 <translation id="5355498626146154079">Du skal aktivere demofunktionen "Borealis Enabled"</translation>
 <translation id="5355501370336370394">Tilmeld virksomhedsenhed</translation>
-<translation id="5355926466126177564">Udvidelsen <ph name="EXTENSION_NAME" /> har ændret, hvilken side der vises, når du søger via omnifeltet.</translation>
 <translation id="5356155057455921522">Denne opdatering fra din administrator vil få din organisations apps til at åbne hurtigere. Dette kan tage et par minutter.</translation>
 <translation id="5359910752122114278">1 resultat</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> fane</translation>
@@ -5912,7 +5910,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5624120631404540903">Administrer adgangskoder</translation>
 <translation id="5625225435499354052">Rediger i Google Pay</translation>
 <translation id="5626134646977739690">Navn:</translation>
-<translation id="5627086634964711283">Den styrer også, hvilken side der vises, når du klikker på knappen Startside.</translation>
 <translation id="5627832140542566187">Visningsretning</translation>
 <translation id="5628434207686266338">Angiv en adgangskode til enheden</translation>
 <translation id="562935524653278697">Din administrator har deaktiveret synkroniseringen af bogmærker, historik, adgangskoder og andre indstillinger.</translation>
@@ -6316,14 +6313,12 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Et website vil gerne åbne denne app.</translation>
 <translation id="5955809630138889698">Denne enhed er muligvis ikke kvalificeret til onlinedemotilstand. Kontakt din supportrepræsentant for at få flere oplysninger.</translation>
-<translation id="5956585768868398362">Var det den søgeside, du havde forventet?</translation>
 <translation id="5957987129450536192">Tryk på ikonet for tekstoplæsning i nærheden af dit profilbillede, og vælg derefter det, der skal læses højt.</translation>
 <translation id="5959471481388474538">Netværket er ikke tilgængeligt</translation>
 <translation id="5963413905009737549">Afsnit</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maks. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn ({COUNT}) i &amp;nyt vindue}other{Åbn alle ({COUNT}) i &amp;nyt vindue}}</translation>
 <translation id="5964247741333118902">Indlejret indhold</translation>
-<translation id="5965661248935608907">Den styrer også, hvilken side der vises, når du klikker på knappen Startside eller søger via omnifeltet.</translation>
 <translation id="5966511985653515929">Websitedata slettes fra din enhed, når du lukker alle vinduer</translation>
 <translation id="5968022600320704045">Ingen søgeresultater</translation>
 <translation id="5969364029958154283">Få flere oplysninger om nulstilling af indstillinger</translation>
@@ -6760,7 +6755,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6309510305002439352">Mikrofonen er deaktiveret</translation>
 <translation id="6310141306111263820">eSIM-profilen kunne ikke installeres. Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="6311220991371174222">Chrome kan ikke startes, da der gik noget galt ved åbningen af din profil. Prøv at genstarte Chrome.</translation>
-<translation id="6311708879134408222">Du kan prøve igen i morgen.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Sikkerhedstjekket blev udført for 1 dag siden}one{Sikkerhedstjekket blev udført for {NUM_DAYS} dag siden}other{Sikkerhedstjekket blev udført for {NUM_DAYS} dage siden}}</translation>
 <translation id="6312638141433622592">Tilbyd at vise artikler i Læser-tilstand, når dette understøttes</translation>
 <translation id="6313641880021325787">LUK VR</translation>
@@ -7287,7 +7281,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6749473226660745022">Billeder</translation>
 <translation id="6750757184909117990">Deaktiver mobilnetværk</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
-<translation id="6756059675436942777">Tjek din internetforbindelse, og prøv igen.</translation>
 <translation id="6756157672127672536">Appen Filer giver hurtig adgang til filer, som du har gemt i Google Drev, på et eksternt lager eller på din ChromeOS-enhed.</translation>
 <translation id="6756643207511618722">Oplæsningsmaskiner</translation>
 <translation id="6757431299485455321">Hjælp andre enheder med at finde dette hotspot.</translation>
@@ -7692,7 +7685,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7047059339731138197">Vælg en baggrund</translation>
 <translation id="7049293980323620022">Vil du beholde filen?</translation>
 <translation id="7050037487872780845">Ugyldig konfiguration af hotspot</translation>
-<translation id="7051551856857948729">Skjul IBAN-værdi</translation>
 <translation id="7052237160939977163">Send data om ydeevne</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7055152154916055070">Omdirigeringen blev blokeret:</translation>
@@ -8578,7 +8570,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7757787379047923882">Tekst, der deles fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Tilpas grænserne for din skærm</translation>
-<translation id="7760004034676677601">Var det den opstartsside, du havde forventet?</translation>
 <translation id="7762024824096060040">Denne konto kan ikke bruges</translation>
 <translation id="7762243782113123335">Noget gik galt. Send os feedback med #bruschetta i beskrivelsen. Fejlkoden er <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Tilføj adresse</translation>
@@ -8679,7 +8670,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7828642077514646543">Fejl: Certifikatet kunne ikke afkodes</translation>
 <translation id="7829877209233347340">Bed din forælder om at logge ind og give tilladelse til, at skolekontoen tilføjes</translation>
 <translation id="7830833461614351956">Vil du kopiere <ph name="NUM_OF_FILES" /> filer til <ph name="CLOUD_PROVIDER" />, så de kan åbnes?</translation>
-<translation id="783088158898934992">Appsprog</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Hvis Google finder en rabat, vises rabatten på denne side</translation>
 <translation id="7833720883933317473">Dine gemte tilføjelser til ordbogen vises her</translation>
@@ -9888,7 +9878,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="876956356450740926">Kør udviklerværktøjer, IDE'er og redigeringsværktøjer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>
-<translation id="8773280816776735812">Vis IBAN-værdi</translation>
 <translation id="8774379074441005279">Bekræft gendannelse</translation>
 <translation id="8774934320277480003">Topmargen</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
@@ -10068,6 +10057,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8910987510378294980">Skjul liste over enheder</translation>
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8912810933860534797">Aktivér automatisk scanning</translation>
+<translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8915307125957890427">Højreklik på en fane, vælg "Føj fane til gruppe", og vælg derefter "Ny gruppe"</translation>
 <translation id="8915370057835397490">Indlæser forslag</translation>
 <translation id="8916476537757519021">Underramme for inkognitotilstand: <ph name="SUBFRAME_SITE" /></translation>

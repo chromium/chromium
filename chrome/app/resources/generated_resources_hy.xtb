@@ -2675,6 +2675,7 @@
 <translation id="3021065318976393105">Մարտկոցից սնուցման ընթացքում</translation>
 <translation id="3021066826692793094">Թիթեռ</translation>
 <translation id="3021678814754966447">&amp;Դիտել շրջանակի սկզբնաղբյուրը</translation>
+<translation id="3021902017511220299">Չհաջողվեց սկանավորել։ Ադմինիստրատորն արգելափակել է այս գործողությունը։</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> սարքը կհեռացվի այս Chromebook-ից և չի պահվի <ph name="PRIMARY_EMAIL" /> հաշվում։</translation>
 <translation id="3022978424994383087">Անհասկանալի է:</translation>
 <translation id="3023464535986383522">Ընտրեք և լսեք</translation>
@@ -4046,7 +4047,6 @@
 <translation id="4124935795427217608">Միաեղջյուր</translation>
 <translation id="412730574613779332">Գերհերոս</translation>
 <translation id="4130199216115862831">Սարքի մատյան</translation>
-<translation id="4130207949184424187">Այս ընդլայնումը փոխել է Omnibox-ում որոնման ժամանակ ցուցադրվող էջը:</translation>
 <translation id="4130750466177569591">Համաձայն եմ</translation>
 <translation id="413121957363593859">Բաղադրիչներ</translation>
 <translation id="4131283654370308898">Թույլատրել <ph name="EXTENSION_NAME" /> ընդլայնումը այս կայքում</translation>
@@ -5555,7 +5555,6 @@
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5355498626146154079">Հարկավոր է միացնել «Borealis Enabled» փորձնական գործառույթը</translation>
 <translation id="5355501370336370394">Գրանցել կորպորատիվ սարք</translation>
-<translation id="5355926466126177564">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է Omnibox-ում որոնման ժամանակ ցուցադրվող էջը:</translation>
 <translation id="5356155057455921522">Ադմինիստրատորի տրամադրած այս թարմացումից հետո ձեր կազմակերպության հավելվածներն ավելի արագ կգործարկվեն։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="5359910752122114278">1 արդյունք</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> ներդիր</translation>
@@ -5895,7 +5894,6 @@
 <translation id="5624120631404540903">Կառավարել գաղտնաբառերը</translation>
 <translation id="5625225435499354052">Փոփոխել Google Pay-ում</translation>
 <translation id="5626134646977739690">Անուն՝</translation>
-<translation id="5627086634964711283">Այն նաև վերահսկում է, թե ինչ էջ պետք է ցուցադրվի Սկիզբ կոճակը սեղմելիս:</translation>
 <translation id="5627832140542566187">Էկրանի դիրքավորումը</translation>
 <translation id="5628434207686266338">Սահմանեք սարքի գաղտնաբառը</translation>
 <translation id="562935524653278697">Ադմինիստրատորն անջատել է ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և մյուս կարգավորումների համաժամացումը:</translation>
@@ -6298,14 +6296,12 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Կայքին անհրաժեշտ է բացել այս հավելվածը:</translation>
 <translation id="5955809630138889698">Այս սարքն աշխատում է միայն անցանց դեմո ռեժիմում։ Մանրամասներն իմանալու համար դիմեք աջակցման կենտրոնի մասնագետներին։</translation>
-<translation id="5956585768868398362">Սա՞ է ձեր սպասած որոնման էջը:</translation>
 <translation id="5957987129450536192">Հպեք «Ընտրեք և լսեք» պատկերակին և նշեք տեքստը՝ այն հնչեցնելու համար։</translation>
 <translation id="5959471481388474538">Ցանցը մատչելի չէ</translation>
 <translation id="5963413905009737549">Հատված</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> առավելագույն)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
 <translation id="5964247741333118902">Զետեղված բովանդակություն</translation>
-<translation id="5965661248935608907">Այն նաև վերահսկում է, թե որ էջը պետք է ցուցադրվի` Սկիզբ կոճակը սեղմելիս կամ Omnibox-ից որոնում կատարելիս:</translation>
 <translation id="5966511985653515929">Երբ փակեք բոլոր պատուհանները, կայքերի տվյալները կհեռացվեն ձեր սարքից</translation>
 <translation id="5968022600320704045">Որոնման արդյունքներ չկան</translation>
 <translation id="5969364029958154283">Իմանալ ավելին կարգավորումների զրոյացման մասին</translation>
@@ -6742,7 +6738,6 @@
 <translation id="6309510305002439352">Խոսափողի օգտագործման թույլտվությունն անջատված է</translation>
 <translation id="6310141306111263820">Չհաջողվեց տեղադրել eSIM պրոֆիլը։ Օգնության համար դիմեք ձեր օպերատորին։</translation>
 <translation id="6311220991371174222">Չհաջողվեց գործարկել Chrome-ը, քանի որ պրոֆիլը բացելիս սխալ առաջացավ: Վերագործարկեք Chrome-ը:</translation>
-<translation id="6311708879134408222">Վաղը կարող եք նորից փորձել։</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Անվտանգության ստուգումն արվել է 1 օր առաջ}one{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}other{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}}</translation>
 <translation id="6312638141433622592">Առաջարկել հոդվածների դիտումն ընթերցման ռեժիմում, եթե աջակցվում է</translation>
 <translation id="6313641880021325787">ԴՈՒՐՍ ԳԱԼ VR ՌԵԺԻՄԻՑ</translation>
@@ -7269,7 +7264,6 @@
 <translation id="6749473226660745022">Լուսանկարներ</translation>
 <translation id="6750757184909117990">Անջատել բջջային ցանցը</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ինկոգնիտո)</translation>
-<translation id="6756059675436942777">Ստուգեք ինտերնետ կապը և նորից փորձեք։</translation>
 <translation id="6756157672127672536">«Ֆայլեր» հավելվածի օգնությամբ դուք կարող եք արագ բացել ձեր ֆայլերը, որոնք պահել եք Google Drive-ում, արտաքին կրիչի վրա կամ ChromeOS սարքում։</translation>
 <translation id="6756643207511618722">Խոսքի սինթեզատորներ</translation>
 <translation id="6757431299485455321">Օգնել մյուս սարքերին գտնել այս թեժ կետը։</translation>
@@ -7673,7 +7667,6 @@
 <translation id="7047059339731138197">Ընտրեք ֆոնը</translation>
 <translation id="7049293980323620022">Պահե՞լ ֆայլը:</translation>
 <translation id="7050037487872780845">Թեժ կետի սխալ կազմաձև</translation>
-<translation id="7051551856857948729">Թաքցնել IBAN-ի արժեքը</translation>
 <translation id="7052237160939977163">Ուղարկել կատարողականության հետագծման տվյալները</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
@@ -8559,7 +8552,6 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> սարքից ուղարկված հաղորդագրություն</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Կարգավորեք ձեր էկրանի սահմանագծերը</translation>
-<translation id="7760004034676677601">Սա՞ է ձեր ուզած մեկնարկման էջը:</translation>
 <translation id="7762024824096060040">Հնարավոր չէ օգտագործել այս հաշիվը</translation>
 <translation id="7762243782113123335">Սխալ առաջացավ։ Կարծիք հայտնեք՝ նկարագրության մեջ ավելացնելով #bruschetta։ Սխալի կոդ՝ <ph name="ERROR" />։</translation>
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
@@ -8660,7 +8652,6 @@
 <translation id="7828642077514646543">Սխալ․ չհաջողվեց ապակոդավորել հավաստագիրը</translation>
 <translation id="7829877209233347340">Խնդրեք ծնողին մուտք գործել հաշիվ և ուսումնական հաշիվ ավելացնելու թույլտվություն տալ</translation>
 <translation id="7830833461614351956">Պատճենե՞լ <ph name="NUM_OF_FILES" /> ֆայլ <ph name="CLOUD_PROVIDER" />-ում՝ բացելու համար</translation>
-<translation id="783088158898934992">Հավելվածի լեզուն</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Երբ Google-ը զեղչեր գտնի, դրանք կցուցադրվեն այս էջում։</translation>
 <translation id="7833720883933317473">Պահված հատուկ բառերը կցուցադրվեն այստեղ</translation>
@@ -9044,6 +9035,7 @@
 <translation id="811994229154425014">Սեղմել կրկնակի բացատ՝ կետ մուտքագրելու համար</translation>
 <translation id="8120505434908124087">Տեղադրել eSIM պրոֆիլը</translation>
 <translation id="8121750884985440809">Այս պահին դուք հեռարձակում եք ձեր էկրանը</translation>
+<translation id="8122898034710982882">Հեռախոսի կառավարման կենտրոն, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Դեղին ու սպիտակ ծաղիկ</translation>
 <translation id="8123975449645947908">Ոլորել հետ</translation>
 <translation id="8124313775439841391">Կառավարվող ONC</translation>
@@ -9079,6 +9071,7 @@
 <translation id="8148760431881541277">Մուտքի սահմանափակում</translation>
 <translation id="8149564499626272569">Հաստատել USB մալուխով միացված հեռախոսի միջոցով</translation>
 <translation id="8149870652370242480">Պահված գաղտնաբառերը ձեր հեռախոսում օգտագործելու համար ներբեռնեք iOS-ի համար նախատեսված Chrome դիտարկիչը և մուտք գործեք ձեր Google հաշիվ։</translation>
+<translation id="8151057139207656239">Կառուցման տվյալները պատճենվեցին</translation>
 <translation id="815114315010033526">Օգտագործել QR կոդ</translation>
 <translation id="8151638057146502721">Կազմաձևել</translation>
 <translation id="8154790740888707867">Ֆայլ չի գտնվել</translation>
@@ -9865,7 +9858,6 @@
 <translation id="876956356450740926">Աշխատեցրեք ծրագրավորողի գործիքներ, IDE-ներ և խմբագրիչներ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Ընդլայնման արմատային գրացուցակ</translation>
 <translation id="8771300903067484968">Գլխավոր էջը վերակայվել է կանխադրված ֆոնով։</translation>
-<translation id="8773280816776735812">Ցույց տալ IBAN-ի արժեքը</translation>
 <translation id="8774379074441005279">Հաստատեք վերականգնումը</translation>
 <translation id="8774934320277480003">Վերին լուսանցք</translation>
 <translation id="8775144690796719618">URL-ն անվավեր է</translation>
@@ -10045,6 +10037,7 @@
 <translation id="8910987510378294980">Թաքցնել սարքերի ցանկը</translation>
 <translation id="8912362522468806198">Google հաշիվ</translation>
 <translation id="8912810933860534797">Միացնել ավտոմատ որոնումը</translation>
+<translation id="8914504000324227558">Chrome-ի վերագործարկում</translation>
 <translation id="8915307125957890427">Մկնիկի աջ կոճակով սեղմեք ներդիրի վրա և ընտրեք «Ավելացնել ներդիրը նոր խմբում», այնուհետև՝ «Նոր խումբ»</translation>
 <translation id="8915370057835397490">Առաջարկը բեռնվում է</translation>
 <translation id="8916476537757519021">Ինկոգնիտո ռեժիմի ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>

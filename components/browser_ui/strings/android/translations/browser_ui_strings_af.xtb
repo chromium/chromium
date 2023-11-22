@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Prentdekodeerder</translation>
 <translation id="1785415724048343560">Aanbeveel vir beste ervaring</translation>
 <translation id="1818308510395330587">Om <ph name="APP_NAME" /> AR te laat gebruik, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
-<translation id="187227595286001730">Verwante werwe kan jou aktiwiteit in die groep sien</translation>
 <translation id="1887786770086287077">Liggingtoegang is af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="1915307458270490472">Sit neer</translation>
 <translation id="1919950603503897840">Kies kontakte</translation>
@@ -63,7 +62,6 @@
 <translation id="2182457891543959921">Vra voordat werwe toegelaat word om 'n 3D-kaart van jou omgewing te skep of kameraposisie na te spoor (aanbeveel)</translation>
 <translation id="2185965788978862351">Dit sal <ph name="DATASIZE" /> se data en webkoekies uitvee wat deur werwe of deur apps op jou tuisskerm geberg is.</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
-<translation id="2212565012507486665">Laat webkoekies toe</translation>
 <translation id="2228071138934252756">Om <ph name="APP_NAME" /> toegang tot jou kamera te gee, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="2238944249568001759">Voorgestelde soektogte op grond van jou jongste oortjie</translation>
@@ -104,7 +102,6 @@
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2678468611080193228">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder beskerming beteken, maar werfkenmerke is meer geneig om te werk</translation>
 <translation id="2683434792633810741">Vee uit en stel terug?</translation>
-<translation id="2687403674020088961">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2717722538473713889">E-posadresse</translation>
 <translation id="2750481671343847896">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys.</translation>
@@ -156,7 +153,6 @@
 <translation id="3586500876634962664">Kamera- en mikrofoongebruik</translation>
 <translation id="358794129225322306">Laat 'n werf toe om outomaties veelvuldige lêers af te laai</translation>
 <translation id="3594780231884063836">Demp video</translation>
-<translation id="3596414637720633074">Blokkeer derdepartywebkoekies in Incognito</translation>
 <translation id="3600792891314830896">Demp werwe wat klank speel</translation>
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3628308229821498208">Voorgestelde soektogte</translation>
@@ -184,7 +180,6 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
 <translation id="4002066346123236978">Titel</translation>
-<translation id="4008040567710660924">Laat webkoekies vir 'n spesifieke werf toe.</translation>
 <translation id="4046123991198612571">Volgende snit</translation>
 <translation id="4149890623864272035">Is jy seker jy wil alle plaaslike data, insluitend webkoekies, uitvee en alle toestemmings vir hierdie webwerf terugstel?</translation>
 <translation id="4149994727733219643">Vereenvoudigde aansig vir webbladsye</translation>
@@ -225,7 +220,6 @@
 <translation id="4883854917563148705">Bestuurde instellings kan nie teruggestel word nie</translation>
 <translation id="4887024562049524730">Vra voordat werwe toegelaat word om jou virtuelerealiteittoestel en -data te gebruik (aanbeveel)</translation>
 <translation id="4953688446973710931">Wanneer dit aan is, kan werwe vra om outomaties veelvuldige lêers af te laai. Wanneer dit af is, kan werwe nie outomaties veelvuldige lêers aflaai nie.</translation>
-<translation id="4955223779495905865">’n Werf wat jy tans bekyk, kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Enige van hierdie werwe kan webkoekies en ander data stoor om jou ervaring te personaliseer.</translation>
 <translation id="4962975101802056554">Herroep alle toestemmings vir toestel</translation>
 <translation id="497421865427891073">Gaan vorentoe</translation>
 <translation id="4976702386844183910">Laas besoek op <ph name="DATE" /></translation>
@@ -426,7 +420,6 @@
 <translation id="8117244575099414087">Wanneer dit aan is, kan werwe jou toestel se sensors gebruik. Wanneer dit af is, kan werwe nie sensors gebruik nie.</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8131740175452115882">Bevestig</translation>
-<translation id="8154912474061769055">Kenmerke op baie werwe sal dalk nie werk nie</translation>
 <translation id="8168435359814927499">Inhoud</translation>
 <translation id="8186479265534291036">Werk werf nie? Derdepartywebkoekies geblokkeer</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> word toegelaat</translation>
@@ -440,7 +433,6 @@
 <translation id="8324158725704657629">Moenie weer vra nie</translation>
 <translation id="8362795839483915693">Jy kan in- of uitzoem op werwe wat jy besoek</translation>
 <translation id="8372893542064058268">Laat agtergrondsinkronisering vir 'n spesifieke werf toe.</translation>
-<translation id="8376384591331888629">Insluitend derdeparty-webkoekies op hierdie werf</translation>
 <translation id="83792324527827022">'n Werf gebruik tans jou kamera en mikrofoon</translation>
 <translation id="8380167699614421159">Hierdie werf wys indringerige of misleidende advertensies</translation>
 <translation id="8394832520002899662">Tik om na werf terug te keer</translation>
@@ -488,7 +480,6 @@
 <translation id="8926666909099850184">NFC is af vir hierdie toestel. Skakel dit aan in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Blokkeer werwe om inligting op NFC-toestelle te sien en te verander</translation>
 <translation id="8944485226638699751">Beperk</translation>
-<translation id="8958424370300090006">Blokkeer webkoekies vir 'n spesifieke werf.</translation>
 <translation id="8959122750345127698">Navigasie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Vergeet</translation>
 <translation id="8990043154272859344">Jy sal op alle werwe afgemeld word</translation>

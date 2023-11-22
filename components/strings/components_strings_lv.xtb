@@ -324,7 +324,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1593359183944365958">Par 270 grādiem</translation>
 <translation id="1594030484168838125">Izvēlēties</translation>
 <translation id="1596296697375291157">Trilleri, noziegumu un šausmu filmas</translation>
-<translation id="1597473228022844713">Jūs izsekojat šo produktu. Šī lapa ir saglabāta sarakstā “<ph name="LAST_BOOKMARKS_FOLDER" />”.</translation>
 <translation id="1598816256585174656">Piekļuves atslēga no Windows Hello</translation>
 <translation id="1599199147673445968">Vai jums ir jauna karte? <ph name="BEGIN_LINK" />Ievadīt kartes datus<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Spēlēt dinozaura skriešanas spēli pārlūkā Chrome</translation>
@@ -517,6 +516,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1997484222658892567">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pastāvīgi uzglabāt lielu datu apjomu jūsu lokālajā datorā.</translation>
 <translation id="1997774360448418989">Papīrs (zema gramāža)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{un vēl 1}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
+<translation id="2001469757375372617">Radās problēma. Izmaiņas netika saglabātas.</translation>
 <translation id="2003709556000175978">Nekavējoties atiestatiet paroli</translation>
 <translation id="2003775180883135320">Četri caurumi augšdaļā</translation>
 <translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
@@ -722,6 +722,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2395840535409704129">Ūdens sporta veidi</translation>
 <translation id="2396249848217231973">&amp;Atsaukt dzēšanu</translation>
 <translation id="2397836504670957718">Klēpjdatori un piezīmjdatori</translation>
+<translation id="2399868464369312507">Pārlūkā Google Chrome tiek mēģināts automātiski rediģēt maksājuma veidus.</translation>
 <translation id="2400600116338235695">Var pieprasīt atļauju veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="2404884497378469141">Mēģiniet vēlreiz kopēt savus failus.</translation>
 <translation id="2413155254802890957">Vecā</translation>
@@ -1115,6 +1116,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3250640885957938546">Reklamēšana un mārketings</translation>
 <translation id="3252772880526154546">Arhitektūra</translation>
 <translation id="3254301855501243548">18 x 22 collas</translation>
+<translation id="3255926992597692024">Pārlūkā Chromium tiek mēģināts mainīt maksājuma veidu aizpildes iestatījumus.</translation>
 <translation id="3256863843508922226">Pensionēšanās un pensijas</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu pasākumu Google kalendārā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3261488570342242926">Uzzināt vairāk par virtuālajām kartēm</translation>
@@ -1497,6 +1499,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4047351652147966654">18 x 24 collas</translation>
 <translation id="404831776305217138">Paplašinājuma ar ID “<ph name="EXTENSION_ID" />” atjaunināšanas vietrādis URL nav derīgs vai satur neatbalstītu shēmu. Atbalstītās shēmas ir <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> un <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Jūs varēsiet izmantot šo adresi Google produktos.</translation>
+<translation id="4050599136622776556">Pārlūkā Chromium tiek mēģināts automātiski rediģēt maksājuma veidus.</translation>
 <translation id="405399507749852140">Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="4056223980640387499">Sēpija</translation>
 <translation id="4063063121357725926">Ļaujiet Google palīdzēt jums atrast atlaides jūsu groziem</translation>
@@ -1619,6 +1622,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-krekli</translation>
 <translation id="4253168017788158739">Piezīme</translation>
+<translation id="4255487295905690262">Jūs saņemsiet e-pasta brīdinājumus, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
 <translation id="425582637250725228">Veiktās izmaiņas, iespējams, netiks saglabātas.</translation>
 <translation id="4258748452823770588">Paraksts nav derīgs.</translation>
 <translation id="4261046003697461417">Aizsargātiem dokumentiem nevar pievienot piezīmes</translation>
@@ -2973,7 +2977,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6999480632062519056">Fitnesa programmas un individuālās nodarbības</translation>
 <translation id="6999969238895751684">Izklaides nozare</translation>
 <translation id="7003278537452757231">Paklāji un grīdsegas</translation>
-<translation id="7003335073762455340">Jūs izsekojat šo produktu. Šī lapa ir saglabāta mapē “<ph name="LAST_BOOKMARKS_FOLDER" />”.</translation>
 <translation id="7004499039102548441">Nesen atvērtas cilnes</translation>
 <translation id="7004583254764674281">Izmantot Windows Hello, lai ātrāk apstiprinātu kartes</translation>
 <translation id="7006930604109697472">Tomēr sūtīt</translation>
@@ -3029,7 +3032,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7108819624672055576">Atļāva paplašinājums</translation>
 <translation id="7109510814665441393">Braukšanas un sacīkšu spēles</translation>
 <translation id="7110116949943042888">Īslaicīgi un sezonas darbi</translation>
-<translation id="7110553203952632623">Jūs saņemsiet e-pasta brīdinājumus, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
 <translation id="7111012039238467737">(derīgs)</translation>
 <translation id="7111507312244504964">Īpašumu pārbaude un novērtēšana</translation>
 <translation id="7112327784801341716">Vai neredzat pašreizējo informāciju? Sazinieties ar banku, lai to atjauninātu.</translation>
@@ -3148,7 +3150,6 @@ Papildu informācija:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Maksājumu apdarinātāji</translation>
 <translation id="7367985555340314048">Interešu tēmu pamatā ir jūsu nesenā pārlūkošanas vēsture, un vietnes tās izmanto, lai rādītu jums personalizētas reklāmas.</translation>
-<translation id="7368169244533796604">Dzēst vietni</translation>
 <translation id="7372526636730851647">Fotopapīrs (glancēts)</translation>
 <translation id="7372973238305370288">meklēšanas rezultāts</translation>
 <translation id="7374461526650987610">Protokolu apdarinātāji</translation>
@@ -3571,7 +3572,6 @@ Papildu informācija:
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
 <translation id="8135546115396015134">kreisais taustiņš</translation>
-<translation id="8144303576836498784">Radās problēma. Jūsu izmaiņas netika saglabātas.</translation>
 <translation id="8148608574971654810">PDF versija:</translation>
 <translation id="8149426793427495338">Dators tika pārslēgts miega režīmā.</translation>
 <translation id="8150722005171944719">Vietnē <ph name="URL" /> esošo failu nevar nolasīt. Iespējams, tas ir noņemts vai pārvietots vai piekļuvei nepieciešamas atļaujas.</translation>
@@ -3784,6 +3784,7 @@ Papildu informācija:
 <translation id="8542014550340843547">Trīskāršs skavojums apakšdaļā</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Jūs varat <ph name="BEGIN_ERROR_LINK" />ziņot par noteikšanas problēmu<ph name="END_ERROR_LINK" /> vai, ja apzināties drošības riskus, <ph name="BEGIN_LINK" />apmeklēt šo nedrošo vietni<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Pārlūkā Google Chrome tiek mēģināts mainīt maksājuma veidu aizpildes iestatījumus.</translation>
 <translation id="8544303911974837265">Poliesteris</translation>
 <translation id="854548366864113872">Augstas cenas opcija</translation>
 <translation id="8546254312340305428">Norādiet augšupielādēšanas iemeslu (obligāti)</translation>

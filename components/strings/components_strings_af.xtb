@@ -324,7 +324,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1593359183944365958">270 grade</translation>
 <translation id="1594030484168838125">Kies</translation>
 <translation id="1596296697375291157">Rillers, misdaad- en misterieflieks</translation>
-<translation id="1597473228022844713">Jy spoor tans hierdie produk na. Hierdie bladsy is in <ph name="LAST_BOOKMARKS_FOLDER" /> gestoor</translation>
 <translation id="1598816256585174656">Wagwoordsleutel van Windows Hello</translation>
 <translation id="1599199147673445968">Nuwe kaart? <ph name="BEGIN_LINK" />Voer kaartbesonderhede in<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Speel die Dino Run-speletjie in Chrome</translation>
@@ -517,6 +516,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1997484222658892567"><ph name="URL" /> wil groot data permanent op jou plaaslike rekenaar berg</translation>
 <translation id="1997774360448418989">Papier (lig)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
+<translation id="2001469757375372617">Iets het skeefgeloop. Jou verandering is nie gestoor nie.</translation>
 <translation id="2003709556000175978">Stel jou wagwoord nou terug</translation>
 <translation id="2003775180883135320">Vierpons bo</translation>
 <translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
@@ -722,6 +722,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2395840535409704129">Watersportsoorte</translation>
 <translation id="2396249848217231973">Ontdoen uitvee</translation>
 <translation id="2397836504670957718">Skootrekenaars</translation>
+<translation id="2399868464369312507">Google Chrome probeer tans om betaalmetodes te wysig.</translation>
 <translation id="2400600116338235695">Kan vra om aan reekspoorte te koppel</translation>
 <translation id="2404884497378469141">Probeer jou lêers weer kopieer</translation>
 <translation id="2413155254802890957">Oud</translation>
@@ -1115,6 +1116,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3250640885957938546">Reklame en bemarking</translation>
 <translation id="3252772880526154546">Argitektuur</translation>
 <translation id="3254301855501243548">18x22 dm.</translation>
+<translation id="3255926992597692024">Chromium probeer tans instellings vir die invul van betaalmetodes wysig.</translation>
 <translation id="3256863843508922226">Aftrede en pensioen</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe geleentheid in Google Kalender te skep</translation>
 <translation id="3261488570342242926">Kom meer te wete oor virtuele kaarte</translation>
@@ -1498,6 +1500,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4047351652147966654">18x24 dm.</translation>
 <translation id="404831776305217138">Opdatering-URL vir uitbreiding met ID “<ph name="EXTENSION_ID" />” is ongeldig of gebruik ’n ongesteunde skema. Gesteunde skemas is: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> en <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Jy sal dit in alle Google-produkte kan gebruik</translation>
+<translation id="4050599136622776556">Chromium probeer tans om betaalmetodes te wysig.</translation>
 <translation id="405399507749852140">Kry kennisgewings as die prys op enige werf daal</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Laat Google jou help om afslag vir jou mandjies te kry</translation>
@@ -1620,6 +1623,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T-hemde</translation>
 <translation id="4253168017788158739">Nota</translation>
+<translation id="4255487295905690262">Jy sal e-poskennisgewings kry as die prys op enige werf daal.</translation>
 <translation id="425582637250725228">Veranderinge wat jy aangebring het, sal dalk nie gestoor word nie.</translation>
 <translation id="4258748452823770588">Swak handtekening</translation>
 <translation id="4261046003697461417">Aantekeninge kan nie op beskermde dokumente gemaak word nie</translation>
@@ -2974,7 +2978,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6999480632062519056">Fiksheid- en persoonlike afrigting</translation>
 <translation id="6999969238895751684">Vermaakbedryf</translation>
 <translation id="7003278537452757231">Matte en tapyte</translation>
-<translation id="7003335073762455340">Jy spoor tans hierdie produk na. Hierdie bladsy is in <ph name="LAST_BOOKMARKS_FOLDER" /> gestoor</translation>
 <translation id="7004499039102548441">Onlangse oortjies</translation>
 <translation id="7004583254764674281">Gebruik Windows Hello om kaarte vinniger te bevestig</translation>
 <translation id="7006930604109697472">Stuur in elk geval</translation>
@@ -3030,7 +3033,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7108819624672055576">Toegelaat deur 'n uitbreiding</translation>
 <translation id="7109510814665441393">Bestuur- en wedrenspeletjies</translation>
 <translation id="7110116949943042888">Tydelike en seisoenale poste</translation>
-<translation id="7110553203952632623">Jy sal e-poskennisgewings kry as die prys op enige werf daal</translation>
 <translation id="7111012039238467737">(Geldig)</translation>
 <translation id="7111507312244504964">Eiendomsinspeksies en -keurings</translation>
 <translation id="7112327784801341716">Sien jy nie jou huidige inligting nie? Kontak jou bank om dit op te dateer.</translation>
@@ -3149,7 +3151,6 @@ Bykomende besonderhede:
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">Betalinghanteerders</translation>
 <translation id="7367985555340314048">Onderwerpe waarin jy belangstel, word op jou onlangse blaaigeskiedenis gegrond en word deur werwe gebruik om vir jou gepersonaliseerde advertensies te wys</translation>
-<translation id="7368169244533796604">Vee werf uit</translation>
 <translation id="7372526636730851647">Foto (glans)</translation>
 <translation id="7372973238305370288">soekresultaat</translation>
 <translation id="7374461526650987610">Protokolhanteerders</translation>
@@ -3572,7 +3573,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8134058435519644366">Werwing en personeel</translation>
 <translation id="8135546115396015134">linkersleutel</translation>
-<translation id="8144303576836498784">Iets het skeefgeloop. Jou verandering is nie gestoor nie</translation>
 <translation id="8148608574971654810">PDF-weergawe:</translation>
 <translation id="8149426793427495338">Jou rekenaar het gaan slaap.</translation>
 <translation id="8150722005171944719">Die lêer by <ph name="URL" /> is nie leesbaar nie. Dit is dalk verwyder, geskuif of lêertoestemmings kan dalk toegang verhinder.</translation>
@@ -3785,6 +3785,7 @@ Bykomende besonderhede:
 <translation id="8542014550340843547">Tripelkram onder</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Jy kan <ph name="BEGIN_ERROR_LINK" />'n bespeuringsprobleem aangee<ph name="END_ERROR_LINK" /> of, as jy die risikos vir jou sekuriteit verstaan, kan jy <ph name="BEGIN_LINK" />hierdie onveilige werf besoek<ph name="END_LINK" />.</translation>
+<translation id="8544217240017914508">Google Chrome probeer tans instellings vir die invul van betaalmetodes wysig.</translation>
 <translation id="8544303911974837265">Poliëster</translation>
 <translation id="854548366864113872">Duur opsie</translation>
 <translation id="8546254312340305428">Verskaf rede vir oplaai (vereis)</translation>

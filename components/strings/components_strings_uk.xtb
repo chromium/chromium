@@ -324,7 +324,6 @@
 <translation id="1593359183944365958">270 градусів</translation>
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="1596296697375291157">Трилери, детективи та кримінальні фільми</translation>
-<translation id="1597473228022844713">Ви відстежуєте цей товар. Цю сторінку збережено в папці "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="1598816256585174656">Ключ доступу з Windows Hello</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
@@ -517,6 +516,7 @@
 <translation id="1997484222658892567">Сайт <ph name="URL" /> хоче постійно зберігати великий обсяг даних на вашому локальному комп’ютері</translation>
 <translation id="1997774360448418989">Папір (нещільний)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{і ще 1}one{і ще #}few{і ще #}many{і ще #}other{і ще #}}</translation>
+<translation id="2001469757375372617">Сталася помилка. Не вдалося зберегти зміну.</translation>
 <translation id="2003709556000175978">Скиньте пароль</translation>
 <translation id="2003775180883135320">Пробити чотири отвори вгорі</translation>
 <translation id="2004697686368036666">Функції на деяких сайтах можуть не працювати</translation>
@@ -722,6 +722,7 @@
 <translation id="2395840535409704129">Водні види спорту</translation>
 <translation id="2396249848217231973">&amp;Відмінити видалення</translation>
 <translation id="2397836504670957718">Портативні комп’ютери й ноутбуки</translation>
+<translation id="2399868464369312507">Google Chrome намагається змінити способи оплати.</translation>
 <translation id="2400600116338235695">Може просити дозвіл підключатися до послідовних портів</translation>
 <translation id="2404884497378469141">Спробуйте повторно скопіювати файли</translation>
 <translation id="2413155254802890957">Старі дані</translation>
@@ -1115,6 +1116,7 @@
 <translation id="3250640885957938546">Реклама та маркетинг</translation>
 <translation id="3252772880526154546">Архітектура</translation>
 <translation id="3254301855501243548">18 x 22 дюйм.</translation>
+<translation id="3255926992597692024">Chromium намагається змінити параметри заповнення способів оплати.</translation>
 <translation id="3256863843508922226">Пенсія</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову подію в Google Календарі</translation>
 <translation id="3261488570342242926">Докладніше про віртуальні картки</translation>
@@ -1498,6 +1500,7 @@
 <translation id="4047351652147966654">18 x 24 дюйм.</translation>
 <translation id="404831776305217138">URL-адреса оновлення для розширення з ідентифікатором <ph name="EXTENSION_ID" /> недійсна або використовує непідтримувану схему. Підтримувані схеми: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> і <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ви зможете використовувати цю адресу в усіх продуктах Google</translation>
+<translation id="4050599136622776556">Chromium намагається змінити способи оплати.</translation>
 <translation id="405399507749852140">Отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4063063121357725926">Дозвольте Google знаходити знижки на товари у ваших кошиках</translation>
@@ -1620,6 +1623,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Футболки</translation>
 <translation id="4253168017788158739">Примітка</translation>
+<translation id="4255487295905690262">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення електронною поштою.</translation>
 <translation id="425582637250725228">Внесені зміни, можливо, не буде збережено.</translation>
 <translation id="4258748452823770588">Недійсний підпис</translation>
 <translation id="4261046003697461417">Для захищених документів створення приміток недоступне</translation>
@@ -2974,7 +2978,6 @@
 <translation id="6999480632062519056">Заняття з фітнесу й персональні тренування</translation>
 <translation id="6999969238895751684">Індустрія розваг</translation>
 <translation id="7003278537452757231">Килими й килимові покриття</translation>
-<translation id="7003335073762455340">Ви відстежуєте цей товар. Його сторінку збережено в папці "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
 <translation id="7004583254764674281">Використовувати Windows Hello, щоб швидше підтверджувати картки</translation>
 <translation id="7006930604109697472">Усе одно надіслати</translation>
@@ -3030,7 +3033,6 @@
 <translation id="7108819624672055576">Дозволено розширенням</translation>
 <translation id="7109510814665441393">Симулятори водіння й перегонів</translation>
 <translation id="7110116949943042888">Тимчасові й сезонні вакансії</translation>
-<translation id="7110553203952632623">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення електронною поштою</translation>
 <translation id="7111012039238467737">(Дійсний)</translation>
 <translation id="7111507312244504964">Оцінка вартості й перевірка нерухомості</translation>
 <translation id="7112327784801341716">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
@@ -3149,7 +3151,6 @@
 <translation id="7366117520888504990">198 x 275 мм</translation>
 <translation id="7366362069757178916">Обробники платежів</translation>
 <translation id="7367985555340314048">Теми визначаються на основі вашої нещодавньої історії веб-перегляду й використовуються сайтами, щоб показувати вам персоналізовану рекламу</translation>
-<translation id="7368169244533796604">Видалити сайт</translation>
 <translation id="7372526636730851647">Фотопапір (глянцевий)</translation>
 <translation id="7372973238305370288">результат пошуку</translation>
 <translation id="7374461526650987610">Обробники протоколів</translation>
@@ -3572,7 +3573,6 @@
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8134058435519644366">Набір персоналу й працевлаштування</translation>
 <translation id="8135546115396015134">клавіша зі стрілкою вліво</translation>
-<translation id="8144303576836498784">Сталася помилка. Не вдалося зберегти зміну.</translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
 <translation id="8149426793427495338">Ваш комп’ютер перейшов у режим сну.</translation>
 <translation id="8150722005171944719">Файл за адресою <ph name="URL" /> не читається. Можливо, його видалено, переміщено або доступ заборонено дозволами файлу.</translation>
@@ -3785,6 +3785,7 @@
 <translation id="8542014550340843547">Тричі скріпити внизу</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Ви можете <ph name="BEGIN_ERROR_LINK" />повідомити про проблему з пошуком<ph name="END_ERROR_LINK" /> або <ph name="BEGIN_LINK" />перейти на цей незахищений сайт<ph name="END_LINK" /> (якщо розумієте, наскільки це небезпечно).</translation>
+<translation id="8544217240017914508">Google Chrome намагається змінити параметри заповнення способів оплати.</translation>
 <translation id="8544303911974837265">Поліестер</translation>
 <translation id="854548366864113872">Варіант із високою ціною</translation>
 <translation id="8546254312340305428">Укажіть причину завантаження (обов’язково)</translation>

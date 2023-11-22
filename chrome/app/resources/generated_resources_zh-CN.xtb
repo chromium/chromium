@@ -4038,7 +4038,6 @@
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="412730574613779332">勇士</translation>
 <translation id="4130199216115862831">设备日志</translation>
-<translation id="4130207949184424187">此扩展程序更改了您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="413121957363593859">组件</translation>
 <translation id="4131283654370308898">允许在此网站上使用“<ph name="EXTENSION_NAME" />”</translation>
@@ -5544,7 +5543,6 @@
 <translation id="5355191726083956201">已开启增强型保护</translation>
 <translation id="5355498626146154079">您需要开启“Borealis Enabled”这个 flag</translation>
 <translation id="5355501370336370394">注册企业设备</translation>
-<translation id="5355926466126177564">“<ph name="EXTENSION_NAME" />”扩展程序更改了您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5356155057455921522">此更新由您的管理员提供，可加快贵单位的应用的打开速度。这可能需要几分钟的时间。</translation>
 <translation id="5359910752122114278">1 条结果</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> 个标签页</translation>
@@ -5884,7 +5882,6 @@
 <translation id="5624120631404540903">管理密码</translation>
 <translation id="5625225435499354052">在 Google Pay 中修改</translation>
 <translation id="5626134646977739690">名字：</translation>
-<translation id="5627086634964711283">它还能够控制您点击“主页”按钮后系统显示的页面。</translation>
 <translation id="5627832140542566187">显示屏方向</translation>
 <translation id="5628434207686266338">设置设备密码</translation>
 <translation id="562935524653278697">您的管理员已停止同步您的书签、历史记录、密码及其他设置。</translation>
@@ -6287,14 +6284,12 @@
 <translation id="5955304353782037793">应用</translation>
 <translation id="5955721306465922729">有个网站想打开此应用。</translation>
 <translation id="5955809630138889698">此设备可能只能使用在线演示模式。要了解更多信息，请与您的支持代表联系。</translation>
-<translation id="5956585768868398362">这是您想要的搜索页面吗？</translation>
 <translation id="5957987129450536192">点按您的个人资料图片附近的“随选朗读”图标，然后选择您想听到的内容。</translation>
 <translation id="5959471481388474538">网络不可用</translation>
 <translation id="5963413905009737549">章节标记</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 个（峰值：<ph name="NUM_KILOBYTES_LIVE" />）</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
 <translation id="5964247741333118902">嵌入式内容</translation>
-<translation id="5965661248935608907">它还能够控制您点击“主页”按钮后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5966511985653515929">在您关闭所有窗口时删除设备上的网站数据</translation>
 <translation id="5968022600320704045">无搜索结果</translation>
 <translation id="5969364029958154283">详细了解如何重置设置</translation>
@@ -6731,7 +6726,6 @@
 <translation id="6309510305002439352">麦克风已关闭</translation>
 <translation id="6310141306111263820">无法安装 eSIM 卡配置文件。如需帮助，请与您的运营商联系。</translation>
 <translation id="6311220991371174222">打开您的个人资料时出了点问题，无法启动 Chrome。请尝试重新启动 Chrome。</translation>
-<translation id="6311708879134408222">您可以明天再试。</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前运行过安全检查}other{{NUM_DAYS} 天前运行过安全检查}}</translation>
 <translation id="6312638141433622592">询问是否使用阅读器模式（若支持）显示文章</translation>
 <translation id="6313641880021325787">退出虚拟现实</translation>
@@ -7256,7 +7250,6 @@
 <translation id="6749473226660745022">照片</translation>
 <translation id="6750757184909117990">停用移动网络</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（无痕）</translation>
-<translation id="6756059675436942777">请检查您的互联网连接状况，然后重试。</translation>
 <translation id="6756157672127672536">通过“文件”应用，您可以快速访问自己保存在 Google 云端硬盘、外部存储空间或 Chrome 操作系统设备上的文件。</translation>
 <translation id="6756643207511618722">语音引擎</translation>
 <translation id="6757431299485455321">有助于其他设备发现此热点。</translation>
@@ -7661,7 +7654,6 @@
 <translation id="7047059339731138197">选择背景</translation>
 <translation id="7049293980323620022">要保留文件吗？</translation>
 <translation id="7050037487872780845">热点配置无效</translation>
-<translation id="7051551856857948729">隐藏 IBAN 值</translation>
 <translation id="7052237160939977163">发送性能跟踪数据</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
@@ -8547,7 +8539,6 @@
 <translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">调整显示屏的边界</translation>
-<translation id="7760004034676677601">这是您想要的启动页吗？</translation>
 <translation id="7762024824096060040">无法使用此账号</translation>
 <translation id="7762243782113123335">抱歉，出了点问题。请在说明中提交反馈并附上 #bruschetta。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">添加地址</translation>
@@ -8649,7 +8640,6 @@
 <translation id="7828642077514646543">错误：无法对证书进行解码</translation>
 <translation id="7829877209233347340">如需添加学校账号，请让家长登录并向您授权</translation>
 <translation id="7830833461614351956">将 <ph name="NUM_OF_FILES" /> 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
-<translation id="783088158898934992">应用语言</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">如果 Google 找到了折扣信息，您就会在此页面上看到相应信息</translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
@@ -9857,7 +9847,6 @@
 <translation id="876956356450740926">运行开发者工具、IDE 和编辑器。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">扩展程序根目录</translation>
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
-<translation id="8773280816776735812">显示 IBAN 值</translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>
@@ -10036,6 +10025,7 @@
 <translation id="8910987510378294980">隐藏设备列表</translation>
 <translation id="8912362522468806198">Google 账号</translation>
 <translation id="8912810933860534797">启用自动扫描</translation>
+<translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8915307125957890427">右键点击某个标签页，选择“向组中添加标签页”，然后选择“新建组”</translation>
 <translation id="8915370057835397490">正在加载建议</translation>
 <translation id="8916476537757519021">隐身辅助框架：<ph name="SUBFRAME_SITE" /></translation>

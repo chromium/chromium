@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ໃນແອັບອື່ນຢູ່ iPhone ຂອງທ່ານໄດ້.</translation>
 <translation id="2689064829982324496">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
+<translation id="2702250627063295552">ເພີ່ມລາຍການລາຍຊື່ການອ່ານໃສ່ Chrome</translation>
 <translation id="2736805085127235148">ຕອນນີ້ການແຈ້ງເຕືອນ Chrome ປິດຢູ່ໃນການຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="2767464022270041271">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ທ່ານບັນທຶກພວກມັນໄດ້.</translation>
 <translation id="2868822340714096138">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບໃນ Chrome</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">ຈັດການລະຫັດຜ່ານໃນ Chrome</translation>
 <translation id="3827545470516145620">ທ່ານຈະໄດ້ຮັບການປົກປ້ອງຄວາມປອດໄພມາດຕະຖານຢູ່ອຸປະກອນນີ້</translation>
 <translation id="384394811301901750">Google Chrome ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ໃນຂະນະນີ້</translation>
+<translation id="3863841106411295595">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານໃນ Chrome.</translation>
 <translation id="3901001113120561395">ໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome.</translation>
 <translation id="3967382818307165056">ຈັດການວິທີການຈ່າຍເງິນໃນ Chrome</translation>
 <translation id="3980220367029651214">ທ່ານກຳລັງປ່ຽນບັນຊີຊິ້ງຂໍ້ມູນຈາກ <ph name="USER_EMAIL1" /> ເປັນ <ph name="USER_EMAIL2" />. ຂໍ້ມູນ Chrome ທີ່ມີຢູ່ຖືກຈັດການໂດຍ <ph name="DOMAIN" />. ນີ້ຈະລຶບຂໍ້ມູນຂອງທ່ານອອກຈາກອຸປະກອນນີ້, ແຕ່ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນ <ph name="USER_EMAIL1" />.</translation>

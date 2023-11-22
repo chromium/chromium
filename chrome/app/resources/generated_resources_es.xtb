@@ -2676,6 +2676,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3021065318976393105">Con batería</translation>
 <translation id="3021066826692793094">Mariposa</translation>
 <translation id="3021678814754966447">&amp;Ver fuente del marco</translation>
+<translation id="3021902017511220299">Error al analizar. Tu administrador ha bloqueado esta acción.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> se quitará de este Chromebook y no se guardará en <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">No te he entendido.</translation>
 <translation id="3023464535986383522">Enunciar selección</translation>
@@ -4046,7 +4047,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="412730574613779332">Superhéroe</translation>
 <translation id="4130199216115862831">Registro de dispositivo</translation>
-<translation id="4130207949184424187">Esta extensión ha cambiado la página que se muestra al buscar en el omnibox.</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="413121957363593859">Componentes</translation>
 <translation id="4131283654370308898">Permitir <ph name="EXTENSION_NAME" /> en este sitio</translation>
@@ -5552,7 +5552,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
 <translation id="5355498626146154079">Debes activar la marca "Borealis Enabled"</translation>
 <translation id="5355501370336370394">Registrar dispositivo de empresa</translation>
-<translation id="5355926466126177564">La extensión <ph name="EXTENSION_NAME" /> ha cambiado la página que se muestra al buscar en el omnibox.</translation>
 <translation id="5356155057455921522">Gracias a esta actualización de tu administrador, las aplicaciones de tu organización se abrirán con más rapidez. Este proceso puede durar unos minutos.</translation>
 <translation id="5359910752122114278">1 resultado</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> pestaña</translation>
@@ -5894,7 +5893,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5624120631404540903">Gestionar contraseñas</translation>
 <translation id="5625225435499354052">Editar en Google Pay</translation>
 <translation id="5626134646977739690">Nombre:</translation>
-<translation id="5627086634964711283">También controla qué página se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="5627832140542566187">Orientación de la pantalla</translation>
 <translation id="5628434207686266338">Definir contraseña del dispositivo</translation>
 <translation id="562935524653278697">Tu administrador ha inhabilitado la sincronización de tus marcadores, tus contraseñas, tu historial y otros ajustes.</translation>
@@ -6298,14 +6296,12 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5955304353782037793">aplic</translation>
 <translation id="5955721306465922729">Un sitio web quiere abrir esta aplicación.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo sea apto para el modo Demo online. Para obtener más información, ponte en contacto con tu representante de soporte.</translation>
-<translation id="5956585768868398362">¿Es esta la página de búsqueda que esperabas?</translation>
 <translation id="5957987129450536192">Toca el icono Enunciar selección, situado junto a la imagen de tu perfil, y selecciona la parte que quieres escuchar.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="5963413905009737549">Etiqueta de sección</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> máximo)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todas en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todas ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="5964247741333118902">Contenido insertado</translation>
-<translation id="5965661248935608907">También controla qué página se muestra al hacer clic en el botón de página principal o al hacer búsquedas desde el omnibox.</translation>
 <translation id="5966511985653515929">Los datos de sitios se eliminarán del dispositivo cuando cierres todas las ventanas</translation>
 <translation id="5968022600320704045">No hay resultados de búsqueda</translation>
 <translation id="5969364029958154283">Más información sobre cómo restablecer la configuración</translation>
@@ -6742,7 +6738,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6309510305002439352">Micrófono desactivado</translation>
 <translation id="6310141306111263820">No se ha podido instalar el perfil de eSIM. Para obtener ayuda, ponte en contacto con tu operador.</translation>
 <translation id="6311220991371174222">No se puede iniciar Chrome porque se ha producido un error al abrir el perfil. Prueba a reiniciar el navegador.</translation>
-<translation id="6311708879134408222">Puedes intentarlo de nuevo mañana.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{La comprobación de seguridad se realizó hace 1 día}other{La comprobación de seguridad se realizó hace {NUM_DAYS} días}}</translation>
 <translation id="6312638141433622592">Te ofrece mostrar los artículos en modo de lectura (donde esté disponible)</translation>
 <translation id="6313641880021325787">SALIR DE RV</translation>
@@ -7267,7 +7262,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Inhabilitar red móvil</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (incógnito)</translation>
-<translation id="6756059675436942777">Comprueba tu conexión a Internet e inténtalo de nuevo.</translation>
 <translation id="6756157672127672536">La aplicación Archivos permite acceder rápidamente a los archivos que has guardado en Google Drive, en un almacenamiento interno o en tu dispositivo ChromeOS.</translation>
 <translation id="6756643207511618722">Motores de voz</translation>
 <translation id="6757431299485455321">Ayuda a otros dispositivos a encontrar este punto de acceso.</translation>
@@ -7672,7 +7666,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7047059339731138197">Selecciona un fondo de pantalla</translation>
 <translation id="7049293980323620022">¿Quieres conservar el archivo?</translation>
 <translation id="7050037487872780845">Configuración de punto de acceso no válida</translation>
-<translation id="7051551856857948729">Ocultar valor de IBAN</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Redirección bloqueada:</translation>
@@ -8558,7 +8551,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7757787379047923882">Texto compartido desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ajusta los extremos de la pantalla</translation>
-<translation id="7760004034676677601">¿Es esta la página de inicio que esperabas?</translation>
 <translation id="7762024824096060040">No se puede usar esta cuenta</translation>
 <translation id="7762243782113123335">Se ha producido un error. Envíanos tus comentarios e incluye el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Añadir dirección</translation>
@@ -8660,7 +8652,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7828642077514646543">Error: no se ha podido decodificar el certificado</translation>
 <translation id="7829877209233347340">Pídele a tu padre o a tu madre que inicie sesión para permitir que se añada una cuenta de centro educativo</translation>
 <translation id="7830833461614351956">¿Copiar <ph name="NUM_OF_FILES" /> archivos a <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
-<translation id="783088158898934992">Idioma de la aplicación</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Si Google encuentra un descuento, lo verás en esta página.</translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
@@ -9045,6 +9036,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="811994229154425014">Doble espacio para escribir un punto</translation>
 <translation id="8120505434908124087">Instalar perfil de eSIM</translation>
 <translation id="8121750884985440809">Estás enviando tu pantalla</translation>
+<translation id="8122898034710982882">Mi teléfono, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Flor blanca y amarilla</translation>
 <translation id="8123975449645947908">Desplazar atrás</translation>
 <translation id="8124313775439841391">ONC administrado</translation>
@@ -9080,6 +9072,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8148760431881541277">Limitar inicio de sesión</translation>
 <translation id="8149564499626272569">Verificar mediante tu teléfono con un cable USB</translation>
 <translation id="8149870652370242480">Si quieres usar las contraseñas que tienes guardadas en tu teléfono, descarga Chrome para iOS e inicia sesión en tu cuenta de Google.</translation>
+<translation id="8151057139207656239">Detalles de la compilación copiados</translation>
 <translation id="815114315010033526">Usar código QR</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Ningún archivo encontrado</translation>
@@ -9866,7 +9859,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="876956356450740926">Ejecuta herramientas para desarrolladores, IDEs y editores. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Directorio raíz de la extensión</translation>
 <translation id="8771300903067484968">El fondo de pantalla de la página de inicio se ha restablecido al fondo de pantalla predeterminado.</translation>
-<translation id="8773280816776735812">Mostrar valor de IBAN</translation>
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Margen superior</translation>
 <translation id="8775144690796719618">La URL no es válida</translation>
@@ -10045,6 +10037,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
 <translation id="8912362522468806198">cuenta de Google</translation>
 <translation id="8912810933860534797">Habilitar búsqueda automática</translation>
+<translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8915307125957890427">Haz clic con el botón derecho en una pestaña y selecciona "Añadir pestaña al grupo" &gt; "Nuevo grupo"</translation>
 <translation id="8915370057835397490">Cargando sugerencia</translation>
 <translation id="8916476537757519021">Submarco incógnito: <ph name="SUBFRAME_SITE" /></translation>

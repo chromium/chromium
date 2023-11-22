@@ -36,6 +36,17 @@
 <translation id="1020006815010587263">Il Cestino non è attivo per l'utente.</translation>
 <translation id="1021462144002396313">Criteri di <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID delle estensioni (oppure * per tutte le estensioni) per cui non è consentita l'installazione</translation>
+<translation id="1023465280109914543">Se questo criterio viene attivato, si consiglia di attivare per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di <ph name="PRODUCT_NAME" />. Gli utenti potranno comunque modificare questa impostazione.
+
+Se questo criterio viene disattivato, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non possono modificare questa impostazione.
+
+Se questo criterio non viene configurato, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e possono modificare questa impostazione in un secondo momento.
+
+Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.</translation>
 <translation id="102492767056134033">Impostazione stato predefinito della tastiera sullo schermo nella schermata di accesso</translation>
 <translation id="1026335125982730097">Consente di impostare un elenco di pattern URL che specificano i siti nei quali è consentito impostare i cookie.
 

@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1448064542941920355">縮小</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
 <translation id="1510341833810331442">不允許網站在裝置上儲存資料</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1568470248891039841">你瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。這些其他網站可要求授權，在你瀏覽網站時使用與你相關的既有資料。<ph name="BEGIN_LINK" />進一步瞭解已嵌入的內容<ph name="END_LINK" /></translation>
@@ -40,7 +41,6 @@
 <translation id="1779089405699405702">圖片解碼器</translation>
 <translation id="1785415724048343560">建議勾選，以獲得最佳體驗</translation>
 <translation id="1818308510395330587">如要讓 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
-<translation id="187227595286001730">相關網站可以查看您在群組中的活動</translation>
 <translation id="1887786770086287077">此裝置的位置資訊存取權已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="1915307458270490472">結束通話</translation>
 <translation id="1919950603503897840">選取聯絡人</translation>
@@ -63,7 +63,6 @@
 <translation id="2182457891543959921">在允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置前先詢問您 (建議)</translation>
 <translation id="2185965788978862351">這會刪除網站或主畫面上的應用程式儲存的資料和 Cookie，共 <ph name="DATASIZE" />。</translation>
 <translation id="2194856509914051091">考慮因素</translation>
-<translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
@@ -104,7 +103,6 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2678468611080193228">請嘗試暫時允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
 <translation id="2683434792633810741">要刪除並重設嗎？</translation>
-<translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2717722538473713889">電郵地址</translation>
 <translation id="2750481671343847896">網站可顯示來自身分服務的登入提示。</translation>
@@ -156,7 +154,6 @@
 <translation id="3586500876634962664">使用攝錄機和麥克風</translation>
 <translation id="358794129225322306">允許網站自動下載多個檔案。</translation>
 <translation id="3594780231884063836">將影片靜音</translation>
-<translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
@@ -184,7 +181,6 @@
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="4002066346123236978">標題</translation>
-<translation id="4008040567710660924">允許特定網站存取 Cookie。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4149890623864272035">確定要刪除 Cookie 等所有本機資料，並重設此網站的所有權限嗎？</translation>
 <translation id="4149994727733219643">使用簡化檢視模式查看網頁</translation>
@@ -225,7 +221,6 @@
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">在允許網站使用您的虛擬實境裝置和資料前先詢問您 (建議)</translation>
 <translation id="4953688446973710931">開咗之後，網站可以要求自動下載多個檔案。閂咗之後，網站唔可以自動下載多個檔案。</translation>
-<translation id="4955223779495905865">您瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。上述的任何網站都可儲存 Cookie 和其他資料，為您提供個人化體驗。</translation>
 <translation id="4962975101802056554">撤銷裝置所有的權限</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4976702386844183910">上次瀏覽日期：<ph name="DATE" /></translation>
@@ -277,6 +272,7 @@
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> 可以在你瀏覽時使用你的資訊</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
@@ -320,6 +316,7 @@
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6295158916970320988">所有網站</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> 無法在以下網站使用你的資訊：</translation>
 <translation id="6320088164292336938">震動</translation>
 <translation id="6344622098450209924">追蹤保護功能</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
@@ -426,7 +423,6 @@
 <translation id="8117244575099414087">開咗之後，網站可以使用裝置嘅感應器。閂咗之後，網站唔可以使用感應器。</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8131740175452115882">確定</translation>
-<translation id="8154912474061769055">很多網站的功能可能會無法正常運作</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8186479265534291036">網站無法正常運作嗎？因為第三方 Cookie 已被封鎖</translation>
 <translation id="8197286292360124385">已允許「<ph name="PERMISSION_1" />」</translation>
@@ -440,7 +436,6 @@
 <translation id="8324158725704657629">不要再詢問</translation>
 <translation id="8362795839483915693">您可在瀏覽時縮放網站內容</translation>
 <translation id="8372893542064058268">允許特定網站執行背景同步功能。</translation>
-<translation id="8376384591331888629">包括在此網站上的第三方 Cookie</translation>
 <translation id="83792324527827022">有網站正在使用您的相機和麥克風</translation>
 <translation id="8380167699614421159">此網站顯示滋擾性或誤導廣告</translation>
 <translation id="8394832520002899662">輕按即可返回網站</translation>
@@ -488,7 +483,6 @@
 <translation id="8926666909099850184">此裝置的 NFC 已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="8928445016601307354">禁止網站在 NFC 裝置上查看和變更資料</translation>
 <translation id="8944485226638699751">有限制</translation>
-<translation id="8958424370300090006">禁止特定網站存取 Cookie。</translation>
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">您將會從所有網站登出</translation>
