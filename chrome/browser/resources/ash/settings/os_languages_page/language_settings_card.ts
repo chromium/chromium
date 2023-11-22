@@ -54,7 +54,7 @@ export class LanguageSettingsCardElement extends
         value() {
           if (isRevampWayfindingEnabled()) {
             return {
-              languages: 'os-settings:language',
+              languages: 'os-settings:language-revamp',
             };
           }
           return {
