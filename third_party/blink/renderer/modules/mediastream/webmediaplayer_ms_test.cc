@@ -263,8 +263,6 @@ class MockMediaStreamAudioRenderer : public WebMediaStreamAudioRenderer {
                           media::OutputDeviceStatusCB callback) override {}
   base::TimeDelta GetCurrentRenderTime() override { return base::TimeDelta(); }
 
-  bool IsLocalRenderer() override { return true; }
-
  protected:
   ~MockMediaStreamAudioRenderer() override {}
 };

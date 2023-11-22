@@ -40,12 +40,6 @@ namespace blink {
 
 namespace {
 
-enum LocalRendererSinkStates {
-  kSinkStarted = 0,
-  kSinkNeverStarted,
-  kSinkStatesMax  // Must always be last!
-};
-
 // Translates |num_samples_rendered| into a TimeDelta duration and adds it to
 // |prior_elapsed_render_time|.
 base::TimeDelta ComputeTotalElapsedRenderTime(
@@ -252,10 +246,6 @@ void TrackAudioRenderer::Stop() {
     sink_ = nullptr;
   }
 
-  if (!sink_started_ && IsLocalRenderer()) {
-    UMA_HISTOGRAM_ENUMERATION("Media.LocalRendererSinkStates",
-                              kSinkNeverStarted, kSinkStatesMax);
-  }
   sink_started_ = false;
 
   // Ensure that the capturer stops feeding us with captured audio.
@@ -308,11 +298,6 @@ base::TimeDelta TrackAudioRenderer::GetCurrentRenderTime() {
                                          source_params_.sample_rate());
   }
   return prior_elapsed_render_time_;
-}
-
-bool TrackAudioRenderer::IsLocalRenderer() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  return MediaStreamAudioTrack::From(audio_component_.Get())->is_local_track();
 }
 
 void TrackAudioRenderer::SwitchOutputDevice(
@@ -406,10 +391,6 @@ void TrackAudioRenderer::MaybeStartSink(bool reconfiguring) {
   sink_->SetVolume(volume_);
   sink_->Play();  // Not all the sinks play on start.
   sink_started_ = true;
-  if (IsLocalRenderer()) {
-    UMA_HISTOGRAM_ENUMERATION("Media.LocalRendererSinkStates", kSinkStarted,
-                              kSinkStatesMax);
-  }
 }
 
 void TrackAudioRenderer::ReconfigureSink(

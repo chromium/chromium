@@ -3637,15 +3637,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.LocalRendererSinkStates" enum="LocalRendererSinkStates"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    State of the WebRtc local renderer, sampled once during the lifetime of a
-    local renderer.
-  </summary>
-</histogram>
-
 <histogram name="Media.LowLatencyAudioCaptureStartupSuccess"
     enum="AudioCaptureStartupResult" expires_after="2024-05-12">
   <owner>armax@chromium.org</owner>

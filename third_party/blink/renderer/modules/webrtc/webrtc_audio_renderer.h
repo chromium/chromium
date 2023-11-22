@@ -153,7 +153,6 @@ class MODULES_EXPORT WebRtcAudioRenderer
   void Stop() override;
   void SetVolume(float volume) override;
   base::TimeDelta GetCurrentRenderTime() override;
-  bool IsLocalRenderer() override;
   void SwitchOutputDevice(const std::string& device_id,
                           media::OutputDeviceStatusCB callback) override;
 

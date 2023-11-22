@@ -1060,11 +1060,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed using photo stream"/>
 </enum>
 
-<enum name="LocalRendererSinkStates">
-  <int value="0" label="SinkStarted"/>
-  <int value="1" label="SinkNeverStarted"/>
-</enum>
-
 <enum name="MakeAudioInputStreamStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Error: Had switch fail-audio-stream-creation"/>

@@ -187,11 +187,6 @@ class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
     return delegate_->GetCurrentRenderTime();
   }
 
-  bool IsLocalRenderer() override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    return delegate_->IsLocalRenderer();
-  }
-
  private:
   THREAD_CHECKER(thread_checker_);
   const scoped_refptr<WebMediaStreamAudioRenderer> delegate_;
@@ -520,10 +515,6 @@ base::TimeDelta WebRtcAudioRenderer::GetCurrentRenderTime() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoLock auto_lock(lock_);
   return current_time_;
-}
-
-bool WebRtcAudioRenderer::IsLocalRenderer() {
-  return false;
 }
 
 void WebRtcAudioRenderer::SwitchOutputDevice(
