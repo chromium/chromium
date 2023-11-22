@@ -29,11 +29,15 @@ class PasswordCheckupLauncherHelperImpl : public PasswordCheckupLauncherHelper {
       const base::android::JavaRef<jstring>& checkupUrl,
       const base::android::JavaRef<jobject>& windowAndroid) override;
 
-  // Launch the bulk password check on device
-  void LaunchCheckupOnDevice(JNIEnv* env,
-                             ui::WindowAndroid* window_android,
-                             password_manager::PasswordCheckReferrerAndroid
-                                 passwordCheckReferrer) override;
+  // Launch the bulk password check on device.
+  // If the user is syncing passwords, |account_email| is the email of the
+  // account syncing passwords. |account_email| is an empty string if the user
+  // isn't syncing passwords.
+  void LaunchCheckupOnDevice(
+      JNIEnv* env,
+      ui::WindowAndroid* window_android,
+      password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer,
+      std::string account_email) override;
 
   // Launch the bulk password check in passwords.google.com using an activity
   // rather than a WindowAndroid

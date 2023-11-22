@@ -24,7 +24,8 @@ class MockPasswordCheckupLauncherHelper : public PasswordCheckupLauncherHelper {
               LaunchCheckupOnDevice,
               (JNIEnv*,
                ui::WindowAndroid*,
-               password_manager::PasswordCheckReferrerAndroid),
+               password_manager::PasswordCheckReferrerAndroid,
+               std::string account_email),
               (override));
   MOCK_METHOD(void,
               LaunchCheckupOnlineWithActivity,

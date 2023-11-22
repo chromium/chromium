@@ -20,10 +20,13 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithWindowAndroid(
 void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
     JNIEnv* env,
     ui::WindowAndroid* windowAndroid,
-    password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer) {
+    password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer,
+    std::string account_email) {
   if (!windowAndroid) {
     return;
   }
+  // TODO(b/306669939): Pass the |account_email| to Java and launch the
+  // appropriate checkup: for the account or local.
   Java_PasswordCheckupLauncher_launchCheckupOnDevice(
       env, windowAndroid->GetJavaObject(),
       static_cast<int>(passwordCheckReferrer));

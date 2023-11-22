@@ -531,6 +531,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//ui/android:android",
     "//ui/base:base",
   ]
