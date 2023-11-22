@@ -1471,11 +1471,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "csc-visual-search-suggestions",
-    "owners": ["pstjuste@google.com", "stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
     "expiry_milestone": 124

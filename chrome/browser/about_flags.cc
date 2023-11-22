@@ -9290,11 +9290,6 @@ const FeatureEntry kFeatureEntries[] = {
          companion::features::internal::kSidePanelCompanion,
          kSidePanelCompanionVariations,
          "CSC")},
-    {"csc-visual-search-suggestions",
-     flag_descriptions::kCscVisualSearchSuggestionsName,
-     flag_descriptions::kCscVisualSearchSuggestionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         companion::visual_search::features::kVisualSearchSuggestions)},
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
     {"enable-lens-image-format-optimizations",
