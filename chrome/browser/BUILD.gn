@@ -7130,6 +7130,8 @@ static_library("browser") {
       "signin/bound_session_credentials/bound_session_registration_fetcher_param.h",
       "signin/bound_session_credentials/bound_session_request_throttled_handler_browser_impl.cc",
       "signin/bound_session_credentials/bound_session_request_throttled_handler_browser_impl.h",
+      "signin/bound_session_credentials/bound_session_switches.cc",
+      "signin/bound_session_credentials/bound_session_switches.h",
       "signin/bound_session_credentials/registration_token_helper.cc",
       "signin/bound_session_credentials/registration_token_helper.h",
       "signin/bound_session_credentials/session_binding_helper.cc",
