@@ -47,10 +47,13 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -2174,6 +2177,22 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   scoped_refptr<StaticBitmapImage> snapshot =
       GetImage(FlushReason::kGetImageData);
+
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+      "CanvasReadback", perfetto::Flow::FromPointer(this),
+      [&](perfetto::EventContext ctx) {
+        String data = "data:,";
+        if (snapshot) {
+          std::unique_ptr<ImageDataBuffer> data_buffer =
+              ImageDataBuffer::Create(snapshot);
+          if (data_buffer) {
+            data = data_buffer->ToDataURL(ImageEncodingMimeType::kMimeTypePng,
+                                          -1.0);
+          }
+        }
+        ctx.AddDebugAnnotation("data_url", data.Utf8());
+      });
 
   // Determine if the array should be zero initialized, or if it will be
   // completely overwritten.

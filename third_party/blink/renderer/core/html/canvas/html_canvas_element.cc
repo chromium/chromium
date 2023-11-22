@@ -40,6 +40,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -1217,7 +1218,11 @@ String HTMLCanvasElement::toDataURL(const String& mime_type,
     if (v8_value->IsNumber())
       quality = v8_value.As<v8::Number>()->Value();
   }
-  return ToDataURLInternal(mime_type, quality, kBackBuffer);
+  String data = ToDataURLInternal(mime_type, quality, kBackBuffer);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+      "CanvasReadback", "data_url", data.Utf8());
+  return data;
 }
 
 void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
