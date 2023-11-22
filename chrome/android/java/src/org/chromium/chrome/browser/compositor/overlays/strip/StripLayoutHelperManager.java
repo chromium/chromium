@@ -269,6 +269,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             if (layoutType != LayoutType.TAB_SWITCHER) return;
             mBrowserScrimShowing = false;
         }
+
+        @Override
+        public void onTabSelectionHinted(int tabId) {
+            LayoutStateObserver.super.onTabSelectionHinted(tabId);
+        }
     }
 
     /**

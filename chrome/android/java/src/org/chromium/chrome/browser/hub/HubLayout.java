@@ -222,10 +222,10 @@ public class HubLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextTabId) {
+    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         if (isStartingToHide()) return;
 
-        super.startHiding(nextTabId);
+        super.startHiding(nextTabId, hintAtTabSelection);
 
         // Use the NEW_TAB animation if it is already prepared.
         if (getCurrentAnimationType() == HubLayoutAnimationType.NEW_TAB) {

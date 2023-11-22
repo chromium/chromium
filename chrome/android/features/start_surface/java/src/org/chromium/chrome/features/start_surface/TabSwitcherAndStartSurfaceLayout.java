@@ -423,32 +423,32 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextId) {
+    public void startHiding(int nextId, boolean hintAtTabSelection) {
         int startSurfaceState = mStartSurface.getStartSurfaceState();
         StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            startHidingStartSurface(nextId);
+            startHidingStartSurface(nextId, hintAtTabSelection);
         } else {
-            startHidingTabSwitcher(nextId);
+            startHidingTabSwitcher(nextId, hintAtTabSelection);
         }
     }
 
-    private void startHidingStartSurface(int nextId) {
+    private void startHidingStartSurface(int nextId, boolean hintAtTabSelection) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_START_SURFACE)) {
-            startHidingImpl(nextId);
+            startHidingImpl(nextId, hintAtTabSelection);
         }
     }
 
-    private void startHidingTabSwitcher(int nextId) {
+    private void startHidingTabSwitcher(int nextId, boolean hintAtTabSelection) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             mTransitionStartTime = SystemClock.elapsedRealtime();
 
-            startHidingImpl(nextId);
+            startHidingImpl(nextId, hintAtTabSelection);
         }
     }
 
-    private void startHidingImpl(int nextId) {
-        super.startHiding(nextId);
+    private void startHidingImpl(int nextId, boolean hintAtTabSelection) {
+        super.startHiding(nextId, hintAtTabSelection);
 
         int sourceTabId = nextId;
         if (sourceTabId == Tab.INVALID_TAB_ID) {

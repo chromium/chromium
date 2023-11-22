@@ -980,8 +980,14 @@ public class LayoutManagerImpl
     }
 
     @Override
-    public void startHiding() {
+    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         requestUpdate();
+        if (hintAtTabSelection) {
+            for (LayoutStateObserver observer : mLayoutObservers) {
+                observer.onTabSelectionHinted(nextTabId);
+            }
+        }
+
         Layout layoutBeingHidden = getActiveLayout();
         for (LayoutStateObserver observer : mLayoutObservers) {
             observer.onStartedHiding(layoutBeingHidden.getLayoutType());
@@ -1021,7 +1027,7 @@ public class LayoutManagerImpl
         Layout activeLayout = getActiveLayout();
         if (activeLayout != null && !activeLayout.isStartingToHide()) {
             setNextLayout(getLayoutForType(layoutType), animate);
-            activeLayout.startHiding(Tab.INVALID_TAB_ID);
+            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
         } else {
             startShowing(getLayoutForType(layoutType), animate);
         }

@@ -531,7 +531,7 @@ public class HubLayoutUnitTest {
         assertTrue(mHubLayout.isRunningAnimations());
         assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
 
-        startHiding(LayoutType.BROWSING, NEW_TAB_ID);
+        startHiding(LayoutType.BROWSING, NEW_TAB_ID, false);
         verify(mHubLayout).doneShowing();
         verify(mTab, never()).hide(anyInt());
         verify(mScrimController).forceAnimationToFinish();
@@ -590,7 +590,7 @@ public class HubLayoutUnitTest {
             assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
         }
 
-        startHiding(nextLayout, nextTabId);
+        startHiding(nextLayout, nextTabId, true);
 
         assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
         assertTrue(mHubLayout.isRunningAnimations());
@@ -614,12 +614,13 @@ public class HubLayoutUnitTest {
         mHubLayout.show(FAKE_TIME, animate);
     }
 
-    private void startHiding(@LayoutType int nextLayout, int nextTabId) {
+    private void startHiding(
+            @LayoutType int nextLayout, int nextTabId, boolean hintAtTabSelection) {
         @LayoutType int layoutType = mHubLayout.getLayoutType();
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(layoutType);
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
 
-        mHubLayout.startHiding(nextTabId);
+        mHubLayout.startHiding(nextTabId, hintAtTabSelection);
     }
 
     private void setupHubLayoutAnimatorAndProvider(@HubLayoutAnimationType int animationType) {
