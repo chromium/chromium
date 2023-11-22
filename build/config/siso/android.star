@@ -51,10 +51,6 @@ def __step_config(ctx, step_config):
                 "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
                 "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
-            "outputs_map": {
-                # Slow actions that exceed deadline on the default worker pool.
-                "./obj/chrome/android/chrome_test_java.turbine.jar": {"platform_ref": "large"},
-            },
             "remote": remote_run,
             "platform_ref": "large",
             "canonicalize_dir": True,
