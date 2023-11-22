@@ -2327,9 +2327,6 @@ extern const char kTabStateFlatBufferDescription[];
 extern const char kContextMenuPopupForAllScreenSizesName[];
 extern const char kContextMenuPopupForAllScreenSizesDescription[];
 
-extern const char kContextualSearchForceCaptionName[];
-extern const char kContextualSearchForceCaptionDescription[];
-
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 

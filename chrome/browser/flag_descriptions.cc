@@ -4017,11 +4017,6 @@ const char kContextMenuPopupForAllScreenSizesDescription[] =
     "devices; when enabled, context menu will be shown as a pop-up window "
     "for all form factors regardless of the screen sizes.";
 
-const char kContextualSearchForceCaptionName[] =
-    "Contextual Search force a caption";
-const char kContextualSearchForceCaptionDescription[] =
-    "Forces a caption to always be shown in the Touch to Search Bar.";
-
 const char kContextualSearchSuppressShortViewName[] =
     "Contextual Search suppress short view";
 const char kContextualSearchSuppressShortViewDescription[] =
