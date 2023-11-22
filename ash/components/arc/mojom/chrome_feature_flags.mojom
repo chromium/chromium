@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module arc.mojom;
 
@@ -35,6 +35,8 @@ struct FeatureFlags {
   [MinVersion=5] bool enable_pip_double_tap;
   // chrome://flags#render-arc-notifications-by-chrome;
   [MinVersion=6] bool render_arc_notifications_by_chrome;
+  // ash::features::IsGameDashboardEnabled
+  [MinVersion=7] bool game_dashboard;
 };
 
 // This interface provides methods to propagate the feature flag status to
