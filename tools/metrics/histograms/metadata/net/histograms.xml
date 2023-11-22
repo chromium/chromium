@@ -4571,15 +4571,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RedirectWithUnadvertisedContentEncoding" enum="Boolean"
-    expires_after="M77">
-  <owner>eustas@chromium.org</owner>
-  <summary>
-    True for redirect responses with unadvertised &quot;Content-Encoding&quot;.
-    False for valid redirect responses. See http://crbug.com/714514
-  </summary>
-</histogram>
-
 <histogram name="Net.Reporting.HeaderType" enum="NetReportingHeaderType"
     expires_after="2023-02-18">
   <owner>rodneyding@google.com</owner>

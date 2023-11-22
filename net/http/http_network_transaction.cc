@@ -2068,8 +2068,6 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
 
   // Temporary workaround for http://crbug.com/714514
   if (headers->IsRedirect(nullptr)) {
-    UMA_HISTOGRAM_BOOLEAN("Net.RedirectWithUnadvertisedContentEncoding",
-                          !result);
     return true;
   }
 
