@@ -20,7 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Logger for logging cronet's telemetry */
-// TODO(edechamps): this is not plumbed in, yet.
 @RequiresApi(Build.VERSION_CODES.R)
 public class CronetLoggerImpl extends CronetLogger {
     private static final String TAG = CronetLoggerImpl.class.getSimpleName();

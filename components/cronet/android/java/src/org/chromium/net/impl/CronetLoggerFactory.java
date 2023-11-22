@@ -11,6 +11,7 @@ import android.util.Log; // TODO(crbug/1394709): use org.chromium.base.Log inste
 import androidx.annotation.Nullable;
 
 import org.chromium.net.impl.CronetLogger.CronetSource;
+import org.chromium.net.telemetry.CronetLoggerImpl;
 
 /**
  * Takes care of instantiating the correct CronetLogger.
@@ -23,10 +24,6 @@ public final class CronetLoggerFactory {
 
     private static final CronetLogger sDefaultLogger = new NoOpLogger();
     private static CronetLogger sTestingLogger;
-
-    // Class that is packaged for Cronet telemetry.
-    private static final String CRONET_LOGGER_IMPL_CLASS =
-            "com.google.net.cronet.telemetry.CronetLoggerImpl";
 
     /**
      * Bypasses CronetLoggerFactory logic and always creates a NoOpLogger.
@@ -49,12 +46,8 @@ public final class CronetLoggerFactory {
             return sDefaultLogger;
         }
 
-        Class<? extends CronetLogger> cronetLoggerImplClass = fetchLoggerImplClass();
-        if (cronetLoggerImplClass == null) return sDefaultLogger;
-
         try {
-            return cronetLoggerImplClass.getConstructor(int.class).newInstance(
-                    SAMPLE_RATE_PER_SECOND);
+            return new CronetLoggerImpl(SAMPLE_RATE_PER_SECOND);
         } catch (Exception e) {
             // Pass - since we dont want any failure, catch any exception that might arise.
             Log.e(TAG, "Exception creating an instance of CronetLoggerImpl", e);
@@ -85,18 +78,6 @@ public final class CronetLoggerFactory {
         @Override
         public void close() {
             CronetLoggerFactory.setLoggerForTesting(null);
-        }
-    }
-
-    // TODO(edechamps): get rid of this and just use the built-in
-    // org.chromium.net.telemetry.CronetLoggerImpl directly instead.
-    private static Class<? extends CronetLogger> fetchLoggerImplClass() {
-        ClassLoader loader = CronetLoggerFactory.class.getClassLoader();
-        try {
-            return loader.loadClass(CRONET_LOGGER_IMPL_CLASS).asSubclass(CronetLogger.class);
-        } catch (Exception e) { // catching all exceptions since we don't want to crash the client
-            Log.e(TAG, "Exception fetching LoggerImpl class", e);
-            return null;
         }
     }
 }
