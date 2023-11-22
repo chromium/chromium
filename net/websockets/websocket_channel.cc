@@ -324,8 +324,8 @@ WebSocketChannel::ChannelState WebSocketChannel::SendFrame(
   if (op_code == WebSocketFrameHeader::kOpCodeText ||
       (op_code == WebSocketFrameHeader::kOpCodeContinuation &&
        sending_text_message_)) {
-    StreamingUtf8Validator::State state =
-        outgoing_utf8_validator_.AddBytes(buffer->data(), buffer_size);
+    StreamingUtf8Validator::State state = outgoing_utf8_validator_.AddBytes(
+        base::make_span(buffer->bytes(), buffer_size));
     if (state == StreamingUtf8Validator::INVALID ||
         (state == StreamingUtf8Validator::VALID_MIDPOINT && fin)) {
       // TODO(ricea): Kill renderer.
@@ -800,8 +800,8 @@ ChannelState WebSocketChannel::HandleDataFrame(
        receiving_text_message_)) {
     // This call is not redundant when size == 0 because it tells us what
     // the current state is.
-    StreamingUtf8Validator::State state = incoming_utf8_validator_.AddBytes(
-        payload.data(), static_cast<size_t>(payload.size()));
+    StreamingUtf8Validator::State state =
+        incoming_utf8_validator_.AddBytes(base::as_byte_span(payload));
     if (state == StreamingUtf8Validator::INVALID ||
         (state == StreamingUtf8Validator::VALID_MIDPOINT && final)) {
       FailChannel("Could not decode a text frame as UTF-8.",

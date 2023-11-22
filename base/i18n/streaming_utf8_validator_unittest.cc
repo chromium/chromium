@@ -39,14 +39,12 @@ const uint32_t kThoroughTestChunkSize = 1 << 24;
 
 class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
  protected:
-  StreamingUtf8ValidatorThoroughTest()
-      : tasks_dispatched_(0), tasks_finished_(0) {}
+  StreamingUtf8ValidatorThoroughTest() = default;
 
   // This uses the same logic as base::IsStringUTF8 except it considers
   // non-characters valid (and doesn't require a string as input).
-  static bool IsStringUtf8(const char* src, int32_t src_len) {
+  static bool IsStringUtf8(const uint8_t* src, int32_t src_len) {
     int32_t char_index = 0;
-
     while (char_index < src_len) {
       base_icu::UChar32 code_point;
       U8_NEXT(src, char_index, src_len, code_point);
@@ -60,17 +58,15 @@ class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
   // verifies that IsStringUtf8 and StreamingUtf8Validator agree on
   // whether it is valid UTF-8 or not.
   void TestNumber(uint32_t n) const {
-    char test[sizeof n];
+    uint8_t test[sizeof n];
     memcpy(test, &n, sizeof n);
     StreamingUtf8Validator validator;
     EXPECT_EQ(IsStringUtf8(test, sizeof n),
-              validator.AddBytes(test, sizeof n) == VALID_ENDPOINT)
+              validator.AddBytes(test) == VALID_ENDPOINT)
         << "Difference of opinion for \""
-        << base::StringPrintf("\\x%02X\\x%02X\\x%02X\\x%02X",
-                              test[0] & 0xFF,
-                              test[1] & 0xFF,
-                              test[2] & 0xFF,
-                              test[3] & 0xFF) << "\"";
+        << base::StringPrintf("\\x%02X\\x%02X\\x%02X\\x%02X", test[0], test[1],
+                              test[2], test[3])
+        << "\"";
   }
 
  public:
@@ -90,8 +86,8 @@ class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
 
  protected:
   base::Lock lock_;
-  int tasks_dispatched_;
-  int tasks_finished_;
+  int tasks_dispatched_ = 0;
+  int tasks_finished_ = 0;
 };
 
 // Enable locally to verify that this class accepts exactly the same set of
@@ -220,8 +216,7 @@ class StreamingUtf8ValidatorSingleSequenceTest : public ::testing::Test {
     for (Iterator it = begin; it != end; ++it) {
       StreamingUtf8Validator validator;
       base::StringPiece sequence = *it;
-      EXPECT_EQ(expected,
-                validator.AddBytes(sequence.data(), sequence.size()))
+      EXPECT_EQ(expected, validator.AddBytes(base::as_byte_span(sequence)))
           << "Failed for \"" << sequence << "\"";
     }
   }
@@ -236,7 +231,7 @@ class StreamingUtf8ValidatorSingleSequenceTest : public ::testing::Test {
       base::StringPiece sequence = *it;
       StreamingUtf8Validator::State state = VALID_ENDPOINT;
       for (const auto& cit : sequence) {
-        state = validator.AddBytes(&cit, 1);
+        state = validator.AddBytes(base::as_bytes(base::make_span(&cit, 1u)));
       }
       EXPECT_EQ(expected, state) << "Failed for \"" << sequence << "\"";
     }
@@ -260,8 +255,8 @@ class StreamingUtf8ValidatorDoubleSequenceTest : public ::testing::Test {
       base::StringPiece c1 = *it1;
       for (Iterator2 it2 = begin2; it2 != end2; ++it2) {
         base::StringPiece c2 = *it2;
-        validator.AddBytes(c1.data(), c1.size());
-        EXPECT_EQ(expected, validator.AddBytes(c2.data(), c2.size()))
+        validator.AddBytes(base::as_byte_span(c1));
+        EXPECT_EQ(expected, validator.AddBytes(base::as_byte_span(c2)))
             << "Failed for \"" << c1 << c2 << "\"";
         validator.Reset();
       }
@@ -270,8 +265,7 @@ class StreamingUtf8ValidatorDoubleSequenceTest : public ::testing::Test {
 };
 
 TEST(StreamingUtf8ValidatorTest, NothingIsValid) {
-  static const char kNothing[] = "";
-  EXPECT_EQ(VALID_ENDPOINT, StreamingUtf8Validator().AddBytes(kNothing, 0));
+  EXPECT_EQ(VALID_ENDPOINT, StreamingUtf8Validator().AddBytes({}));
 }
 
 // Because the members of the |valid| array need to be non-zero length
@@ -280,24 +274,28 @@ TEST(StreamingUtf8ValidatorTest, NothingIsValid) {
 // test.
 TEST(StreamingUtf8ValidatorTest, NulIsValid) {
   static const char kNul[] = "\x00";
-  EXPECT_EQ(VALID_ENDPOINT, StreamingUtf8Validator().AddBytes(kNul, 1));
+  EXPECT_EQ(VALID_ENDPOINT, StreamingUtf8Validator().AddBytes(
+                                base::as_bytes(base::make_span(kNul, 1u))));
 }
 
 // Just a basic sanity test before we start getting fancy.
 TEST(StreamingUtf8ValidatorTest, HelloWorld) {
   static const char kHelloWorld[] = "Hello, World!";
-  EXPECT_EQ(
-      VALID_ENDPOINT,
-      StreamingUtf8Validator().AddBytes(kHelloWorld, strlen(kHelloWorld)));
+  EXPECT_EQ(VALID_ENDPOINT,
+            StreamingUtf8Validator().AddBytes(base::as_bytes(
+                base::make_span(kHelloWorld, strlen(kHelloWorld)))));
 }
 
 // Check that the Reset() method works.
 TEST(StreamingUtf8ValidatorTest, ResetWorks) {
   StreamingUtf8Validator validator;
-  EXPECT_EQ(INVALID, validator.AddBytes("\xC0", 1));
-  EXPECT_EQ(INVALID, validator.AddBytes("a", 1));
+  EXPECT_EQ(INVALID,
+            validator.AddBytes(base::as_bytes(base::make_span("\xC0", 1u))));
+  EXPECT_EQ(INVALID,
+            validator.AddBytes(base::as_bytes(base::make_span("a", 1u))));
   validator.Reset();
-  EXPECT_EQ(VALID_ENDPOINT, validator.AddBytes("a", 1));
+  EXPECT_EQ(VALID_ENDPOINT,
+            validator.AddBytes(base::as_bytes(base::make_span("a", 1u))));
 }
 
 TEST_F(StreamingUtf8ValidatorSingleSequenceTest, Valid) {
