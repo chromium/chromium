@@ -789,6 +789,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // because it is full.
   std::unique_ptr<SlopBucket> slop_bucket_;
 
+  // Keeps the result of IsSharedDictionaryReadAllowed(). Used only for metrics.
+  bool shared_dictionary_allowed_check_passed_ = false;
+
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 

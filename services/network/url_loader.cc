@@ -432,19 +432,43 @@ const char* GetCertStatePartString(const net::SSLInfo& ssl_info) {
   return ssl_info.is_issued_by_known_root ? "KnownRootCert" : "UnknownRootCert";
 }
 
+const char* ConnectionInfoCoarseString(
+    net::HttpResponseInfo::ConnectionInfo connection_info) {
+  switch (net::HttpResponseInfo::ConnectionInfoToCoarse(connection_info)) {
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1:
+      return "Http1";
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP2:
+      return "Http2";
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_QUIC:
+      return "Http3";
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_OTHER:
+      return "Other";
+  }
+  NOTREACHED_NORETURN();
+}
+
 void MaybeRecordSharedDictionaryUsedResponseMetrics(
     int error_code,
     network::mojom::RequestDestination destination,
-    const net::HttpResponseInfo& response_info) {
-  if (!response_info.did_use_shared_dictionary) {
-    return;
+    const net::HttpResponseInfo& response_info,
+    bool shared_dictionary_allowed_check_passed) {
+  if (response_info.did_use_shared_dictionary) {
+    base::UmaHistogramSparse(
+        base::StrCat({"Net.SharedDictionaryUsedResponseErrorCodes.",
+                      GetDestinationTypePartString(destination), ".",
+                      GetCertStatePartString(response_info.ssl_info)}),
+        -error_code);
   }
 
-  base::UmaHistogramSparse(
-      base::StrCat({"Net.SharedDictionaryUsedResponseErrorCodes.",
-                    GetDestinationTypePartString(destination), ".",
-                    GetCertStatePartString(response_info.ssl_info)}),
-      -error_code);
+  if (shared_dictionary_allowed_check_passed &&
+      destination == network::mojom::RequestDestination::kDocument) {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Net.SharedDictionaryUsedByResponseWhenAvailable.MainFrame.",
+             ConnectionInfoCoarseString(response_info.connection_info), ".",
+             GetCertStatePartString(response_info.ssl_info)}),
+        response_info.did_use_shared_dictionary);
+  }
 }
 
 }  // namespace
@@ -2208,7 +2232,8 @@ void URLLoader::NotifyCompleted(int error_code) {
   }
 
   MaybeRecordSharedDictionaryUsedResponseMetrics(
-      error_code, request_destination_, url_request_->response_info());
+      error_code, request_destination_, url_request_->response_info(),
+      shared_dictionary_allowed_check_passed_);
 
   if ((total_received > 0 || total_sent > 0)) {
     if (url_loader_network_observer_ && provide_data_use_updates_) {
@@ -2381,9 +2406,11 @@ void URLLoader::SetRawRequestHeadersAndNotify(
 }
 
 bool URLLoader::IsSharedDictionaryReadAllowed() {
-  return shared_dictionary_checker_->CheckAllowedToReadAndReport(
-      url_request_->url(), url_request_->site_for_cookies(),
-      url_request_->isolation_info());
+  shared_dictionary_allowed_check_passed_ =
+      shared_dictionary_checker_->CheckAllowedToReadAndReport(
+          url_request_->url(), url_request_->site_for_cookies(),
+          url_request_->isolation_info());
+  return shared_dictionary_allowed_check_passed_;
 }
 
 void URLLoader::DispatchOnRawRequest(
