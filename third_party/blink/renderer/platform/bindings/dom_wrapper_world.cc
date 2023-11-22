@@ -288,20 +288,6 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
   return kInvalidWorldId;
 }
 
-bool DOMWrapperWorld::HasWrapperInAnyWorldInMainThread(
-    ScriptWrappable* script_wrappable) {
-  DCHECK(IsMainThread());
-
-  Vector<scoped_refptr<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
-  for (const auto& world : worlds) {
-    DOMDataStore& dom_data_store = world->DomDataStore();
-    if (dom_data_store.ContainsWrapper(script_wrappable))
-      return true;
-  }
-  return false;
-}
-
 // static
 bool DOMWrapperWorld::UnsetNonMainWorldWrapperIfSet(
     ScriptWrappable* object,

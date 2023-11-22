@@ -153,8 +153,6 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
   scoped_refptr<const SecurityOrigin> IsolatedWorldSecurityOrigin(
       const base::UnguessableToken& cluster_id) const;
 
-  static bool HasWrapperInAnyWorldInMainThread(ScriptWrappable*);
-
   bool IsMainWorld() const { return world_type_ == WorldType::kMain; }
   bool IsWorkerWorld() const { return world_type_ == WorldType::kWorker; }
   bool IsShadowRealmWorld() const {

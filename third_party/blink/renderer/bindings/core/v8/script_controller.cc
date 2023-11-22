@@ -121,11 +121,6 @@ TextPosition ScriptController::EventHandlerPosition() const {
   return TextPosition::MinimumPosition();
 }
 
-void ScriptController::EnableEval() {
-  SetEvalForWorld(DOMWrapperWorld::MainWorld(), true /* allow_eval */,
-                  g_empty_string /* error_message */);
-}
-
 void ScriptController::DisableEval(const String& error_message) {
   SetEvalForWorld(DOMWrapperWorld::MainWorld(), false /* allow_eval */,
                   error_message);
