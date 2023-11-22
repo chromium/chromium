@@ -9,7 +9,7 @@ tint_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
 tint_googletest_dir = "//third_party/googletest/src"
 tint_spirv_headers_dir = "//third_party/vulkan-deps/spirv-headers/src"
 
-tint_build_spv_reader = skia_use_dawn
+tint_build_spv_reader = false
 tint_build_spv_writer = true
 tint_build_wgsl_reader = true
 tint_build_wgsl_writer = true
