@@ -1463,7 +1463,7 @@
   {
     "name": "csc-companion-enable-page-content",
     "owners": ["manukh@google.com", "stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "csc-force-companion-pinned-state",
