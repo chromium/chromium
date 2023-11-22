@@ -23,6 +23,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -1000,6 +1001,26 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ASSERT_TRUE(app_item);
   EXPECT_EQ(promise_app_ordinal, app_item->position());
   EXPECT_TRUE(IsItemPinned(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, ContextMenu) {
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Promise app item should exist in the model.
+  ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  item->GetContextMenuModel(ash::AppListItemContext::kNone,
+                            future.GetCallback());
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  // The context menu should only have the option to pin to shelf.
+  EXPECT_EQ(menu_model->GetItemCount(), 1u);
+  EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu_model->GetCommandIdAt(0), ash::CommandId::TOGGLE_PIN);
 }
 
 // Test the full promise icon lifecycle where promise icon changes are triggered
