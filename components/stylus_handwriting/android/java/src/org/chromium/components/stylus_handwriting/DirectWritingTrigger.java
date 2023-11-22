@@ -109,11 +109,11 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
         } else {
             // Stop recognition and hide DW toolbar as focused node is not editable.
             hideDWToolbar();
-            onStopRecognition(/* motionEvent */ null, /*editableBounds */ null, currentView);
+            onStopRecognition(/* motionEvent= */ null, /* editableBounds= */ null, currentView);
         }
 
         mEditableNodeBounds = roundedBounds;
-        mCallback.updateEditableBounds(roundedBounds, /* cursorPosition */ new Point());
+        mCallback.updateEditableBounds(roundedBounds, /* cursorPosition= */ new Point());
         return editorBoundsInfo;
     }
 
@@ -194,7 +194,7 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
         if (!hasFocus) {
             // Hide DW toolbar and Stop Recognition when View focus is lost.
             hideDWToolbar();
-            onStopRecognition(/* motionEvent */ null, /*editableBounds */ null);
+            onStopRecognition(/* motionEvent= */ null, /* editableBounds= */ null);
         }
     }
 
@@ -399,7 +399,8 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
                 // Post task to stop recognition and hide DW toolbar as stylus is moved away.
                 mHideDwToolbarCallbackToken = new Object();
                 mHandler.postDelayed(() -> {
-                    onStopRecognition(/* motionEvent */ null, /*editableBounds */ null, rootView);
+                    onStopRecognition(
+                            /* motionEvent= */ null, /* editableBounds= */ null, rootView);
                     mHideDwToolbarCallbackToken = null;
                 }, mHideDwToolbarCallbackToken, mConfig.getHideDwToolbarDelayMs());
                 break;
@@ -473,14 +474,15 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
         return DirectWritingConstants.STYLUS_WRITING_ICON_VALUE;
     }
 
-    private void onStopRecognition(MotionEvent me, Rect editableBounds) {
+    private void onStopRecognition(MotionEvent motionEvent, Rect editableBounds) {
         if (mStylusWritingImeCallback == null) return;
-        onStopRecognition(me, editableBounds, mStylusWritingImeCallback.getContainerView());
+        onStopRecognition(
+                motionEvent, editableBounds, mStylusWritingImeCallback.getContainerView());
     }
 
-    private void onStopRecognition(MotionEvent me, Rect editableBounds, View currentView) {
+    private void onStopRecognition(MotionEvent motionEvent, Rect editableBounds, View currentView) {
         if (!mDwServiceEnabled) return;
-        mBinder.onStopRecognition(me, editableBounds, currentView);
+        mBinder.onStopRecognition(motionEvent, editableBounds, currentView);
         resetRecognition();
     }
 
