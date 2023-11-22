@@ -43,9 +43,6 @@ class Time;
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath;
 - (instancetype)init NS_UNAVAILABLE;
 
-// The scale that should be used for snapshots.
-- (CGFloat)snapshotScaleForDevice;
-
 // Retrieves a cached snapshot for the `snapshotID` and return it via the
 // callback if it exists. The callback is guaranteed to be called synchronously
 // if the image is in memory. It will be called asynchronously if the image is

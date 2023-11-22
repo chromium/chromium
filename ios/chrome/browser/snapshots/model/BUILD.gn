@@ -10,6 +10,7 @@ source_set("model") {
     "snapshot_lru_cache.h",
     "snapshot_manager.h",
     "snapshot_manager_delegate.h",
+    "snapshot_scale.h",
     "snapshot_storage+Testing.h",
     "snapshot_storage.h",
     "snapshot_storage_observer.h",
@@ -20,6 +21,7 @@ source_set("model") {
     "snapshot_browser_agent.mm",
     "snapshot_lru_cache.mm",
     "snapshot_manager.mm",
+    "snapshot_scale.mm",
     "snapshot_storage.mm",
     "snapshot_tab_helper.mm",
   ]

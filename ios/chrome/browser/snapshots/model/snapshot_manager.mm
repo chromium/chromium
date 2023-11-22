@@ -15,8 +15,9 @@
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_manager_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_manager_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
@@ -251,8 +252,8 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
   // Note: When not using device scale, the output image size may slightly
   // differ from the input size due to rounding.
-  const CGFloat kScale =
-      std::max<CGFloat>(1.0, [_snapshotStorage snapshotScaleForDevice]);
+  const CGFloat kScale = [SnapshotImageScale floatImageScaleForDevice];
+  DCHECK_GE(kScale, 1.0);
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
   format.scale = kScale;
@@ -352,8 +353,8 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   if (overlays.count == 0) {
     return baseImage;
   }
-  const CGFloat kScale =
-      std::max<CGFloat>(1.0, [_snapshotStorage snapshotScaleForDevice]);
+  const CGFloat kScale = [SnapshotImageScale floatImageScaleForDevice];
+  DCHECK_GE(kScale, 1.0);
 
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];

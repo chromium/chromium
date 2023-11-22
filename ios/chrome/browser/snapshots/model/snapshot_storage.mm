@@ -153,10 +153,6 @@ bool IsGreySnapshotOptimizationNoCacheEnabled() {
               object:nil];
 }
 
-- (CGFloat)snapshotScaleForDevice {
-  return [_fileManager snapshotScaleForDevice];
-}
-
 - (void)retrieveImageForSnapshotID:(SnapshotID)snapshotID
                           callback:(void (^)(UIImage*))callback {
   DCHECK(snapshotID.valid());

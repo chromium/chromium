@@ -15,6 +15,7 @@
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -61,7 +62,7 @@ class SnapshotStorageTest : public PlatformTest {
     snapshot_storage_ = [[SnapshotStorage alloc]
         initWithStoragePath:scoped_temp_directory_.GetPath()];
 
-    CGFloat scale = [snapshot_storage_ snapshotScaleForDevice];
+    CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
 
     srand(1);
 

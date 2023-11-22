@@ -18,6 +18,7 @@
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -52,7 +53,7 @@ class ImageFileManagerTest : public PlatformTest {
         initWithStoragePath:scoped_temp_directory_.GetPath()
                  legacyPath:base::FilePath()];
 
-    CGFloat scale = [image_file_manager_ snapshotScaleForDevice];
+    CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
 
     srand(1);
 
@@ -318,7 +319,7 @@ TEST_F(ImageFileManagerTest, SizeAndScalePreservation) {
   ASSERT_TRUE(file_manager);
 
   // Create an image with the expected snapshot scale.
-  CGFloat scale = [file_manager snapshotScaleForDevice];
+  CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
   UIImage* image = GenerateRandomImage(scale);
 
   // Add the image to the storage and ensure the file is written to disk.
@@ -345,7 +346,7 @@ TEST_F(ImageFileManagerTest, DeleteRetinaImages) {
   ImageFileManager* file_manager = GetImageFileManager();
   ASSERT_TRUE(file_manager);
 
-  if ([file_manager snapshotScaleForDevice] != 2.0) {
+  if ([SnapshotImageScale floatImageScaleForDevice] != 2.0) {
     return;
   }
 

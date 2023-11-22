@@ -38,9 +38,6 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns the scale that should be used for snapshots.
-- (CGFloat)snapshotScaleForDevice;
-
 // Reads a color image from disk.
 - (void)readImageWithSnapshotID:(SnapshotID)snapshotID
                      completion:(ImageReadCompletionBlock)completion;
