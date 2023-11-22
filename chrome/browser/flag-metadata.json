@@ -2323,6 +2323,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "enable-cros-ime-korean-only-mode-switch-on-right-alt",
+    "owners": [ "tranbaoduy@chromium.org", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-cros-ime-stylus-handwriting",
     "owners": ["jopalmer@chromium.org", "essential-inputs-team@google.com"],
     "expiry_milestone" : 116

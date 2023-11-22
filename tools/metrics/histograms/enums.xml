@@ -38430,6 +38430,7 @@ from previous Chrome versions.
   <int value="400239639" label="PrivacySandboxAdsAPIsOverride:enabled"/>
   <int value="400272381" label="LazyFrameLoading:disabled"/>
   <int value="400322063" label="ash-disable-screen-orientation-lock"/>
+  <int value="400836553" label="ImeKoreanOnlyModeSwitchOnRightAlt:enabled"/>
   <int value="401606992" label="AnimatedImageResume:enabled"/>
   <int value="401983950" label="enable-spdy4"/>
   <int value="402143634" label="enable-search-button-in-omnibox-always"/>
@@ -39247,6 +39248,7 @@ from previous Chrome versions.
   <int value="792840942" label="BorealisDGPU:enabled"/>
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
   <int value="793287900" label="VerifyDidCommitParams:disabled"/>
+  <int value="793705368" label="ImeKoreanOnlyModeSwitchOnRightAlt:disabled"/>
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
   <int value="794100639" label="CameraAppAutoQRDetection:enabled"/>
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>

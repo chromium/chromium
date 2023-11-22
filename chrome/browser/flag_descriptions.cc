@@ -6667,6 +6667,12 @@ const char kImeKoreanModeSwitchDebugName[] =
 const char kImeKoreanModeSwitchDebugDescription[] =
     "Enables debug info UI for Korean input method's internal-mode switch";
 
+const char kImeKoreanOnlyModeSwitchOnRightAltName[] =
+    "Only internal-mode switch on right-Alt in Korean input method";
+const char kImeKoreanOnlyModeSwitchOnRightAltDescription[] =
+    "When enabled and in Korean input method, right-Alt key location solely "
+    "toggles internal Korean/English mode, without Alt modifier functionality";
+
 const char kIppFirstSetupForUsbPrintersName[] =
     "Try to setup USB printers with IPP first";
 const char kIppFirstSetupForUsbPrintersDescription[] =

@@ -146,6 +146,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &ash::standalone_browser::features::kLacrosOnly,
       &features::kSystemJapanesePhysicalTyping,
       &features::kImeDownloaderUpdate,
+      &features::kImeKoreanOnlyModeSwitchOnRightAlt,
       &features::kImeUsEnglishModelUpdate,
       &features::kImeFstDecoderParamsUpdate,
       &features::kAutocorrectByDefault,

@@ -3830,6 +3830,9 @@ extern const char kImeTrayHideVoiceButtonDescription[];
 extern const char kImeKoreanModeSwitchDebugName[];
 extern const char kImeKoreanModeSwitchDebugDescription[];
 
+extern const char kImeKoreanOnlyModeSwitchOnRightAltName[];
+extern const char kImeKoreanOnlyModeSwitchOnRightAltDescription[];
+
 extern const char kIppFirstSetupForUsbPrintersName[];
 extern const char kIppFirstSetupForUsbPrintersDescription[];
 
