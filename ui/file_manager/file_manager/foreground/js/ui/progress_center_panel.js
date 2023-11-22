@@ -626,8 +626,8 @@ export class ProgressCenterPanel {
     switch (item.state) {
       case ProgressItemState.ERROR:
         if (previousItem &&
-            (previousItem.state !== ProgressItemState.PROGRESSING ||
-             previousItem.state !== ProgressItemState.PAUSED ||
+            (previousItem.state !== ProgressItemState.PROGRESSING &&
+             previousItem.state !== ProgressItemState.PAUSED &&
              previousItem.state !== ProgressItemState.SCANNING)) {
           return;
         }
@@ -650,8 +650,8 @@ export class ProgressCenterPanel {
 
       case ProgressItemState.CANCELED:
         if (!previousItem ||
-            (previousItem.state !== ProgressItemState.PROGRESSING ||
-             previousItem.state !== ProgressItemState.PAUSED ||
+            (previousItem.state !== ProgressItemState.PROGRESSING &&
+             previousItem.state !== ProgressItemState.PAUSED &&
              previousItem.state !== ProgressItemState.SCANNING)) {
           return;
         }
