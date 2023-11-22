@@ -1743,9 +1743,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         g_browser_process->profile_manager()->GetLastOpenedProfiles();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // This step is costly and is already measured in
-  // Startup.StartupBrowserCreator_Start.
+  // This step is costly.
   if (browser_creator_->Start(*base::CommandLine::ForCurrentProcess(),
                               base::FilePath(), profile_info,
                               last_opened_profiles)) {

@@ -645,7 +645,6 @@ bool StartupBrowserCreator::Start(const base::CommandLine& cmd_line,
                                   StartupProfileInfo profile_info,
                                   const Profiles& last_opened_profiles) {
   TRACE_EVENT0("startup", "StartupBrowserCreator::Start");
-  SCOPED_UMA_HISTOGRAM_TIMER("Startup.StartupBrowserCreator_Start");
   return ProcessCmdLineImpl(cmd_line, cur_dir,
                             chrome::startup::IsProcessStartup::kYes,
                             profile_info, last_opened_profiles);
