@@ -186,6 +186,9 @@ class AccessibilityManager
   // Returns true if autoclick is enabled.
   bool IsAutoclickEnabled() const;
 
+  // Enables or disables FaceGaze.
+  void EnableFaceGaze(bool enabled);
+
   // Requests the Autoclick extension find the bounds of the nearest scrollable
   // ancestor to the point in the screen, as given in screen coordinates.
   void RequestAutoclickScrollableBoundsForPoint(

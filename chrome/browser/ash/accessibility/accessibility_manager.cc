@@ -858,6 +858,16 @@ bool AccessibilityManager::IsAutoclickEnabled() const {
                          prefs::kAccessibilityAutoclickEnabled);
 }
 
+void AccessibilityManager::EnableFaceGaze(bool enabled) {
+  if (!profile_) {
+    return;
+  }
+
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(prefs::kAccessibilityFaceGazeEnabled, enabled);
+  pref_service->CommitPendingWrite();
+}
+
 void AccessibilityManager::OnAccessibilityCommonChanged(
     const std::string& pref_name) {
   if (!profile_)

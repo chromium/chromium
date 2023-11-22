@@ -13,11 +13,19 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 assert(is_chromeos_ash)
 
+declare_args() {
+  include_mediapipe_task_vision_files_for_facegaze = false
+}
+
 accessibility_common_dir =
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
 
 group("build") {
   deps = [ ":accessibility_common_copied_files" ]
+
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    deps += [ ":extract_mediapipe_task_vision_files" ]
+  }
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
@@ -79,6 +87,10 @@ source_set("browser_tests") {
     ":pumpkin_test_files",
   ]
 
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    deps += [ ":extract_mediapipe_task_vision_files" ]
+  }
+
   data = [
     "$root_out_dir/chrome_100_percent.pak",
     "$root_out_dir/chrome_200_percent.pak",
@@ -110,6 +122,10 @@ js2gtest("accessibility_common_extjs_tests") {
     "dictation/parse/dictation_pumpkin_parse_test.js",
     "magnifier/magnifier_test.js",
   ]
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    sources += [ "facegaze/facegaze_mediapipe_test.js" ]
+  }
+
   gen_include_files = [
     "../common/rect_util.js",
     "../common/testing/accessibility_test_base.js",
@@ -137,6 +153,9 @@ js2gtest("accessibility_common_extjs_tests") {
 
 js_type_check("closure_compile") {
   deps = [ ":accessibility_common" ]
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    deps += [ ":mediapipe_task_vision_js" ]
+  }
 }
 
 js_library("accessibility_common") {
@@ -298,10 +317,28 @@ js_library("dictation_context_checker") {
 js_library("facegaze") {
   sources = [ "facegaze/facegaze.js" ]
   deps = [ "../common:event_handler" ]
+
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    deps += [ ":mediapipe_task_vision_js" ]
+  }
+
   externs_list = [
     "$externs_path/automation.js",
     "$externs_path/accessibility_private.js",
   ]
+}
+
+js_library("mediapipe_task_vision_js") {
+  sources = []
+  deps = []
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    sources += [
+      "facegaze/mediapipe_task_vision/tasks_vision.js",
+      "facegaze/mediapipe_task_vision/vision_wasm_internal.js",
+    ]
+
+    deps += [ ":extract_mediapipe_task_vision_files" ]
+  }
 }
 
 action("pumpkin_test_files") {
@@ -332,4 +369,26 @@ action("pumpkin_test_files") {
     pumpkin_output_dir,
   ]
   outputs = files_to_extract
+}
+
+if (include_mediapipe_task_vision_files_for_facegaze) {
+  action("extract_mediapipe_task_vision_files") {
+    out_dir = "$accessibility_common_dir/facegaze/mediapipe_task_vision"
+    script = "facegaze/mediapipe_task_vision/unpack.py"
+    sources = [ "facegaze/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
+    files_to_extract = [
+      "$out_dir/face_landmarker.task",
+      "$out_dir/task_vision.js",
+      "$out_dir/vision_wasm_internal.js",
+      "$out_dir/vision_wasm_internal.wasm",
+    ]
+    args = [
+      "--dest-dir=resources/chromeos/accessibility/accessibility_common/facegaze/mediapipe_task_vision",
+      rebase_path("facegaze/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
+                  root_build_dir),
+      string_join(",", files_to_extract),
+      out_dir,
+    ]
+    outputs = files_to_extract
+  }
 }
