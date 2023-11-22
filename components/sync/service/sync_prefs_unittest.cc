@@ -372,24 +372,18 @@ TEST_F(SyncPrefsTest,
 }
 
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kEnablePasswordsAccountStorage},
-      /*disabled_features=*/{});
-
   const UserSelectableTypeSet default_selected_types =
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
-  ASSERT_TRUE(default_selected_types.Has(UserSelectableType::kPasswords));
+  ASSERT_TRUE(default_selected_types.Has(UserSelectableType::kPayments));
 
-  // Change one of the default values for example kPasswords.
-  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
+  // Change one of the default values for example kPayments.
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPayments, false,
                                          gaia_id_hash_);
 
-  // kPasswords should be disabled, other default values should be unaffected.
+  // kPayments should be disabled, other default values should be unaffected.
   EXPECT_EQ(
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
-      Difference(default_selected_types, {UserSelectableType::kPasswords}));
+      Difference(default_selected_types, {UserSelectableType::kPayments}));
   // Other accounts should be unnafected.
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(
                 signin::GaiaIdHash::FromGaiaId("account_gaia_2")),

@@ -53,6 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -61,6 +62,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "google_apis/gaia/gaia_switches.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -233,17 +235,17 @@ class PasswordManagerSyncTest : public SyncTest {
 
   // Also stores the AccountInfo for the signed-in account in
   // |signed_in_account_| as a side effect.
-  void SetupSyncTransportWithoutPasswordAccountStorage() {
+  void SignIn(const std::string& email = kTestUserEmail) {
     ASSERT_TRUE(signed_in_account_.IsEmpty());
     // Setup Sync for an unconsented account (i.e. in transport mode).
     signed_in_account_ = secondary_account_helper::SignInUnconsentedAccount(
-        GetProfile(0), &test_url_loader_factory_, kTestUserEmail);
+        GetProfile(0), &test_url_loader_factory_, email);
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
     ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   }
 
   void SetupSyncTransportWithPasswordAccountStorage() {
-    SetupSyncTransportWithoutPasswordAccountStorage();
+    SignIn();
 
     // Let the user opt in to the account-scoped password storage, and wait for
     // it to become active.
@@ -884,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInSurvivesSignout) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  SetupSyncTransportWithoutPasswordAccountStorage();
+  SignIn();
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   password_manager::features_util::OptInToAccountStorage(
@@ -895,8 +897,138 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInSurvivesSignout) {
   PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
 
   // The opt-in should be remembered.
-  SetupSyncTransportWithoutPasswordAccountStorage();
+  SignIn();
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInOutHistograms) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  {
+    base::HistogramTester histogram_tester;
+
+    SignIn("first@gmail.com");
+    password_manager::features_util::OptInToAccountStorage(
+        GetProfile(0)->GetPrefs(), GetSyncService(0));
+
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 1, 1);
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 0);
+  }
+  {
+    base::HistogramTester histogram_tester;
+
+    SignOut();
+    SignIn("second@gmail.com");
+    password_manager::features_util::OptInToAccountStorage(
+        GetProfile(0)->GetPrefs(), GetSyncService(0));
+
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 2, 1);
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 0);
+  }
+  {
+    base::HistogramTester histogram_tester;
+
+    password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
+        GetProfile(0)->GetPrefs(), GetSyncService(0));
+
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 0);
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 1, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+
+    // Neither an opt-in nor opt-out, something else.
+    password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
+        GetProfile(0)->GetPrefs(), {});
+
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 0);
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Re-signin should be offered if the user is signed out now but in the past
+  // some account opted in. No opt-in yet, so no re-signin.
+  EXPECT_FALSE(
+      password_manager::features_util::ShouldShowAccountStorageReSignin(
+          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+
+  SignIn();
+
+  // Still no opt-in. Plus, the user is signed-in already.
+  EXPECT_FALSE(
+      password_manager::features_util::ShouldShowAccountStorageReSignin(
+          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+
+  // Now there's an opt-in but the user is signed-in already.
+  EXPECT_FALSE(
+      password_manager::features_util::ShouldShowAccountStorageReSignin(
+          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+
+  SignOut();
+
+  // The preconditions are now met. Re-signin should be offered for all pages,
+  // except the Gaia sign-in page where it's useless. Native UI can offer
+  // re-signin too, in that case the GURL is empty.
+  EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
+      GetProfile(0)->GetPrefs(), GetSyncService(0),
+      GURL("http://www.example.com")));
+  EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
+      GetProfile(0)->GetPrefs(), GetSyncService(0),
+      GURL("https://www.example.com")));
+  EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
+      GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+  EXPECT_FALSE(
+      password_manager::features_util::ShouldShowAccountStorageReSignin(
+          GetProfile(0)->GetPrefs(), GetSyncService(0),
+          GaiaUrls::GetInstance()->gaia_url()));
+  EXPECT_FALSE(
+      password_manager::features_util::ShouldShowAccountStorageReSignin(
+          GetProfile(0)->GetPrefs(), GetSyncService(0),
+          GaiaUrls::GetInstance()->gaia_url().Resolve("path")));
+
+  SignIn();
+
+  // Once the user signs in, no re-signin offered anymore.
+  EXPECT_FALSE(
+      password_manager::features_util::ShouldShowAccountStorageReSignin(
+          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
+                       KeepAccountStorageSettingsOnlyForUsers) {
+  ASSERT_TRUE(SetupClients());
+  SignIn("first@gmail.com");
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  std::string first_gaia_id = GetSyncService(0)->GetAccountInfo().gaia;
+  SignOut();
+  SignIn("second@gmail.com");
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  SignOut();
+
+  password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
+      GetProfile(0)->GetPrefs(), {first_gaia_id});
+
+  SignIn("first@gmail.com");
+  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+  SignOut();
+  SignIn("second@gmail.com");
+  EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

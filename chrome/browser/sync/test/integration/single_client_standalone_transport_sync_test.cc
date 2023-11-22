@@ -537,26 +537,23 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  // E.g. Bookmarks and Passwords are enabled by default (based on the Features
-  // set by the fixture).
-  // TODO(crbug.com/1494120): Re-enable
-  // `syncer::kEnableBookmarksAccountStorage` when possible and reflect
-  // expectations below.
-  // ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-  //    syncer::UserSelectableType::kBookmarks));
+  // E.g. Reading List and Payments are enabled by default (based on the
+  // Features set by the fixture).
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
+      syncer::UserSelectableType::kReadingList));
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPayments));
   // Preferences is not supported in transport mode (based on the Features
   // set by the fixture), so it should be reported as non-selected.
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
 
-  // The user disabled Passwords, e.g. via a temporary toggle predating the
+  // The user disabled Payments, e.g. via a temporary toggle predating the
   // "unified settings panel" introduced by kReplaceSyncPromosWithSignInPromos.
   // Note that SyncUserSettings is already reading/writing from/to the
   // account-scoped prefs!
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, false);
+      syncer::UserSelectableType::kPayments, false);
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -573,14 +570,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // Bookmarks and Passwords should still be enabled and disabled, respectively.
-  // TODO(crbug.com/1494120): Re-enable
-  // `syncer::kEnableBookmarksAccountStorage` when possible and reflect
-  // expectations below.
-  // EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-  //    syncer::UserSelectableType::kBookmarks));
+  // Reading List and Payments should still be enabled and disabled,
+  // respectively.
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kReadingList));
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
+      syncer::UserSelectableType::kPayments));
   // Preferences is supported in transport mode now but should've been disabled
   // by the migration.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
@@ -609,9 +604,9 @@ IN_PROC_BROWSER_TEST_F(
                                     syncer::PassphraseType::kCustomPassphrase)
                   .Wait());
 
-  // E.g. Passwords and Autofill are enabled by default.
+  // E.g. ReadingList and Autofill are enabled by default.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
+      syncer::UserSelectableType::kReadingList));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
   // Preferences is not supported without `kReplaceSyncPromosWithSignInPromos`.
@@ -632,9 +627,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
             syncer::PassphraseType::kCustomPassphrase);
 
-  // Passwords is still enabled (not affected by the migration).
+  // Reading List is still enabled (not affected by the migration).
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
+      syncer::UserSelectableType::kReadingList));
   // Preferences got disabled by the migration (same as for
   // non-custom-passphrase users).
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
