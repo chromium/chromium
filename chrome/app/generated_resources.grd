@@ -9004,12 +9004,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_MIGRATE_LOCAL_CARD" desc="Tooltip for the credit card icon that appears in the address bar. Icon is shown when a user has a credit card stored locally in Chrome but not in Google Pay.">
         Save payment method
       </message>
-      <message name="IDS_MANAGE_IBAN_VALUE_SHOW_VALUE" desc="The tooltip of a button that is used in the manage pending IBAN (International Bank Account Number) bubble for revealing the IBAN value.">
-        Show IBAN value
-      </message>
-      <message name="IDS_MANAGE_IBAN_VALUE_HIDE_VALUE" desc="The tooltip of a button that is used in the manage pending IBAN (International Bank Account Number) bubble for masking the IBAN value.">
-        Hide IBAN value
-      </message>
       <message name="IDS_TOOLTIP_TRANSLATE" desc="The tooltip for translate">
         Translate this page
       </message>
