@@ -30,6 +30,7 @@ suite('AppManagementSupportedLinksItemElement', function() {
 
     loadTimeData.resetForTesting({
       cancel: 'Cancel',
+      close: 'Close',
       appManagementIntentSettingsDialogTitle: 'Supported Links',
       appManagementIntentSettingsTitle: '<a href="#">Supported Links</a>',
       appManagementIntentOverlapDialogTitle: 'Change as preferred app',
