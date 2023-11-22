@@ -382,6 +382,55 @@ TEST_P(BaseGridMediatorTest, TestToolbarsNormalModeWithWebstates) {
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
 }
 
+// Ensures that selection button are correctly enabled when pushing select tab
+// button.
+TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithoutSelection) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ selectTabsButtonTapped:nil];
+
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_EQ(0u, fake_toolbars_mediator_.configuration.selectedItemsCount);
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
+// Ensures that selection button are correctly enabled when pushing select tab
+// button and the user selected one tab.
+TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ selectTabsButtonTapped:nil];
+
+  // Simulate a user who tapped on a tab.
+  [mediator_ userTappedOnItemID:browser_->GetWebStateList()
+                                    ->GetWebStateAt(1)
+                                    ->GetUniqueIdentifier()];
+
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_EQ(1u, fake_toolbars_mediator_.configuration.selectedItemsCount);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.shareButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.addToButton);
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     BaseGridMediatorTest,
