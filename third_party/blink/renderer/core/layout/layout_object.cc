@@ -1993,20 +1993,22 @@ void LayoutObject::Paint(const PaintInfo&) const {
   NOT_DESTROYED();
 }
 
-RecalcLayoutOverflowResult LayoutObject::RecalcLayoutOverflow() {
+RecalcScrollableOverflowResult LayoutObject::RecalcScrollableOverflow() {
   NOT_DESTROYED();
-  ClearSelfNeedsLayoutOverflowRecalc();
-  if (!ChildNeedsLayoutOverflowRecalc())
-    return RecalcLayoutOverflowResult();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  if (!ChildNeedsScrollableOverflowRecalc()) {
+    return RecalcScrollableOverflowResult();
+  }
 
-  ClearChildNeedsLayoutOverflowRecalc();
-  bool children_layout_overflow_changed = false;
+  ClearChildNeedsScrollableOverflowRecalc();
+  bool children_scrollable_overflow_changed = false;
   for (LayoutObject* current = SlowFirstChild(); current;
        current = current->NextSibling()) {
-    children_layout_overflow_changed |=
-        current->RecalcLayoutOverflow().layout_overflow_changed;
+    children_scrollable_overflow_changed |=
+        current->RecalcScrollableOverflow().scrollable_overflow_changed;
   }
-  return {children_layout_overflow_changed, /* rebuild_fragment_tree */ false};
+  return {children_scrollable_overflow_changed,
+          /* rebuild_fragment_tree */ false};
 }
 
 void LayoutObject::RecalcVisualOverflow() {

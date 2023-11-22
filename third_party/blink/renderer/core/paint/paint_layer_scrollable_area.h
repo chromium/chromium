@@ -730,7 +730,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point scroll_origin_;
 
   // The width/height of our scrolled area.
-  // This is OverflowModel's layout overflow translated to physical
+  // This is OverflowModel's scrollable overflow translated to physical
   // coordinates. See OverflowModel for the different overflow and
   // LayoutBoxModelObject for the coordinate systems.
   PhysicalRect overflow_rect_;

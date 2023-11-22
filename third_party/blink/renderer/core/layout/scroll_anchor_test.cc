@@ -1025,7 +1025,7 @@ TEST_F(MAYBE_ScrollAnchorTest, ClampAdjustsAnchorAnimation) {
       .getElementById(AtomicString("hidden"))
       ->setAttribute(html_names::kStyleAttr, g_empty_atom);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  // The clamping scroll after resizing layout overflow to be smaller
+  // The clamping scroll after resizing scrollable overflow to be smaller
   // should adjust the animation back to 0.
   EXPECT_EQ(gfx::Vector2d(0, 0), LayoutViewport()
                                      ->GetScrollAnimator()

@@ -542,7 +542,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 }
 
-TEST_F(LayoutTextCombineTest, LayoutOverflow) {
+TEST_F(LayoutTextCombineTest, ScrollableOverflow) {
   LoadAhem();
   InsertStyleElement(
       "div {"

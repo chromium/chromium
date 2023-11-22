@@ -200,7 +200,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   return reason;
 }
 
-bool BoxPaintInvalidator::BackgroundGeometryDependsOnLayoutOverflowRect() {
+bool BoxPaintInvalidator::BackgroundGeometryDependsOnScrollableOverflowRect() {
   return HasEffectiveBackground() &&
          box_.StyleRef().BackgroundLayers().AnyLayerHasLocalAttachmentImage();
 }
@@ -217,22 +217,26 @@ bool BoxPaintInvalidator::BackgroundPaintsInBorderBoxSpace() {
   return box_.GetBackgroundPaintLocation() & kBackgroundPaintInBorderBoxSpace;
 }
 
-bool BoxPaintInvalidator::ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
-    const PhysicalRect& old_layout_overflow,
-    const PhysicalRect& new_layout_overflow) {
-  if (new_layout_overflow == old_layout_overflow)
+bool BoxPaintInvalidator::
+    ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
+        const PhysicalRect& old_scrollable_overflow,
+        const PhysicalRect& new_scrollable_overflow) {
+  if (new_scrollable_overflow == old_scrollable_overflow) {
     return false;
+  }
 
-  if (!BackgroundGeometryDependsOnLayoutOverflowRect())
+  if (!BackgroundGeometryDependsOnScrollableOverflowRect()) {
     return false;
+  }
 
   // The background should invalidate on most location changes.
-  if (new_layout_overflow.offset != old_layout_overflow.offset)
+  if (new_scrollable_overflow.offset != old_scrollable_overflow.offset) {
     return true;
+  }
 
   return ShouldFullyInvalidateFillLayersOnSizeChange(
-      box_.StyleRef().BackgroundLayers(), old_layout_overflow.size,
-      new_layout_overflow.size);
+      box_.StyleRef().BackgroundLayers(), old_scrollable_overflow.size,
+      new_scrollable_overflow.size);
 }
 
 BoxPaintInvalidator::BackgroundInvalidationType
@@ -276,10 +280,10 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
                 root_box->Size())) {
           return BackgroundInvalidationType::kFull;
         }
-        if (BackgroundGeometryDependsOnLayoutOverflowRect() &&
-            ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
-                root_box->PreviousPhysicalLayoutOverflowRect(),
-                root_box->PhysicalLayoutOverflowRect())) {
+        if (BackgroundGeometryDependsOnScrollableOverflowRect() &&
+            ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
+                root_box->PreviousScrollableOverflowRect(),
+                root_box->ScrollableOverflowRect())) {
           return BackgroundInvalidationType::kFull;
         }
         // It also uses the root element's content box in case the background
@@ -329,23 +333,26 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
       box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
     return BackgroundInvalidationType::kFull;
 
-  bool layout_overflow_change_causes_invalidation =
-      (BackgroundGeometryDependsOnLayoutOverflowRect() ||
+  bool scrollable_overflow_change_causes_invalidation =
+      (BackgroundGeometryDependsOnScrollableOverflowRect() ||
        BackgroundPaintsInContentsSpace());
 
-  if (!layout_overflow_change_causes_invalidation)
+  if (!scrollable_overflow_change_causes_invalidation) {
     return BackgroundInvalidationType::kNone;
+  }
 
-  const auto& old_layout_overflow = box_.PreviousPhysicalLayoutOverflowRect();
-  auto new_layout_overflow = box_.PhysicalLayoutOverflowRect();
-  if (ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
-          old_layout_overflow, new_layout_overflow))
+  const auto& old_scrollable_overflow = box_.PreviousScrollableOverflowRect();
+  auto new_scrollable_overflow = box_.ScrollableOverflowRect();
+  if (ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
+          old_scrollable_overflow, new_scrollable_overflow)) {
     return BackgroundInvalidationType::kFull;
+  }
 
-  if (new_layout_overflow != old_layout_overflow) {
+  if (new_scrollable_overflow != old_scrollable_overflow) {
     // Do incremental invalidation if possible.
-    if (old_layout_overflow.offset == new_layout_overflow.offset)
+    if (old_scrollable_overflow.offset == new_scrollable_overflow.offset) {
       return BackgroundInvalidationType::kIncremental;
+    }
     return BackgroundInvalidationType::kFull;
   }
   return BackgroundInvalidationType::kNone;
@@ -417,17 +424,18 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
 }
 
 bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
-  if (box_.HasVisualOverflow() || box_.HasLayoutOverflow())
+  if (box_.HasVisualOverflow() || box_.HasScrollableOverflow()) {
     return true;
+  }
 
-  // If we don't have layout overflow, the layout overflow rect is the padding
-  // box rect, and we need to save it if the background depends on it.
+  // If we don't have scrollable overflow, the layout overflow rect is the
+  // padding box rect, and we need to save it if the background depends on it.
   // We also need to save the rect for the document element because the
-  // LayoutView may depend on the document element's layout overflow rect
+  // LayoutView may depend on the document element's scrollable overflow rect
   // (see: ComputeViewBackgroundInvalidation).
-  if ((BackgroundGeometryDependsOnLayoutOverflowRect() ||
+  if ((BackgroundGeometryDependsOnScrollableOverflowRect() ||
        BackgroundPaintsInContentsSpace() || box_.IsDocumentElement()) &&
-      box_.PhysicalLayoutOverflowRect() != box_.PhysicalBorderBoxRect()) {
+      box_.ScrollableOverflowRect() != box_.PhysicalBorderBoxRect()) {
     return true;
   }
 

@@ -449,7 +449,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
   GetDocument().View()->SetTracksRasterInvalidations(true);
   content->setAttribute(html_names::kStyleAttr, AtomicString("height: 500px"));
   UpdateAllLifecyclePhasesForTest();
-  // No invalidation because the changed part of layout overflow is clipped.
+  // No invalidation because the changed part of scrollable overflow is clipped.
   EXPECT_FALSE(GetRasterInvalidationTracking()->HasInvalidations());
   GetDocument().View()->SetTracksRasterInvalidations(false);
 

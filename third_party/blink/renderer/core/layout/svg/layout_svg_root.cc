@@ -200,8 +200,8 @@ void LayoutSVGRoot::UpdateLayout() {
     needs_boundaries_or_transform_update_ = false;
   }
 
-  ClearSelfNeedsLayoutOverflowRecalc();
-  ClearLayoutOverflow();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  ClearScrollableOverflow();
 
   // The scale of one or more of the SVG elements may have changed, content
   // (the entire SVG) could have moved or new content may have been exposed, so

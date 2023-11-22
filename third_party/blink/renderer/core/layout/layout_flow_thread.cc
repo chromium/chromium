@@ -218,9 +218,9 @@ bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
                                       accumulated_offset, phase);
 }
 
-RecalcLayoutOverflowResult LayoutFlowThread::RecalcLayoutOverflow() {
+RecalcScrollableOverflowResult LayoutFlowThread::RecalcScrollableOverflow() {
   NOT_DESTROYED();
-  // RecalcLayoutOverflow() traverses a physical fragment tree. So it's not
+  // RecalcScrollableOverflow() traverses a physical fragment tree. So it's not
   // called for LayoutFlowThread, which has no physical fragments.
   NOTREACHED_NORETURN();
 }

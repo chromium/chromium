@@ -422,17 +422,17 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
   }
 }
 
-void RecalcFragmentLayoutOverflow(RecalcLayoutOverflowResult& result,
-                                  const NGPhysicalFragment& fragment) {
+void RecalcFragmentScrollableOverflow(RecalcScrollableOverflowResult& result,
+                                      const NGPhysicalFragment& fragment) {
   for (const auto& child : fragment.PostLayoutChildren()) {
     if (child->GetLayoutObject()) {
       if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.get())) {
         if (LayoutBox* owner_box = box->MutableOwnerLayoutBox())
-          result.Unite(owner_box->RecalcLayoutOverflow());
+          result.Unite(owner_box->RecalcScrollableOverflow());
       }
     } else {
       // We enter this branch when the |child| is a fragmentainer.
-      RecalcFragmentLayoutOverflow(result, *child.get());
+      RecalcFragmentScrollableOverflow(result, *child.get());
     }
   }
 }
@@ -1057,10 +1057,10 @@ LayoutUnit LayoutBox::ScrollWidth() const {
     if (auto* scrollable_area = GetScrollableArea())
       return scrollable_area->ScrollWidth();
     else
-      return PhysicalLayoutOverflowRect().Width();
+      return ScrollableOverflowRect().Width();
   }
   // For objects with scrollable overflow, this matches IE.
-  PhysicalRect overflow_rect = PhysicalLayoutOverflowRect();
+  PhysicalRect overflow_rect = ScrollableOverflowRect();
   if (!StyleRef().GetWritingDirection().IsFlippedX()) {
     return std::max(ClientWidth(), overflow_rect.Right() - BorderLeft());
   }
@@ -1077,12 +1077,12 @@ LayoutUnit LayoutBox::ScrollHeight() const {
     if (auto* scrollable_area = GetScrollableArea())
       return scrollable_area->ScrollHeight();
     else
-      return PhysicalLayoutOverflowRect().Height();
+      return ScrollableOverflowRect().Height();
   }
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
   return std::max(ClientHeight(),
-                  PhysicalLayoutOverflowRect().Bottom() - BorderTop());
+                  ScrollableOverflowRect().Bottom() - BorderTop());
 }
 
 PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
@@ -3260,25 +3260,25 @@ bool LayoutBox::HasLeftOverflow() const {
   return StyleRef().GetWritingMode() == WritingMode::kVerticalRl;
 }
 
-void LayoutBox::SetLayoutOverflowFromLayoutResults() {
+void LayoutBox::SetScrollableOverflowFromLayoutResults() {
   NOT_DESTROYED();
-  ClearSelfNeedsLayoutOverflowRecalc();
-  ClearChildNeedsLayoutOverflowRecalc();
-  ClearLayoutOverflow();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  ClearChildNeedsScrollableOverflowRecalc();
+  ClearScrollableOverflow();
 
   const WritingMode writing_mode = StyleRef().GetWritingMode();
-  absl::optional<PhysicalRect> layout_overflow;
+  absl::optional<PhysicalRect> scrollable_overflow;
   LayoutUnit consumed_block_size;
   LayoutUnit fragment_width_sum;
 
-  // Iterate over all the fragments and unite their individual layout-overflow
-  // to determine the final layout-overflow.
+  // Iterate over all the fragments and unite their individual
+  // scrollable-overflow to determine the final scrollable-overflow.
   for (const auto& layout_result : layout_results_) {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
 
     // In order to correctly unite the overflow, we need to shift an individual
-    // fragment's layout-overflow by previously consumed block-size so far.
+    // fragment's scrollable-overflow by previously consumed block-size so far.
     PhysicalOffset offset_adjust;
     switch (writing_mode) {
       case WritingMode::kHorizontalTb:
@@ -3303,14 +3303,15 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
         break;
     }
 
-    PhysicalRect fragment_layout_overflow = fragment.ScrollableOverflow();
-    fragment_layout_overflow.offset += offset_adjust;
+    PhysicalRect fragment_scrollable_overflow = fragment.ScrollableOverflow();
+    fragment_scrollable_overflow.offset += offset_adjust;
 
-    // If we are the first fragment just set the layout-overflow.
-    if (!layout_overflow)
-      layout_overflow = fragment_layout_overflow;
-    else
-      layout_overflow->UniteEvenIfEmpty(fragment_layout_overflow);
+    // If we are the first fragment just set the scrollable-overflow.
+    if (!scrollable_overflow) {
+      scrollable_overflow = fragment_scrollable_overflow;
+    } else {
+      scrollable_overflow->UniteEvenIfEmpty(fragment_scrollable_overflow);
+    }
 
     if (const auto* break_token = fragment.GetBreakToken()) {
       // The legacy engine doesn't understand our concept of repeated
@@ -3322,100 +3323,108 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
     }
   }
 
-  if (!layout_overflow)
+  if (!scrollable_overflow) {
     return;
-
-  if (IsFlippedBlocksWritingMode(writing_mode)) {
-    layout_overflow->offset.left += fragment_width_sum;
   }
 
-  if (layout_overflow->IsEmpty() ||
-      PhysicalPaddingBoxRect().Contains(*layout_overflow))
-    return;
+  if (IsFlippedBlocksWritingMode(writing_mode)) {
+    scrollable_overflow->offset.left += fragment_width_sum;
+  }
 
-  DCHECK(!LayoutOverflowIsSet());
+  if (scrollable_overflow->IsEmpty() ||
+      PhysicalPaddingBoxRect().Contains(*scrollable_overflow)) {
+    return;
+  }
+
+  DCHECK(!ScrollableOverflowIsSet());
   if (!overflow_)
     overflow_ = MakeGarbageCollected<BoxOverflowModel>();
-  overflow_->layout_overflow.emplace(*layout_overflow);
+  overflow_->scrollable_overflow.emplace(*scrollable_overflow);
 }
 
-RecalcLayoutOverflowResult LayoutBox::RecalcLayoutOverflowNG() {
+RecalcScrollableOverflowResult LayoutBox::RecalcScrollableOverflowNG() {
   NOT_DESTROYED();
 
-  RecalcLayoutOverflowResult child_result;
+  RecalcScrollableOverflowResult child_result;
   // Don't attempt to rebuild the fragment tree or recalculate
   // scrollable-overflow, layout will do this for us.
   if (NeedsLayout())
-    return RecalcLayoutOverflowResult();
+    return RecalcScrollableOverflowResult();
 
-  if (ChildNeedsLayoutOverflowRecalc())
-    child_result = RecalcChildLayoutOverflowNG();
+  if (ChildNeedsScrollableOverflowRecalc()) {
+    child_result = RecalcChildScrollableOverflowNG();
+  }
 
-  bool should_recalculate_layout_overflow =
-      SelfNeedsLayoutOverflowRecalc() || child_result.layout_overflow_changed;
+  bool should_recalculate_scrollable_overflow =
+      SelfNeedsScrollableOverflowRecalc() ||
+      child_result.scrollable_overflow_changed;
   bool rebuild_fragment_tree = child_result.rebuild_fragment_tree;
-  bool layout_overflow_changed = false;
+  bool scrollable_overflow_changed = false;
 
-  if (rebuild_fragment_tree || should_recalculate_layout_overflow) {
+  if (rebuild_fragment_tree || should_recalculate_scrollable_overflow) {
     for (auto& layout_result : layout_results_) {
       const auto& fragment =
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
-      absl::optional<PhysicalRect> layout_overflow;
+      absl::optional<PhysicalRect> scrollable_overflow;
 
-      // Recalculate our layout-overflow if a child had its layout-overflow
-      // changed, or if we are marked as dirty.
-      if (should_recalculate_layout_overflow) {
-        const PhysicalRect old_layout_overflow = fragment.ScrollableOverflow();
+      // Recalculate our scrollable-overflow if a child had its
+      // scrollable-overflow changed, or if we are marked as dirty.
+      if (should_recalculate_scrollable_overflow) {
+        const PhysicalRect old_scrollable_overflow =
+            fragment.ScrollableOverflow();
         const bool has_block_fragmentation =
             layout_result->GetConstraintSpaceForCaching()
                 .HasBlockFragmentation();
 #if DCHECK_IS_ON()
         NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
 #endif
-        const PhysicalRect new_layout_overflow = ScrollableOverflowCalculator::
-            RecalculateScrollableOverflowForFragment(fragment,
-                                                     has_block_fragmentation);
+        const PhysicalRect new_scrollable_overflow =
+            ScrollableOverflowCalculator::
+                RecalculateScrollableOverflowForFragment(
+                    fragment, has_block_fragmentation);
 
-        // Set the appropriate flags if the layout-overflow changed.
-        if (old_layout_overflow != new_layout_overflow) {
-          layout_overflow = new_layout_overflow;
-          layout_overflow_changed = true;
+        // Set the appropriate flags if the scrollable-overflow changed.
+        if (old_scrollable_overflow != new_scrollable_overflow) {
+          scrollable_overflow = new_scrollable_overflow;
+          scrollable_overflow_changed = true;
           rebuild_fragment_tree = true;
         }
       }
 
-      if (layout_overflow) {
+      if (scrollable_overflow) {
         fragment.GetMutableForStyleRecalc().SetScrollableOverflow(
-            *layout_overflow);
+            *scrollable_overflow);
       }
     }
-    SetLayoutOverflowFromLayoutResults();
+    SetScrollableOverflowFromLayoutResults();
   }
 
-  if (layout_overflow_changed && IsScrollContainer())
+  if (scrollable_overflow_changed && IsScrollContainer()) {
     Layer()->GetScrollableArea()->UpdateAfterOverflowRecalc();
+  }
 
-  // Only indicate to our parent that our layout overflow changed if we have:
+  // Only indicate to our parent that our scrollable overflow changed if we
+  // have:
   //  - No layout containment applied.
   //  - No clipping (in both axes).
-  layout_overflow_changed = layout_overflow_changed &&
-                            !ShouldApplyLayoutContainment() &&
-                            !ShouldClipOverflowAlongBothAxis();
+  scrollable_overflow_changed = scrollable_overflow_changed &&
+                                !ShouldApplyLayoutContainment() &&
+                                !ShouldClipOverflowAlongBothAxis();
 
-  return {layout_overflow_changed, rebuild_fragment_tree};
+  return {scrollable_overflow_changed, rebuild_fragment_tree};
 }
 
-RecalcLayoutOverflowResult LayoutBox::RecalcChildLayoutOverflowNG() {
+RecalcScrollableOverflowResult LayoutBox::RecalcChildScrollableOverflowNG() {
   NOT_DESTROYED();
-  DCHECK(ChildNeedsLayoutOverflowRecalc());
-  ClearChildNeedsLayoutOverflowRecalc();
+  DCHECK(ChildNeedsScrollableOverflowRecalc());
+  ClearChildNeedsScrollableOverflowRecalc();
 
 #if DCHECK_IS_ON()
   // We use PostLayout methods to navigate the fragment tree and reach the
   // corresponding LayoutObjects, so we need to use AllowPostLayoutScope here.
   NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
 #endif
-  RecalcLayoutOverflowResult result;
+  RecalcScrollableOverflowResult result;
   for (auto& layout_result : layout_results_) {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
@@ -3425,11 +3434,12 @@ RecalcLayoutOverflowResult LayoutBox::RecalcChildLayoutOverflowNG() {
             cursor.Current()->PostLayoutBoxFragment();
         if (!child || !child->GetLayoutObject()->IsBox())
           continue;
-        result.Unite(child->MutableOwnerLayoutBox()->RecalcLayoutOverflow());
+        result.Unite(
+            child->MutableOwnerLayoutBox()->RecalcScrollableOverflow());
       }
     }
 
-    RecalcFragmentLayoutOverflow(result, fragment);
+    RecalcFragmentScrollableOverflow(result, fragment);
   }
 
   return result;
@@ -3515,10 +3525,10 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
   }
 }
 
-void LayoutBox::ClearLayoutOverflow() {
+void LayoutBox::ClearScrollableOverflow() {
   NOT_DESTROYED();
   if (overflow_)
-    overflow_->layout_overflow.reset();
+    overflow_->scrollable_overflow.reset();
   // overflow_ will be reset by MutableForPainting::ClearPreviousOverflowData()
   // if we don't need it to store previous overflow data.
 }
@@ -3913,8 +3923,8 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
   auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
   if (!previous_overflow)
     previous_overflow.emplace();
-  previous_overflow->previous_physical_layout_overflow_rect =
-      GetLayoutBox().PhysicalLayoutOverflowRect();
+  previous_overflow->previous_scrollable_overflow_rect =
+      GetLayoutBox().ScrollableOverflowRect();
   previous_overflow->previous_visual_overflow_rect =
       GetLayoutBox().VisualOverflowRect();
   previous_overflow->previous_self_visual_overflow_rect =

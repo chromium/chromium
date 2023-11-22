@@ -806,10 +806,10 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   return layout_block;
 }
 
-RecalcLayoutOverflowResult LayoutBlock::RecalcLayoutOverflow() {
+RecalcScrollableOverflowResult LayoutBlock::RecalcScrollableOverflow() {
   NOT_DESTROYED();
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
-  return RecalcLayoutOverflowNG();
+  return RecalcScrollableOverflowNG();
 }
 
 void LayoutBlock::RecalcVisualOverflow() {

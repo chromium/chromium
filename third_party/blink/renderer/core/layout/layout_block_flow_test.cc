@@ -10,7 +10,7 @@ class LayoutBlockFlowTest : public RenderingTest {};
 
 // crbug.com/1253159.  We had a bug that a legacy IFC LayoutBlockFlow didn't
 // call RecalcVisualOverflow() for children.
-TEST_F(LayoutBlockFlowTest, RecalcInlineChildrenLayoutOverflow) {
+TEST_F(LayoutBlockFlowTest, RecalcInlineChildrenScrollableOverflow) {
   SetBodyInnerHTML(R"HTML(
 <style>
 kbd { float: right; }

@@ -124,9 +124,9 @@ void LayoutReplaced::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  ClearLayoutOverflow();
-  ClearSelfNeedsLayoutOverflowRecalc();
-  ClearChildNeedsLayoutOverflowRecalc();
+  ClearScrollableOverflow();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  ClearChildNeedsScrollableOverflowRecalc();
   ClearNeedsLayout();
 }
 

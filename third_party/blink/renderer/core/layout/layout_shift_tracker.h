@@ -40,12 +40,12 @@ class CORE_EXPORT LayoutShiftTracker final
 
   bool NeedsToTrack(const LayoutObject&) const;
 
-  // |old_rect| and |new_rect| are border box rects, united with layout overflow
-  // rects if the box has layout overflow and doesn't clip overflow, in the
-  // local transform space (property_tree_state.Transform()). |old_paint_offset|
-  // and |new_paint_offset| are the offsets of the border box rect in the local
-  // transform space, which are the same as |old_rect.offset| and
-  // |new_rect.offset| respectively if the rects are border box rects.
+  // |old_rect| and |new_rect| are border box rects, united with scrollable
+  // overflow rects if the box has scrollable overflow and doesn't clip
+  // overflow, in the local transform space (property_tree_state.Transform()).
+  // |old_paint_offset| and |new_paint_offset| are the offsets of the border box
+  // rect in the local transform space, which are the same as |old_rect.offset|
+  // and |new_rect.offset| respectively if the rects are border box rects.
   // As we don't save the old property tree state, the caller should adjust
   // |old_rect| and |old_paint_offset| so that we can calculate the correct old
   // visual representation and old starting point in the initial containing

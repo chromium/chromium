@@ -4308,7 +4308,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
-       PaintOffsetsUnderMultiColumnWithLayoutOverflow) {
+       PaintOffsetsUnderMultiColumnWithScrollableOverflow) {
   SetBodyInnerHTML(R"HTML(
     <div style='columns: 2; width: 300px; column-gap: 0; height: 100px'>
       <div id='parent' style='outline: 2px solid black;
@@ -4320,21 +4320,21 @@ TEST_P(PaintPropertyTreeBuilderTest,
 
   const LayoutBox* parent = GetLayoutBoxByElementId("parent");
 
-    // The parent will need to generate 2 fragments, to hold child fragments
-    // that contribute to layout overflow.
-    ASSERT_EQ(2u, NumFragments(parent));
-    EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(parent, 1).PaintOffset());
-    // But since the #parent doesn't take up any space on its own in the second
-    // fragment, the block-size should be 0.
-    ASSERT_EQ(2u, parent->PhysicalFragmentCount());
-    EXPECT_EQ(LayoutUnit(100), parent->GetPhysicalFragment(0)->Size().height);
-    EXPECT_EQ(LayoutUnit(), parent->GetPhysicalFragment(1)->Size().height);
-    EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(parent, 0).PaintOffset());
+  // The parent will need to generate 2 fragments, to hold child fragments
+  // that contribute to scrollable overflow.
+  ASSERT_EQ(2u, NumFragments(parent));
+  EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(parent, 1).PaintOffset());
+  // But since the #parent doesn't take up any space on its own in the second
+  // fragment, the block-size should be 0.
+  ASSERT_EQ(2u, parent->PhysicalFragmentCount());
+  EXPECT_EQ(LayoutUnit(100), parent->GetPhysicalFragment(0)->Size().height);
+  EXPECT_EQ(LayoutUnit(), parent->GetPhysicalFragment(1)->Size().height);
+  EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(parent, 0).PaintOffset());
 
-    LayoutObject* child = GetLayoutObjectByElementId("child");
-    ASSERT_EQ(2u, NumFragments(child));
-    EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(child, 0).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(child, 1).PaintOffset());
+  LayoutObject* child = GetLayoutObjectByElementId("child");
+  ASSERT_EQ(2u, NumFragments(child));
+  EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(child, 0).PaintOffset());
+  EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(child, 1).PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SpanFragmentsLimitedToSize) {

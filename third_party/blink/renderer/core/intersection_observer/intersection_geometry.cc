@@ -333,7 +333,8 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
     }
     if (container != root && container->ShouldClipOverflowAlongEitherAxis() &&
         // Clippers that don't actually clip anything are ignored.
-        (To<LayoutBox>(container)->HasLayoutOverflow() || has_target_margin)) {
+        (To<LayoutBox>(container)->HasScrollableOverflow() ||
+         has_target_margin)) {
       has_intermediate_clippers = true;
     }
     if (container != root && has_scroll_margin &&
@@ -344,7 +345,7 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
   if (has_intermediate_clippers) {
     relationship = kHasIntermediateClippers;
   } else if (root->IsScrollContainer() &&
-             To<LayoutBox>(root)->HasLayoutOverflow()) {
+             To<LayoutBox>(root)->HasScrollableOverflow()) {
     relationship = kScrollableByRootOnly;
   } else {
     relationship = kNotScrollable;

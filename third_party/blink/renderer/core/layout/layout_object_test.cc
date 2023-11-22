@@ -1385,7 +1385,7 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImageDirtyStyleCrash) {
   EXPECT_TRUE(target_object->ShouldDoFullPaintInvalidation());
 }
 
-TEST_F(LayoutObjectTest, NeedsLayoutOverflowRecalc) {
+TEST_F(LayoutObjectTest, NeedsScrollableOverflowRecalc) {
   SetBodyInnerHTML(R"HTML(
     <div id='wrapper'>
       <div id='target'>foo</div>
@@ -1401,17 +1401,17 @@ TEST_F(LayoutObjectTest, NeedsLayoutOverflowRecalc) {
   DCHECK(target);
   DCHECK(other);
 
-  EXPECT_FALSE(wrapper->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(target->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(other->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(wrapper->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(target->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(other->NeedsScrollableOverflowRecalc());
 
   auto* target_element = GetDocument().getElementById(AtomicString("target"));
   target_element->setInnerHTML("baz");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(wrapper->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(target->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(other->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(wrapper->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(target->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(other->NeedsScrollableOverflowRecalc());
 }
 
 TEST_F(LayoutObjectTest, ContainValueIsRelayoutBoundary) {

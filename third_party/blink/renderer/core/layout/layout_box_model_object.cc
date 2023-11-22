@@ -510,7 +510,7 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
     PhysicalRect scroll_container_relative_containing_block_rect;
     if (sticky_container == scroll_container) {
       scroll_container_relative_containing_block_rect =
-          sticky_container->PhysicalLayoutOverflowRect();
+          sticky_container->ScrollableOverflowRect();
     } else {
       PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
       scroll_container_relative_containing_block_rect =

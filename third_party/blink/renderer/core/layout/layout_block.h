@@ -173,7 +173,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
       const LayoutObject* parent) const override;
 
  public:
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
+  RecalcScrollableOverflowResult RecalcScrollableOverflow() override;
 
   void RecalcVisualOverflow() override;
 

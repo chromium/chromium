@@ -2350,7 +2350,7 @@ void Document::UpdateStyle() {
 
   LayoutView* layout_view = GetLayoutView();
   layout_view->UpdateMarkersAndCountersAfterStyleChange();
-  layout_view->RecalcLayoutOverflow();
+  layout_view->RecalcScrollableOverflow();
 
 #if DCHECK_IS_ON()
   AssertNodeClean(*this);

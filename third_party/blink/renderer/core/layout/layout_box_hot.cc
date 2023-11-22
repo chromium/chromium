@@ -45,7 +45,7 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
     overflow_box = VisualOverflowRectIncludingFilters();
   } else if (HasHitTestableOverflow()) {
     // PhysicalVisualOverflowRect is an approximation of
-    // PhsyicalLayoutOverflowRect excluding self-painting descendants (which
+    // ScrollableOverflowRect excluding self-painting descendants (which
     // hit test by themselves), with false-positive (which won't cause any
     // functional issues) when the point is only in visual overflow, but
     // excluding self-painting descendants is more important for performance.
@@ -482,18 +482,18 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   DCHECK_EQ(*out_cache_status, NGLayoutCacheStatus::kHit);
 
   // For example, for elements with a transform change we can re-use the cached
-  // result but we still need to recalculate the layout overflow.
+  // result but we still need to recalculate the scrollable overflow.
   if (use_layout_cache_slot && !is_blocked_by_display_lock &&
-      NeedsLayoutOverflowRecalc()) {
+      NeedsScrollableOverflowRecalc()) {
 #if DCHECK_IS_ON()
     const NGLayoutResult* cloned_cached_layout_result =
         NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
 #endif
     if (!NGDisableSideEffectsScope::IsDisabled())
-      RecalcLayoutOverflow();
+      RecalcScrollableOverflow();
 
     // We need to update the cached layout result, as the call to
-    // RecalcLayoutOverflow() might have modified it.
+    // RecalcScrollableOverflow() might have modified it.
     cached_layout_result = GetCachedLayoutResult(break_token);
 
 #if DCHECK_IS_ON()

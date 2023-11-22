@@ -129,8 +129,8 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 // we remove the scrollbars from the box.
 //
 // The presence of scrollbars is determined by the 'overflow' property and can
-// be conditioned on having layout overflow (see OverflowModel for more details
-// on how we track overflow).
+// be conditioned on having scrollable overflow (see OverflowModel for more
+// details on how we track overflow).
 //
 // There are 2 types of scrollbars:
 // - non-overlay scrollbars take space from the content box.
@@ -357,11 +357,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return PhysicalPaddingBoxRect();
   }
-  PhysicalRect PhysicalLayoutOverflowRect() const {
+  PhysicalRect ScrollableOverflowRect() const {
     NOT_DESTROYED();
     DCHECK(!IsLayoutMultiColumnSet());
-    return LayoutOverflowIsSet()
-               ? overflow_->layout_overflow->LayoutOverflowRect()
+    return ScrollableOverflowIsSet()
+               ? overflow_->scrollable_overflow->ScrollableOverflowRect()
                : NoOverflowRect();
   }
 
@@ -399,8 +399,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool HasTopOverflow() const;
   virtual bool HasLeftOverflow() const;
 
-  // Sets the layout-overflow from the current set of layout-results.
-  void SetLayoutOverflowFromLayoutResults();
+  // Sets the scrollable-overflow from the current set of layout-results.
+  void SetScrollableOverflowFromLayoutResults();
 
   void AddSelfVisualOverflow(const PhysicalRect& r);
   void AddContentsVisualOverflow(const PhysicalRect& r);
@@ -408,7 +408,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
 
-  void ClearLayoutOverflow();
+  void ClearScrollableOverflow();
   void ClearVisualOverflow();
 
   bool CanUseFragmentsForVisualOverflow() const;
@@ -1000,9 +1000,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return VisualOverflowIsSet();
   }
-  bool HasLayoutOverflow() const {
+  bool HasScrollableOverflow() const {
     NOT_DESTROYED();
-    return LayoutOverflowIsSet();
+    return ScrollableOverflowIsSet();
   }
 
   // See README.md for an explanation of scroll origin.
@@ -1097,7 +1097,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void SavePreviousOverflowData();
     void ClearPreviousOverflowData() {
       DCHECK(!GetLayoutBox().HasVisualOverflow());
-      DCHECK(!GetLayoutBox().HasLayoutOverflow());
+      DCHECK(!GetLayoutBox().HasScrollableOverflow());
       GetLayoutBox().overflow_ = nullptr;
     }
     void SavePreviousContentBoxRect() {
@@ -1152,11 +1152,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                      ->previous_visual_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
-  PhysicalRect PreviousPhysicalLayoutOverflowRect() const {
+  PhysicalRect PreviousScrollableOverflowRect() const {
     NOT_DESTROYED();
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
-                     ->previous_physical_layout_overflow_rect
+                     ->previous_scrollable_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
   PhysicalRect PreviousSelfVisualOverflowRect() const {
@@ -1376,14 +1376,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Returns the CSS 'direction' property value when it is not atomic inline.
   TextDirection ResolvedDirection() const;
 
-  // RecalcLayoutOverflow implementations for LayoutNG.
-  RecalcLayoutOverflowResult RecalcLayoutOverflowNG();
-  RecalcLayoutOverflowResult RecalcChildLayoutOverflowNG();
+  // RecalcScrollableOverflow implementations for LayoutNG.
+  RecalcScrollableOverflowResult RecalcScrollableOverflowNG();
+  RecalcScrollableOverflowResult RecalcChildScrollableOverflowNG();
 
  private:
-  inline bool LayoutOverflowIsSet() const {
+  inline bool ScrollableOverflowIsSet() const {
     NOT_DESTROYED();
-    return overflow_ && overflow_->layout_overflow;
+    return overflow_ && overflow_->scrollable_overflow;
   }
 #if DCHECK_IS_ON()
   void CheckIsVisualOverflowComputed() const;

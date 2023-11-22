@@ -738,7 +738,7 @@ void NGBoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   // 2. Painting scrolling contents.
   // For 1, check with |ContentsInkOverflow()|, except when there is no
   // overflow, in which case check with |LocalRect()|. For 2, check with
-  // |LayoutOverflow()|, but this can be approximiated with
+  // |ScrollableOverflow()|, but this can be approximiated with
   // |ContentsInkOverflow()|.
   // TODO(crbug.com/829028): Column boxes do not have |ContentsInkOverflow| atm,
   // hence skip the optimization. If we were to have it, this should be enabled.
@@ -1027,7 +1027,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     // For the case where we are painting the background in the contents space,
     // we need to include the entire overflow rect.
     const LayoutBox& layout_box = To<LayoutBox>(layout_object);
-    paint_rect = layout_box.PhysicalLayoutOverflowRect();
+    paint_rect = layout_box.ScrollableOverflowRect();
 
     contents_paint_state.emplace(paint_info, paint_offset, layout_box,
                                  box_fragment_.GetFragmentData());

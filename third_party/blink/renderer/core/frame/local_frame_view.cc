@@ -1014,7 +1014,7 @@ void LocalFrameView::RunIntersectionObserverSteps() {
     // Report the main frame's document intersection with itself.
     LayoutObject* layout_object = GetLayoutView();
     gfx::Rect main_frame_dimensions(ToRoundedSize(
-        To<LayoutBox>(layout_object)->PhysicalLayoutOverflowRect().size));
+        To<LayoutBox>(layout_object)->ScrollableOverflowRect().size));
     GetFrame().Client()->OnMainFrameIntersectionChanged(main_frame_dimensions);
     GetFrame().Client()->OnMainFrameViewportRectangleChanged(
         gfx::Rect(frame_->GetOutermostMainFrameScrollPosition(),

@@ -800,7 +800,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBox() const {
     if (HasNonVisibleOverflow())
       return PhysicalRect({}, Size());
     // Legacy is the source of truth for overflow
-    return layout_box->PhysicalLayoutOverflowRect();
+    return layout_box->ScrollableOverflowRect();
   } else if (layout_object->IsLayoutInline()) {
     // Inline overflow is a union of child overflows.
     PhysicalRect overflow;

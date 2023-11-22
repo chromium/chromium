@@ -153,21 +153,22 @@ class CORE_EXPORT AllowDestroyingLayoutObjectInFinalizerScope {
   ~AllowDestroyingLayoutObjectInFinalizerScope();
 };
 
-// The result of |LayoutObject::RecalcLayoutOverflow|.
-struct RecalcLayoutOverflowResult {
+// The result of |LayoutObject::RecalcScrollableOverflow|.
+struct RecalcScrollableOverflowResult {
   STACK_ALLOCATED();
 
  public:
-  // True if the layout-overflow (from the viewpoint of the parent) changed,
-  // indicating that the parent should also recalculate its layout-overflow.
-  bool layout_overflow_changed = false;
+  // True if the scrollable-overflow (from the viewpoint of the parent) changed,
+  // indicating that the parent should also recalculate its scrollable-overflow.
+  bool scrollable_overflow_changed = false;
 
   // True if parents should rebuild their fragments to ensure fragment tree
-  // consistency. This may be true even if |layout_overflow_changed| is false.
+  // consistency. This may be true even if |scrollable_overflow_changed| is
+  // false.
   bool rebuild_fragment_tree = false;
 
-  void Unite(const RecalcLayoutOverflowResult& other) {
-    layout_overflow_changed |= other.layout_overflow_changed;
+  void Unite(const RecalcScrollableOverflowResult& other) {
+    scrollable_overflow_changed |= other.scrollable_overflow_changed;
     rebuild_fragment_tree |= other.rebuild_fragment_tree;
   }
 };
@@ -1586,34 +1587,34 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetDefiniteIntrinsicLogicalWidthsDirty(b);
   }
 
-  bool NeedsLayoutOverflowRecalc() const {
+  bool NeedsScrollableOverflowRecalc() const {
     NOT_DESTROYED();
-    return bitfields_.SelfNeedsLayoutOverflowRecalc() ||
-           bitfields_.ChildNeedsLayoutOverflowRecalc();
+    return bitfields_.SelfNeedsScrollableOverflowRecalc() ||
+           bitfields_.ChildNeedsScrollableOverflowRecalc();
   }
-  bool SelfNeedsLayoutOverflowRecalc() const {
+  bool SelfNeedsScrollableOverflowRecalc() const {
     NOT_DESTROYED();
-    return bitfields_.SelfNeedsLayoutOverflowRecalc();
+    return bitfields_.SelfNeedsScrollableOverflowRecalc();
   }
-  bool ChildNeedsLayoutOverflowRecalc() const {
+  bool ChildNeedsScrollableOverflowRecalc() const {
     NOT_DESTROYED();
-    return bitfields_.ChildNeedsLayoutOverflowRecalc();
+    return bitfields_.ChildNeedsScrollableOverflowRecalc();
   }
-  void SetSelfNeedsLayoutOverflowRecalc() {
+  void SetSelfNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetSelfNeedsLayoutOverflowRecalc(true);
+    bitfields_.SetSelfNeedsScrollableOverflowRecalc(true);
   }
-  void SetChildNeedsLayoutOverflowRecalc() {
+  void SetChildNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetChildNeedsLayoutOverflowRecalc(true);
+    bitfields_.SetChildNeedsScrollableOverflowRecalc(true);
   }
-  void ClearSelfNeedsLayoutOverflowRecalc() {
+  void ClearSelfNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetSelfNeedsLayoutOverflowRecalc(false);
+    bitfields_.SetSelfNeedsScrollableOverflowRecalc(false);
   }
-  void ClearChildNeedsLayoutOverflowRecalc() {
+  void ClearChildNeedsScrollableOverflowRecalc() {
     NOT_DESTROYED();
-    bitfields_.SetChildNeedsLayoutOverflowRecalc(false);
+    bitfields_.SetChildNeedsScrollableOverflowRecalc(false);
   }
 
   // CSS clip only applies when position is absolute or fixed. Prefer this check
@@ -2193,7 +2194,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   virtual void Paint(const PaintInfo&) const;
 
-  virtual RecalcLayoutOverflowResult RecalcLayoutOverflow();
+  virtual RecalcScrollableOverflowResult RecalcScrollableOverflow();
 
   // Invalidate visual overflow, using a method that varies based
   // the object type and state of layout.
@@ -3744,7 +3745,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool SelfPaintingLayerNeedsVisualOverflowRecalc() const;
   inline void MarkContainerChainForOverflowRecalcIfNeeded(
-      bool mark_container_chain_layout_overflow_recalc);
+      bool mark_container_chain_scrollable_overflow_recalc);
 
   inline void InvalidateContainerIntrinsicLogicalWidths();
 
@@ -3852,8 +3853,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         : self_needs_full_layout_(false),
           child_needs_full_layout_(false),
           needs_simplified_layout_(false),
-          self_needs_layout_overflow_recalc_(false),
-          child_needs_layout_overflow_recalc_(false),
+          self_needs_scrollable_overflow_recalc_(false),
+          child_needs_scrollable_overflow_recalc_(false),
           intrinsic_logical_widths_dirty_(false),
           intrinsic_logical_widths_depends_on_block_constraints_(true),
           intrinsic_logical_widths_child_depends_on_block_constraints_(true),
@@ -3947,11 +3948,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // This is relatively cheap compuared to "full" layout.
     ADD_BOOLEAN_BITFIELD(needs_simplified_layout_, NeedsSimplifiedLayout);
 
-    ADD_BOOLEAN_BITFIELD(self_needs_layout_overflow_recalc_,
-                         SelfNeedsLayoutOverflowRecalc);
+    ADD_BOOLEAN_BITFIELD(self_needs_scrollable_overflow_recalc_,
+                         SelfNeedsScrollableOverflowRecalc);
 
-    ADD_BOOLEAN_BITFIELD(child_needs_layout_overflow_recalc_,
-                         ChildNeedsLayoutOverflowRecalc);
+    ADD_BOOLEAN_BITFIELD(child_needs_scrollable_overflow_recalc_,
+                         ChildNeedsScrollableOverflowRecalc);
 
     // This boolean marks the intrinsic logical widths for lazy recomputation.
     //

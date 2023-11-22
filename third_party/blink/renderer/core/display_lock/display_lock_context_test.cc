@@ -2146,7 +2146,7 @@ TEST_P(DisplayLockContextRenderingTest, FloatChildLocked) {
   auto* floating = GetDocument().getElementById(AtomicString("floating"));
   EXPECT_EQ(PhysicalRect(0, 0, 200, 100), lockable_box->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 200, 100),
-            lockable_box->PhysicalLayoutOverflowRect());
+            lockable_box->ScrollableOverflowRect());
 
   lockable->classList().Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
@@ -2158,7 +2158,7 @@ TEST_P(DisplayLockContextRenderingTest, FloatChildLocked) {
       lockable->GetDisplayLockContext()));
   EXPECT_EQ(PhysicalRect(0, 0, 200, 50), lockable_box->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 200, 50),
-            lockable_box->PhysicalLayoutOverflowRect());
+            lockable_box->ScrollableOverflowRect());
 
   floating->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px"));
   // The following should not crash/DCHECK.
@@ -2169,7 +2169,7 @@ TEST_P(DisplayLockContextRenderingTest, FloatChildLocked) {
       lockable->GetDisplayLockContext()));
   EXPECT_EQ(PhysicalRect(0, 0, 200, 50), lockable_box->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 200, 50),
-            lockable_box->PhysicalLayoutOverflowRect());
+            lockable_box->ScrollableOverflowRect());
 
   // After unlocking, we should process the pending visual overflow recalc.
   lockable->classList().Remove(AtomicString("hidden"));
@@ -2177,7 +2177,7 @@ TEST_P(DisplayLockContextRenderingTest, FloatChildLocked) {
 
   EXPECT_EQ(PhysicalRect(0, 0, 200, 200), lockable_box->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 200, 200),
-            lockable_box->PhysicalLayoutOverflowRect());
+            lockable_box->ScrollableOverflowRect());
 }
 
 TEST_P(DisplayLockContextRenderingTest,

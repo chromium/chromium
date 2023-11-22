@@ -625,7 +625,7 @@ gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
 
   // TODO(skobes): We should really ASSERT that contentSize >= visibleSize
   // when we are not the root layer, but we can't because contentSize is
-  // based on stale layout overflow data (http://crbug.com/576933).
+  // based on stale scrollable overflow data (http://crbug.com/576933).
   content_size.SetToMax(visible_size);
 
   return -ScrollOrigin().OffsetFromOrigin() +
@@ -910,10 +910,10 @@ void PaintLayerScrollableArea::UpdateScrollOrigin() {
 }
 
 void PaintLayerScrollableArea::UpdateScrollDimensions() {
-  PhysicalRect new_overflow_rect = GetLayoutBox()->PhysicalLayoutOverflowRect();
+  PhysicalRect new_overflow_rect = GetLayoutBox()->ScrollableOverflowRect();
 
-  // The layout viewport can be larger than the document's layout overflow when
-  // top controls are hidden.  Expand the overflow here to ensure that our
+  // The layout viewport can be larger than the document's scrollable overflow
+  // when top controls are hidden.  Expand the overflow here to ensure that our
   // contents size >= visible size.
   new_overflow_rect.Unite(PhysicalRect(
       new_overflow_rect.offset, LayoutContentRect(kExcludeScrollbars).size));

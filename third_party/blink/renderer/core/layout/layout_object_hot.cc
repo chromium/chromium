@@ -110,12 +110,12 @@ void LayoutObject::SetNeedsOverflowRecalc(
       return;
     }
   }
-  bool mark_container_chain_layout_overflow_recalc =
-      !SelfNeedsLayoutOverflowRecalc();
+  bool mark_container_chain_scrollable_overflow_recalc =
+      !SelfNeedsScrollableOverflowRecalc();
 
   if (overflow_recalc_type ==
       OverflowRecalcType::kLayoutAndVisualOverflowRecalc) {
-    SetSelfNeedsLayoutOverflowRecalc();
+    SetSelfNeedsScrollableOverflowRecalc();
   }
 
   DCHECK(overflow_recalc_type ==
@@ -125,7 +125,7 @@ void LayoutObject::SetNeedsOverflowRecalc(
   SetShouldCheckForPaintInvalidation();
   MarkSelfPaintingLayerForVisualOverflowRecalc();
 
-  if (mark_container_chain_layout_overflow_recalc) {
+  if (mark_container_chain_scrollable_overflow_recalc) {
     MarkContainerChainForOverflowRecalcIfNeeded(
         overflow_recalc_type ==
         OverflowRecalcType::kLayoutAndVisualOverflowRecalc);

@@ -104,11 +104,11 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
     local_bounds = box->PhysicalBorderBoxRect();
     // If we clip overflow then we can use the `PhysicalBorderBoxRect()`
-    // as our bounds. If not, we expand the bounds by the layout overflow.
+    // as our bounds. If not, we expand the bounds by the scrollable overflow.
     if (!layout_object->ShouldClipOverflowAlongEitherAxis()) {
       // BorderBoxRect doesn't include overflow content and floats.
       LayoutUnit max_y = std::max(local_bounds.Bottom(),
-                                  box->PhysicalLayoutOverflowRect().Bottom());
+                                  box->ScrollableOverflowRect().Bottom());
       local_bounds.ShiftBottomEdgeTo(max_y);
     }
   } else if (layout_object->IsText()) {
