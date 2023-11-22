@@ -139,4 +139,14 @@ void HistogramAlgorithmAndKey(ExecutionContext* context,
   HistogramKey(context, key);
 }
 
+void HistogramDeriveBitsTruncation(ExecutionContext* context,
+                                   unsigned int length_bits,
+                                   WebCryptoWarningType status) {
+  if (length_bits == 0) {
+    UseCounter::Count(context, WebFeature::kSubtleCryptoDeriveBitsZeroLength);
+  } else if (status == blink::kWebCryptoWarningTypeDeriveBitsTruncated) {
+    UseCounter::Count(context, WebFeature::kSubtleCryptoDeriveBitsTruncation);
+  }
+}
+
 }  // namespace blink

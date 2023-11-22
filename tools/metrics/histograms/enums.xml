@@ -25253,6 +25253,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4742" label="LinkRelOpenerTargetingSameFrame"/>
   <int value="4743" label="CSSSelectorPseudoHas"/>
   <int value="4744" label="WakeLockAcquireScreenLockWithoutStickyActivation"/>
+  <int value="4745" label="SubtleCryptoDeriveBitsZeroLength"/>
+  <int value="4746" label="SubtleCryptoDeriveBitsTruncation"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

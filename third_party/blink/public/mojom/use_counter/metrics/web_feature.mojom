@@ -4081,6 +4081,8 @@ enum WebFeature {
   kLinkRelOpenerTargetingSameFrame = 4742,
   kCSSSelectorPseudoHas = 4743,
   kWakeLockAcquireScreenLockWithoutStickyActivation = 4744,
+  kSubtleCryptoDeriveBitsZeroLength = 4745,
+  kSubtleCryptoDeriveBitsTruncation = 4746,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
