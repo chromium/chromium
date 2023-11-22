@@ -47,6 +47,7 @@ WolvicContents::Init() {
 }
 
 WolvicContents::~WolvicContents() {
+  web_contents_->RemoveUserData(kWolvicContentsUserDataKey);
   WebContentsObserver::Observe(nullptr);
 }
 
