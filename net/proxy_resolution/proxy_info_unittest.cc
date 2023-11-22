@@ -38,7 +38,7 @@ TEST(ProxyInfoTest, ProxyInfoIsDirectOnly) {
   EXPECT_FALSE(info.is_direct());
   EXPECT_FALSE(info.is_direct_only());
   EXPECT_EQ(2u, info.proxy_list().size());
-  EXPECT_EQ("PROXY myproxy:80;DIRECT", info.proxy_list().ToPacString());
+  EXPECT_EQ("PROXY myproxy:80;DIRECT", info.proxy_list().ToDebugString());
   // After falling back to direct, we shouldn't consider it DIRECT only.
   EXPECT_TRUE(info.Fallback(ERR_PROXY_CONNECTION_FAILED, NetLogWithSource()));
   EXPECT_TRUE(info.is_direct());
@@ -52,10 +52,10 @@ TEST(ProxyInfoTest, UseVsOverrideProxyList) {
   ProxyList proxy_list;
   proxy_list.Set("http://foo.com");
   info.OverrideProxyList(proxy_list);
-  EXPECT_EQ("PROXY foo.com:80", info.proxy_list().ToPacString());
+  EXPECT_EQ("PROXY foo.com:80", info.proxy_list().ToDebugString());
   proxy_list.Set("http://bar.com");
   info.UseProxyList(proxy_list);
-  EXPECT_EQ("PROXY bar.com:80", info.proxy_list().ToPacString());
+  EXPECT_EQ("PROXY bar.com:80", info.proxy_list().ToDebugString());
 }
 
 TEST(ProxyInfoTest, IsForIpProtection) {
@@ -72,7 +72,7 @@ TEST(ProxyListTest, UseProxyChain) {
   ProxyChain proxy_chain =
       ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "foo", 80);
   info.UseProxyChain(proxy_chain);
-  EXPECT_EQ("PROXY foo:80", info.proxy_list().ToPacString());
+  EXPECT_EQ("PROXY foo:80", info.proxy_list().ToDebugString());
 }
 
 }  // namespace net

@@ -82,6 +82,10 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
     if (!proxy_info) {
       error = net::ErrorToString(net_error);
       result = kProxyInfoOnFailure;
+    } else if (proxy_info->ContainsMultiProxyChain()) {
+      // Multi-proxy chains cannot be represented as a PAC string.
+      error = net::ErrorToString(net::ERR_MANDATORY_PROXY_CONFIGURATION_FAILED);
+      result = kProxyInfoOnFailure;
     } else {
       result = proxy_info->ToPacString();
       if (proxy_info->is_http()) {

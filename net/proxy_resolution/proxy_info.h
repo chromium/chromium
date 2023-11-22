@@ -76,6 +76,9 @@ class NET_EXPORT ProxyInfo {
     return is_direct() && proxy_list_.size() == 1 && proxy_retry_info_.empty();
   }
 
+  // Returns true if any of the contained ProxyChains are multi-proxy.
+  bool ContainsMultiProxyChain() const;
+
   // Returns true if the first valid proxy server is an https proxy.
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
@@ -136,6 +139,9 @@ class NET_EXPORT ProxyInfo {
 
   // See description in ProxyList::ToPacString().
   std::string ToPacString() const;
+
+  // See description in ProxyList::ToDebugString().
+  std::string ToDebugString() const;
 
   // Marks the current proxy as bad. |net_error| should contain the network
   // error encountered when this proxy was tried, if any. If this fallback

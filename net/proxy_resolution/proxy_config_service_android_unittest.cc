@@ -118,7 +118,7 @@ class ProxyConfigServiceAndroidTestBase : public TestWithTaskEnvironment {
     EXPECT_EQ(ProxyConfigService::CONFIG_VALID, availability);
     ProxyInfo proxy_info;
     proxy_config.value().proxy_rules().Apply(GURL(url), &proxy_info);
-    EXPECT_EQ(expected, proxy_info.ToPacString());
+    EXPECT_EQ(expected, proxy_info.ToDebugString());
   }
 
   void SetProxyOverride(

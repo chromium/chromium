@@ -721,7 +721,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY weird"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
-      << "Got: " << result.proxy_list().ToPacString();
+      << "Got: " << result.proxy_list().ToDebugString();
   EXPECT_TRUE(result.is_for_ip_protection());
 }
 
@@ -758,7 +758,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   // Proxy server is not added.
   expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
-      << "Got: " << result.proxy_list().ToPacString();
+      << "Got: " << result.proxy_list().ToDebugString();
   EXPECT_TRUE(result.is_for_ip_protection());
 }
 

@@ -161,7 +161,7 @@ TEST_F(ProxyServiceMojoTest, Basic) {
   fetcher_->NotifyFetchCompletion(net::OK, kSimplePacScript);
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ("PROXY foo:1234", info.ToPacString());
+  EXPECT_EQ("PROXY foo:1234", info.ToDebugString());
   EXPECT_EQ(0u, mock_host_resolver_.num_resolve());
   proxy_resolution_service_.reset();
 }
@@ -184,7 +184,7 @@ TEST_F(ProxyServiceMojoTest, DnsResolution) {
   fetcher_->NotifyFetchCompletion(net::OK, kDnsResolvePacScript);
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ("QUIC bar:4321", info.ToPacString());
+  EXPECT_EQ("QUIC bar:4321", info.ToDebugString());
   EXPECT_EQ(1u, mock_host_resolver_.num_resolve());
   proxy_resolution_service_.reset();
 }
@@ -211,7 +211,7 @@ TEST_F(ProxyServiceMojoTest, Error) {
       TestNetworkDelegate::PAC_SCRIPT_ERROR);
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ("DIRECT", info.ToPacString());
+  EXPECT_EQ("DIRECT", info.ToDebugString());
   EXPECT_EQ(0u, mock_host_resolver_.num_resolve());
   CheckCapturedNetLogEntries(
       net_log_observer_.GetEntriesForSource(net_log_with_source.source()));
@@ -238,7 +238,7 @@ TEST_F(ProxyServiceMojoTest, ErrorOnInitialization) {
       TestNetworkDelegate::PAC_SCRIPT_ERROR);
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ("DIRECT", info.ToPacString());
+  EXPECT_EQ("DIRECT", info.ToDebugString());
   EXPECT_EQ(0u, mock_host_resolver_.num_resolve());
 
   CheckCapturedNetLogEntries(net_log_observer_.GetEntries());

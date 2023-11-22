@@ -314,7 +314,7 @@ base::Value::Dict NetLogBadProxyListParams(
 // Returns NetLog parameters on a successful proxy resolution.
 base::Value::Dict NetLogFinishedResolvingProxyParams(const ProxyInfo* result) {
   base::Value::Dict dict;
-  dict.Set("pac_string", result->ToPacString());
+  dict.Set("proxy_info", result->ToDebugString());
   return dict;
 }
 

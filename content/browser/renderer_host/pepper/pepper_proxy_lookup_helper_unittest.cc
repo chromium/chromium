@@ -159,7 +159,7 @@ TEST_F(PepperProxyLookupHelperTest, Success) {
   ClaimProxyLookupClient()->OnProxyLookupComplete(net::OK, proxy_info_response);
   WaitForLookupCompletion();
   ASSERT_TRUE(proxy_info());
-  EXPECT_EQ("PROXY result:80", proxy_info()->ToPacString());
+  EXPECT_EQ("PROXY result:80", proxy_info()->ToDebugString());
 }
 
 // Basic failure case - an error is passed to the PepperProxyLookupHelper

@@ -15,11 +15,11 @@ namespace net {
 namespace {
 
 void ExpectProxyServerEquals(const char* expectation,
-                             const ProxyList& proxy_servers) {
+                             const ProxyList& proxy_list) {
   if (expectation == nullptr) {
-    EXPECT_TRUE(proxy_servers.IsEmpty());
+    EXPECT_TRUE(proxy_list.IsEmpty());
   } else {
-    EXPECT_EQ(expectation, proxy_servers.ToPacString());
+    EXPECT_EQ(expectation, proxy_list.ToDebugString());
   }
 }
 
@@ -491,7 +491,7 @@ class ProxyConfigWebSocketTest : public ::testing::Test {
     rules_.ParseFromString(rules);
   }
   void Apply(const GURL& gurl) { rules_.Apply(gurl, &info_); }
-  std::string ToPacString() const { return info_.ToPacString(); }
+  std::string ToDebugString() const { return info_.ToDebugString(); }
 
   static GURL WsUrl() { return GURL(kWsUrl); }
   static GURL WssUrl() { return GURL(kWssUrl); }
@@ -504,7 +504,7 @@ class ProxyConfigWebSocketTest : public ::testing::Test {
 TEST_F(ProxyConfigWebSocketTest, UsesProxy) {
   ParseFromString("proxy:3128");
   Apply(WsUrl());
-  EXPECT_EQ("PROXY proxy:3128", ToPacString());
+  EXPECT_EQ("PROXY proxy:3128", ToDebugString());
 }
 
 // See RFC6455 Section 4.1. item 3, "_Proxy Usage_". Note that this favors a
@@ -513,7 +513,7 @@ TEST_F(ProxyConfigWebSocketTest, PrefersSocksV4) {
   ParseFromString(
       "http=proxy:3128 ; https=sslproxy:3128 ; socks=socksproxy:1080");
   Apply(WsUrl());
-  EXPECT_EQ("SOCKS socksproxy:1080", ToPacString());
+  EXPECT_EQ("SOCKS socksproxy:1080", ToDebugString());
 }
 
 // See RFC6455 Section 4.1. item 3, "_Proxy Usage_".
@@ -521,13 +521,13 @@ TEST_F(ProxyConfigWebSocketTest, PrefersSocksV5) {
   ParseFromString(
       "http=proxy:3128 ; https=sslproxy:3128 ; socks=socks5://socksproxy:1080");
   Apply(WsUrl());
-  EXPECT_EQ("SOCKS5 socksproxy:1080", ToPacString());
+  EXPECT_EQ("SOCKS5 socksproxy:1080", ToDebugString());
 }
 
 TEST_F(ProxyConfigWebSocketTest, PrefersHttpsToHttp) {
   ParseFromString("http=proxy:3128 ; https=sslproxy:3128");
   Apply(WssUrl());
-  EXPECT_EQ("PROXY sslproxy:3128", ToPacString());
+  EXPECT_EQ("PROXY sslproxy:3128", ToDebugString());
 }
 
 // Tests when a proxy-per-url-scheme configuration was used, and proxies are
@@ -538,9 +538,9 @@ TEST_F(ProxyConfigWebSocketTest, PrefersNonSocksFallbackOverHttps) {
   // The notation for "socks=" is abused to set the "fallback proxy".
   ParseFromString(
       "http=proxy:3128 ; https=sslproxy:3128; socks=https://httpsproxy");
-  EXPECT_EQ("HTTPS httpsproxy:443", rules_.fallback_proxies.ToPacString());
+  EXPECT_EQ("HTTPS httpsproxy:443", rules_.fallback_proxies.ToDebugString());
   Apply(WssUrl());
-  EXPECT_EQ("HTTPS httpsproxy:443", ToPacString());
+  EXPECT_EQ("HTTPS httpsproxy:443", ToDebugString());
 }
 
 // Tests when a proxy-per-url-scheme configuration was used, and the fallback
@@ -549,41 +549,41 @@ TEST_F(ProxyConfigWebSocketTest, PrefersNonSocksFallbackOverHttps) {
 TEST_F(ProxyConfigWebSocketTest, UsesNonSocksFallbackProxy) {
   // The notation for "socks=" is abused to set the "fallback proxy".
   ParseFromString("ftp=ftpproxy:3128; socks=https://httpsproxy");
-  EXPECT_EQ("HTTPS httpsproxy:443", rules_.fallback_proxies.ToPacString());
+  EXPECT_EQ("HTTPS httpsproxy:443", rules_.fallback_proxies.ToDebugString());
   Apply(WssUrl());
-  EXPECT_EQ("HTTPS httpsproxy:443", ToPacString());
+  EXPECT_EQ("HTTPS httpsproxy:443", ToDebugString());
 }
 
 TEST_F(ProxyConfigWebSocketTest, PrefersHttpsEvenForWs) {
   ParseFromString("http=proxy:3128 ; https=sslproxy:3128");
   Apply(WsUrl());
-  EXPECT_EQ("PROXY sslproxy:3128", ToPacString());
+  EXPECT_EQ("PROXY sslproxy:3128", ToDebugString());
 }
 
 TEST_F(ProxyConfigWebSocketTest, PrefersHttpToDirect) {
   ParseFromString("http=proxy:3128");
   Apply(WssUrl());
-  EXPECT_EQ("PROXY proxy:3128", ToPacString());
+  EXPECT_EQ("PROXY proxy:3128", ToDebugString());
 }
 
 TEST_F(ProxyConfigWebSocketTest, IgnoresFtpProxy) {
   ParseFromString("ftp=ftpproxy:3128");
   Apply(WssUrl());
-  EXPECT_EQ("DIRECT", ToPacString());
+  EXPECT_EQ("DIRECT", ToDebugString());
 }
 
 TEST_F(ProxyConfigWebSocketTest, ObeysBypassRules) {
   ParseFromString("http=proxy:3128 ; https=sslproxy:3128");
   rules_.bypass_rules.AddRuleFromString(".chromium.org");
   Apply(GURL("wss://codereview.chromium.org/feed"));
-  EXPECT_EQ("DIRECT", ToPacString());
+  EXPECT_EQ("DIRECT", ToDebugString());
 }
 
 TEST_F(ProxyConfigWebSocketTest, ObeysLocalBypass) {
   ParseFromString("http=proxy:3128 ; https=sslproxy:3128");
   rules_.bypass_rules.AddRuleFromString("<local>");
   Apply(GURL("ws://localhost/feed"));
-  EXPECT_EQ("DIRECT", ToPacString());
+  EXPECT_EQ("DIRECT", ToDebugString());
 }
 
 }  // namespace

@@ -211,11 +211,11 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyManual) {
 
   auto actual = CrosapiProxyToNetProxy(std::move(ptr));
 
-  EXPECT_EQ(actual.value().proxy_rules().proxies_for_http.ToPacString(),
+  EXPECT_EQ(actual.value().proxy_rules().proxies_for_http.ToDebugString(),
             "PROXY proxy:80");
-  EXPECT_EQ(actual.value().proxy_rules().proxies_for_https.ToPacString(),
+  EXPECT_EQ(actual.value().proxy_rules().proxies_for_https.ToDebugString(),
             "HTTPS secure_proxy:81;PROXY secure_proxy2:82");
-  EXPECT_EQ(actual.value().proxy_rules().fallback_proxies.ToPacString(),
+  EXPECT_EQ(actual.value().proxy_rules().fallback_proxies.ToDebugString(),
             "SOCKS socks_proxy:82");
   EXPECT_EQ(actual.value().proxy_rules().bypass_rules.ToString(),
             "localhost;google.com;");

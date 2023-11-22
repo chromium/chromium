@@ -278,7 +278,7 @@ void ProxyResolverMojo::Job::ReportResult(int32_t error,
 
   if (error == net::OK) {
     *results_ = proxy_info;
-    DVLOG(1) << "Servers: " << results_->ToPacString();
+    DVLOG(1) << "Servers: " << results_->ToDebugString();
   }
 
   CompleteRequest(error);

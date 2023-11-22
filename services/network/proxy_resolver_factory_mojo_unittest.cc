@@ -785,7 +785,7 @@ TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL) {
   EXPECT_THAT(request->Resolve(), IsError(net::ERR_IO_PENDING));
   EXPECT_THAT(request->WaitForResult(), IsOk());
 
-  EXPECT_EQ("DIRECT", request->results().ToPacString());
+  EXPECT_EQ("DIRECT", request->results().ToDebugString());
   CheckCapturedNetLogEntries(url.spec(),
                              net_log_observer_.GetEntriesForSource(
                                  request->net_log_with_source().source()));
@@ -803,7 +803,7 @@ TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL_MultipleResults) {
   EXPECT_THAT(request->Resolve(), IsError(net::ERR_IO_PENDING));
   EXPECT_THAT(request->WaitForResult(), IsOk());
 
-  EXPECT_EQ(kPacString, request->results().ToPacString());
+  EXPECT_EQ(kPacString, request->results().ToDebugString());
 }
 
 TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL_Error) {
@@ -849,8 +849,8 @@ TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL_MultipleRequests) {
   EXPECT_THAT(request1->WaitForResult(), IsOk());
   EXPECT_THAT(request2->WaitForResult(), IsOk());
 
-  EXPECT_EQ("DIRECT", request1->results().ToPacString());
-  EXPECT_EQ("HTTPS foo:443", request2->results().ToPacString());
+  EXPECT_EQ("DIRECT", request1->results().ToDebugString());
+  EXPECT_EQ("HTTPS foo:443", request2->results().ToDebugString());
 }
 
 TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL_Disconnect) {

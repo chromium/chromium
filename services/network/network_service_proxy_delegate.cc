@@ -184,7 +184,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 
     if (VLOG_IS_ON(3)) {
       dvlog(base::StrCat({"setting proxy list (before deprioritization) to ",
-                          proxy_list.ToPacString()}));
+                          proxy_list.ToDebugString()}));
     }
     result->set_is_for_ip_protection(true);
     result->OverrideProxyList(

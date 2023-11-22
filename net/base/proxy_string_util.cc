@@ -99,8 +99,8 @@ std::string ConstructHostPortString(std::string_view hostname, uint16_t port) {
 }  // namespace
 
 ProxyChain PacResultElementToProxyChain(std::string_view pac_result_element) {
-  // TODO(https://crbug.com/1491092): Support parsing multi-hop proxy chains
-  // from PAC scripts.
+  // Proxy chains are not supported in PAC strings, so this is just parsed
+  // as a single server.
   return ProxyChain(PacResultElementToProxyServer(pac_result_element));
 }
 

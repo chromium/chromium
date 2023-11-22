@@ -57,6 +57,14 @@ void ProxyInfo::OverrideProxyList(const ProxyList& proxy_list) {
   proxy_list_ = proxy_list;
 }
 
+bool ProxyInfo::ContainsMultiProxyChain() const {
+  auto& proxy_chains = proxy_list_.AllChains();
+  return std::any_of(proxy_chains.begin(), proxy_chains.end(),
+                     [](const ProxyChain& proxy_chain) {
+                       return proxy_chain.is_multi_proxy();
+                     });
+}
+
 std::string ProxyInfo::ToPacString() const {
   return proxy_list_.ToPacString();
 }
@@ -125,6 +133,10 @@ bool ProxyInfo::is_socks() const {
     return false;
   }
   return proxy_chain().GetProxyServer(/*chain_index=*/0).is_socks();
+}
+
+std::string ProxyInfo::ToDebugString() const {
+  return proxy_list_.ToDebugString();
 }
 
 bool ProxyInfo::Fallback(int net_error, const NetLogWithSource& net_log) {

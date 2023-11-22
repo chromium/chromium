@@ -25,7 +25,7 @@ namespace {
 TEST(ProxyListTest, SetFromPacString) {
   const struct {
     const char* pac_input;
-    const char* pac_output;
+    const char* debug_output;
   } tests[] = {
     // Valid inputs:
     {  "PROXY foopy:10",
@@ -68,7 +68,7 @@ TEST(ProxyListTest, SetFromPacString) {
   for (const auto& test : tests) {
     ProxyList list;
     list.SetFromPacString(test.pac_input);
-    EXPECT_EQ(test.pac_output, list.ToPacString());
+    EXPECT_EQ(test.debug_output, list.ToDebugString());
     EXPECT_FALSE(list.IsEmpty());
   }
 }
@@ -77,7 +77,7 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
   const struct {
     const char* pac_input;
     int filter;
-    const char* filtered_pac_output;
+    const char* filtered_debug_output;
   } tests[] = {
     {  "PROXY foopy:10 ; SOCKS5 foopy2 ; SOCKS foopy11 ; PROXY foopy3 ; DIRECT",
        // Remove anything that isn't HTTP or DIRECT.
@@ -95,7 +95,7 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
     ProxyList list;
     list.SetFromPacString(test.pac_input);
     list.RemoveProxiesWithoutScheme(test.filter);
-    EXPECT_EQ(test.filtered_pac_output, list.ToPacString());
+    EXPECT_EQ(test.filtered_debug_output, list.ToDebugString());
   }
 }
 
@@ -146,7 +146,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
     ProxyRetryInfoMap retry_info_map;
     list.DeprioritizeBadProxyChains(retry_info_map);
     EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
-              list.ToPacString());
+              list.ToDebugString());
   }
 
   // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
@@ -167,7 +167,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
     list.DeprioritizeBadProxyChains(retry_info_map);
 
     EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80;PROXY foopy3:80",
-              list.ToPacString());
+              list.ToDebugString());
   }
 
   // Call DeprioritizeBadProxyChains where ALL of the chains are marked as bad.
@@ -187,7 +187,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
     list.DeprioritizeBadProxyChains(retry_info_map);
 
     EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
-              list.ToPacString());
+              list.ToDebugString());
   }
 
   // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
@@ -211,8 +211,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
 
     list.DeprioritizeBadProxyChains(retry_info_map);
 
-    EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80",
-              list.ToPacString());
+    EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80", list.ToDebugString());
   }
 }
 
@@ -377,6 +376,22 @@ TEST(ProxyListTest, ToPacString) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
+  EXPECT_EQ(list.ToPacString(), "HTTPS foo:443");
+
+  // ToPacString should fail for proxy chains.
+  list.AddProxyChain(ProxyChain({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  }));
+  EXPECT_DEATH_IF_SUPPORTED(list.ToPacString(), "");
+}
+
+TEST(ProxyListTest, ToDebugString) {
+  ProxyList list;
+  list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
   list.AddProxyChain(ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "foo-a", 443),
@@ -384,9 +399,7 @@ TEST(ProxyListTest, ToPacString) {
                                          "foo-b", 443),
   }));
 
-  // TODO(crbug.com/1491092): This is not actually valid PAC syntax. We should
-  // decide if we're OK with that.
-  EXPECT_EQ(list.ToPacString(),
+  EXPECT_EQ(list.ToDebugString(),
             "HTTPS foo:443;[https://foo-a:443, https://foo-b:443]");
 }
 

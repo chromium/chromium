@@ -19,10 +19,7 @@ namespace net {
 // element separated out from the complete semicolon-delimited PAC result
 // string.
 //
-// TODO(https://crbug.com/1491092): Update this once we add support for parsing
-// multi-hop proxies into a ProxyChain. Also, remove the ProxyServer functions
-// once we've updated the code to use ProxyChains instead (assuming these are no
-// longer needed).
+// Note that PAC strings cannot currently specify multi-proxy chains.
 //
 // PAC result elements have the format:
 // <scheme>" "<host>[":"<port>]

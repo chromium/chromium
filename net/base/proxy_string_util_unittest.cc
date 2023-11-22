@@ -216,9 +216,6 @@ TEST(ProxySpecificationUtilTest, PacResultElementToProxyServer) {
     EXPECT_TRUE(server.is_valid());
     EXPECT_EQ(test.expected_uri, ProxyServerToProxyUri(server));
 
-    // TODO(https://crbug.com/1491092): Split this into a new test when
-    // `PacResultElementToProxyChain()` does more than just wrap
-    // `PacResultElementToProxyServer()`.
     ProxyChain chain = PacResultElementToProxyChain(test.input_pac);
     EXPECT_TRUE(chain.IsValid());
     if (!chain.is_direct()) {
@@ -245,9 +242,6 @@ TEST(ProxySpecificationUtilTest, InvalidPacResultElementToProxyServer) {
     ProxyServer server = PacResultElementToProxyServer(test);
     EXPECT_FALSE(server.is_valid());
 
-    // TODO(https://crbug.com/1491092): Split this into a new test when
-    // `PacResultElementToProxyChain()` does more than just wrap
-    // `PacResultElementToProxyServer()`.
     ProxyChain chain = PacResultElementToProxyChain(test);
     EXPECT_FALSE(chain.IsValid());
   }
