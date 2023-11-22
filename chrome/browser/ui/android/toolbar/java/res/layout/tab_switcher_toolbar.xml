@@ -73,27 +73,13 @@ found in the LICENSE file.
         android:layout_gravity="center"
         android:layout_marginBottom="4dp"/>
 
-    <LinearLayout
-        android:id="@+id/tab_switcher_switches_and_menu"
-        android:orientation="horizontal"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center|end" >
 
-        <Switch
-            android:id="@+id/incognito_switch"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:thumb="@drawable/incognito_switch"
-            android:track="@drawable/incognito_switch_track"
-            android:visibility="gone"
-            tools:ignore="UseSwitchCompatOrMaterialXml"/>
-
         <include layout="@layout/menu_button" />
 
-    </LinearLayout>
+    </FrameLayout>
 
 </org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTopToolbar>

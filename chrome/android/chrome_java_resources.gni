@@ -407,7 +407,6 @@ chrome_java_resources = [
   "java/res/drawable/improved_bookmark_save_flow_multi_pane_top_background.xml",
   "java/res/drawable/improved_bookmark_save_flow_single_pane_background.xml",
   "java/res/drawable/incognito_history_placeholder_image.xml",
-  "java/res/drawable/incognito_switch_track.xml",
   "java/res/drawable/infobar_autofill_cc.xml",
   "java/res/drawable/lens_camera_icon.xml",
   "java/res/drawable/long_screenshot.xml",
