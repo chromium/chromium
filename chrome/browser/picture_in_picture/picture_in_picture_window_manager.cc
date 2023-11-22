@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_bounds_cache.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -22,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/view.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -439,6 +441,12 @@ PictureInPictureWindowManager::GetOverlayView(
 
   return overlay_view;
 }
+
+PictureInPictureOcclusionTracker*
+PictureInPictureWindowManager::GetOcclusionTracker() {
+  CreateOcclusionTrackerIfNecessary();
+  return occlusion_tracker_.get();
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 std::vector<url::Origin>
@@ -480,6 +488,16 @@ void PictureInPictureWindowManager::CreateAutoPipSettingHelperIfNeeded() {
   auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
       web_contents,
       base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon));
+}
+
+void PictureInPictureWindowManager::CreateOcclusionTrackerIfNecessary() {
+  if (occlusion_tracker_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(media::kPictureInPictureOcclusionTracking)) {
+    occlusion_tracker_ = std::make_unique<PictureInPictureOcclusionTracker>();
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

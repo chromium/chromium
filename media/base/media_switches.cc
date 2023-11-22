@@ -332,6 +332,14 @@ BASE_FEATURE(kPauseBackgroundMutedAudio,
              "PauseBackgroundMutedAudio",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables tracking the position of picture-in-picture windows to know when they
+// occlude certain widgets.
+BASE_FEATURE(kPictureInPictureOcclusionTracking,
+             "PictureInPictureOcclusionTracking",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Enables user control over muting tab audio from the tab strip.
 BASE_FEATURE(kEnableTabMuting,
              "EnableTabMuting",
