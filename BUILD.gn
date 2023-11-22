@@ -1618,7 +1618,7 @@ group("chromium_builder_perf") {
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
     ]
 
-    if (!is_chromeos_ash) {
+    if (!is_chromeos_ash && !(is_fuchsia && optimize_for_size)) {
       data_deps += [ "//chrome/test:performance_browser_tests" ]
     }
 
