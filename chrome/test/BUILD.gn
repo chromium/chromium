@@ -530,6 +530,14 @@ static_library("test_support") {
     ]
   }
 
+  if (enable_print_preview) {
+    sources += [
+      "../browser/printing/browser_printing_context_factory_for_test.cc",
+      "../browser/printing/browser_printing_context_factory_for_test.h",
+    ]
+    public_deps += [ "//printing:test_support" ]
+  }
+
   if (enable_supervised_users) {
     public_deps += [
       "//chrome/browser/supervised_user:test_support",
@@ -4865,8 +4873,6 @@ if (!is_android) {
       if (use_cups) {
         sources += [
           "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
-          "../browser/extensions/api/printing/fake_print_job_controller_ash.cc",
-          "../browser/extensions/api/printing/fake_print_job_controller_ash.h",
           "../browser/extensions/api/printing/printing_apitest.cc",
           "../browser/printing/web_api/web_printing_browsertest.cc",
         ]
@@ -5276,8 +5282,6 @@ if (!is_android) {
     }
     if (enable_print_preview) {
       sources += [
-        "../browser/printing/browser_printing_context_factory_for_test.cc",
-        "../browser/printing/browser_printing_context_factory_for_test.h",
         "../browser/printing/print_browsertest.cc",
         "../browser/printing/print_browsertest.h",
         "../browser/printing/print_preview_dialog_controller_browsertest.cc",

@@ -8,8 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_list.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/callback_list.h"
+#include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -61,12 +66,6 @@ class PrintingTestHelper {
   // Does the necessary setup; intended to be used from SetUpOnMainThread().
   void Init(Profile* profile);
 
-  // No-op unless Init() is called.
-  ash::TestCupsPrintJobManager* GetPrintJobManager();
-
-  // No-op unless Init() is called.
-  ash::FakeCupsPrintersManager* GetPrintersManager();
-
   // Adds a printer with the given `printer_id`, `printer_display_name` and
   // `capabilities` to the printers manager and the test backend.
   void AddAvailablePrinter(
@@ -89,6 +88,7 @@ class PrintingTestHelper {
   base::CallbackListSubscription create_services_subscription_;
 
   scoped_refptr<printing::TestPrintBackend> test_print_backend_;
+  printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
 };
 #endif
 

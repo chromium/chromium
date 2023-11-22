@@ -18,13 +18,20 @@
 #include "extensions/test/test_extension_dir.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/fake_cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
-#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/printing/print_job.h"
+#include "chrome/browser/printing/print_job_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/backend/test_print_backend.h"
+#include "printing/printing_context.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -55,9 +62,38 @@ static constexpr auto kManifestFileNames =
          {ExtensionType::kExtensionMV3, "manifest_v3_extension.json"}});
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
+// This class uses methods from FakeCupsPrintJobManager while connecting it to
+// the rest of the printing pipeline so that it no longer has to be directly
+// invoked by the test code.
+class FakePrintJobManagerWithDocDone : public ash::FakeCupsPrintJobManager {
+ public:
+  explicit FakePrintJobManagerWithDocDone(Profile* profile)
+      : FakeCupsPrintJobManager(profile) {
+    subscription_ = g_browser_process->print_job_manager()->AddDocDoneCallback(
+        base::BindRepeating(&FakePrintJobManagerWithDocDone::OnDocDone,
+                            base::Unretained(this)));
+  }
+
+  void OnDocDone(printing::PrintJob* job,
+                 printing::PrintedDocument* document,
+                 int job_id) {
+    const auto& settings = document->settings();
+    // ash::printing::proto::PrintSettings are only useful for real pipelines
+    // for logging print data; this can be omitted in tests.
+    CreatePrintJob(
+        base::UTF16ToUTF8(settings.device_name()),
+        base::UTF16ToUTF8(settings.title()), job_id,
+        /*total_page_number=*/document->page_count() * settings.copies(),
+        job->source(), job->source_id(), ash::printing::proto::PrintSettings());
+  }
+
+ private:
+  printing::PrintJobManager::DocDoneCallbackList::Subscription subscription_;
+};
+
+std::unique_ptr<KeyedService> BuildFakeCupsPrintJobManagerWithDocDone(
     content::BrowserContext* context) {
-  return std::make_unique<ash::TestCupsPrintJobManager>(
+  return std::make_unique<FakePrintJobManagerWithDocDone>(
       Profile::FromBrowserContext(context));
 }
 
@@ -81,6 +117,7 @@ PrintingTestHelper::PrintingTestHelper()
 
 PrintingTestHelper::~PrintingTestHelper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
   printing::PrintBackend::SetPrintBackendForTesting(nullptr);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -96,6 +133,8 @@ void PrintingTestHelper::Init(Profile* profile) {
   profile_ = profile;
 
   printing::PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
+  printing::PrintingContext::SetPrintingContextFactoryForTest(
+      &test_printing_context_factory_);
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Note that this test service is not launched in the constructor due to the
   // mojo subsystem not having been initialized yet.
@@ -110,42 +149,38 @@ void PrintingTestHelper::Init(Profile* profile) {
 #endif
 }
 
-ash::TestCupsPrintJobManager* PrintingTestHelper::GetPrintJobManager() {
-  CHECK(profile_);
-  return static_cast<ash::TestCupsPrintJobManager*>(
-      ash::CupsPrintJobManagerFactory::GetForBrowserContext(profile_));
-}
-
-ash::FakeCupsPrintersManager* PrintingTestHelper::GetPrintersManager() {
-  CHECK(profile_);
-  return static_cast<ash::FakeCupsPrintersManager*>(
-      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile_));
-}
-
 void PrintingTestHelper::AddAvailablePrinter(
     const std::string& printer_id,
     const std::string& printer_display_name,
     std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities) {
+  CHECK(profile_);
+
   chromeos::Printer printer;
   printer.set_id(printer_id);
   printer.set_display_name(printer_display_name);
   printer.SetUri("ipp://192.168.1.0");
-  GetPrintersManager()->AddPrinter(printer,
-                                   chromeos::PrinterClass::kEnterprise);
+
+  auto* printers_manager = static_cast<ash::FakeCupsPrintersManager*>(
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile_));
+  printers_manager->AddPrinter(printer, chromeos::PrinterClass::kEnterprise);
   chromeos::CupsPrinterStatus status(printer_id);
   status.AddStatusReason(
       chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason::
           kPrinterUnreachable,
       chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-  GetPrintersManager()->SetPrinterStatus(status);
+  printers_manager->SetPrinterStatus(status);
   test_print_backend_->AddValidPrinter(printer_id, std::move(capabilities),
                                        nullptr);
+
+  // Printers in the test context are identified by `printer_id`.
+  test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
+      printer_id);
 }
 
 void PrintingTestHelper::OnWillCreateBrowserContextServices(
     content::BrowserContext* context) {
   ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
-      context, base::BindRepeating(&BuildTestCupsPrintJobManager));
+      context, base::BindRepeating(&BuildFakeCupsPrintJobManagerWithDocDone));
   ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&BuildFakeCupsPrintersManager));
 }
