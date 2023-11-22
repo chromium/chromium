@@ -55,8 +55,6 @@
                 "content_shell.pak",
                 "dump_syms",
                 "icudtl.dat",
-                "libblink_deprecated_test_plugin.so",
-                "libblink_test_plugin.so",
                 "minidump_stackwalk",
                 "v8_context_snapshot.bin"
             ],
