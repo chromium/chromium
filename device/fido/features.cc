@@ -59,10 +59,10 @@ BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enabled in M120. Remove in or after M123.
+// Added in M114. Not yet enabled by default.
 BASE_FEATURE(kWebAuthnAndroidCredMan,
              "WebAuthenticationAndroidCredMan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnAndroidCredManForHybrid,
