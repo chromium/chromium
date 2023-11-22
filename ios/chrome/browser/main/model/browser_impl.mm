@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/main/browser_impl.h"
+#import "ios/chrome/browser/main/model/browser_impl.h"
 
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
-#import "ios/chrome/browser/main/browser_agent_util.h"
+#import "ios/chrome/browser/main/model/browser_agent_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

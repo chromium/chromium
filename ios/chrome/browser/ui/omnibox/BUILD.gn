@@ -311,7 +311,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",

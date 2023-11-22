@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("main") {
+source_set("model") {
   sources = [
     "browser_agent_util.h",
     "browser_agent_util.mm",
@@ -66,7 +66,7 @@ source_set("unit_tests") {
     "browser_web_state_list_delegate_unittest.mm",
   ]
   deps = [
-    ":main",
+    ":model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/shared/coordinator/scene/test",

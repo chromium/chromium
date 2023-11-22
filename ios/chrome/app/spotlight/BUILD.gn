@@ -91,7 +91,7 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
-    "//ios/chrome/browser/main:main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/shared/model/browser:browser",

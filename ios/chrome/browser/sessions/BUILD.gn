@@ -354,7 +354,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/sessions:session_id",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/sessions/proto",
     "//ios/chrome/browser/shared/model/browser",

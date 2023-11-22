@@ -10,7 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/sessions/core/session_id.h"
-#import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"

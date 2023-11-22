@@ -74,7 +74,7 @@ source_set("coordinator") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",

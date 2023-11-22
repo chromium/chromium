@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_IMPL_H_
-#define IOS_CHROME_BROWSER_MAIN_BROWSER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_IMPL_H_
+#define IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_IMPL_H_
 
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "ios/chrome/browser/main/browser_web_state_list_delegate.h"
+#include "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #include "ios/chrome/browser/shared/model/browser/browser.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
@@ -74,4 +74,4 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   base::WeakPtrFactory<Browser> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_IMPL_H_

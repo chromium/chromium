@@ -63,7 +63,7 @@ source_set("test_support") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics:metrics_browser_agent",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/sessions:session_restoration_service",

@@ -39,7 +39,7 @@ source_set("download") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/confirmation",
     "//ios/chrome/browser/shared/coordinator/alert",

@@ -489,7 +489,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/mailto_handler/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/memory/model",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",

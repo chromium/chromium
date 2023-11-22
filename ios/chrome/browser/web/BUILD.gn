@@ -176,7 +176,7 @@ source_set("unit_tests") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/lens/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",

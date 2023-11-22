@@ -34,7 +34,7 @@ source_set("overlays") {
     "//base",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

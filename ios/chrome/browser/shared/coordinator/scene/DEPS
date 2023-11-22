@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/intents",
-  "+ios/chrome/browser/main",
+  "+ios/chrome/browser/main/model",
   "+ios/chrome/browser/ntp",
   "+ios/chrome/browser/policy",
   "+ios/chrome/browser/passwords/model",

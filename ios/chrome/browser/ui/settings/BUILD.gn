@@ -130,7 +130,7 @@ source_set("settings") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/language/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/passwords/model",

@@ -74,7 +74,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/link_to_text/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics:metrics_browser_agent",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/net",

@@ -19,7 +19,7 @@ source_set("browser_container") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/link_to_text/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/screen_time/model:buildflags",

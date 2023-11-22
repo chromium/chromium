@@ -40,7 +40,7 @@ source_set("location_bar") {
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/infobars:badge",
     "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/overlays/model",

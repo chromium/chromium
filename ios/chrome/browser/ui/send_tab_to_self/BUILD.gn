@@ -13,7 +13,7 @@ source_set("send_tab_to_self") {
     "//components/send_tab_to_self",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",

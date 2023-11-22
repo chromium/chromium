@@ -11,7 +11,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/main",
     "//ios/web",

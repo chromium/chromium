@@ -25,7 +25,7 @@ source_set("find_bar") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/find_in_page/model",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",

@@ -12,7 +12,7 @@
 #import "components/omnibox/browser/test_omnibox_view.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
-#import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"

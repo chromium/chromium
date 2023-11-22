@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_UTIL_H_
-#define IOS_CHROME_BROWSER_MAIN_BROWSER_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_UTIL_H_
+#define IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_UTIL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -57,4 +57,4 @@ void MoveTabToBrowser(web::WebStateID tab_id,
 BrowserAndIndex FindBrowserAndIndex(web::WebStateID tab_id,
                                     const std::set<Browser*>& browsers);
 
-#endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_UTIL_H_

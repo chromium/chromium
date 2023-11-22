@@ -233,7 +233,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/language/model:unit_tests",
     "//ios/chrome/browser/lens/model:unit_tests",
     "//ios/chrome/browser/link_to_text/model:unit_tests",
-    "//ios/chrome/browser/main:unit_tests",
+    "//ios/chrome/browser/main/model:unit_tests",
     "//ios/chrome/browser/metrics:unit_tests",
     "//ios/chrome/browser/metrics:unit_tests_internal",
     "//ios/chrome/browser/net:unit_tests",

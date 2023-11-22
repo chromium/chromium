@@ -11,7 +11,7 @@ source_set("inactive_tabs") {
   ]
   deps = [
     ":features",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
