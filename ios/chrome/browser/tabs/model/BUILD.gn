@@ -17,13 +17,10 @@ source_set("model") {
   ]
   public_deps = [ "//ios/web" ]
   deps = [
-    "//components/sessions",
+    "//components/sessions:session_id",
     "//components/sync_sessions",
-    "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

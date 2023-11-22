@@ -5,9 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_TABS_MODEL_IOS_SYNCED_WINDOW_DELEGATE_GETTER_H_
 #define IOS_CHROME_BROWSER_TABS_MODEL_IOS_SYNCED_WINDOW_DELEGATE_GETTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
 
+class BrowserList;
 namespace browser_sync {
 class SyncedWindowDelegate;
 }
@@ -15,7 +17,8 @@ class SyncedWindowDelegate;
 class IOSSyncedWindowDelegatesGetter
     : public sync_sessions::SyncedWindowDelegatesGetter {
  public:
-  IOSSyncedWindowDelegatesGetter();
+  explicit IOSSyncedWindowDelegatesGetter(BrowserList* browser_list);
+
   // Not copyable or moveable
   IOSSyncedWindowDelegatesGetter(const IOSSyncedWindowDelegatesGetter&) =
       delete;
@@ -27,6 +30,9 @@ class IOSSyncedWindowDelegatesGetter
   SyncedWindowDelegateMap GetSyncedWindowDelegates() override;
   const sync_sessions::SyncedWindowDelegate* FindById(
       SessionID session_id) override;
+
+ private:
+  raw_ptr<BrowserList> const browser_list_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_IOS_SYNCED_WINDOW_DELEGATE_GETTER_H_

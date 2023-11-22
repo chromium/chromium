@@ -61,7 +61,7 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
                          BrowserList* browser_list)
       : browser_state_(browser_state),
         window_delegates_getter_(
-            std::make_unique<IOSSyncedWindowDelegatesGetter>()),
+            std::make_unique<IOSSyncedWindowDelegatesGetter>(browser_list)),
         local_session_event_router_(
             std::make_unique<IOSChromeLocalSessionEventRouter>(
                 browser_list,
