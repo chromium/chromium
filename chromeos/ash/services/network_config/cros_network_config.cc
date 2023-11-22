@@ -3366,8 +3366,7 @@ void CrosNetworkConfig::PopulateTrafficCounters(
     }
 
     counters.push_back(mojom::TrafficCounter::New(
-        ConvertToTrafficCounterSourceEnum(base::ToLowerASCII(*source)),
-        rx_bytes, tx_bytes));
+        ConvertToTrafficCounterSourceEnum(*source), rx_bytes, tx_bytes));
   }
   std::move(callback).Run(std::move(counters));
 }
