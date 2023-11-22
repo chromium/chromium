@@ -2444,6 +2444,11 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
     case kTabulationCharacter: {
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
+      if (!style.GetFont().PrimaryFont()) {
+        // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
+        HandleEmptyText(item, line_info);
+        return;
+      }
       scoped_refptr<const ShapeResult> shape_result =
           ShapeResult::CreateForTabulationCharacters(
               &style.GetFont(), item.Direction(), style.GetTabSize(), position_,
