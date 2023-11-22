@@ -11,9 +11,9 @@
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
 
-namespace wolvic {
-
 using content::WebContents;
+
+namespace wolvic {
 
 const void* const kWolvicContentsUserDataKey = &kWolvicContentsUserDataKey;
 
@@ -35,6 +35,12 @@ class WolvicContentsUserData : public base::SupportsUserData::Data {
  private:
   std::unique_ptr<WolvicContents> contents_;
 };
+
+// static
+WolvicContents* WolvicContents::FromWebContents(WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return WolvicContentsUserData::GetContents(web_contents);
+}
 
 WolvicContents::WolvicContents(
     std::unique_ptr<content::WebContents> web_contents)
@@ -66,6 +72,12 @@ WolvicContents::DidFinishNavigation(content::NavigationHandle* navigation_handle
     content::WolvicBrowserContext::FromWebContents(*web_contents())
         ->AddVisitedURLs(navigation_handle->GetRedirectChain());
   }
+}
+
+void
+WolvicContents::SetDelegate(std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid> delegate) {
+  web_contents_delegate_ = std::move(delegate);
+  web_contents_->SetDelegate(web_contents_delegate_.get());
 }
 
 } // namespace wolvic
