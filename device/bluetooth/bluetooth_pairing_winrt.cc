@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/win/com_init_util.h"
@@ -196,7 +195,7 @@ void BluetoothPairingWinrt::OnConfirmPairingDeferralCompletion(HRESULT hr) {
   }
 }
 
-void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
+void BluetoothPairingWinrt::SetPinCode(std::string_view pin_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "BluetoothPairingWinrt::SetPinCode(" << pin_code << ")";
   auto pin_hstring = base::win::ScopedHString::Create(pin_code);

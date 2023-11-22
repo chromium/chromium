@@ -10,10 +10,10 @@
 #include <wrl/implements.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -40,7 +40,7 @@ class FakeDeviceInformationCustomPairingWinrt
   FakeDeviceInformationCustomPairingWinrt(
       Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
       ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind,
-      base::StringPiece display_pin);
+      std::string_view display_pin);
 
   FakeDeviceInformationCustomPairingWinrt(
       const FakeDeviceInformationCustomPairingWinrt&) = delete;

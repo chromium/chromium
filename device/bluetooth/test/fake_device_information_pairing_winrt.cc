@@ -40,7 +40,7 @@ FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
 
 FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
     DevicePairingKinds pairing_kind,
-    base::StringPiece display_pin)
+    std::string_view display_pin)
     : custom_(Make<FakeDeviceInformationCustomPairingWinrt>(this,
                                                             pairing_kind,
                                                             display_pin)) {}

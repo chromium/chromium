@@ -67,7 +67,7 @@ using Microsoft::WRL::Make;
 FakeGattCharacteristicWinrt::FakeGattCharacteristicWinrt(
     BluetoothTestWinrt* bluetooth_test_winrt,
     int properties,
-    base::StringPiece uuid,
+    std::string_view uuid,
     uint16_t attribute_handle)
     : bluetooth_test_winrt_(bluetooth_test_winrt),
       properties_(static_cast<GattCharacteristicProperties>(properties)),
@@ -280,7 +280,7 @@ void FakeGattCharacteristicWinrt::SimulateGattCharacteristicWriteError(
 }
 
 void FakeGattCharacteristicWinrt::SimulateGattDescriptor(
-    base::StringPiece uuid) {
+    std::string_view uuid) {
   fake_descriptors_.push_back(Make<FakeGattDescriptorWinrt>(
       bluetooth_test_winrt_, uuid, ++last_descriptor_attribute_handle_));
 }

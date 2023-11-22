@@ -10,6 +10,7 @@
 #include <Windows.Devices.Enumeration.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -151,7 +152,7 @@ class BluetoothTestWinrt
   // for pairing_kind we should promote this function as virtual
   void SimulateConfirmOnly(BluetoothDevice* device);
   void SimulateDisplayPin(BluetoothDevice* device,
-                          base::StringPiece display_pin);
+                          std::string_view display_pin);
   void SimulateAdvertisementStarted(
       BluetoothAdvertisement* advertisement) override;
   void SimulateAdvertisementStopped(

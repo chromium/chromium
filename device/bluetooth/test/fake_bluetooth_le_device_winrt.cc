@@ -270,7 +270,7 @@ void FakeBluetoothLEDeviceWinrt::SimulateConfirmOnly() {
 }
 
 void FakeBluetoothLEDeviceWinrt::SimulateDisplayPin(
-    base::StringPiece display_pin) {
+    std::string_view display_pin) {
   device_information_ =
       Make<FakeDeviceInformationWinrt>(Make<FakeDeviceInformationPairingWinrt>(
           DevicePairingKinds_ConfirmPinMatch, display_pin));
