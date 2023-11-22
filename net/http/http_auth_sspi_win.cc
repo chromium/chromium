@@ -500,7 +500,6 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
     // sequence.  If we have already initialized our security context, then
     // we're incorrectly reusing the auth handler for a new sequence.
     if (SecIsValidHandle(&ctxt_)) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return ERR_UNEXPECTED;
     }
   }
