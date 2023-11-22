@@ -586,9 +586,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
     case PopupItemId::kSeePromoCodeDetails:
-      manager_->OnSeePromoCodeOfferDetailsSelected(
-          suggestion.GetPayload<GURL>(), suggestion.main_text.value,
-          suggestion.popup_item_id, query_form_, query_field_);
+      // Open a new tab and navigate to the offer details page.
+      manager_->client().OpenPromoCodeOfferDetailsURL(
+          suggestion.GetPayload<GURL>());
+      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
+                                                suggestion.popup_item_id,
+                                                query_form_, query_field_);
       break;
     case PopupItemId::kFillExistingPlusAddress:
       plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(

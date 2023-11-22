@@ -3645,16 +3645,6 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
       static_cast<PhoneCollectionMetricState>(phone_collection_metric_state_));
 }
 
-void BrowserAutofillManager::OnSeePromoCodeOfferDetailsSelected(
-    const GURL& offer_details_url,
-    const std::u16string& value,
-    PopupItemId popup_item_id,
-    const FormData& form,
-    const FormFieldData& field) {
-  client().OpenPromoCodeOfferDetailsURL(offer_details_url);
-  OnSingleFieldSuggestionSelected(value, popup_item_id, form, field);
-}
-
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     const FormStructure& form_structure) {
   // TODO(crbug.com/1325851): Log metrics if at least one field in the form was
