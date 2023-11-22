@@ -23,6 +23,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -123,7 +124,6 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -515,8 +515,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             }, getBottomSheetController(), true));
         }
 
-        mIntentMetadataOneshotSupplier.onAvailable(mCallbackController.makeCancelable(
-                (metadata) -> initializeIPH(metadata.getIsIntentWithEffect())));
+        SupplierUtils.waitForAll(
+                mCallbackController.makeCancelable(
+                        () -> {
+                            initializeIPH(
+                                    mProfileSupplier.get().getOriginalProfile(),
+                                    mIntentMetadataOneshotSupplier.get().getIsIntentWithEffect());
+                        }),
+                mIntentMetadataOneshotSupplier,
+                mProfileSupplier);
 
         // TODO(https://crbug.com/1157955): Investigate switching to per-Activity coordinator that
         // uses signals from the current Tab to decide when to show the PWA install bottom sheet
@@ -648,7 +655,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     // Private class methods
 
-    private void initializeIPH(boolean intentWithEffect) {
+    private void initializeIPH(Profile profile, boolean intentWithEffect) {
         if (mActivity == null) return;
         mToolbarButtonInProductHelpController =
                 new ToolbarButtonInProductHelpController(
@@ -734,15 +741,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (!didTriggerPromo) {
-            didTriggerPromo = DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
-                    && RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
-                            getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile(),
-                            mMessageDispatcher, mActivity, mActivityTabProvider);
+            didTriggerPromo =
+                    DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
+                            && RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
+                                    getPrimaryDisplaySizeInInches(),
+                                    profile,
+                                    mMessageDispatcher,
+                                    mActivity,
+                                    mActivityTabProvider);
         }
 
         if (!didTriggerPromo) {
-            didTriggerPromo = RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
-                    Profile.getLastUsedRegularProfile(), mMessageDispatcher, mActivity);
+            didTriggerPromo =
+                    RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+                            profile, mMessageDispatcher, mActivity);
         }
 
         if (!didTriggerPromo) {
@@ -758,7 +770,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mActivity,
                     mWindowAndroid,
                     mActivityTabProvider,
-                    Profile.getLastUsedRegularProfile(),
+                    profile,
                     getToolbarManager().getMenuButtonView(),
                     mAppMenuCoordinator.getAppMenuHandler());
         }
@@ -792,18 +804,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
             // TODO(crbug.com/1252965): Investigate locking feature engagement system during
             // "second run promos" to avoid !didTriggerPromo check.
-            WebContents webContents;
-
-            Profile profile;
-            if (tab != null && (webContents = tab.getWebContents()) != null) {
-                profile = Profile.fromWebContents(webContents);
-            } else {
-                profile = Profile.getLastUsedRegularProfile();
-                webContents = null;
-            }
-
-            WebContentsDarkModeMessageController.attemptToSendMessage(mActivity, profile,
-                    webContents, new SettingsLauncherImpl(), mMessageDispatcher);
+            WebContentsDarkModeMessageController.attemptToSendMessage(
+                    mActivity,
+                    tab != null ? tab.getProfile() : profile,
+                    tab != null ? tab.getWebContents() : null,
+                    new SettingsLauncherImpl(),
+                    mMessageDispatcher);
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {

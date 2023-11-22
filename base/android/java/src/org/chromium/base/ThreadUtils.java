@@ -47,20 +47,6 @@ public class ThreadUtils {
      * }
      * }
      * </pre>
-     *
-     * Another way to use this class is to also use the baked in support for destruction:
-     * <pre>
-     * {@code
-     * class Foo {
-     *     // Valid thread is set during construction here.
-     *     private final ThreadChecker mThreadChecker = new ThreadChecker();
-     *
-     *     public void doFoo() {
-     *         mThreadChecker.assertOnValidThreadAndState();
-     *     }
-     * }
-     * }
-     * </pre>
      */
     public static class ThreadChecker {
         private final long mThreadId = Process.myTid();
