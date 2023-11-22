@@ -421,9 +421,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Lacros-chrome is loaded and ready for launching.
     STOPPED,
 
-    // Params for the lacros-chrome are parepared on a background thread, and
-    // the device owner set up is being waited.
+    // Params for lacros-chrome are parepared on a background thread.
     PREPARING_FOR_LAUNCH,
+
+    // Lacros-chrome is waiting for device owner to be fetched after receiving
+    // params. For prelaunching, it also waits for profile to be added.
+    WAITING_OWNER_FETCH,
 
     // Lacros-chrome has been pre-launched at login screen, and it's waiting to
     // be unblocked post-login.

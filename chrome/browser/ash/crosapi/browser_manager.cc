@@ -734,7 +734,8 @@ bool BrowserManager::IsRunning() const {
 
 bool BrowserManager::IsRunningOrWillRun() const {
   return state_ == State::RUNNING || state_ == State::STARTING ||
-         state_ == State::PREPARING_FOR_LAUNCH || state_ == State::TERMINATING;
+         state_ == State::PREPARING_FOR_LAUNCH ||
+         state_ == State::WAITING_OWNER_FETCH || state_ == State::TERMINATING;
 }
 
 bool BrowserManager::IsInitialized() const {
@@ -865,6 +866,7 @@ bool BrowserManager::EnsureLaunch() {
 
     case State::MOUNTING:
     case State::PREPARING_FOR_LAUNCH:
+    case State::WAITING_OWNER_FETCH:
     case State::STARTING:
       LOG(WARNING)
           << "Ensuring Lacros launch: already in the process of starting";
@@ -1128,7 +1130,7 @@ void BrowserManager::Start(bool launching_at_login_screen) {
 
 void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
                                       LaunchParamsFromBackground params) {
-  DCHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
+  CHECK_EQ(state_, State::WAITING_OWNER_FETCH);
 
   // Shutdown() might have been called after Start() posted the StartWithLogFile
   // task, so we need to check `shutdown_requested_` again.
@@ -1720,7 +1722,7 @@ void BrowserManager::ResumeLaunch() {
   // executed in |InitializeAndStartIfNeeded| (we call |PrelaunchAtLoginScreen|
   // instead) and |StartWithLogFile|, because they required the user to be
   // logged in.
-  DCHECK_EQ(state_, State::PRE_LAUNCHED);
+  CHECK_EQ(state_, State::PRE_LAUNCHED);
   DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   // Ensure this isn't run multiple times.
@@ -1779,6 +1781,7 @@ void BrowserManager::ResumeLaunch() {
 
 void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
   DCHECK(!primary_profile_creation_waiter_);
+  CHECK_EQ(state_, State::WAITING_OWNER_FETCH);
   primary_profile_creation_waiter_ = PrimaryProfileCreationWaiter::WaitOrRun(
       g_browser_process->profile_manager(), std::move(cb));
 }
@@ -1786,6 +1789,8 @@ void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
 void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
     base::OnceClosure cb,
     bool launching_at_login_screen) {
+  CHECK(state_ == State::PRE_LAUNCHED || state_ == State::PREPARING_FOR_LAUNCH);
+  SetState(State::WAITING_OWNER_FETCH);
   device_ownership_waiter_called_ = true;
   device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb),
                                                     launching_at_login_screen);
@@ -1793,6 +1798,7 @@ void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
 
 void BrowserManager::OnLaunchParamsFetched(bool launching_at_login_screen,
                                            LaunchParamsFromBackground params) {
+  CHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
   WaitForDeviceOwnerFetchedAndThen(
       base::BindOnce(&BrowserManager::StartWithLogFile,
                      weak_factory_.GetWeakPtr(), launching_at_login_screen,
@@ -1801,6 +1807,7 @@ void BrowserManager::OnLaunchParamsFetched(bool launching_at_login_screen,
 }
 
 void BrowserManager::ResumeLaunchAfterProfileAdded() {
+  CHECK_EQ(state_, State::WAITING_OWNER_FETCH);
   // Execute actions that we couldn't run when pre-launching at login screen,
   // because they required the user to be logged in.
   PrepareLacrosPolicies();
@@ -2067,7 +2074,14 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
       return;
 
     case State::PREPARING_FOR_LAUNCH:
-      LOG(WARNING) << "lacros-chrome is preparing for launching";
+      LOG(WARNING)
+          << "params for lacros-chrome are prepared on a background thread";
+      pending_actions_.PushOrCancel(std::move(action),
+                                    mojom::CreationResult::kBrowserNotRunning);
+      return;
+
+    case State::WAITING_OWNER_FETCH:
+      LOG(WARNING) << "lacros-chrome is waiting for device owner to be fetched";
       pending_actions_.PushOrCancel(std::move(action),
                                     mojom::CreationResult::kBrowserNotRunning);
       return;

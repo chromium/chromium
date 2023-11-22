@@ -2072,6 +2072,8 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
       return api::autotest_private::LacrosState::kStopped;
     case crosapi::BrowserManager::State::PREPARING_FOR_LAUNCH:
       return api::autotest_private::LacrosState::kPreparingForLaunch;
+    case crosapi::BrowserManager::State::WAITING_OWNER_FETCH:
+      return api::autotest_private::LacrosState::kWaitingOwnerFetch;
     case crosapi::BrowserManager::State::PRE_LAUNCHED:
       return api::autotest_private::LacrosState::kPreLaunched;
     case crosapi::BrowserManager::State::STARTING:
