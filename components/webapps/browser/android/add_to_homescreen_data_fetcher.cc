@@ -73,11 +73,14 @@ InstallableParams ParamsToFetchPrimaryIcon() {
 InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
-  if (base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
+  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
+  if (base::FeatureList::IsEnabled(
+          features::kUniversalInstallRootScopeNoManifest)) {
+    params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kUniversalInstallManifest)) {
     params.installable_criteria =
         InstallableCriteria::kImplicitManifestFieldsHTML;
-  } else {
-    params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
   }
   return params;
 }
@@ -204,17 +207,10 @@ void AddToHomescreenDataFetcher::OnDidGetInstallableData(
   if (!web_contents_)
     return;
 
-  shortcut_info_.UpdateFromWebPageMetadata(*data.web_page_metadata);
-
   RecordMobileCapableUserActions(data.web_page_metadata->mobile_capable,
                                  !blink::IsEmptyManifest(*data.manifest));
 
-  if (blink::IsEmptyManifest(*data.manifest)) {
-    installable_status_code_ = data.GetFirstError();
-    PrepareToAddShortcut(true /* fetch_favicon */);
-    return;
-  }
-
+  shortcut_info_.UpdateFromWebPageMetadata(*data.web_page_metadata);
   shortcut_info_.UpdateFromManifest(*data.manifest);
   shortcut_info_.manifest_url = (*data.manifest_url);
   // Save the splash screen URL for the later download.

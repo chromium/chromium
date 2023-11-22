@@ -252,6 +252,8 @@ void AppBannerSettingsHelper::RecordBannerEvent(
     const std::string& package_name_or_start_url,
     AppBannerEvent event,
     base::Time time) {
+  CHECK(!package_name_or_start_url.empty());
+
   AppPrefs app_prefs(web_contents, origin_url, package_name_or_start_url);
   if (!app_prefs.dict())
     return;

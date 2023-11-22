@@ -64,6 +64,7 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage;
 
 BASE_DECLARE_FEATURE(kUniversalInstallManifest);
 BASE_DECLARE_FEATURE(kUniversalInstallIcon);
+BASE_DECLARE_FEATURE(kUniversalInstallRootScopeNoManifest);
 extern const base::FeatureParam<int> kMinimumFaviconSize;
 
 }  // namespace features

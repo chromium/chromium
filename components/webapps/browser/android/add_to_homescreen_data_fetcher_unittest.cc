@@ -569,4 +569,72 @@ TEST_F(AddToHomescreenDataFetcherTest, UniversalManifestDisplay) {
             GURL(kDefaultIconUrl));
 }
 
+TEST_F(AddToHomescreenDataFetcherTest,
+       UniversalInstallEmptyManifestAtRootScope) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kUniversalInstallManifest,
+       features::kUniversalInstallRootScopeNoManifest,
+       features::kUniversalInstallIcon},
+      {});
+
+  NavigateAndCommit(GURL("https://www.example.com/index.html"));
+
+  SetManifest(blink::mojom::Manifest::New());
+  SetWebPageMetadata(BuildDefaultMetadata());
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"http://www.google.com/favicon.ico"},
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
+  // Fake that |InstallableIconFetcher| fetched the icon correctly.
+  SetPrimaryIcon(GURL(kDefaultIconUrl));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+             blink::mojom::DisplayMode::kMinimalUi, true,
+             InstallableStatusCode::NO_ERROR_DETECTED);
+
+  EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
+  EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);
+  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
+  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
+            GURL(kDefaultIconUrl));
+}
+
+TEST_F(AddToHomescreenDataFetcherTest,
+       UniversalInstallEmptyManifestNotRootScope) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kUniversalInstallManifest,
+       features::kUniversalInstallRootScopeNoManifest,
+       features::kUniversalInstallIcon},
+      {});
+
+  NavigateAndCommit(GURL("https://www.example.com/scope/index.html"));
+
+  SetManifest(blink::mojom::Manifest::New());
+  SetWebPageMetadata(BuildDefaultMetadata());
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"http://www.google.com/favicon.ico"},
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
+  // Fake that |InstallableIconFetcher| fetched the icon correctly.
+  SetPrimaryIcon(GURL(kDefaultIconUrl));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+             blink::mojom::DisplayMode::kBrowser, false,
+             InstallableStatusCode::MANIFEST_EMPTY);
+
+  EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
+  EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);
+  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
+  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
+            GURL(kDefaultIconUrl));
+}
+
 }  // namespace webapps

@@ -122,6 +122,12 @@ BASE_FEATURE(kUniversalInstallManifest,
              "UniversalInstallManifest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows installing a web app with fallback manifest values on root scope pages
+// without manifest.
+BASE_FEATURE(kUniversalInstallRootScopeNoManifest,
+             "UniversalInstallRootScopeNoManifest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows installing a web app when no icon provided by the manifest.
 BASE_FEATURE(kUniversalInstallIcon,
              "UniversalInstallIcon",

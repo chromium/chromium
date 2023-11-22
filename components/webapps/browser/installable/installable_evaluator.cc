@@ -40,16 +40,50 @@ constexpr ImageTypeDetails kSupportedImageTypes[] = {
     {".webp", "image/webp"},
 };
 
+bool AllowImplicitManifestFields(InstallableCriteria criteria) {
+  return criteria == InstallableCriteria::kImplicitManifestFieldsHTML ||
+         criteria == InstallableCriteria::kNoManifestAtRootScope;
+}
+
+InstallableStatusCode HasManifestOrAtRootScope(
+    InstallableCriteria criteria,
+    const blink::mojom::Manifest& manifest,
+    const GURL& manifest_url,
+    const GURL& site_url) {
+  if (criteria == InstallableCriteria::kNoManifestAtRootScope &&
+      site_url.GetWithoutFilename().path().length() <= 1) {
+    return NO_ERROR_DETECTED;
+  }
+
+  if (manifest_url.is_empty()) {
+    return NO_MANIFEST;
+  }
+
+  if (blink::IsEmptyManifest(manifest)) {
+    return MANIFEST_EMPTY;
+  }
+  return NO_ERROR_DETECTED;
+}
+
 bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
                       const mojom::WebPageMetadata& metadata,
+                      const GURL& site_url,
                       InstallableCriteria criteria) {
   if (manifest.start_url.is_valid()) {
     // If the start_url is valid, the id must be valid.
     CHECK(manifest.id.is_valid());
     return true;
   }
-  return criteria == InstallableCriteria::kImplicitManifestFieldsHTML &&
-         metadata.application_url.is_valid();
+
+  if (AllowImplicitManifestFields(criteria) &&
+      metadata.application_url.is_valid()) {
+    return true;
+  }
+
+  if (criteria == InstallableCriteria::kNoManifestAtRootScope) {
+    return site_url.GetWithoutFilename().path().length() <= 1;
+  }
+  return false;
 }
 
 bool IsManifestNameValid(const blink::mojom::Manifest& manifest) {
@@ -67,8 +101,8 @@ bool HasValidName(const blink::mojom::Manifest& manifest,
   if (IsManifestNameValid(manifest)) {
     return true;
   }
-  return (criteria == InstallableCriteria::kImplicitManifestFieldsHTML &&
-          IsWebPageMetadataContainValidName(metadata));
+  return AllowImplicitManifestFields(criteria) &&
+         IsWebPageMetadataContainValidName(metadata);
 }
 
 bool IsIconTypeSupported(const blink::Manifest::ImageResource& icon) {
@@ -139,8 +173,8 @@ bool HasValidIcon(content::WebContents* web_contents,
   if (DoesManifestContainRequiredIcon(manifest)) {
     return true;
   }
-  return (criteria == InstallableCriteria::kImplicitManifestFieldsHTML &&
-          HasNonDefaultFavicon(web_contents));
+  return AllowImplicitManifestFields(criteria) &&
+         HasNonDefaultFavicon(web_contents);
 }
 
 bool IsInstallableDisplayMode(blink::mojom::DisplayMode display_mode) {
@@ -175,6 +209,7 @@ InstallableStatusCode GetDisplayError(const blink::mojom::Manifest& manifest,
       }
       break;
     case InstallableCriteria::kImplicitManifestFieldsHTML:
+    case InstallableCriteria::kNoManifestAtRootScope:
       if (display_mode_to_evaluate == blink::mojom::DisplayMode::kBrowser) {
         return error_type_if_invalid;
       }
@@ -211,13 +246,18 @@ InstallableEvaluator::CheckInstallability() const {
   }
 
   std::vector<InstallableStatusCode> errors;
-  if (blink::IsEmptyManifest(page_data_->GetManifest())) {
-    errors.push_back(MANIFEST_EMPTY);
+
+  InstallableStatusCode error = HasManifestOrAtRootScope(
+      criteria_, page_data_->GetManifest(), page_data_->manifest_url(),
+      web_contents_->GetLastCommittedURL());
+  if (error != NO_ERROR_DETECTED) {
+    errors.push_back(error);
     return errors;
   }
 
   if (!HasValidStartUrl(page_data_->GetManifest(),
-                        page_data_->WebPageMetadata(), criteria_)) {
+                        page_data_->WebPageMetadata(),
+                        web_contents_->GetLastCommittedURL(), criteria_)) {
     errors.push_back(START_URL_NOT_VALID);
   }
 

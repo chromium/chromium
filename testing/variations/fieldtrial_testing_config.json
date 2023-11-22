@@ -20768,7 +20768,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UniversalInstallIcon",
-                        "UniversalInstallManifest"
+                        "UniversalInstallManifest",
+                        "UniversalInstallRootScopeNoManifest"
                     ]
                 }
             ]

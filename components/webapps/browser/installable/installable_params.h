@@ -17,7 +17,10 @@ enum class InstallableCriteria {
   kValidManifestIgnoreDisplay,
   // The page can be installable if required info (name, icon, display mode...)
   // is provided implicitly with meta tags, favicon, etc.
-  kImplicitManifestFieldsHTML
+  kImplicitManifestFieldsHTML,
+  // Page at the root level of an origin can be installable without manifest
+  // if required info is provided implicitly.
+  kNoManifestAtRootScope
 };
 
 // This struct specifies the work to be done by the InstallableManager.

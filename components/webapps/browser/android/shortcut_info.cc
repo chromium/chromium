@@ -51,7 +51,8 @@ ShareTarget::ShareTarget() {}
 
 ShareTarget::~ShareTarget() {}
 
-ShortcutInfo::ShortcutInfo(const GURL& shortcut_url) : url(shortcut_url) {}
+ShortcutInfo::ShortcutInfo(const GURL& shortcut_url)
+    : url(shortcut_url), manifest_id(shortcut_url) {}
 
 ShortcutInfo::ShortcutInfo(const ShortcutInfo& other) = default;
 
@@ -141,6 +142,9 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
 }
 
 void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
+  if (blink::IsEmptyManifest(manifest)) {
+    return;
+  }
   std::u16string s_name = manifest.short_name.value_or(std::u16string());
   std::u16string f_name = manifest.name.value_or(std::u16string());
   if (!s_name.empty() || !f_name.empty()) {
@@ -160,7 +164,10 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
     url = manifest.start_url;
 
   scope = manifest.scope;
-  manifest_id = manifest.id;
+
+  if (manifest.id.is_valid()) {
+    manifest_id = manifest.id;
+  }
 
   // Set the display based on the manifest value, if any.
   if (manifest.display != DisplayMode::kUndefined)

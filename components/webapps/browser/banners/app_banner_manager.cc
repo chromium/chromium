@@ -330,8 +330,7 @@ bool AppBannerManager::ShouldDeferToRelatedNonWebApp() const {
 }
 
 std::string AppBannerManager::GetAppIdentifier() {
-  DCHECK(!blink::IsEmptyManifest(manifest()));
-  return manifest().start_url.spec();
+  return manifest_id_.spec();
 }
 
 std::u16string AppBannerManager::GetAppName() const {
@@ -382,12 +381,14 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
     return;
   }
 
-  DCHECK(!data.manifest_url->is_empty());
-  DCHECK(!blink::IsEmptyManifest(*data.manifest));
-
   manifest_url_ = *(data.manifest_url);
   manifest_ = data.manifest->Clone();
   web_page_metadata_ = data.web_page_metadata->Clone();
+
+  manifest_id_ = manifest_->id;
+  if (!manifest_id_.is_valid()) {
+    manifest_id_ = validated_url_.GetWithoutRef();
+  }
 
   // Skip checks for PasswordManager WebUI page.
   if (content::HasWebUIScheme(validated_url_) &&
@@ -547,6 +548,7 @@ void AppBannerManager::ResetCurrentPageData() {
   active_media_players_.clear();
   manifest_ = blink::mojom::Manifest::New();
   web_page_metadata_ = mojom::WebPageMetadata::New();
+  manifest_id_ = GURL();
   manifest_url_ = GURL();
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
@@ -857,7 +859,7 @@ std::string AppBannerManager::GetInstallableWebAppManifestId(
       return std::string();
     case InstallableWebAppCheckResult::kYes_ByUserRequest:
     case InstallableWebAppCheckResult::kYes_Promotable:
-      return manager->manifest().id.spec();
+      return manager->manifest_id_.spec();
   }
 }
 bool AppBannerManager::IsProbablyPromotableWebApp(

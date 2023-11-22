@@ -151,10 +151,15 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.installable_criteria =
-      base::FeatureList::IsEnabled(features::kUniversalInstallManifest)
-          ? InstallableCriteria::kImplicitManifestFieldsHTML
-          : InstallableCriteria::kValidManifestWithIcons;
+  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
+  if (base::FeatureList::IsEnabled(
+          features::kUniversalInstallRootScopeNoManifest)) {
+    params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kUniversalInstallManifest)) {
+    params.installable_criteria =
+        InstallableCriteria::kImplicitManifestFieldsHTML;
+  }
   params.fetch_favicon =
       base::FeatureList::IsEnabled(features::kUniversalInstallIcon);
   return params;
@@ -188,7 +193,7 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
                                          manifest().start_url) ||
          WebappsClient::Get()->IsInstallationInProgress(web_contents(),
-                                                        manifest().id);
+                                                        manifest_id_);
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
