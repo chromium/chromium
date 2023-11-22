@@ -3232,7 +3232,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       NavigationBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaActivation);
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SharedStorageWritable);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, SetTitleOnUnload);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, SetTitleOnPagehide);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            DetachedIframeUnloadHandlerABCB);
 
