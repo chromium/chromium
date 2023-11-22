@@ -28,10 +28,16 @@ using ui::test::uiimage_utils::UIImagesAreEqual;
 using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
 namespace {
+
+// Name of the directory where snapshots are saved.
+const char kIdentifier0[] = "Identifier0";
+const char kIdentifier1[] = "Identifier1";
+
 std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
     web::BrowserState* browser_state) {
   return std::make_unique<FakeTabRestoreService>();
 }
+
 }  // namespace
 
 // Test fixture for testing functions in browser_util.h/mm.
@@ -199,7 +205,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent::CreateForBrowser(browser_.get());
   SnapshotBrowserAgent* agent =
       SnapshotBrowserAgent::FromBrowser(browser_.get());
-  agent->SetSessionID([[NSUUID UUID] UUIDString]);
+  agent->SetSessionID(kIdentifier0);
   SnapshotStorage* snapshot_storage = agent->snapshot_storage();
   ASSERT_NE(nil, snapshot_storage);
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
@@ -213,7 +219,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
   SnapshotBrowserAgent* other_agent =
       SnapshotBrowserAgent::FromBrowser(other_browser_.get());
-  other_agent->SetSessionID([[NSUUID UUID] UUIDString]);
+  other_agent->SetSessionID(kIdentifier1);
   SnapshotStorage* other_snapshot_storage = other_agent->snapshot_storage();
   ASSERT_NE(nil, other_snapshot_storage);
   ASSERT_EQ(nil, GetSnapshot(other_snapshot_storage, snapshot_id));

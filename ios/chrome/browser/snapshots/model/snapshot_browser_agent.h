@@ -5,8 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 
-#import <Foundation/Foundation.h>
-
+#import <string>
 #import <vector>
 
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -29,7 +28,7 @@ class SnapshotBrowserAgent : public BrowserObserver,
   // Set a session identification string that will be used to locate the
   // snapshots directory. Setting this more than once on the same agent is
   // probably a programming error.
-  void SetSessionID(NSString* session_identifier);
+  void SetSessionID(const std::string& identifier);
 
   // Maintains the snapshots storage including purging unused images and
   // performing any necessary migrations.

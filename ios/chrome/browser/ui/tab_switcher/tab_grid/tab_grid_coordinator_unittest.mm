@@ -79,10 +79,12 @@
 
 namespace {
 
+// Name of the directory where snapshots are saved.
+const char kIdentifier[] = "Identifier";
+
 void AddAgentsToBrowser(Browser* browser) {
   SnapshotBrowserAgent::CreateForBrowser(browser);
-  SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(
-      [[NSUUID UUID] UUIDString]);
+  SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(kIdentifier);
 }
 
 class TabGridCoordinatorTest : public BlockCleanupTest {

@@ -54,10 +54,14 @@ namespace {
 constexpr base::TimeDelta kWaitForTabCollectionConsumerUpdateTimeout =
     base::Seconds(1);
 
+// Name of the directory where snapshots are saved.
+const char kIdentifier[] = "Identifier";
+
 std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
     web::BrowserState* browser_state) {
   return std::make_unique<FakeTabRestoreService>();
 }
+
 }  // namespace
 
 // Fake WebStateList delegate that attaches the required tab helper.
@@ -122,8 +126,7 @@ void GridMediatorTestClass::SetUp() {
   WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
   SnapshotBrowserAgent::CreateForBrowser(browser_.get());
-  SnapshotBrowserAgent::FromBrowser(browser_.get())
-      ->SetSessionID([[NSUUID UUID] UUIDString]);
+  SnapshotBrowserAgent::FromBrowser(browser_.get())->SetSessionID(kIdentifier);
   browser_list_ = BrowserListFactory::GetForBrowserState(browser_state_.get());
   browser_list_->AddBrowser(browser_.get());
 

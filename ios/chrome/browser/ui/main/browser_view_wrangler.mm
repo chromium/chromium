@@ -379,12 +379,13 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     browserSessionID =
         [browserSessionID stringByAppendingString:kInactiveSessionIDSuffix];
   }
+  const std::string identifier = base::SysNSStringToUTF8(browserSessionID);
 
-  SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(browserSessionID);
+  SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(identifier);
 
   ChromeBrowserState* browserState = browser->GetBrowserState();
   SessionRestorationServiceFactory::GetForBrowserState(browserState)
-      ->SetSessionID(browser, base::SysNSStringToUTF8(browserSessionID));
+      ->SetSessionID(browser, identifier);
 }
 
 // Load session for `browser`.

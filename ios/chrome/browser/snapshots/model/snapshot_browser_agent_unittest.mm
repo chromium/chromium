@@ -13,6 +13,11 @@
 
 namespace {
 
+// Name of the directory where snapshots are saved.
+const char kIdentifier[] = "Identifier";
+
+}  // anonymous namespace
+
 class SnapshotBrowserAgentTest : public PlatformTest {
  public:
   SnapshotBrowserAgentTest() {
@@ -32,8 +37,6 @@ TEST_F(SnapshotBrowserAgentTest, SnapshotStorageCreatedAfterSettingSessionID) {
       SnapshotBrowserAgent::FromBrowser(browser_.get());
   EXPECT_NE(nullptr, agent);
   EXPECT_EQ(nil, agent->snapshot_storage());
-  agent->SetSessionID([[NSUUID UUID] UUIDString]);
+  agent->SetSessionID(kIdentifier);
   EXPECT_NE(nil, agent->snapshot_storage());
 }
-
-}  // anonymous namespace
