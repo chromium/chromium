@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -1887,10 +1888,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and reloads the current page.
 - (void)reload {
   RecordAction(UserMetricsAction("MobileMenuReload"));
-  if (_engagementTracker) {
-    _engagementTracker->NotifyEvent(
-        feature_engagement::events::kIOSMultiGestureRefreshUsed);
-  }
+  [self.helpHandler notifyMultiGestureRefreshAndShowHelpBubbleIfEligible];
   [self dismissMenu];
   self.navigationAgent->Reload();
 }

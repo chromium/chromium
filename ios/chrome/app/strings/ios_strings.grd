@@ -2849,6 +2849,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PROGRESS_BAR_ACCESSIBILITY" desc="Text read by voice over to inform the user about the progress of the page load. [Read by Text To Speech].">
         Page load progress bar, <ph name="EMAIL">$1<ex>20%</ex></ph> loaded.
       </message>
+      <message name="IDS_IOS_PULL_TO_REFRESH_IPH" desc="The text for the full screen in-product help for pull-to-refresh on the current tab.">
+        You can pull down to refresh.
+      </message>
       <message name="IDS_IOS_QR_CODE_ACCESSIBILITY_LABEL" desc="Text read by voice over to describe a generated QR code image. [Read by Text To Speech]">
         QR Code
       </message>

@@ -388,6 +388,15 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
                                completion:nil];
 }
 
+- (void)dismissWithReason:(IPHDismissalReasonType)reason {
+  if (!self.superview) {
+    return;
+  }
+  [self removeFromSuperview];
+  self.dismissCallback(reason,
+                       feature_engagement::Tracker::SnoozeAction::DISMISSED);
+}
+
 #pragma mark - Private
 
 // Handles the completion of each round of animation.
@@ -398,14 +407,6 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   } else {
     [self startAnimation];
   }
-}
-
-// Dismiss the view with `reason`.
-- (void)dismissWithReason:(IPHDismissalReasonType)reason {
-  // Only destroy the view after callback executed.
-  [self removeFromSuperview];
-  self.dismissCallback(reason,
-                       feature_engagement::Tracker::SnoozeAction::DISMISSED);
 }
 
 #pragma mark - Initial positioning helpers

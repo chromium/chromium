@@ -32,6 +32,7 @@ class AuthenticationService;
 class BrowserPolicyConnectorIOS;
 @protocol FindInPageCommands;
 class FollowBrowserAgent;
+@protocol HelpCommands;
 @protocol OverflowMenuCustomizationCommands;
 @class OverflowMenuOrderer;
 class OverlayPresenter;
@@ -125,6 +126,9 @@ class WebStateList;
 
 // The AuthenticationService to get sign-in info.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
+
+// The help handler to present in-product help bubbles.
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
 
 // Disconnect the mediator.
 - (void)disconnect;

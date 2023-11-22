@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
@@ -325,6 +326,8 @@ using base::UserMetricsAction;
       mediator.authenticationService =
           AuthenticationServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+      mediator.helpHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), HelpCommands);
 
       self.contentBlockerMediator.consumer = mediator;
 

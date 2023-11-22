@@ -43,14 +43,19 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// view.
 @property(nonatomic, copy) CallbackWithIPHDismissalReasonType dismissCallback;
 
-/// Starts the view animation immediately. This should only be called when the
-/// view is in the view hierarchy.
+/// Starts the view animation immediately. View will be dismissed when animation
+/// completes. This should only be called when the view is in the view
+/// hierarchy.
 - (void)startAnimation;
 
-/// Starts the view animation after `delay`. This should only be called when the
-/// view is in the view hierarchy.
-/// Note: `delay` would NOT be honored with reduced animation.
+/// Starts the view animation after `delay`. View will be dismissed when
+/// animation completes. This should only be called when the view is in the view
+/// hierarchy. Note: `delay` would NOT be honored with reduced animation.
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay;
+
+/// Dismiss the view with `reason` before or during the animation if view is in
+/// the UI hierarchy.
+- (void)dismissWithReason:(IPHDismissalReasonType)reason;
 
 @end
 
