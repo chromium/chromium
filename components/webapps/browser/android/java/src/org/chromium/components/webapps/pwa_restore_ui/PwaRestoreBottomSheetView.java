@@ -38,9 +38,9 @@ import java.util.List;
  */
 @SuppressLint("ClickableViewAccessibility")
 public class PwaRestoreBottomSheetView implements View.OnTouchListener {
-    private static final int APP_ICON_SIZE_DP = 32;
-    private static final int APP_ICON_CORNER_RADIUS_DP = 16;
-    private static final int APP_ICON_TEXT_SIZE_DP = 16;
+    private static final int APP_ICON_SIZE_DP = 40;
+    private static final int APP_ICON_CORNER_RADIUS_DP = 20;
+    private static final int APP_ICON_TEXT_SIZE_DP = 24;
 
     // The current context.
     private final Context mContext;
@@ -123,9 +123,6 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
         ((TextView) label.findViewById(R.id.label_text)).setText(recentAppLabel);
         scrollViewContent.addView(label);
 
-        // TODO(finnur): Replace with actual app icons.
-        Bitmap placeholder = mIconGenerator.generateIconForText("?");
-
         int item = 0;
         for (PwaRestoreProperties.AppInfo app : appList) {
             View appView =
@@ -144,6 +141,8 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
             }
             item += 1;
 
+            // TODO(finnur): Replace with actual app icons.
+            Bitmap placeholder = mIconGenerator.generateIconForText(app.getName());
             ((ImageView) appView.findViewById(R.id.app_icon)).setImageBitmap(placeholder);
             ((TextView) appView.findViewById(R.id.app_name)).setText(app.getName());
             CheckBox checkBox = (CheckBox) appView.findViewById(R.id.checkbox);
@@ -157,7 +156,7 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
 
             scrollViewContent.addView(appView);
 
-            // Add a 2pt separator view as a separate item in the ScrollView so as to not affect the
+            // Add a 4dp separator view as a separate item in the ScrollView so as to not affect the
             // height of the app item view (or mess up the rounded corners).
             View separator = new View(mContext);
             separator.setLayoutParams(
@@ -166,7 +165,7 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
                             (int)
                                     TypedValue.applyDimension(
                                             TypedValue.COMPLEX_UNIT_DIP,
-                                            2,
+                                            4,
                                             mContext.getResources().getDisplayMetrics())));
             scrollViewContent.addView(separator);
         }

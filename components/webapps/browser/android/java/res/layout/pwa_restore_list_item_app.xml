@@ -15,7 +15,7 @@ found in the LICENSE file.
         android:id="@+id/app_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
+        android:layout_margin="16dp"
         android:importantForAccessibility="no" />
 
     <TextView
@@ -23,7 +23,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="22dp"
         android:layout_weight="1"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
@@ -31,6 +31,6 @@ found in the LICENSE file.
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="24dp" />
+        android:layout_marginEnd="19dp"
+        android:layout_marginTop="22dp" />
 </LinearLayout>
