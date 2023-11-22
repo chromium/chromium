@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_auth_revoke_request.h"
+#include "content/browser/webid/federated_auth_disconnect_request.h"
 
 #include <memory>
 #include <set>
@@ -36,11 +36,12 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
+using DisconnectResponse =
+    content::IdpNetworkRequestManager::DisconnectResponse;
+using DisconnectStatusForMetrics = content::FedCmDisconnectStatus;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using LoginState = content::IdentityRequestAccount::LoginState;
-using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
-using RevokeStatusForMetrics = content::FedCmRevokeStatus;
-using blink::mojom::RevokeStatus;
+using blink::mojom::DisconnectStatus;
 
 namespace content {
 namespace {
@@ -48,13 +49,13 @@ namespace {
 constexpr char kRpUrl[] = "https://rp.example";
 constexpr char kProviderUrl[] = "https://idp.example/fedcm.json";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
-constexpr char kRevokeEndpoint[] = "https://idp.example/revoke";
+constexpr char kDisconnectEndpoint[] = "https://idp.example/disconnect";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kLoginUrl[] = "https://idp.example/login";
 constexpr char kClientId[] = "client_id_123";
 
 // Not used?
-// constexpr char kIdpRevokeUrl[] = "https://idp.example/revoke";
+// constexpr char kIdpDisconnectUrl[] = "https://idp.example/disconnect";
 
 struct AccountConfig {
   std::string id;
@@ -65,7 +66,7 @@ struct AccountConfig {
 struct Config {
   std::vector<AccountConfig> accounts;
   FetchStatus config_fetch_status;
-  FetchStatus revoke_fetch_status;
+  FetchStatus disconnect_fetch_status;
   std::string config_url;
 };
 
@@ -74,24 +75,25 @@ Config kValidConfig = {
     {{"account1", /*login_state=*/absl::nullopt,
       /*was_granted_sharing_permission=*/true}},
     /*config_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
-    /*revoke_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
+    /*disconnect_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
     kProviderUrl};
 
-// Helper class for receiving the Revoke method callback.
-class RevokeRequestCallbackHelper {
+// Helper class for receiving the Disconnect method callback.
+class DisconnectRequestCallbackHelper {
  public:
-  RevokeRequestCallbackHelper() = default;
-  ~RevokeRequestCallbackHelper() = default;
+  DisconnectRequestCallbackHelper() = default;
+  ~DisconnectRequestCallbackHelper() = default;
 
-  RevokeRequestCallbackHelper(const RevokeRequestCallbackHelper&) = delete;
-  RevokeRequestCallbackHelper& operator=(const RevokeRequestCallbackHelper&) =
+  DisconnectRequestCallbackHelper(const DisconnectRequestCallbackHelper&) =
       delete;
+  DisconnectRequestCallbackHelper& operator=(
+      const DisconnectRequestCallbackHelper&) = delete;
 
-  RevokeStatus status() const { return status_; }
+  DisconnectStatus status() const { return status_; }
 
   // This can only be called once per lifetime of this object.
-  base::OnceCallback<void(RevokeStatus)> callback() {
-    return base::BindOnce(&RevokeRequestCallbackHelper::ReceiverMethod,
+  base::OnceCallback<void(DisconnectStatus)> callback() {
+    return base::BindOnce(&DisconnectRequestCallbackHelper::ReceiverMethod,
                           base::Unretained(this));
   }
 
@@ -105,7 +107,7 @@ class RevokeRequestCallbackHelper {
   }
 
  private:
-  void ReceiverMethod(RevokeStatus status) {
+  void ReceiverMethod(DisconnectStatus status) {
     status_ = status;
     was_called_ = true;
     wait_for_callback_loop_.Quit();
@@ -113,7 +115,7 @@ class RevokeRequestCallbackHelper {
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  RevokeStatus status_;
+  DisconnectStatus status_;
 };
 
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
@@ -143,7 +145,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     IdpNetworkRequestManager::Endpoints endpoints;
     endpoints.accounts = GURL(kAccountsEndpoint);
     endpoints.token = GURL(kTokenEndpoint);
-    endpoints.revoke = GURL(kRevokeEndpoint);
+    endpoints.disconnect = GURL(kDisconnectEndpoint);
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = GURL(config_.config_url);
@@ -154,19 +156,20 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                        endpoints, idp_metadata));
   }
 
-  void SendRevokeRequest(const GURL& revoke_url,
-                         const std::string& account_hint,
-                         const std::string& client_id,
-                         RevokeCallback callback) override {
-    has_fetched_revoke_ = true;
+  void SendDisconnectRequest(const GURL& disconnect_url,
+                             const std::string& account_hint,
+                             const std::string& client_id,
+                             DisconnectCallback callback) override {
+    has_fetched_disconnect_ = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  config_.revoke_fetch_status, account_hint));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), config_.disconnect_fetch_status,
+                       account_hint));
   }
 
   bool has_fetched_well_known_{false};
   bool has_fetched_config_{false};
-  bool has_fetched_revoke_{false};
+  bool has_fetched_disconnect_{false};
 
  private:
   const Config config_;
@@ -219,16 +222,17 @@ class TestPermissionDelegate : public MockPermissionDelegate {
 
 }  // namespace
 
-class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
+class FederatedAuthDisconnectRequestTest
+    : public RenderViewHostImplTestHarness {
  public:
-  FederatedAuthRevokeRequestTest() {
+  FederatedAuthDisconnectRequestTest() {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
-  ~FederatedAuthRevokeRequestTest() override = default;
+  ~FederatedAuthDisconnectRequestTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(features::kFedCmRevoke);
+    scoped_feature_list_.InitAndEnableFeature(features::kFedCmDisconnect);
 
     api_permission_delegate_ = std::make_unique<TestApiPermissionDelegate>();
     permission_delegate_ = std::make_unique<TestPermissionDelegate>();
@@ -242,8 +246,8 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  void RunRevokeTest(const Config& config,
-                     RevokeStatus expected_revoke_status) {
+  void RunDisconnectTest(const Config& config,
+                         DisconnectStatus expected_disconnect_status) {
     permission_delegate_->SetConfig(config);
 
     auto network_manager =
@@ -254,15 +258,15 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
         GURL(config.config_url), main_test_rfh()->GetPageUkmSourceId(),
         /*session_id=*/1, /*is_disabled=*/false);
 
-    blink::mojom::IdentityCredentialRevokeOptionsPtr options =
-        blink::mojom::IdentityCredentialRevokeOptions::New();
+    blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
+        blink::mojom::IdentityCredentialDisconnectOptions::New();
     options->config = blink::mojom::IdentityProviderConfig::New();
     options->config->config_url = GURL(config.config_url);
     options->config->client_id = kClientId;
     options->account_hint = "accountHint";
 
-    RevokeRequestCallbackHelper callback_helper;
-    request_ = FederatedAuthRevokeRequest::Create(
+    DisconnectRequestCallbackHelper callback_helper;
+    request_ = FederatedAuthDisconnectRequest::Create(
         std::move(network_manager), permission_delegate_.get(), main_rfh(),
         metrics_.get(), std::move(options),
         /*should_complete_request_immediately=*/true);
@@ -270,11 +274,11 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
                                   api_permission_delegate_.get());
     callback_helper.WaitForCallback();
 
-    EXPECT_EQ(expected_revoke_status, callback_helper.status());
+    EXPECT_EQ(expected_disconnect_status, callback_helper.status());
   }
 
-  void ExpectRevokeStatusUKM(RevokeStatusForMetrics status,
-                             const char* entry_name) {
+  void ExpectDisconnectStatusUKM(DisconnectStatusForMetrics status,
+                                 const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty())
@@ -285,24 +289,25 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
     bool metric_found = false;
     for (const auto* const entry : entries) {
       const int64_t* metric =
-          ukm_recorder()->GetEntryMetric(entry, "Status.Revoke2");
+          ukm_recorder()->GetEntryMetric(entry, "Status.Disconnect");
       if (!metric) {
         continue;
       }
       EXPECT_FALSE(metric_found)
-          << "Found more than one entry with Status.Revoke2 in " << entry_name;
+          << "Found more than one entry with Status.Disconnect in "
+          << entry_name;
       metric_found = true;
       EXPECT_EQ(static_cast<int>(status), *metric)
           << "Unexpected status recorded in " << entry_name;
     }
     EXPECT_TRUE(metric_found)
-        << "No Status.Revoke2 entry was found in " << entry_name;
+        << "No Status.Disconnect entry was found in " << entry_name;
   }
 
   bool DidFetchAnyEndpoint() {
     return network_manager_->has_fetched_well_known_ ||
            network_manager_->has_fetched_config_ ||
-           network_manager_->has_fetched_revoke_;
+           network_manager_->has_fetched_disconnect_;
   }
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
@@ -313,38 +318,39 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<FedCmMetrics> metrics_;
-  std::unique_ptr<FederatedAuthRevokeRequest> request_;
+  std::unique_ptr<FederatedAuthDisconnectRequest> request_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-TEST_F(FederatedAuthRevokeRequestTest, Success) {
+TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   Config config = kValidConfig;
-  RunRevokeTest(config, RevokeStatus::kSuccess);
+  RunDisconnectTest(config, DisconnectStatus::kSuccess);
   EXPECT_TRUE(network_manager_->has_fetched_well_known_);
   EXPECT_TRUE(network_manager_->has_fetched_config_);
-  EXPECT_TRUE(network_manager_->has_fetched_revoke_);
+  EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Revoke2",
-                                       RevokeStatusForMetrics::kSuccess, 1);
-  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kSuccess,
-                        FedCmEntry::kEntryName);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
+                                       DisconnectStatusForMetrics::kSuccess, 1);
+  ExpectDisconnectStatusUKM(DisconnectStatusForMetrics::kSuccess,
+                            FedCmEntry::kEntryName);
 }
 
-TEST_F(FederatedAuthRevokeRequestTest, NotTrustworthyIdP) {
+TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
   Config config = kValidConfig;
   config.config_url = "http://idp.example/fedcm.json";
-  RunRevokeTest(config, RevokeStatus::kError);
+  RunDisconnectTest(config, DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.Status.Revoke2",
-      RevokeStatusForMetrics::kIdpNotPotentiallyTrustworthy, 1);
-  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kIdpNotPotentiallyTrustworthy,
-                        FedCmEntry::kEntryName);
+      "Blink.FedCm.Status.Disconnect",
+      DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy, 1);
+  ExpectDisconnectStatusUKM(
+      DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
+      FedCmEntry::kEntryName);
 }
 
-TEST_F(FederatedAuthRevokeRequestTest,
+TEST_F(FederatedAuthDisconnectRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
@@ -361,15 +367,15 @@ TEST_F(FederatedAuthRevokeRequestTest,
                                          url::Origin::Create(GURL(kRpUrl))))
       .WillOnce(Return(true));
 
-  RunRevokeTest(config, RevokeStatus::kSuccess);
+  RunDisconnectTest(config, DisconnectStatus::kSuccess);
   EXPECT_TRUE(network_manager_->has_fetched_well_known_);
   EXPECT_TRUE(network_manager_->has_fetched_config_);
-  EXPECT_TRUE(network_manager_->has_fetched_revoke_);
+  EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Revoke2",
-                                       RevokeStatusForMetrics::kSuccess, 1);
-  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kSuccess,
-                        FedCmEntry::kEntryName);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
+                                       DisconnectStatusForMetrics::kSuccess, 1);
+  ExpectDisconnectStatusUKM(DisconnectStatusForMetrics::kSuccess,
+                            FedCmEntry::kEntryName);
 }
 
 }  // namespace content

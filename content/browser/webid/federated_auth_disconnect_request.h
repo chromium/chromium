@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REVOKE_REQUEST_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REVOKE_REQUEST_H_
+#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_
+#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_
 
 #include <memory>
 #include <vector>
@@ -23,53 +23,54 @@ class FederatedIdentityPermissionContextDelegate;
 class FederatedProviderFetcher;
 class RenderFrameHost;
 
-// Fetches data for a FedCM revoke request.
-class CONTENT_EXPORT FederatedAuthRevokeRequest {
+// Fetches data for a FedCM disconnect request.
+class CONTENT_EXPORT FederatedAuthDisconnectRequest {
  public:
-  // Returns an object which fetches data for revoke request.
-  static std::unique_ptr<FederatedAuthRevokeRequest> Create(
+  // Returns an object which fetches data for disconnect request.
+  static std::unique_ptr<FederatedAuthDisconnectRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
-      blink::mojom::IdentityCredentialRevokeOptionsPtr options,
+      blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
       bool should_complete_request_immediately);
 
-  FederatedAuthRevokeRequest(const FederatedAuthRevokeRequest&) = delete;
-  FederatedAuthRevokeRequest& operator=(const FederatedAuthRevokeRequest&) =
+  FederatedAuthDisconnectRequest(const FederatedAuthDisconnectRequest&) =
       delete;
-  ~FederatedAuthRevokeRequest();
+  FederatedAuthDisconnectRequest& operator=(
+      const FederatedAuthDisconnectRequest&) = delete;
+  ~FederatedAuthDisconnectRequest();
 
   // There is a separate method to set the callback because the callback relies
   // on having a pointer to this object, hence cannot be passed in the
   // constructor. Once the callback is set, start fetching.
   void SetCallbackAndStart(
-      blink::mojom::FederatedAuthRequest::RevokeCallback callback,
+      blink::mojom::FederatedAuthRequest::DisconnectCallback callback,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
  private:
-  FederatedAuthRevokeRequest(
+  FederatedAuthDisconnectRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
-      blink::mojom::IdentityCredentialRevokeOptionsPtr options,
+      blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
       bool should_complete_request_immediately);
 
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
 
-  void OnRevokeResponse(IdpNetworkRequestManager::FetchStatus fetch_status,
-                        const std::string& account_id);
+  void OnDisconnectResponse(IdpNetworkRequestManager::FetchStatus fetch_status,
+                            const std::string& account_id);
 
   // `should_delay_callback` represents whether we should call the callback
   // with some delay or immediately. For some failures we choose to reject
-  // with some delay for privacy reasons. `revoke_status_for_metrics` is
+  // with some delay for privacy reasons. `disconnect_status_for_metrics` is
   // non-nullopt if metrics have not yet been recorded for this request.
-  void Complete(
-      blink::mojom::RevokeStatus status,
-      absl::optional<content::FedCmRevokeStatus> revoke_status_for_metrics,
-      bool should_delay_callback);
+  void Complete(blink::mojom::DisconnectStatus status,
+                absl::optional<content::FedCmDisconnectStatus>
+                    disconnect_status_for_metrics,
+                bool should_delay_callback);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
@@ -80,17 +81,17 @@ class CONTENT_EXPORT FederatedAuthRevokeRequest {
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
-  blink::mojom::IdentityCredentialRevokeOptionsPtr options_;
+  blink::mojom::IdentityCredentialDisconnectOptionsPtr options_;
   bool should_complete_request_immediately_{false};
 
   url::Origin origin_;
   url::Origin embedding_origin_;
 
-  blink::mojom::FederatedAuthRequest::RevokeCallback callback_;
+  blink::mojom::FederatedAuthRequest::DisconnectCallback callback_;
 
-  base::WeakPtrFactory<FederatedAuthRevokeRequest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FederatedAuthDisconnectRequest> weak_ptr_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REVOKE_REQUEST_H_
+#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_

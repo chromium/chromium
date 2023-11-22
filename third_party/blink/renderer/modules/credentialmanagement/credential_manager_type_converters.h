@@ -24,7 +24,7 @@ class AuthenticationExtensionsPRFValues;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
-class IdentityCredentialRevokeOptions;
+class IdentityCredentialDisconnectOptions;
 class IdentityProviderConfig;
 class IdentityProviderRequestOptions;
 class IdentityUserInfo;
@@ -269,10 +269,11 @@ struct TypeConverter<Vector<blink::mojom::blink::PRFValuesPtr>,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::IdentityCredentialRevokeOptionsPtr,
-                     blink::IdentityCredentialRevokeOptions> {
-  static blink::mojom::blink::IdentityCredentialRevokeOptionsPtr Convert(
-      const blink::IdentityCredentialRevokeOptions&);
+struct TypeConverter<
+    blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr,
+    blink::IdentityCredentialDisconnectOptions> {
+  static blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr Convert(
+      const blink::IdentityCredentialDisconnectOptions&);
 };
 
 }  // namespace mojo

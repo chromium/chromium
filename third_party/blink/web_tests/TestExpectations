@@ -7103,7 +7103,7 @@ crbug.com/1502336 [ Linux ] external/wpt/idle-detection/idle-detection-allowed-b
 crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass Timeout ]
 
 # Gerdener 2023-11-17
-crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-revoke.sub.https.html [ Timeout ]
+crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
 crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
 crbug.com/1503067 [ Linux ] virtual/plz-dedicated-worker-disabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
 crbug.com/1503067 [ Linux ] virtual/pna-iframes-warning/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]

@@ -931,6 +931,9 @@ extern const char kFedCmAuthzDescription[];
 extern const char kFedCmAutoSelectedFlagName[];
 extern const char kFedCmAutoSelectedFlagDescription[];
 
+extern const char kFedCmDisconnectName[];
+extern const char kFedCmDisconnectDescription[];
+
 extern const char kFedCmDomainHintName[];
 extern const char kFedCmDomainHintDescription[];
 
@@ -948,9 +951,6 @@ extern const char kFedCmMetricsEndpointDescription[];
 
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
-
-extern const char kFedCmRevokeName[];
-extern const char kFedCmRevokeDescription[];
 
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];

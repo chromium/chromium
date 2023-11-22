@@ -9171,6 +9171,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAutoSelectedFlagDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutoSelectedFlag)},
 
+    {"fedcm-disconnect", flag_descriptions::kFedCmDisconnectName,
+     flag_descriptions::kFedCmDisconnectDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmDisconnect)},
+
     {"fedcm-domain-hint", flag_descriptions::kFedCmDomainHintName,
      flag_descriptions::kFedCmDomainHintDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmDomainHint)},
@@ -9200,10 +9204,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"fedcm-multi-idp", flag_descriptions::kFedCmMultiIdpName,
      flag_descriptions::kFedCmMultiIdpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},
-
-    {"fedcm-revoke", flag_descriptions::kFedCmRevokeName,
-     flag_descriptions::kFedCmRevokeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmRevoke)},
 
     {"fedcm-selective-disclosure",
      flag_descriptions::kFedCmSelectiveDisclosureName,

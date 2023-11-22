@@ -4085,6 +4085,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "fedcm-disconnect",
+    "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "fedcm-domain-hint",
     "owners": [ "npm@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125
@@ -4121,11 +4126,6 @@
   },
   {
     "name": "fedcm-multi-idp",
-    "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "fedcm-revoke",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125
   },

@@ -239,7 +239,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(blink::features::kSharedStorageAPIM118), kSetOnlyIfOverridden},
     {wf::EnableFedCmMultipleIdentityProviders,
      raw_ref(features::kFedCmMultipleIdentityProviders), kDefault},
-    {wf::EnableFedCmRevoke, raw_ref(features::kFedCmRevoke),
+    {wf::EnableFedCmDisconnect, raw_ref(features::kFedCmDisconnect),
      kSetOnlyIfOverridden},
     {wf::EnableFedCmSelectiveDisclosure,
      raw_ref(features::kFedCmSelectiveDisclosure), kDefault},

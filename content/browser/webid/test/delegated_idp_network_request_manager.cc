@@ -79,13 +79,13 @@ void DelegatedIdpNetworkRequestManager::SendLogout(const GURL& logout_url,
   delegate_->SendLogout(logout_url, std::move(callback));
 }
 
-void DelegatedIdpNetworkRequestManager::SendRevokeRequest(
-    const GURL& revoke_url,
+void DelegatedIdpNetworkRequestManager::SendDisconnectRequest(
+    const GURL& disconnect_url,
     const std::string& account_hint,
     const std::string& client_id,
-    RevokeCallback callback) {
-  delegate_->SendRevokeRequest(revoke_url, account_hint, client_id,
-                               std::move(callback));
+    DisconnectCallback callback) {
+  delegate_->SendDisconnectRequest(disconnect_url, account_hint, client_id,
+                                   std::move(callback));
 }
 
 }  // namespace content

@@ -1601,6 +1601,16 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of CSP checks in the FedCM API.</summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Status.Disconnect" enum="FedCmDisconnectStatus"
+    expires_after="M125">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the status of a disconnect call to the FedCM API. Recorded once per
+    IdentityCredential.disconnect() call, once the browser knows the result.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Status.IdpSigninMatch"
     enum="FedCmIdpSigninMatchStatus" expires_after="2024-05-05">
   <owner>cbiesinger@chromium.org</owner>
@@ -1631,16 +1641,6 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the status of a request token call to the FedCM API.
-  </summary>
-</histogram>
-
-<histogram name="Blink.FedCm.Status.Revoke2" enum="FedCmRevokeStatus2"
-    expires_after="M125">
-  <owner>npm@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records the status of a revoke call to the FedCM API. Recorded once per
-    IdentityCredential.revoke() call, once the browser knows the result.
   </summary>
 </histogram>
 

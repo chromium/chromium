@@ -97,8 +97,8 @@ crbug.com/1499775 external/wpt/credential-management/fedcm-nonce-is-optional.htt
 crbug.com/1499775 external/wpt/credential-management/fedcm-not-observed-by-service-worker.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-pending-call-rejected.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-returning-account-auto-reauthn.https.html [ Timeout ]
-crbug.com/1499775 external/wpt/credential-management/fedcm-revoke.sub.https.html [ Timeout ]
-crbug.com/1499775 external/wpt/credential-management/fedcm-revoke-iframe.sub.https.html [ Timeout ]
+crbug.com/1499775 external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
+crbug.com/1499775 external/wpt/credential-management/fedcm-disconnect-iframe.sub.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-store.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-token-returned-with-http-error.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/CSS2/floats/float-nowrap-2.html [ Failure ]  # Reftest image failure

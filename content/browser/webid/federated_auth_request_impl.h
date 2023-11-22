@@ -31,7 +31,7 @@
 
 namespace content {
 
-class FederatedAuthRevokeRequest;
+class FederatedAuthDisconnectRequest;
 class FederatedAuthUserInfoRequest;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
@@ -89,8 +89,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
   void CloseModalDialogView() override;
   void PreventSilentAccess(PreventSilentAccessCallback callback) override;
-  void Revoke(blink::mojom::IdentityCredentialRevokeOptionsPtr options,
-              RevokeCallback) override;
+  void Disconnect(blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
+                  DisconnectCallback) override;
 
   // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
   void OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
@@ -348,8 +348,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void SignInToIdP(GURL signin_url);
 
-  void CompleteRevokeRequest(RevokeCallback callback,
-                             blink::mojom::RevokeStatus status);
+  void CompleteDisconnectRequest(DisconnectCallback callback,
+                                 blink::mojom::DisconnectStatus status);
 
   void RecordErrorMetrics(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
@@ -418,8 +418,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::flat_set<std::unique_ptr<FederatedAuthUserInfoRequest>>
       user_info_requests_;
 
-  // Pending revoke request.
-  std::unique_ptr<FederatedAuthRevokeRequest> revoke_request_;
+  // Pending disconnect request.
+  std::unique_ptr<FederatedAuthDisconnectRequest> disconnect_request_;
 
   // TODO(crbug.com/1361649): Refactor these member variables introduced through
   // the multi IDP prototype implementation to make them less confusing.

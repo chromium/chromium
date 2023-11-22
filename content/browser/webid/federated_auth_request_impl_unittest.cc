@@ -89,7 +89,7 @@ constexpr char kClientMetadataEndpoint[] =
     "https://idp.example/client_metadata";
 constexpr char kMetricsEndpoint[] = "https://idp.example/metrics";
 constexpr char kIdpLoginUrl[] = "https://idp.example/login_url";
-constexpr char kIdpRevokeUrl[] = "https://idp.example/revoke";
+constexpr char kIdpDisconnectUrl[] = "https://idp.example/disconnect";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
@@ -261,7 +261,7 @@ struct MockConfig {
   std::string client_metadata_endpoint;
   std::string metrics_endpoint;
   std::string idp_login_url;
-  std::string revoke_endpoint;
+  std::string disconnect_endpoint;
 };
 
 struct MockIdpInfo {
@@ -338,7 +338,7 @@ static const MockIdpInfo kDefaultIdentityProviderInfo{
         kClientMetadataEndpoint,
         kMetricsEndpoint,
         kIdpLoginUrl,
-        kIdpRevokeUrl,
+        kIdpDisconnectUrl,
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -358,7 +358,7 @@ static const MockIdpInfo kProviderTwoInfo{
         "https://idp2.example/client_metadata",
         "https://idp2.example/metrics",
         "https://idp2.example/login_url",
-        "https://idp2.example/revoke",
+        "https://idp2.example/disconnect",
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -455,8 +455,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         GURL(config_.idp_info[provider_key].config.client_metadata_endpoint);
     endpoints.metrics =
         GURL(config_.idp_info[provider_key].config.metrics_endpoint);
-    endpoints.revoke =
-        GURL(config_.idp_info[provider_key].config.revoke_endpoint);
+    endpoints.disconnect =
+        GURL(config_.idp_info[provider_key].config.disconnect_endpoint);
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;

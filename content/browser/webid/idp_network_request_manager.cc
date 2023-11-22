@@ -68,7 +68,7 @@ constexpr char kProviderUrlListKey[] = "provider_urls";
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
-constexpr char kRevocationEndpoint[] = "revocation_endpoint";
+constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kSupportsAddAccountKey[] = "supports_add_account";
 
 // Shared between the well-known files and config files
@@ -128,8 +128,8 @@ constexpr char kAccessDenied[] = "access_denied";
 constexpr char kTemporarilyUnavailable[] = "temporarily_unavailable";
 constexpr char kServerError[] = "server_error";
 
-// Revoke response keys.
-constexpr char kRevokeAccountId[] = "account_id";
+// Disconnect response keys.
+constexpr char kDisconnectAccountId[] = "account_id";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -520,7 +520,8 @@ void OnConfigParsed(const GURL& provider,
   endpoints.client_metadata =
       ExtractEndpoint(provider, response, kClientMetadataEndpointKey);
   endpoints.metrics = ExtractEndpoint(provider, response, kMetricsEndpoint);
-  endpoints.revoke = ExtractEndpoint(provider, response, kRevocationEndpoint);
+  endpoints.disconnect =
+      ExtractEndpoint(provider, response, kDisconnectEndpoint);
 
   const base::Value::Dict* idp_metadata_value =
       response.FindDict(kIdpBrandingKey);
@@ -773,16 +774,17 @@ void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
   std::move(callback).Run();
 }
 
-void OnRevokeResponseParsed(IdpNetworkRequestManager::RevokeCallback callback,
-                            FetchStatus fetch_status,
-                            data_decoder::DataDecoder::ValueOrError result) {
+void OnDisconnectResponseParsed(
+    IdpNetworkRequestManager::DisconnectCallback callback,
+    FetchStatus fetch_status,
+    data_decoder::DataDecoder::ValueOrError result) {
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(fetch_status, /*account_id=*/"");
     return;
   }
 
   const base::Value::Dict& response = result->GetDict();
-  const std::string* account_id = response.FindString(kRevokeAccountId);
+  const std::string* account_id = response.FindString(kDisconnectAccountId);
 
   if (account_id && !account_id->empty()) {
     std::move(callback).Run(fetch_status, *account_id);
@@ -1002,18 +1004,18 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
               maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::SendRevokeRequest(
-    const GURL& revoke_url,
+void IdpNetworkRequestManager::SendDisconnectRequest(
+    const GURL& disconnect_url,
     const std::string& account_hint,
     const std::string& client_id,
-    RevokeCallback callback) {
+    DisconnectCallback callback) {
   auto resource_request = CreateCredentialedResourceRequest(
-      revoke_url, CredentialedResourceRequestType::kOriginWithCORS);
+      disconnect_url, CredentialedResourceRequestType::kOriginWithCORS);
   std::string url_encoded_post_data =
       "client_id=" + client_id + "&account_hint=" + account_hint;
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
-      base::BindOnce(&OnRevokeResponseParsed, std::move(callback)),
+      base::BindOnce(&OnDisconnectResponseParsed, std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Federated Credential Management API revoke() tests in iframes.</title>
+<title>Federated Credential Management API disconnect() tests in iframes.</title>
 <link rel="help" href="https://fedidcg.github.io/FedCM">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -27,21 +27,21 @@ async function createIframeAndWaitForMessage(test, iframeUrl, allow = false) {
 }
 
 fedcm_test(async t => {
-  const message = await createIframeAndWaitForMessage(t, 'support/fedcm/revoke-iframe.html');
+  const message = await createIframeAndWaitForMessage(t, 'support/fedcm/disconnect-iframe.html');
   assert_equals(message.result, "Pass");
 }, 'Same-origin iframe does not need explicit identity-credentials-get');
 
 fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(t,
-      'https://{{hosts[alt][]}}:{{ports[https][0]}}/credential-management/support/fedcm/revoke-iframe.html?skip_get');
-  assert_equals(message.result, "Failed revoke");
+      'https://{{hosts[alt][]}}:{{ports[https][0]}}/credential-management/support/fedcm/disconnect-iframe.html?skip_get');
+  assert_equals(message.result, "Failed disconnect");
   assert_equals(message.errorType, "NotAllowedError");
-}, 'Cross-origin iframe fails revoke() without explicit identity-credentials-get');
+}, 'Cross-origin iframe fails disconnect() without explicit identity-credentials-get');
 
 fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(t,
-      'https://{{hosts[alt][]}}:{{ports[https][0]}}/credential-management/support/fedcm/revoke-iframe.html',
+      'https://{{hosts[alt][]}}:{{ports[https][0]}}/credential-management/support/fedcm/disconnect-iframe.html',
       /*allow=*/true);
   assert_equals(message.result, "Pass");
-}, 'Cross-origin iframe can revoke with explicit identity-credentials-get');
+}, 'Cross-origin iframe can disconnect with explicit identity-credentials-get');
 </script>

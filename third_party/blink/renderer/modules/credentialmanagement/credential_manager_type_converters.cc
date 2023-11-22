@@ -28,9 +28,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_field_requirement.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_selector.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_disconnect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_revoke_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
@@ -74,8 +74,8 @@ using blink::mojom::blink::DigitalCredentialProvider;
 using blink::mojom::blink::DigitalCredentialProviderPtr;
 using blink::mojom::blink::DigitalCredentialSelector;
 using blink::mojom::blink::DigitalCredentialSelectorPtr;
-using blink::mojom::blink::IdentityCredentialRevokeOptions;
-using blink::mojom::blink::IdentityCredentialRevokeOptionsPtr;
+using blink::mojom::blink::IdentityCredentialDisconnectOptions;
+using blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr;
 using blink::mojom::blink::IdentityProvider;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
@@ -1015,18 +1015,19 @@ TypeConverter<Vector<PRFValuesPtr>, blink::AuthenticationExtensionsPRFInputs>::
 }
 
 // static
-IdentityCredentialRevokeOptionsPtr
-TypeConverter<IdentityCredentialRevokeOptionsPtr,
-              blink::IdentityCredentialRevokeOptions>::
-    Convert(const blink::IdentityCredentialRevokeOptions& options) {
-  auto mojo_revoke_options = IdentityCredentialRevokeOptions::New();
+IdentityCredentialDisconnectOptionsPtr
+TypeConverter<IdentityCredentialDisconnectOptionsPtr,
+              blink::IdentityCredentialDisconnectOptions>::
+    Convert(const blink::IdentityCredentialDisconnectOptions& options) {
+  auto mojo_disconnect_options = IdentityCredentialDisconnectOptions::New();
 
-  mojo_revoke_options->config = IdentityProviderConfig::New();
-  mojo_revoke_options->config->config_url = blink::KURL(options.configURL());
-  mojo_revoke_options->config->client_id = options.clientId();
+  mojo_disconnect_options->config = IdentityProviderConfig::New();
+  mojo_disconnect_options->config->config_url =
+      blink::KURL(options.configURL());
+  mojo_disconnect_options->config->client_id = options.clientId();
 
-  mojo_revoke_options->account_hint = options.accountHint();
-  return mojo_revoke_options;
+  mojo_disconnect_options->account_hint = options.accountHint();
+  return mojo_disconnect_options;
 }
 
 }  // namespace mojo

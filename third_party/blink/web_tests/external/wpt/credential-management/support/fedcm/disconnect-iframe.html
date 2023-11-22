@@ -2,34 +2,36 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script type="module">
-  import {revoke_options,
+  import {disconnect_options,
           request_options_with_mediation_required,
-        set_fedcm_cookie, manifest_origin} from './../fedcm-helper.sub.js';
+          set_fedcm_cookie, manifest_origin} from './../fedcm-helper.sub.js';
 
 // Loading this iframe in the test will make a FedCM call on load, and
 // trigger a postMessage upon completion.
 //
 // message {
-//   string result: "Pass" | "Failed get" | "Failed revoke"
+//   string result: "Pass" | "Failed get" | "Failed disconnect"
 //   string errorType: error.name
 // }
-async function attemptRevoke() {
+async function attemptDisconnect() {
   try {
-    await IdentityCredential.revoke(revoke_options("1234"));
+    await IdentityCredential.disconnect(disconnect_options("1234"));
     window.top.postMessage({result: "Pass"}, "*");
   } catch (error) {
-    window.top.postMessage({result: "Failed revoke", errorType: error.name}, "*");
+    window.top.postMessage({result: "Failed disconnect", errorType: error.name},
+        "*");
   }
 }
 
 window.onload = async () => {
   const params = new URLSearchParams(document.location.search);
   if (params.has("skip_get")) {
-    attemptRevoke();
+    attemptDisconnect();
     return;
   }
 
-  // Use this variable to stop trying to select an account once the get() promise is resolved.
+  // Use this variable to stop trying to select an account once the get()
+  // promise is resolved.
   let cancelHelper = false;
   try {
     const credentialPromise = navigator.credentials.get(request_options_with_mediation_required());
@@ -46,8 +48,8 @@ window.onload = async () => {
     helper();
     const cred = await credentialPromise;
     await set_fedcm_cookie(manifest_origin);
-    // Now that we have a get(), attempt to revoke permission.
-    attemptRevoke();
+    // Now that we have a get(), attempt to disconnect permission.
+    attemptDisconnect();
   } catch (error) {
     window.top.postMessage({result: "Failed get", errorType: error.name}, '*');
   }

@@ -24685,7 +24685,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4221" label="OBSOLETE_GestureScrollUpdate"/>
   <int value="4222" label="OBSOLETE_GestureScrollEnd"/>
   <int value="4223" label="ArrayBufferTooBigForWebAPI"/>
-  <int value="4224" label="FedCmRevoke"/>
+  <int value="4224" label="FedCmDisconnect"/>
   <int value="4225" label="OBSOLETE_FedCmLogout"/>
   <int value="4226" label="OBSOLETE_FedCmLogoutRps"/>
   <int value="4227" label="V8Navigator_DeprecatedReplaceInURN_Method"/>
@@ -25408,6 +25408,29 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="FailedOrigin"/>
 </enum>
 
+<enum name="FedCmDisconnectStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="TooManyRequests"/>
+  <int value="2" label="UnhandledRequest"/>
+  <int value="3" label="NoAccountToDisconnect"/>
+  <int value="4" label="DisconnectUrlIsCrossOrigin"/>
+  <int value="5" label="DisconnectFailedOnServer"/>
+  <int value="6" label="ConfigHttpNotFound"/>
+  <int value="7" label="ConfigNoResponse"/>
+  <int value="8" label="ConfigInvalidResponse"/>
+  <int value="9" label="DisabledInSettings"/>
+  <int value="10" label="DisabledInFlags"/>
+  <int value="11" label="WellKnownHttpNotFound"/>
+  <int value="12" label="WellKnownNoResponse"/>
+  <int value="13" label="WellKnownInvalidResponse"/>
+  <int value="14" label="WellKnownListEmpty"/>
+  <int value="15" label="ConfigNotInWellKnown"/>
+  <int value="16" label="WellKnownTooBig"/>
+  <int value="17" label="WellKnownInvalidContentType"/>
+  <int value="18" label="ConfigInvalidContentType"/>
+  <int value="19" label="IdpNotPotentiallyTrustworthy"/>
+</enum>
+
 <enum name="FedCmErrorDialogResult">
   <int value="0" label="More details clicked"/>
   <int value="1" label="Got it clicked without more details available"/>
@@ -25562,29 +25585,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="15" label="ManifestNotInManifestList"/>
   <int value="16" label="ManifestListTooBig"/>
   <int value="17" label="ThirdPartyCookiesBlocked"/>
-</enum>
-
-<enum name="FedCmRevokeStatus2">
-  <int value="0" label="Success"/>
-  <int value="1" label="TooManyRequests"/>
-  <int value="2" label="UnhandledRequest"/>
-  <int value="3" label="NoAccountToRevoke"/>
-  <int value="4" label="RevokeUrlIsCrossOrigin"/>
-  <int value="5" label="RevocationFailedOnServer"/>
-  <int value="6" label="ConfigHttpNotFound"/>
-  <int value="7" label="ConfigNoResponse"/>
-  <int value="8" label="ConfigInvalidResponse"/>
-  <int value="9" label="DisabledInSettings"/>
-  <int value="10" label="DisabledInFlags"/>
-  <int value="11" label="WellKnownHttpNotFound"/>
-  <int value="12" label="WellKnownNoResponse"/>
-  <int value="13" label="WellKnownInvalidResponse"/>
-  <int value="14" label="WellKnownListEmpty"/>
-  <int value="15" label="ConfigNotInWellKnown"/>
-  <int value="16" label="WellKnownTooBig"/>
-  <int value="17" label="WellKnownInvalidContentType"/>
-  <int value="18" label="ConfigInvalidContentType"/>
-  <int value="19" label="IdpNotPotentiallyTrustworthy"/>
 </enum>
 
 <enum name="FedCmRpContext">
@@ -39707,6 +39707,7 @@ from previous Chrome versions.
   <int value="1030608602" label="AutofillAssistantProactiveHelp:enabled"/>
   <int value="1030922819" label="AlignWakeUps:enabled"/>
   <int value="1031239808" label="ForceMajorVersion100InUserAgent:disabled"/>
+  <int value="1031278117" label="FedCmDisconnect:enabled"/>
   <int value="1031281564"
       label="DisablePeripheralDataAccessProtection:disabled"/>
   <int value="1033148287" label="NTPShortcuts:disabled"/>
@@ -41605,6 +41606,7 @@ from previous Chrome versions.
   <int value="1918984253"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:disabled"/>
   <int value="1919380242" label="ReduceAcceptLanguage:disabled"/>
+  <int value="1919786756" label="FedCmDisconnect:disabled"/>
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>

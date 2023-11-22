@@ -111,16 +111,16 @@ enum class PreventSilentAccessFrameType {
   kMaxValue = kCrossSiteIframe
 };
 
-// This enum describes the status of a revocation call to the FedCM API.
-enum class FedCmRevokeStatus {
+// This enum describes the status of a disconnect call to the FedCM API.
+enum class FedCmDisconnectStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
   kSuccess,
   kTooManyRequests,
   kUnhandledRequest,
-  kNoAccountToRevoke,
-  kRevokeUrlIsCrossOrigin,
-  kRevocationFailedOnServer,
+  kNoAccountToDisconnect,
+  kDisconnectUrlIsCrossOrigin,
+  kDisconnectFailedOnServer,
   kConfigHttpNotFound,
   kConfigNoResponse,
   kConfigInvalidResponse,
@@ -264,8 +264,8 @@ class CONTENT_EXPORT FedCmMetrics {
   // FedCM request or for the purpose of MDocs or multi-IDP are not counted.
   void RecordNumRequestsPerDocument(const int num_requests);
 
-  // Records the status of the |Revoke| call.
-  void RecordRevokeStatus(FedCmRevokeStatus status);
+  // Records the status of the disconnect call.
+  void RecordDisconnectStatus(FedCmDisconnectStatus status);
 
   // Records the type of error dialog shown.
   void RecordErrorDialogType(

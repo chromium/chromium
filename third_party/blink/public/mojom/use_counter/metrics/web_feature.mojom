@@ -3547,7 +3547,7 @@ enum WebFeature {
   kOBSOLETE_GestureScrollUpdate = 4221,
   kOBSOLETE_GestureScrollEnd = 4222,
   kArrayBufferTooBigForWebAPI = 4223,
-  kFedCmRevoke = 4224,
+  kFedCmDisconnect = 4224,
   kOBSOLETE_FedCmLogout = 4225,
   kOBSOLETE_FedCmLogoutRps = 4226,
   kV8Navigator_DeprecatedReplaceInURN_Method = 4227,

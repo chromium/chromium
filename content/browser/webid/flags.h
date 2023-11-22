@@ -47,8 +47,8 @@ bool IsFedCmDomainHintEnabled();
 // Whether the Error API is enabled.
 bool IsFedCmErrorEnabled();
 
-// Whether the revoke API is enabled.
-bool IsFedCmRevokeEnabled();
+// Whether the disconnect API is enabled.
+bool IsFedCmDisconnectEnabled();
 
 // Whether "Add Account" is enabled.
 bool IsFedCmAddAccountEnabled();

@@ -4463,6 +4463,13 @@ be describing additional metrics about the same event.
       where the site of the iframe is compared with the site of the main frame.
     </summary>
   </metric>
+  <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
+    <summary>
+      Records the status of a disconnect call to the FedCM API. Recorded once
+      per IdentityCredential.disconnect() call, once the browser knows the
+      result.
+    </summary>
+  </metric>
   <metric name="Status.MediationRequirement"
       enum="CredentialManagerMediationRequirement">
     <summary>
@@ -4482,12 +4489,6 @@ be describing additional metrics about the same event.
     </obsolete>
     <summary>
       Records the status of a revoke call to the FedCM API.
-    </summary>
-  </metric>
-  <metric name="Status.Revoke2" enum="FedCmRevokeStatus2">
-    <summary>
-      Records the status of a revoke call to the FedCM API. Recorded once per
-      IdentityCredential.revoke() call, once the browser knows the result.
     </summary>
   </metric>
   <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">
@@ -4605,6 +4606,13 @@ be describing additional metrics about the same event.
       Records a 1 each time a mismatch dialog is shown.
     </summary>
   </metric>
+  <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
+    <summary>
+      Records the status of a disconnect call to the FedCM API. Recorded once
+      per IdentityCredential.disconnect() call, once the browser knows the
+      result.
+    </summary>
+  </metric>
   <metric name="Status.MediationRequirement"
       enum="CredentialManagerMediationRequirement">
     <summary>
@@ -4616,12 +4624,6 @@ be describing additional metrics about the same event.
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
       Records the status of a request id token call to the FedCM API.
-    </summary>
-  </metric>
-  <metric name="Status.Revoke2" enum="FedCmRevokeStatus2">
-    <summary>
-      Records the status of a revoke call to the FedCM API. Recorded once per
-      IdentityCredential.revoke() call, once the browser knows the result.
     </summary>
   </metric>
   <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">

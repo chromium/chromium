@@ -1652,6 +1652,11 @@ const char kFedCmAutoSelectedFlagDescription[] =
     "auto-selected with developers post user permission to continue with the "
     "IdP.";
 
+const char kFedCmDisconnectName[] = "FedCmDisconnect";
+const char kFedCmDisconnectDescription[] =
+    "Enables the IdentityCredential.disconnect() API which allows "
+    "disconnecting accounts created via federated login through FedCM.";
+
 const char kFedCmDomainHintName[] = "FedCmDomainHint";
 const char kFedCmDomainHintDescription[] =
     "Enables RPs to request only FedCM invocations to only show accounts "
@@ -1682,11 +1687,6 @@ const char kFedCmMultiIdpName[] = "FedCmMultiIdp";
 const char kFedCmMultiIdpDescription[] =
     "Allows the FedCM API to request multiple identity providers "
     "simultaneously. Requires FedCM to be enabled as well.";
-
-const char kFedCmRevokeName[] = "FedCmRevoke";
-const char kFedCmRevokeDescription[] =
-    "Enables the IdentityCredential.revoke() API which allows revoking "
-    "accounts created via federated login through FedCM.";
 
 const char kFedCmSelectiveDisclosureName[] = "FedCmSelectiveDisclosure";
 const char kFedCmSelectiveDisclosureDescription[] =

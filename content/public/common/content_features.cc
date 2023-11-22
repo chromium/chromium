@@ -406,8 +406,10 @@ BASE_FEATURE(kFedCmMultipleIdentityProviders,
              "FedCmMultipleIdentityProviders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the revoke method within the FedCM API.
-BASE_FEATURE(kFedCmRevoke, "FedCmRevoke", base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables the disconnect method within the FedCM API.
+BASE_FEATURE(kFedCmDisconnect,
+             "FedCmDisconnect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with the Selective Disclosure API at the same
 // time.

@@ -64,8 +64,8 @@ bool IsFedCmErrorEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmError);
 }
 
-bool IsFedCmRevokeEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmRevoke);
+bool IsFedCmDisconnectEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmDisconnect);
 }
 
 bool IsFedCmAddAccountEnabled() {

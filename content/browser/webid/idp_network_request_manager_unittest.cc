@@ -66,7 +66,8 @@ constexpr char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 constexpr char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
 constexpr char kTestClientMetadataEndpoint[] =
     "https://idp.test/client_metadata_endpoint";
-constexpr char kTestRevokeEndpoint[] = "https://idp.test/revocation_endpoint";
+constexpr char kTestDisconnectEndpoint[] =
+    "https://idp.test/revocation_endpoint";
 
 constexpr char kSingleAccountEndpointValidJson[] = R"({
   "accounts" : [
@@ -1568,15 +1569,15 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
   EXPECT_FALSE(error_url_type());
 }
 
-TEST_F(IdpNetworkRequestManagerTest, RevokeRequest) {
+TEST_F(IdpNetworkRequestManagerTest, DisconnectRequest) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmRevoke);
+  list.InitAndEnableFeature(features::kFedCmDisconnect);
 
   bool called = false;
   auto interceptor =
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         called = true;
-        EXPECT_EQ(GURL(kTestRevokeEndpoint), request.url);
+        EXPECT_EQ(GURL(kTestDisconnectEndpoint), request.url);
         EXPECT_FALSE(request.referrer.is_valid());
         url::Origin rpOrigin = url::Origin::Create(GURL(kTestRpUrl));
         EXPECT_EQ(GetOriginHeader(request), rpOrigin);
@@ -1596,34 +1597,34 @@ TEST_F(IdpNetworkRequestManagerTest, RevokeRequest) {
       });
   test_url_loader_factory().SetInterceptor(interceptor);
 
-  const char test_revoke_json[] = R"({
+  const char test_disconnect_json[] = R"({
   "account_id" : "accountId"
   })";
 
-  GURL revoke_endpoint(kTestRevokeEndpoint);
-  AddResponse(revoke_endpoint, net::HTTP_OK, "application/json",
-              test_revoke_json);
+  GURL disconnect_endpoint(kTestDisconnectEndpoint);
+  AddResponse(disconnect_endpoint, net::HTTP_OK, "application/json",
+              test_disconnect_json);
 
   base::RunLoop run_loop;
-  FetchStatus revoke_response;
-  absl::optional<std::string> revoke_account_id;
+  FetchStatus disconnect_response;
+  absl::optional<std::string> disconnect_account_id;
   auto callback = base::BindLambdaForTesting(
       [&](FetchStatus response, const std::string& account_id) {
-        revoke_response = response;
-        revoke_account_id = account_id;
+        disconnect_response = response;
+        disconnect_account_id = account_id;
         run_loop.Quit();
       });
 
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-  manager->SendRevokeRequest(revoke_endpoint, "hint", "clientId",
-                             std::move(callback));
+  manager->SendDisconnectRequest(disconnect_endpoint, "hint", "clientId",
+                                 std::move(callback));
   run_loop.Run();
 
   EXPECT_TRUE(called);
-  EXPECT_EQ(ParseStatus::kSuccess, revoke_response.parse_status);
-  EXPECT_EQ(net::HTTP_OK, revoke_response.response_code);
-  ASSERT_TRUE(revoke_account_id.has_value());
-  EXPECT_EQ(*revoke_account_id, "accountId");
+  EXPECT_EQ(ParseStatus::kSuccess, disconnect_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, disconnect_response.response_code);
+  ASSERT_TRUE(disconnect_account_id.has_value());
+  EXPECT_EQ(*disconnect_account_id, "accountId");
 }
 
 }  // namespace

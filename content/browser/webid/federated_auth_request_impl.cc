@@ -25,8 +25,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/digital_credentials/digital_credential_provider.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
+#include "content/browser/webid/federated_auth_disconnect_request.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
-#include "content/browser/webid/federated_auth_revoke_request.h"
 #include "content/browser/webid/federated_auth_user_info_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
@@ -46,6 +46,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 using base::Value;
+using blink::mojom::DisconnectStatus;
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProviderConfig;
 using blink::mojom::IdentityProviderConfigPtr;
@@ -54,10 +55,9 @@ using blink::mojom::IdentityProviderRequestOptions;
 using blink::mojom::IdentityProviderRequestOptionsPtr;
 using blink::mojom::RequestTokenStatus;
 using blink::mojom::RequestUserInfoStatus;
-using blink::mojom::RevokeStatus;
 using FederatedApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using RevokeStatusForMetrics = content::FedCmRevokeStatus;
+using DisconnectStatusForMetrics = content::FedCmDisconnectStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using TokenResponseType =
@@ -499,11 +499,11 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // naturally.
   user_info_requests_.clear();
 
-  // Calls |FederatedAuthRevokeRequest|'s destructor to complete the revocation
-  // request. This is needed because otherwise some resources like
+  // Calls |FederatedAuthDisconnectRequest|'s destructor to complete the
+  // revocation request. This is needed because otherwise some resources like
   // `fedcm_metrics_` may no longer be usable when the destructor get invoked
   // naturally.
-  revoke_request_.reset();
+  disconnect_request_.reset();
 
   // Since FederatedAuthRequestImpl is a subclass of
   // DocumentService<blink::mojom::FederatedAuthRequest>, it only lives as long
@@ -1192,16 +1192,16 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
   }
 }
 
-void FederatedAuthRequestImpl::CompleteRevokeRequest(
-    RevokeCallback callback,
-    blink::mojom::RevokeStatus status) {
-  if (!revoke_request_) {
-    NOTREACHED() << "The completed revocation request is nowhere to be found";
+void FederatedAuthRequestImpl::CompleteDisconnectRequest(
+    DisconnectCallback callback,
+    blink::mojom::DisconnectStatus status) {
+  if (!disconnect_request_) {
+    NOTREACHED() << "The completed disconnect request is nowhere to be found";
     return;
   }
 
   std::move(callback).Run(status);
-  revoke_request_.reset();
+  disconnect_request_.reset();
 }
 
 void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
@@ -2622,13 +2622,13 @@ void FederatedAuthRequestImpl::PreventSilentAccess(
   std::move(callback).Run();
 }
 
-void FederatedAuthRequestImpl::Revoke(
-    blink::mojom::IdentityCredentialRevokeOptionsPtr options,
-    RevokeCallback callback) {
-  if (!IsFedCmRevokeEnabled()) {
+void FederatedAuthRequestImpl::Disconnect(
+    blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
+    DisconnectCallback callback) {
+  if (!IsFedCmDisconnectEnabled()) {
     // This should only happen when the request comes from a compromised
     // renderer.
-    std::move(callback).Run(RevokeStatus::kError);
+    std::move(callback).Run(DisconnectStatus::kError);
     return;
   }
   if (!fedcm_metrics_) {
@@ -2642,9 +2642,10 @@ void FederatedAuthRequestImpl::Revoke(
         options->config->config_url, render_frame_host().GetPageUkmSourceId(),
         /*is_disabled=*/false);
   }
-  if (revoke_request_) {
-    fedcm_metrics_->RecordRevokeStatus(FedCmRevokeStatus::kTooManyRequests);
-    std::move(callback).Run(RevokeStatus::kErrorTooManyRequests);
+  if (disconnect_request_) {
+    fedcm_metrics_->RecordDisconnectStatus(
+        FedCmDisconnectStatus::kTooManyRequests);
+    std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;
   }
 
@@ -2658,14 +2659,15 @@ void FederatedAuthRequestImpl::Revoke(
 
   auto network_manager = CreateNetworkManager();
 
-  revoke_request_ = FederatedAuthRevokeRequest::Create(
+  disconnect_request_ = FederatedAuthDisconnectRequest::Create(
       std::move(network_manager), permission_delegate_, &render_frame_host(),
       fedcm_metrics_.get(), std::move(options),
       should_complete_request_immediately_);
-  FederatedAuthRevokeRequest* revoke_request_ptr = revoke_request_.get();
+  FederatedAuthDisconnectRequest* disconnect_request_ptr =
+      disconnect_request_.get();
 
-  revoke_request_ptr->SetCallbackAndStart(
-      base::BindOnce(&FederatedAuthRequestImpl::CompleteRevokeRequest,
+  disconnect_request_ptr->SetCallbackAndStart(
+      base::BindOnce(&FederatedAuthRequestImpl::CompleteDisconnectRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       api_permission_delegate_);
 }

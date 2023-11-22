@@ -33,10 +33,10 @@ enum RequestUserInfoStatus {
   kError,
 };
 
-// Represents the fetch result from a IdentityProvider.revoke() request.
+// Represents the fetch result from a IdentityProvider.disconnect() request.
 // It is used to determine whether a JavaScript exception should be
 // thrown, and what the error message of such exception should say.
-enum RevokeStatus {
+enum DisconnectStatus {
   kSuccess,
   kErrorTooManyRequests,
   kError
@@ -135,11 +135,11 @@ struct IdentityProviderRequestOptions {
   map<string, string> params;
 };
 
-// The information passed in an IdentityProvider.revoke() call.
-struct IdentityCredentialRevokeOptions {
+// The information passed in an IdentityProvider.disconnect() call.
+struct IdentityCredentialDisconnectOptions {
   IdentityProviderConfig config;
 
-  // The account hint for which the revocation ought to happen.
+  // The account hint for which the disconnect ought to happen.
   string account_hint;
 };
 
@@ -228,7 +228,8 @@ interface FederatedAuthRequest {
   // CredentialTypes and avoid the duplication eventually.
   PreventSilentAccess() => ();
 
-  // Revokes the sharing permission for the specified |account_id| from
+  // Disconnects the sharing permission for the specified |account_id| from
   // |provider| for the RP identified by |client_id|.
-  Revoke(IdentityCredentialRevokeOptions options) => (RevokeStatus status);
+  Disconnect(IdentityCredentialDisconnectOptions options) =>
+      (DisconnectStatus status);
 };

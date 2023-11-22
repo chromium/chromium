@@ -17,8 +17,8 @@
 namespace blink {
 
 namespace {
+using mojom::blink::DisconnectStatus;
 using mojom::blink::RequestTokenStatus;
-using mojom::blink::RevokeStatus;
 
 constexpr char kIdentityCredentialType[] = "identity";
 
@@ -31,10 +31,10 @@ enum class FedCmCspStatus {
   kMaxValue = kFailedOrigin
 };
 
-void OnRevoke(ScriptPromiseResolver* resolver, RevokeStatus status) {
-  if (status != RevokeStatus::kSuccess) {
+void OnDisconnect(ScriptPromiseResolver* resolver, DisconnectStatus status) {
+  if (status != DisconnectStatus::kSuccess) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Error revoking account."));
+        DOMExceptionCode::kNetworkError, "Error disconnecting account."));
     return;
   }
   resolver->Resolve();
@@ -96,9 +96,9 @@ bool IdentityCredential::IsIdentityCredential() const {
 }
 
 // static
-ScriptPromise IdentityCredential::revoke(
+ScriptPromise IdentityCredential::disconnect(
     ScriptState* script_state,
-    const blink::IdentityCredentialRevokeOptions* options,
+    const blink::IdentityCredentialDisconnectOptions* options,
     ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -141,10 +141,11 @@ ScriptPromise IdentityCredential::revoke(
     return promise;
   }
 
-  mojom::blink::IdentityCredentialRevokeOptionsPtr revoke_options =
-      blink::mojom::blink::IdentityCredentialRevokeOptions::From(*options);
-  auth_request->Revoke(std::move(revoke_options),
-                       WTF::BindOnce(&OnRevoke, WrapPersistent(resolver)));
+  mojom::blink::IdentityCredentialDisconnectOptionsPtr disconnect_options =
+      blink::mojom::blink::IdentityCredentialDisconnectOptions::From(*options);
+  auth_request->Disconnect(
+      std::move(disconnect_options),
+      WTF::BindOnce(&OnDisconnect, WrapPersistent(resolver)));
   return promise;
 }
 
