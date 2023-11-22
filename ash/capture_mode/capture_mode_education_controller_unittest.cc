@@ -8,16 +8,31 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kCaptureModeNudgeId[] = "kCaptureModeNudge";
+
+constexpr char kNudgeTimeToActionWithin1m[] =
+    "Ash.NotifierFramework.Nudge.TimeToAction.Within1m";
+constexpr char kNudgeTimeToActionWithin1h[] =
+    "Ash.NotifierFramework.Nudge.TimeToAction.Within1h";
+constexpr char kNudgeTimeToActionWithinSession[] =
+    "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
 
 PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
@@ -27,13 +42,12 @@ void CancelNudge(const std::string& id) {
   Shell::Get()->anchored_nudge_manager()->Cancel(id);
 }
 
-constexpr char kCaptureModeNudgeId[] = "kCaptureModeNudge";
-
 }  // namespace
 
 class CaptureModeEducationControllerTest : public AshTestBase {
  public:
-  CaptureModeEducationControllerTest(const std::string& arm_name = "") {
+  CaptureModeEducationControllerTest(const std::string& arm_name = "")
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // `kSystemNudgeV2` must be initialized before the test starts as otherwise
     // `AnchoredNudgeManagerImpl` will not be created by the shell.
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -53,6 +67,25 @@ class CaptureModeEducationControllerTest : public AshTestBase {
     CaptureModeEducationController::SetOverrideClockForTesting(test_clock);
   }
 
+  void ActivateNudgeAndCheckVisibility() {
+    // Attempt to use the Windows Snipping Tool (capture bar) shortcut.
+    PressAndReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+
+    // Get the list of visible nudges from the nudge manager and make sure our
+    // education nudge is in the list and visible.
+    const AnchoredNudge* nudge =
+        Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+            kCaptureModeNudgeId);
+    ASSERT_TRUE(nudge);
+    EXPECT_TRUE(nudge->GetVisible());
+  }
+
+  // Skip the 3 times/24 hours show limit for testing.
+  void SkipNudgePrefs() {
+    CaptureModeController::Get()->education_controller()->skip_prefs_for_test_ =
+        true;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -70,25 +103,15 @@ TEST_F(CaptureModeEducationControllerTest, NudgeAppearsOnAcceleratorPressed) {
 
   // We will need to show the nudge more than three times, so ignore pref
   // limits.
-  CaptureModeController::Get()->education_controller()->skip_prefs_for_test_ =
-      true;
+  SkipNudgePrefs();
 
-  AnchoredNudgeManagerImpl* nudge_manager =
-      Shell::Get()->anchored_nudge_manager();
   for (auto [tracker_data, metadata] : kAcceleratorTrackerList) {
     // We only want to test capture mode related misinputs.
     if (metadata.type != TrackerType::kCaptureMode) {
       continue;
     }
 
-    PressAndReleaseKey(tracker_data.key_code, tracker_data.flags);
-
-    // Get the list of visible nudges from the nudge manager and make sure our
-    // education nudge is in the list and visible.
-    const AnchoredNudge* nudge =
-        nudge_manager->GetNudgeIfShown(kCaptureModeNudgeId);
-    ASSERT_TRUE(nudge);
-    ASSERT_TRUE(nudge->GetVisible());
+    ActivateNudgeAndCheckVisibility();
 
     // Close nudge to get ready for the next input.
     CancelNudge(kCaptureModeNudgeId);
@@ -118,15 +141,7 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, EducationPreferencesShowLimit) {
   AnchoredNudgeManagerImpl* nudge_manager =
       Shell::Get()->anchored_nudge_manager();
   for (int i = 0; i < 3; i++) {
-    // Attempt to use the Windows Snipping Tool (capture bar) shortcut.
-    PressAndReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
-
-    // Get the list of visible nudges from the nudge manager and make sure our
-    // education nudge is in the list and visible.
-    const AnchoredNudge* nudge =
-        nudge_manager->GetNudgeIfShown(kCaptureModeNudgeId);
-    ASSERT_TRUE(nudge);
-    EXPECT_TRUE(nudge->GetVisible());
+    ActivateNudgeAndCheckVisibility();
 
     // Showing the nudge should also update the preferences.
     EXPECT_EQ(
@@ -162,17 +177,7 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, EducationPreferencesTimeLimit) {
   // Advance clock so we aren't at zero time.
   test_clock.Advance(base::Hours(25));
 
-  // Attempt to use the Windows Snipping Tool (capture bar) shortcut.
-  PressAndReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
-
-  // Get the list of visible nudges from the nudge manager and make sure our
-  // education nudge is in the list and visible.
-  AnchoredNudgeManagerImpl* nudge_manager =
-      Shell::Get()->anchored_nudge_manager();
-  const AnchoredNudge* nudge =
-      nudge_manager->GetNudgeIfShown(kCaptureModeNudgeId);
-  ASSERT_TRUE(nudge);
-  EXPECT_TRUE(nudge->GetVisible());
+  ActivateNudgeAndCheckVisibility();
 
   // Showing the nudge should also update the preferences.
   EXPECT_EQ(
@@ -189,7 +194,8 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, EducationPreferencesTimeLimit) {
 
   // The nudge should not be visible.
   const AnchoredNudge* null_nudge =
-      nudge_manager->GetNudgeIfShown(kCaptureModeNudgeId);
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kCaptureModeNudgeId);
   ASSERT_FALSE(null_nudge);
 
   // The nudge count should not increment as the nudge was not shown.
@@ -197,6 +203,87 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, EducationPreferencesTimeLimit) {
       GetPrefService()->GetInteger(prefs::kCaptureModeEducationShownCount), 1);
 
   CaptureModeEducationControllerTest::SetOverrideClock(nullptr);
+}
+
+// Tests that metrics relating to the shortcut nudge (Arm 1) are properly
+// recorded.
+TEST_F(CaptureModeEducationShortcutNudgeTest, ShortcutNudgeMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // For this test, we do not care about pref limits.
+  SkipNudgePrefs();
+
+  // The nudge has not been activated, so all related buckets should be at 0.
+  Shell::Get()->anchored_nudge_manager()->ResetNudgeRegistryForTesting();
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1h,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithinSession,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+
+  ActivateNudgeAndCheckVisibility();
+
+  // Attempt to use the screenshot shortcut as soon as possible.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+
+  // The buckets do not cascade, so a nudge that has been activated within 1m
+  // will not show up in the `kNudgeTimeToActionWithin1h` bucket or session
+  // bucket.
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1h,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithinSession,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+
+  // Close the capture session and nudge, and advance the clock so we can show
+  // the nudge again.
+  CaptureModeController::Get()->Stop();
+  CancelNudge(kCaptureModeNudgeId);
+  ActivateNudgeAndCheckVisibility();
+
+  // Attempt to use the screenshot shortcut after more than 1 minute, but less
+  // than 1 hour.
+  task_environment()->FastForwardBy(base::Minutes(30));
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1h,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithinSession,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 0);
+
+  // Close the capture session and nudge, and advance the clock so we can show
+  // the nudge again.
+  CaptureModeController::Get()->Stop();
+  CancelNudge(kCaptureModeNudgeId);
+  ActivateNudgeAndCheckVisibility();
+
+  // Attempt to use the screenshot shortcut after more than 1 hour.
+  task_environment()->FastForwardBy(base::Hours(2));
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1m,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithin1h,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
+  histogram_tester.ExpectBucketCount(
+      kNudgeTimeToActionWithinSession,
+      NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
 }
 
 }  // namespace ash

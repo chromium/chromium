@@ -54,8 +54,6 @@ class ASH_EXPORT CaptureModeEducationController {
 
  private:
   friend class CaptureModeEducationControllerTest;
-  FRIEND_TEST_ALL_PREFIXES(CaptureModeEducationControllerTest,
-                           NudgeAppearsOnAcceleratorPressed);
 
   // Used to control the clock in a test setting.
   static void SetOverrideClockForTesting(base::Clock* test_clock);

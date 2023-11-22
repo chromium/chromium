@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 
@@ -113,6 +114,11 @@ void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {
       BuildHistogramName(kEntryPointHistogramRootWord, /*behavior=*/nullptr,
                          /*append_ui_mode_suffix=*/true),
       entry_type);
+  // Record nudge-related metrics.
+  if (entry_type == CaptureModeEntryType::kAccelTakePartialScreenshot) {
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kCaptureModeEducationShortcutNudge);
+  }
 }
 
 void RecordCaptureModeRecordingDuration(base::TimeDelta recording_duration,
