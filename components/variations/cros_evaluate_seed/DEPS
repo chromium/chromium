@@ -6,7 +6,7 @@ include_rules = [
   "-dbus",
   "-net",
   "-ui",
-  "-third_party",  # e.g. exclude icu
+  "-third_party/icu",
   "+chromeos/ash/components/dbus/featured",
   "+chromeos/crosapi/cpp",
 ]

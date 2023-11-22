@@ -214,7 +214,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     std::unique_ptr<base::FeatureList> feature_list,
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
-    SafeSeedManagerInterface* safe_seed_manager,
+    SafeSeedManagerBase* safe_seed_manager,
     bool add_entropy_source_to_variations_ids) {
   DCHECK(feature_list);
   DCHECK(metrics_state_manager);
@@ -580,7 +580,7 @@ VariationsFieldTrialCreatorBase::GetGoogleGroupsFromPrefs() {
 bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
     const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
-    SafeSeedManagerInterface* safe_seed_manager) {
+    SafeSeedManagerBase* safe_seed_manager) {
   // This histogram name uses "VariationsFieldTrialCreator" rather than
   // "VariationsFieldTrialCreatorBase" for consistency with historical data
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");

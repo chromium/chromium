@@ -48,20 +48,19 @@ constexpr char kDefaultLocalStatePath[] = "/home/chronos/Local State";
 bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
                          SafeSeed&& safe_seed,
                          featured::ComputedState* computed_state) {
+  // In the null seed case, featured just won't exec() evaluate_seed.
+  SeedType seed_type =
+      safe_seed.use_safe_seed ? SeedType::kSafeSeed : SeedType::kRegularSeed;
+  CrOSSafeSeedManager safe_seed_manager(seed_type);
+
   std::optional<featured::SeedDetails> safe_seed_details;
-  if (safe_seed.use_safe_seed) {
-    computed_state->mutable_used_seed()->CopyFrom(safe_seed.seed_data);
+  if (seed_type == SeedType::kSafeSeed) {
     safe_seed_details = std::move(safe_seed.seed_data);
   }
 
   CrosVariationsServiceClient client;
   auto field_trial_creator =
       GetFieldTrialCreator(local_state.get(), &client, safe_seed_details);
-
-  // In the null seed case, featured just won't exec() evaluate_seed.
-  SeedType seed_type =
-      safe_seed.use_safe_seed ? SeedType::kSafeSeed : SeedType::kRegularSeed;
-  CrOSSafeSeedManager safe_seed_manager(seed_type);
 
   EarlyBootEnabledStateProvider enabled_state_provider;
 
@@ -96,8 +95,26 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
   }
 
   if (seed_type == SeedType::kRegularSeed) {
-    // TODO(b/297870545): Expand CrOSSafeSeedManager and extract compressed
-    // b64'd seed from it, along with all other state.
+    // We use the safe seed manager here because the
+    // CrOSVariationsFieldTrialCreator (in the parent class's
+    // CreateTrialsFromSeed) calls CrOSSafeSeedManager::SetActiveSeedState when
+    // it marks a seed as active (NOT when it marks a seed as safe). This
+    // is just to retrieve that active state, and doesn't necessarily indicate
+    // that the seed is safe yet (we wait for ash to start to determine that).
+    std::optional<featured::SeedDetails> details =
+        safe_seed_manager.GetUsedSeed();
+    if (details.has_value()) {
+      computed_state->mutable_used_seed()->CopyFrom(details.value());
+    } else {
+      LOG(ERROR) << "Couldn't retrieve seed details; proceeding without them";
+    }
+  } else {
+    // In this case, CrOSSafeSeedManager::SetActiveSeedState is never called, so
+    // use the seed we requested to be used.
+    CHECK_EQ(seed_type, SeedType::kSafeSeed);
+    // Set above, at start of function.
+    CHECK(safe_seed_details.has_value());
+    computed_state->mutable_used_seed()->CopyFrom(safe_seed_details.value());
   }
 
   // TODO(b/297870545): serialize correctly.

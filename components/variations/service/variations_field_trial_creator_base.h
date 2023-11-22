@@ -101,7 +101,7 @@ enum LoadPermanentConsistencyCountryResult {
 };
 
 class PlatformFieldTrials;
-class SafeSeedManagerInterface;
+class SafeSeedManagerBase;
 class VariationsServiceClient;
 
 // Used to set up field trials based on stored variations seed data.
@@ -164,7 +164,7 @@ class VariationsFieldTrialCreatorBase {
       std::unique_ptr<base::FeatureList> feature_list,
       metrics::MetricsStateManager* metrics_state_manager,
       PlatformFieldTrials* platform_field_trials,
-      SafeSeedManagerInterface* safe_seed_manager,
+      SafeSeedManagerBase* safe_seed_manager,
       bool add_entropy_source_to_variations_ids);
 
   // Returns all of the client state used for filtering studies.
@@ -253,7 +253,7 @@ class VariationsFieldTrialCreatorBase {
   // |safe_seed_manager|.
   bool CreateTrialsFromSeed(const EntropyProviders& entropy_providers,
                             base::FeatureList* feature_list,
-                            SafeSeedManagerInterface* safe_seed_manager);
+                            SafeSeedManagerBase* safe_seed_manager);
 
   // Reads a seed's data and signature from the file at |json_seed_path| and
   // writes them to Local State. Exits Chrome if (A) the file's contents can't

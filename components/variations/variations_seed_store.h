@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_SEED_STORE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -19,7 +20,6 @@
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/variations_safe_seed_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
@@ -201,6 +201,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       const std::string& seed_bytes,
       const std::string& base64_seed_signature);
 
+  // Given a serialized VariationsSeed, compress it and base-64 encode it.
+  // Fails if gzip encoding fails.
+  static std::optional<std::string> SeedBytesToCompressedBase64Seed(
+      const std::string& seed_bytes);
+
  protected:
   // Verify an already-loaded |seed_data| along with its |base64_seed_signature|
   // and, if verification passes, parse it into |*seed|.
@@ -208,7 +213,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       VariationsSeed* seed,
       const std::string& seed_data,
       const std::string& base64_seed_signature,
-      absl::optional<VerifySignatureResult>* verify_signature_result);
+      std::optional<VerifySignatureResult>* verify_signature_result);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, VerifySeedSignature);

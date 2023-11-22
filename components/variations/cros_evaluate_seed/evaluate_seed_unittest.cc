@@ -4,6 +4,9 @@
 
 #include "components/variations/cros_evaluate_seed/evaluate_seed.h"
 
+#include <optional>
+
+#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
@@ -29,6 +32,7 @@
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 
@@ -108,6 +112,19 @@ std::unique_ptr<PrefService> CreateStateWriter(
   pref_service_factory.set_user_prefs(local_state_pref_store);
 
   return pref_service_factory.Create(pref_registry);
+}
+
+std::optional<std::string> DecodeBase64AndDecompress(
+    const std::string& b64_compressed) {
+  std::string decoded;
+  if (!base::Base64Decode(b64_compressed, &decoded)) {
+    return std::nullopt;
+  }
+  std::string result;
+  if (!compression::GzipUncompress(decoded, &result)) {
+    return std::nullopt;
+  }
+  return result;
 }
 
 }  // namespace
@@ -428,6 +445,18 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_NoSafeSeedFlag_NormalSeed) {
   ASSERT_EQ(feature.params_size(), 1);
   EXPECT_EQ(feature.params(0).key(), "baz");
   EXPECT_EQ(feature.params(0).value(), "quux");
+
+  // gzip does not promise a stable serialization, so de-b64 and decompress
+  // before comparing.
+  auto decompressed_actual =
+      DecodeBase64AndDecompress(read_output.used_seed().b64_compressed_data());
+  ASSERT_TRUE(decompressed_actual.has_value());
+  auto decompressed_expected =
+      DecodeBase64AndDecompress(kEarlyBootTestSeed_Compressed);
+  ASSERT_TRUE(decompressed_expected.has_value());
+  EXPECT_EQ(decompressed_actual.value(), decompressed_expected.value());
+
+  EXPECT_EQ(read_output.used_seed().signature(), kEarlyBootTestSeed_Signature);
 }
 
 // Test that evaluating a safe seed works (with no filters).
@@ -461,6 +490,18 @@ TEST_F(VariationsCrosEvaluateSeedMainTest, Main_SafeSeed_Evaluate) {
   ASSERT_EQ(feature.params_size(), 1);
   EXPECT_EQ(feature.params(0).key(), "baz");
   EXPECT_EQ(feature.params(0).value(), "quux");
+
+  // gzip does not promise a stable serialization, so de-b64 and decompress
+  // before comparing.
+  auto decompressed_actual =
+      DecodeBase64AndDecompress(read_output.used_seed().b64_compressed_data());
+  ASSERT_TRUE(decompressed_actual.has_value());
+  auto decompressed_expected =
+      DecodeBase64AndDecompress(kEarlyBootTestSeed_Compressed);
+  ASSERT_TRUE(decompressed_expected.has_value());
+  EXPECT_EQ(decompressed_actual.value(), decompressed_expected.value());
+
+  EXPECT_EQ(read_output.used_seed().signature(), kEarlyBootTestSeed_Signature);
 }
 
 TEST_F(VariationsCrosEvaluateSeedMainTest, Main_BadJson) {
