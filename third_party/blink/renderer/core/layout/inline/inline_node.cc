@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_attributes_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -241,6 +242,13 @@ class ReusingTextShaper final {
   const bool allow_shape_cache_;
 };
 
+const Font& ScaledFont(const LayoutText& layout_text) {
+  if (const auto* svg_text = DynamicTo<LayoutSVGInlineText>(layout_text)) {
+    return svg_text->ScaledFont();
+  }
+  return layout_text.StyleRef().GetFont();
+}
+
 // The function is templated to indicate the purpose of collected inlines:
 // - With EmptyOffsetMappingBuilder: updating layout;
 // - With OffsetMappingBuilder: building offset mapping on clean layout.
@@ -263,45 +271,49 @@ void CollectInlinesInternal(ItemsBuilder* builder,
   const LayoutObject* inline_list_item_marker = nullptr;
   while (node) {
     if (auto* counter = DynamicTo<LayoutCounter>(node)) {
-      // According to
-      // https://w3c.github.io/csswg-drafts/css-counter-styles/#simple-symbolic,
-      // disclosure-* should have special rendering paths.
-      if (counter->IsDirectionalSymbolMarker()) {
-        const String& text = counter->GetText();
-        // We assume the text representation length for a predefined symbol
-        // marker is always 1.
-        if (text.length() <= 1) {
-          builder->AppendText(counter, previous_data);
-          builder->SetIsSymbolMarker();
-        } else {
-          // The text must be in the following form:
-          // Symbol, separator, symbol, separator, symbol, ...
-          builder->AppendText(text.Substring(0, 1), counter);
-          builder->SetIsSymbolMarker();
-          const AtomicString& separator = counter->Separator();
-          for (wtf_size_t i = 1; i < text.length();) {
-            if (separator.length() > 0) {
-              DCHECK_EQ(separator, text.Substring(i, separator.length()));
-              builder->AppendText(separator, counter);
-              i += separator.length();
-              DCHECK_LT(i, text.length());
-            }
-            builder->AppendText(text.Substring(i, 1), counter);
+      // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
+      if (counter->Style()->GetFont().PrimaryFont()) {
+        // According to
+        // https://w3c.github.io/csswg-drafts/css-counter-styles/#simple-symbolic,
+        // disclosure-* should have special rendering paths.
+        if (counter->IsDirectionalSymbolMarker()) {
+          const String& text = counter->GetText();
+          // We assume the text representation length for a predefined symbol
+          // marker is always 1.
+          if (text.length() <= 1) {
+            builder->AppendText(counter, previous_data);
             builder->SetIsSymbolMarker();
-            ++i;
+          } else {
+            // The text must be in the following form:
+            // Symbol, separator, symbol, separator, symbol, ...
+            builder->AppendText(text.Substring(0, 1), counter);
+            builder->SetIsSymbolMarker();
+            const AtomicString& separator = counter->Separator();
+            for (wtf_size_t i = 1; i < text.length();) {
+              if (separator.length() > 0) {
+                DCHECK_EQ(separator, text.Substring(i, separator.length()));
+                builder->AppendText(separator, counter);
+                i += separator.length();
+                DCHECK_LT(i, text.length());
+              }
+              builder->AppendText(text.Substring(i, 1), counter);
+              builder->SetIsSymbolMarker();
+              ++i;
+            }
           }
+        } else {
+          builder->AppendText(counter, previous_data);
         }
-      } else {
-        builder->AppendText(counter, previous_data);
       }
       builder->ClearNeedsLayout(counter);
     } else if (auto* layout_text = DynamicTo<LayoutText>(node)) {
-      builder->AppendText(layout_text, previous_data);
-
-      if (symbol == layout_text || inline_list_item_marker == layout_text) {
-        builder->SetIsSymbolMarker();
+      // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
+      if (ScaledFont(*layout_text).PrimaryFont()) {
+        builder->AppendText(layout_text, previous_data);
+        if (symbol == layout_text || inline_list_item_marker == layout_text) {
+          builder->SetIsSymbolMarker();
+        }
       }
-
       builder->ClearNeedsLayout(layout_text);
     } else if (node->IsFloating()) {
       builder->AppendFloating(node);
