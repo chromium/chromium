@@ -2253,6 +2253,16 @@ chromium-metrics-reviews@google.com.
   <token key="IncognitoOrNormal" variants="IncognitoOrNormal"/>
 </histogram>
 
+<histogram name="Media.EME.CdmFileIO.WriteFile.DataSizeKB" units="KB"
+    expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Size in KB of a file written by the CDM through CDM FileIO. This is recorded
+    once per write through the CDM.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmFileIO.{FileOperation}{IncognitoOrNormal}"
     enum="BooleanSuccess" expires_after="2024-04-11">
   <owner>jrummell@chromium.org</owner>
