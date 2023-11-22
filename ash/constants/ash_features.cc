@@ -1149,7 +1149,7 @@ BASE_FEATURE(kFilesConflictDialog,
 // Enables new directory tree implementation in files.
 BASE_FEATURE(kFilesNewDirectoryTree,
              "FilesNewDirectoryTree",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables local image search by query in the Files app.
 BASE_FEATURE(kFilesLocalImageSearch,

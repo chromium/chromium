@@ -605,7 +605,6 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
     const event = {
       canExecute: true,
       target: {
-        classList: {contains: () => false},
         parentElement: {
           contextElement: null,
         },
