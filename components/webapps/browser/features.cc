@@ -22,11 +22,6 @@ extern const base::FeatureParam<base::TimeDelta>
     kAmbientBadgeSuppressFirstVisit_Period{&kAmbientBadgeSuppressFirstVisit,
                                            "period", base::Days(30)};
 
-// Enables or disables the installable ambient badge infobar.
-BASE_FEATURE(kInstallableAmbientBadgeInfoBar,
-             "InstallableAmbientBadgeInfoBar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the installable ambient badge message.
 BASE_FEATURE(kInstallableAmbientBadgeMessage,
              "InstallableAmbientBadgeMessage",
