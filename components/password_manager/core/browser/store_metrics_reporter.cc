@@ -654,7 +654,6 @@ StoreMetricsReporter::StoreMetricsReporter(
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     const syncer::SyncService* sync_service,
-    const signin::IdentityManager* identity_manager,
     PrefService* prefs,
     password_manager::PasswordReuseManager* password_reuse_manager,
     bool is_under_advanced_protection,
@@ -685,8 +684,7 @@ StoreMetricsReporter::StoreMetricsReporter(
       base::Time::Now().InSecondsFSinceUnixEpoch());
 
   sync_username_ = password_manager::sync_util::
-      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service,
-                                                            identity_manager);
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service);
 
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
       password_manager::sync_util::GetPasswordSyncState(sync_service));

@@ -35,7 +35,13 @@ FormData CreateSigninFormData(const GURL& url, const char* username) {
 
 }  // namespace
 
-SyncUsernameTestBase::SyncUsernameTestBase() = default;
+SyncUsernameTestBase::SyncUsernameTestBase() {
+  // Start TestSyncService signed out by default to be consistent with
+  // IdentityManager, until FakeSigninAs() is invoked.
+  CHECK(!identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  sync_service_.SetAccountInfo(CoreAccountInfo());
+}
 
 SyncUsernameTestBase::~SyncUsernameTestBase() = default;
 

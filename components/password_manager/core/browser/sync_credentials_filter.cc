@@ -39,8 +39,6 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
 
   const syncer::SyncService* sync_service =
       sync_service_factory_function_.Run();
-  const signin::IdentityManager* identity_manager =
-      client_->GetIdentityManager();
 
   if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     // Legacy code path, subject to clean-up.
@@ -60,7 +58,7 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
     return !gaia::AreEmailsSame(
         base::UTF16ToUTF8(form.username_value),
         sync_util::GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
-            sync_service, identity_manager));
+            sync_service));
   }
 
   if (!sync_util::IsGaiaCredentialPage(form.signon_realm)) {
@@ -72,8 +70,7 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
   // Let's assume that if the browser is signed-in, new passwords are saved to
   // the primary signed-in account. Per sync_util::GetAccountForSaving(), that's
   // not always true, but let's not overcomplicate.
-  CoreAccountInfo primary_account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const CoreAccountInfo primary_account = sync_service->GetAccountInfo();
   if (!primary_account.IsEmpty()) {
     // This returns false when `primary_account` just signed-in on the web and
     // already made it to the IdentityManager.

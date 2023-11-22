@@ -72,10 +72,22 @@ using base::UTF8ToUTF16;
 using password_manager::GetExpressionForFederatedMatching;
 using password_manager::GetRegexForPSLFederatedMatching;
 using password_manager::GetRegexForPSLMatching;
-using sync_util::GetSyncingAccount;
 
 using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
+
+absl::optional<std::string> GetSyncingAccount(
+    const syncer::SyncService* sync_service) {
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  std::string email =
+      sync_util::GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+          sync_service);
+  if (email.empty()) {
+    return absl::nullopt;
+  }
+  return email;
+}
 
 std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
                                    bool include_psl) {

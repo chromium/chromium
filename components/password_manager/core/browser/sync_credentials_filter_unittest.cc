@@ -192,6 +192,7 @@ TEST_P(CredentialsFilterTest, ShouldSave_NotSignedIn) {
 
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(sync_service()->GetAccountInfo().IsEmpty());
 
   SetSyncingPasswords(false);
   // See comments inside ShouldSave() for the justification.

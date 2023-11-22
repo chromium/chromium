@@ -23,7 +23,6 @@
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -1014,12 +1013,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
   EXPECT_TRUE(
       password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
           GetSyncService(0)));
-  EXPECT_NE(absl::nullopt,
-            password_manager::sync_util::GetSyncingAccount(GetSyncService(0)));
   EXPECT_EQ(password_manager::sync_util::
                 GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
-                    GetSyncService(0),
-                    IdentityManagerFactory::GetForProfile(GetProfile(0))),
+                    GetSyncService(0)),
             kExpectedUsername);
   EXPECT_EQ(
       password_manager::sync_util::GetPasswordSyncState(GetSyncService(0)),
@@ -1042,12 +1038,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
   EXPECT_TRUE(
       password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
           GetSyncService(0)));
-  EXPECT_NE(absl::nullopt,
-            password_manager::sync_util::GetSyncingAccount(GetSyncService(0)));
   EXPECT_EQ(password_manager::sync_util::
                 GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
-                    GetSyncService(0),
-                    IdentityManagerFactory::GetForProfile(GetProfile(0))),
+                    GetSyncService(0)),
             kExpectedUsername);
 }
 
