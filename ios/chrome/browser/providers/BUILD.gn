@@ -23,6 +23,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/omaha:chromium_omaha",
     "//ios/chrome/browser/providers/overrides:chromium_overrides",
     "//ios/chrome/browser/providers/partial_translate:chromium_partial_translate",
+    "//ios/chrome/browser/providers/passcode_settings:chromium_passcode_settings",
     "//ios/chrome/browser/providers/password_auto_fill:chromium_password_auto_fill",
     "//ios/chrome/browser/providers/photos:chromium_photos",
     "//ios/chrome/browser/providers/primes:chromium_primes",
