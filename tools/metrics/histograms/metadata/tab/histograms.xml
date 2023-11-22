@@ -254,11 +254,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.PageLoadsSinceLastSwitchToEvictedTab" units="units"
-    expires_after="M77">
+    expires_after="2024-03-18">
   <owner>dtrainor@chromium.org</owner>
+  <owner>ckitagawa@chroimum.org</owner>
   <summary>
     [Android] The number of page loads since the last switch to an evicted tab
-    on Android. This was sampled each time an evicted tab was reloaded.
+    on Android. This was sampled each time an evicted tab was reloaded. Note
+    that this data is invalid from M77 until 2023-11-22 because this histogram
+    was expired. As of right now, this histogram is only emitted in iOS.
   </summary>
 </histogram>
 
@@ -388,10 +391,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.SwitchedToForegroundAge" units="ms" expires_after="M85">
+<histogram name="Tab.SwitchedToForegroundAge" units="ms"
+    expires_after="2024-03-18">
   <owner>dtrainor@chromium.org</owner>
+  <owner>ckitagawa@chroimum.org</owner>
   <summary>
-    [Android] Age (in ms) when the tab was switched to foreground.
+    [Android] Age (in ms) when the tab was switched to foreground. Note that
+    this data is invalid from M85 until 2023-11-22 because this histogram was
+    expired.
   </summary>
 </histogram>
 
