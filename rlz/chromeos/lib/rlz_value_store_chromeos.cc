@@ -18,7 +18,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -142,12 +141,10 @@ void SetRlzPingSent(int retry_count) {
 // Callback invoked for DebugDaemonClient::SetRlzPingSent.
 void OnSetRlzPingSent(int retry_count, bool success) {
   if (success) {
-    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", true);
     return;
   }
 
   if (retry_count >= RlzValueStoreChromeOS::kMaxRetryCount) {
-    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", false);
     LOG(ERROR) << "Setting " << ash::system::kShouldSendRlzPingKey
                << " failed after " << RlzValueStoreChromeOS::kMaxRetryCount
                << " attempts.";
