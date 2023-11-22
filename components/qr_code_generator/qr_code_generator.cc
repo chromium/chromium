@@ -584,7 +584,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> GenerateQrCodeUsingRust(
       base::checked_cast<int16_t>(min_version.value_or(-1));
 
   std::vector<uint8_t> result_pixels;
-  size_t result_width;
+  size_t result_width = 0;
   bool result_is_success = generate_qr_code_using_rust(
       rs_in, rs_min_version, result_pixels, result_width);
 
