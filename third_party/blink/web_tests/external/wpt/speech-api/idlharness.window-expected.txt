@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SpeechRecognition interface: existence and properties of interface object
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface object length
@@ -236,60 +236,6 @@ Found 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
 [FAIL] SpeechGrammarList interface: calling addFromString(DOMString, optional float) on new SpeechGrammarList() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechSynthesis interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface object length
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface object name
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute pending
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute speaking
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute paused
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute onvoiceschanged
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation speak(SpeechSynthesisUtterance)
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation cancel()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation pause()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation resume()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation getVoices()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis must be primary interface of speechSynthesis
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface object length
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface object name
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute voiceURI
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute name
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute lang
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute localService
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute default
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
 [FAIL] SpeechSynthesisVoice must be primary interface of voice
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] Stringification of voice
