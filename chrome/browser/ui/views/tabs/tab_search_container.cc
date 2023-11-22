@@ -18,6 +18,17 @@
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TriggerOutcome {
+  kAccepted = 0,
+  kDismissed = 1,
+  kTimedOut = 2,
+  kMaxValue = kTimedOut,
+};
+
+constexpr char kTriggerOutcomeName[] = "TabOrganization.Trigger.Outcome";
+
 Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
   const bool is_rtl = base::i18n::IsRTL();
   if ((!is_search_button && before_tab_strip) ||
@@ -120,6 +131,7 @@ void TabSearchContainer::SetLockedExpansionModeForTesting(
 }
 
 void TabSearchContainer::OnOrganizeButtonClicked() {
+  base::UmaHistogramEnumeration(kTriggerOutcomeName, TriggerOutcome::kAccepted);
   tab_organization_service_->OnActionUIAccepted(browser_);
 
   // Force hide the button when pressed, bypassing locked expansion mode.
@@ -127,10 +139,20 @@ void TabSearchContainer::OnOrganizeButtonClicked() {
 }
 
 void TabSearchContainer::OnOrganizeButtonDismissed() {
+  base::UmaHistogramEnumeration(kTriggerOutcomeName,
+                                TriggerOutcome::kDismissed);
   tab_organization_service_->OnActionUIDismissed(browser_);
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabOrganization();
+}
+
+void TabSearchContainer::OnOrganizeButtonTimeout() {
+  base::UmaHistogramEnumeration(kTriggerOutcomeName, TriggerOutcome::kTimedOut);
+
+  // Hide the button if not pressed. Use locked expansion mode to avoid
+  // disrupting the user.
+  HideTabOrganization();
 }
 
 void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode) {
@@ -150,8 +172,8 @@ void TabSearchContainer::ExecuteShowTabOrganization() {
   expansion_animation_.Show();
 
   const base::TimeDelta delta = base::Seconds(16);
-  hide_tab_organization_timer_.Start(FROM_HERE, delta, this,
-                                     &TabSearchContainer::HideTabOrganization);
+  hide_tab_organization_timer_.Start(
+      FROM_HERE, delta, this, &TabSearchContainer::OnOrganizeButtonTimeout);
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization() {

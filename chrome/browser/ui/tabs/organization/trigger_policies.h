@@ -120,6 +120,7 @@ class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
 
   base::TimeTicks cycle_start_time_;
   absl::optional<float> best_score = absl::nullopt;
+  bool has_triggered_ = false;
 };
 
 // Trigger only first time a trigger moment occurs.

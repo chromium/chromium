@@ -118,6 +118,14 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="TabOrganizationTriggerOutcome">
+  <int value="0" label="Accepted">User clicked through the nudge UI.</int>
+  <int value="1" label="Dismissed">User explicitly dismissed the nudge UI.</int>
+  <int value="2" label="Timed out">
+    The timeout elapsed without user interaction.
+  </int>
+</enum>
+
 <enum name="TabRestoreMethod">
   <int value="0" label="TabState"/>
   <int value="1" label="CriticalPersistedTabData"/>

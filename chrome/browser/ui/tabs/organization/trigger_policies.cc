@@ -7,6 +7,7 @@
 #include <cmath>
 #include <numbers>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -100,6 +101,9 @@ bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
   if (current_time > cycle_start_time_ + period) {
     cycle_start_time_ += period;
     best_score = absl::nullopt;
+    base::UmaHistogramBoolean("TabOrganization.Trigger.TriggeredInPeriod",
+                              has_triggered_);
+    has_triggered_ = false;
   }
 
   // Update the best score if we're in the observation phase.
@@ -111,8 +115,9 @@ bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
   }
 
   // Trigger if we haven't triggered yet and have a new high score.
-  if (best_score.has_value() && score > best_score) {
+  if (!has_triggered_ && best_score.has_value() && score > best_score) {
     best_score = absl::nullopt;
+    has_triggered_ = true;
     return true;
   }
 

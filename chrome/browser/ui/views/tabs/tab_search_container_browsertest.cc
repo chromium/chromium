@@ -93,3 +93,45 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
   ASSERT_TRUE(
       tab_search_container()->expansion_animation_for_testing()->IsClosing());
 }
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       ImmediatelyHidesWhenOrganizeButtonClicked) {
+  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kWillHide);
+
+  tab_search_container()->OnOrganizeButtonClicked();
+
+  EXPECT_TRUE(
+      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       ImmediatelyHidesWhenOrganizeButtonDismissed) {
+  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kWillHide);
+
+  tab_search_container()->OnOrganizeButtonDismissed();
+
+  EXPECT_TRUE(
+      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       DelayedHidesWhenOrganizeButtonTimesOut) {
+  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kWillHide);
+
+  tab_search_container()->OnOrganizeButtonTimeout();
+
+  EXPECT_FALSE(
+      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone);
+
+  ASSERT_TRUE(
+      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+}

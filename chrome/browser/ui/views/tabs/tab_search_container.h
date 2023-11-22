@@ -59,6 +59,7 @@ class TabSearchContainer : public views::View,
 
   void OnOrganizeButtonClicked();
   void OnOrganizeButtonDismissed();
+  void OnOrganizeButtonTimeout();
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
