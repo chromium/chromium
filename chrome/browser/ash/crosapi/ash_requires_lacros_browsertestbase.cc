@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 
-#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/location.h"
 #include "base/one_shot_event.h"
 #include "base/test/test_future.h"
+#include "base/test/to_vector.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -47,6 +48,28 @@ void AshRequiresLacrosBrowserTestBase::SetUpOnMainThread() {
   EXPECT_TRUE(waiter.Wait());
 
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
+}
+
+void AshRequiresLacrosBrowserTestBase::EnableFeaturesInLacros(
+    const std::vector<base::test::FeatureRef>& features) {
+  CHECK(ash_starter_.HasLacrosArgument());
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  std::string lacros_args = command_line->GetSwitchValueASCII(
+      ash::switches::kLacrosChromeAdditionalArgs);
+  command_line->RemoveSwitch(ash::switches::kLacrosChromeAdditionalArgs);
+
+  std::vector<std::string> feature_strings = base::test::ToVector(  // IN-TEST
+      features, [](base::test::FeatureRef feature) -> std::string {
+        return feature->name;
+      });
+
+  std::string lacros_args_with_features =
+      lacros_args +
+      "####--enable-features=" + base::JoinString(feature_strings, ",");
+
+  command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
+                                  lacros_args_with_features);
 }
 
 mojom::StandaloneBrowserTestController*

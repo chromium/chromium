@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -43,8 +45,12 @@ class StandaloneBrowserTestController
                     utterance_client) override;
 
   void InstallSubApp(const webapps::AppId& parent_app_id,
-                     const std::string& sub_app_start_url,
+                     const std::string& sub_app_path,
                      InstallSubAppCallback callback) override;
+
+  void InstallIsolatedWebApp(crosapi::mojom::IsolatedWebAppLocationPtr location,
+                             bool dev_mode,
+                             InstallIsolatedWebAppCallback callback) override;
 
  private:
   class LacrosUtteranceEventDelegate;

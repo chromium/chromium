@@ -7,23 +7,27 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/url_constants.h"
 #include "chromeos/crosapi/mojom/tts.mojom-forward.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/tts_utterance.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -53,6 +57,41 @@ web_app::mojom::UserDisplayMode WindowModeToUserDisplayMode(
     case apps::WindowMode::kUnknown:
       return web_app::mojom::UserDisplayMode::kBrowser;
   }
+}
+
+void IsolatedWebAppInstallationDone(
+    const webapps::AppId& installed_app_id,
+    StandaloneBrowserTestController::InstallIsolatedWebAppCallback callback,
+    base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
+                   web_app::InstallIsolatedWebAppCommandError> install_result) {
+  if (install_result.has_value()) {
+    std::move(callback).Run(
+        crosapi::mojom::InstallWebAppResult::NewAppId(installed_app_id));
+  } else {
+    std::move(callback).Run(
+        crosapi::mojom::InstallWebAppResult::NewErrorMessage(
+            install_result.error().message));
+  }
+}
+
+void OnIsolatedWebAppUrlInfoCreated(
+    const web_app::IsolatedWebAppLocation& iwa_location,
+    StandaloneBrowserTestController::InstallIsolatedWebAppCallback callback,
+    base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
+        iwa_url_info_expected) {
+  ASSIGN_OR_RETURN(
+      auto iwa_url_info, iwa_url_info_expected, [&](const std::string& error) {
+        std::move(callback).Run(
+            crosapi::mojom::InstallWebAppResult::NewErrorMessage(error));
+      });
+
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  provider->scheduler().InstallIsolatedWebApp(
+      iwa_url_info, iwa_location, /*expected_version=*/absl::nullopt,
+      /*optional_keep_alive=*/nullptr, /*optional_profile_keep_alive=*/nullptr,
+      base::BindOnce(&IsolatedWebAppInstallationDone, iwa_url_info.app_id(),
+                     std::move(callback)));
 }
 
 }  // namespace
@@ -177,12 +216,17 @@ void StandaloneBrowserTestController::TtsSpeak(
 
 void StandaloneBrowserTestController::InstallSubApp(
     const webapps::AppId& parent_app_id,
-    const std::string& sub_app_start_url,
+    const std::string& sub_app_path,
     InstallSubAppCallback callback) {
+  GURL parent_app_url(
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    parent_app_id}));
+
   auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(sub_app_start_url);
+  info->start_url = parent_app_url.Resolve(sub_app_path);
   info->parent_app_id = parent_app_id;
-  info->title = u"Test Web App";
+  info->parent_app_manifest_id = parent_app_url;
+  info->title = u"Sub App";
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
@@ -192,6 +236,30 @@ void StandaloneBrowserTestController::InstallSubApp(
       webapps::WebappInstallSource::SUB_APP,
       base::BindOnce(&StandaloneBrowserTestController::WebAppInstallationDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void StandaloneBrowserTestController::InstallIsolatedWebApp(
+    crosapi::mojom::IsolatedWebAppLocationPtr location,
+    bool dev_mode,
+    InstallIsolatedWebAppCallback callback) {
+  web_app::IsolatedWebAppLocation iwa_location_location;
+  if (dev_mode) {
+    if (location->is_bundle_path()) {
+      iwa_location_location = web_app::DevModeBundle{
+          .path = base::FilePath(location->get_bundle_path())};
+    } else {
+      iwa_location_location = web_app::DevModeProxy{
+          .proxy_url = url::Origin::Create(location->get_proxy_origin())};
+    }
+  } else {
+    iwa_location_location = web_app::InstalledBundle{
+        .path = base::FilePath(location->get_bundle_path())};
+  }
+
+  web_app::IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
+      iwa_location_location,
+      base::BindOnce(&OnIsolatedWebAppUrlInfoCreated, iwa_location_location,
+                     std::move(callback)));
 }
 
 void StandaloneBrowserTestController::OnUtteranceFinished(int utterance_id) {

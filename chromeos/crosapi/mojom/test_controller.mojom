@@ -7,6 +7,7 @@ module crosapi.mojom;
 import "chromeos/crosapi/mojom/app_service_types.mojom";
 import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
@@ -47,6 +48,20 @@ enum OptionalBoolean {
   kTrue,
 };
 
+// Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
+// file.
+[Stable]
+union IsolatedWebAppLocation {
+  url.mojom.Url proxy_origin;
+  mojo_base.mojom.FilePath bundle_path;
+};
+
+[Stable]
+union InstallWebAppResult {
+  string app_id;
+  string error_message;
+};
+
 [Stable]
 struct AppListItemAttributes {
   string item_position@0;
@@ -56,8 +71,8 @@ struct AppListItemAttributes {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 6
-// Next method id: 6
+// Next version: 7
+// Next method id: 7
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -83,11 +98,18 @@ interface StandaloneBrowserTestController {
   TtsSpeak@4(TtsUtterance utterance,
              pending_remote<TtsUtteranceClient> utterance_client);
 
-  // Installs an app with the given start url as a sub app of the given parent
-  // app in Lacros.
+  // Installs an app with the start URL "parent_app_origin/'sub_app_path'" as a
+  // sub app of the given parent app in Lacros.
   [MinVersion=5]
-  InstallSubApp@5(string parent_app_id, string sub_app_start_url)
+  InstallSubApp@5(string parent_app_id, string sub_app_path)
     => (string sub_app_id);
+
+  // Installs the isolated web app hosted at 'location' in lacros-chrome and
+  // returns the ID of the installed app or the error message if the install
+  // failed.
+  [MinVersion=6]
+  InstallIsolatedWebApp@6(IsolatedWebAppLocation location, bool dev_mode)
+    => (InstallWebAppResult result);
 };
 
 // Allows callers running in lacros to trigger test events that are passed to
