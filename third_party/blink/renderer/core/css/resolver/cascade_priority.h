@@ -78,7 +78,7 @@ class CORE_EXPORT CascadePriority {
   static constexpr uint64_t kGenerationMask = 0xF;               // of low_bits_
 
   CascadePriority() : low_bits_(0), high_bits_(0) {}
-  CascadePriority(CascadeOrigin origin)
+  explicit CascadePriority(CascadeOrigin origin)
       : CascadePriority(origin, false, 0, false, false, 0, 0) {}
   CascadePriority(CascadeOrigin origin, bool important)
       : CascadePriority(origin, important, 0, false, false, 0, 0) {}
