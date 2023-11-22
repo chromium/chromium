@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/native_library.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -68,6 +69,37 @@ bool ScreenAIInstallState::VerifyLibraryVersion(const std::string& version) {
   VLOG(0) << "Screen AI library version is expected to be at least "
           << kMinExpectedVersion << ", but it is: " << version;
   return false;
+}
+
+// static
+bool ScreenAIInstallState::VerifyLibraryAvailablity(
+    const base::FilePath& install_dir) {
+  // Check the file iterator heuristic to find the library in the sandbox
+  // returns the same directory as `install_dir`.
+  base::FilePath binary_path = screen_ai::GetLatestComponentBinaryPath();
+  if (binary_path.DirName() != install_dir) {
+    VLOG(0) << "Screen AI library is installed in an unexpected folder.";
+    return false;
+  }
+
+  // Sometimes the library cannot be loaded due to an installation error or OS
+  // limitations.
+  base::NativeLibraryLoadError lib_error;
+  base::NativeLibrary library =
+      base::LoadNativeLibrary(binary_path, &lib_error);
+  bool available = (library != nullptr);
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.LibraryAvailableOnVerify",
+                            available);
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramSparse("Accessibility.ScreenAI.LibraryAccessResultOnVerify",
+                           lib_error.code);
+#endif
+
+  if (available) {
+    base::UnloadNativeLibrary(library);
+  }
+
+  return available;
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {

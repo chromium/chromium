@@ -7,8 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/native_library.h"
 #include "base/values.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/component_updater/component_updater_service.h"
@@ -87,36 +85,7 @@ bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
     return false;
   }
 
-  // Check the file iterator heuristic to find the library in the sandbox
-  // returns the same directory as `install_dir`.
-  base::FilePath binary_path = screen_ai::GetLatestComponentBinaryPath();
-  bool expected_path = (binary_path.DirName() == install_dir);
-
-#if !BUILDFLAG(IS_WIN)
-  return expected_path;
-#else
-  // TODO(crbug.com/1498394): Remove the following after the crash reason is
-  // found.
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.LibraryPathVerified",
-                            expected_path);
-  if (!expected_path) {
-    return false;
-  }
-
-  base::NativeLibraryLoadError lib_error;
-  HMODULE h_mod = base::LoadNativeLibrary(binary_path, &lib_error);
-  bool result = h_mod != nullptr;
-  base::UmaHistogramSparse("Accessibility.ScreenAI.LibraryAccessResultOnVerify",
-                           lib_error.code);
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.LibraryAvailableOnVerify",
-                            result);
-
-  if (h_mod) {
-    base::UnloadNativeLibrary(h_mod);
-  }
-
-  return result;
-#endif
+  return screen_ai::ScreenAIInstallState::VerifyLibraryAvailablity(install_dir);
 }
 
 base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {
@@ -145,15 +114,14 @@ ScreenAIComponentInstallerPolicy::GetInstallerAttributes() const {
 
 // static
 void ScreenAIComponentInstallerPolicy::DeleteComponent() {
-  base::FilePath component_binary_path =
-      screen_ai::GetLatestComponentBinaryPath();
-
-  if (!component_binary_path.empty()) {
-    base::DeletePathRecursively(component_binary_path.DirName());
-    screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
-        /*install=*/false,
-        /*successful=*/true);
+  if (screen_ai::GetLatestComponentBinaryPath().empty()) {
+    return;
   }
+
+  base::DeletePathRecursively(screen_ai::GetComponentDir());
+  screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
+      /*install=*/false,
+      /*successful=*/true);
 }
 
 void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,
