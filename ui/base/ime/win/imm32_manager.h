@@ -246,9 +246,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
                                          BOOL* open,
                                          DWORD* new_conversion_mode);
 
-  // Return true if current active IME is IMM32-bassed.
-  bool IsImm32ImeActive();
-
  protected:
   // Retrieves the composition information.
   void GetCompositionInfo(HIMC imm_context, LPARAM lparam,
