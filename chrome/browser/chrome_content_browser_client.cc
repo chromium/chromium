@@ -1478,14 +1478,19 @@ void HandleStringData(
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-            absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
-                clipboard_paste_data;
-            clipboard_paste_data =
-                ChromeContentBrowserClient::ClipboardPasteData(
-                    data.text[0], std::string(), {});
-            std::move(callback).Run(result.text_results[0]
-                                        ? std::move(clipboard_paste_data)
-                                        : absl::nullopt);
+            if (!result.text_results[0] && !result.image_result) {
+              std::move(callback).Run(absl::nullopt);
+              return;
+            }
+
+            ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data;
+            if (result.text_results[0]) {
+              clipboard_paste_data.text = std::move(data.text[0]);
+            }
+            if (result.image_result) {
+              clipboard_paste_data.image = std::move(data.image);
+            }
+            std::move(callback).Run(std::move(clipboard_paste_data));
           },
           std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PASTE);
@@ -7560,11 +7565,9 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
                                         std::move(dialog_data), connector,
                                         std::move(paths), std::move(callback)));
   } else {
-    dialog_data.text.push_back(clipboard_paste_data.text);
-    // Send image only to local agent for analysis.
-    if (dialog_data.settings.cloud_or_local_settings.is_local_analysis()) {
-      dialog_data.image = std::move(clipboard_paste_data.image);
-    }
+    dialog_data.text.push_back(std::move(clipboard_paste_data.text));
+    dialog_data.image = std::move(clipboard_paste_data.image);
+    dialog_data.clipboard_mime_type = data_type.GetName();
     HandleStringData(web_contents, std::move(dialog_data), connector,
                      std::move(callback));
   }
