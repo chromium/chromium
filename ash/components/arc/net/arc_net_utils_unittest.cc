@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/net/arc_net_utils.h"
 
+#include <memory>
 #include <string>
 
 #include "base/sys_byteorder.h"
@@ -67,7 +68,7 @@ class ArcNetUtilsTest : public testing::Test {
 
   std::unique_ptr<base::Value> dict;
 
-  struct in_addr StringToIPv4Address(const std::string& buf) {
+  static struct in_addr StringToIPv4Address(const std::string& buf) {
     struct in_addr addr = {};
     if (!inet_pton(AF_INET, buf.c_str(), &addr)) {
       memset(&addr, 0, sizeof(addr));
@@ -75,12 +76,31 @@ class ArcNetUtilsTest : public testing::Test {
     return addr;
   }
 
-  struct in6_addr StringToIPv6Address(const std::string& buf) {
+  static struct in6_addr StringToIPv6Address(const std::string& buf) {
     struct in6_addr addr = {};
     if (!inet_pton(AF_INET6, buf.c_str(), &addr)) {
       memset(&addr, 0, sizeof(addr));
     }
     return addr;
+  }
+
+  static patchpanel::NetworkDevice GetDevice() {
+    patchpanel::NetworkDevice device;
+    // Set up test network device.
+    device.set_guest_type(patchpanel::NetworkDevice::ARC);
+    device.set_phys_ifname(kTestCellularDeviceInterface);
+    device.set_guest_ifname(kTestCellularDeviceGuestInterface);
+    // Set binary form of IP address.
+    device.set_ipv4_addr(StringToIPv4Address(kAddress1).s_addr);
+    device.set_host_ipv4_addr(StringToIPv4Address(kGateway).s_addr);
+    device.mutable_ipv4_subnet()->set_prefix_len(kPrefixLen);
+    auto ipv4_addr = StringToIPv4Address(kNameServer1);
+    device.set_dns_proxy_ipv4_addr(reinterpret_cast<const char*>(&ipv4_addr),
+                                   sizeof(ipv4_addr));
+    auto ipv6_addr = StringToIPv6Address(kNameServerIpv6);
+    device.set_dns_proxy_ipv6_addr(reinterpret_cast<const char*>(&ipv6_addr),
+                                   sizeof(ipv6_addr));
+    return device;
   }
 
   base::Value::Dict GetShillDict() {
@@ -347,10 +367,11 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkType) {
             net_utils::TranslateNetworkType(shill::kTypeCellular));
 }
 
-TEST_F(ArcNetUtilsTest, TranslateNetworkProperties) {
+TEST_F(ArcNetUtilsTest, FillConfigurationsFromState) {
   base::Value::Dict shill_dict = GetShillDict();
-  const arc::mojom::NetworkConfigurationPtr mojo =
-      net_utils::TranslateNetworkProperties(GetNetworkState(), &shill_dict);
+  auto mojo = arc::mojom::NetworkConfiguration::New();
+  net_utils::FillConfigurationsFromState(GetNetworkState(), &shill_dict,
+                                         mojo.get());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(mojo.is_null());
@@ -376,25 +397,24 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkProperties) {
   EXPECT_EQ(kSignalStrength, mojo->wifi->signal_strength);
 }
 
+TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {
+  auto mojo = arc::mojom::NetworkConfiguration::New();
+  auto device = GetDevice();
+  net_utils::FillConfigurationsFromDevice(device, mojo.get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(kTestCellularDeviceGuestInterface, mojo->arc_network_interface);
+  EXPECT_EQ(kAddress1, mojo->arc_ipv4_address);
+  EXPECT_EQ(kGateway, mojo->arc_ipv4_gateway);
+  EXPECT_EQ(16u, mojo->arc_ipv4_prefix_length);
+  EXPECT_EQ(kNameServer1, mojo->dns_proxy_addresses.value()[0]);
+  EXPECT_EQ(kNameServerIpv6, mojo->dns_proxy_addresses.value()[1]);
+}
+
 TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
   std::vector<patchpanel::NetworkDevice> network_devices;
-  patchpanel::NetworkDevice device;
 
-  // Set up test network device.
-  device.set_guest_type(patchpanel::NetworkDevice::ARC);
-  device.set_phys_ifname(kTestCellularDeviceInterface);
-  device.set_guest_ifname(kTestCellularDeviceGuestInterface);
-  // Set binary form of IP address.
-  device.set_ipv4_addr(StringToIPv4Address(kAddress1).s_addr);
-  device.set_host_ipv4_addr(StringToIPv4Address(kGateway).s_addr);
-  device.mutable_ipv4_subnet()->set_prefix_len(kPrefixLen);
-  auto ipv4_addr = StringToIPv4Address(kNameServer1);
-  device.set_dns_proxy_ipv4_addr(reinterpret_cast<const char*>(&ipv4_addr),
-                                 sizeof(ipv4_addr));
-  auto ipv6_addr = StringToIPv6Address(kNameServerIpv6);
-  device.set_dns_proxy_ipv6_addr(reinterpret_cast<const char*>(&ipv6_addr),
-                                 sizeof(ipv6_addr));
-  network_devices.push_back(device);
+  network_devices.emplace_back(GetDevice());
 
   std::map<std::string, base::Value::Dict> shill_network_properties;
   shill_network_properties[kNetworkStatePath] = GetShillDict();

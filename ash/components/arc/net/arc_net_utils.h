@@ -21,12 +21,15 @@
 
 namespace arc::net_utils {
 
-// Translates a shill network state into a mojo NetworkConfigurationPtr.
-// This get network properties from NetworkState and populating the
-// corresponding fields defined in NetworkConfiguration in mojo.
-arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
-    const ash::NetworkState* network_state,
-    const base::Value::Dict* shill_dict);
+// Adds fields from |network_state| into |mojo| NetworkConfiguration.
+void FillConfigurationsFromState(const ash::NetworkState* network_state,
+                                 const base::Value::Dict* shill_dict,
+                                 arc::mojom::NetworkConfiguration* mojo);
+
+// Adds fields from patchpanel's virtual |device| into |mojo|
+// NetworkConfiguration.
+void FillConfigurationsFromDevice(const patchpanel::NetworkDevice& device,
+                                  arc::mojom::NetworkConfiguration* mojo);
 
 // Translates a mojo EapMethod into a shill EAP method.
 std::string TranslateEapMethod(arc::mojom::EapMethod method);
