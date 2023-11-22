@@ -375,7 +375,7 @@ BASE_FEATURE(kResumeBackgroundVideo,
 // screen on macOS 13.0+.
 BASE_FEATURE(kMacLoopbackAudioForCast,
              "MacLoopbackAudioForCast",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables system audio sharing using ScreenCaptureKit when screen sharing on
 // macOS 13.0+.
