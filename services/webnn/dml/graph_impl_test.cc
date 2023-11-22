@@ -1153,11 +1153,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
   }
 }
 
-template <typename T>
+template <typename T, typename O = T>
 struct ElementWiseUnaryTester {
   OperandInfo<T> input;
   mojom::ElementWiseUnary::Kind kind;
-  OperandInfo<T> output;
+  OperandInfo<O> output;
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
     GraphInfoBuilder builder;
@@ -1546,6 +1546,297 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorExpand) {
                            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
             }}
         .Test();
+  }
+}
+
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorCast) {
+  OperandInfo<float_t> test_operand_info_float32{
+      .type = mojom::Operand::DataType::kFloat32,
+      .dimensions = {1, 2, 3, 1},
+      .values = {1, 0, 0, 0, 0, 0}};
+  OperandInfo<float16> test_operand_info_float16{
+      .type = mojom::Operand::DataType::kFloat16,
+      .dimensions = {1, 2, 3, 1},
+      .values = Float16FromFloat32({1.0f, 0, 0, 0, 0, 0})};
+  OperandInfo<int32_t> test_operand_info_int32{
+      .type = mojom::Operand::DataType::kInt32,
+      .dimensions = {1, 2, 3, 1},
+      .values = {1, 0, 0, 0, 0, 0}};
+  OperandInfo<uint32_t> test_operand_info_uint32{
+      .type = mojom::Operand::DataType::kUint32,
+      .dimensions = {1, 2, 3, 1},
+      .values = {1, 0, 0, 0, 0, 0}};
+  OperandInfo<int8_t> test_operand_info_int8{
+      .type = mojom::Operand::DataType::kInt8,
+      .dimensions = {1, 2, 3, 1},
+      .values = {1, 0, 0, 0, 0, 0}};
+  OperandInfo<uint8_t> test_operand_info_uint8{
+      .type = mojom::Operand::DataType::kUint8,
+      .dimensions = {1, 2, 3, 1},
+      .values = {1, 0, 0, 0, 0, 0}};
+
+  // Test all combinations from float data type.
+  {
+    {
+      ElementWiseUnaryTester<float, float16>{
+          .input = test_operand_info_float32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float16}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<float, int32_t>{
+          .input = test_operand_info_float32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<float, uint32_t>{
+          .input = test_operand_info_float32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<float, int8_t>{
+          .input = test_operand_info_float32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int8}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<float, uint8_t>{
+          .input = test_operand_info_float32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint8}
+          .Test();
+    }
+  }
+  // Test all combinations from float16 data type.
+  {
+    {
+      ElementWiseUnaryTester<float16, float>{
+          .input = test_operand_info_float16,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float32}
+          .Test();
+    }
+    {
+      ElementWiseUnaryTester<float16, int32_t>{
+          .input = test_operand_info_float16,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<float16, uint32_t>{
+          .input = test_operand_info_float16,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<float16, int8_t>{
+          .input = test_operand_info_float16,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int8}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<float16, uint8_t>{
+          .input = test_operand_info_float16,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint8}
+          .Test();
+    }
+  }
+  // Test all combinations from int32 data type.
+  {
+    {
+      ElementWiseUnaryTester<int32_t, float>{
+          .input = test_operand_info_int32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int32_t, float16>{
+          .input = test_operand_info_int32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float16}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int32_t, uint32_t>{
+          .input = test_operand_info_int32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int32_t, int8_t>{
+          .input = test_operand_info_int32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int8}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int32_t, uint8_t>{
+          .input = test_operand_info_int32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint8}
+          .Test();
+    }
+  }
+  // Test all combinations from uint32 data type.
+  {
+    {
+      ElementWiseUnaryTester<uint32_t, float>{
+          .input = test_operand_info_uint32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint32_t, float16>{
+          .input = test_operand_info_uint32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float16}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint32_t, int32_t>{
+          .input = test_operand_info_uint32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint32_t, int8_t>{
+          .input = test_operand_info_uint32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int8}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint32_t, uint8_t>{
+          .input = test_operand_info_uint32,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint8}
+          .Test();
+    }
+  }
+  // Test all combinations from int8_t data type.
+  {
+    {
+      ElementWiseUnaryTester<int8_t, float>{
+          .input = test_operand_info_int8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int8_t, float16>{
+          .input = test_operand_info_int8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float16}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int8_t, int32_t>{
+          .input = test_operand_info_int8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int8_t, uint32_t>{
+          .input = test_operand_info_int8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<int8_t, uint8_t>{
+          .input = test_operand_info_int8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint8}
+          .Test();
+    }
+  }
+  // Test all combinations from uint8_t data type.
+  {
+    {
+      ElementWiseUnaryTester<uint8_t, float>{
+          .input = test_operand_info_uint8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint8_t, float16>{
+          .input = test_operand_info_uint8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_float16}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint8_t, int32_t>{
+          .input = test_operand_info_uint8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint8_t, uint32_t>{
+          .input = test_operand_info_uint8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_uint32}
+          .Test();
+    }
+
+    {
+      ElementWiseUnaryTester<uint8_t, int8_t>{
+          .input = test_operand_info_uint8,
+          .kind = mojom::ElementWiseUnary::Kind::kCast,
+          .output = test_operand_info_int8}
+          .Test();
+    }
+  }
+  // Test case where dimensions dont match
+  {
+    OperandInfo<int8_t> test_operand_info_int8_wrong_dimension{
+        .type = mojom::Operand::DataType::kInt8,
+        .dimensions = {1, 2, 3, 2},
+        .values = {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}};
+    ElementWiseUnaryTester<uint8_t, int8_t>{
+        .input = test_operand_info_uint8,
+        .kind = mojom::ElementWiseUnary::Kind::kCast,
+        .output = test_operand_info_int8_wrong_dimension}
+        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
   }
 }
 

@@ -319,6 +319,23 @@ bool ValidateUnaryOperation(
   return true;
 }
 
+bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
+                           const mojom::ElementWiseUnaryPtr& operation) {
+  const auto* input =
+      GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+  const auto* output =
+      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
+  if (!input || !output || output == input) {
+    // The unary operator is invalid.
+    return false;
+  }
+  if (output->dimensions != input->dimensions) {
+    // The output shape is not expected.
+    return false;
+  }
+  return true;
+}
+
 bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
                    const mojom::ClampPtr& clamp) {
   if (!ValidateUnaryOperation(id_to_operand_map, clamp,
@@ -530,6 +547,9 @@ bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
       // Only float data type is supported
       return ValidateUnaryOperation(id_to_operand_map, operation,
                                     DataTypeConstraint::kFloat);
+    }
+    case mojom::ElementWiseUnary::Kind::kCast: {
+      return ValidateCastOperation(id_to_operand_map, operation);
     }
   }
   return false;

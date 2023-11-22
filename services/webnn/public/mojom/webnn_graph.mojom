@@ -171,6 +171,7 @@ struct ElementWiseUnary  {
     kSqrt,
     kErf,
     kReciprocal,
+    kCast,
   };
 
   // The kind of unary operation.

@@ -1142,6 +1142,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
                                         DML_OPERATOR_ELEMENT_WISE_RECIP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
+    case mojom::ElementWiseUnary::Kind::kCast: {
+      return CreateOperatorNodeForUnary<DML_CAST_OPERATOR_DESC,
+                                        DML_OPERATOR_CAST>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
   }
   NOTREACHED_NORETURN();
 }
