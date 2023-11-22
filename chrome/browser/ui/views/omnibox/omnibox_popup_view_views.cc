@@ -190,9 +190,12 @@ gfx::Image OmniboxPopupViewViews::GetMatchIcon(
 void OmniboxPopupViewViews::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
 
-  OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
-  model()->SetPopupSelection(OmniboxPopupSelection(index, line_state));
-  OnPropertyChanged(model(), views::kPropertyEffectsNone);
+  if (!OmniboxFieldTrial::IsKeywordModeRefreshEnabled() ||
+      index != model()->GetPopupSelection().line) {
+    OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
+    model()->SetPopupSelection(OmniboxPopupSelection(index, line_state));
+    OnPropertyChanged(model(), views::kPropertyEffectsNone);
+  }
 }
 
 size_t OmniboxPopupViewViews::GetSelectedIndex() const {

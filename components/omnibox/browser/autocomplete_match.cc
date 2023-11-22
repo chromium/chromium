@@ -1100,7 +1100,9 @@ bool AutocompleteMatch::HasInstantKeyword(
   if (!turl) {
     return false;
   }
-  return turl->starter_pack_id() != 0;
+  // Note, starter pack keywords with '@' prefix removed do not get
+  // the special instant keyword UX, by design.
+  return turl->starter_pack_id() != 0 && turl->keyword().starts_with(u'@');
 }
 
 void AutocompleteMatch::GetKeywordUIState(

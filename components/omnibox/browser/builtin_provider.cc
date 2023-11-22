@@ -232,7 +232,8 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url,
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
       input.current_page_classification() !=
-          metrics::OmniboxEventProto::NTP_REALBOX) {
+          metrics::OmniboxEventProto::NTP_REALBOX &&
+      template_url.keyword().starts_with(u'@')) {
     match.description = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.short_name());
     match.description_class.emplace_back(0, ACMatchClassification::NONE);

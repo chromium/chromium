@@ -1240,7 +1240,11 @@ void AutocompleteController::UpdateAssociatedKeywords(
           match.type != AutocompleteMatchType::STARTER_PACK) {
         TemplateURL* turl =
             template_url_service_->GetTemplateURLForKeyword(exact_keyword);
-        if (turl && turl->starter_pack_id() != 0) {
+        // Note, starter pack matches that removed the '@' from the beginning of
+        // the keyword are still allowed to attach because those don't get the
+        // special UX, by design.
+        if (turl && turl->starter_pack_id() != 0 &&
+            turl->keyword().starts_with(u'@')) {
           continue;
         }
       }
@@ -1270,7 +1274,8 @@ void AutocompleteController::UpdateAssociatedKeywords(
           match.type != AutocompleteMatchType::STARTER_PACK) {
         TemplateURL* turl =
             template_url_service_->GetTemplateURLForKeyword(keyword);
-        if (turl && turl->starter_pack_id() != 0) {
+        if (turl && turl->starter_pack_id() != 0 &&
+            turl->keyword().starts_with(u'@')) {
           continue;
         }
       }
@@ -2027,10 +2032,12 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     }
 
     // Clear help text that is repeated across consecutive instant keyword
-    // matches.
+    // matches. During this pass, also eliminate tab switch on instant
+    // keyword matches for an extra clean appearance.
     size_t instant_counter = 0;
     for (size_t i = 0; i < result->size(); i++) {
       if (result->match_at(i)->HasInstantKeyword(template_url_service_)) {
+        result->match_at(i)->actions.clear();
         instant_counter++;
         if (instant_counter > 1) {
           result->match_at(i)->contents.clear();

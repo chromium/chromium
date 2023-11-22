@@ -1978,6 +1978,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       // In keyword mode, the match we're interested in is actually the
       // associated_keyword of the match we're on. Populate the a11y string
       // with information from the keyword match, rather than the current match.
+      CHECK(match.associated_keyword) << match.keyword;
       TemplateURL* turl = match.associated_keyword->GetTemplateURL(
           controller_->client()->GetTemplateURLService(), false);
       std::u16string replacement_string =
