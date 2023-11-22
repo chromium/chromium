@@ -15,22 +15,6 @@ found in the LICENSE file.
     android:focusable="false"
     android:orientation="vertical">
 
-    <include layout="@layout/settings_card"
-        android:id="@+id/offboarding_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:visibility="gone"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="@string/website_settings_third_party_cookies_page_description"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="20dp"
-        style="@style/PreferenceSummary">
-    </TextView>
-
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/radio_button_layout"
         android:layout_width="match_parent"

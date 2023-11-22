@@ -15,8 +15,10 @@ import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_V
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -36,6 +38,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.Preference.OnPreferenceClickListener;
@@ -45,10 +48,12 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -84,6 +89,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -177,9 +183,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private ChromeBaseCheckBoxPreference mDesktopSiteDisplayPref;
     // The "desktop_site_window" preference to allow hiding/showing it.
     private ChromeBaseCheckBoxPreference mDesktopSiteWindowPref;
+    private CardPreference mCardPreference;
 
     @Nullable
     private Set<String> mSelectedDomains;
+
+    private static final String TP_LEARN_MORE_URL =
+            "https://support.google.com/chrome/?p=tracking_protection";
 
     @Override
     public void onCookiesDetailsRequested(@CookieControlsMode int cookieSettingsState) {
@@ -213,6 +223,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     // Keys for common ContentSetting toggle for categories. These toggles are mutually
     // exclusive: a category should only show one of them, at most.
+
+    public static final String CARD_PREFERENCE_KEY = "card_preference";
     public static final String BINARY_TOGGLE_KEY = "binary_toggle";
     public static final String TRI_STATE_TOGGLE_KEY = "tri_state_toggle";
     public static final String TRI_STATE_COOKIE_TOGGLE = "tri_state_cookie_toggle";
@@ -1102,6 +1114,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         Preference infoText = screen.findPreference(INFO_TEXT_KEY);
         if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
             infoText.setSummary(R.string.website_settings_site_data_page_description);
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
         } else {
@@ -1269,10 +1283,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled();
         params.isFirstPartySetsDataAccessEnabled =
                 getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled();
-        params.shouldShowTrackingProtectionOffboardingCard =
-                getSiteSettingsDelegate().shouldShowSettingsOffboardingNotice();
-        params.customTabIntentHelper = getCustomTabIntentHelper();
         triStateCookieToggle.setState(params);
+        maybeShowOffboardingCard();
     }
 
     private int getCookieControlsMode() {
@@ -1543,5 +1555,45 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
         };
+    }
+
+    private void maybeShowOffboardingCard() {
+        if (getSiteSettingsDelegate().shouldShowSettingsOffboardingNotice()) {
+            mCardPreference = findPreference(CARD_PREFERENCE_KEY);
+            mCardPreference.setVisible(true);
+            mCardPreference.setSummary(
+                    SpanApplier.applySpans(
+                            getResources()
+                                    .getString(
+                                            R.string.tracking_protection_settings_rollback_notice),
+                            new SpanInfo(
+                                    "<link>",
+                                    "</link>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(),
+                                            (view) -> openUrlInCct(TP_LEARN_MORE_URL)))));
+            mCardPreference.setIconDrawable(
+                    SettingsUtils.getTintedIcon(getContext(), R.drawable.infobar_warning));
+            mCardPreference.setCloseIconVisibility(View.VISIBLE);
+            mCardPreference.setOnCloseClickListener(this::onOffboardingCardCloseClick);
+        }
+    }
+
+    private void onOffboardingCardCloseClick(View button) {
+        mCardPreference.setVisible(false);
+    }
+
+    private void openUrlInCct(String url) {
+        var customTabHelper = getCustomTabIntentHelper();
+        assert (customTabHelper != null) : "CCT helpers must be set before opening a link";
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent =
+                customTabHelper.createCustomTabActivityIntent(getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

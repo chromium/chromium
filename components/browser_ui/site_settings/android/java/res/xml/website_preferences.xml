@@ -10,6 +10,12 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/all_sites">
 
+    <!-- A common card preference to highlight a text paragraph. -->
+    <org.chromium.components.browser_ui.settings.CardPreference
+        android:key="card_preference"
+        app:allowDividerBelow="false"
+        app:isPreferenceVisible="false"/>
+
     <!-- A text message describing cookie settings. -->
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="info_text"/>
