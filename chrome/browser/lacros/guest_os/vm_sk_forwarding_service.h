@@ -28,4 +28,4 @@ class VmSkForwardingService : public crosapi::mojom::GuestOsSkForwarder {
   mojo::Receiver<crosapi::mojom::GuestOsSkForwarder> receiver_;
 };
 }  // namespace guest_os
-#endif
+#endif  // CHROME_BROWSER_LACROS_GUEST_OS_VM_SK_FORWARDING_SERVICE_H_

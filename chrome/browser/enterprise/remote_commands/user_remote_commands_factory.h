@@ -31,4 +31,4 @@ class UserRemoteCommandsFactory : public policy::RemoteCommandsFactory {
 
 }  // namespace enterprise_commands
 
-#endif  // CHROME_BROWSER_ENTERPRISE_REMOTE_COMMANDS_PROFILE_REMOTE_COMMANDS_FACTORY_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_REMOTE_COMMANDS_USER_REMOTE_COMMANDS_FACTORY_H_

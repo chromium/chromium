@@ -16,4 +16,4 @@ LanguagePackResultToExtensionStatus(
 
 }  // namespace chromeos
 
-#endif
+#endif  // CHROME_BROWSER_ASH_EXTENSIONS_LANGUAGE_PACKS_LANGUAGE_PACKS_EXTENSIONS_UTIL_H_

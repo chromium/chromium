@@ -304,4 +304,4 @@ class DesksClient : public ash::SessionObserver {
   base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_DESKS_DESKS_TEMPLATES_CLIENT_H_
+#endif  // CHROME_BROWSER_UI_ASH_DESKS_DESKS_CLIENT_H_

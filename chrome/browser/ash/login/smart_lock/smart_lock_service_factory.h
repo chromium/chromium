@@ -55,4 +55,4 @@ class SmartLockServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_SERVICE_FACTORY_H_

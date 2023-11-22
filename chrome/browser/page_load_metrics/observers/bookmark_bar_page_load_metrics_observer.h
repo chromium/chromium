@@ -47,4 +47,4 @@ class BookmarkBarMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing);
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_BOOKMARK_BAR_USED_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_BOOKMARK_BAR_PAGE_LOAD_METRICS_OBSERVER_H_

@@ -75,4 +75,4 @@ class GaiaPasswordChangedScreenLegacy : public BaseScreen {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_GAIA_PASSWORD_CHANGED_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_GAIA_PASSWORD_CHANGED_SCREEN_LEGACY_H_

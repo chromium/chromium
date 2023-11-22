@@ -67,4 +67,4 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_AUTOMATION_CLIENT_IMPL_H_

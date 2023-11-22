@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_TEST_BASE_H_
-#define CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_TEST_BASE_H_
+#ifndef CHROME_BROWSER_ASH_GAME_MODE_TESTING_GAME_MODE_CONTROLLER_TEST_BASE_H_
+#define CHROME_BROWSER_ASH_GAME_MODE_TESTING_GAME_MODE_CONTROLLER_TEST_BASE_H_
 
 #include <memory>
 
@@ -47,4 +47,4 @@ class GameModeControllerTestBase : public ChromeAshTestBase {
 
 }  // namespace game_mode
 
-#endif  // CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_TEST_BASE_H_
+#endif  // CHROME_BROWSER_ASH_GAME_MODE_TESTING_GAME_MODE_CONTROLLER_TEST_BASE_H_

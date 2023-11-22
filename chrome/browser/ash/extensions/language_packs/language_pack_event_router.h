@@ -36,4 +36,4 @@ class LanguagePackEventRouter
 
 }  // namespace chromeos
 
-#endif
+#endif  // CHROME_BROWSER_ASH_EXTENSIONS_LANGUAGE_PACKS_LANGUAGE_PACK_EVENT_ROUTER_H_

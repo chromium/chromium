@@ -75,4 +75,4 @@ class RepositionController {
 
 }  // namespace arc::input_overlay
 
-#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_DRAG_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_REPOSITION_CONTROLLER_H_

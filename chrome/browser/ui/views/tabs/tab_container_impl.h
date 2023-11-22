@@ -392,4 +392,4 @@ class TabContainerImpl : public TabContainer,
   base::RepeatingCallback<int()> available_width_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_IMPL_H_

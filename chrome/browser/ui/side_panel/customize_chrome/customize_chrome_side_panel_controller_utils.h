@@ -12,4 +12,4 @@ std::unique_ptr<CustomizeChromeTabHelper::Delegate> CreateDelegate(
     content::WebContents* web_contents);
 }  // namespace customize_chrome
 
-#endif  // CHROME_BROWSER_UI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_SIDE_PANEL_CONTROLLER_UTLS_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_SIDE_PANEL_CONTROLLER_UTILS_H_

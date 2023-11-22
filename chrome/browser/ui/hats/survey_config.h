@@ -130,4 +130,4 @@ void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_);
 
 }  // namespace hats
 
-#endif  // def CHROME_BROWSER_UI_HATS_SURVEY_CONFIG_H_
+#endif  // CHROME_BROWSER_UI_HATS_SURVEY_CONFIG_H_

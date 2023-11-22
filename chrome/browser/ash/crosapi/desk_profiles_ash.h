@@ -64,4 +64,4 @@ class DeskProfilesAsh : public mojom::DeskProfileObserver,
 
 }  // namespace crosapi
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_CLIPBOARD_HISTORY_ASH_H_
+#endif  // CHROME_BROWSER_ASH_CROSAPI_DESK_PROFILES_ASH_H_

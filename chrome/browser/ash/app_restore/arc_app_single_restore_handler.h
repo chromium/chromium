@@ -89,4 +89,4 @@ class ArcAppSingleRestoreHandler
 
 }  // namespace ash::app_restore
 
-#endif
+#endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_SINGLE_RESTORE_HANDLER_H_

@@ -57,4 +57,4 @@ class ChromeOsWebAppExperiments {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_CHROMEOS_WEB_APP_ExperimentS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_CHROMEOS_WEB_APP_EXPERIMENTS_H_

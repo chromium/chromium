@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PRINTING_WEB_API_PRINTING_SERVICE_CHROMEOS_H_
-#define CHROME_BROWSER_PRINTING_WEB_API_PRINTING_SERVICE_CHROMEOS_H_
+#ifndef CHROME_BROWSER_PRINTING_WEB_API_WEB_PRINTING_SERVICE_CHROMEOS_H_
+#define CHROME_BROWSER_PRINTING_WEB_API_WEB_PRINTING_SERVICE_CHROMEOS_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
@@ -46,4 +46,4 @@ class WebPrintingServiceChromeOS
 
 }  // namespace printing
 
-#endif  // CHROME_BROWSER_PRINTING_WEB_API_PRINTING_SERVICE_CHROMEOS_H_
+#endif  // CHROME_BROWSER_PRINTING_WEB_API_WEB_PRINTING_SERVICE_CHROMEOS_H_

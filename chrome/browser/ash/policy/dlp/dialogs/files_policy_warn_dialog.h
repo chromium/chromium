@@ -83,4 +83,4 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog,
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_BLOCK_DIALOG_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_

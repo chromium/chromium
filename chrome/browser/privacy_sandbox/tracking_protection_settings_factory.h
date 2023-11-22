@@ -30,4 +30,4 @@ class TrackingProtectionSettingsFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_FACTORY_H_
+#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_TRACKING_PROTECTION_SETTINGS_FACTORY_H_

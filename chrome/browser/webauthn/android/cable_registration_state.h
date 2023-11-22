@@ -180,4 +180,4 @@ class RegistrationState {
 
 }  // namespace webauthn::authenticator
 
-#endif
+#endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_REGISTRATION_STATE_H_

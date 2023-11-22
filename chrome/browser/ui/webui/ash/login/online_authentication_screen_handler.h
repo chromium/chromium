@@ -49,4 +49,4 @@ class OnlineAuthenticationScreenHandler : public OnlineAuthenticationScreenView,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_GAIA_SCREEN_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_AUTHENTICATION_SCREEN_HANDLER_H_

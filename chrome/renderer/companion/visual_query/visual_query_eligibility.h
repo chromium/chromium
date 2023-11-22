@@ -176,4 +176,4 @@ class EligibilityModule {
   float most_shoppy_sens_score_;
 };
 }  // namespace companion::visual_search
-#endif
+#endif  // CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_ELIGIBILITY_H_

@@ -38,4 +38,4 @@ class DownloadItemWebAppData : public base::SupportsUserData::Data {
   webapps::AppId web_app_id_;
 };
 
-#endif  // __CHROMIUM_SRC_CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WEB_APP_DATA_H_
+#endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WEB_APP_DATA_H_

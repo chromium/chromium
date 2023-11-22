@@ -21,4 +21,4 @@ std::unique_ptr<extensions::StreamContainer> GenerateSampleStreamContainer(
 
 }  // namespace pdf_test_util
 
-#endif  // CHROME_BROWSER_PDF_PDF_TEST_UTIL_
+#endif  // CHROME_BROWSER_PDF_PDF_TEST_UTIL_H_

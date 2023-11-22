@@ -57,4 +57,4 @@ class DownloadBubblePartialView : public DownloadBubblePrimaryView,
   absl::optional<base::Time> last_download_completed_time_;
 };
 
-#endif
+#endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_PARTIAL_VIEW_H_

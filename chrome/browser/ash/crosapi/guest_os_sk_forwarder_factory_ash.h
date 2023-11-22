@@ -29,4 +29,4 @@ class GuestOsSkForwarderFactoryAsh : public mojom::GuestOsSkForwarderFactory {
 };
 }  // namespace crosapi
 
-#endif
+#endif  // CHROME_BROWSER_ASH_CROSAPI_GUEST_OS_SK_FORWARDER_FACTORY_ASH_H_

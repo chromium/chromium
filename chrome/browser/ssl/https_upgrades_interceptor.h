@@ -149,4 +149,4 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
   base::WeakPtrFactory<HttpsUpgradesInterceptor> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_UPGRADE_INTERCEPTOR_H_
+#endif  // CHROME_BROWSER_SSL_HTTPS_UPGRADES_INTERCEPTOR_H_

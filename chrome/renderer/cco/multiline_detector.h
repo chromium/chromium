@@ -20,4 +20,4 @@ class MultilineDetector : public content::RenderFrameObserver {
   ~MultilineDetector() override;
 };
 
-#endif  // CHROME_RENDERER_MULTILINE_DETECTOR_H_
+#endif  // CHROME_RENDERER_CCO_MULTILINE_DETECTOR_H_

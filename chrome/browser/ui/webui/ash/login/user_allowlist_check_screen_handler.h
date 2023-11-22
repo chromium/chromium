@@ -49,4 +49,4 @@ class UserAllowlistCheckScreenHandler : public UserAllowlistCheckScreenView,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_GAIA_SCREEN_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_USER_ALLOWLIST_CHECK_SCREEN_HANDLER_H_

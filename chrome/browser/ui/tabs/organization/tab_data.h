@@ -74,4 +74,4 @@ class TabData : public TabStripModelObserver,
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_METRICS_H_
+#endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DATA_H_

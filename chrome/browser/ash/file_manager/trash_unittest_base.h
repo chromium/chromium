@@ -90,4 +90,4 @@ class TrashBaseTest : public testing::Test {
 
 }  // namespace file_manager::io_task
 
-#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_IO_TASK_H_
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_UNITTEST_BASE_H_

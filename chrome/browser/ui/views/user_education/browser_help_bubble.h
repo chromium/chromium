@@ -65,4 +65,4 @@ class FloatingWebUIHelpBubbleFactoryBrowser
       const ui::TrackedElement* element) const override;
 };
 
-#endif  // #CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_HELP_BUBBLE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_HELP_BUBBLE_H_

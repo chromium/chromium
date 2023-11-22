@@ -68,4 +68,4 @@ class GarbageCollectStoragePartitionsCommand
 
 }  // namespace web_app
 
-#endif
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_GARBAGE_COLLECT_STORAGE_PARTITIONS_COMMAND_H_

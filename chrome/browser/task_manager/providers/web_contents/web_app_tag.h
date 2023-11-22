@@ -34,4 +34,4 @@ class WebAppTag : public WebContentsTag {
 
 }  // namespace task_manager
 
-#endif  // CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_web_app_tag_H_
+#endif  // CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_WEB_APP_TAG_H_

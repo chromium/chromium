@@ -38,4 +38,4 @@ class MediaItemUIMetrics {
   static void RecordStopCastingMetrics(media_router::MediaCastMode cast_mode);
 };
 
-#endif
+#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_METRICS_H_

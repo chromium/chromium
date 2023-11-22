@@ -38,4 +38,4 @@ class UserEducationServiceFactory : public ProfileKeyedServiceFactory {
   bool disable_idle_polling_ = false;
 };
 
-#endif  // CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_FACTORY_H_

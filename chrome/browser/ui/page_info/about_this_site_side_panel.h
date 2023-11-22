@@ -16,4 +16,4 @@ void ShowAboutThisSiteSidePanel(content::WebContents* web_contents,
                                 const GURL& more_about_url);
 void RegisterAboutThisSiteSidePanel(content::WebContents* web_contents,
                                     const GURL& more_about_url);
-#endif
+#endif  // CHROME_BROWSER_UI_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_H_

@@ -95,4 +95,4 @@ class AutoTranslateSnackbarController {
 
 }  // namespace translate
 
-#endif  // CHROME_BROWSER_TRANSLATE_ANDROID_AUTO_TRANSLATE_SNACKBAR_H_
+#endif  // CHROME_BROWSER_TRANSLATE_ANDROID_AUTO_TRANSLATE_SNACKBAR_CONTROLLER_H_

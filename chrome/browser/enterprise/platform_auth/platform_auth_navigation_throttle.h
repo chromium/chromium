@@ -54,4 +54,4 @@ class PlatformAuthNavigationThrottle : public content::NavigationThrottle {
 };
 }  // namespace enterprise_auth
 
-#endif  // CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_NAVIGATION_THROTTLE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_PLATFORM_AUTH_NAVIGATION_THROTTLE_H_

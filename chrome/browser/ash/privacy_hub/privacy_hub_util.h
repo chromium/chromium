@@ -58,4 +58,4 @@ void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier);
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_CONTROLLER_PROXY_H_
+#endif  // CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_

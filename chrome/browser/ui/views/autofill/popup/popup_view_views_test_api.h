@@ -50,4 +50,4 @@ inline PopupViewViewsTestApi test_api(PopupViewViews& view) {
 
 }  // namespace autofill
 
-#endif
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_VIEWS_TEST_API_H_

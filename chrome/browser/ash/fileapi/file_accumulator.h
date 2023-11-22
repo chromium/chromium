@@ -62,4 +62,4 @@ class FileAccumulator {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_FILEAPI_FOUND_FILES_CACHE_H_
+#endif  // CHROME_BROWSER_ASH_FILEAPI_FILE_ACCUMULATOR_H_

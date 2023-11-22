@@ -67,4 +67,4 @@ class UserEducationService : public KeyedService {
       feature_promo_session_policy_;
 };
 
-#endif  // CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_SERVICE_H_
+#endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_

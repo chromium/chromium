@@ -81,4 +81,4 @@ class VisualClassificationAndEligibility {
   ClassificationMetrics metrics_;
 };
 }  // namespace companion::visual_search
-#endif
+#endif  // CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFICATION_AND_ELIGIBILITY_H_

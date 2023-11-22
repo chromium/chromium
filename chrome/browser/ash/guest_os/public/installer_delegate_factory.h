@@ -24,4 +24,4 @@ InstallerDelegateFactory(
     mojo::PendingReceiver<ash::guest_os_installer::mojom::PageHandler>);
 }
 
-#endif
+#endif  // CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_INSTALLER_DELEGATE_FACTORY_H_
