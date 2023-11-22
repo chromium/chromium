@@ -363,3 +363,7 @@ cr-dialog > [slot='title'] {
 cr-button {
   font: var(--cros-button-2-font);
 }
+
+:host-context(body.revamp-wayfinding-enabled) cr-link-row {
+  --cr-link-row-start-icon-color: var(--cros-sys-primary);
+}
