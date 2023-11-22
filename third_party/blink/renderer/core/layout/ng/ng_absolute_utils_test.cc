@@ -115,12 +115,15 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
         PhysicalOffset());
-    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), &anchor_evaluator);
+    WritingDirectionMode self_writing_direction =
+        node.Style().GetWritingDirection();
+    const LogicalOofInsets insets =
+        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize(),
+                               self_writing_direction, &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), insets, static_position,
-            container_writing_direction, node.Style().GetWritingDirection());
+            container_writing_direction, self_writing_direction);
     ComputeOofInlineDimensions(node, node.Style(), space, imcb, border_padding,
                                absl::nullopt, container_writing_direction,
                                /* anchor_evaluator */ nullptr, dimensions);
@@ -151,12 +154,15 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
         PhysicalOffset());
-    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), &anchor_evaluator);
+    WritingDirectionMode self_writing_direction =
+        node.Style().GetWritingDirection();
+    const LogicalOofInsets insets =
+        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize(),
+                               self_writing_direction, &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), insets, static_position,
-            container_writing_direction, node.Style().GetWritingDirection());
+            container_writing_direction, self_writing_direction);
     ComputeOofBlockDimensions(node, node.Style(), space, imcb, border_padding,
                               absl::nullopt, container_writing_direction,
                               /* anchor_evaluator */ nullptr, dimensions);

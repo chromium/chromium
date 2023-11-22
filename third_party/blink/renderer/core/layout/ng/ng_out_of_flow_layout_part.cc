@@ -1854,7 +1854,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   const LogicalOofInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),
-      anchor_evaluator);
+      candidate_writing_direction, anchor_evaluator);
 
   {
     auto& document = node_info.node.GetDocument();
