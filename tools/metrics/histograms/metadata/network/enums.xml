@@ -571,6 +571,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kWifiWithCellularNotConnected"/>
 </enum>
 
+<enum name="IpProtectionProxyLayer">
+  <int value="0" label="Proxy A"/>
+  <int value="1" label="Proxy B"/>
+</enum>
+
 <enum name="IpProtectionTokenBatchRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed - No Account"/>

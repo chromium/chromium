@@ -13,6 +13,7 @@
 #include "services/network/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection_token_cache_manager.h"
 #include "services/network/ip_protection_token_cache_manager_impl.h"
+#include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
@@ -44,12 +45,20 @@ void IpProtectionConfigCacheImpl::SetUp() {
 }
 
 bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
+  // Verify there is at least one cache manager and all have available tokens.
+  bool all_caches_have_tokens = !ipp_token_cache_managers_.empty();
   for (const auto& manager : ipp_token_cache_managers_) {
     if (!manager.second->IsAuthTokenAvailable()) {
-      return false;
+      base::UmaHistogramEnumeration(
+          "NetworkService.IpProtection.EmptyTokenCache", manager.first);
+      all_caches_have_tokens = false;
     }
   }
-  return !ipp_token_cache_managers_.empty();
+
+  base::UmaHistogramBoolean(
+      "NetworkService.IpProtection.AreAuthTokensAvailable",
+      all_caches_have_tokens);
+  return all_caches_have_tokens;
 }
 
 absl::optional<network::mojom::BlindSignedAuthTokenPtr>

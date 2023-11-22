@@ -4376,14 +4376,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.AreAuthTokensAvailable"
+    enum="BooleanSuccess" expires_after="2024-05-12">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    The result of a call to `IpProtectionConfigCache::AreAuthTokensAvailable()`
+    when `NetworkServiceProxyDelegate::OnResolveProxy()` is determining if the
+    request is eligible for IP Protection. If this fails, tokens were not
+    available in all token caches and the request will bypass the IP Protection
+    proxy.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.EmptyTokenCache"
+    enum="IpProtectionProxyLayer" expires_after="2024-05-12">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Records which token cache (if any) was empty when calling
+    `IpProtectionConfigCache::AreAuthTokensAvailable()`.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.GetAuthTokenResult"
     enum="BooleanSuccess" expires_after="2024-05-12">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
-    The result of a call to `IpProtectionConfigCache::GetAuthToken()`. If this
-    fails, it is because the cache was empty when a new connection to a proxy
-    was initiated.
+    The result of a call to `IpProtectionConfigCache::GetAuthToken()`, which
+    will not happen unless `IpProtectionConfigCache::AreAuthTokensAvailable()`
+    is true. If this fails, it is because the cache was empty when a new
+    connection to a proxy was initiated.
   </summary>
 </histogram>
 
