@@ -667,6 +667,23 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(
+    sync_pb::CardBenefit::CategoryBenefitType category_benefit_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::CardBenefit, CategoryBenefitType,
+                     CATEGORY_BENEFIT_TYPE_UNKNOWN, GROCERY_STORES);
+  switch (category_benefit_type) {
+    ENUM_CASE(sync_pb::CardBenefit, CATEGORY_BENEFIT_TYPE_UNKNOWN);
+    ENUM_CASE(sync_pb::CardBenefit, SUBSCRIPTION);
+    ENUM_CASE(sync_pb::CardBenefit, FLIGHTS);
+    ENUM_CASE(sync_pb::CardBenefit, DINING);
+    ENUM_CASE(sync_pb::CardBenefit, ENTERTAINMENT);
+    ENUM_CASE(sync_pb::CardBenefit, STREAMING);
+    ENUM_CASE(sync_pb::CardBenefit, GROCERY_STORES);
+  }
+  NOTREACHED();
+  return "";
+}
+
 const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer) {
   ASSERT_ENUM_BOUNDS(sync_pb::CardIssuer, Issuer, ISSUER_UNKNOWN,
                      EXTERNAL_ISSUER);

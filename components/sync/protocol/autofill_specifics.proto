@@ -253,6 +253,53 @@ message CloudTokenData {
   optional string instrument_token = 5;
 }
 
+message CardBenefit {
+  // The benefit description (Engligh only currently) to be shown in the UI.
+  optional string benefit_description = 1;
+
+  // When the benefit should be displayed, in UTC time.
+  optional int64 start_time_unix_epoch_nanos = 2;
+  optional int64 end_time_unix_epoch_nanos = 3;
+
+  // Proto containing data specific to a flat rate benefit. Empty as flat rate
+  // benefits don't have unique fields. The actual benefit (e.g. "2% cash back")
+  // is already included in the `benefit_description`.
+  message FlatRateBenefit {}
+
+  // For category benefits, represents the category of purchases that the
+  // benefit can be applied to.
+  enum CategoryBenefitType {
+    CATEGORY_BENEFIT_TYPE_UNKNOWN = 0;
+    SUBSCRIPTION = 1;
+    FLIGHTS = 2;
+    DINING = 3;
+    ENTERTAINMENT = 4;
+    STREAMING = 5;
+    GROCERY_STORES = 6;
+  }
+
+  // Proto containing data specific to a category benefit.
+  message CategoryBenefit {
+    // The type of category purchases the benefit is eligible on.
+    optional CategoryBenefitType category_benefit_type = 1;
+  }
+
+  // Proto containing data specific to a merchant benefit.
+  message MerchantBenefit {
+    // The merchant domain that the benefit is eligible on.
+    // Example: https://www.acme.com
+    repeated string merchant_domain = 1;
+  }
+
+  // Proto data representing the actual data of the credit card benefit,
+  // depending on the benefit type.
+  oneof DomainSpecificBenefit {
+    FlatRateBenefit flat_rate_benefit = 4;
+    CategoryBenefit category_benefit = 5;
+    MerchantBenefit merchant_benefit = 6;
+  }
+}
+
 message CardIssuer {
   enum Issuer {
     ISSUER_UNKNOWN = 0;
@@ -360,6 +407,14 @@ message WalletMaskedCreditCard {
   // The type of virtual card enrollment. kTypeUnspecified indicates that the
   // card is unenrolled.
   optional VirtualCardEnrollmentType virtual_card_enrollment_type = 19;
+
+  // The benefits (e.g. points or discounts) associated with purchases made
+  // with the card.
+  repeated CardBenefit card_benefit = 20;
+
+  // Separate link from the card issuer which provides additional context or
+  // terms and conditions regarding the credit card product and its benefits.
+  optional string product_terms_url = 21;
 }
 
 // Unused by the client since M121.

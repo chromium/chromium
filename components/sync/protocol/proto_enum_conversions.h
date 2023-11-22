@@ -147,6 +147,9 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::WalletCardType wallet_card_type);
 
+const char* ProtoEnumToString(
+    sync_pb::CardBenefit::CategoryBenefitType category_benefit_type);
+
 const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer);
 
 const char* ProtoEnumToString(

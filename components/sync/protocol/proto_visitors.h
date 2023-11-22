@@ -1518,6 +1518,25 @@ VISIT_PROTO_FIELDS(const sync_pb::BankAccountDetails& proto) {
   VISIT_ENUM(account_type);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::CardBenefit& proto) {
+  VISIT(benefit_description);
+  VISIT(start_time_unix_epoch_nanos);
+  VISIT(end_time_unix_epoch_nanos);
+  VISIT(flat_rate_benefit);
+  VISIT(category_benefit);
+  VISIT(merchant_benefit);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CardBenefit_FlatRateBenefit& proto) {}
+
+VISIT_PROTO_FIELDS(const sync_pb::CardBenefit_CategoryBenefit& proto) {
+  VISIT_ENUM(category_benefit_type);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CardBenefit_MerchantBenefit& proto) {
+  VISIT_REP(merchant_domain);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::CardIssuer& proto) {
   VISIT_ENUM(issuer);
   VISIT(issuer_id);
@@ -1540,6 +1559,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WalletMaskedCreditCard& proto) {
   VISIT(card_art_url);
   VISIT(product_description);
   VISIT_ENUM(virtual_card_enrollment_type);
+  VISIT_REP(card_benefit);
+  VISIT(product_terms_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WalletMetadataSpecifics& proto) {

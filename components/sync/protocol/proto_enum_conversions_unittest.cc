@@ -121,5 +121,9 @@ TEST(ProtoEnumConversionsTest, GetInitialSyncStateString) {
   TestEnumStringsNonEmpty(sync_pb::ModelTypeState::InitialSyncState);
 }
 
+TEST(ProtoEnumConversionsTest, GetCategoryBenefitTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::CardBenefit::CategoryBenefitType);
+}
+
 }  // namespace
 }  // namespace syncer
