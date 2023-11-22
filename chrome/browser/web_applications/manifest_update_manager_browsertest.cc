@@ -481,6 +481,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GURL app_url = GetAppURLWithoutManifest();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
+    webapps::AppId app_id;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         install_future;
     GetProvider().scheduler().FetchManifestAndInstall(
@@ -498,43 +499,49 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GURL app_url = GetAppURL();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
-    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-        install_future;
+    webapps::AppId app_id;
+    base::RunLoop run_loop;
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
         base::BindOnce(test::TestAcceptInstallDialogCallback),
-        install_future.GetCallback(),
+        base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
+                                       webapps::InstallResultCode code) {
+          EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+          app_id = new_app_id;
+          run_loop.Quit();
+        }),
         /*use_fallback=*/true);
 
-    EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
-              webapps::InstallResultCode::kSuccessNewInstall);
-    return install_future.Get<webapps::AppId>();
+    run_loop.Run();
+    return app_id;
   }
 
   webapps::AppId InstallOemWebApp() {
     const GURL app_url = GetAppURL();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
-    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-        install_future;
+    webapps::AppId app_id;
+    base::RunLoop run_loop;
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::PRELOADED_OEM,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
         base::BindOnce(test::TestAcceptInstallDialogCallback),
-        install_future.GetCallback(),
+        base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
+                                       webapps::InstallResultCode code) {
+          EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+          app_id = new_app_id;
+          run_loop.Quit();
+        }),
         /*use_fallback=*/true);
 
-    EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
-              webapps::InstallResultCode::kSuccessNewInstall);
-    return install_future.Get<webapps::AppId>();
+    run_loop.Run();
+    return app_id;
   }
 
   webapps::AppId InstallDefaultApp() {
     const GURL app_url = GetAppURL();
-    base::test::TestFuture<const GURL&,
-                           ExternallyManagedAppManager::InstallResult>
-        install_future;
+    base::RunLoop run_loop;
     ExternalInstallOptions install_options(
         app_url, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kInternalDefault);
@@ -543,12 +550,16 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     install_options.add_to_quick_launch_bar = false;
     install_options.install_placeholder = true;
     GetProvider().externally_managed_app_manager().Install(
-        std::move(install_options), install_future.GetCallback());
-
-    EXPECT_EQ(install_future.Get<GURL>(), app_url);
-    EXPECT_EQ(
-        install_future.Get<ExternallyManagedAppManager::InstallResult>().code,
-        webapps::InstallResultCode::kSuccessNewInstall);
+        std::move(install_options),
+        base::BindLambdaForTesting(
+            [&](const GURL& installed_app_url,
+                ExternallyManagedAppManager::InstallResult result) {
+              EXPECT_EQ(installed_app_url, app_url);
+              EXPECT_EQ(result.code,
+                        webapps::InstallResultCode::kSuccessNewInstall);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     return GetProvider()
         .registrar_unsafe()
         .LookupExternalAppId(app_url)
@@ -557,9 +568,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   webapps::AppId InstallPolicyApp() {
     const GURL app_url = GetAppURL();
-    base::test::TestFuture<const GURL&,
-                           ExternallyManagedAppManager::InstallResult>
-        install_future;
+    base::RunLoop run_loop;
     ExternalInstallOptions install_options(
         app_url, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalPolicy);
@@ -568,12 +577,16 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     install_options.add_to_quick_launch_bar = false;
     install_options.install_placeholder = true;
     GetProvider().externally_managed_app_manager().Install(
-        std::move(install_options), install_future.GetCallback());
-
-    EXPECT_EQ(install_future.Get<GURL>(), app_url);
-    EXPECT_EQ(
-        install_future.Get<ExternallyManagedAppManager::InstallResult>().code,
-        webapps::InstallResultCode::kSuccessNewInstall);
+        std::move(install_options),
+        base::BindLambdaForTesting(
+            [&](const GURL& installed_app_url,
+                ExternallyManagedAppManager::InstallResult result) {
+              EXPECT_EQ(installed_app_url, app_url);
+              EXPECT_EQ(result.code,
+                        webapps::InstallResultCode::kSuccessNewInstall);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     return GetProvider()
         .registrar_unsafe()
         .LookupExternalAppId(app_url)
@@ -582,20 +595,22 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   webapps::AppId InstallKioskApp() {
     const GURL app_url = GetAppURL();
-    base::test::TestFuture<const GURL&,
-                           ExternallyManagedAppManager::InstallResult>
-        install_future;
+    base::RunLoop run_loop;
     ExternalInstallOptions install_options(app_url,
                                            mojom::UserDisplayMode::kStandalone,
                                            ExternalInstallSource::kKiosk);
     install_options.install_placeholder = true;
     GetProvider().externally_managed_app_manager().Install(
-        std::move(install_options), install_future.GetCallback());
-
-    EXPECT_EQ(install_future.Get<GURL>(), app_url);
-    EXPECT_EQ(
-        install_future.Get<ExternallyManagedAppManager::InstallResult>().code,
-        webapps::InstallResultCode::kSuccessNewInstall);
+        std::move(install_options),
+        base::BindLambdaForTesting(
+            [&](const GURL& installed_app_url,
+                ExternallyManagedAppManager::InstallResult result) {
+              EXPECT_EQ(installed_app_url, app_url);
+              EXPECT_EQ(result.code,
+                        webapps::InstallResultCode::kSuccessNewInstall);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     return GetProvider()
         .registrar_unsafe()
         .LookupExternalAppId(app_url)
@@ -4986,64 +5001,30 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
       "tab_strip": {
         "new_tab_button": {
           "url": "$1"
-        },
-        "home_tab": {
-          $2
         }
       },
-      "icons": $3
+      "icons": $2
     }
   )";
 
-  // Install with manifest for a tabbed web app.
   OverrideManifest(kTabStripManifestTemplate,
-                   {"old-relative-url", "", kInstallableIconList});
-  BrowserWaiter browser_waiter;
+                   {"old-relative-url", kInstallableIconList});
   webapps::AppId app_id = InstallWebApp();
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
-  // Tabbed app display mode only applies if UserDisplayMode is standalone.
-  ASSERT_TRUE(web_app->user_display_mode().has_value());
-  EXPECT_EQ(web_app->user_display_mode().value(),
-            mojom::UserDisplayMode::kStandalone);
   // URL parsed relative to manifest URL, which is in /banners/.
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/banners/old-relative-url"),
             web_app->tab_strip().value().new_tab_button.url);
 
-  // Wait for the app window (from installation) to appear.
-  Browser* web_app_browser = browser_waiter.AwaitAdded();
-  AppBrowserController* app_controller = web_app_browser->app_controller();
-  DCHECK(app_controller);
-  // Check the start URL (ignoring query and ref) is in home tab scope but other
-  // URLs are not.
-  EXPECT_TRUE(app_controller->IsUrlInHomeTabScope(web_app->start_url()));
-  EXPECT_TRUE(app_controller->IsUrlInHomeTabScope(
-      web_app->start_url().Resolve("?query=foo#ref")));
-  EXPECT_FALSE(app_controller->IsUrlInHomeTabScope(
-      web_app->start_url().Resolve("sub/dir")));
-  EXPECT_FALSE(
-      app_controller->IsUrlInHomeTabScope(http_server_.GetURL("/foo/bar")));
-
-  // Update manifest and navigate the app browser to trigger the update.
-  base::test::TestFuture<void> update_applied_future;
-  WebAppBrowserController::SetManifestUpdateAppliedCallbackForTesting(
-      update_applied_future.GetCallback());
-  std::string home_tab_json = R"("scope_patterns": [ {"pathname": "/foo/*"} ])";
   OverrideManifest(kTabStripManifestTemplate,
-                   {"/new-tab-url", home_tab_json, kInstallableIconList});
+                   {"/new-tab-url", kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), web_app_browser));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
             web_app->tab_strip().value().new_tab_button.url);
-
-  // Check update takes effect on live app window.
-  ASSERT_TRUE(update_applied_future.Wait());
-  EXPECT_TRUE(app_controller->IsUrlInHomeTabScope(web_app->start_url()));
-  EXPECT_TRUE(
-      app_controller->IsUrlInHomeTabScope(http_server_.GetURL("/foo/bar")));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,

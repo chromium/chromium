@@ -325,7 +325,6 @@ void WebAppBrowserController::OnWebAppManifestUpdated(
   if (updated_app_id == app_id()) {
     UpdateThemePack();
     app_icon_.reset();
-    home_tab_scope_.reset();
     browser()->window()->UpdateTitleBar();
 
     if (ManifestUpdateAppliedCallbackForTesting()) {
