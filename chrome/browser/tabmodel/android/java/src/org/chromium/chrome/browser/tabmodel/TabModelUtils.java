@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
@@ -143,6 +145,27 @@ public class TabModelUtils {
         if (tab == null) return null;
 
         return tab.getWebContents();
+    }
+
+    /**
+     * Selects a tab by its ID in the tab model selector.
+     *
+     * @param selector The {@link TabModelSelector} to act on.
+     * @param tabId The tab ID to select.
+     * @param type {@link TabSelectionType} how the tab selection was initiated.
+     * @param skipLoadingTab Whether to skip loading the Tab.
+     */
+    public static void selectTabById(
+            @NonNull TabModelSelector selector,
+            int tabId,
+            @TabSelectionType int tabSelectionType,
+            boolean skipLoadingTab) {
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
+        TabModel model = selector.getModelForTabId(tabId);
+        if (model == null) return;
+
+        model.setIndex(getTabIndexById(model, tabId), tabSelectionType, skipLoadingTab);
     }
 
     /**
