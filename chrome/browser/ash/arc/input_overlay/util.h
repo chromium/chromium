@@ -35,9 +35,6 @@ using ash::game_dashboard_utils::UpdateFlag;
 class Action;
 class InputElement;
 
-// Arrow key move distance per key press event.
-constexpr int kArrowKeyMoveDistance = 2;
-
 // Gets the event flags for the modifier domcode. Return ui::DomCode::NONE if
 // `code` is not modifier DomCode.
 int ModifierDomCodeToEventFlag(ui::DomCode code);

@@ -42,19 +42,9 @@ class EditingListTest : public OverlayViewTestBase {
     return 0;
   }
 
-  size_t GetActionViewSize() {
-    DCHECK(input_mapping_view_);
-    return input_mapping_view_->children().size();
-  }
-
   size_t GetTouchInjectorActionSize() {
     DCHECK(touch_injector_);
     return touch_injector_->actions().size();
-  }
-
-  void PressAddButton() {
-    DCHECK(editing_list_);
-    editing_list_->OnAddButtonPressed();
   }
 
   // Add a new action in the center of the main window.
@@ -157,10 +147,6 @@ class EditingListTest : public OverlayViewTestBase {
     return controller_->input_mapping_widget_.get();
   }
 
-  views::Widget* GetTargetViewWidget() {
-    return controller_->target_widget_.get();
-  }
-
   bool ButtonOptionsMenuExists() {
     return !!controller_->button_options_widget_;
   }
@@ -234,7 +220,7 @@ TEST_F(EditingListTest, TestAddNewAction) {
   EXPECT_EQ(3u, GetActionViewSize());
   EXPECT_EQ(3u, GetTouchInjectorActionSize());
   EXPECT_FALSE(ButtonOptionsMenuExists());
-  // Press add button and it enters into the button place mode.
+  // Press add button and it enters into the button placement mode.
   PressAddButton();
   auto* target_widget = GetTargetViewWidget();
   EXPECT_TRUE(target_widget);

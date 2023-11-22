@@ -55,6 +55,9 @@ constexpr int kButtonOptionsMenuWidth = 296;
 // Horizontal order inset for `ArrowContainer` and its children.
 constexpr int kArrowContainerHorizontalBorderInset = 16;
 
+// Arrow key move distance per key press event.
+inline constexpr int kArrowKeyMoveDistance = 2;
+
 // Display mode for display overlay.
 enum class DisplayMode {
   kNone,

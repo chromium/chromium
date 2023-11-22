@@ -9,12 +9,14 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
 
 namespace gfx {
+class Point;
 class Rect;
 }  // namespace gfx
 
@@ -33,6 +35,9 @@ gfx::Rect CalculateAvailableBounds(aura::Window* root_window);
 // `opacity_percent` is contained within [0.0, 1.0] where 0.0 corresponds to
 // fully transparent and 1.0 corresponds to fully opaque.
 SkAlpha GetAlpha(float opacity_percent);
+
+// Update `position` according to `key` if `key` is arrow key.
+bool OffsetPositionByArrowKey(ui::KeyboardCode key, gfx::Point& position);
 
 }  // namespace arc::input_overlay
 

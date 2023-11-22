@@ -14,7 +14,8 @@ namespace arc::input_overlay {
 
 class DisplayOverlayController;
 
-// View shows target circle, crossed line and touch point in button place mode.
+// View shows target circle, crossed line and touch point in button placement
+// mode.
 class TargetView : public views::View {
  public:
   METADATA_HEADER(TargetView);
@@ -28,13 +29,24 @@ class TargetView : public views::View {
   void UpdateWidgetBounds();
 
  private:
+  friend class TargetViewTest;
+
   // The overall target circle radius.
   int GetCircleRadius();
   // The target circle ring radius excluding the ring thickness.
   int GetCircleRingRadius();
 
+  // Clamps `center_` so that the target circle can show completely and
+  // constraint the action position.
+  void ClampCenter();
+
+  // Called when `center_` is updated.
+  void OnCenterChanged();
+
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;

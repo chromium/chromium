@@ -24,7 +24,12 @@ class OverlayViewTestBase : public GameControlsTestBase {
 
  protected:
   void EnableEditMode();
+  void PressAddButton();
+
+  size_t GetActionViewSize();
+
   ButtonOptionsMenu* ShowButtonOptionsMenu(Action* action);
+  views::Widget* GetTargetViewWidget();
 
   // GameControlsTestBase:
   void SetUp() override;

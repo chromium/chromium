@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
@@ -16,6 +17,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/widget/widget.h"
 
@@ -72,6 +75,9 @@ TargetView::TargetView(DisplayOverlayController* controller,
   const auto& bounds = touch_injector->content_bounds();
   center_.set_x(bounds.width() / 2);
   center_.set_y(bounds.height() / 2);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  // TODO(b/279117180): Update a11y properties.
+  SetAccessibilityProperties(ax::mojom::Role::kGroup, u"Targeting");
 }
 
 TargetView::~TargetView() = default;
@@ -81,13 +87,6 @@ void TargetView::UpdateWidgetBounds() {
   DCHECK(widget);
 
   widget->SetBounds(controller_->touch_injector()->content_bounds());
-}
-
-void TargetView::VisibilityChanged(views::View* starting_from,
-                                   bool is_visible) {
-  if (is_visible) {
-    UpdateWidgetBounds();
-  }
 }
 
 int TargetView::GetCircleRadius() {
@@ -112,9 +111,68 @@ int TargetView::GetCircleRingRadius() {
   }
 }
 
+void TargetView::ClampCenter() {
+  const int circle_ring_radius = GetCircleRadius();
+  const auto& view_size = size();
+  center_.set_x(std::clamp(center_.x(), /*lo=*/circle_ring_radius,
+                           view_size.width() - circle_ring_radius));
+  center_.set_y(std::clamp(center_.y(), /*lo=*/circle_ring_radius,
+                           view_size.height() - circle_ring_radius));
+}
+
+void TargetView::OnCenterChanged() {
+  ClampCenter();
+  SchedulePaint();
+}
+
+void TargetView::VisibilityChanged(views::View* starting_from,
+                                   bool is_visible) {
+  if (is_visible) {
+    UpdateWidgetBounds();
+    RequestFocus();
+  }
+}
+
+void TargetView::OnGestureEvent(ui::GestureEvent* event) {
+  auto type = event->type();
+  center_ = event->location();
+  OnCenterChanged();
+  event->SetHandled();
+
+  // When the gesture event is released, add a new action.
+  if (type == ui::ET_GESTURE_SCROLL_END || type == ui::ET_SCROLL_FLING_START ||
+      type == ui::ET_GESTURE_PINCH_END || type == ui::ET_GESTURE_END) {
+    controller_->AddNewAction(action_type_, center_);
+  }
+}
+
+bool TargetView::OnKeyPressed(const ui::KeyEvent& event) {
+  const auto key_code = event.key_code();
+
+  // Exit the button placement mode when key `esc` is pressed.
+  if (key_code == ui::VKEY_ESCAPE) {
+    controller_->ExitButtonPlaceMode();
+    return true;
+  }
+
+  // Continue to add new action if key `enter` is pressed.
+  if (key_code == ui::VKEY_RETURN) {
+    controller_->AddNewAction(action_type_, center_);
+    return true;
+  }
+
+  // Update `center_` and repaint if arrow keys are pressed.
+  if (OffsetPositionByArrowKey(key_code, center_)) {
+    OnCenterChanged();
+    return true;
+  }
+
+  return false;
+}
+
 void TargetView::OnMouseMoved(const ui::MouseEvent& event) {
   center_ = event.location();
-  SchedulePaint();
+  OnCenterChanged();
 }
 
 bool TargetView::OnMousePressed(const ui::MouseEvent& event) {

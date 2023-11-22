@@ -164,4 +164,24 @@ SkAlpha GetAlpha(float opacity_percent) {
                                        opacity_percent);
 }
 
+bool OffsetPositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
+  switch (key) {
+    case ui::VKEY_LEFT:
+      position.Offset(-kArrowKeyMoveDistance, 0);
+      break;
+    case ui::VKEY_RIGHT:
+      position.Offset(kArrowKeyMoveDistance, 0);
+      break;
+    case ui::VKEY_UP:
+      position.Offset(0, -kArrowKeyMoveDistance);
+      break;
+    case ui::VKEY_DOWN:
+      position.Offset(0, kArrowKeyMoveDistance);
+      break;
+    default:
+      return false;
+  }
+  return true;
+}
+
 }  // namespace arc::input_overlay

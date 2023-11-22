@@ -5,32 +5,13 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
 
 #include "ash/app_list/app_list_util.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
 
 namespace {
-
-// Update `position` according to `key` if `key` is arrow key.
-bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
-  switch (key) {
-    case ui::VKEY_LEFT:
-      position.set_x(position.x() - kArrowKeyMoveDistance);
-      return true;
-    case ui::VKEY_RIGHT:
-      position.set_x(position.x() + kArrowKeyMoveDistance);
-      return true;
-    case ui::VKEY_UP:
-      position.set_y(position.y() - kArrowKeyMoveDistance);
-      return true;
-    case ui::VKEY_DOWN:
-      position.set_y(position.y() + kArrowKeyMoveDistance);
-      return true;
-    default:
-      return false;
-  }
-}
 
 // Clamp position `position` inside of the `parent_size` with padding of
 // `parent_padding`
@@ -108,7 +89,7 @@ bool RepositionController::OnGestureEvent(ui::GestureEvent* event) {
 bool RepositionController::OnKeyPressed(const ui::KeyEvent& event) {
   auto target_position = host_view_->origin();
 
-  if (UpdatePositionByArrowKey(event.key_code(), target_position)) {
+  if (OffsetPositionByArrowKey(event.key_code(), target_position)) {
     ClampPosition(target_position, host_view_->size(),
                   host_view_->parent()->size(), parent_padding_);
     host_view_->SetPosition(target_position);

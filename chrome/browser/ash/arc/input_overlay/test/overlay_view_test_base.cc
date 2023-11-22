@@ -27,10 +27,29 @@ void OverlayViewTestBase::EnableEditMode() {
   ASSERT_TRUE(editing_list_);
 }
 
+void OverlayViewTestBase::PressAddButton() {
+  if (!editing_list_) {
+    return;
+  }
+  editing_list_->OnAddButtonPressed();
+}
+
+size_t OverlayViewTestBase::GetActionViewSize() {
+  if (!input_mapping_view_) {
+    return 0;
+  }
+
+  return input_mapping_view_->children().size();
+}
+
 ButtonOptionsMenu* OverlayViewTestBase::ShowButtonOptionsMenu(Action* action) {
   action->action_view()->ShowButtonOptionsMenu();
   DCHECK(controller_->button_options_widget_);
   return controller_->GetButtonOptionsMenu();
+}
+
+views::Widget* OverlayViewTestBase::GetTargetViewWidget() {
+  return controller_->target_widget_.get();
 }
 
 // Create a GIO enabled window with default actions including two action tap and
