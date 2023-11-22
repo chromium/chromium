@@ -98,11 +98,47 @@ class BLINK_EXPORT WebAXContext {
   // popup document. Ensures layout is clean as well.
   void UpdateAXForAllDocuments();
 
-  // Ensure that a layout and accessibility update will occur soon.
-  void ScheduleAXUpdate();
-
   // If the document is loaded, fire a load complete event.
   void FireLoadCompleteIfLoaded();
+
+  // Ensures that a serialization of all pending events and dirty objects is
+  // sent to the client as soon as possible at the next lifecycle update.
+  // Technically, ensures that a call to
+  // RenderAccessibilityImpl::AXReadyCallback() will occur as soon as possible.
+  void ScheduleImmediateSerialization();
+
+  // Add an event to the queue of events to be processed as well as mark the
+  // AXObject dirty. If immediate_serialization is set, it schedules a
+  // serialization to be done at the next lifecycle update without delays.
+  void AddEventToSerializationQueue(const ui::AXEvent& event,
+                                    bool immediate_serialization);
+
+  // Inform AXObjectCacheImpl that the last serialization was received by the
+  // browser successfully.
+  void OnSerializationReceived();
+
+  // Inform AXObjectCacheImpl that a serialization was cancelled. It's only
+  // required for legacy, non-lifecycle mode. Check IsSerializationInFlight
+  // details.
+  // TODO(accessibility): This method can eventually be moved to AXObjectCache
+  // when legacy mode is removed.
+  void OnSerializationCancelled();
+
+  // Inform AXObjectCacheImpl that a serialization just started to be sent to
+  // the browser. Check IsSerializationInFlight details.
+  // TODO(accessibility): This method can eventually be moved to AXObjectCache
+  // when legacy mode is removed.
+  void OnSerializationStartSend();
+
+  // Determine if a serialization is in progress or not. Sometimes when
+  // serializing the events, more events are generated and a new lifecycle
+  // update occurs. Without this variable, we could end up in an infinite loop
+  // of sending updates so we keep track when an update is in progress and avoid
+  // starting any new updates while it's true. It becomes false again when the
+  // update reaches the browser via a call to OnSerializationReceived().
+  // TODO(accessibility): Again, this method is here only for legacy mode and
+  // would be moved to AXObjectCache later on.
+  bool IsSerializationInFlight() const;
 
  private:
   std::unique_ptr<AXContext> private_;

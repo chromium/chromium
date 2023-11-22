@@ -272,7 +272,7 @@ class BLINK_EXPORT WebAXObject {
 
   // Marks ths object as dirty (needing serialization). If subtree is true,
   // the entire AX subtree should be invalidated as well.
-  void MarkAXObjectDirtyWithDetails(
+  void AddDirtyObjectToSerializationQueue(
       bool subtree,
       ax::mojom::EventFrom event_from,
       ax::mojom::Action event_from_action,
