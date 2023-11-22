@@ -142,6 +142,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Bookmarks.BulkSaveBookmarksInAccountCount"
+    units="bookmarks" expires_after="2024-11-15">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The number of local bookmarks the user has moved to their account using the
+    batch upload dialog in the bookmarks manager. This is logged when the user
+    chooses to batch upload their bookmarks to their account.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"
+    enum="BooleanHit" expires_after="2024-11-15">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded whenever the batch upload flow/dialog is shown to the user in the
+    bookmarks manager.
+
+    Note that this metric can be logged multiple times in one flow, whenever the
+    views are recreated.
+  </summary>
+</histogram>
+
 <histogram name="IOS.BringAndroidTabs.ActionOnPrompt"
     enum="IOSBringAndroidTabsPromptActionType" expires_after="2024-04-28">
   <owner>hiramahmood@google.com</owner>

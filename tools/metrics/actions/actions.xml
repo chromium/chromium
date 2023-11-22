@@ -19693,6 +19693,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarksManagerBulkSaveBookmarksToAccountButtonClicked">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <description>
+    Reported when the user clicks on the entrypoint button for batch upload from
+    bookmarks manager. iOS only.
+  </description>
+</action>
+
+<action name="MobileBookmarksManagerBulkSaveBookmarksToAccountDialogAccepted">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <description>
+    Reported when the user accepts the confirmation dialog to move their local
+    bookmarks to their account. iOS only.
+  </description>
+</action>
+
+<action name="MobileBookmarksManagerBulkSaveBookmarksToAccountDialogCancelled">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <description>
+    Reported when the user denies the confirmation dialog to move their local
+    bookmarks to their account. iOS only.
+  </description>
+</action>
+
 <action name="MobileBottomToolbarHomeButton">
   <obsolete>Removed as of 2020/09/09.</obsolete>
   <owner>mdjones@chromium.org</owner>

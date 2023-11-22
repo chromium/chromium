@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -186,6 +187,18 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   return config;
 }
 
+- (void)setUp {
+  [super setUp];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+}
+
+- (void)tearDown {
+  [super tearDown];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+}
+
 #pragma mark - BookmarksBatchUploadEnabledTestCase Tests
 
 // Tests that no batch upload dialog is shown if the user is not signed-in.
@@ -201,6 +214,14 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload section is not visible.
   ExpectNoBatchUploadDialog();
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:YES
+          forHistogram:
+              @"IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"],
+      @"Invalid metric count.");
 }
 
 // Tests that no batch upload dialog is shown if there are no local bookmarks.
@@ -216,6 +237,14 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload section is not visible.
   ExpectNoBatchUploadDialog();
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:YES
+          forHistogram:
+              @"IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"],
+      @"Invalid metric count.");
 }
 
 // Tests that the batch upload dialog is shown and has the correct string for a
@@ -237,6 +266,15 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload section is visible.
   ExpectBatchUploadSection(1, fakeIdentity.userEmail);
+
+  // Verify that the metric count is non-zero.
+  GREYAssertNotNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:YES
+          forHistogram:
+              @"IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"],
+      @"Invalid metric count.");
 }
 
 // Tests that the batch upload dialog is shown and has the correct string for
@@ -262,6 +300,15 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload section is visible.
   ExpectBatchUploadSection(2, fakeIdentity.userEmail);
+
+  // Verify that the metric count is non-zero.
+  GREYAssertNotNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:YES
+          forHistogram:
+              @"IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"],
+      @"Invalid metric count.");
 }
 
 // Tests that the batch upload dialog is removed if local bookmarks are removed
@@ -355,6 +402,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that alert is visible.
   ExpectBatchUploadAlert(1);
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"IOS.Bookmarks.BulkSaveBookmarksInAccountCount"],
+      @"Invalid metric count.");
 }
 
 // Tests that dismissing the action sheet (upon clicking the batch upload button
@@ -393,6 +446,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload dialog is still visible.
   ExpectBatchUploadSection(1, fakeIdentity.userEmail);
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"IOS.Bookmarks.BulkSaveBookmarksInAccountCount"],
+      @"Invalid metric count.");
 }
 
 // Tests that upon clicking on the "save" button on the batch upload alert, the
@@ -434,6 +493,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload dialog is no longer visible.
   ExpectNoBatchUploadDialog();
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"IOS.Bookmarks.BulkSaveBookmarksInAccountCount"],
+      @"Invalid metric count.");
 
   // TODO(crbug.com/1451511): Verify that the bookmarks have been moved to the
   // account model and the local bookmark model is empty.

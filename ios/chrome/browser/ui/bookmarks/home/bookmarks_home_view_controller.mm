@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/safe_conversions.h"
@@ -941,6 +942,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)
                   action:^{
+                    base::RecordAction(base::UserMetricsAction(
+                        "MobileBookmarksManagerBulkSaveBookmarksToAccountDialog"
+                        "Accepted"));
                     [weakSelf triggerBatchUploadFor:local_bookmarks_count
                                           userEmail:std::move(user_email)];
                   }
@@ -951,6 +955,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_CANCEL)
                   action:^{
+                    base::RecordAction(base::UserMetricsAction(
+                        "MobileBookmarksManagerBulkSaveBookmarksToAccountDialog"
+                        "Cancelled"));
                     [weakSelf dismissActionSheetCoordinator];
                   }
                    style:UIAlertActionStyleCancel];
@@ -964,6 +971,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                     userEmail:(std::string)userEmail {
   [self dismissActionSheetCoordinator];
   [self.mediator triggerBatchUpload];
+
+  base::UmaHistogramCounts100000(
+      "IOS.Bookmarks.BulkSaveBookmarksInAccountCount", localBookmarksCount);
+
   [self refreshContents];
 
   NSString* snackbarMessage = base::SysUTF16ToNSString(
@@ -2597,6 +2608,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
     if (static_cast<BookmarksHomeItemType>(item.type) ==
         BookmarksHomeItemTypeBatchUploadButton) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileBookmarksManagerBulkSaveBookmarksToAccountButtonClicked"));
       CGRect targetRect = [tableView rectForRowAtIndexPath:indexPath];
       [self showBatchUploadDialog:targetRect];
     }

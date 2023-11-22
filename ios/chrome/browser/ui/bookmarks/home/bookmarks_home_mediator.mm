@@ -8,6 +8,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/i18n/message_formatter.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -790,6 +791,9 @@ bool IsABookmarkNodeSectionForIdentifier(
                 toSectionWithIdentifier:BookmarksBatchUploadSectionIdentifier];
   [self.consumer.tableViewModel addItem:button
                 toSectionWithIdentifier:BookmarksBatchUploadSectionIdentifier];
+
+  base::UmaHistogramBoolean(
+      "IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated", true);
 
   [self.consumer.tableView reloadData];
 }
