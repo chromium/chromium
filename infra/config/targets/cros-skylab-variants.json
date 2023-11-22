@@ -202,7 +202,7 @@
     "skylab": {
       "cros_board": "eve",
       "cros_chrome_version": "121.0.6136.0",
-      "cros_img": "eve-public/R121-15683.0.0",
+      "cros_img": "eve-public/R121-15684.0.0",
       "bucket": "chromiumos-image-archive",
       "dut_pool": "chromium",
       "public_builder": "cros_test_platform_public",
@@ -314,7 +314,7 @@
     "skylab": {
       "cros_board": "trogdor",
       "cros_chrome_version": "121.0.6136.0",
-      "cros_img": "trogdor-public/R121-15683.0.0",
+      "cros_img": "trogdor-public/R121-15684.0.0",
       "bucket": "chromiumos-image-archive"
     },
     "enabled": true,
@@ -324,7 +324,7 @@
     "skylab": {
       "cros_board": "octopus",
       "cros_chrome_version": "121.0.6136.0",
-      "cros_img": "octopus-public/R121-15683.0.0",
+      "cros_img": "octopus-public/R121-15684.0.0",
       "bucket": "chromiumos-image-archive"
     },
     "enabled": true,
@@ -419,7 +419,7 @@
       "cros_board": "volteer",
       "cros_model": "voxel",
       "cros_chrome_version": "121.0.6136.0",
-      "cros_img": "volteer-public/R121-15683.0.0",
+      "cros_img": "volteer-public/R121-15684.0.0",
       "bucket": "chromiumos-image-archive",
       "dut_pool": "chromium",
       "public_builder": "cros_test_platform_public",
