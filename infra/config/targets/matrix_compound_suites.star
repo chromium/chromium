@@ -1072,11 +1072,6 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_arm",
     basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
         "lacros_skylab_tests_version_skew": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_DEV",

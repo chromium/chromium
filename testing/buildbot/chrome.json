@@ -2158,23 +2158,6 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "jacuzzi",
-        "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
-      },
-      {
-        "autotest_name": "tast.lacros-from-gcs",
-        "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15633.44.0",
         "experiment_percentage": 100,
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",

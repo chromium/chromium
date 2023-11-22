@@ -7560,11 +7560,6 @@
     },
 
     'lacros_skylab_arm': {
-      'lacros_skylab_tests': {
-        'variants': [
-          'CROS_JACUZZI_RELEASE_LKGM',
-        ],
-      },
       'lacros_skylab_tests_version_skew': {
         'variants': [
           'CROS_JACUZZI_RELEASE_DEV',
