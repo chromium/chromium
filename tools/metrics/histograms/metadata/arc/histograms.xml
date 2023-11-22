@@ -1132,8 +1132,8 @@ chromium-metrics-reviews@google.com.
   <owner>arc-storage@google.com</owner>
   <summary>
     The number of apps that have at least one file or directory that is failed
-    to be fixed during the fixup process that is triggered after ARC P to R
-    upgrade.
+    to be fixed during the fixup process that is triggered after ARC P to ARCVM
+    R upgrade.
   </summary>
 </histogram>
 
@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
   <owner>arc-storage@google.com</owner>
   <summary>
     The number of directories that are fixed during the {Scale} fixup process
-    that is triggered after ARC P to R upgrade.
+    that is triggered after ARC P to ARCVM R upgrade.
   </summary>
   <token key="Scale">
     <variant name="Entire" summary="the entire fixup process"/>
@@ -1156,8 +1156,8 @@ chromium-metrics-reviews@google.com.
   <owner>momohatt@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
-    The duration of the {Scale} fixup process that is triggered after ARC P to R
-    upgrade.
+    The duration of the {Scale} fixup process that is triggered after ARC P to
+    ARCVM R upgrade.
   </summary>
   <token key="Scale">
     <variant name="Entire" summary="the entire fixup process"/>
@@ -2230,7 +2230,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.AccessDeniedAtOpenSourceFileFailureType"
     enum="ArcVmDataMigrationAccessDeniedAtOpenFileFailureType"
-    expires_after="2024-01-01">
+    expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2311,7 +2311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.FailedErrorCode" enum="PlatformFileError"
-    expires_after="2024-01-01">
+    expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2325,7 +2325,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.FailedOperationType"
     enum="CrOSFileSystemMigrationFailedOperationType"
-    expires_after="2024-01-01">
+    expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2338,7 +2338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.FailedPathType"
-    enum="ArcVmDataMigrationFailedPathType" expires_after="2024-01-01">
+    enum="ArcVmDataMigrationFailedPathType" expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2374,7 +2374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.InitialFreeSpace" units="MB"
-    expires_after="2024-01-01">
+    expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2409,7 +2409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.NoSpaceFailureFreeSpace" units="MB"
-    expires_after="2024-01-01">
+    expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2421,7 +2421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.NoSpaceXattrSize" units="bytes"
-    expires_after="2024-01-01">
+    expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2530,7 +2530,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.VmDataMigration.ScreenSetupFailure.On{ArcVmDataMigrationType}"
-    enum="ArcVmDataMigrationScreenSetupFailure" expires_after="2024-01-01">
+    enum="ArcVmDataMigrationScreenSetupFailure" expires_after="2024-07-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
