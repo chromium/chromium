@@ -139,8 +139,18 @@ message ComposeResponse {
   string output = 1;
 }
 
+// A helper message to store the int64 high and uint64 low bits of an int128
+// since protos do not natively handle int128. The underlying value is split
+// into a `low` uint64 holding the low bits, and `high` int64 holding the bits
+// beyond what an int64 can hold.
+message Int128 {
+  uint64 high = 1;
+  uint64 low = 2;
+}
+
 // Any data collected on the client outside of the model request and response.
 // This includes user feedback, and metrics about feature usage.
+// Next Id: 8
 message ComposeQuality {
   FinalStatus final_status = 1;
   UserFeedback user_feedback = 2;
@@ -151,7 +161,7 @@ message ComposeQuality {
   // final_status = INSERTED.
   int64 edit_distance = 5;
   // A unique ID for each compose session.
-  int64 session_id = 6;
+  Int128 session_id = 6;
   // Was this request generated via an edit action.
   bool was_generated_via_edit = 7;
 }
