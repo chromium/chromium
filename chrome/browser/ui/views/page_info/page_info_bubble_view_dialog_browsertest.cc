@@ -102,7 +102,9 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
         {safe_browsing::kRedInterstitialFacelift},
         {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
          // to disable this feature.
-         features::kHttpsUpgrades});
+         features::kHttpsUpgrades,
+         // TODO(http://b/306151669): Add coverage for 3PCD state.
+         content_settings::features::kTrackingProtection3pcd});
   }
 
   PageInfoBubbleViewDialogBrowserTest(
@@ -477,8 +479,10 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     : public DialogBrowserTest {
  public:
   PageInfoBubbleViewAboutThisSiteDialogBrowserTest() {
-    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSiteMoreLangs},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoAboutThisSiteMoreLangs},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {
@@ -559,6 +563,12 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
 class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
     : public DialogBrowserTest {
  public:
+  PageInfoBubbleViewPrivacySandboxDialogBrowserTest() {
+    // TODO(http://b/306151669): Add coverage for 3PCD state.
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
   void SetUpOnMainThread() override {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -630,7 +640,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
 class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewHistoryDialogBrowserTest() {
-    feature_list_.InitWithFeatures({page_info::kPageInfoHistoryDesktop}, {});
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoHistoryDesktop},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {
@@ -690,7 +703,9 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
  public:
   PageInfoBubbleViewCookiesSubpageBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
+    // TODO(http://b/306151669): Add coverage for 3PCD state.
+    std::vector<base::test::FeatureRef> disabled_features = {
+        content_settings::features::kTrackingProtection3pcd};
 
     enabled_features.push_back(
         {privacy_sandbox::kPrivacySandboxFirstPartySetsUI, {}});
@@ -915,7 +930,9 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewIsolatedWebAppBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {
