@@ -112,8 +112,6 @@ class CreditCardAccessManager
 
   // Logs information about current credit card data.
   void UpdateCreditCardFormEventLogger();
-  // Returns true when deletion is allowed. Only local cards can be deleted.
-  bool DeleteCard(const CreditCard* card);
 
   // Returns false only if some form of authentication is still in progress.
   bool ShouldClearPreviewedForm();

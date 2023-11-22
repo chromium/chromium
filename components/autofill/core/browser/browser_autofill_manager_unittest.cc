@@ -8053,26 +8053,34 @@ TEST_F(BrowserAutofillManagerTest, CrowdsourceNoCVCDueToInvalidCandidateValue) {
 
 TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
   // Add and remove an Autofill profile.
-  AutofillProfile profile;
-  profile.set_guid(MakeGuid(102));
+  AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
 
-  browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
-      Suggestion::Guid(MakeGuid(102)));
+  EXPECT_TRUE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
+      Suggestion::Guid(profile.guid())));
 
-  EXPECT_FALSE(personal_data().GetProfileByGUID(MakeGuid(102)));
+  EXPECT_FALSE(personal_data().GetProfileByGUID(profile.guid()));
 }
 
-TEST_F(BrowserAutofillManagerTest, RemoveCreditCard) {
+TEST_F(BrowserAutofillManagerTest, RemoveLocalCreditCard) {
   // Add and remove an Autofill credit card.
-  CreditCard credit_card;
-  credit_card.set_guid(MakeGuid(100007));
-  personal_data().AddCreditCard(credit_card);
+  CreditCard local_card = test::GetCreditCard();
+  personal_data().AddCreditCard(local_card);
 
-  browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
-      Suggestion::Guid(MakeGuid(100007)));
+  EXPECT_TRUE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
+      Suggestion::Guid(local_card.guid())));
 
-  EXPECT_FALSE(personal_data().GetCreditCardByGUID(MakeGuid(100007)));
+  EXPECT_FALSE(personal_data().GetCreditCardByGUID(local_card.guid()));
+}
+
+TEST_F(BrowserAutofillManagerTest, RemoveServerCreditCard) {
+  CreditCard server_card = test::GetMaskedServerCard();
+  personal_data().AddServerCreditCard(server_card);
+
+  EXPECT_FALSE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
+      Suggestion::Guid(server_card.guid())));
+
+  EXPECT_TRUE(personal_data().GetCreditCardByGUID(server_card.guid()));
 }
 
 // Test our external delegate is called at the right time.

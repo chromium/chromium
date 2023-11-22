@@ -119,16 +119,6 @@ bool CreditCardAccessManager::IsCardPresentInUnmaskedCache(
          unmasked_card_cache_.end();
 }
 
-bool CreditCardAccessManager::DeleteCard(const CreditCard* card) {
-  // Server cards cannot be deleted from within Chrome.
-  bool allowed_to_delete = CreditCard::IsLocalCard(card);
-
-  if (allowed_to_delete)
-    personal_data_manager_->DeleteLocalCreditCards({*card});
-
-  return allowed_to_delete;
-}
-
 bool CreditCardAccessManager::ShouldClearPreviewedForm() {
   return !is_authentication_in_progress_;
 }

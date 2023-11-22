@@ -561,28 +561,6 @@ class CreditCardAccessManagerTest : public testing::Test {
   raw_ptr<TestCreditCardOtpAuthenticator> otp_authenticator_;
 };
 
-// Ensures DeleteCard() successfully removes local cards.
-TEST_F(CreditCardAccessManagerTest, RemoveLocalCreditCard) {
-  CreateLocalCard(kTestGUID);
-  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
-
-  EXPECT_TRUE(personal_data().GetCreditCardByGUID(kTestGUID));
-  EXPECT_TRUE(credit_card_access_manager().DeleteCard(card));
-  EXPECT_FALSE(personal_data().GetCreditCardByGUID(kTestGUID));
-}
-
-// Ensures DeleteCard() does nothing for server cards.
-TEST_F(CreditCardAccessManagerTest, RemoveServerCreditCard) {
-  CreateServerCard(kTestGUID);
-  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
-
-  EXPECT_TRUE(personal_data().GetCreditCardByGUID(kTestGUID));
-  EXPECT_FALSE(credit_card_access_manager().DeleteCard(card));
-
-  // Cannot delete server cards.
-  EXPECT_TRUE(personal_data().GetCreditCardByGUID(kTestGUID));
-}
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_IOS)
 // Parameters of the CreditCardAccessManagerMandatoryReauthTest:
