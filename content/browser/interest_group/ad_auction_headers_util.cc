@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -129,6 +130,10 @@ bool IsAdAuctionHeadersEligible(
 bool IsAdAuctionHeadersEligibleForNavigation(
     const FrameTreeNode& frame,
     const url::Origin& navigation_request_origin) {
+  if (!base::FeatureList::IsEnabled(features::kEnableIFrameAdAuctionHeaders)) {
+    return false;
+  }
+
   // Fenced frames disallow most permissions policies which would let this
   // function return false regardless, but adding this check to be more
   // explicit.

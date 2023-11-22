@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -215,7 +216,8 @@ class IsAdAuctionHeadersEligibleForNavigationTest
  public:
   IsAdAuctionHeadersEligibleForNavigationTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kInterestGroupStorage},
+        /*enabled_features=*/{blink::features::kInterestGroupStorage,
+                              features::kEnableUpdatingUserBiddingSignals},
         /*disabled_features=*/{});
   }
 
@@ -266,6 +268,17 @@ TEST_F(IsAdAuctionHeadersEligibleForNavigationTest, RequestIsEligible) {
   GURL test_url("https://google.com");
   const FrameTreeNode& frame = NavigatePage(test_url);
   EXPECT_TRUE(IsAdAuctionHeadersEligibleForNavigation(
+      frame, url::Origin::Create(test_url)));
+}
+
+TEST_F(IsAdAuctionHeadersEligibleForNavigationTest, DisabledByFeature) {
+  base::test::ScopedFeatureList disable_feature;
+  disable_feature.InitAndDisableFeature(
+      features::kEnableIFrameAdAuctionHeaders);
+
+  GURL test_url("https://google.com");
+  const FrameTreeNode& frame = NavigatePage(test_url);
+  EXPECT_FALSE(IsAdAuctionHeadersEligibleForNavigation(
       frame, url::Origin::Create(test_url)));
 }
 
