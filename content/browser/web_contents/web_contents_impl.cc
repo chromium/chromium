@@ -8205,11 +8205,6 @@ void WebContentsImpl::DidStopLoading() {
           manager->DidStopLoading();
         }
       });
-
-  // TODO(avi): Remove. http://crbug.com/170921
-  NotificationService::current()->Notify(
-      NOTIFICATION_LOAD_STOP, Source<NavigationController>(&GetController()),
-      NotificationService::NoDetails());
 }
 
 void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
