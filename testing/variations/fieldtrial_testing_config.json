@@ -7185,29 +7185,6 @@
             ]
         }
     ],
-    "ForYouFreStudy": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledF-5",
-                    "params": {
-                        "close_should_proceed": "true",
-                        "default_browser_variant": "new",
-                        "group_name": "EnabledF-5",
-                        "signin_promo_variant": "sign-in",
-                        "with_default_browser_step": "yes"
-                    },
-                    "enable_features": [
-                        "ForYouFre",
-                        "ForYouFreSyntheticTrialRegistration"
-                    ]
-                }
-            ]
-        }
-    ],
     "ForceGpuMainThreadToNormalPriorityDrDc": [
         {
             "platforms": [
