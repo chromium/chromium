@@ -7214,7 +7214,20 @@ void AddUnloadHandler(RenderFrameHostImpl* rfh) {
 }
 
 class NavigationSuddenTerminationDisablerTypeBrowserTest
-    : public NavigationBrowserTest,
+    : public NavigationBrowserTest {
+ public:
+  NavigationSuddenTerminationDisablerTypeBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{blink::features::kDeprecateUnload});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class NavigationSuddenTerminationDisablerTypeWithFrameTypeBrowserTest
+    : public NavigationSuddenTerminationDisablerTypeBrowserTest,
       public ::testing::WithParamInterface<
           std::tuple<UnloadFrameType, NavigateFrameType>> {
  public:
@@ -7271,12 +7284,25 @@ class NavigationSuddenTerminationDisablerTypeBrowserTest
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationSuddenTerminationDisablerTypeWithFrameTypeBrowserTest,
+    ::testing::Combine(::testing::Values(UnloadFrameType::kMainFrame,
+                                         UnloadFrameType::kSubFrame,
+                                         UnloadFrameType::kNone),
+                       ::testing::Values(NavigateFrameType::kMainFrame,
+                                         NavigateFrameType::kSubFrame,
+                                         NavigateFrameType::kOther)),
+    &NavigationSuddenTerminationDisablerTypeWithFrameTypeBrowserTest::
+        DescribeParams);
+
 // Set up a page with 2 subframes. The main frame or one of the subframes may
 // have an unload handler. Then navigate one of the frames and verify that we
 // correctly record which type of frame navigates combined with whether it
 // involved an unload handler.
-IN_PROC_BROWSER_TEST_P(NavigationSuddenTerminationDisablerTypeBrowserTest,
-                       RecordUma) {
+IN_PROC_BROWSER_TEST_P(
+    NavigationSuddenTerminationDisablerTypeWithFrameTypeBrowserTest,
+    RecordUma) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "a.com", "/cross_site_iframe_factory.html?a(a,a)")));
@@ -7307,21 +7333,10 @@ IN_PROC_BROWSER_TEST_P(NavigationSuddenTerminationDisablerTypeBrowserTest,
       expected_histogram_value, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NavigationSuddenTerminationDisablerTypeBrowserTest,
-    ::testing::Combine(::testing::Values(UnloadFrameType::kMainFrame,
-                                         UnloadFrameType::kSubFrame,
-                                         UnloadFrameType::kNone),
-                       ::testing::Values(NavigateFrameType::kMainFrame,
-                                         NavigateFrameType::kSubFrame,
-                                         NavigateFrameType::kOther)),
-    &NavigationSuddenTerminationDisablerTypeBrowserTest::DescribeParams);
-
 // Test that "SameOrigin" only considers frames that have an unbroken path of
 // same-origin frames from the frame that navigates.
 IN_PROC_BROWSER_TEST_F(
-    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeBrowserTest,
     NavigationSuddenTerminationDisablerTypeRecordUmaSameOrigin) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
@@ -7349,7 +7364,7 @@ IN_PROC_BROWSER_TEST_F(
 // This is tested because the code path for a navigation involving activation
 // is different from one involving a pageload.
 IN_PROC_BROWSER_TEST_F(
-    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeBrowserTest,
     NavigationSuddenTerminationDisablerTypeRecordUmaActivation) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -7380,7 +7395,7 @@ IN_PROC_BROWSER_TEST_F(
 // histogram value, just that the scenario is counted under the correct
 // histogram.
 IN_PROC_BROWSER_TEST_F(
-    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeBrowserTest,
     NavigationSuddenTerminationDisablerTypeRecordUmaInitialEmptyDocument) {
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), url));
@@ -7412,7 +7427,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Ensure that navigations from non-HTTP(S) pages are recorded correctly.
 IN_PROC_BROWSER_TEST_F(
-    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeBrowserTest,
     NavigationSuddenTerminationDisablerTypeRecordUmaNotHttp) {
   GURL blank_url("about:blank");
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");

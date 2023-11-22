@@ -3217,19 +3217,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            EvictionInBFCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplPrerenderBrowserTest,
                            KeepPrerenderRFHOwnerAfterActivation);
-  FRIEND_TEST_ALL_PREFIXES(NavigationSuddenTerminationDisablerTypeBrowserTest,
-                           RecordUma);
   FRIEND_TEST_ALL_PREFIXES(
-      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeWithFrameTypeBrowserTest,
+      RecordUma);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationSuddenTerminationDisablerTypeBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaNotHttp);
   FRIEND_TEST_ALL_PREFIXES(
-      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaInitialEmptyDocument);
   FRIEND_TEST_ALL_PREFIXES(
-      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaSameOrigin);
   FRIEND_TEST_ALL_PREFIXES(
-      NavigationBrowserTest,
+      NavigationSuddenTerminationDisablerTypeBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaActivation);
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SharedStorageWritable);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, SetTitleOnPagehide);
