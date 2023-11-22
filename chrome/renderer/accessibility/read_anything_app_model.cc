@@ -381,6 +381,7 @@ void ReadAnythingAppModel::UnserializeUpdates(
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   DCHECK(base::Contains(tree_managers_, tree_id));
   ui::AXSerializableTree* tree = GetTreeFromId(tree_id);
+  size_t prev_tree_size = tree->size();
   CHECK(tree);
   // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
   // return true and merge_updates_out will contain the updates. Otherwise, if
@@ -399,7 +400,7 @@ void ReadAnythingAppModel::UnserializeUpdates(
     tree->Unserialize(update);
   }
 
-  ProcessGeneratedEvents(event_generator);
+  ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
 }
 
 ui::AXTreeID ReadAnythingAppModel::GetActiveTreeId() const {
@@ -690,7 +691,9 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
 }
 
 void ReadAnythingAppModel::ProcessGeneratedEvents(
-    const ui::AXEventGenerator& event_generator) {
+    const ui::AXEventGenerator& event_generator,
+    size_t prev_tree_size,
+    size_t tree_size) {
   // Note that this list of events may overlap with non-generated events in the
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
@@ -785,7 +788,18 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::SORT_CHANGED:
       case ui::AXEventGenerator::Event::STATE_CHANGED:
       case ui::AXEventGenerator::Event::SUBTREE_CREATED:
-        if (is_pdf_) {
+        // PDFs are not completely loaded on the kLoadComplete event. The PDF
+        // accessibility tree is only complete when the embedded node in the
+        // tree is populated with the actual contents of the PDF. When this
+        // happens, a SUBTREE_CREATED event will be generated and distillation
+        // should occur.
+        // However, when the user scrolls in the PDF, SUBTREE_CREATED events
+        // will be generated. This happens because the accessibility tree tracks
+        // the scroll position of the PDF (which part of the PDF is currently
+        // displaying). To avoid distilling and causing RM to flicker, only
+        // distill if the size of the updated tree is larger than before (to
+        // capture the complete PDF load mentioned earlier).
+        if (is_pdf_ && prev_tree_size < tree_size) {
           requires_distillation_ = true;
         }
         break;

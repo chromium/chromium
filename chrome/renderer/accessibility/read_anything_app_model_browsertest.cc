@@ -172,6 +172,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool ProcessSelection() { return model_->PostProcessSelection(); }
 
+  bool RequiresDistillation() { return model_->requires_distillation(); }
+
   bool RequiresPostProcessSelection() {
     return model_->requires_post_process_selection();
   }
@@ -1159,4 +1161,47 @@ TEST_F(ReadAnythingAppModelTest, InvalidPDFFormat) {
   AccessibilityEventReceived({pdf_web_contents_update});
 
   ASSERT_FALSE(IsPDFFormatted());
+}
+
+TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillationProperly) {
+  SetIsPdf(GURL("http://www.google.com/foo/bar.pdf"));
+
+  ui::AXTreeUpdate initial_update;
+  SetUpdateTreeID(&initial_update);
+  initial_update.root_id = 1;
+  initial_update.nodes.resize(2);
+  initial_update.nodes[0].id = 1;
+  initial_update.nodes[1].id = 2;
+  initial_update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  initial_update.nodes[1].role = ax::mojom::Role::kEmbeddedObject;
+  initial_update.nodes[0].child_ids = {2};
+  AccessibilityEventReceived({initial_update});
+
+  // Update with no new nodes added to the tree.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.root_id = 1;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  update.nodes[0].SetName("example.pdf");
+  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  AccessibilityEventReceived({update});
+  ASSERT_FALSE(RequiresDistillation());
+
+  // Tree update with PDF contents (new nodes added).
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.root_id = 1;
+  update2.nodes.resize(3);
+  update2.nodes[0].id = 1;
+  update2.nodes[1].id = 2;
+  update2.nodes[2].id = 3;
+  update2.nodes[0].role = ax::mojom::Role::kStaticText;
+  update2.nodes[1].role = ax::mojom::Role::kEmbeddedObject;
+  update2.nodes[2].role = ax::mojom::Role::kStaticText;
+  update2.nodes[0].child_ids = {2};
+  update2.nodes[1].child_ids = {3};
+  AccessibilityEventReceived({update2});
+  ASSERT_TRUE(RequiresDistillation());
 }

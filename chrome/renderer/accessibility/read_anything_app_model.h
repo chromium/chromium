@@ -215,7 +215,12 @@ class ReadAnythingAppModel {
       ui::AXTreeID tree_id);
 
   void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);
-  void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator);
+
+  // The tree size arguments are used to determine if distillation of a PDF is
+  // necessary.
+  void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator,
+                              size_t prev_tree_size,
+                              size_t tree_size);
 
   ui::AXNode* GetParentForSelection(ui::AXNode* node);
 
