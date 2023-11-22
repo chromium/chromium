@@ -8,8 +8,11 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/centered_zoom_transition_animation.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/point_zoom_transition_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/tab_grid_transition_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations/tab_grid_transition_animation_group.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
@@ -179,15 +182,24 @@
 
 // Returns Browser to TabGrid normal motion animation.
 - (id<TabGridTransitionAnimation>)browserToTabGridNormalAnimation {
-  // TODO(crbug.com/1499268): Update this animation.
-  id<TabGridTransitionAnimation> introAnimation =
-      [[CenteredZoomTransitionAnimation alloc]
-          initWithView:_bvcContainerViewController.view
-             direction:CenteredZoomTransitionAnimationDirection::kContracting];
+  // Main animation.
+  TabGridTransitionItem* cellItem =
+      _tabGridViewController.transitionLayout.activeCell;
 
+  PointZoomAnimationParameters animationParam = PointZoomAnimationParameters{
+      .direction =
+          PointZoomAnimationParameters::AnimationDirection::kContracting,
+      .destinationFrame = cellItem.originalFrame,
+      .destinationCornerRadius = cellItem.view.layer.cornerRadius};
+  id<TabGridTransitionAnimation> mainAnimation =
+      [[PointZoomTransitionAnimation alloc]
+                 initWithView:_bvcContainerViewController.view
+          animationParameters:animationParam];
+
+  // Combine animation.
   id<TabGridTransitionAnimation> combinedIntroAndMainAnimations =
       [[TabGridTransitionAnimationGroup alloc]
-          initWithAnimations:@[ introAnimation ]];
+          initWithAnimations:@[ mainAnimation ]];
   return combinedIntroAndMainAnimations;
 }
 

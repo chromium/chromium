@@ -460,9 +460,14 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewLayoutAttributes* attributes = [self.collectionView
       layoutAttributesForItemAtIndexPath:selectedItemIndexPath];
 
+  // Removes the cell header height from the orignal frame.
+  CGRect attributesFrame = attributes.frame;
+  attributesFrame.origin.y += kGridCellHeaderHeight;
+  attributesFrame.size.height -= kGridCellHeaderHeight;
+
   // Normalize frame to window coordinates. The attributes class applies this
   // change to the other properties such as center, bounds, etc.
-  CGRect frameInWindow = [self.collectionView convertRect:attributes.frame
+  CGRect frameInWindow = [self.collectionView convertRect:attributesFrame
                                                    toView:nil];
 
   return [TabGridTransitionItem itemWithView:cell originalFrame:frameInWindow];
