@@ -417,7 +417,8 @@
     <cr-grid columns="3" disable-arrow-navigation>
       <template is="dom-repeat" id="historyRepeat" items="[[history_]]">
         <div class="tile result" tabindex="0" role="button"
-            aria-label="[[getHistoryTileTitle_(index)]]">
+            aria-label="[[getHistoryTileTitle_(index)]]"
+            on-click="onHistoryImageClick_">
           <div class="image-container">
             <img src="data:image/png;base64,[[item.image]]">
             </img>

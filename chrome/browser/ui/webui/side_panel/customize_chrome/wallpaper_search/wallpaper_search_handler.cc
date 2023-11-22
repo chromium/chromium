@@ -231,6 +231,22 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
                      base::ElapsedTimer()));
 }
 
+void WallpaperSearchHandler::SetBackgroundToHistoryImage(
+    const base::Token& result_id) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(
+          &ReadFile,
+          profile_->GetPath().AppendASCII(
+              result_id.ToString() +
+              chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
+      base::BindOnce(
+          &WallpaperSearchHandler::DecodeHistoryImage,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&WallpaperSearchHandler::SelectHistoryImage,
+                         weak_ptr_factory_.GetWeakPtr(), result_id)));
+}
+
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     const base::Token& result_id,
     double time) {
@@ -417,6 +433,11 @@ void WallpaperSearchHandler::OnHistoryDecoded(
     }
   }
   client_->SetHistory(std::move(thumbnails));
+}
+
+void WallpaperSearchHandler::SelectHistoryImage(const base::Token& id,
+                                                const gfx::Image& image) {
+  wallpaper_search_background_manager_->SelectHistoryImage(id, image);
 }
 
 void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(

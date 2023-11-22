@@ -108,6 +108,18 @@ std::vector<base::Token> WallpaperSearchBackgroundManager::GetHistory() {
   return history;
 }
 
+void WallpaperSearchBackgroundManager::SelectHistoryImage(
+    const base::Token& id,
+    const gfx::Image& image) {
+  if (ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy() ||
+      image.IsEmpty()) {
+    return;
+  }
+
+  ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(id);
+  ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(image);
+}
+
 void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
     const base::Token& id,
     const SkBitmap& bitmap) {

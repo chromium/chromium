@@ -359,6 +359,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     };
   }
 
+  private onHistoryImageClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
+    this.wallpaperSearchHandler_.setBackgroundToHistoryImage(e.model.item.id);
+  }
+
   private async onSelectedHueChanged_() {
     this.selectedDefaultColor_ = undefined;
     this.selectedHue_ = this.$.hueSlider.selectedHue;

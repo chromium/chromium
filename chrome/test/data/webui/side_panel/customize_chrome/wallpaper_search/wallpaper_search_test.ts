@@ -806,5 +806,26 @@ suite('WallpaperSearchTest', () => {
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
     });
+
+    test('set history image on click', async () => {
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      const historyTile =
+          $$(wallpaperSearchElement, '#historyCard .tile.result');
+      assertTrue(!!historyTile);
+      (historyTile as HTMLElement).click();
+
+      assertEquals(1, handler.getCallCount('setBackgroundToHistoryImage'));
+      assertEquals(
+          BigInt(10), handler.getArgs('setBackgroundToHistoryImage')[0].high);
+      assertEquals(
+          BigInt(1), handler.getArgs('setBackgroundToHistoryImage')[0].low);
+    });
   });
 });

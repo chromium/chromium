@@ -74,6 +74,7 @@ class WallpaperSearchHandler
       GetWallpaperSearchResultsCallback callback) override;
   void SetResultRenderTime(const std::vector<base::Token>& result_ids,
                            double time) override;
+  void SetBackgroundToHistoryImage(const base::Token& result_id) override;
   void SetBackgroundToWallpaperSearchResult(const base::Token& result_id,
                                             double time) override;
   void UpdateHistory() override;
@@ -97,6 +98,7 @@ class WallpaperSearchHandler
       std::vector<
           std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
                     SkBitmap>> bitmaps);
+  void SelectHistoryImage(const base::Token& id, const gfx::Image& image);
 
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;

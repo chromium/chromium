@@ -66,6 +66,10 @@ interface WallpaperSearchHandler {
   // in the side panel at Unix epoch time stamp `time`.
   SetResultRenderTime(array<mojo_base.mojom.Token> result_ids, double time);
 
+  // Sets the history image identified by `result_id` as the current background
+  // image.
+  SetBackgroundToHistoryImage(mojo_base.mojom.Token result_id);
+
   // Sets wallpaper search result identified by `result_id` to background image.
   // `time` is Unix epoch time stamp of when the user selected the respective
   // preview.

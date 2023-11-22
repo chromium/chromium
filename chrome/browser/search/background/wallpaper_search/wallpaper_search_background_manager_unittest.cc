@@ -118,6 +118,32 @@ TEST_F(WallpaperSearchBackgroundManagerTest, GetHistory) {
   EXPECT_EQ(result, tokens);
 }
 
+TEST_F(WallpaperSearchBackgroundManagerTest, SetHistoryImage) {
+  gfx::Image image_arg;
+  base::Token token_arg;
+  ON_CALL(mock_ntp_custom_background_service(),
+          IsCustomBackgroundDisabledByPolicy)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(mock_ntp_custom_background_service(),
+              SetBackgroundToLocalResourceWithId)
+      .WillOnce(SaveArg<0>(&token_arg));
+  EXPECT_CALL(mock_ntp_custom_background_service(),
+              UpdateCustomLocalBackgroundColorAsync)
+      .WillOnce(SaveArg<0>(&image_arg));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  bitmap.eraseColor(SK_ColorRED);
+
+  const gfx::Image& image = gfx::Image::CreateFrom1xBitmap(bitmap);
+  const base::Token& token = base::Token::CreateRandom();
+  wallpaper_search_background_manager().SelectHistoryImage(token, image);
+  task_environment().RunUntilIdle();
+
+  // Check that the args were passed to |NtpCustomBackgroundService|.
+  EXPECT_EQ(token_arg, token);
+  EXPECT_EQ(image, image_arg);
+}
+
 TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
   gfx::Image image_arg;
   base::Token token_arg;

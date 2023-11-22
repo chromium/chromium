@@ -87,6 +87,7 @@ class MockWallpaperSearchBackgroundManager
   explicit MockWallpaperSearchBackgroundManager(Profile* profile)
       : WallpaperSearchBackgroundManager(profile) {}
   MOCK_METHOD0(GetHistory, std::vector<base::Token>());
+  MOCK_METHOD2(SelectHistoryImage, void(const base::Token&, const gfx::Image&));
   MOCK_METHOD2(SelectLocalBackgroundImage,
                void(const base::Token&, const SkBitmap&));
   MOCK_METHOD0(SaveCurrentBackgroundToHistory, absl::optional<base::Token>());
@@ -157,8 +158,6 @@ class WallpaperSearchHandlerTest : public testing::Test {
             MockWallpaperSearchBackgroundManager(profile_.get())) {}
 
   void SetUp() override {
-    EXPECT_CALL(mock_wallpaper_search_background_manager(),
-                SaveCurrentBackgroundToHistory);
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch,
                               optimization_guide::features::
@@ -186,6 +185,8 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   std::unique_ptr<WallpaperSearchHandler> MakeHandler(int64_t session_id) {
+    EXPECT_CALL(mock_wallpaper_search_background_manager(),
+                SaveCurrentBackgroundToHistory);
     auto handler = std::make_unique<WallpaperSearchHandler>(
         mojo::PendingReceiver<
             side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
@@ -961,6 +962,55 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
   EXPECT_TRUE(quality.final_request_in_session());
   EXPECT_EQ(321, quality.request_latency_ms());
   EXPECT_EQ(0, quality.images_quality_size());
+}
+
+TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback;
+  base::Token token_arg;
+  gfx::Image image_arg;
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
+              SelectHistoryImage(_, _))
+      .WillOnce(DoAll(MoveArg<0>(&token_arg), MoveArg<1>(&image_arg)));
+  EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
+      .WillOnce(Invoke(
+          [&decoder_callback](const std::string& image_data,
+                              const gfx::Size& desired_image_frame_size,
+                              data_decoder::DataDecoder* data_decoder,
+                              image_fetcher::ImageDecodedCallback callback) {
+            decoder_callback = std::move(callback);
+          }));
+
+  auto handler = MakeHandler(/*session_id=*/123);
+
+  // Create test bitmap.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  std::vector<unsigned char> encoded;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                    &encoded);
+
+  // Write bitmap to file.
+  base::Token token = base::Token::CreateRandom();
+  base::WriteFile(profile().GetPath().AppendASCII(
+                      token.ToString() +
+                      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
+                  base::as_bytes(base::make_span(
+                      std::string(encoded.begin(), encoded.end()))));
+
+  handler->SetBackgroundToHistoryImage(token);
+  task_environment().RunUntilIdle();
+
+  std::move(decoder_callback).Run(gfx::Image::CreateFrom1xBitmap(bitmap));
+
+  // Check that the bitmap and token passed to
+  // |WallpaperSearchBackgroundManager| after the reading the history file
+  // and decoding matches the test history image.
+  SkBitmap bitmap_arg = image_arg.AsBitmap();
+  EXPECT_EQ(token_arg, token);
+  EXPECT_EQ(bitmap_arg.getColor(0, 0), bitmap.getColor(0, 0));
+  EXPECT_EQ(bitmap_arg.width(), bitmap.width());
+  EXPECT_EQ(bitmap_arg.height(), bitmap.height());
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
