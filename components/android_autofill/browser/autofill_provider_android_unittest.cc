@@ -180,6 +180,7 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
   MOCK_METHOD(void, OnTextFieldDidScroll, (const FieldInfo&), (override));
   MOCK_METHOD(void, OnFormSubmitted, (mojom::SubmissionSource), (override));
   MOCK_METHOD(void, OnDidFillAutofillFormData, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
 };
 
 content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
@@ -855,10 +856,10 @@ TEST_F(AutofillProviderAndroidTestHidingLogic,
 }
 
 // Tests that if the popup is shown in the *main frame*, destruction of the
-// *main frame* hides the popup.
+// *main frame* resets the java instance which hides the popup.
 TEST_F(AutofillProviderAndroidTestHidingLogic, HideInMainFrameOnDestruction) {
   AskForValuesToFill(main_frame());
-  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  EXPECT_CALL(provider_bridge(), Reset);
   // TearDown() destructs the main frame.
 }
 

@@ -460,8 +460,8 @@ void AutofillProviderAndroid::Reset() {
   triggered_origin_ = {};
   check_submission_ = false;
 
-  // This is a no-op if there is no datalist popup.
-  bridge_->HideDatalistPopup();
+  // Resets the Java instance and hides the datalist popup if there is one.
+  bridge_->Reset();
   // TODO(crbug.com/1488233): Also send an unfocus event to make sure that the
   // Autofill session is truly terminated.
 }

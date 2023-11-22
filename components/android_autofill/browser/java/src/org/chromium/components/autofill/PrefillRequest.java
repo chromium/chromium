@@ -18,13 +18,16 @@ import java.util.Locale;
  * android.view.autofill.AutofillManager#notifyVirtualViewsReady(View, SparseArray)} from the {@link
  * FormData} object sent for the cache request.
  */
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 class PrefillRequest {
     public static final String TAG = "PrefillRequest";
     private final FormData mForm;
 
     public PrefillRequest(FormData form) {
         mForm = form;
+    }
+
+    public FormData getForm() {
+        return mForm;
     }
 
     /**
@@ -34,6 +37,7 @@ class PrefillRequest {
      * @return a SparseArray of VirtualViewFillInfo, null if the feature is disabled or the android
      *     version is below Android U.
      */
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public SparseArray<VirtualViewFillInfo> getPrefillHints() {
         if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS
                 .isEnabled()) {
@@ -42,7 +46,7 @@ class PrefillRequest {
         SparseArray<VirtualViewFillInfo> virtualViewsInfo = new SparseArray<VirtualViewFillInfo>();
 
         for (short i = 0; i < mForm.mFields.size(); ++i) {
-            int virtualFieldId = AutofillRequest.toFieldVirtualId(mForm.mSessionId, i);
+            int virtualFieldId = FormData.toFieldVirtualId(mForm.mSessionId, i);
             // We need to send them as lower case as this is not handled
             // in the first version of Android U.
             String joinedServerPredictions =

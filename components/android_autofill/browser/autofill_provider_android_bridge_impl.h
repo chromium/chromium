@@ -40,6 +40,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   void OnTextFieldDidScroll(const FieldInfo& field) override;
   void OnFormSubmitted(mojom::SubmissionSource submission_source) override;
   void OnDidFillAutofillFormData() override;
+  void Reset() override;
 
   // Called by Java:
 

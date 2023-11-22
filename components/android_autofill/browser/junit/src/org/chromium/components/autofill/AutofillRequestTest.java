@@ -82,7 +82,7 @@ public class AutofillRequestTest {
 
     private static TestViewStructure fillStructureForRequest(AutofillRequest request) {
         TestViewStructure structure = new TestViewStructure();
-        request.fillViewStructure(structure);
+        request.getForm().fillViewStructure(structure);
         return structure;
     }
 

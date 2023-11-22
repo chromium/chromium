@@ -75,6 +75,7 @@ public class AutofillProvider {
     private AutofillSuggestion[] mDatalistSuggestions;
     private WebContentsAccessibility mWebContentsAccessibility;
     private View mAnchorView;
+    private PrefillRequest mPrefillRequest;
 
     public AutofillProvider(Context context, ViewGroup containerView, WebContents webContents,
             String providerName) {
@@ -130,19 +131,23 @@ public class AutofillProvider {
         // This method could be called for the session started by the native
         // control outside of the scope of autofill, e.g. the URL bar, in this case, we simply
         // return.
-        if (mRequest == null) return;
+        if (mRequest == null && mPrefillRequest == null) return;
 
         Bundle bundle = structure.getExtras();
         if (bundle != null) {
             bundle.putCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME", mProviderName);
             bundle.putCharSequence(
                     "VIRTUAL_STRUCTURE_PROVIDER_VERSION", VersionConstants.PRODUCT_VERSION);
-            AutofillHintsService autofillHintsService = mRequest.getAutofillHintsService();
-            if (autofillHintsService != null) {
-                bundle.putBinder("AUTOFILL_HINTS_SERVICE", autofillHintsService.getBinder());
+
+            if (mRequest != null && mRequest.getAutofillHintsService() != null) {
+                bundle.putBinder(
+                        "AUTOFILL_HINTS_SERVICE", mRequest.getAutofillHintsService().getBinder());
             }
         }
-        mRequest.fillViewStructure(structure);
+        // We should have one of them available here, we start with AutofillRequest as it should be
+        // available only if we started a session.
+        FormData form = mRequest != null ? mRequest.getForm() : mPrefillRequest.getForm();
+        form.fillViewStructure(structure);
         if (AutofillManagerWrapper.isLoggable()) {
             AutofillManagerWrapper.log(
                     "onProvideAutoFillVirtualStructure fields:" + structure.getChildCount());
@@ -209,9 +214,9 @@ public class AutofillProvider {
         }
 
         transformFormFieldToContainViewCoordinates(form);
-        PrefillRequest prefillRequest = new PrefillRequest(form);
+        mPrefillRequest = new PrefillRequest(form);
 
-        mAutofillManager.notifyVirtualViewsReady(mContainerView, prefillRequest.getPrefillHints());
+        mAutofillManager.notifyVirtualViewsReady(mContainerView, mPrefillRequest.getPrefillHints());
     }
 
     /**
@@ -239,8 +244,9 @@ public class AutofillProvider {
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
         if (mRequest != null) notifyViewExitBeforeDestroyRequest();
         transformFormFieldToContainViewCoordinates(formData);
-        mRequest = new AutofillRequest(
-                formData, new FocusField((short) focus, absBound), hasServerPrediction);
+        mRequest =
+                new AutofillRequest(
+                        formData, new FocusField((short) focus, absBound), hasServerPrediction);
         notifyVirtualViewEntered(mContainerView, focus, absBound);
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
         if (hasServerPrediction) {
@@ -687,6 +693,13 @@ public class AutofillProvider {
     private void setAnchorViewRect(long nativeAutofillProvider, View anchorView, RectF rect) {
         AutofillProviderJni.get().setAnchorViewRect(nativeAutofillProvider, AutofillProvider.this,
                 anchorView, rect.left, rect.top, rect.width(), rect.height());
+    }
+
+    @CalledByNative
+    public void reset() {
+        hideDatalistPopup();
+        mPrefillRequest = null;
+        mRequest = null;
     }
 
     @NativeMethods

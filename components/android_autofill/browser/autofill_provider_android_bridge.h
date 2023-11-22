@@ -100,6 +100,9 @@ class AutofillProviderAndroidBridge {
 
   // Informs the Java side that the form was autofilled.
   virtual void OnDidFillAutofillFormData() = 0;
+
+  // Resets the Java instance.
+  virtual void Reset() = 0;
 };
 
 }  // namespace autofill
