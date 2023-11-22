@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.ImeAdapter;
@@ -21,6 +20,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.wolvic.WolvicWebContentsDelegate;
 
 @JNINamespace("wolvic")
 public class Tab {
@@ -35,7 +35,7 @@ public class Tab {
     }
 
     public void setWebContentsDelegate(
-            WebContents webContents, WebContentsDelegateAndroid delegate) {
+            WebContents webContents, WolvicWebContentsDelegate delegate) {
         TabJni.get().setWebContentsDelegate(webContents, delegate);
     }
 
@@ -96,6 +96,6 @@ public class Tab {
     @NativeMethods
     public interface Natives {
         WebContents createWebContents(boolean is_off_the_record);
-        void setWebContentsDelegate(WebContents webContents, WebContentsDelegateAndroid delegate);
+        void setWebContentsDelegate(WebContents webContents, WolvicWebContentsDelegate delegate);
     }
 }
