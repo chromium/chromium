@@ -445,6 +445,11 @@ DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTenFeature,
 DEFINE_VARIATION_PARAM(kIPHScalableIphGamingFeature, "IPH_ScalableIphGaming");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+DEFINE_VARIATION_PARAM(kIPHDesktopPWAsLinkCapturingLaunch,
+                       "IPH_DesktopPWAsLinkCapturingLaunch");
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 DEFINE_VARIATION_PARAM(kIPHiOSPasswordPromoDesktopFeature,
                        "IPH_iOSPasswordPromoDesktop");
@@ -678,6 +683,10 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTenFeature),
         VARIATION_ENTRY(kIPHScalableIphGamingFeature),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+        VARIATION_ENTRY(kIPHDesktopPWAsLinkCapturingLaunch),
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
         VARIATION_ENTRY(kIPHiOSPasswordPromoDesktopFeature),

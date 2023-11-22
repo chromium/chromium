@@ -17878,6 +17878,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="LinkCapturingIPHAppSettingsOpened">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user clicks on the Open App Settings button in the IPH
+    bubble that pops up whenever an app is opened via a link capturing workflow
+    due to the app being set to support links by default.
+  </description>
+</action>
+
 <action name="LinkNavigationOpenedInForegroundTab">
   <owner>meiliang@chromium.org</owner>
   <owner>sbirch@chromium.org</owner>
@@ -40071,6 +40081,8 @@ should be able to be added at any place in this file.
   <suffix name="DesktopNewTabPageModulesCustomize"
       label="For Desktop NTP modules customize feature."/>
   <suffix name="DesktopPwaInstall" label="For desktop PWA install icon."/>
+  <suffix name="DesktopPWAsLinkCapturingLaunch"
+      label="For desktop PWAs launched via Link Capturing."/>
   <suffix name="DesktopSharedHighlighting"
       label="For DesktopSharedHighlighting feature."/>
   <suffix name="DesktopSnoozeFeature"

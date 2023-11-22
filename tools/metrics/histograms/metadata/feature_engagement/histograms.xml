@@ -132,6 +132,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DesktopNewTabPageModulesCustomizeFeature"
       summary="customizing new tab page modules"/>
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
+  <variant name="IPH_DesktopPWAsLinkCapturingLaunch"
+      summary="PWA launch due to link capturing being enabled"/>
   <variant name="IPH_DesktopTabGroupsNewGroup"
       summary="creating a new tab group"/>
   <variant name="IPH_DownloadHome" summary="download home"/>

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -683,6 +685,48 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHPriceTrackingChipFeature,
       kPriceTrackingChipElementId, IDS_PRICE_TRACKING_CHIP_IPH));
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  // kIPHDesktopPWAsLinkCapturingLaunch:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
+          kToolbarAppMenuButtonElementId, IDS_DESKTOP_PWA_LINK_CAPTURING_TEXT,
+          IDS_DESKTOP_PWA_LINK_CAPTURING_SETTINGS,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                TabStripModel* tab_strip_model = browser->tab_strip_model();
+                if (tab_strip_model) {
+                  content::WebContents* web_contents =
+                      tab_strip_model->GetActiveWebContents();
+                  GURL final_url;
+                  const webapps::AppId* app_id =
+                      web_app::WebAppTabHelper::GetAppId(web_contents);
+                  CHECK(app_id);
+                  final_url =
+                      GURL(chrome::kChromeUIWebAppSettingsURL + *app_id);
+                  if (web_contents &&
+                      web_contents->GetURL() != browser->GetNewTabURL()) {
+                    NavigateParams params(browser->profile(), final_url,
+                                          ui::PAGE_TRANSITION_LINK);
+                    params.disposition =
+                        WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                    Navigate(&params);
+                    base::RecordAction(base::UserMetricsAction(
+                        "LinkCapturingIPHAppSettingsOpened"));
+                  }
+                }
+              }))
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetPromoSubtype(user_education::FeaturePromoSpecification::
+                               PromoSubtype::kPerApp)));
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 }
 
 void MaybeRegisterChromeTutorials(
