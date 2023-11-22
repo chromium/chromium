@@ -13,10 +13,7 @@
 namespace blink {
 
 BlinkFuzzerTestSupport::BlinkFuzzerTestSupport()
-    : BlinkFuzzerTestSupport(0, nullptr) {
-  test_environment_ =
-      std::make_unique<content::BlinkTestEnvironmentWithIsolate>();
-}
+    : BlinkFuzzerTestSupport(0, nullptr) {}
 
 BlinkFuzzerTestSupport::BlinkFuzzerTestSupport(int argc, char** argv) {
   // Note: we don't tear anything down here after an iteration of the fuzzer
@@ -28,6 +25,8 @@ BlinkFuzzerTestSupport::BlinkFuzzerTestSupport(int argc, char** argv) {
 
   TestTimeouts::Initialize();
 
+  test_environment_ =
+      std::make_unique<content::BlinkTestEnvironmentWithIsolate>();
   test_environment_->SetUp();
 }
 
