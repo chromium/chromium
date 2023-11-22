@@ -9802,7 +9802,6 @@ test("unit_tests") {
     sources += [
       "../browser/device_identity/device_oauth2_token_store_desktop_unittest.cc",
       "../browser/media/webrtc/native_desktop_media_list_unittest.cc",
-      "../browser/metrics/upgrade_metrics_provider_unittest.cc",
       "../browser/policy/cbcm_invalidations_initializer_unittest.cc",
       "../browser/policy/chrome_browser_cloud_management_register_watcher_unittest.cc",
       "../browser/policy/client_data_delegate_desktop_unittest.cc",

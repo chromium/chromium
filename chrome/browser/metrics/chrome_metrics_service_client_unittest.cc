@@ -256,10 +256,6 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers += 2;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  expected_providers++;  // UpgradeMetricsProvider
-#endif  //! BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_MAC)
   expected_providers++;  // PowerMetricsProvider
 #endif                   // BUILDFLAG(IS_MAC)

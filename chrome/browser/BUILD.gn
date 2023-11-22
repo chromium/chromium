@@ -4734,8 +4734,6 @@ static_library("browser") {
         "first_run/upgrade_util.h",
         "lifetime/switch_utils.cc",
         "lifetime/switch_utils.h",
-        "metrics/upgrade_metrics_provider.cc",
-        "metrics/upgrade_metrics_provider.h",
         "platform_util.cc",
         "policy/cbcm_invalidations_initializer.cc",
         "policy/cbcm_invalidations_initializer.h",

@@ -57553,16 +57553,6 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Admin-initiated enterprise rollback"/>
 </enum>
 
-<enum name="UpgradeNotificationStage">
-  <int value="0" label="None"/>
-  <int value="1" label="Low"/>
-  <int value="2" label="Elevated"/>
-  <int value="3" label="High"/>
-  <int value="4" label="(Obsolete) Severe"/>
-  <int value="5" label="Critical"/>
-  <int value="6" label="Very Low (desktop canary and dev)"/>
-</enum>
-
 <enum name="UploadAcceptedCardOrigin">
   <int value="0" label="Upload was accepted for existing local card"/>
   <int value="1" label="Upload was accepted for newly-seen card"/>

@@ -10609,14 +10609,6 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="UpgradeDetector.NotificationStage"
-    enum="UpgradeNotificationStage" expires_after="M77">
-  <owner>spqchan@chromium.org</owner>
-  <summary>
-    Tracks the upgrade notification stage. This is recorded with every UMA log.
-  </summary>
-</histogram>
-
 <histogram name="UpgradeDetector.RollbackReason"
     enum="UpgradeDetectorRollbackReason" expires_after="2024-06-01">
   <owner>mpolzer@google.com</owner>
