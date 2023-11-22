@@ -30,7 +30,6 @@ static_js_files = [
   "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
-  "file_manager/common/js/progress_center_common.js",
   "file_manager/common/js/ui.js",
   "file_manager/common/js/volume_manager_types.js",
 
@@ -166,8 +165,9 @@ ts_files = [
   "file_manager/common/js/file_types_base.ts",
   "file_manager/common/js/flags.ts",
   "file_manager/common/js/icon_util.ts",
-  "file_manager/common/js/metrics.ts",
   "file_manager/common/js/lru_cache.ts",
+  "file_manager/common/js/metrics.ts",
+  "file_manager/common/js/progress_center_common.ts",
   "file_manager/common/js/recent_date_bucket.ts",
   "file_manager/common/js/script_loader.ts",
   "file_manager/common/js/storage.ts",
