@@ -900,11 +900,6 @@ export class FileManager extends EventTarget {
         new CommandHandler(this, assert(this.selectionHandler_));
 
     // TODO(hirono): Move the following block to the UI part.
-    // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a
-    // '[Symbol.iterator]()' method that returns an iterator.
-    for (const button of this.dialogDom_.querySelectorAll('button[command]')) {
-      CommandButton.decorate(button);
-    }
     // Hook up the cr-button commands.
     // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a
     // '[Symbol.iterator]()' method that returns an iterator.

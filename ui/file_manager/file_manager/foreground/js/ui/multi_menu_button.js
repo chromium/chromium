@@ -3,18 +3,22 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {decorate} from '../../../common/js/ui.js';
+import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+
+import {decorate} from '../../../common/js/cr_ui.js';
+import {decorate as deprecatedDecorate} from '../../../common/js/ui.js';
+
 import {Menu} from './menu.js';
 import {HideType} from './menu_button.js';
 import {MenuItem} from './menu_item.js';
-import {AnchorType, positionPopupAroundElement} from './position_util.js';
-import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 import {MultiMenu} from './multi_menu.js';
+import {AnchorType, positionPopupAroundElement} from './position_util.js';
 
 /**
  * A button that displays a MultiMenu (menu with sub-menus).
  */
-export class MultiMenuButton extends HTMLButtonElement {
+export class MultiMenuButton extends CrButtonElement {
   constructor() {
     super();
 
@@ -49,45 +53,12 @@ export class MultiMenuButton extends HTMLButtonElement {
 
   /**
    * Decorates the element.
-   * @param {!Element} element Element to be decorated.
+   * @param {!HTMLElement} element Element to be decorated.
    * @return {!MultiMenuButton} Decorated element.
    */
   static decorate(element) {
-    // Add the MultiMenuButton methods to the element we're
-    // decorating, leaving it's prototype chain intact.
-    // Don't copy 'constructor' or property get/setters.
-    Object.getOwnPropertyNames(MultiMenuButton.prototype).forEach(name => {
-      if (name !== 'constructor' &&
-          !Object.getOwnPropertyDescriptor(element, name)) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type
-        // 'MultiMenuButton'.
-        element[name] = MultiMenuButton.prototype[name];
-      }
-    });
-    // Set up the 'menu' property & setter/getter.
-    Object.defineProperty(element, 'menu', {
-      get() {
-        return this.menu_;
-      },
-      set(menu) {
-        this.setMenu_(menu);
-      },
-      enumerable: true,
-      configurable: true,
-    });
-    // @ts-ignore: error TS2352: Conversion of type 'Element' to type
-    // 'MultiMenuButton' may be a mistake because neither type sufficiently
-    // overlaps with the other. If this was intentional, convert the expression
-    // to 'unknown' first.
-    element = /** @type {!MultiMenuButton} */ (element);
-    // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-    // 'Element'.
-    element.decorate();
-    // @ts-ignore: error TS2740: Type 'Element' is missing the following
-    // properties from type 'MultiMenuButton': overflow, menuEndGap_,
-    // showingEvents_, menu_, and 18 more.
-    return element;
+    decorate(element, MultiMenuButton);
+    return /** @type {!MultiMenuButton} */ (element);
   }
 
   /**
@@ -143,22 +114,16 @@ export class MultiMenuButton extends HTMLButtonElement {
   }
 
   /**
-   * TODO(adanilo) Get rid of the getter/setter duplication.
-   * The menu associated with the menu button.
-   * @type {Menu}
+   * @type {?Menu}
    */
   get menu() {
-    // @ts-ignore: error TS2322: Type 'Menu | null' is not assignable to type
-    // 'Menu'.
     return this.menu_;
   }
   // @ts-ignore: error TS7006: Parameter 'menu' implicitly has an 'any' type.
   setMenu_(menu) {
     if (typeof menu == 'string' && menu[0] == '#') {
-      // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
-      // type 'MultiMenuButton'.
       menu = assert(this.ownerDocument.body.querySelector(menu));
-      decorate(menu, MultiMenu);
+      deprecatedDecorate(menu, MultiMenu);
     }
 
     this.menu_ = menu;
@@ -595,5 +560,3 @@ export class MultiMenuButton extends HTMLButtonElement {
     return false;
   }
 }
-
-MultiMenuButton.prototype.__proto__ = HTMLButtonElement.prototype;
