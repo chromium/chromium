@@ -63,10 +63,15 @@ BackendIO::BackendIO(InFlightBackendIO* controller, BackendImpl* backend)
 
 // Runs on the background thread.
 void BackendIO::ExecuteOperation() {
-  if (IsEntryOperation())
-    return ExecuteEntryOperation();
-
-  ExecuteBackendOperation();
+  if (IsEntryOperation()) {
+    ExecuteEntryOperation();
+  } else {
+    ExecuteBackendOperation();
+  }
+  // Clear our pointer to entry we operated on.  We don't need it any more, and
+  // it's possible by the time ~BackendIO gets destroyed on the main thread the
+  // entry will have been closed and freed on the cache/background thread.
+  entry_ = nullptr;
 }
 
 // Runs on the background thread.
