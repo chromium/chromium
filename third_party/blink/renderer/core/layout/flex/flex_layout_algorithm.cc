@@ -635,7 +635,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
   // child. See the bottom of GiveItemsFinalPositionAndSize().
   if (Node().IsButton()) {
     space_builder.SetBaselineAlgorithmType(
-        GetConstraintSpace().BaselineAlgorithmType());
+        GetConstraintSpace().GetBaselineAlgorithmType());
   }
 
   return space_builder.ToConstraintSpace();
@@ -2135,7 +2135,7 @@ void FlexLayoutAlgorithm::AdjustButtonBaseline(
   LogicalBoxFragment fragment(space.GetWritingDirection(),
                               To<NGPhysicalBoxFragment>(*child.fragment));
   absl::optional<LayoutUnit> child_baseline =
-      space.BaselineAlgorithmType() == NGBaselineAlgorithmType::kDefault
+      space.GetBaselineAlgorithmType() == BaselineAlgorithmType::kDefault
           ? fragment.FirstBaseline()
           : fragment.LastBaseline();
   if (child_baseline)

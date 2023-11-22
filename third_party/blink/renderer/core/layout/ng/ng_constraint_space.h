@@ -30,7 +30,7 @@ namespace blink {
 
 class NGConstraintSpaceBuilder;
 
-enum NGFragmentationType {
+enum FragmentationType {
   kFragmentNone,
   kFragmentPage,
   kFragmentColumn,
@@ -41,19 +41,19 @@ enum NGFragmentationType {
 // used to indicate that a particular node might need a relayout once its BFC
 // block-offset is resolved. E.g. their position depends on the final BFC
 // block-offset being known.
-enum NGAdjoiningObjectTypeValue {
+enum AdjoiningObjectTypeValue {
   kAdjoiningNone = 0b000,
   kAdjoiningFloatLeft = 0b001,
   kAdjoiningFloatRight = 0b010,
   kAdjoiningFloatBoth = 0b011,
   kAdjoiningInlineOutOfFlow = 0b100
 };
-typedef int NGAdjoiningObjectTypes;
+typedef int AdjoiningObjectTypes;
 
 // The last baseline algorithm for an inline-blocks are complex. Depending on
 // the layout algorithm type it'll select the first (table, flex, grid) or last
 // (block-like) as the last baseline.
-enum class NGBaselineAlgorithmType {
+enum class BaselineAlgorithmType {
   // Compute the baselines normally.
   kDefault,
   // Compute the baseline(s) for when we are within an inline-block context.
@@ -95,7 +95,7 @@ class CORE_EXPORT NGConstraintSpace final {
  public:
   // Percentages are frequently the same as the available-size, zero, or
   // indefinite (thanks non-quirks mode)! This enum encodes this information.
-  enum NGPercentageStorage {
+  enum PercentageStorage {
     kSameAsAvailable,
     kZero,
     kIndefinite,
@@ -190,8 +190,8 @@ class CORE_EXPORT NGConstraintSpace final {
   // The size to use for percentage resolution.
   // See: https://drafts.csswg.org/css-sizing/#percentage-sizing
   LayoutUnit PercentageResolutionInlineSize() const {
-    switch (static_cast<NGPercentageStorage>(
-        bitfields_.percentage_inline_storage)) {
+    switch (
+        static_cast<PercentageStorage>(bitfields_.percentage_inline_storage)) {
       default:
         NOTREACHED();
         [[fallthrough]];
@@ -209,7 +209,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
   LayoutUnit PercentageResolutionBlockSize() const {
     switch (
-        static_cast<NGPercentageStorage>(bitfields_.percentage_block_storage)) {
+        static_cast<PercentageStorage>(bitfields_.percentage_block_storage)) {
       default:
         NOTREACHED();
         [[fallthrough]];
@@ -234,7 +234,7 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   LayoutUnit ReplacedPercentageResolutionBlockSize() const {
-    switch (static_cast<NGPercentageStorage>(
+    switch (static_cast<PercentageStorage>(
         bitfields_.replaced_percentage_block_storage)) {
       case kSameAsAvailable:
         return available_size_.block_size;
@@ -459,9 +459,9 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // How the baseline for the fragment should be calculated, see documentation
-  // for |NGBaselineAlgorithmType|.
-  NGBaselineAlgorithmType BaselineAlgorithmType() const {
-    return static_cast<NGBaselineAlgorithmType>(
+  // for |BaselineAlgorithmType|.
+  BaselineAlgorithmType GetBaselineAlgorithmType() const {
+    return static_cast<BaselineAlgorithmType>(
         bitfields_.baseline_algorithm_type);
   }
 
@@ -527,8 +527,8 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // If specified a layout should produce a Fragment which fragments at the
   // blockSize if possible.
-  NGFragmentationType BlockFragmentationType() const {
-    return HasRareData() ? static_cast<NGFragmentationType>(
+  FragmentationType BlockFragmentationType() const {
+    return HasRareData() ? static_cast<FragmentationType>(
                                rare_data_->block_direction_fragmentation_type)
                          : kFragmentNone;
   }
@@ -713,7 +713,7 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Returns the types of preceding adjoining objects.
-  // See |NGAdjoiningObjectTypes|.
+  // See |AdjoiningObjectTypes|.
   //
   // Adjoining floats are positioned at their correct position if the
   // |ForcedBfcBlockOffset()| is known.
@@ -723,7 +723,7 @@ class CORE_EXPORT NGConstraintSpace final {
   // up front that the block will need clearance, since, if it doesn't, the
   // float will be pulled along with the block, and the block will fail to
   // clear).
-  NGAdjoiningObjectTypes AdjoiningObjectTypes() const {
+  AdjoiningObjectTypes GetAdjoiningObjectTypes() const {
     return bitfields_.adjoining_object_types;
   }
 
@@ -1545,7 +1545,7 @@ class CORE_EXPORT NGConstraintSpace final {
           use_first_line_style(false),
           ancestor_has_clearance_past_adjoining_floats(false),
           baseline_algorithm_type(
-              static_cast<unsigned>(NGBaselineAlgorithmType::kDefault)),
+              static_cast<unsigned>(BaselineAlgorithmType::kDefault)),
           cache_slot(static_cast<unsigned>(LayoutResultCacheSlot::kLayout)),
           inline_auto_behavior(
               static_cast<unsigned>(AutoSizeBehavior::kFitContent)),
@@ -1590,7 +1590,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     unsigned has_rare_data : 1;
-    unsigned adjoining_object_types : 3;  // NGAdjoiningObjectTypes
+    unsigned adjoining_object_types : 3;  // AdjoiningObjectTypes
     unsigned writing_mode : 3;
     unsigned direction : 1;
 
@@ -1615,9 +1615,9 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_table_cell_child : 1;
     unsigned is_restricted_block_size_table_cell_child : 1;
 
-    unsigned percentage_inline_storage : 2;           // NGPercentageStorage
-    unsigned percentage_block_storage : 2;            // NGPercentageStorage
-    unsigned replaced_percentage_block_storage : 2;   // NGPercentageStorage
+    unsigned percentage_inline_storage : 2;          // PercentageStorage
+    unsigned percentage_block_storage : 2;           // PercentageStorage
+    unsigned replaced_percentage_block_storage : 2;  // PercentageStorage
   };
 
   // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,

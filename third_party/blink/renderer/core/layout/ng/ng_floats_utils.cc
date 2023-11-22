@@ -91,7 +91,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
     if (margin_edge_offset <= LayoutUnit())
       builder.SetIsAtFragmentainerStart();
   } else {
-    builder.SetFragmentationType(NGFragmentationType::kFragmentNone);
+    builder.SetFragmentationType(FragmentationType::kFragmentNone);
   }
 
   builder.SetAvailableSize(unpositioned_float.available_size);

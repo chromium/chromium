@@ -281,7 +281,7 @@ LogicalSize FragmentainerLogicalCapacity(
 }
 
 LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder& builder,
-                                          NGFragmentationType type) {
+                                          FragmentationType type) {
   if (type == kFragmentColumn) {
     LayoutUnit column_inline_progression = ColumnInlineProgression(
         builder.ChildAvailableSize().inline_size, builder.Style());
@@ -1267,7 +1267,7 @@ bool IsEarlyBreakTarget(const NGEarlyBreak& early_break,
 
 NGConstraintSpace CreateConstraintSpaceForFragmentainer(
     const NGConstraintSpace& parent_space,
-    NGFragmentationType fragmentation_type,
+    FragmentationType fragmentation_type,
     LogicalSize fragmentainer_size,
     LogicalSize percentage_resolution_size,
     bool balance_columns,
@@ -1289,7 +1289,8 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
     space_builder.SetIsInsideBalancedColumns();
   }
   space_builder.SetMinBreakAppeal(min_break_appeal);
-  space_builder.SetBaselineAlgorithmType(parent_space.BaselineAlgorithmType());
+  space_builder.SetBaselineAlgorithmType(
+      parent_space.GetBaselineAlgorithmType());
 
   return space_builder.ToConstraintSpace();
 }

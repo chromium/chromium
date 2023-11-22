@@ -117,7 +117,7 @@ inline const NGLayoutResult* LayoutInflow(
                           To<BlockNode>(node));
 }
 
-NGAdjoiningObjectTypes ToAdjoiningObjectTypes(EClear clear) {
+AdjoiningObjectTypes ToAdjoiningObjectTypes(EClear clear) {
   switch (clear) {
     default:
       NOTREACHED();
@@ -140,7 +140,7 @@ NGAdjoiningObjectTypes ToAdjoiningObjectTypes(EClear clear) {
 // since that's what clearance is all about. This means that if we have any such
 // floats to clear, we know for sure that we get clearance, even before layout.
 inline bool HasClearancePastAdjoiningFloats(
-    NGAdjoiningObjectTypes adjoining_object_types,
+    AdjoiningObjectTypes adjoining_object_types,
     const ComputedStyle& child_style,
     const ComputedStyle& cb_style) {
   return ToAdjoiningObjectTypes(child_style.Clear(cb_style)) &
@@ -580,8 +580,8 @@ inline const NGLayoutResult* BlockLayoutAlgorithm::Layout(
   container_builder_.SetBfcLineOffset(
       constraint_space.GetBfcOffset().line_offset);
 
-  if (NGAdjoiningObjectTypes adjoining_object_types =
-          constraint_space.AdjoiningObjectTypes()) {
+  if (auto adjoining_object_types =
+          constraint_space.GetAdjoiningObjectTypes()) {
     DCHECK(!constraint_space.IsNewFormattingContext());
     DCHECK(!container_builder_.BfcBlockOffset());
 
@@ -1159,8 +1159,8 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
 
   OutOfFlowLayoutPart(Node(), constraint_space, &container_builder_).Run();
 
-  if (constraint_space.BaselineAlgorithmType() ==
-      NGBaselineAlgorithmType::kInlineBlock) {
+  if (constraint_space.GetBaselineAlgorithmType() ==
+      BaselineAlgorithmType::kInlineBlock) {
     container_builder_.SetUseLastBaselineForInlineBaseline();
   }
 
@@ -1493,7 +1493,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
 
   if (!container_builder_.BfcBlockOffset()) {
     has_adjoining_floats =
-        container_builder_.AdjoiningObjectTypes() & kAdjoiningFloatBoth;
+        container_builder_.GetAdjoiningObjectTypes() & kAdjoiningFloatBoth;
 
     // If this node, or an arbitrary ancestor had clearance past adjoining
     // floats, we consider the margin "separated". We should *never* attempt to
@@ -1501,7 +1501,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
     bool has_clearance_past_adjoining_floats =
         constraint_space.AncestorHasClearancePastAdjoiningFloats() ||
         HasClearancePastAdjoiningFloats(
-            container_builder_.AdjoiningObjectTypes(), child_style, Style());
+            container_builder_.GetAdjoiningObjectTypes(), child_style, Style());
 
     if (has_clearance_past_adjoining_floats) {
       child_bfc_offset_estimate = NextBorderEdge(*previous_inflow_position);
@@ -1917,8 +1917,8 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
 
   bool has_clearance_past_adjoining_floats =
       !container_builder_.BfcBlockOffset() && child.IsBlock() &&
-      HasClearancePastAdjoiningFloats(container_builder_.AdjoiningObjectTypes(),
-                                      child.Style(), Style());
+      HasClearancePastAdjoiningFloats(
+          container_builder_.GetAdjoiningObjectTypes(), child.Style(), Style());
 
   absl::optional<LayoutUnit> forced_bfc_block_offset;
   bool is_pushed_by_floats = false;
@@ -2227,9 +2227,9 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   container_builder_.SetExclusionSpace(layout_result->GetExclusionSpace());
 
   // Only self-collapsing children should have adjoining objects.
-  DCHECK(!layout_result->AdjoiningObjectTypes() || is_self_collapsing);
+  DCHECK(!layout_result->GetAdjoiningObjectTypes() || is_self_collapsing);
   container_builder_.SetAdjoiningObjectTypes(
-      layout_result->AdjoiningObjectTypes());
+      layout_result->GetAdjoiningObjectTypes());
 
   // If we don't know our BFC block-offset yet, and the child stumbled into
   // something that needs it (unable to position floats yet), we need abort
@@ -2247,7 +2247,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   // has been positioned.
   if (!container_builder_.BfcBlockOffset()) {
     abort_when_bfc_block_offset_updated_ |=
-        layout_result->AdjoiningObjectTypes();
+        layout_result->GetAdjoiningObjectTypes();
     // If our BFC block offset is unknown, and the child got pushed down by
     // floats, so will we.
     if (layout_result->IsPushedByFloats())
@@ -2951,7 +2951,7 @@ NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     }
   }
   builder.SetClearanceOffset(clearance_offset);
-  builder.SetBaselineAlgorithmType(constraint_space.BaselineAlgorithmType());
+  builder.SetBaselineAlgorithmType(constraint_space.GetBaselineAlgorithmType());
 
   if (child_data.is_pushed_by_floats) {
     // Clearance has been applied, but it won't be automatically detected when
@@ -2966,7 +2966,7 @@ NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     builder.SetExclusionSpace(GetExclusionSpace());
     if (!has_bfc_block_offset) {
       builder.SetAdjoiningObjectTypes(
-          container_builder_.AdjoiningObjectTypes());
+          container_builder_.GetAdjoiningObjectTypes());
     }
     builder.SetIsLineClampContext(is_line_clamp_context_);
     builder.SetLinesUntilClamp(lines_until_clamp_);
@@ -3045,12 +3045,13 @@ void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
     const BoxStrut& margins,
     LayoutUnit block_offset) {
   DCHECK(child.IsBox());
-  const auto baseline_algorithm = GetConstraintSpace().BaselineAlgorithmType();
+  const auto baseline_algorithm =
+      GetConstraintSpace().GetBaselineAlgorithmType();
 
   // When computing baselines for an inline-block, table's don't contribute any
   // baselines.
   if (child.IsTable() &&
-      baseline_algorithm == NGBaselineAlgorithmType::kInlineBlock) {
+      baseline_algorithm == BaselineAlgorithmType::kInlineBlock) {
     return;
   }
 
@@ -3070,7 +3071,7 @@ void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
   // Counter-intuitively, when computing baselines for an inline-block, some
   // fragments use their first-baseline for the container's last-baseline.
   bool use_last_baseline =
-      baseline_algorithm == NGBaselineAlgorithmType::kDefault ||
+      baseline_algorithm == BaselineAlgorithmType::kDefault ||
       physical_fragment.UseLastBaselineForInlineBaseline();
 
   auto last_baseline =
@@ -3078,7 +3079,7 @@ void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
 
   // When computing baselines for an inline-block, some block-boxes (e.g. with
   // "overflow: hidden") will force the baseline to the block-end margin edge.
-  if (baseline_algorithm == NGBaselineAlgorithmType::kInlineBlock &&
+  if (baseline_algorithm == BaselineAlgorithmType::kInlineBlock &&
       physical_fragment.UseBlockEndMarginEdgeForInlineBaseline() &&
       !child.ShouldApplyLayoutContainment() && fragment.IsWritingModeEqual()) {
     last_baseline = fragment.BlockSize() + margins.block_end;

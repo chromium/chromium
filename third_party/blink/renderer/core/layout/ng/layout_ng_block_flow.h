@@ -10,7 +10,6 @@
 
 namespace blink {
 
-enum class NGBaselineAlgorithmType;
 struct InlineNodeData;
 
 // This overrides the default layout block algorithm to use Layout NG.

@@ -1543,7 +1543,7 @@ const NGLayoutResult* BlockNode::LayoutAtomicInline(
     const NGConstraintSpace& parent_constraint_space,
     const ComputedStyle& parent_style,
     bool use_first_line_style,
-    NGBaselineAlgorithmType baseline_algorithm_type) {
+    BaselineAlgorithmType baseline_algorithm_type) {
   NGConstraintSpaceBuilder builder(parent_constraint_space,
                                    Style().GetWritingDirection(),
                                    /* is_new_fc */ true);

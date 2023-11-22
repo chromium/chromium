@@ -226,12 +226,12 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.bitfields_.is_painted_atomically = b;
   }
 
-  void SetFragmentationType(NGFragmentationType fragmentation_type) {
+  void SetFragmentationType(FragmentationType fragmentation_type) {
 #if DCHECK_IS_ON()
     DCHECK(!is_block_direction_fragmentation_type_set_);
     is_block_direction_fragmentation_type_set_ = true;
 #endif
-    if (fragmentation_type != NGFragmentationType::kFragmentNone) {
+    if (fragmentation_type != FragmentationType::kFragmentNone) {
       space_.EnsureRareData()->block_direction_fragmentation_type =
           fragmentation_type;
     }
@@ -300,7 +300,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.bitfields_.use_first_line_style = b;
   }
 
-  void SetAdjoiningObjectTypes(NGAdjoiningObjectTypes adjoining_object_types) {
+  void SetAdjoiningObjectTypes(AdjoiningObjectTypes adjoining_object_types) {
     if (!is_new_fc_) {
       space_.bitfields_.adjoining_object_types =
           static_cast<unsigned>(adjoining_object_types);
@@ -311,7 +311,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.bitfields_.ancestor_has_clearance_past_adjoining_floats = true;
   }
 
-  void SetBaselineAlgorithmType(NGBaselineAlgorithmType type) {
+  void SetBaselineAlgorithmType(BaselineAlgorithmType type) {
     space_.bitfields_.baseline_algorithm_type = static_cast<unsigned>(type);
   }
 

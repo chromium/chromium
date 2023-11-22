@@ -10,7 +10,7 @@ namespace blink {
 
 namespace {
 
-NGConstraintSpace::NGPercentageStorage GetPercentageStorage(
+NGConstraintSpace::PercentageStorage GetPercentageStorage(
     LayoutUnit percentage_size,
     LayoutUnit available_size) {
   if (percentage_size == available_size)

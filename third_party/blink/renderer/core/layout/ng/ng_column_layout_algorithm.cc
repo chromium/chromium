@@ -1501,7 +1501,7 @@ NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
   space_builder.SetPercentageResolutionSize(ChildAvailableSize());
 
   space_builder.SetBaselineAlgorithmType(
-      GetConstraintSpace().BaselineAlgorithmType());
+      GetConstraintSpace().GetBaselineAlgorithmType());
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(

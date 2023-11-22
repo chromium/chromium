@@ -281,11 +281,11 @@ computing requested baselines, and
 calling [NGBoxFragmentBuilder]`::AddBaseline()`
 to add them to [NGPhysicalBoxFragment].
 
-[NGBaselineRequest] consists of [NGBaselineAlgorithmType] and [FontBaseline].
+[NGBaselineRequest] consists of [BaselineAlgorithmType] and [FontBaseline].
 
 In most normal cases,
 algorithms should decide which box should provide the baseline
-for the specified [NGBaselineAlgorithmType] and delegate to it.
+for the specified [BaselineAlgorithmType] and delegate to it.
 
 [FontBaseline] currently has only two baseline types,
 alphabetic and ideographic,
@@ -369,6 +369,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [UAX#9 Resolving Embedding Levels]: http://www.unicode.org/reports/tr9/#Resolving_Embedding_Levels
 [UAX#9 Reordering Resolved Levels]: http://www.unicode.org/reports/tr9/#Reordering_Resolved_Levels
 
+[BaselineAlgorithmType]: ../ng/ng_constraint_space.h
 [BidiParagraph]: ../../../platform/text/bidi_paragraph.h
 [BlockNode]: ../ng/ng_block_node.h
 [FontBaseline]: ../../../platform/fonts/font_baseline.h
@@ -383,7 +384,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [LineBreaker]: ng_line_breaker.h
 [LogicalLineItem]: ng_logical_line_item.h
 [LogicalLineItems]: ng_logical_line_items.h
-[NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBoxFragment]: ../ng/ng_box_fragment.h
 [NGBoxFragmentBuilder]: ../ng/ng_box_fragment_builder.h

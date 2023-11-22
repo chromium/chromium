@@ -883,7 +883,7 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
 
   end_margin_strut_ = result.EndMarginStrut();
   container_builder_.SetExclusionSpace(result.GetExclusionSpace());
-  container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
+  container_builder_.SetAdjoiningObjectTypes(result.GetAdjoiningObjectTypes());
   lines_until_clamp_ = result.LinesUntilClamp();
   if (UNLIKELY(box_fragment.MayHaveDescendantAboveBlockStart()))
     container_builder_.SetMayHaveDescendantAboveBlockStart(true);
@@ -1371,7 +1371,7 @@ const NGLayoutResult* InlineLayoutAlgorithm::Layout() {
 
   end_margin_strut_ = constraint_space.GetMarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
-      constraint_space.AdjoiningObjectTypes());
+      constraint_space.GetAdjoiningObjectTypes());
   lines_until_clamp_ = constraint_space.LinesUntilClamp();
 
   // In order to get the correct list of layout opportunities, we need to
@@ -1543,7 +1543,7 @@ const NGLayoutResult* InlineLayoutAlgorithm::Layout() {
       }
 
       // Abort if something before needs to know the correct BFC block-offset.
-      if (container_builder_.AdjoiningObjectTypes() &&
+      if (container_builder_.GetAdjoiningObjectTypes() &&
           bfc_block_offset != constraint_space.ExpectedBfcBlockOffset()) {
         items_builder->ReleaseCurrentLogicalLineItems();
         return container_builder_.Abort(

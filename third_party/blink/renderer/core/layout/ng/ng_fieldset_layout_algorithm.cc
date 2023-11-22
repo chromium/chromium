@@ -537,7 +537,7 @@ FieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
       GetConstraintSpace().PercentageResolutionSize());
   builder.SetIsFixedBlockSize(padding_box_size.block_size != kIndefiniteSize);
   builder.SetBaselineAlgorithmType(
-      GetConstraintSpace().BaselineAlgorithmType());
+      GetConstraintSpace().GetBaselineAlgorithmType());
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(

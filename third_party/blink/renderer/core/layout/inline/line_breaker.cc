@@ -2577,10 +2577,10 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
   if (mode_ == LineBreakerMode::kContent || UNLIKELY(is_initial_letter_box)) {
     // If our baseline-source is non-auto use the easier to reason about
     // "default" algorithm type.
-    NGBaselineAlgorithmType baseline_algorithm_type =
+    BaselineAlgorithmType baseline_algorithm_type =
         style.BaselineSource() == EBaselineSource::kAuto
-            ? NGBaselineAlgorithmType::kInlineBlock
-            : NGBaselineAlgorithmType::kDefault;
+            ? BaselineAlgorithmType::kInlineBlock
+            : BaselineAlgorithmType::kDefault;
 
     // https://drafts.csswg.org/css-pseudo-4/#first-text-line
     // > The first line of a table-cell or inline-block cannot be the first

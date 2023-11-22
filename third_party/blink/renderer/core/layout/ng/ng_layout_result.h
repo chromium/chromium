@@ -439,14 +439,14 @@ class CORE_EXPORT NGLayoutResult final
   bool IsPushedByFloats() const { return bitfields_.is_pushed_by_floats; }
 
   // Returns the types of preceding adjoining objects.
-  // See |NGAdjoiningObjectTypes|.
+  // See |AdjoiningObjectTypes|.
   //
   // Adjoining floats should be treated differently when calculating clearance
   // on a block with adjoining block-start margin (in such cases we will know
   // up front that the block will need clearance, since, if it doesn't, the
   // float will be pulled along with the block, and the block will fail to
   // clear).
-  NGAdjoiningObjectTypes AdjoiningObjectTypes() const {
+  AdjoiningObjectTypes GetAdjoiningObjectTypes() const {
     return bitfields_.adjoining_object_types;
   }
 
@@ -959,7 +959,7 @@ class CORE_EXPORT NGLayoutResult final
               /* subtree_modified_margin_strut */ false) {}
     Bitfields(bool is_self_collapsing,
               bool is_pushed_by_floats,
-              NGAdjoiningObjectTypes adjoining_object_types,
+              AdjoiningObjectTypes adjoining_object_types,
               bool has_descendant_that_depends_on_percentage_block_size,
               bool subtree_modified_margin_strut)
         : has_rare_data_exclusion_space(false),
@@ -997,7 +997,7 @@ class CORE_EXPORT NGLayoutResult final
 
     unsigned is_self_collapsing : 1;
     unsigned is_pushed_by_floats : 1;
-    unsigned adjoining_object_types : 3;  // NGAdjoiningObjectTypes
+    unsigned adjoining_object_types : 3;  // AdjoiningObjectTypes
 
     unsigned is_initial_block_size_indefinite : 1;
     unsigned has_descendant_that_depends_on_percentage_block_size : 1;

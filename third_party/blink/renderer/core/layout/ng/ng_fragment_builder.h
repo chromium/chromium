@@ -368,17 +368,17 @@ class CORE_EXPORT NGFragmentBuilder {
     adjoining_object_types_ = kAdjoiningNone;
     has_adjoining_object_descendants_ = false;
   }
-  void AddAdjoiningObjectTypes(NGAdjoiningObjectTypes adjoining_object_types) {
+  void AddAdjoiningObjectTypes(AdjoiningObjectTypes adjoining_object_types) {
     adjoining_object_types_ |= adjoining_object_types;
     has_adjoining_object_descendants_ |= adjoining_object_types;
   }
-  void SetAdjoiningObjectTypes(NGAdjoiningObjectTypes adjoining_object_types) {
+  void SetAdjoiningObjectTypes(AdjoiningObjectTypes adjoining_object_types) {
     adjoining_object_types_ = adjoining_object_types;
   }
   void SetHasAdjoiningObjectDescendants(bool has_adjoining_object_descendants) {
     has_adjoining_object_descendants_ = has_adjoining_object_descendants;
   }
-  NGAdjoiningObjectTypes AdjoiningObjectTypes() const {
+  AdjoiningObjectTypes GetAdjoiningObjectTypes() const {
     return adjoining_object_types_;
   }
 
@@ -613,7 +613,7 @@ class CORE_EXPORT NGFragmentBuilder {
   // if we're performing block fragmentation.
   int line_count_ = 0;
 
-  NGAdjoiningObjectTypes adjoining_object_types_ = kAdjoiningNone;
+  AdjoiningObjectTypes adjoining_object_types_ = kAdjoiningNone;
   bool has_adjoining_object_descendants_ = false;
   bool is_self_collapsing_ = false;
   bool is_pushed_by_floats_ = false;

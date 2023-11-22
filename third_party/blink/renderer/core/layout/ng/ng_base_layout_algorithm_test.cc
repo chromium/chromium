@@ -104,10 +104,10 @@ NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
     bool stretch_inline_size_if_auto,
     bool is_new_formatting_context,
     LayoutUnit fragmentainer_space_available) {
-  NGFragmentationType block_fragmentation =
+  FragmentationType block_fragmentation =
       fragmentainer_space_available != kIndefiniteSize
-          ? NGFragmentationType::kFragmentColumn
-          : NGFragmentationType::kFragmentNone;
+          ? FragmentationType::kFragmentColumn
+          : FragmentationType::kFragmentNone;
 
   NGConstraintSpaceBuilder builder(writing_direction.GetWritingMode(),
                                    writing_direction,
@@ -119,8 +119,9 @@ NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
                                     : AutoSizeBehavior::kFitContent);
   builder.SetFragmentainerBlockSize(fragmentainer_space_available);
   builder.SetFragmentationType(block_fragmentation);
-  if (block_fragmentation != NGFragmentationType::kFragmentNone)
+  if (block_fragmentation != FragmentationType::kFragmentNone) {
     builder.SetShouldPropagateChildBreakValues();
+  }
   return builder.ToConstraintSpace();
 }
 

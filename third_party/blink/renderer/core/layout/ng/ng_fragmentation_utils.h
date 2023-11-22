@@ -216,7 +216,7 @@ inline void AdjustMarginsForFragmentation(const NGBlockBreakToken* break_token,
 
 // Get the offset from one fragmentainer to the next.
 LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder&,
-                                          NGFragmentationType);
+                                          FragmentationType);
 
 // Set up a child's constraint space builder for block fragmentation. The child
 // participates in the same fragmentation context as parent_space. If the child
@@ -477,7 +477,7 @@ inline const NGColumnSpannerPath* FollowColumnSpannerPath(
 // when printing; as specified by fragmentation_type.
 NGConstraintSpace CreateConstraintSpaceForFragmentainer(
     const NGConstraintSpace& parent_space,
-    NGFragmentationType fragmentation_type,
+    FragmentationType fragmentation_type,
     LogicalSize fragmentainer_size,
     LogicalSize percentage_resolution_size,
     bool balance_columns,

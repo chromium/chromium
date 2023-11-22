@@ -261,7 +261,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   const ContainingBlockInfo GetContainingBlockInfo(
       const LogicalOofPositionedNode&);
 
-  NGFragmentationType GetFragmentainerType() const {
+  FragmentationType GetFragmentainerType() const {
     if (container_builder_->Node().IsPaginatedRoot())
       return kFragmentPage;
     return kFragmentColumn;

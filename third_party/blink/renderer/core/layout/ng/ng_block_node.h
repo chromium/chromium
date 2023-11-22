@@ -24,6 +24,7 @@ class NGEarlyBreak;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
+enum class BaselineAlgorithmType;
 struct LayoutAlgorithmParams;
 
 enum class MathScriptType;
@@ -203,7 +204,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       const NGConstraintSpace& parent_constraint_space,
       const ComputedStyle& parent_style,
       bool use_first_line_style,
-      NGBaselineAlgorithmType baseline_algorithm_type);
+      BaselineAlgorithmType baseline_algorithm_type);
 
   // Write the inline-size and number of columns in a multicol container to
   // legacy.
