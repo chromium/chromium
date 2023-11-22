@@ -28,7 +28,8 @@ namespace {
 class ExtensionUntrustedWebUITest : public ExtensionApiTest {
  public:
   ExtensionUntrustedWebUITest() {
-    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kReadAnythingLocalSidePanel}, {});
   }
 
   ~ExtensionUntrustedWebUITest() override = default;

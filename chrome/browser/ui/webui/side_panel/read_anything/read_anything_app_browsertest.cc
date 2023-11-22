@@ -20,7 +20,8 @@
 class ReadAnythingAppTest : public InProcessBrowserTest {
  public:
   ReadAnythingAppTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnything);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kReadAnythingLocalSidePanel}, {});
   }
   ~ReadAnythingAppTest() override = default;
   ReadAnythingAppTest(const ReadAnythingAppTest&) = delete;

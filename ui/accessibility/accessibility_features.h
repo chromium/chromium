@@ -216,6 +216,11 @@ AX_BASE_EXPORT bool IsPdfOcrEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnything);
 AX_BASE_EXPORT bool IsReadAnythingEnabled();
 
+// Make the Read Anything Side Panel local (don't persist when opening a new
+// tab)
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingLocalSidePanel);
+AX_BASE_EXPORT bool IsReadAnythingLocalSidePanelEnabled();
+
 // Show a reading mode icon in the omnibox.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingOmniboxIcon);
 AX_BASE_EXPORT bool IsReadAnythingOmniboxIconEnabled();

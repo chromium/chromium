@@ -20,6 +20,10 @@
 
 class Browser;
 class ReadAnythingController;
+class SidePanelRegistry;
+namespace views {
+class View;
+}  // namespace views
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingCoordinator
@@ -33,6 +37,7 @@ class ReadAnythingController;
 //  This class has the same lifetime as the browser.
 //
 class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
+                                public SidePanelEntryObserver,
                                 public TabStripModelObserver,
                                 public content::WebContentsObserver,
                                 public BrowserListObserver {
@@ -45,6 +50,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
     virtual void SetDefaultLanguageCode(const std::string& code) {}
   };
 
+  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
   explicit ReadAnythingCoordinator(Browser* browser);
   ~ReadAnythingCoordinator() override;
 
@@ -77,6 +83,14 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   void StartPageChangeDelay();
   // Occurs when the timer set when changing tabs is finished.
   void OnTabChangeDelayComplete();
+
+  // SidePanelEntryObserver:
+  void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryHidden(SidePanelEntry* entry) override;
+
+  // Callback passed to SidePanelCoordinator. This function creates the
+  // container view and all its child views and returns it.
+  std::unique_ptr<views::View> CreateContainerView();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

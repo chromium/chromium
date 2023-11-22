@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 
-#include "chrome/browser/ui/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -43,6 +42,9 @@ class MockReadAnythingCoordinator : public ReadAnythingCoordinator {
   explicit MockReadAnythingCoordinator(Browser* browser)
       : ReadAnythingCoordinator(browser) {}
 
+  MOCK_METHOD(void,
+              CreateAndRegisterEntry,
+              (SidePanelRegistry * global_registry));
   MOCK_METHOD(ReadAnythingController*, GetController, ());
   MOCK_METHOD(ReadAnythingModel*, GetModel, ());
   MOCK_METHOD(void,
@@ -57,12 +59,6 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
-    for (int index = 0; index < tab_strip_model->GetTabCount(); index++) {
-      ReadAnythingTabHelper::CreateForWebContents(
-          tab_strip_model->GetWebContentsAt(index));
-    }
-
     coordinator_ = std::make_unique<MockReadAnythingCoordinator>(browser());
 
     toolbar_view_ = std::make_unique<ReadAnythingToolbarView>(

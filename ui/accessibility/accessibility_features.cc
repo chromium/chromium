@@ -281,6 +281,13 @@ bool IsReadAnythingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnything);
 }
 
+BASE_FEATURE(kReadAnythingLocalSidePanel,
+             "ReadAnythingLocalSidePanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingLocalSidePanelEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingLocalSidePanel);
+}
+
 BASE_FEATURE(kReadAnythingOmniboxIcon,
              "ReadAnythingOmniboxIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);

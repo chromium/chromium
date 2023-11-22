@@ -34,7 +34,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kReadAnythingLocalSidePanel}, {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =
@@ -88,6 +89,9 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   void RemoveObserver(ReadAnythingCoordinator::Observer* observer) {
     read_anything_coordinator_->RemoveObserver(observer);
   }
+  std::unique_ptr<views::View> CreateContainerView() {
+    return read_anything_coordinator_->CreateContainerView();
+  }
 
   void OnBrowserSetLastActive(Browser* browser) {
     read_anything_coordinator_->OnBrowserSetLastActive(browser);
@@ -140,6 +144,12 @@ TEST_F(ReadAnythingCoordinatorTest, ModelAndControllerPersist) {
   side_panel_coordinator_->Close();
   EXPECT_NE(nullptr, GetModel());
   EXPECT_NE(nullptr, GetController());
+}
+
+TEST_F(ReadAnythingCoordinatorTest, ContainerViewsAreUnique) {
+  auto view1 = CreateContainerView();
+  auto view2 = CreateContainerView();
+  EXPECT_NE(view1, view2);
 }
 
 TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
