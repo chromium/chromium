@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] "::view-transition-group(default)" should be an invalid selector
+  assert_throws_dom: "::view-transition-group(default)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-group(unset)" should be an invalid selector
+  assert_throws_dom: "::view-transition-group(unset)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-group(initial)" should be an invalid selector
+  assert_throws_dom: "::view-transition-group(initial)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-group(inherit)" should be an invalid selector
+  assert_throws_dom: "::view-transition-group(inherit)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-group(revert)" should be an invalid selector
+  assert_throws_dom: "::view-transition-group(revert)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-group(revert-layer)" should be an invalid selector
+  assert_throws_dom: "::view-transition-group(revert-layer)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-image-pair(default)" should be an invalid selector
+  assert_throws_dom: "::view-transition-image-pair(default)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-image-pair(unset)" should be an invalid selector
+  assert_throws_dom: "::view-transition-image-pair(unset)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-image-pair(initial)" should be an invalid selector
+  assert_throws_dom: "::view-transition-image-pair(initial)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-image-pair(inherit)" should be an invalid selector
+  assert_throws_dom: "::view-transition-image-pair(inherit)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-image-pair(revert)" should be an invalid selector
+  assert_throws_dom: "::view-transition-image-pair(revert)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-image-pair(revert-layer)" should be an invalid selector
+  assert_throws_dom: "::view-transition-image-pair(revert-layer)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-old(default)" should be an invalid selector
+  assert_throws_dom: "::view-transition-old(default)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-old(unset)" should be an invalid selector
+  assert_throws_dom: "::view-transition-old(unset)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-old(initial)" should be an invalid selector
+  assert_throws_dom: "::view-transition-old(initial)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-old(inherit)" should be an invalid selector
+  assert_throws_dom: "::view-transition-old(inherit)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-old(revert)" should be an invalid selector
+  assert_throws_dom: "::view-transition-old(revert)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-old(revert-layer)" should be an invalid selector
+  assert_throws_dom: "::view-transition-old(revert-layer)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-new(default)" should be an invalid selector
+  assert_throws_dom: "::view-transition-new(default)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-new(unset)" should be an invalid selector
+  assert_throws_dom: "::view-transition-new(unset)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-new(initial)" should be an invalid selector
+  assert_throws_dom: "::view-transition-new(initial)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-new(inherit)" should be an invalid selector
+  assert_throws_dom: "::view-transition-new(inherit)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-new(revert)" should be an invalid selector
+  assert_throws_dom: "::view-transition-new(revert)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+[FAIL] "::view-transition-new(revert-layer)" should be an invalid selector
+  assert_throws_dom: "::view-transition-new(revert-layer)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+Harness: the test ran to completion.
+
