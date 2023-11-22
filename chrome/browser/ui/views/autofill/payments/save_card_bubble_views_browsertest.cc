@@ -65,6 +65,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server.h"
 #include "components/sync/test/fake_server_network_resources.h"
@@ -960,6 +961,11 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
       disabled_features.push_back(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
     }
+    // Since server card saves upload address information, they are only offered
+    // when addresses are being synced. Enable CONTACT_INFO in transport mode.
+    enabled_features.push_back(syncer::kSyncDecoupleAddressPaymentSettings);
+    enabled_features.push_back(
+        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
