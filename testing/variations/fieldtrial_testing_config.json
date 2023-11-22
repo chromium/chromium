@@ -14168,21 +14168,6 @@
             ]
         }
     ],
-    "QsRevampStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "QsRevamp"
-                    ]
-                }
-            ]
-        }
-    ],
     "QueryTiles": [
         {
             "platforms": [

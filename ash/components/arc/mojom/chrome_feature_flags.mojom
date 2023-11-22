@@ -17,8 +17,8 @@ enum RoundedWindowCompatStrategy {
 
 // State of feature flags that ARC++ needs to know from Chrome.
 struct FeatureFlags {
-  // chrome://flags#qs-revamp
-  bool qs_revamp;
+  // DEPRECATED: chrome://flags#qs-revamp
+  bool deprecated_qs_revamp;
   // chrome://flags#jelly-colors
   bool jelly_colors;
   // DEPRECATED: chrome://flags#arc-trackpad-scroll-touchscreen-emulation

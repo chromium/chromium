@@ -2308,9 +2308,6 @@ BASE_FEATURE(kProjectorTranscriptChapterTitle,
              "ProjectorTranscriptChapterTitle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable quick settings revamped view (go/qsrevamp).
-BASE_FEATURE(kQsRevamp, "QsRevamp", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to show toast notification when account switches.
 BASE_FEATURE(kProjectorAccountSwitchNotification,
              "ProjectorAccountSwitchNotification",
@@ -4125,12 +4122,6 @@ bool IsProjectorShowShortPseudoTranscript() {
 
 bool IsProjectorUpdateIndexableTextEnabled() {
   return base::FeatureList::IsEnabled(kProjectorUpdateIndexableText);
-}
-
-// TODO(b/305075031): Remove `kQsRevamp` and this method after all the clean up
-// is done.
-bool IsQsRevampEnabled() {
-  return true;
 }
 
 bool IsProjectorAccountSwitchNotificationEnabled() {
