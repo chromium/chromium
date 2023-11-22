@@ -22,6 +22,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
 import {Section, Subpage} from '../mojom-webui/routes.mojom-webui.js';
 import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../mojom-webui/search.mojom-webui.js';
@@ -668,10 +669,12 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return 'os-settings:paint-brush';
     }
 
+    const isRevampEnabled = isRevampWayfindingEnabled();
     const settingsSearchResult = this.searchResult as SettingsSearchResult;
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
-        return 'os-settings:accessibility';
+        return isRevampEnabled ? 'os-settings:accessibility-revamp' :
+                                 'os-settings:accessibility';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
       case SearchResultIcon.kAppsGrid:
