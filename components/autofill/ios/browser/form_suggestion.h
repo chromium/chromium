@@ -24,6 +24,9 @@ struct FormSuggestionMetadata {
 // The string in the form to show to the user to represent the suggestion.
 @property(copy, readonly, nonatomic) NSString* value;
 
+// An optional user-visible string to hold a piece of text following the value.
+@property(copy, readonly, nonatomic) NSString* minorValue;
+
 // An optional user-visible description for this suggestion.
 @property(copy, readonly, nonatomic) NSString* displayDescription;
 
@@ -63,6 +66,7 @@ struct FormSuggestionMetadata {
 
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
+                            minorValue:(NSString*)minorValue
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                            popupItemId:(autofill::PopupItemId)popupItemId

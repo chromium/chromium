@@ -317,6 +317,7 @@
   // so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
              suggestionWithValue:nil
+                      minorValue:nil
               displayDescription:nil
                             icon:nil
                      popupItemId:autofill::PopupItemId::kCreditCardEntry

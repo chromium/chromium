@@ -7,6 +7,7 @@
 @implementation FormSuggestion
 
 - (instancetype)initWithValue:(NSString*)value
+                    minorValue:(NSString*)minorValue
             displayDescription:(NSString*)displayDescription
                           icon:(UIImage*)icon
                    popupItemId:(autofill::PopupItemId)popupItemId
@@ -17,6 +18,7 @@
   self = [super init];
   if (self) {
     _value = [value copy];
+    _minorValue = [minorValue copy];
     _displayDescription = [displayDescription copy];
     _icon = [icon copy];
     _popupItemId = popupItemId;
@@ -37,6 +39,7 @@
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
                               metadata:(FormSuggestionMetadata)metadata {
   return [[FormSuggestion alloc] initWithValue:value
+                                    minorValue:nil
                             displayDescription:displayDescription
                                           icon:icon
                                    popupItemId:popupItemId
@@ -47,6 +50,7 @@
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
+                            minorValue:(NSString*)minorValue
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                            popupItemId:(autofill::PopupItemId)popupItemId
@@ -54,6 +58,7 @@
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
   return [[FormSuggestion alloc] initWithValue:value
+                                    minorValue:minorValue
                             displayDescription:displayDescription
                                           icon:icon
                                    popupItemId:popupItemId
@@ -70,6 +75,7 @@
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth {
   return [[FormSuggestion alloc] initWithValue:value
+                                    minorValue:nil
                             displayDescription:displayDescription
                                           icon:icon
                                    popupItemId:popupItemId

@@ -6,8 +6,10 @@
 
 #include "base/apple/bundle_locations.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
@@ -18,6 +20,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -356,6 +359,107 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   EXPECT_EQ(1U, completion_handler_suggestions.count);
   EXPECT_EQ(PopupItemId::kShowAccountCards,
             completion_handler_suggestions[0].popupItemId);
+}
+
+// Tests that virtual cards are being served as suggestions with the
+// wanted string values of (main_text, ' ', minor_text) where the main_text
+// is the 'Virtual card' string and the minor_text is the card name + last 4 or
+// the card holder's name
+TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillEnableVirtualCards);
+
+  __block NSUInteger suggestion_array_size = 0;
+  __block FormSuggestion* virtual_card_suggestion = nil;
+  __block FormSuggestion* credit_card_suggestion = nil;
+  UIImage* visa_icon =
+      ui::ResourceBundle::GetSharedInstance()
+          .GetNativeImageNamed(autofill::CreditCard::IconResourceId("visaCC"))
+          .ToUIImage();
+  NSString* expiration_date_display_description = base::SysUTF8ToNSString(
+      autofill::test::NextMonth() + "/" + autofill::test::NextYear().substr(2));
+  // Mock different popup types.
+  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  EXPECT_CALL(mock_delegate, GetPopupType)
+      .WillOnce(testing::Return(PopupType::kCreditCards))
+      .WillOnce(testing::Return(PopupType::kCreditCards));
+
+  const std::string expiration_date_label = base::StrCat(
+      {autofill::test::NextMonth(), "/", autofill::test::NextYear().substr(2)});
+
+  // Initialize suggestion.
+  std::vector<autofill::Suggestion> autofillSuggestions = {
+      autofill::Suggestion("Virtual card", "Quicksilver ••1111",
+                           expiration_date_label,
+                           autofill::Suggestion::Icon::kCardVisa,
+                           autofill::PopupItemId::kVirtualCreditCardEntry),
+      autofill::Suggestion("Quicksilver ••1111", "", expiration_date_label,
+                           autofill::Suggestion::Icon::kCardVisa,
+                           autofill::PopupItemId::kCreditCardEntry),
+  };
+
+  // Completion handler to retrieve suggestions.
+  auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    suggestion_array_size = suggestions.count;
+    virtual_card_suggestion = [FormSuggestion
+               suggestionWithValue:[suggestions[0].value copy]
+                        minorValue:[suggestions[0].minorValue copy]
+                displayDescription:[suggestions[0].displayDescription copy]
+                              icon:[suggestions[0].icon copy]
+                       popupItemId:suggestions[0].popupItemId
+                 backendIdentifier:suggestions[0].backendIdentifier
+                    requiresReauth:suggestions[0].requiresReauth
+        acceptanceA11yAnnouncement:[suggestions[0]
+                                           .acceptanceA11yAnnouncement copy]];
+    credit_card_suggestion = [FormSuggestion
+               suggestionWithValue:[suggestions[1].value copy]
+                        minorValue:[suggestions[1].minorValue copy]
+                displayDescription:[suggestions[1].displayDescription copy]
+                              icon:[suggestions[1].icon copy]
+                       popupItemId:suggestions[1].popupItemId
+                 backendIdentifier:suggestions[1].backendIdentifier
+                    requiresReauth:suggestions[1].requiresReauth
+        acceptanceA11yAnnouncement:[suggestions[1]
+                                           .acceptanceA11yAnnouncement copy]];
+  };
+
+  // Make credit card suggestion.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+
+  // Confirm both suggestions present
+  ASSERT_EQ(2U, suggestion_array_size);
+
+  // Confirm virtual card suggestion properties
+  EXPECT_NSEQ(@"Virtual card", virtual_card_suggestion.value);
+  EXPECT_NSEQ(@"Quicksilver ••1111", virtual_card_suggestion.minorValue);
+  EXPECT_NSEQ(expiration_date_display_description,
+              virtual_card_suggestion.displayDescription);
+  EXPECT_TRUE(
+      gfx::test::PlatformImagesEqual(virtual_card_suggestion.icon, visa_icon));
+  EXPECT_EQ(autofill::PopupItemId::kVirtualCreditCardEntry,
+            virtual_card_suggestion.popupItemId);
+  EXPECT_NSEQ(@"", virtual_card_suggestion.backendIdentifier);
+  EXPECT_EQ(false, virtual_card_suggestion.requiresReauth);
+  EXPECT_NSEQ(nil, virtual_card_suggestion.acceptanceA11yAnnouncement);
+
+  // Confirm credit card suggestion properties
+  EXPECT_NSEQ(@"Quicksilver ••1111", credit_card_suggestion.value);
+  EXPECT_NSEQ(nil, credit_card_suggestion.minorValue);
+  EXPECT_NSEQ(expiration_date_display_description,
+              credit_card_suggestion.displayDescription);
+  EXPECT_TRUE(
+      gfx::test::PlatformImagesEqual(credit_card_suggestion.icon, visa_icon));
+  EXPECT_EQ(autofill::PopupItemId::kCreditCardEntry,
+            credit_card_suggestion.popupItemId);
+  EXPECT_NSEQ(@"", credit_card_suggestion.backendIdentifier);
+  EXPECT_EQ(false, credit_card_suggestion.requiresReauth);
+  EXPECT_NSEQ(nil, credit_card_suggestion.acceptanceA11yAnnouncement);
 }
 
 // Tests that only credit card suggestions would have icons.

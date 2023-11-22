@@ -85,9 +85,16 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       [stackView addArrangedSubview:iconView];
     }
 
-    UILabel* label = TextLabel(suggestion.value,
-                               [UIColor colorNamed:kTextPrimaryColor], YES);
-    [stackView addArrangedSubview:label];
+    UILabel* valueLabel = TextLabel(
+        suggestion.value, [UIColor colorNamed:kTextPrimaryColor], YES);
+    [stackView addArrangedSubview:valueLabel];
+
+    if ([suggestion.minorValue length] > 0) {
+      UILabel* minorValueLabel = TextLabel(
+          suggestion.minorValue, [UIColor colorNamed:kTextPrimaryColor], YES);
+      [stackView addArrangedSubview:minorValueLabel];
+    }
+
     if ([suggestion.displayDescription length] > 0) {
       UILabel* description =
           TextLabel(suggestion.displayDescription,

@@ -34,6 +34,7 @@
 #import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/core/common/autofill_tick_clock.h"
 #import "components/autofill/core/common/autofill_util.h"
@@ -465,7 +466,11 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
   if (suggestion.popupItemId == autofill::PopupItemId::kAddressEntry ||
       suggestion.popupItemId == autofill::PopupItemId::kCreditCardEntry ||
-      suggestion.popupItemId == autofill::PopupItemId::kCreateNewPlusAddress) {
+      suggestion.popupItemId == autofill::PopupItemId::kCreateNewPlusAddress ||
+      (base::FeatureList::IsEnabled(
+           autofill::features::kAutofillEnableVirtualCards) &&
+       suggestion.popupItemId ==
+           autofill::PopupItemId::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
@@ -670,14 +675,20 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     // interested in is autofill::PopupItemId::kClearForm, used to show the
     // "clear form" button.
     NSString* value = nil;
+    NSString* minorValue = nil;
     NSString* displayDescription = nil;
     UIImage* icon = nil;
+
     if (popup_suggestion.popup_item_id ==
             autofill::PopupItemId::kAutocompleteEntry ||
         popup_suggestion.popup_item_id ==
             autofill::PopupItemId::kAddressEntry ||
         popup_suggestion.popup_item_id ==
-            autofill::PopupItemId::kCreditCardEntry) {
+            autofill::PopupItemId::kCreditCardEntry ||
+        (base::FeatureList::IsEnabled(
+             autofill::features::kAutofillEnableVirtualCards) &&
+         popup_suggestion.popup_item_id ==
+             autofill::PopupItemId::kVirtualCreditCardEntry)) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.popup_item_id ==
               autofill::PopupItemId::kAutocompleteEntry &&
@@ -688,6 +699,16 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       // displayDescription will contain a summary of the data to be filled in
       // the other elements.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
+
+      if (base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableVirtualCards) &&
+          (!popup_suggestion.minor_text.value.empty())) {
+        // For Virtual Cards, the main_text is just "Virtual card" so we need to
+        // include the minor_text (which is the card name + last 4 digits ||
+        // card holder's name) as the minorValue.
+        minorValue = SysUTF16ToNSString(popup_suggestion.minor_text.value);
+      }
+
       if (!popup_suggestion.labels.empty()) {
         DCHECK_EQ(popup_suggestion.labels.size(), 1U);
         DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
@@ -698,32 +719,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       // Only show icon for credit card suggestions.
       if (delegate &&
           delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
-        // If available, the custom icon for the card is preferred over the
-        // generic network icon. The network icon may also be missing, in
-        // which case we do not set an icon at all.
-        if (!popup_suggestion.custom_icon.IsEmpty()) {
-          icon = popup_suggestion.custom_icon.ToUIImage();
-
-          // On iOS, the keyboard accessory wants smaller icons than the default
-          // 40x24 size, so we resize them to 32x20, if the provided icon is
-          // larger than that.
-          constexpr CGFloat kSuggestionIconWidth = 32;
-          if (icon && (icon.size.width > kSuggestionIconWidth)) {
-            // For a simple image resize, we can keep the same underlying image
-            // and only adjust the ratio.
-            CGFloat ratio = icon.size.width / kSuggestionIconWidth;
-            icon = [UIImage imageWithCGImage:[icon CGImage]
-                                       scale:icon.scale * ratio
-                                 orientation:icon.imageOrientation];
-          }
-        } else if (popup_suggestion.icon !=
-                   autofill::Suggestion::Icon::kNoIcon) {
-          const int resourceID =
-              autofill::CreditCard::IconResourceId(popup_suggestion.icon);
-          icon = ui::ResourceBundle::GetSharedInstance()
-                     .GetNativeImageNamed(resourceID)
-                     .ToUIImage();
-        }
+        icon = [self createIcon:popup_suggestion];
       }
     } else if (popup_suggestion.popup_item_id ==
                autofill::PopupItemId::kClearForm) {
@@ -751,6 +747,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
     FormSuggestion* suggestion = [FormSuggestion
                suggestionWithValue:value
+                        minorValue:minorValue
                 displayDescription:displayDescription
                               icon:icon
                        popupItemId:popup_suggestion.popup_item_id
@@ -1171,6 +1168,37 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   GetFormField(&field, forms[0], fieldIdentifier);
   autofillManager->OnTextFieldDidChange(
       forms[0], field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
+}
+
+// Helper method to create icons for payment cards.
+- (UIImage*)createIcon:(autofill::Suggestion)popup_suggestion {
+  // If available, the custom icon for the card is preferred over the
+  // generic network icon. The network icon may also be missing, in
+  // which case we do not set an icon at all.
+  if (!popup_suggestion.custom_icon.IsEmpty()) {
+    UIImage* icon = popup_suggestion.custom_icon.ToUIImage();
+
+    // On iOS, the keyboard accessory wants smaller icons than the default
+    // 40x24 size, so we resize them to 32x20, if the provided icon is
+    // larger than that.
+    constexpr CGFloat kSuggestionIconWidth = 32;
+    if (icon && (icon.size.width > kSuggestionIconWidth)) {
+      // For a simple image resize, we can keep the same underlying image
+      // and only adjust the ratio.
+      CGFloat ratio = icon.size.width / kSuggestionIconWidth;
+      return [UIImage imageWithCGImage:[icon CGImage]
+                                 scale:icon.scale * ratio
+                           orientation:icon.imageOrientation];
+    }
+    return icon;
+  } else if (popup_suggestion.icon != autofill::Suggestion::Icon::kNoIcon) {
+    const int resourceID =
+        autofill::CreditCard::IconResourceId(popup_suggestion.icon);
+    return ui::ResourceBundle::GetSharedInstance()
+        .GetNativeImageNamed(resourceID)
+        .ToUIImage();
+  }
+  return nil;
 }
 
 @end
