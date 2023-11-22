@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,6 +71,8 @@ bool ReadAnythingIconView::ShouldShowLabel() const {
 void ReadAnythingIconView::Activate(bool active) {
   if (active) {
     SetVisible(false);
+    base::UmaHistogramBoolean("Accessibility.ReadAnything.OmniboxIconShown",
+                              false);
   }
 }
 
@@ -82,6 +85,8 @@ void ReadAnythingIconView::OnActivePageDistillable(bool distillable) {
     return;
   }
   SetVisible(distillable);
+  base::UmaHistogramBoolean("Accessibility.ReadAnything.OmniboxIconShown",
+                            distillable);
 
   // Increase `prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount` up
   // to its max to denote that the icon was shown.

@@ -2182,6 +2182,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.OmniboxIconShown"
+    enum="BooleanShown" expires_after="2024-04-28">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records when the Read Anything omnibox icon is shown.</summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.RulesDistillationTime.{Result}"
     units="ms" expires_after="2024-04-28">
   <owner>abigailbklein@google.com</owner>
