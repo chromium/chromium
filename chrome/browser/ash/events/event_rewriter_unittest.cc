@@ -1035,7 +1035,6 @@ class EventRewriterTest : public ChromeAshTestBase {
       int_pref->SetValue(static_cast<int>(remap_to));
       return;
     }
-
     if (remap_from == remap_to) {
       keyboard_settings->modifier_remappings.erase(remap_from);
       return;
@@ -1091,6 +1090,12 @@ class EventRewriterTest : public ChromeAshTestBase {
         kKeyboardDeviceId);
 
     return keyboard;
+  }
+
+  void SetExtensionCommands(
+      std::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
+          commands) {
+    delegate_->SetExtensionCommandsOverrideForTesting(std::move(commands));
   }
 
   std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
@@ -4414,101 +4419,55 @@ TEST_F(StickyKeysOverlayTest, ModifierVisibility) {
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 }
 
-class ExtensionRewriterInputTest : public EventRewriterTest {
- public:
-  ExtensionRewriterInputTest() = default;
-  ExtensionRewriterInputTest(const ExtensionRewriterInputTest&) = delete;
-  ExtensionRewriterInputTest& operator=(const ExtensionRewriterInputTest&) =
-      delete;
-  ~ExtensionRewriterInputTest() override = default;
-
-  void SetModifierRemapping(ui::mojom::ModifierKey remap_from,
-                            ui::mojom::ModifierKey remap_to) {
-    keyboard_settings->modifier_remappings[remap_from] = remap_to;
-  }
-
-  void SetExtensionCommands(
-      base::flat_set<std::pair<ui::KeyboardCode, int>> commands) {
-    delegate_->SetExtensionCommandsOverrideForTesting(std::move(commands));
-  }
-
-  void RemoveAllExtensionShortcuts() {
-    delegate_->SetExtensionCommandsOverrideForTesting(absl::nullopt);
-  }
-
-  void ExpectEventRewrittenTo(const KeyTestCase& test) {
-    CheckKeyTestCase(source(), test);
-  }
-};
-
-TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
+TEST_F(EventRewriterTest, RewrittenModifier) {
   // Register Control + B as an extension shortcut.
-  SetExtensionCommands({{ui::VKEY_B, ui::EF_CONTROL_DOWN}});
+  SetExtensionCommands({{{ui::VKEY_B, ui::EF_CONTROL_DOWN}}});
 
   // Check that standard extension input has no rewritten modifiers.
-  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                           ui::DomKey::Constant<'b'>::Character},
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                           ui::DomKey::Constant<'b'>::Character}});
+  EXPECT_EQ(BPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(BPressed(ui::EF_CONTROL_DOWN)));
 
   // Remap Control -> Alt.
-  SetModifierRemapping(ui::mojom::ModifierKey::kControl,
-                       ui::mojom::ModifierKey::kAlt);
+  IntegerPrefMember control;
+  InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
+                      ui::mojom::ModifierKey::kAlt);
   // Pressing Control + B should now be remapped to Alt + B.
-  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                           ui::DomKey::Constant<'b'>::Character},
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
-                           ui::DomKey::Constant<'b'>::Character}});
+  EXPECT_EQ(BPressed(ui::EF_ALT_DOWN),
+            RunRewriter(BPressed(ui::EF_CONTROL_DOWN)));
 
   // Remap Alt -> Control.
-  SetModifierRemapping(ui::mojom::ModifierKey::kAlt,
-                       ui::mojom::ModifierKey::kControl);
+  IntegerPrefMember alt;
+  InitModifierKeyPref(&alt, ::prefs::kLanguageRemapAltKeyTo,
+                      ui::mojom::ModifierKey::kAlt,
+                      ui::mojom::ModifierKey::kControl);
   // Pressing Alt + B should now be remapped to Control + B.
-  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
-                           ui::DomKey::Constant<'b'>::Character},
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                           ui::DomKey::Constant<'b'>::Character}});
+  EXPECT_EQ(BPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(BPressed(ui::EF_ALT_DOWN)));
 
   // Remove all extension shortcuts and still expect the remapping to work.
-  RemoveAllExtensionShortcuts();
+  SetExtensionCommands(std::nullopt);
 
-  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                           ui::DomKey::Constant<'b'>::Character},
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
-                           ui::DomKey::Constant<'b'>::Character}});
-  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
-                           ui::DomKey::Constant<'b'>::Character},
-                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                           ui::DomKey::Constant<'b'>::Character}});
+  EXPECT_EQ(BPressed(ui::EF_ALT_DOWN),
+            RunRewriter(BPressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(BPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(BPressed(ui::EF_ALT_DOWN)));
 }
 
-TEST_F(ExtensionRewriterInputTest, RewriteNumpadExtensionCommand) {
+TEST_F(EventRewriterTest, RewriteNumpadExtensionCommand) {
   // Register Control + NUMPAD1 as an extension shortcut.
-  SetExtensionCommands({{ui::VKEY_NUMPAD1, ui::EF_CONTROL_DOWN}});
+  SetExtensionCommands({{{ui::VKEY_NUMPAD1, ui::EF_CONTROL_DOWN}}});
   // Check that extension shortcuts that involve numpads keys are properly
   // rewritten. Note that VKEY_END is associated with NUMPAD1 if Num Lock is
   // disabled. The result should be "NumPad 1 with Control".
-  ExpectEventRewrittenTo(
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_END, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
-        ui::DomKey::END},
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'1'>::Character}});
+  EXPECT_EQ(Numpad1Pressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(NumpadEndPressed(ui::EF_CONTROL_DOWN)));
 
   // Remove the extension shortcut and expect the numpad event to still be
   // rewritten.
-  RemoveAllExtensionShortcuts();
-  ExpectEventRewrittenTo(
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_END, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
-        ui::DomKey::END},
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'1'>::Character}});
+  SetExtensionCommands(std::nullopt);
+  EXPECT_EQ(Numpad1Pressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(NumpadEndPressed(ui::EF_CONTROL_DOWN)));
 }
 
 class ModifierPressedMetricsTest
