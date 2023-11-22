@@ -248,11 +248,9 @@ absl::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
   return absl::nullopt;
 }
 
-void AshTestBase::UpdateDisplay(const std::string& display_specs,
-                                bool from_native_platform,
-                                bool generate_new_ids) {
+void AshTestBase::UpdateDisplay(const std::string& display_specs) {
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
-      .UpdateDisplay(display_specs, from_native_platform, generate_new_ids);
+      .UpdateDisplay(display_specs);
   ScreenOrientationControllerTestApi(
       Shell::Get()->screen_orientation_controller())
       .UpdateNaturalOrientation();

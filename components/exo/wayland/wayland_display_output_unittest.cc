@@ -124,25 +124,4 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
                                     WaylandDisplayOutput::kDeleteRetries);
 }
 
-// Tests to ensure exo processes added displays before removed displays for
-// display configuration updates. This ensures exo's clients always see a valid
-// Output during such configuration updates.
-// TODO(1503560) Test consistently fails on builder Linux Chromium OS ASan LSan
-// Tests.
-#if defined(LEAK_SANITIZER) && defined(ADDRESS_SANITIZER)
-#define MAYBE_MaintainsNonEmptyOutputList DISABLED_MaintainsNonEmptyOutputList
-#else
-#define MAYBE_MaintainsNonEmptyOutputList MaintainsNonEmptyOutputList
-#endif
-TEST_F(WaylandDisplayOutputTest, MAYBE_MaintainsNonEmptyOutputList) {
-  // Start with 2 displays.
-  UpdateDisplay("300x400,500x600");
-
-  // Update to a new display configuration. The total global Outputs maintained
-  // by exo should remain non-zero while processing the change (exo will CHECK
-  // crash if it enters a zero output state).
-  UpdateDisplay("700x800,900x1000", /*from_native_platform=*/false,
-                /*generate_new_ids=*/true);
-}
-
 }  // namespace exo::wayland

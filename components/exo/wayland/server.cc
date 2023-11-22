@@ -40,7 +40,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -262,7 +261,6 @@ Server::Server(Display* display,
 
   wl_display_.reset(wl_display_create());
   SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
-  display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
 
   client_tracker_ = std::make_unique<ClientTracker>(wl_display_.get());
 }
@@ -291,10 +289,9 @@ void Server::Initialize() {
                    kZAuraOutputManagerVersion, this, bind_aura_output_manager);
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface,
                    /*version=*/1, display_, bind_subcompositor);
-  OnDidProcessDisplayChanges(
-      {ash::Shell::Get()->display_manager()->active_display_list(),
-       Displays(),
-       {}});
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    OnDisplayAdded(display);
+  }
   wl_global_create(wl_display_.get(), &zcr_vsync_feedback_v1_interface,
                    /*version=*/1, display_, bind_vsync_feedback);
 
@@ -501,35 +498,21 @@ void Server::Flush() {
   wl_display_flush_clients(wl_display_.get());
 }
 
-void Server::OnDidProcessDisplayChanges(
-    const DisplayConfigurationChange& configuration_change) {
-  // Process added displays before removed displays to ensure exo does not leave
-  // clients in a temporary state where no outputs are present.
-  for (const display::Display& added_display :
-       configuration_change.added_displays) {
-    auto output = std::make_unique<WaylandDisplayOutput>(added_display.id());
-    output->set_global(wl_global_create(wl_display_.get(), &wl_output_interface,
-                                        kWlOutputVersion, output.get(),
-                                        bind_output));
-    CHECK_EQ(outputs_.count(added_display.id()), 0u);
-    outputs_.insert(std::make_pair(added_display.id(), std::move(output)));
-  }
+void Server::OnDisplayAdded(const display::Display& new_display) {
+  auto output = std::make_unique<WaylandDisplayOutput>(new_display.id());
+  output->set_global(wl_global_create(wl_display_.get(), &wl_output_interface,
+                                      kWlOutputVersion, output.get(),
+                                      bind_output));
+  DCHECK_EQ(outputs_.count(new_display.id()), 0u);
+  outputs_.insert(std::make_pair(new_display.id(), std::move(output)));
+}
 
-  for (const display::Display& removed_display :
-       configuration_change.removed_displays) {
-    // There should always be at least one display tracked by Exo.
-    CHECK(outputs_.size() > 1);
-    CHECK_EQ(outputs_.count(removed_display.id()), 1u);
-    std::unique_ptr<WaylandDisplayOutput> output =
-        std::move(outputs_[removed_display.id()]);
-    outputs_.erase(removed_display.id());
-    output.release()->OnDisplayRemoved();
-  }
-
-  // Flush updated outputs to clients immediately.
-  // TODO(crbug.com/1502682): Exo should be updated to automatically flush
-  // buffers at the end of task processing if necessary.
-  Flush();
+void Server::OnDisplayRemoved(const display::Display& old_display) {
+  DCHECK_EQ(outputs_.count(old_display.id()), 1u);
+  std::unique_ptr<WaylandDisplayOutput> output =
+      std::move(outputs_[old_display.id()]);
+  outputs_.erase(old_display.id());
+  output.release()->OnDisplayRemoved();
 }
 
 wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {
