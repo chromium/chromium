@@ -988,12 +988,13 @@ class EventRewriterTest : public ChromeAshTestBase {
   ui::test::TestEventSource& source() { return source_; }
 
  protected:
-  absl::optional<TestKeyEvent> RunRewriter(const TestKeyEvent& test_key_event) {
+  absl::optional<TestKeyEvent> RunRewriter(const TestKeyEvent& test_key_event,
+                                           int device_id = kKeyboardDeviceId) {
     ui::KeyEvent event(test_key_event.type, test_key_event.keycode,
                        test_key_event.code, test_key_event.flags,
                        test_key_event.key, ui::EventTimeForNow());
     event.set_scan_code(test_key_event.scan_code);
-    event.set_source_device_id(kKeyboardDeviceId);
+    event.set_source_device_id(device_id);
     source().Send(&event);
 
     auto events =
@@ -5248,47 +5249,21 @@ TEST_F(FKeysRewritingPeripheralCustomizationTest, FKeysNotRewritten) {
               GetMouseSettings(kMouseDeviceId))
       .WillRepeatedly(testing::Return(&mouse_settings_));
 
+  SetUpKeyboard(kExternalGenericKeyboard);
+
   // Mice that press F-Keys do not get rewritten to actions.
-  TestExternalGenericKeyboard({
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-       kMouseDeviceId},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       kMouseDeviceId},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-       kMouseDeviceId},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-       kMouseDeviceId},
-  });
+  EXPECT_EQ(F1Pressed(), RunRewriter(F1Pressed(), kMouseDeviceId));
+  EXPECT_EQ(F2Pressed(), RunRewriter(F2Pressed(), kMouseDeviceId));
+  EXPECT_EQ(F1Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN), kMouseDeviceId));
+  EXPECT_EQ(F2Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(F2Pressed(ui::EF_COMMAND_DOWN), kMouseDeviceId));
 
   // Keyboards that press F-Keys do get rewritten to actions.
-  TestExternalGenericKeyboard({
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-        ui::DomKey::BROWSER_BACK},
-       kKeyboardDeviceId},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       {ui::VKEY_BROWSER_FORWARD, ui::DomCode::BROWSER_FORWARD, ui::EF_NONE,
-        ui::DomKey::BROWSER_FORWARD},
-       kKeyboardDeviceId},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-       kKeyboardDeviceId},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       kKeyboardDeviceId},
-  });
+  EXPECT_EQ(BrowserBackPressed(), RunRewriter(F1Pressed()));
+  EXPECT_EQ(BrowserForwardPressed(), RunRewriter(F2Pressed()));
+  EXPECT_EQ(F1Pressed(), RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN)));
+  EXPECT_EQ(F2Pressed(), RunRewriter(F2Pressed(ui::EF_COMMAND_DOWN)));
 }
 
 }  // namespace ash
