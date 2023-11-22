@@ -5818,6 +5818,16 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
   if (!GetNode() && !IsMenuListPopup()) {
     return true;
   }
+
+  // Destroy all nested pseudo-elements, because we are only able to re-attach
+  // them via top-down tree walk and not via RepairMissingParent. See
+  // GetParentNodeForComputeParent for more commentary.
+  auto* layout_object = GetLayoutObject();
+  if (layout_object && layout_object->Parent() &&
+      layout_object->Parent()->IsPseudoElement()) {
+    return true;
+  }
+
   // Inline textbox children are dependent on their parent's ignored state.
   if (IsAXInlineTextBox()) {
     return true;
