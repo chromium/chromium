@@ -7,15 +7,18 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TabData, TabItemType} from './tab_data.js';
 import {getTemplate} from './tab_organization_results.html.js';
 import {Tab} from './tab_search.mojom-webui.js';
+import {TabSearchItem} from './tab_search_item.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
@@ -24,6 +27,7 @@ export interface TabOrganizationResultsElement {
   $: {
     input: CrInputElement,
     scrollable: HTMLElement,
+    selector: IronSelectorElement,
   };
 }
 
@@ -84,6 +88,36 @@ export class TabOrganizationResultsElement extends PolymerElement {
     }
   }
 
+  private onListKeyDown_(event: KeyboardEvent) {
+    if (event.shiftKey) {
+      return;
+    }
+
+    const selector = this.$.selector;
+    if (selector.selected === undefined) {
+      return;
+    }
+
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      if (event.key === 'ArrowUp') {
+        selector.selectPrevious();
+      } else {
+        selector.selectNext();
+      }
+      event.stopPropagation();
+      event.preventDefault();
+    }
+  }
+
+  private onSelectedChanged_() {
+    if (this.$.selector.selectedItem) {
+      const selectedItem = this.$.selector.selectedItem as TabSearchItem;
+      const selectedItemCloseButton =
+          selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
+      selectedItemCloseButton.focus();
+    }
+  }
+
   private onTabRemove_(event: DomRepeatEvent<TabData>) {
     const index = this.tabDatas_.indexOf(event.model.item);
     this.splice('tabs', index, 1);
@@ -91,6 +125,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  private onTabFocus_(event: DomRepeatEvent<TabData>) {
+    // Ensure that when a TabSearchItem receives focus, it becomes the selected
+    // item in the list.
+    this.$.selector.selected = event.model.index;
   }
 
   private onCreateGroupClick_() {

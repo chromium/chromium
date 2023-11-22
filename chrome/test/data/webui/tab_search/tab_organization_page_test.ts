@@ -149,6 +149,45 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(2, tabRowsAfterCancel.length);
   });
 
+  test('Arrow keys traverse focus', async () => {
+    await tabOrganizationResultsSetup();
+
+    const tabRows =
+        tabOrganizationResults.shadowRoot!.querySelectorAll('tab-search-item');
+    assertTrue(!!tabRows);
+    assertEquals(3, tabRows.length);
+
+    const closeButton0 =
+        tabRows[0]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton0);
+    const closeButton1 =
+        tabRows[1]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton1);
+    const closeButton2 =
+        tabRows[2]!.shadowRoot!.querySelector(`cr-icon-button`);
+    assertTrue(!!closeButton2);
+
+    closeButton0.focus();
+
+    assertTrue(closeButton0.matches(':focus'));
+    assertFalse(closeButton1.matches(':focus'));
+    assertFalse(closeButton2.matches(':focus'));
+
+    tabOrganizationResults.$.selector.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+
+    assertFalse(closeButton0.matches(':focus'));
+    assertFalse(closeButton1.matches(':focus'));
+    assertTrue(closeButton2.matches(':focus'));
+
+    tabOrganizationResults.$.selector.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+
+    assertTrue(closeButton0.matches(':focus'));
+    assertFalse(closeButton1.matches(':focus'));
+    assertFalse(closeButton2.matches(':focus'));
+  });
+
   test('Create group accepts organization', async () => {
     await tabOrganizationPageSetup();
 

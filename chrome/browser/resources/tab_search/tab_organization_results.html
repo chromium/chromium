@@ -35,9 +35,17 @@
     gap: 4px;
   }
 
+  iron-selector > .mwb-list-item:focus {
+    background-color: var(--mwb-list-item-selected-background-color);
+  }
+
   .mwb-list-item {
     background-color: transparent;
     min-height: var(--mwb-item-height);
+  }
+
+  .mwb-list-item.selected {
+    background-color: transparent;
   }
 
   .results {
@@ -65,11 +73,17 @@
           on-focus="onInputFocus_"
           on-keydown="onInputKeyDown_">
       </cr-input>
-      <template is="dom-repeat" items="[[tabDatas_]]">
-        <tab-search-item class="mwb-list-item" data="[[item]]"
-            on-close="onTabRemove_" hide-timestamp>
-        </tab-search-item>
-      </template>
+      <iron-selector id="selector" on-keydown="onListKeyDown_"
+          selected-class="selected"
+          on-iron-select="onSelectedChanged_">
+        <template is="dom-repeat" items="[[tabDatas_]]">
+          <tab-search-item class="mwb-list-item" data="[[item]]"
+              on-close="onTabRemove_"
+              on-focus="onTabFocus_"
+              hide-timestamp>
+          </tab-search-item>
+        </template>
+      </iron-selector>
       <cr-button class="action-button" on-click="onCreateGroupClick_">
         $i18n{createGroup}
       </cr-button>
