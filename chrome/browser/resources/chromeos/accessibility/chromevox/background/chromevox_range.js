@@ -71,9 +71,8 @@ export class ChromeVoxRange {
     return null;
   }
 
-  /** @param {?CursorRange} newPageSel */
-  static set pageSel(newPageSel) {
-    ChromeVoxRange.instance.pageSel_ = newPageSel;
+  static clearSelection() {
+    ChromeVoxRange.instance.pageSel_ = null;
   }
 
   /**

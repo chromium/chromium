@@ -60,7 +60,7 @@ export class ClipboardHandler {
     textarea.remove();
     ChromeVox.tts.speak(
         Msgs.getMsg(eventType, [clipboardContent]), QueueMode.FLUSH);
-    ChromeVoxRange.pageSel = null;
+    ChromeVoxRange.clearSelection();
   }
 
   readNextClipboardDataChange() {
