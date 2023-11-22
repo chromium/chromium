@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_autofill_history.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -14,10 +15,13 @@ namespace autofill {
 FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
     std::u16string field_value,
     bool field_is_autofilled,
-    std::optional<std::string> field_autofill_source_profile_guid)
+    std::optional<std::string> field_autofill_source_profile_guid,
+    std::optional<ServerFieldType> field_autofilled_type)
     : value(field_value),
       is_autofilled(field_is_autofilled),
-      autofill_source_profile_guid(field_autofill_source_profile_guid) {}
+      autofill_source_profile_guid(
+          std::move(field_autofill_source_profile_guid)),
+      autofilled_type(std::move(field_autofilled_type)) {}
 
 FormAutofillHistory::FieldFillingEntry::~FieldFillingEntry() = default;
 
@@ -64,7 +68,8 @@ void FormAutofillHistory::AddFormFillEntry(
                  .emplace(field->global_id(),
                           FieldFillingEntry(
                               field->value, field->is_autofilled,
-                              autofill_field->autofill_source_profile_guid()))
+                              autofill_field->autofill_source_profile_guid(),
+                              autofill_field->autofilled_type()))
                  .second;
   }
   // Drop the last history entry while the history size exceeds the limit.

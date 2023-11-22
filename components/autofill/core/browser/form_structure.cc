@@ -1213,10 +1213,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         field->is_autofilled = cached_field->is_autofilled;
     }
 
-    if (cached_field->autofill_source_profile_guid()) {
-      field->set_autofill_source_profile_guid(
-          *cached_field->autofill_source_profile_guid());
-    }
+    field->set_autofill_source_profile_guid(
+        cached_field->autofill_source_profile_guid());
+    field->set_autofilled_type(cached_field->autofilled_type());
     field->set_previously_autofilled(cached_field->previously_autofilled());
     field->set_was_context_menu_shown(cached_field->was_context_menu_shown());
     if (cached_field->value_not_autofilled_over_existing_value_hash()) {

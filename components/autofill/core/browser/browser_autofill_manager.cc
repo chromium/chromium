@@ -10,6 +10,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -1507,6 +1508,7 @@ void BrowserAutofillManager::UndoAutofill(
       autofill_field->is_autofilled = previous_state.is_autofilled;
       autofill_field->set_autofill_source_profile_guid(
           previous_state.autofill_source_profile_guid);
+      autofill_field->set_autofilled_type(previous_state.autofilled_type);
     }
   }
 
@@ -3267,6 +3269,8 @@ bool BrowserAutofillManager::FillFieldWithValue(
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       autofill_field.set_autofill_source_profile_guid((*profile)->guid());
     }
+    // TODO(b/311604770): Update when fallback types are introduced.
+    autofill_field.set_autofilled_type(autofill_field.Type().GetStorableType());
   }
 
   // Mark the field as autofilled when a non-empty value is assigned to

@@ -28,7 +28,8 @@ class FormAutofillHistory {
     FieldFillingEntry(
         std::u16string field_value,
         bool field_is_autofilled,
-        std::optional<std::string> field_autofill_source_profile_guid);
+        std::optional<std::string> field_autofill_source_profile_guid,
+        std::optional<ServerFieldType> field_autofilled_type);
 
     ~FieldFillingEntry();
     FieldFillingEntry(const FieldFillingEntry&);
@@ -51,6 +52,12 @@ class FormAutofillHistory {
     // the field doesn't track undone autofill operations, which can cause
     // problems. (see crbug.com/1491872)
     std::optional<std::string> autofill_source_profile_guid;
+
+    // Field type used to fill the field. This is stored so that after undoing
+    // an autofill operation, AutofillField does not store outdated information,
+    // especially if the field is reverted with Undo to a previous autofilled
+    // state.
+    std::optional<ServerFieldType> autofilled_type;
   };
 
   using FormFillingEntry = std::map<FieldGlobalId, FieldFillingEntry>;

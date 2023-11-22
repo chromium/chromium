@@ -339,6 +339,13 @@ class AutofillField : public FormFieldData {
     return autofill_source_profile_guid_;
   }
 
+  void set_autofilled_type(std::optional<ServerFieldType> autofilled_type) {
+    autofilled_type_ = std::move(autofilled_type);
+  }
+  std::optional<ServerFieldType> autofilled_type() const {
+    return autofilled_type_;
+  }
+
  private:
   explicit AutofillField(FieldSignature field_signature);
 
@@ -483,6 +490,12 @@ class AutofillField : public FormFieldData {
   // is not a sufficient condition for `autofill_source_profile_guid_` to have a
   // value.
   std::optional<std::string> autofill_source_profile_guid_;
+
+  // Denotes the type that was used to fill the field in its last autofill
+  // operation. This is different from `overall_type_` because in some cases
+  // Autofill might fallback to filling a classified field with a different type
+  // than the classified one, based on country-specific rules.
+  std::optional<ServerFieldType> autofilled_type_;
 };
 
 }  // namespace autofill
