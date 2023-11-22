@@ -30,7 +30,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -39,6 +38,13 @@ namespace ash {
 using BoundsType = CalendarView::CalendarSlidingSurfaceBoundsType;
 
 namespace {
+
+// If display height is greater than `kDisplayHeightThreshold`, the height of
+// the `calendar_view_` is `kCalendarBubbleHeightLargeDisplay`, otherwise
+// is `kCalendarBubbleHeightSmallDisplay`.
+constexpr int kDisplayHeightThreshold = 800;
+constexpr int kCalendarBubbleHeightSmallDisplay = 340;
+constexpr int kCalendarBubbleHeightLargeDisplay = 368;
 
 // The view that parents glanceable bubbles. It's a flex layout view that
 // propagates child preferred size changes to the tray bubble view and the
@@ -208,8 +214,16 @@ void GlanceableTrayBubbleView::InitializeContents() {
   if (!calendar_view_) {
     calendar_view_ = scroll_view_->contents()->AddChildView(
         std::make_unique<CalendarView>(/*for_glanceables_container=*/true));
-    // TODO(b:277268122): Update with glanceable spec.
-    calendar_view_->SetPreferredSize(gfx::Size(kWideTrayMenuWidth, 400));
+    // TODO(b/312320532): Update the height if display height is less than
+    // `kCalendarBubbleHeightSmallDisplay`.
+    calendar_view_->SetPreferredSize(
+        features::IsGlanceablesV2CalendarViewEnabled()
+            ? gfx::Size(kWideTrayMenuWidth,
+                        CalculateMaxTrayBubbleHeight(shelf_->GetWindow()) >
+                                kDisplayHeightThreshold
+                            ? kCalendarBubbleHeightLargeDisplay
+                            : kCalendarBubbleHeightSmallDisplay)
+            : gfx::Size(kWideTrayMenuWidth, 400));
   }
 
   auto* const tasks_client =
@@ -280,6 +294,15 @@ void GlanceableTrayBubbleView::OnWidgetClosing(views::Widget* widget) {
 void GlanceableTrayBubbleView::OnDisplayConfigurationChanged() {
   int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
+  // TODO(b/312320532): Update the height if display height is less than
+  // `kCalendarBubbleHeightSmallDisplay`.
+  calendar_view_->SetPreferredSize(
+      features::IsGlanceablesV2CalendarViewEnabled()
+          ? gfx::Size(kWideTrayMenuWidth,
+                      max_height > kDisplayHeightThreshold
+                          ? kCalendarBubbleHeightLargeDisplay
+                          : kCalendarBubbleHeightSmallDisplay)
+          : gfx::Size(kWideTrayMenuWidth, 400));
   ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());
 }
 

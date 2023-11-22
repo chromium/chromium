@@ -3677,6 +3677,7 @@ test("ash_unittests") {
     "system/unified/date_tray_unittest.cc",
     "system/unified/feature_tile_unittest.cc",
     "system/unified/feature_tiles_container_view_unittest.cc",
+    "system/unified/glanceable_tray_bubble_view_unittest.cc",
     "system/unified/notification_counter_view_unittest.cc",
     "system/unified/notification_icons_controller_unittest.cc",
     "system/unified/power_button_unittest.cc",
