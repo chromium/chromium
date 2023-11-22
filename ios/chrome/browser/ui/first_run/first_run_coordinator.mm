@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
@@ -150,6 +151,11 @@
       return ios::provider::
           CreateChoiceCoordinatorForFREWithNavigationController(
               self.navigationController, self.browser, self);
+    case kOmniboxPosition:
+      return [[OmniboxPositionChoiceCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kStepsCompleted:
       NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
       break;

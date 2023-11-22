@@ -179,6 +179,7 @@ using base::UserMetricsAction;
                                accessPoint:_accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:
+    case kOmniboxPosition:
     case kStepsCompleted:
       break;
   }

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
@@ -41,6 +42,11 @@
   }
 
   [screens addObject:@(kDefaultBrowserPromo)];
+
+  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE)) {
+    [screens addObject:@(kOmniboxPosition)];
+  }
+
   [screens addObject:@(kStepsCompleted)];
   return [super initWithScreens:screens];
 }

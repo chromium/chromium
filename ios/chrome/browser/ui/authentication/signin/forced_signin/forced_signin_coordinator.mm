@@ -118,6 +118,7 @@
     case kTangibleSync:
     case kDefaultBrowserPromo:
     case kChoice:
+    case kOmniboxPosition:
     case kStepsCompleted:
       NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);
       break;
