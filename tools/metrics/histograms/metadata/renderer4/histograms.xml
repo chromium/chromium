@@ -196,18 +196,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.MomentumScrollJankPercentage" units="%"
-    expires_after="M85">
-  <owner>ericrk@chromium.org</owner>
-  <summary>
-    The percentage of input events which are janks (not processed in the
-    expected frame) during each momentum scroll gesture. Computed by tracking
-    the number of extra coalesced momentum scroll events during a gesture. Extra
-    coalesced event indicates that the events were not handled in the target
-    frame. Logged once after a scroll with momentum events completes.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.pixelCountCulled_Draw" units="NormalizedPixels"
     expires_after="M85">
   <owner>wiltzius@chromium.org</owner>

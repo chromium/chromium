@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/widget/input/event_with_callback.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
-#include "third_party/blink/renderer/platform/widget/input/momentum_scroll_jank_tracker.h"
 #include "third_party/blink/renderer/platform/widget/input/scroll_predictor.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -491,28 +490,6 @@ void InputHandlerProxy::DispatchSingleInputEvent(
       if (static_cast<const WebTouchEvent&>(event).IsTouchSequenceEnd()) {
         input_handler_->SetIsHandlingTouchSequence(false);
       }
-      break;
-    default:
-      break;
-  }
-
-  // Handle jank tracking during the momentum phase of a scroll gesture. The
-  // class filters non-momentum events internally.
-  switch (type) {
-    case WebGestureEvent::Type::kGestureScrollBegin:
-      momentum_scroll_jank_tracker_ =
-          std::make_unique<MomentumScrollJankTracker>();
-      break;
-    case WebGestureEvent::Type::kGestureScrollUpdate:
-      // It's possible to get a scroll update without a begin. Ignore these
-      // cases.
-      if (momentum_scroll_jank_tracker_) {
-        momentum_scroll_jank_tracker_->OnDispatchedInputEvent(
-            event_with_callback.get(), now);
-      }
-      break;
-    case WebGestureEvent::Type::kGestureScrollEnd:
-      momentum_scroll_jank_tracker_.reset();
       break;
     default:
       break;

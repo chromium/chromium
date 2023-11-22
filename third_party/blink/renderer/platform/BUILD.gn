@@ -1561,8 +1561,6 @@ component("platform") {
     "widget/input/main_thread_event_queue_task.h",
     "widget/input/main_thread_event_queue_task_list.cc",
     "widget/input/main_thread_event_queue_task_list.h",
-    "widget/input/momentum_scroll_jank_tracker.cc",
-    "widget/input/momentum_scroll_jank_tracker.h",
     "widget/input/prediction/filter_factory.cc",
     "widget/input/prediction/filter_factory.h",
     "widget/input/prediction/predictor_factory.cc",
