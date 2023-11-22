@@ -559,6 +559,13 @@ constexpr TestKeyEvent VolumeUpPressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::DomKey::AUDIO_VOLUME_UP, ui::VKEY_VOLUME_UP, flags};
 }
 
+constexpr TestKeyEvent PrivacyScreenTogglePressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
+          ui::DomKey::F12,  // no dom-key for PRIVACY_SCREEN_TOGGLE.
+          ui::VKEY_PRIVACY_SCREEN_TOGGLE, flags};
+}
+
 // Hereafter, numpad key events.
 
 constexpr TestKeyEvent Numpad0Pressed(ui::EventFlags flags = ui::EF_NONE) {
@@ -854,6 +861,27 @@ constexpr TestKeyboard kAllKeyboardVariants[] = {
     kInternalChromeKeyboard,  kInternalChromeCustomLayoutKeyboard,
     kExternalChromeKeyboard,  kExternalChromeCustomLayoutKeyboard,
     kExternalGenericKeyboard, kExternalAppleKeyboard,
+};
+
+// Wilco keyboard configs
+
+constexpr TestKeyboard kWilco1_0Keyboard{
+    "Wilco Keyboard",
+    kKbdTopRowLayoutWilcoTag,
+    ui::INPUT_DEVICE_INTERNAL,
+    /*has_custom_top_row=*/false,
+};
+
+constexpr TestKeyboard kWilco1_5Keyboard{
+    "Drallion Keyboard",
+    kKbdTopRowLayoutDrallionTag,
+    ui::INPUT_DEVICE_INTERNAL,
+    /*has_custom_top_row=*/false,
+};
+
+constexpr TestKeyboard kWilcoKeyboardVariants[] = {
+    kWilco1_0Keyboard,
+    kWilco1_5Keyboard,
 };
 
 // Table entry for simple single key event rewriting tests.
@@ -2999,531 +3027,242 @@ TEST_F(
             RunRewriter(F12Pressed(ui::EF_COMMAND_DOWN)));
 }
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayoutsDeprecated) {
-  Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitAndDisableFeature(
-      ::features::kImprovedKeyboardShortcuts);
-  std::vector<KeyTestCase> wilco_standard_tests({
-      // The number row should be rewritten as the F<number> row with Search
-      // key.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'2'>::Character},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'3'>::Character},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'4'>::Character},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'5'>::Character},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'6'>::Character},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'7'>::Character},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'8'>::Character},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'9'>::Character},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'0'>::Character},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'-'>::Character},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'='>::Character},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-  });
-}
-
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysWilcoLayouts) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
-  std::vector<KeyTestCase> wilco_standard_tests({
-      // F1 -> F1, Search + F1 -> Back
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-        ui::DomKey::BROWSER_BACK}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1}},
-      // F2 -> F2, Search + F2 -> Refresh
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_CONTROL_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_CONTROL_DOWN, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2}},
-      // F3 -> F3, Search + F3 -> Zoom (aka Fullscreen)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_CONTROL_DOWN, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_ALT_DOWN, ui::DomKey::F3}},
-      // F4 -> F4, Search + F4 -> Launch App 1
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_NONE,
-        ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_CONTROL_DOWN, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_CONTROL_DOWN, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_ALT_DOWN, ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_ALT_DOWN, ui::DomKey::F4}},
-      // F5 -> F5, Search + F5 -> Brightness down
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5},
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_CONTROL_DOWN, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_CONTROL_DOWN, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_ALT_DOWN, ui::DomKey::F5},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_ALT_DOWN, ui::DomKey::F5}},
-      // F6 -> F6, Search + F6 -> Brightness up
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_CONTROL_DOWN, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_CONTROL_DOWN, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_ALT_DOWN, ui::DomKey::F6},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_ALT_DOWN, ui::DomKey::F6}},
-      // F7 -> F7, Search + F7 -> Volume mute
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7},
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_MUTE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_CONTROL_DOWN, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_CONTROL_DOWN, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_ALT_DOWN, ui::DomKey::F7},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_ALT_DOWN, ui::DomKey::F7}},
-      // F8 -> F8, Search + F8 -> Volume Down
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8},
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_CONTROL_DOWN, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_CONTROL_DOWN, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_ALT_DOWN, ui::DomKey::F8},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_ALT_DOWN, ui::DomKey::F8}},
-      // F9 -> F9, Search + F9 -> Volume Up
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9},
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_CONTROL_DOWN, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_CONTROL_DOWN, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_ALT_DOWN, ui::DomKey::F9},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_ALT_DOWN, ui::DomKey::F9}},
-      // F10 -> F10, Search + F10 -> F10
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_CONTROL_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_CONTROL_DOWN, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_ALT_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_ALT_DOWN, ui::DomKey::F10}},
-      // F11 -> F11, Search + F11 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_ALT_DOWN, ui::DomKey::F11}},
-      // F12 -> F12
-      // Search + F12 differs between Wilco devices so it is tested separately.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12}},
-      // The number row should not be rewritten without Search key.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_NONE,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_NONE,
-        ui::DomKey::Constant<'1'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_NONE,
-        ui::DomKey::Constant<'2'>::Character},
-       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_NONE,
-        ui::DomKey::Constant<'2'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_NONE,
-        ui::DomKey::Constant<'3'>::Character},
-       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_NONE,
-        ui::DomKey::Constant<'3'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_NONE,
-        ui::DomKey::Constant<'4'>::Character},
-       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_NONE,
-        ui::DomKey::Constant<'4'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_NONE,
-        ui::DomKey::Constant<'5'>::Character},
-       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_NONE,
-        ui::DomKey::Constant<'5'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_NONE,
-        ui::DomKey::Constant<'6'>::Character},
-       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_NONE,
-        ui::DomKey::Constant<'6'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_NONE,
-        ui::DomKey::Constant<'7'>::Character},
-       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_NONE,
-        ui::DomKey::Constant<'7'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_NONE,
-        ui::DomKey::Constant<'8'>::Character},
-       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_NONE,
-        ui::DomKey::Constant<'8'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_NONE,
-        ui::DomKey::Constant<'9'>::Character},
-       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_NONE,
-        ui::DomKey::Constant<'9'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_NONE,
-        ui::DomKey::Constant<'0'>::Character},
-       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_NONE,
-        ui::DomKey::Constant<'0'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_NONE,
-        ui::DomKey::Constant<'-'>::Character},
-       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_NONE,
-        ui::DomKey::Constant<'-'>::Character}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_NONE,
-        ui::DomKey::Constant<'='>::Character},
-       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_NONE,
-        ui::DomKey::Constant<'='>::Character}},
-  });
+  for (const auto& keyboard : kWilcoKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-  KeyTestCase wilco_1_test =
-      // Search + F12 -> Ctrl + Zoom (aka Fullscreen) (Display toggle)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
-       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12}};
+    // F1 -> F1, Search + F1 -> Back
+    EXPECT_EQ(F1Pressed(), RunRewriter(F1Pressed()));
+    EXPECT_EQ(BrowserBackPressed(),
+              RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F1Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F1Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F1Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F1Pressed(ui::EF_ALT_DOWN)));
 
-  KeyTestCase drallion_test_no_privacy_screen =
-      // Search + F12 -> F12 (Privacy screen not supported)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}};
+    // F2 -> F2, Search + F2 -> Refresh
+    EXPECT_EQ(F2Pressed(), RunRewriter(F2Pressed()));
+    EXPECT_EQ(BrowserRefreshPressed(),
+              RunRewriter(F2Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F2Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F2Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F2Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F2Pressed(ui::EF_ALT_DOWN)));
 
-  KeyTestCase drallion_test_privacy_screen =
-      // F12 -> F12, Search + F12 -> Privacy Screen Toggle
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_NONE, ui::DomKey::F12}};
+    // F3 -> F3, Search + F3 -> Zoom (aka Fullscreen)
+    EXPECT_EQ(F3Pressed(), RunRewriter(F3Pressed()));
+    EXPECT_EQ(ZoomTogglePressed(), RunRewriter(F3Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F3Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F3Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F3Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F3Pressed(ui::EF_ALT_DOWN)));
 
-  // Set keyboard layout to Wilco 1.0
-  SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
-  // Standard key tests using Wilco 1.0 keyboard
-  for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(source(), test);
-  CheckKeyTestCase(source(), wilco_1_test);
+    // F4 -> F4, Search + F4 -> Launch App 1
+    EXPECT_EQ(F4Pressed(), RunRewriter(F4Pressed()));
+    EXPECT_EQ((TestKeyEvent{ui::ET_KEY_PRESSED, ui::DomCode::F4, ui::DomKey::F4,
+                            ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE}),
+              RunRewriter(F4Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F4Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F4Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F4Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F4Pressed(ui::EF_ALT_DOWN)));
 
-  // Set keyboard layout to Drallion (Wilco 1.5)
-  SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
+    // F5 -> F5, Search + F5 -> Brightness down
+    EXPECT_EQ(F5Pressed(), RunRewriter(F5Pressed()));
+    EXPECT_EQ(BrightnessDownPressed(),
+              RunRewriter(F5Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F5Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F5Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F5Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F5Pressed(ui::EF_ALT_DOWN)));
 
-  // Run key tests using Drallion keyboard layout (no privacy screen)
+    // F6 -> F6, Search + F6 -> Brightness up
+    EXPECT_EQ(F6Pressed(), RunRewriter(F6Pressed()));
+    EXPECT_EQ(BrightnessUpPressed(),
+              RunRewriter(F6Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F6Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F6Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F6Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F6Pressed(ui::EF_ALT_DOWN)));
+
+    // F7 -> F7, Search + F7 -> Volume mute
+    EXPECT_EQ(F7Pressed(), RunRewriter(F7Pressed()));
+    EXPECT_EQ(VolumeMutePressed(), RunRewriter(F7Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F7Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F7Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F7Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F7Pressed(ui::EF_ALT_DOWN)));
+
+    // F8 -> F8, Search + F8 -> Volume Down
+    EXPECT_EQ(F8Pressed(), RunRewriter(F8Pressed()));
+    EXPECT_EQ(VolumeDownPressed(), RunRewriter(F8Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F8Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F8Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F8Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F8Pressed(ui::EF_ALT_DOWN)));
+
+    // F9 -> F9, Search + F9 -> Volume Up
+    EXPECT_EQ(F9Pressed(), RunRewriter(F9Pressed()));
+    EXPECT_EQ(VolumeUpPressed(), RunRewriter(F9Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F9Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F9Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F9Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F9Pressed(ui::EF_ALT_DOWN)));
+
+    // F10 -> F10, Search + F10 -> F10
+    EXPECT_EQ(F10Pressed(), RunRewriter(F10Pressed()));
+    EXPECT_EQ(F10Pressed(), RunRewriter(F10Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F10Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F10Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F10Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F10Pressed(ui::EF_ALT_DOWN)));
+
+    // F11 -> F11, Search + F11 -> F11
+    EXPECT_EQ(F11Pressed(), RunRewriter(F11Pressed()));
+    EXPECT_EQ(F11Pressed(), RunRewriter(F11Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F11Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F11Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F11Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F11Pressed(ui::EF_ALT_DOWN)));
+
+    // F12 -> F12
+    // Search + F12 differs between Wilco devices so it is tested separately.
+    EXPECT_EQ(F12Pressed(), RunRewriter(F12Pressed()));
+    EXPECT_EQ(F12Pressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(F12Pressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(F12Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(F12Pressed(ui::EF_ALT_DOWN)));
+
+    // The number row should not be rewritten without Search key.
+    EXPECT_EQ(Digit1Pressed(), RunRewriter(Digit1Pressed()));
+    EXPECT_EQ(Digit2Pressed(), RunRewriter(Digit2Pressed()));
+    EXPECT_EQ(Digit3Pressed(), RunRewriter(Digit3Pressed()));
+    EXPECT_EQ(Digit4Pressed(), RunRewriter(Digit4Pressed()));
+    EXPECT_EQ(Digit5Pressed(), RunRewriter(Digit5Pressed()));
+    EXPECT_EQ(Digit6Pressed(), RunRewriter(Digit6Pressed()));
+    EXPECT_EQ(Digit7Pressed(), RunRewriter(Digit7Pressed()));
+    EXPECT_EQ(Digit8Pressed(), RunRewriter(Digit8Pressed()));
+    EXPECT_EQ(Digit9Pressed(), RunRewriter(Digit9Pressed()));
+    EXPECT_EQ(Digit0Pressed(), RunRewriter(Digit0Pressed()));
+    EXPECT_EQ(MinusPressed(), RunRewriter(MinusPressed()));
+    EXPECT_EQ(EqualPressed(), RunRewriter(EqualPressed()));
+  }
+
+  SetUpKeyboard(kWilco1_0Keyboard);
+  // Search + F12 -> Ctrl + Zoom (aka Fullscreen) (Display toggle)
+  EXPECT_EQ((TestKeyEvent{ui::ET_KEY_PRESSED, ui::DomCode::F12, ui::DomKey::F12,
+                          ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN}),
+            RunRewriter(F12Pressed(ui::EF_COMMAND_DOWN)));
+
+  SetUpKeyboard(kWilco1_5Keyboard);
+  // Search + F12 -> F12 (Privacy screen not supported)
   event_rewriter_ash_->set_privacy_screen_for_testing(false);
-  for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(source(), test);
-  CheckKeyTestCase(source(), drallion_test_no_privacy_screen);
+  EXPECT_EQ(F12Pressed(), RunRewriter(F12Pressed(ui::EF_COMMAND_DOWN)));
 
-  // Run key tests using Drallion keyboard layout (privacy screen supported)
+  // F12 -> F12, Search + F12 -> Privacy Screen Toggle
   event_rewriter_ash_->set_privacy_screen_for_testing(true);
-  for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(source(), test);
-  CheckKeyTestCase(source(), drallion_test_privacy_screen);
+  EXPECT_EQ(PrivacyScreenTogglePressed(),
+            RunRewriter(F12Pressed(ui::EF_COMMAND_DOWN)));
 }
 
 TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
-  KeyTestCase wilco_standard_tests[] = {
-      // Back -> Back, Search + Back -> F1
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-        ui::DomKey::BROWSER_BACK},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-        ui::DomKey::BROWSER_BACK}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BROWSER_BACK},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      // Refresh -> Refresh, Search + Refresh -> F2
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      // Full Screen -> Full Screen, Search + Full Screen -> F3
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      // Launch App 1 -> Launch App 1, Search + Launch App 1 -> F4
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_NONE,
-        ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_NONE,
-        ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      // Brightness down -> Brightness Down, Search Brightness Down -> F5
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_DOWN},
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      // Brightness up -> Brightness Up, Search + Brightness Up -> F6
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_UP},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BRIGHTNESS_UP},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      // Volume mute -> Volume Mute, Search + Volume Mute -> F7
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_MUTE},
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_MUTE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_MUTE},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      // Volume Down -> Volume Down, Search + Volume Down -> F8
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_DOWN},
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_DOWN},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      // Volume Up -> Volume Up, Search + Volume Up -> F9
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_UP},
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_UP},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      // F10 -> F10
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      // F11 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}}};
+  for (const auto& keyboard : kWilcoKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-  KeyTestCase wilco_1_tests[] = {
-      // Ctrl + Zoom (Display toggle) -> Unchanged
-      // Search + Ctrl + Zoom (Display toggle) -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::F12,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}}};
+    // Back -> Back, Search + Back -> F1
+    EXPECT_EQ(BrowserBackPressed(), RunRewriter(BrowserBackPressed()));
+    EXPECT_EQ(F1Pressed(),
+              RunRewriter(BrowserBackPressed(ui::EF_COMMAND_DOWN)));
 
-  KeyTestCase drallion_tests_no_privacy_screen[] = {
-      // Privacy Screen Toggle -> F12 (Privacy Screen not supported),
-      // Search + Privacy Screen Toggle -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_NONE, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      // Ctrl + Zoom (Display toggle) -> Unchanged
-      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED}}};
+    // Refresh -> Refresh, Search + Refresh -> F2
+    EXPECT_EQ(BrowserRefreshPressed(), RunRewriter(BrowserRefreshPressed()));
+    EXPECT_EQ(F2Pressed(),
+              RunRewriter(BrowserRefreshPressed(ui::EF_COMMAND_DOWN)));
 
-  KeyTestCase drallion_tests_privacy_screen[] = {
-      // Privacy Screen Toggle -> Privacy Screen Toggle,
-      // Search + Privacy Screen Toggle -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_NONE, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_NONE, ui::DomKey::UNIDENTIFIED}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      // Ctrl + Zoom (Display toggle) -> Unchanged
-      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED}}};
+    // Full Screen -> Full Screen, Search + Full Screen -> F3
+    EXPECT_EQ(ZoomTogglePressed(), RunRewriter(ZoomTogglePressed()));
+    EXPECT_EQ(F3Pressed(), RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN)));
 
-  // Set keyboard layout to Wilco 1.0
-  SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
-  // Standard key tests using Wilco 1.0 keyboard
-  for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(source(), test);
-  // Wilco 1.0 specific key tests
-  for (const auto& test : wilco_1_tests)
-    CheckKeyTestCase(source(), test);
+    // Launch App 1 -> Launch App 1, Search + Launch App 1 -> F4
+    EXPECT_EQ(SelectTaskPressed(), RunRewriter(SelectTaskPressed()));
+    EXPECT_EQ(F4Pressed(), RunRewriter(SelectTaskPressed(ui::EF_COMMAND_DOWN)));
 
-  // Set keyboard layout to Drallion (Wilco 1.5)
-  SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
+    // Brightness down -> Brightness Down, Search Brightness Down -> F5
+    EXPECT_EQ(BrightnessDownPressed(), RunRewriter(BrightnessDownPressed()));
+    EXPECT_EQ(F5Pressed(),
+              RunRewriter(BrightnessDownPressed(ui::EF_COMMAND_DOWN)));
 
-  // Standard key tests using Drallion keyboard layout
-  for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(source(), test);
+    // Brightness up -> Brightness Up, Search + Brightness Up -> F6
+    EXPECT_EQ(BrightnessUpPressed(), RunRewriter(BrightnessUpPressed()));
+    EXPECT_EQ(F6Pressed(),
+              RunRewriter(BrightnessUpPressed(ui::EF_COMMAND_DOWN)));
 
-  // Drallion specific key tests (no privacy screen)
-  event_rewriter_ash_->set_privacy_screen_for_testing(false);
-  for (const auto& test : drallion_tests_no_privacy_screen)
-    CheckKeyTestCase(source(), test);
+    // Volume mute -> Volume Mute, Search + Volume Mute -> F7
+    EXPECT_EQ(VolumeMutePressed(), RunRewriter(VolumeMutePressed()));
+    EXPECT_EQ(F7Pressed(), RunRewriter(VolumeMutePressed(ui::EF_COMMAND_DOWN)));
 
-  // Drallion specific key tests (privacy screen supported)
-  event_rewriter_ash_->set_privacy_screen_for_testing(true);
-  for (const auto& test : drallion_tests_privacy_screen)
-    CheckKeyTestCase(source(), test);
+    // Volume Down -> Volume Down, Search + Volume Down -> F8
+    EXPECT_EQ(VolumeDownPressed(), RunRewriter(VolumeDownPressed()));
+    EXPECT_EQ(F8Pressed(), RunRewriter(VolumeDownPressed(ui::EF_COMMAND_DOWN)));
+
+    // Volume Up -> Volume Up, Search + Volume Up -> F9
+    EXPECT_EQ(VolumeUpPressed(), RunRewriter(VolumeUpPressed()));
+    EXPECT_EQ(F9Pressed(), RunRewriter(VolumeUpPressed(ui::EF_COMMAND_DOWN)));
+  }
+
+  SetUpKeyboard(kWilco1_0Keyboard);
+  // Ctrl + Zoom (Display toggle) -> Unchanged
+  // Search + Ctrl + Zoom (Display toggle) -> F12
+  EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(F12Pressed(), RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN |
+                                                        ui::EF_COMMAND_DOWN)));
+
+  SetUpKeyboard(kWilco1_5Keyboard);
+  {
+    // Drallion specific key tests (no privacy screen)
+    event_rewriter_ash_->set_privacy_screen_for_testing(false);
+
+    // Privacy Screen Toggle -> F12 (Privacy Screen not supported),
+    // Search + Privacy Screen Toggle -> F12
+    EXPECT_EQ(F12Pressed(), RunRewriter(PrivacyScreenTogglePressed()));
+    EXPECT_EQ(F12Pressed(),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
+
+    // Ctrl + Zoom (Display toggle) -> Unchanged
+    // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN |
+                                            ui::EF_COMMAND_DOWN)));
+  }
+
+  {
+    // Drallion specific key tests (privacy screen supported)
+    event_rewriter_ash_->set_privacy_screen_for_testing(true);
+
+    // Privacy Screen Toggle -> Privacy Screen Toggle,
+    // Search + Privacy Screen Toggle -> F12
+    EXPECT_EQ(PrivacyScreenTogglePressed(),
+              RunRewriter(PrivacyScreenTogglePressed()));
+    EXPECT_EQ(F12Pressed(),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
+
+    // Ctrl + Zoom (Display toggle) -> Unchanged
+    // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN |
+                                            ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest,
@@ -3534,131 +3273,68 @@ TEST_F(EventRewriterTest,
 
   // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
   // unchanged and keep the search modifier.
-  KeyTestCase wilco_standard_tests[] = {
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BROWSER_BACK},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BROWSER_BACK}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ZOOM_TOGGLE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN},
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BRIGHTNESS_UP},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BRIGHTNESS_UP}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_MUTE},
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_MUTE}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_DOWN},
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_DOWN}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_UP},
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_UP}},
-      // F-Keys do not remove Search when pressed.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10}},
-      // F11 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11}}};
 
-  // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
-  // unchanged and keep the search modifier.
-  KeyTestCase wilco_1_tests[] = {
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::F12,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_ZOOM, ui::DomCode::F12,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12}}};
+  for (const auto& keyboard : kWilcoKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-  // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
-  // unchanged and keep the search modifier.
-  KeyTestCase drallion_tests_no_privacy_screen[] = {
-      // Search + Privacy Screen Toggle -> Search + F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}},
-      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED}},
-  };
-  // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
-  // unchanged and keep the search modifier.
-  KeyTestCase drallion_tests_privacy_screen[] = {
-      // Search + Privacy Screen Toggle -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED}},
-      // Ctrl + Zoom (Display toggle) -> Unchanged
-      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED}}};
+    EXPECT_EQ(BrowserBackPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrowserBackPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(BrowserRefreshPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrowserRefreshPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(SelectTaskPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(SelectTaskPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(BrightnessDownPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrightnessDownPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(BrightnessUpPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrightnessUpPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(VolumeMutePressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(VolumeMutePressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(VolumeDownPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(VolumeDownPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(VolumeUpPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(VolumeUpPressed(ui::EF_COMMAND_DOWN)));
 
-  // Set keyboard layout to Wilco 1.0
-  SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
-  // Standard key tests using Wilco 1.0 keyboard
-  for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(source(), test);
-  }
-  // Wilco 1.0 specific key tests
-  for (const auto& test : wilco_1_tests) {
-    CheckKeyTestCase(source(), test);
+    // F-Keys do not remove Search when pressed.
+    EXPECT_EQ(F10Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(F10Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F11Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(F11Pressed(ui::EF_COMMAND_DOWN)));
   }
 
-  // Set keyboard layout to Drallion (Wilco 1.5)
-  SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
+  SetUpKeyboard(kWilco1_0Keyboard);
+  EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN),
+            RunRewriter(
+                ZoomTogglePressed(ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)));
 
-  // Standard key tests using Drallion keyboard layout
-  for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(source(), test);
+  SetUpKeyboard(kWilco1_5Keyboard);
+  {
+    // Drallion specific key tests (no privacy screen)
+    event_rewriter_ash_->set_privacy_screen_for_testing(false);
+
+    // Search + Privacy Screen Toggle -> Search + F12
+    EXPECT_EQ(F12Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
+    // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN |
+                                            ui::EF_CONTROL_DOWN)));
   }
 
-  // Drallion specific key tests (no privacy screen)
-  event_rewriter_ash_->set_privacy_screen_for_testing(false);
-  for (const auto& test : drallion_tests_no_privacy_screen) {
-    CheckKeyTestCase(source(), test);
-  }
+  {
+    // Drallion specific key tests (privacy screen supported)
+    event_rewriter_ash_->set_privacy_screen_for_testing(true);
 
-  // Drallion specific key tests (privacy screen supported)
-  event_rewriter_ash_->set_privacy_screen_for_testing(true);
-  for (const auto& test : drallion_tests_privacy_screen) {
-    CheckKeyTestCase(source(), test);
+    // Search + Privacy Screen Toggle -> F12  TODO
+    EXPECT_EQ(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
+    // Ctrl + Zoom (Display toggle) -> Unchanged  TODO
+    // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN |
+                                            ui::EF_CONTROL_DOWN)));
   }
 }
 
@@ -3678,110 +3354,61 @@ TEST_F(
 
   // With |SuppressMetaTopRowKeyComboRewrites| and TopRowAreFKeys, all action
   // keys should be remapped to F-Keys and keep the Search modifier.
-  KeyTestCase wilco_standard_tests[] = {
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BROWSER_BACK},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BRIGHTNESS_UP},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_MUTE},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_DOWN},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_UP},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11}}};
+  for (const auto& keyboard : kWilcoKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-  // With |SuppressMetaTopRowKeyComboRewrites| and TopRowAreFKeys, all action
-  // keys should be remapped to F-Keys and keep the Search modifier.
-  KeyTestCase wilco_1_tests[] = {
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::F12,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}}};
+    EXPECT_EQ(F1Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrowserBackPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F2Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrowserRefreshPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F3Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F4Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(SelectTaskPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F5Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrightnessDownPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F6Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(BrightnessUpPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F7Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(VolumeMutePressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F8Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(VolumeDownPressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F9Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(VolumeUpPressed(ui::EF_COMMAND_DOWN)));
 
-  KeyTestCase drallion_tests_no_privacy_screen[] = {
-      // Search + Privacy Screen Toggle -> Search + F12 (Privacy screen not
-      // supported)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}},
-      // Search + Ctrl + Zoom (Display toggle) -> Unchanged as Display toggle
-      // should never be remapped to anything else.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED}}};
-
-  KeyTestCase drallion_tests_privacy_screen[] = {
-      // Search + Privacy Screen Toggle -> Remapped to F12 and
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}},
-  };
-
-  // Set keyboard layout to Wilco 1.0
-  SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
-  // Standard key tests using Wilco 1.0 keyboard
-  for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(source(), test);
-  }
-  // Wilco 1.0 specific key tests
-  for (const auto& test : wilco_1_tests) {
-    CheckKeyTestCase(source(), test);
+    EXPECT_EQ(F10Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(F10Pressed(ui::EF_COMMAND_DOWN)));
+    EXPECT_EQ(F11Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(F11Pressed(ui::EF_COMMAND_DOWN)));
   }
 
-  // Set keyboard layout to Drallion (Wilco 1.5)
-  SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
+  SetUpKeyboard(kWilco1_0Keyboard);
+  EXPECT_EQ(F12Pressed(ui::EF_COMMAND_DOWN),
+            RunRewriter(
+                ZoomTogglePressed(ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)));
 
-  // Standard key tests using Drallion keyboard layout
-  for (const auto& test : wilco_standard_tests) {
-    CheckKeyTestCase(source(), test);
+  SetUpKeyboard(kWilco1_5Keyboard);
+  {
+    // Drallion specific key tests (no privacy screen)
+    event_rewriter_ash_->set_privacy_screen_for_testing(false);
+
+    // Search + Privacy Screen Toggle -> Search + F12
+    EXPECT_EQ(F12Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
+    // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN |
+                                            ui::EF_CONTROL_DOWN)));
   }
 
-  // Drallion specific key tests (no privacy screen)
-  event_rewriter_ash_->set_privacy_screen_for_testing(false);
-  for (const auto& test : drallion_tests_no_privacy_screen) {
-    CheckKeyTestCase(source(), test);
-  }
+  {
+    // Drallion specific key tests (privacy screen supported)
+    event_rewriter_ash_->set_privacy_screen_for_testing(true);
 
-  // Drallion specific key tests (privacy screen supported)
-  event_rewriter_ash_->set_privacy_screen_for_testing(true);
-  for (const auto& test : drallion_tests_privacy_screen) {
-    CheckKeyTestCase(source(), test);
+    // Search + Privacy Screen Toggle -> F12
+    EXPECT_EQ(F12Pressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
   }
 }
 
@@ -3796,185 +3423,102 @@ TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
   top_row_as_fn_key.SetValue(true);
   keyboard_settings->top_row_are_fkeys = true;
 
-  KeyTestCase wilco_standard_tests[] = {
-      // Back -> F1, Search + Back -> Back
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-        ui::DomKey::BROWSER_BACK},
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BROWSER_BACK},
-       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
-        ui::DomKey::BROWSER_BACK}},
-      // Refresh -> F2, Search + Refresh -> Refresh
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH},
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH},
-       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH, ui::EF_NONE,
-        ui::DomKey::BROWSER_REFRESH}},
-      // Full Screen -> F3, Search + Full Screen -> Full Screen
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_NONE, ui::DomKey::F3}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::ZOOM_TOGGLE},
-       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_NONE,
-        ui::DomKey::ZOOM_TOGGLE}},
-      // Launch App 1 -> F4, Search + Launch App 1 -> Launch App 1
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_NONE,
-        ui::DomKey::F4},
-       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_NONE, ui::DomKey::F4}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
-        ui::DomKey::F4},
-       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_NONE,
-        ui::DomKey::F4}},
-      // Brightness down -> F5, Search Brightness Down -> Brightness Down
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_DOWN},
-       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_NONE, ui::DomKey::F5}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
-        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN},
-       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_DOWN}},
-      // Brightness up -> F6, Search + Brightness Up -> Brightness Up
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_UP},
-       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_NONE, ui::DomKey::F6}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::BRIGHTNESS_UP},
-       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_NONE,
-        ui::DomKey::BRIGHTNESS_UP}},
-      // Volume mute -> F7, Search + Volume Mute -> Volume Mute
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_MUTE},
-       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_NONE, ui::DomKey::F7}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_MUTE},
-       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_MUTE}},
-      // Volume Down -> F8, Search + Volume Down -> Volume Down
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_DOWN},
-       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_NONE, ui::DomKey::F8}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_DOWN},
-       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_DOWN}},
-      // Volume Up -> F9, Search + Volume Up -> Volume Up
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_UP},
-       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_NONE, ui::DomKey::F9}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
-        ui::DomKey::AUDIO_VOLUME_UP},
-       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_NONE,
-        ui::DomKey::AUDIO_VOLUME_UP}},
-      // F10 -> F10
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
-       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_NONE, ui::DomKey::F10}},
-      // F11 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}}};
+  for (const auto& keyboard : kWilcoKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-  KeyTestCase wilco_1_tests[] = {
-      // Ctrl + Zoom (Display toggle) -> F12
-      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::F12,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
-       {ui::VKEY_ZOOM, ui::DomCode::F12, ui::EF_CONTROL_DOWN,
-        ui::DomKey::F12}}};
+    // Back -> F1, Search + Back -> Back
+    EXPECT_EQ(F1Pressed(), RunRewriter(BrowserBackPressed()));
+    EXPECT_EQ(BrowserBackPressed(),
+              RunRewriter(BrowserBackPressed(ui::EF_COMMAND_DOWN)));
 
-  KeyTestCase drallion_tests_no_privacy_screen[] = {
-      // Privacy Screen Toggle -> F12,
-      // Search + Privacy Screen Toggle -> F12 (Privacy screen not supported)
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_NONE, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      // Ctrl + Zoom (Display toggle) -> Unchanged
-      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_ZOOM, ui::DomCode::NONE,
-        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_ZOOM, ui::DomCode::NONE, ui::EF_CONTROL_DOWN,
-        ui::DomKey::UNIDENTIFIED}}};
+    // Refresh -> F2, Search + Refresh -> Refresh
+    EXPECT_EQ(F2Pressed(), RunRewriter(BrowserRefreshPressed()));
+    EXPECT_EQ(BrowserRefreshPressed(),
+              RunRewriter(BrowserRefreshPressed(ui::EF_COMMAND_DOWN)));
 
-  KeyTestCase drallion_tests_privacy_screen[] = {
-      // Privacy Screen Toggle -> F12,
-      // Search + Privacy Screen Toggle -> Unchanged
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_NONE, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
-        ui::EF_NONE, ui::DomKey::UNIDENTIFIED}}};
+    // Full Screen -> F3, Search + Full Screen -> Full Screen
+    EXPECT_EQ(F3Pressed(), RunRewriter(ZoomTogglePressed()));
+    EXPECT_EQ(ZoomTogglePressed(),
+              RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN)));
 
-  // Run key test cases for Wilco 1.0 keyboard layout
-  SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
-  // Standard key tests using Wilco 1.0 keyboard
-  for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(source(), test);
-  // Wilco 1.0 specific key tests
-  for (const auto& test : wilco_1_tests)
-    CheckKeyTestCase(source(), test);
+    // Launch App 1 -> F4, Search + Launch App 1 -> Launch App 1
+    EXPECT_EQ(F4Pressed(), RunRewriter(SelectTaskPressed()));
+    EXPECT_EQ(SelectTaskPressed(),
+              RunRewriter(SelectTaskPressed(ui::EF_COMMAND_DOWN)));
 
-  // Run key test cases for Drallion (Wilco 1.5) keyboard layout
-  SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
-  // Standard key tests using Drallion keyboard layout
-  for (const auto& test : wilco_standard_tests)
-    CheckKeyTestCase(source(), test);
+    // Brightness down -> F5, Search Brightness Down -> Brightness Down
+    EXPECT_EQ(F5Pressed(), RunRewriter(BrightnessDownPressed()));
+    EXPECT_EQ(BrightnessDownPressed(),
+              RunRewriter(BrightnessDownPressed(ui::EF_COMMAND_DOWN)));
 
-  // Drallion specific key tests (no privacy screen)
-  event_rewriter_ash_->set_privacy_screen_for_testing(false);
-  for (const auto& test : drallion_tests_no_privacy_screen)
-    CheckKeyTestCase(source(), test);
+    // Brightness up -> F6, Search + Brightness Up -> Brightness Up
+    EXPECT_EQ(F6Pressed(), RunRewriter(BrightnessUpPressed()));
+    EXPECT_EQ(BrightnessUpPressed(),
+              RunRewriter(BrightnessUpPressed(ui::EF_COMMAND_DOWN)));
 
-  // Drallion specific key tests (privacy screen supported)
-  event_rewriter_ash_->set_privacy_screen_for_testing(true);
-  for (const auto& test : drallion_tests_privacy_screen)
-    CheckKeyTestCase(source(), test);
+    // Volume mute -> F7, Search + Volume Mute -> Volume Mute
+    EXPECT_EQ(F7Pressed(), RunRewriter(VolumeMutePressed()));
+    EXPECT_EQ(VolumeMutePressed(),
+              RunRewriter(VolumeMutePressed(ui::EF_COMMAND_DOWN)));
+
+    // Volume Down -> F8, Search + Volume Down -> Volume Down
+    EXPECT_EQ(F8Pressed(), RunRewriter(VolumeDownPressed()));
+    EXPECT_EQ(VolumeDownPressed(),
+              RunRewriter(VolumeDownPressed(ui::EF_COMMAND_DOWN)));
+
+    // Volume Up -> F9, Search + Volume Up -> Volume Up
+    EXPECT_EQ(F9Pressed(), RunRewriter(VolumeUpPressed()));
+    EXPECT_EQ(VolumeUpPressed(),
+              RunRewriter(VolumeUpPressed(ui::EF_COMMAND_DOWN)));
+
+    // F10 -> F10
+    EXPECT_EQ(F10Pressed(), RunRewriter(F10Pressed()));
+    EXPECT_EQ(F10Pressed(), RunRewriter(F10Pressed(ui::EF_COMMAND_DOWN)));
+
+    // F11 -> F11
+    EXPECT_EQ(F11Pressed(), RunRewriter(F11Pressed()));
+    EXPECT_EQ(F11Pressed(), RunRewriter(F11Pressed(ui::EF_COMMAND_DOWN)));
+  }
+
+  SetUpKeyboard(kWilco1_0Keyboard);
+  // Ctrl + Zoom (Display toggle) -> F12
+  // Search + Ctrl + Zoom (Display toggle) -> Search modifier should be removed
+  EXPECT_EQ(F12Pressed(), RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(
+                ZoomTogglePressed(ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN)));
+
+  SetUpKeyboard(kWilco1_5Keyboard);
+  {
+    // Drallion specific key tests (no privacy screen)
+    event_rewriter_ash_->set_privacy_screen_for_testing(false);
+
+    // Privacy Screen Toggle -> F12,
+    // Search + Privacy Screen Toggle -> F12 (Privacy screen not supported)
+    EXPECT_EQ(F12Pressed(), RunRewriter(PrivacyScreenTogglePressed()));
+    EXPECT_EQ(F12Pressed(),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
+
+    // Ctrl + Zoom (Display toggle) -> Unchanged
+    // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_CONTROL_DOWN)));
+    EXPECT_EQ(ZoomTogglePressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(ZoomTogglePressed(ui::EF_COMMAND_DOWN |
+                                            ui::EF_CONTROL_DOWN)));
+  }
+
+  {
+    // Drallion specific key tests (privacy screen supported)
+    event_rewriter_ash_->set_privacy_screen_for_testing(true);
+
+    // Privacy Screen Toggle -> F12,
+    // Search + Privacy Screen Toggle -> Unchanged
+    EXPECT_EQ(F12Pressed(), RunRewriter(PrivacyScreenTogglePressed()));
+    EXPECT_EQ(PrivacyScreenTogglePressed(),
+              RunRewriter(PrivacyScreenTogglePressed(ui::EF_COMMAND_DOWN)));
+  }
 }
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysInvalidLayout) {
