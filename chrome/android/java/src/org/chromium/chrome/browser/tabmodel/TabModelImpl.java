@@ -83,6 +83,8 @@ public class TabModelImpl extends TabModelJniBridge {
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>();
 
     /** This specifies the current {@link Tab} in {@link #mTabs}. */
     private int mIndex = INVALID_TAB_INDEX;
@@ -103,6 +105,7 @@ public class TabModelImpl extends TabModelJniBridge {
             if (mIndex >= insertIndex) mIndex++;
             assert !tab.isDestroyed() : "Attempting to undo tab that is destroyed.";
             mTabs.add(insertIndex, tab);
+            mTabCountSupplier.set(mTabs.size());
 
             WebContents webContents = tab.getWebContents();
             if (webContents != null) webContents.setAudioMuted(false);
@@ -168,6 +171,7 @@ public class TabModelImpl extends TabModelJniBridge {
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
+        mTabCountSupplier.set(0);
         if (supportUndo && !isIncognito()) {
             mPendingTabClosureManager =
                     new PendingTabClosureManager(this, new PendingTabClosureDelegateImpl());
@@ -208,6 +212,7 @@ public class TabModelImpl extends TabModelJniBridge {
             }
         }
         mTabs.clear();
+        mTabCountSupplier.set(0);
         mObservers.clear();
         super.destroy();
     }
@@ -240,6 +245,11 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public void removeObserver(TabModelObserver observer) {
         mObservers.removeObserver(observer);
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+        return mTabCountSupplier;
     }
 
     /**
@@ -278,6 +288,7 @@ public class TabModelImpl extends TabModelJniBridge {
                     mIndex++;
                 }
             }
+            mTabCountSupplier.set(mTabs.size());
 
             if (!isActiveModel()) {
                 // When adding new tabs in the background, make sure we set a valid index when the
@@ -745,6 +756,7 @@ public class TabModelImpl extends TabModelJniBridge {
         }
 
         mTabs.remove(tab);
+        mTabCountSupplier.set(mTabs.size());
 
         boolean nextIsIncognito = nextTab == null ? false : nextTab.isIncognito();
         int nextTabId = nextTab == null ? Tab.INVALID_TAB_ID : nextTab.getId();

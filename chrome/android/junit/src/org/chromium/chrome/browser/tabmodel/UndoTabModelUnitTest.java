@@ -1512,6 +1512,7 @@ public class UndoTabModelUnitTest {
     public void testActiveModelCloseAndUndoForTabSupplier() throws TimeoutException {
         final boolean isIncognito = false;
         final TabModel model = createTabModel(isIncognito);
+        assertEquals(0, model.getTabCountSupplier().get().intValue());
         createTab(model, isIncognito);
         model.getCurrentTabSupplier().addObserver(mTabSupplierObserver);
         ShadowLooper.runUiThreadTasks();
@@ -1522,16 +1523,19 @@ public class UndoTabModelUnitTest {
         assertEquals(tab0, model.getCurrentTabSupplier().get());
         verify(mTabSupplierObserver).onResult(eq(tab0));
         checkState(model, new Tab[] {tab0}, tab0, sEmptyList, fullList, tab0);
+        assertEquals(1, model.getTabCountSupplier().get().intValue());
 
         closeTab(model, tab0, true);
         checkState(model, sEmptyList, null, new Tab[] {tab0}, fullList, tab0);
         assertNull(model.getCurrentTabSupplier().get());
         verify(mTabSupplierObserver).onResult(isNull());
+        assertEquals(0, model.getTabCountSupplier().get().intValue());
 
         cancelTabClosure(model, tab0);
         checkState(model, new Tab[] {tab0}, tab0, sEmptyList, fullList, tab0);
         assertEquals(tab0, model.getCurrentTabSupplier().get());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
+        assertEquals(1, model.getTabCountSupplier().get().intValue());
     }
 
     @Test
@@ -1539,6 +1543,7 @@ public class UndoTabModelUnitTest {
     public void testInactiveModelCloseAndUndoForTabSupplier() throws TimeoutException {
         final boolean isIncognito = false;
         final TabModel model = createTabModel(isIncognito);
+        assertEquals(0, model.getTabCountSupplier().get().intValue());
         model.getCurrentTabSupplier().addObserver(mTabSupplierObserver);
         model.setActive(false);
         createTab(model, isIncognito);
@@ -1549,15 +1554,18 @@ public class UndoTabModelUnitTest {
         assertEquals(tab0, model.getCurrentTabSupplier().get());
         verify(mTabSupplierObserver).onResult(eq(tab0));
         checkState(model, new Tab[] {tab0}, tab0, sEmptyList, fullList, tab0);
+        assertEquals(1, model.getTabCountSupplier().get().intValue());
 
         closeTab(model, tab0, true);
         checkState(model, sEmptyList, null, new Tab[] {tab0}, fullList, tab0);
         assertNull(model.getCurrentTabSupplier().get());
         verify(mTabSupplierObserver).onResult(isNull());
+        assertEquals(0, model.getTabCountSupplier().get().intValue());
 
         cancelTabClosure(model, tab0);
         checkState(model, new Tab[] {tab0}, tab0, sEmptyList, fullList, tab0);
         assertEquals(tab0, model.getCurrentTabSupplier().get());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
+        assertEquals(1, model.getTabCountSupplier().get().intValue());
     }
 }

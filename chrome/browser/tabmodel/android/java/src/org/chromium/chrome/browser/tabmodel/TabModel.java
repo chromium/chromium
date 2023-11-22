@@ -196,6 +196,12 @@ public interface TabModel extends TabList {
     public void destroy();
 
     /**
+     * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
+     * are pending closure.
+     */
+    public @NonNull ObservableSupplier<Integer> getTabCountSupplier();
+
+    /**
      * Adds a newly created tab to this model.
      * @param tab   The tab to be added.
      * @param index The index where the tab should be inserted. The model may override the index.

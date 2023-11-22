@@ -316,22 +316,27 @@ public class TabModelImplUnitTest {
         TabModel inactiveIncognito = createTabModel(false, true);
 
         assertNull(activeNormal.getCurrentTabSupplier().get());
+        assertEquals(0, activeNormal.getTabCountSupplier().get().intValue());
         activeNormal.getCurrentTabSupplier().addObserver(mTabSupplierObserver);
 
         Tab tab0 = createTab(activeNormal);
         assertEquals(tab0, activeNormal.getCurrentTabSupplier().get());
+        assertEquals(1, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver).onResult(eq(tab0));
 
         Tab tab1 = createTab(activeNormal);
         assertEquals(tab1, activeNormal.getCurrentTabSupplier().get());
+        assertEquals(2, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver).onResult(eq(tab1));
 
         selectTab(activeNormal, tab0);
         assertEquals(tab0, activeNormal.getCurrentTabSupplier().get());
+        assertEquals(2, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
 
         activeNormal.removeTab(tab0);
         assertEquals(tab1, activeNormal.getCurrentTabSupplier().get());
+        assertEquals(1, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab1));
     }
 
@@ -343,22 +348,27 @@ public class TabModelImplUnitTest {
         TabModel activeIncognito = createTabModel(true, true);
 
         assertNull(inactiveNormal.getCurrentTabSupplier().get());
+        assertEquals(0, inactiveNormal.getTabCountSupplier().get().intValue());
         inactiveNormal.getCurrentTabSupplier().addObserver(mTabSupplierObserver);
 
         Tab tab0 = createTab(inactiveNormal);
         assertEquals(tab0, inactiveNormal.getCurrentTabSupplier().get());
+        assertEquals(1, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver).onResult(eq(tab0));
 
         Tab tab1 = createTab(inactiveNormal);
         assertEquals(tab1, inactiveNormal.getCurrentTabSupplier().get());
+        assertEquals(2, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver).onResult(eq(tab1));
 
         selectTab(inactiveNormal, tab0);
         assertEquals(tab0, inactiveNormal.getCurrentTabSupplier().get());
+        assertEquals(2, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
 
         inactiveNormal.removeTab(tab0);
         assertEquals(tab1, inactiveNormal.getCurrentTabSupplier().get());
+        assertEquals(1, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab1));
     }
 }

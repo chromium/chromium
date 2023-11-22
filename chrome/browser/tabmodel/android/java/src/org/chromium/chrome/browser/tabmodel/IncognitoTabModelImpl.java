@@ -44,6 +44,9 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
             new ObserverList<>();
     private final Callback<Tab> mDelegateModelCurrentTabSupplierObserver;
     private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final Callback<Integer> mDelegateModelTabCountSupplierObserver;
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>();
 
     private TabModel mDelegateModel;
     private int mCountOfAddingOrClosingTabs;
@@ -56,6 +59,8 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
         mDelegate = tabModelCreator;
         mDelegateModel = EmptyTabModel.getInstance(true);
         mDelegateModelCurrentTabSupplierObserver = mCurrentTabSupplier::set;
+        mDelegateModelTabCountSupplierObserver = mTabCountSupplier::set;
+        mTabCountSupplier.set(0);
     }
 
     /**
@@ -69,6 +74,7 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
         mDelegateModel
                 .getCurrentTabSupplier()
                 .addObserver(mDelegateModelCurrentTabSupplierObserver);
+        mDelegateModel.getTabCountSupplier().addObserver(mDelegateModelTabCountSupplierObserver);
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
         }
@@ -89,8 +95,13 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
             observer.didBecomeEmpty();
         }
 
+        mDelegateModel
+                .getCurrentTabSupplier()
+                .removeObserver(mDelegateModelCurrentTabSupplierObserver);
+        mDelegateModel.getTabCountSupplier().removeObserver(mDelegateModelTabCountSupplierObserver);
         mDelegateModel.destroy();
         mCurrentTabSupplier.set(null);
+        mTabCountSupplier.set(0);
 
         mDelegateModel = EmptyTabModel.getInstance(true);
     }
@@ -261,6 +272,11 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public void notifyAllTabsClosureUndone() {
         mDelegateModel.notifyAllTabsClosureUndone();
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+        return mTabCountSupplier;
     }
 
     @Override

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -52,6 +53,7 @@ public class IncognitoTabModelTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock Callback<Tab> mTabSupplierObserver;
+    @Mock Callback<Integer> mTabCountSupplierObserver;
 
     private TabModel mRegularTabModel;
     private TabModel mIncognitoTabModel;
@@ -223,5 +225,37 @@ public class IncognitoTabModelTest {
 
         removeTabOnUiThread();
         verify(mTabSupplierObserver).onResult(isNull());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabCountSupplierAddedBefore() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mIncognitoTabModel.getTabCountSupplier().addObserver(mTabCountSupplierObserver);
+                });
+        verify(mTabCountSupplierObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onResult(0);
+
+        createTabOnUiThread();
+        verify(mTabCountSupplierObserver).onResult(1);
+
+        removeTabOnUiThread();
+        verify(mTabCountSupplierObserver, times(2)).onResult(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testTabCountSupplierAddedAfter() {
+        createTabOnUiThread();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mIncognitoTabModel.getTabCountSupplier().addObserver(mTabCountSupplierObserver);
+                });
+        verify(mTabCountSupplierObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onResult(1);
+
+        removeTabOnUiThread();
+        verify(mTabCountSupplierObserver).onResult(0);
     }
 }

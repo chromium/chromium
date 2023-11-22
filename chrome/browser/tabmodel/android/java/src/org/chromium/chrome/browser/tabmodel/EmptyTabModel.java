@@ -156,6 +156,12 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+        assert false : "This should be unreachable in production, it may be mocked for testing.";
+        return new ObservableSupplierImpl<>();
+    }
+
+    @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         assert false;

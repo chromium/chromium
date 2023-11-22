@@ -45,6 +45,8 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     private int mIndex = TabModel.INVALID_TAB_INDEX;
 
     private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>();
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ArrayList<Tab> mTabs = new ArrayList<Tab>();
     private final Profile mProfile;
@@ -54,6 +56,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     public MockTabModel(Profile profile, MockTabModelDelegate delegate) {
         mProfile = profile;
         mDelegate = delegate;
+        mTabCountSupplier.set(0);
     }
 
     public MockTab addTab(int id) {
@@ -65,6 +68,11 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
         addTab(tab, TabModel.INVALID_TAB_INDEX, TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);
         return tab;
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+        return mTabCountSupplier;
     }
 
     @Override
@@ -80,6 +88,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
                 mIndex++;
             }
         }
+        mTabCountSupplier.set(mTabs.size());
 
         for (TabModelObserver observer : mObservers) {
             observer.didAddTab(tab, type, creationState, false);
@@ -89,6 +98,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     @Override
     public void removeTab(Tab tab) {
         if (mTabs.remove(tab)) {
+            mTabCountSupplier.set(mTabs.size());
             for (TabModelObserver observer : mObservers) observer.tabRemoved(tab);
         }
     }
