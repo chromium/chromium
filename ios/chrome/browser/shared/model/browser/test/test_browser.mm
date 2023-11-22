@@ -34,13 +34,11 @@ TestBrowser::TestBrowser(ChromeBrowserState* browser_state,
 TestBrowser::TestBrowser(
     ChromeBrowserState* browser_state,
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate)
-    : TestBrowser(browser_state,
-                  [[SceneState alloc] initWithAppState:nil],
-                  std::move(web_state_list_delegate)) {}
+    : TestBrowser(browser_state, nil, std::move(web_state_list_delegate)) {}
 
 TestBrowser::TestBrowser(ChromeBrowserState* browser_state)
     : TestBrowser(browser_state,
-                  [[SceneState alloc] initWithAppState:nil],
+                  nil,
                   std::make_unique<FakeWebStateListDelegate>()) {}
 
 TestBrowser::~TestBrowser() {

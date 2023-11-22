@@ -24,13 +24,13 @@ class TestBrowser final : public Browser {
   // WebStateListDelegate will be used.
   TestBrowser(ChromeBrowserState* browser_state, SceneState* scene_state);
 
-  // Constructor that takes a ChromeBrowserState and WebStateListDelegate; a
-  // FakeSceneState will be used.
+  // Constructor that takes a ChromeBrowserState and WebStateListDelegate;
+  // SceneState will be nil.
   TestBrowser(ChromeBrowserState* browser_state,
               std::unique_ptr<WebStateListDelegate> web_state_list_delegate);
 
-  // Constructor that takes only a BrowserState; a fake WebStateListDelegate and
-  // FakeSceneState will be used.
+  // Constructor that takes only a BrowserState; a fake WebStateListDelegate
+  // will be used. SceneState will be nil.
   TestBrowser(ChromeBrowserState* browser_state);
 
   TestBrowser(const TestBrowser&) = delete;
