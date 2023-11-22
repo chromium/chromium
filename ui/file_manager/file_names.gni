@@ -23,7 +23,6 @@ static_js_files = [
 
   # Files Common:
   "file_manager/common/js/array_data_model.js",
-  "file_manager/common/js/async_util.js",
   "file_manager/common/js/glitch.js",
   "file_manager/common/js/files_app_entry_types.js",
 
@@ -154,6 +153,7 @@ ts_files = [
   # Common.
   "file_manager/common/js/api.ts",
   "file_manager/common/js/app_util.ts",
+  "file_manager/common/js/async_util.ts",
   "file_manager/common/js/cr_ui.ts",
   "file_manager/common/js/files_app_state.ts",
   "file_manager/common/js/file_type.ts",
@@ -423,6 +423,7 @@ ts_test_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # Common.
+  "file_manager/common/js/async_util_unittest.ts",
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_type_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
@@ -604,7 +605,6 @@ generated_js_files = [
 unittest_files = [
   # Common:
   "file_manager/common/js/array_data_model_unittest.js",
-  "file_manager/common/js/async_util_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/test_error_reporting.js",
