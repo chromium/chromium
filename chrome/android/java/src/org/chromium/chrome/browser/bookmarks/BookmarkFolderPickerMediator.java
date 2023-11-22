@@ -38,7 +38,7 @@ class BookmarkFolderPickerMediator {
                 }
             };
 
-    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
+    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new BookmarkUiPrefs.Observer() {
                 @Override
                 public void onBookmarkRowDisplayPrefChanged(
