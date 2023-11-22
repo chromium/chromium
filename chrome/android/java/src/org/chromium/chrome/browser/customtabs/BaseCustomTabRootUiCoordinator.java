@@ -315,6 +315,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager,
                         mBrowserControlsManager,
                         mBackPressManager,
+                        mCompositorViewHolderSupplier.get() == null
+                                ? null
+                                : mCompositorViewHolderSupplier.get().getInMotionSupplier(),
                         this::isPageInsightsHubEnabled,
                         this::getPageInsightsConfig);
 
