@@ -3131,11 +3131,7 @@ TEST_F(DocumentRulesTest, SelectorMatchesInsideShadowTree) {
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
                                       speculation_script);
   const auto& candidates = speculation_host.candidates();
-  // TODO(crbug.com/1371522): Having document as the scoping root while matching
-  // 'selector_matches' means no link inside a shadow tree can ever be matched.
-  // If https://github.com/WICG/nav-speculation/pull/241 changes this, update
-  // this expectation.
-  EXPECT_THAT(candidates, HasURLs());
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/fizz")));
 }
 
 TEST_F(DocumentRulesTest, SelectorMatchesWithScopePseudoSelector) {

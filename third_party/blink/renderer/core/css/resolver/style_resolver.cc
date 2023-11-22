@@ -1597,9 +1597,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
   ApplyCallbackSelectors(state);
   if (element->IsLink() && (element->HasTagName(html_names::kATag) ||
                             element->HasTagName(html_names::kAreaTag))) {
-    // TODO(crbug.com/1371522): Revisit scoping root used after
-    // https://github.com/WICG/nav-speculation/issues/240 is resolved.
-    ApplyDocumentRulesSelectors(state, &GetDocument());
+    ApplyDocumentRulesSelectors(state, To<ContainerNode>(&element->TreeRoot()));
   }
 
   // Cache our if our original display is inline.
