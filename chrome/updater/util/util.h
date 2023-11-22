@@ -170,8 +170,6 @@ GURL AppendQueryParameter(const GURL& url,
 bool UnzipWithExe(const base::FilePath& src_path,
                   const base::FilePath& dest_path);
 
-std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
-
 // Read the file at path to confirm that the file at the path has the same
 // permissions as the given permissions mask.
 bool ConfirmFilePermissions(const base::FilePath& root_path,

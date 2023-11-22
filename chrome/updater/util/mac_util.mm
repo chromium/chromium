@@ -94,16 +94,14 @@ std::optional<base::FilePath> GetApplicationSupportDirectory(
 std::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {
   const std::optional<base::FilePath> keystone_folder_path =
       GetKeystoneFolderPath(scope);
-  if (!keystone_folder_path || !base::PathExists(*keystone_folder_path))
+  if (!keystone_folder_path) {
     return std::nullopt;
-  base::FilePath ksadmin_path =
+  }
+  return std::make_optional(
       keystone_folder_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
           .Append(FILE_PATH_LITERAL("Contents"))
           .Append(FILE_PATH_LITERAL("Helpers"))
-          .Append(FILE_PATH_LITERAL("ksadmin"));
-  if (!base::PathExists(ksadmin_path))
-    return std::nullopt;
-  return std::make_optional(ksadmin_path);
+          .Append(FILE_PATH_LITERAL("ksadmin")));
 }
 
 std::string GetWakeLaunchdName(UpdaterScope scope) {

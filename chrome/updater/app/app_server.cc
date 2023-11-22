@@ -36,23 +36,7 @@
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/updater/win/setup/setup_util.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace updater {
-
-namespace {
-#if BUILDFLAG(IS_WIN)
-void RestoreComInterfaces(UpdaterScope scope, bool is_internal) {
-  if (AreComInterfacesPresent(scope, is_internal)) {
-    return;
-  }
-
-  InstallComInterfaces(scope, is_internal);
-}
-#endif  // BUILDFLAG(IS_WIN)
-}  // namespace
 
 bool IsInternalService() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -132,9 +116,7 @@ base::OnceClosure AppServer::ModeCheck() {
   CHECK_EQ(base::Version(global_prefs->GetActiveVersion()),
            base::Version(kUpdaterVersion));
 
-#if BUILDFLAG(IS_WIN)
-  RestoreComInterfaces(updater_scope(), IsInternalService());
-#endif  // BUILDFLAG(IS_WIN)
+  RepairUpdater(updater_scope(), IsInternalService());
 
   if (IsInternalService()) {
     prefs_ = CreateLocalPrefs(updater_scope());

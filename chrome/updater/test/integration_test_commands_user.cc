@@ -364,6 +364,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void PrivilegedHelperInstall() const override {
     updater::test::PrivilegedHelperInstall(updater_scope_);
   }
+
+  void DeleteLegacyUpdater() const override {
+    updater::test::DeleteLegacyUpdater(updater_scope_);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   void ExpectLegacyUpdaterMigrated() const override {
