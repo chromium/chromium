@@ -177,19 +177,23 @@ class TasksClientImpl : public api::TasksClient {
                      google_apis::ApiErrorCode> result);
 
   // Done callback for `AddTask()` request.
-  // `task_list_id` - id of the task list used in the request.
-  // `callback`     - done callback passed from `AddTask`.
-  // `result`       - newly created task or HTTP error.
+  // `task_list_id`       - id of the task list used in the request.
+  // `request_start_time` - start time of the request to measure latency.
+  // `callback`           - done callback passed from `AddTask`.
+  // `result`             - newly created task or HTTP error.
   void OnTaskAdded(const std::string& task_list_id,
+                   const base::Time& request_start_time,
                    api::TasksClient::OnTaskSavedCallback callback,
                    base::expected<std::unique_ptr<google_apis::tasks::Task>,
                                   google_apis::ApiErrorCode> result);
 
   // Done callback for `UpdateTask()` request.
-  // `task_list_id` - id of the task list used in the request.
-  // `callback`     - done callback passed from `UpdateTask`.
-  // `result`       - updated task or HTTP error.
+  // `task_list_id`       - id of the task list used in the request.
+  // `request_start_time` - start time of the request to measure latency.
+  // `callback`           - done callback passed from `UpdateTask`.
+  // `result`             - updated task or HTTP error.
   void OnTaskUpdated(const std::string& task_list_id,
+                     const base::Time& request_start_time,
                      api::TasksClient::OnTaskSavedCallback callback,
                      base::expected<std::unique_ptr<google_apis::tasks::Task>,
                                     google_apis::ApiErrorCode> result);

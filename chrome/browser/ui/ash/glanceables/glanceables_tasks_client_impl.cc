@@ -176,13 +176,11 @@ void TasksClientImpl::AddTask(const std::string& task_list_id,
   CHECK(callback);
 
   auto* const request_sender = GetRequestSender();
-  // TODO(b/299317602): update `previous_task_id` parameter if new tasks need to
-  // be added to the end of the list.
   request_sender->StartRequestWithAuthRetry(std::make_unique<InsertTaskRequest>(
       request_sender, task_list_id, /*previous_task_id=*/"",
       TaskRequestPayload{.title = title, .status = TaskStatus::kNeedsAction},
       base::BindOnce(&TasksClientImpl::OnTaskAdded, weak_factory_.GetWeakPtr(),
-                     task_list_id, std::move(callback))));
+                     task_list_id, base::Time::Now(), std::move(callback))));
 }
 
 void TasksClientImpl::UpdateTask(
@@ -200,7 +198,7 @@ void TasksClientImpl::UpdateTask(
       request_sender, task_list_id, task_id, TaskRequestPayload{.title = title},
       base::BindOnce(&TasksClientImpl::OnTaskUpdated,
                      weak_factory_.GetWeakPtr(), task_list_id,
-                     std::move(callback))));
+                     base::Time::Now(), std::move(callback))));
 }
 
 void TasksClientImpl::OnGlanceablesBubbleClosed(
@@ -391,8 +389,14 @@ void TasksClientImpl::OnMarkedAsCompleted(
 
 void TasksClientImpl::OnTaskAdded(
     const std::string& task_list_id,
+    const base::Time& request_start_time,
     api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.InsertTask.Latency",
+                          base::Time::Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.InsertTask.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
+
   if (!result.has_value()) {
     std::move(callback).Run(/*task=*/nullptr);
     return;
@@ -416,9 +420,13 @@ void TasksClientImpl::OnTaskAdded(
 
 void TasksClientImpl::OnTaskUpdated(
     const std::string& task_list_id,
+    const base::Time& request_start_time,
     api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
-  // TODO(b/301253574): Add metrics.
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
+                          base::Time::Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.PatchTask.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
     std::move(callback).Run(/*task=*/nullptr);

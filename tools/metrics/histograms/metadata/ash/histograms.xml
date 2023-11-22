@@ -3474,6 +3474,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Classroom.GetStudentSubmissions"/>
     <variant name="Tasks.GetTaskLists"/>
     <variant name="Tasks.GetTasks"/>
+    <variant name="Tasks.InsertTask"/>
     <variant name="Tasks.PatchTask"/>
   </token>
 </histogram>
@@ -3510,6 +3511,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Classroom.GetStudentSubmissions"/>
     <variant name="Tasks.GetTaskLists"/>
     <variant name="Tasks.GetTasks"/>
+    <variant name="Tasks.InsertTask"/>
     <variant name="Tasks.PatchTask"/>
   </token>
 </histogram>

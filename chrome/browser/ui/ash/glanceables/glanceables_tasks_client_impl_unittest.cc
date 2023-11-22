@@ -1237,6 +1237,11 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
   tasks->AddObserver(&observer);
   EXPECT_CALL(observer, ListItemsAdded(/*start=*/0, /*count=*/1));
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.InsertTask.Latency", /*expected_count=*/0);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.InsertTask.Status", /*expected_count=*/0);
+
   TestFuture<const api::Task*> add_task_future;
   client()->AddTask("test-task-list-id", "New task",
                     add_task_future.GetCallback());
@@ -1244,6 +1249,12 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
   ASSERT_TRUE(add_task_future.Wait());
   EXPECT_EQ(add_task_future.Get()->id, "new-task-id");
   EXPECT_EQ(add_task_future.Get()->title, "New task");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.InsertTask.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.InsertTask.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
 }
 
 // ----------------------------------------------------------------------------
@@ -1285,6 +1296,11 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
   ASSERT_EQ(tasks->item_count(), 1u);
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Task 1");
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/0);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status", /*expected_count=*/0);
+
   // Update the task.
   TestFuture<const api::Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
@@ -1294,6 +1310,12 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
   // Make sure `tasks` contains the update.
   EXPECT_EQ(tasks->GetItemAt(0), update_task_future.Get());
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Updated title");
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
@@ -1302,12 +1324,24 @@ TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/0);
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status", /*expected_count=*/0);
+
   TestFuture<const api::Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        update_task_future.GetCallback());
 
   ASSERT_TRUE(update_task_future.Wait());
   EXPECT_FALSE(update_task_future.Get());
+
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace ash
