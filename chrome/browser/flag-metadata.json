@@ -8178,11 +8178,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "view-transition",
-    "owners": [ "khushalsagar@chromium.org", "vmpstr@chromium.org", "chrishtr@chromium.org" ],
-    "expiry_milestone" : 118
-  },
-  {
     "name": "view-transition-on-navigation",
     "owners": [ "khushalsagar@chromium.org", "vmpstr@chromium.org", "chrishtr@chromium.org" ],
     "expiry_milestone" : 130
