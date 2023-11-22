@@ -69,7 +69,10 @@ using chrome_test_util::SettingsSignInRowMatcher;
       [self isRunningTest:@selector(testInterruptWhenHistoryOptInShown)] ||
       [self isRunningTest:@selector
             (testSigninSecondTimeAfterAddingAccountAgain)] ||
-      [self isRunningTest:@selector(testSigninWithNoAccountOnDevice)]) {
+      [self isRunningTest:@selector(testSigninWithNoAccountOnDevice)] ||
+      [self isRunningTest:@selector(testSigninWithHistorySync)] ||
+      [self isRunningTest:@selector
+            (testSigninSecondTimeShouldNotShowHistorySyncOptin)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }

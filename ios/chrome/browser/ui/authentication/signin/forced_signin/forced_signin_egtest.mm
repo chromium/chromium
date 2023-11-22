@@ -305,7 +305,11 @@ void CompleteSigninFlow() {
   config.additional_args.push_back(
       "<dict><key>BrowserSignin</key><integer>2</integer></dict>");
   if ([self isRunningTest:@selector
-            (testSignOutFromAccountsOnThisDeviceSyncDisabled)]) {
+            (testSignOutFromAccountsOnThisDeviceSyncDisabled)] ||
+      [self
+          isRunningTest:@selector(testSignInScreenDuringRegularSigninPrompt)] ||
+      [self isRunningTest:@selector
+            (testHandlingIntentWhenSigninAfterSkippingRegularPrompt)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
