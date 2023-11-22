@@ -16,7 +16,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "components/cbor/reader.h"
@@ -171,8 +170,8 @@ GURL GetContactURL(KnownDomainID tunnel_server,
                    base::span<const uint8_t> contact_id) {
   std::string contact_id_base64;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(contact_id.data()),
-                        contact_id.size()),
+      std::string_view(reinterpret_cast<const char*>(contact_id.data()),
+                       contact_id.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &contact_id_base64);
   GURL ret(std::string("wss://") + tunnelserver::DecodeDomain(tunnel_server) +
            "/cable/contact/" + contact_id_base64);
@@ -485,7 +484,7 @@ std::string BytesToDigits(base::span<const uint8_t> in) {
   return ret;
 }
 
-absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in) {
+absl::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
   std::vector<uint8_t> ret;
   ret.reserve(((in.size() + kChunkDigits - 1) / kChunkDigits) * kChunkSize);
 

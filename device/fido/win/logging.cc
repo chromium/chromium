@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -18,7 +17,7 @@ constexpr char kSep[] = ", ";
 
 // Quoted wraps |in| in double quotes and backslash-escapes all other double
 // quote characters.
-std::string Quoted(base::StringPiece in) {
+std::string Quoted(std::string_view in) {
   std::string result;
   base::ReplaceChars(in, "\\", "\\\\", &result);
   base::ReplaceChars(result, "\"", "\\\"", &result);

@@ -151,7 +151,7 @@ bool AttestationObject::EraseAttestationStatement(
   return did_make_change;
 }
 
-bool AttestationObject::EraseExtension(base::StringPiece name) {
+bool AttestationObject::EraseExtension(std::string_view name) {
   return authenticator_data_.EraseExtension(name);
 }
 

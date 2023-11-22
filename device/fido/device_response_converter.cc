@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -33,7 +34,7 @@ namespace {
 
 constexpr size_t kResponseCodeLength = 1;
 
-ProtocolVersion ConvertStringToProtocolVersion(base::StringPiece version) {
+ProtocolVersion ConvertStringToProtocolVersion(std::string_view version) {
   if (version == kCtap2Version || version == kCtap2_1Version)
     return ProtocolVersion::kCtap2;
   if (version == kU2fVersion)
@@ -43,7 +44,7 @@ ProtocolVersion ConvertStringToProtocolVersion(base::StringPiece version) {
 }
 
 absl::optional<Ctap2Version> ConvertStringToCtap2Version(
-    base::StringPiece version) {
+    std::string_view version) {
   if (version == kCtap2Version)
     return Ctap2Version::kCtap2_0;
   if (version == kCtap2_1Version)
@@ -382,7 +383,7 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
   base::flat_set<ProtocolVersion> protocol_versions;
   base::flat_set<Ctap2Version> ctap2_versions;
-  base::flat_set<base::StringPiece> advertised_protocols;
+  base::flat_set<std::string_view> advertised_protocols;
   for (const auto& version : it->second.GetArray()) {
     if (!version.is_string())
       return absl::nullopt;

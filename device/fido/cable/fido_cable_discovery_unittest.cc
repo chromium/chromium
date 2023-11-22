@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -256,7 +257,7 @@ class CableMockAdapter : public MockBluetoothAdapter {
   void ExpectRegisterAdvertisementWithResponse(
       bool simulate_success,
       base::span<const uint8_t> expected_client_eid,
-      base::StringPiece expected_uuid_formatted_client_eid,
+      std::string_view expected_uuid_formatted_client_eid,
       Sequence sequence = Sequence(),
       scoped_refptr<CableMockBluetoothAdvertisement> advertisement = nullptr) {
     if (!advertisement) {

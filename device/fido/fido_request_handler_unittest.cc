@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -112,7 +113,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   void BluetoothAdapterPowerChanged(bool is_powered_on) override {}
   void FidoAuthenticatorAdded(const FidoAuthenticator& authenticator) override {
   }
-  void FidoAuthenticatorRemoved(base::StringPiece device_id) override {}
+  void FidoAuthenticatorRemoved(std::string_view device_id) override {}
 
   bool SupportsPIN() const override { return false; }
 

@@ -4,6 +4,8 @@
 
 #include "device/fido/cable/v2_authenticator.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -961,7 +963,7 @@ class CTAP2Processor : public Transaction {
       }
 
       cbor::Value::MapValue response_map;
-      response_map.emplace(1, base::StringPiece(*attestation_object.fmt));
+      response_map.emplace(1, std::string_view(*attestation_object.fmt));
       response_map.emplace(
           2, base::span<const uint8_t>(*attestation_object.auth_data));
       response_map.emplace(3, attestation_object.statement->Clone());

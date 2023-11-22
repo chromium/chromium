@@ -10,13 +10,13 @@
 
 #include <array>
 #include <iterator>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "crypto/sha2.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,10 +113,10 @@ std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
-    base::StringPiece data);
+    std::string_view data);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::StringPiece ConvertToStringPiece(base::span<const uint8_t> data);
+std::string_view ConvertToStringView(base::span<const uint8_t> data);
 
 // Convert byte array into GUID formatted string as defined by RFC 4122.
 // As we are converting 128 bit UUID, |bytes| must be have length of 16.

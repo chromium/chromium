@@ -148,7 +148,7 @@ bool AuthenticatorData::DeleteDeviceAaguid() {
   return attested_data_->DeleteAaguid();
 }
 
-bool AuthenticatorData::EraseExtension(base::StringPiece name) {
+bool AuthenticatorData::EraseExtension(std::string_view name) {
   if (!extensions_) {
     return false;
   }

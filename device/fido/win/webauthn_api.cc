@@ -5,6 +5,7 @@
 #include "device/fido/win/webauthn_api.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -13,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -560,8 +560,8 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   absl::optional<std::u16string> opt_app_id16 = absl::nullopt;
   if (request.app_id) {
     opt_app_id16 = base::UTF8ToUTF16(
-        base::StringPiece(reinterpret_cast<const char*>(request.app_id->data()),
-                          request.app_id->size()));
+        std::string_view(reinterpret_cast<const char*>(request.app_id->data()),
+                         request.app_id->size()));
   }
 
   // Note that entries in |allow_list_credentials| hold pointers into

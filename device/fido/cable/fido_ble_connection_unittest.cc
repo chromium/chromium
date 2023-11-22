@@ -5,6 +5,7 @@
 #include "device/fido/cable/fido_ble_connection.h"
 
 #include <bitset>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -66,7 +66,7 @@ namespace {
 constexpr auto kDefaultServiceRevision =
     static_cast<uint8_t>(FidoBleConnection::ServiceRevision::kFido2);
 
-std::vector<uint8_t> ToByteVector(base::StringPiece str) {
+std::vector<uint8_t> ToByteVector(std::string_view str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
 

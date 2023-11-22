@@ -14,7 +14,7 @@ const char kHybrid[] = "hybrid";
 const char kInternal[] = "internal";
 
 absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
-    base::StringPiece protocol) {
+    std::string_view protocol) {
   if (protocol == kUsbHumanInterfaceDevice)
     return FidoTransportProtocol::kUsbHumanInterfaceDevice;
   else if (protocol == kNearFieldCommunication)
@@ -32,7 +32,7 @@ absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     return absl::nullopt;
 }
 
-base::StringPiece ToString(FidoTransportProtocol protocol) {
+std::string_view ToString(FidoTransportProtocol protocol) {
   switch (protocol) {
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
       return kUsbHumanInterfaceDevice;

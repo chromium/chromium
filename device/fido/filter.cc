@@ -69,7 +69,7 @@ std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
   return ret;
 }
 
-absl::optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
+absl::optional<std::vector<FilterStep>> ParseJSON(std::string_view json) {
   absl::optional<base::Value> v =
       base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!v || !v->is_dict()) {
@@ -225,7 +225,7 @@ CurrentFilter* GetCurrentFilter() {
   return current_filter.get();
 }
 
-bool MaybeParseFilter(base::StringPiece json) {
+bool MaybeParseFilter(std::string_view json) {
   CurrentFilter* const current_filter = GetCurrentFilter();
   if (current_filter->json && json == *current_filter->json) {
     return true;
@@ -262,8 +262,8 @@ void MaybeInitialize() {
 
 Action Evaluate(
     Operation op,
-    base::StringPiece rp_id,
-    absl::optional<base::StringPiece> device,
+    std::string_view rp_id,
+    absl::optional<std::string_view> device,
     absl::optional<std::pair<IDType, base::span<const uint8_t>>> id) {
   CurrentFilter* const current_filter = GetCurrentFilter();
   if (!current_filter->steps) {
@@ -303,7 +303,7 @@ Action Evaluate(
   return Action::ALLOW;
 }
 
-ScopedFilterForTesting::ScopedFilterForTesting(base::StringPiece json)
+ScopedFilterForTesting::ScopedFilterForTesting(std::string_view json)
     : previous_json_(GetCurrentFilter()->json) {
   g_testing_depth++;
   CHECK(g_testing_depth != 0);
@@ -311,7 +311,7 @@ ScopedFilterForTesting::ScopedFilterForTesting(base::StringPiece json)
 }
 
 ScopedFilterForTesting::ScopedFilterForTesting(
-    base::StringPiece json,
+    std::string_view json,
     ScopedFilterForTesting::PermitInvalidJSON)
     : previous_json_(GetCurrentFilter()->json) {
   g_testing_depth++;
@@ -330,7 +330,7 @@ ScopedFilterForTesting::~ScopedFilterForTesting() {
   }
 }
 
-bool ParseForTesting(base::StringPiece json) {
+bool ParseForTesting(std::string_view json) {
   CHECK(base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS)) << json;
   return MaybeParseFilter(json);
 }

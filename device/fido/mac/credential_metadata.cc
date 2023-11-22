@@ -5,6 +5,7 @@
 #include "device/fido/mac/credential_metadata.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -59,7 +60,7 @@ class Cryptor {
       base::span<const uint8_t> ciphertext,
       base::span<const uint8_t> authenticated_data) const;
 
-  std::string HmacForStorage(base::StringPiece data) const;
+  std::string HmacForStorage(std::string_view data) const;
 
  private:
   static absl::optional<crypto::Aead::AeadAlgorithm> ToAeadAlgorithm(
@@ -100,7 +101,7 @@ absl::optional<std::vector<uint8_t>> Cryptor::Unseal(
   return aead.Open(ciphertext, nonce, authenticated_data);
 }
 
-std::string Cryptor::HmacForStorage(base::StringPiece data) const {
+std::string Cryptor::HmacForStorage(std::string_view data) const {
   crypto::HMAC hmac(crypto::HMAC::SHA256);
   const std::string key = DeriveKey(Algorithm::kHmacSha256);
   std::vector<uint8_t> digest(hmac.DigestLength());

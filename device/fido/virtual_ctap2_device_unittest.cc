@@ -5,6 +5,7 @@
 #include "device/fido/virtual_ctap2_device.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -211,13 +212,13 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
 
   bool present;
   bool critical;
-  base::StringPiece contents;
+  std::string_view contents;
   ASSERT_TRUE(net::asn1::ExtractExtensionFromDERCert(
       net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      base::StringPiece("\x55\x1d\x13"), &present, &critical, &contents));
+      std::string_view("\x55\x1d\x13"), &present, &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
-  EXPECT_EQ(base::StringPiece("\x30\x00", 2), contents);
+  EXPECT_EQ(std::string_view("\x30\x00", 2), contents);
 }
 
 TEST_F(VirtualCtap2DeviceTest, RejectsCredentialsWithExtraKeys) {

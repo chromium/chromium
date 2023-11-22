@@ -9,12 +9,12 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/fido_constants.h"
@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
 
   // EraseExtension deletes the named extension. It returns true iff the
   // extension was present.
-  bool EraseExtension(base::StringPiece name);
+  bool EraseExtension(std::string_view name);
 
   // Produces a byte array consisting of:
   // * hash(relying_party_id / appid)

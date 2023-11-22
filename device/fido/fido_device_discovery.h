@@ -9,13 +9,13 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
   std::vector<const FidoDeviceAuthenticator*> GetAuthenticatorsForTesting()
       const;
   FidoDeviceAuthenticator* GetAuthenticatorForTesting(
-      base::StringPiece authenticator_id);
+      std::string_view authenticator_id);
 
   // FidoDiscoveryBase:
   void Start() override;
@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
   // |device|.
   bool AddDevice(std::unique_ptr<FidoDevice> device);
   bool AddAuthenticator(std::unique_ptr<FidoDeviceAuthenticator> authenticator);
-  bool RemoveDevice(base::StringPiece device_id);
+  bool RemoveDevice(std::string_view device_id);
 
   // Subclasses should implement this to actually start the discovery when it is
   // requested.

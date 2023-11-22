@@ -241,7 +241,7 @@ void FidoRequestHandlerBase::StartAuthenticatorRequest(
 }
 
 void FidoRequestHandlerBase::CancelActiveAuthenticators(
-    base::StringPiece exclude_device_id) {
+    std::string_view exclude_device_id) {
   for (auto task_it = active_authenticators_.begin();
        task_it != active_authenticators_.end();) {
     DCHECK(!task_it->first.empty());

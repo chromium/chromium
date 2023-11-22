@@ -5,6 +5,7 @@
 #include "device/fido/cable/v2_test_util.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64url.h"
@@ -14,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -70,7 +70,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       override {
     CHECK(url.has_path());
 
-    base::StringPiece path = url.path_piece();
+    std::string_view path = url.path_piece();
     static const char kNewPrefix[] = "/cable/new/";
     static const char kConnectPrefix[] = "/cable/connect/";
     static const char kContactPrefix[] = "/cable/contact/";
