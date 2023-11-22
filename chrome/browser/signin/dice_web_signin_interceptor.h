@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -164,6 +165,30 @@ class DiceWebSigninInterceptor : public KeyedService,
       ForcedEnterpriseInterceptionTestNoForcedInterception);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, StateResetTest);
 
+  // Profile presets that will be passed from the previous profile to the newly
+  // created one during sign in intercept.
+  struct ProfilePresets {
+    ProfilePresets(SkColor profile_color,
+                   int64_t search_engine_choice_timestamp,
+                   const TemplateURLData& default_search_engine);
+
+    // This constructor is needed to be able to set just the profile theme until
+    // the `SearchEngineChoice` feature is enabled.
+    explicit ProfilePresets(SkColor profile_color);
+
+    ~ProfilePresets();
+
+    ProfilePresets(ProfilePresets&&) = default;
+    ProfilePresets& operator=(ProfilePresets&&) = default;
+
+    ProfilePresets(const ProfilePresets&) = delete;
+    ProfilePresets& operator=(ProfilePresets&) = delete;
+
+    SkColor profile_color = SK_ColorTRANSPARENT;
+    int64_t search_engine_choice_timestamp = 0;
+    TemplateURLData default_search_engine;
+  };
+
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
   void Reset();
@@ -216,11 +241,11 @@ class DiceWebSigninInterceptor : public KeyedService,
   void OnChromeSigninChoice(const AccountInfo& account_info,
                             SigninInterceptionResult result);
 
-  // Called when the new profile is created or loaded from disk.
-  // `profile_color` is set as theme color for the profile ; it should be
-  // nullopt if the profile is not new (loaded from disk).
-  void OnNewSignedInProfileCreated(absl::optional<SkColor> profile_color,
-                                   Profile* new_profile);
+  // A non `absl::nullopt` `profile_presets` will be applied to the
+  // `new_profile` when the function is called.
+  void OnNewSignedInProfileCreated(
+      absl::optional<ProfilePresets> profile_presets,
+      Profile* new_profile);
 
   // Called after the user choses whether the session should continue in a new
   // work profile or not. If the user choses not to continue in a work profile,
