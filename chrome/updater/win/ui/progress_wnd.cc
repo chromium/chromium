@@ -16,6 +16,7 @@
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -405,6 +406,8 @@ void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
     return;
   }
 
+  cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
+
   // Display the next retry time interval if |next_retry_time| is in the future.
   const auto retry_time_in_sec =
       (next_retry_time - base::Time::NowFromSystemTime()).InSeconds();
@@ -483,8 +486,8 @@ void ProgressWnd::DeterminePostInstallUrls(const ObserverCompletionInfo& info) {
   CHECK(!post_install_urls_.empty());
 }
 
-CompletionCodes ProgressWnd::GetBundleOverallCompletionCode(
-    const ObserverCompletionInfo& info) const {
+CompletionCodes ProgressWnd::GetBundleCompletionCode(
+    const ObserverCompletionInfo& info) {
   if (info.completion_code == CompletionCodes::COMPLETION_CODE_ERROR ||
       info.completion_code ==
           CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL) {
@@ -505,7 +508,7 @@ CompletionCodes ProgressWnd::GetBundleOverallCompletionCode(
 }
 
 std::wstring ProgressWnd::GetBundleCompletionErrorMessages(
-    const ObserverCompletionInfo& info) const {
+    const ObserverCompletionInfo& info) {
   // Combine non-empty app installation completion messages. App-specific
   // installation error message usually gives more details than the generic one.
   std::vector<std::u16string> completion_texts;
@@ -535,7 +538,7 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
   bool launch_commands_succeeded = LaunchCmdLines(observer_info);
 
   CompletionCodes overall_completion_code =
-      GetBundleOverallCompletionCode(observer_info);
+      GetBundleCompletionCode(observer_info);
   switch (overall_completion_code) {
     case CompletionCodes::COMPLETION_CODE_SUCCESS:
     case CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND:

@@ -850,7 +850,7 @@ if (is_win || is_mac || is_linux) {
         "win/setup/setup_util_unittest.cc",
         "win/task_scheduler_unittest.cc",
         "win/ui/l10n_util_unittest.cc",
-        "win/ui/resources/resources_unittest.cc",
+        "win/ui/progress_wnd_unittest.cc",
         "win/updater_tests.rc",
       ]
 
@@ -863,6 +863,7 @@ if (is_win || is_mac || is_linux) {
         "win/test:test_executables",
         "win/test:test_strings",
         "win/ui/resources",
+        "//third_party/wtl",
       ]
 
       data_deps += [

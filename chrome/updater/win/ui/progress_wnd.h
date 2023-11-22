@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app_install_progress.h"
@@ -113,6 +114,38 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   END_MSG_MAP()
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, ClickedButton);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnInstallStopped);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, MaybeCloseWindow);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, GetBundleCompletionCode);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, DeterminePostInstallUrls);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnCheckingForUpdate);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnWaitingToDownload);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnWaitingRetryDownload);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnPause);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnComplete);
+
+  enum class States {
+    STATE_INIT = 0,
+    STATE_CHECKING_FOR_UPDATE,
+    STATE_WAITING_TO_DOWNLOAD,
+    STATE_DOWNLOADING,
+    STATE_WAITING_TO_INSTALL,
+    STATE_INSTALLING,
+    STATE_PAUSED,
+    STATE_COMPLETE_SUCCESS,
+    STATE_COMPLETE_ERROR,
+    STATE_COMPLETE_RESTART_BROWSER,
+    STATE_COMPLETE_RESTART_ALL_BROWSERS,
+    STATE_COMPLETE_REBOOT,
+    STATE_END,
+  };
+
+  static CompletionCodes GetBundleCompletionCode(
+      const ObserverCompletionInfo& info);
+  static std::wstring GetBundleCompletionErrorMessages(
+      const ObserverCompletionInfo& info);
+
   // Overrides for AppInstallProgress.
   // These functions are called on the thread which owns this window.
   void OnCheckingForUpdate() override;
@@ -167,26 +200,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   bool CloseInstallStoppedWindow();
 
   void DeterminePostInstallUrls(const ObserverCompletionInfo& info);
-  CompletionCodes GetBundleOverallCompletionCode(
-      const ObserverCompletionInfo& info) const;
-  std::wstring GetBundleCompletionErrorMessages(
-      const ObserverCompletionInfo& info) const;
-
-  enum class States {
-    STATE_INIT = 0,
-    STATE_CHECKING_FOR_UPDATE,
-    STATE_WAITING_TO_DOWNLOAD,
-    STATE_DOWNLOADING,
-    STATE_WAITING_TO_INSTALL,
-    STATE_INSTALLING,
-    STATE_PAUSED,
-    STATE_COMPLETE_SUCCESS,
-    STATE_COMPLETE_ERROR,
-    STATE_COMPLETE_RESTART_BROWSER,
-    STATE_COMPLETE_RESTART_ALL_BROWSERS,
-    STATE_COMPLETE_REBOOT,
-    STATE_END,
-  };
 
   SEQUENCE_CHECKER(sequence_checker_);
 
