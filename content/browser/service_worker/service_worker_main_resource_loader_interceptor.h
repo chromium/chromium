@@ -51,7 +51,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // Creates a ServiceWorkerMainResourceLoaderInterceptor for a worker.
   // Returns nullptr if the interceptor could not be created for the URL of the
   // worker.
-  static std::unique_ptr<NavigationLoaderInterceptor> CreateForWorker(
+  static std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
+  CreateForWorker(
       const network::ResourceRequest& resource_request,
       const net::IsolationInfo& isolation_info,
       int process_id,

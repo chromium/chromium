@@ -48,13 +48,9 @@ WorkerScriptLoader::WorkerScriptLoader(
     Abort();
     return;
   }
-  auto service_worker_interceptor =
-      ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
-          resource_request_, isolation_info, process_id, worker_token,
-          service_worker_handle_);
-
-  if (service_worker_interceptor)
-    interceptors_.push_back(std::move(service_worker_interceptor));
+  interceptor_ = ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
+      resource_request_, isolation_info, process_id, worker_token,
+      service_worker_handle_);
 
   Start();
 }
@@ -89,12 +85,11 @@ void WorkerScriptLoader::Start() {
     return;
   }
 
-  if (interceptor_index_ < interceptors_.size()) {
-    auto* interceptor = interceptors_[interceptor_index_++].get();
-    interceptor->MaybeCreateLoader(
+  if (interceptor_) {
+    interceptor_->MaybeCreateLoader(
         resource_request_, browser_context,
         base::BindOnce(&WorkerScriptLoader::MaybeStartLoader,
-                       weak_factory_.GetWeakPtr(), interceptor),
+                       weak_factory_.GetWeakPtr(), interceptor_.get()),
         base::BindOnce(
             [](base::WeakPtr<WorkerScriptLoader> self,
                bool /*reset_subresource_loader_params*/,
@@ -111,7 +106,7 @@ void WorkerScriptLoader::Start() {
 }
 
 void WorkerScriptLoader::MaybeStartLoader(
-    NavigationLoaderInterceptor* interceptor,
+    ServiceWorkerMainResourceLoaderInterceptor* interceptor,
     scoped_refptr<network::SharedURLLoaderFactory> single_request_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!completed_);
@@ -142,14 +137,8 @@ void WorkerScriptLoader::MaybeStartLoader(
     return;
   }
 
-  // We shouldn't try the remaining interceptors if this interceptor provides
-  // SubresourceLoaderParams. For details, see comments on
-  // NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams().
-  if (subresource_loader_params_)
-    interceptor_index_ = interceptors_.size();
-
-  // Continue until all the interceptors are tried.
-  Start();
+  // The interceptor didn't elect to handle the request. Fallback to network.
+  LoadFromNetwork();
 }
 
 void WorkerScriptLoader::LoadFromNetwork() {
@@ -199,7 +188,6 @@ void WorkerScriptLoader::FollowRedirect(
   resource_request_.referrer_policy = redirect_info_->new_referrer_policy;
 
   // Restart the request.
-  interceptor_index_ = 0;
   url_loader_client_receiver_.reset();
   redirect_info_.reset();
 
@@ -304,10 +292,10 @@ bool WorkerScriptLoader::MaybeCreateLoaderForResponse(
   // of WorkerScriptLoader and WorkerScriptFetcher and the interceptors. The
   // interceptors should be owned by WorkerScriptFetcher.
   DCHECK(default_loader_used_);
-  for (auto& interceptor : interceptors_) {
+  if (interceptor_) {
     bool skip_other_interceptors = false;
     bool will_return_unsafe_redirect = false;
-    if (interceptor->MaybeCreateLoaderForResponse(
+    if (interceptor_->MaybeCreateLoaderForResponse(
             status, resource_request_, response_head, response_body,
             response_url_loader, response_client_receiver, url_loader,
             &skip_other_interceptors, &will_return_unsafe_redirect)) {
@@ -316,7 +304,7 @@ bool WorkerScriptLoader::MaybeCreateLoaderForResponse(
       DCHECK(!skip_other_interceptors);
       DCHECK(!will_return_unsafe_redirect);
       subresource_loader_params_ =
-          interceptor->MaybeCreateSubresourceLoaderParams();
+          interceptor_->MaybeCreateSubresourceLoaderParams();
       return true;
     }
   }

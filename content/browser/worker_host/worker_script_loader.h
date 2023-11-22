@@ -43,6 +43,7 @@ namespace content {
 class BrowserContext;
 class NavigationLoaderInterceptor;
 class ServiceWorkerMainResourceHandle;
+class ServiceWorkerMainResourceLoaderInterceptor;
 
 // The URLLoader for loading a shared worker script. Only used for the main
 // script request.
@@ -63,10 +64,9 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   using BrowserContextGetter = base::RepeatingCallback<BrowserContext*(void)>;
 
   // |default_loader_factory| is used to load the script if the load is not
-  // intercepted by a feature like service worker. Typically it will load the
-  // script from the NetworkService. However, it may internally contain
-  // non-NetworkService factories used for non-http(s) URLs, e.g., a
-  // chrome-extension:// URL.
+  // intercepted by a service worker. Typically it will load the script from the
+  // NetworkService. However, it may internally contain non-NetworkService
+  // factories used for non-http(s) URLs, e.g., a chrome-extension:// URL.
   WorkerScriptLoader(
       int process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
@@ -137,15 +137,12 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void Abort();
   void Start();
   void MaybeStartLoader(
-      NavigationLoaderInterceptor* interceptor,
+      ServiceWorkerMainResourceLoaderInterceptor* interceptor,
       scoped_refptr<network::SharedURLLoaderFactory> single_request_factory);
   void LoadFromNetwork();
   void CommitCompleted(const network::URLLoaderCompletionStatus& status);
 
-  // The order of the interceptors is important. The former interceptor can
-  // preferentially get a chance to intercept a network request.
-  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;
-  size_t interceptor_index_ = 0;
+  std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_;
 
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
@@ -166,8 +163,8 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_client_receiver_{
       this};
   // The factory used to request the script. This is the same as
-  // |default_loader_factory_| if a service worker or other interceptor didn't
-  // elect to handle the request.
+  // |default_loader_factory_| if a service worker didn't elect to handle the
+  // request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool completed_ = false;

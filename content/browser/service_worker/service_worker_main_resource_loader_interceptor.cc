@@ -96,7 +96,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
       request_info.isolation_info));
 }
 
-std::unique_ptr<NavigationLoaderInterceptor>
+std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
 ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     const network::ResourceRequest& resource_request,
     const net::IsolationInfo& isolation_info,
