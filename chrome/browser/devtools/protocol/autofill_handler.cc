@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -72,11 +73,6 @@ AutofillHandler::AutofillHandler(protocol::UberDispatcher* dispatcher,
 }
 
 AutofillHandler::~AutofillHandler() = default;
-
-void AutofillHandler::OnAutofillManagerDestroyed(
-    autofill::AutofillManager& manager) {
-  observation_.Reset();
-}
 
 void AutofillHandler::Trigger(
     int field_id,
@@ -333,7 +329,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
 
 autofill::ContentAutofillDriver* AutofillHandler::GetAutofillDriver() {
   auto host = content::DevToolsAgentHost::GetForId(target_id_);
-  DCHECK(host);
+  CHECK(host);
 
   content::RenderFrameHost* outermost_primary_rfh =
       host->GetWebContents()->GetOutermostWebContents()->GetPrimaryMainFrame();
@@ -343,19 +339,25 @@ autofill::ContentAutofillDriver* AutofillHandler::GetAutofillDriver() {
 }
 
 Response AutofillHandler::Enable() {
+  if (enabled_) {
+    return Response::Success();
+  }
+
   enabled_ = true;
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillTestFormWithDevtools)) {
-    autofill::ContentAutofillDriver* autofill_driver = GetAutofillDriver();
-    if (autofill_driver) {
-      observation_.Observe(&autofill_driver->GetAutofillManager());
-    }
+    auto host = content::DevToolsAgentHost::GetForId(target_id_);
+    CHECK(host);
+    autofill_managers_observation_.Observe(
+        host->GetWebContents(),
+        autofill::ScopedAutofillManagersObservation::InitializationPolicy::
+            kObservePreexistingManagers);
   }
   return Response::Success();
 }
 
 Response AutofillHandler::Disable() {
   enabled_ = false;
-  observation_.Reset();
+  autofill_managers_observation_.Reset();
   return Response::Success();
 }
