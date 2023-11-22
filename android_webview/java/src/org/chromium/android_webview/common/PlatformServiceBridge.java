@@ -193,6 +193,11 @@ public abstract class PlatformServiceBridge {
          * Profile.
          */
         ProfileIdentifier getProfileIdentifier();
+
+        /**
+         * Get the availability status of the WebView Media Integrity API for given URI.
+         */
+        int getMediaIntegrityApiStatusForUri(Uri uri);
     }
 
     /**

@@ -9,6 +9,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.PlatformServiceBridge.JsReplyProxyWrapper;
 import org.chromium.android_webview.common.PlatformServiceBridge.ProfileIdentifier;
@@ -50,6 +51,11 @@ public class PlatformServiceBridgeAwContentsWrapper
     @Override
     public ProfileIdentifier getProfileIdentifier() {
         return new ReferencingProfileIdentifier(mAwContents.getBrowserContext());
+    }
+
+    @Override
+    public @MediaIntegrityApiStatus int getMediaIntegrityApiStatusForUri(Uri uri) {
+        return mAwContents.getSettings().getWebViewIntegrityApiStatusForUri(uri);
     }
 
     private static class WebMessageListenerAdapter implements WebMessageListener {

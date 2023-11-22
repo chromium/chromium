@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -2100,6 +2101,12 @@ public class AwSettings {
     public Map<String, @MediaIntegrityApiStatus Integer> getWebViewIntegrityApiOverrideRules() {
         synchronized (mAwSettingsLock) {
             return mIntegrityApiStatusConfig.getOverrideRules();
+        }
+    }
+
+    public @MediaIntegrityApiStatus int getWebViewIntegrityApiStatusForUri(Uri uri) {
+        synchronized (mAwSettingsLock) {
+            return mIntegrityApiStatusConfig.getStatusForUri(uri);
         }
     }
 
