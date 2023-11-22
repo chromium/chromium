@@ -21,10 +21,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.AwMediaIntegrityApiStatusConfig.ApiStatus;
 import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.AttributionBehavior;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
@@ -2084,19 +2084,20 @@ public class AwSettings {
     }
 
     public void setWebViewIntegrityApiStatus(
-            @ApiStatus int defaultStatus, Map<String, @ApiStatus Integer> permissionConfig) {
+            @MediaIntegrityApiStatus int defaultStatus,
+            Map<String, @MediaIntegrityApiStatus Integer> permissionConfig) {
         synchronized (mAwSettingsLock) {
             mIntegrityApiStatusConfig.setApiAvailabilityRules(defaultStatus, permissionConfig);
         }
     }
 
-    public @ApiStatus int getWebViewIntegrityApiDefaultStatus() {
+    public @MediaIntegrityApiStatus int getWebViewIntegrityApiDefaultStatus() {
         synchronized (mAwSettingsLock) {
             return mIntegrityApiStatusConfig.getDefaultStatus();
         }
     }
 
-    public Map<String, @ApiStatus Integer> getWebViewIntegrityApiOverrideRules() {
+    public Map<String, @MediaIntegrityApiStatus Integer> getWebViewIntegrityApiOverrideRules() {
         synchronized (mAwSettingsLock) {
             return mIntegrityApiStatusConfig.getOverrideRules();
         }
