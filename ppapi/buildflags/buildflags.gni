@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
-import("//components/nacl/features.gni")
 
 declare_args() {
   # Enables basic plugin support. This enables support for registering and
@@ -17,9 +16,7 @@ declare_args() {
 
 declare_args() {
   # Enables Pepper API (PPAPI) plugin support.
-  # The only remaining PPAPI plugin supported is NaCl and if is disabled
-  # we can disable PPAPI.
-  enable_ppapi = enable_plugins && enable_nacl && !is_fuchsia
+  enable_ppapi = enable_plugins && !is_fuchsia
 }
 
 assert(enable_plugins || !enable_ppapi)
