@@ -2484,13 +2484,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputSearch) {
 }
 
 // TODO(crbug.com/1503056): Enable flaky tests
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AccessibilityInsertBefore DISABLED_AccessibilityInsertBefore
-#else
-#define MAYBE_AccessibilityInsertBefore AccessibilityInsertBefore
-#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInsertBefore) {
+                       DISABLED_AccessibilityInsertBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("insert-before.html"));
 }
 
