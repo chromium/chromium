@@ -99,19 +99,12 @@ class PrintingApiTest : public PrintingApiTestBase {
         helper_->GetPrintJobManager(), helper_->GetPrintersManager());
   }
 
-  void AddPrinter(const std::string& printer_id,
-                  const std::string& printer_name) {
-    chromeos::Printer printer;
-    printer.set_id(printer_id);
-    printer.set_display_name(printer_name);
-    helper_->GetPrintersManager()->AddPrinter(printer,
-                                              chromeos::PrinterClass::kSaved);
-  }
-
   void AddPrinterWithSemanticCaps(
       const std::string& printer_id,
+      const std::string& printer_display_name,
       std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> caps) {
-    helper_->AddAvailablePrinter(printer_id, std::move(caps));
+    helper_->AddAvailablePrinter(printer_id, printer_display_name,
+                                 std::move(caps));
   }
 
  private:
@@ -160,7 +153,7 @@ using PrintingPromiseApiTest = PrintingApiTest;
 
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddPrinter(kId, kName);
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_CALL(local_printer(), GetPrinters(_))
       .WillOnce(base::test::RunOnceCallback<0>(
@@ -172,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
 
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddPrinterWithSemanticCaps(kId, ConstructPrinterCapabilities());
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_CALL(local_printer(), GetCapability(kId, _))
       .WillOnce(base::test::RunOnceCallback<1>(
@@ -194,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddPrinterWithSemanticCaps(kId, ConstructPrinterCapabilities());
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   InSequence s;
 
@@ -216,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(PrintingPromiseApiTest, SubmitJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddPrinterWithSemanticCaps(kId, ConstructPrinterCapabilities());
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   InSequence s;
 
@@ -240,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddPrinterWithSemanticCaps(kId, ConstructPrinterCapabilities());
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   InSequence s;
 

@@ -52,7 +52,9 @@ class PrintingTestHelper {
  public:
   // BrowserContextDependencyManager subscriptions should be established before
   // the profile becomes available; for this reason `Profile*` is not provided
-  // as a constructor parameter but rather pass in `Init()`.
+  // as a constructor parameter but rather passed in Init().
+  // Note that most methods of this class (other than the constructor) are
+  // supposed to be called from the main thread.
   PrintingTestHelper();
   ~PrintingTestHelper();
 
@@ -65,10 +67,11 @@ class PrintingTestHelper {
   // No-op unless Init() is called.
   ash::FakeCupsPrintersManager* GetPrintersManager();
 
-  // Adds a printer with the given `printer_id` and `capabilities` to the
-  // printers manager and the test backend.
+  // Adds a printer with the given `printer_id`, `printer_display_name` and
+  // `capabilities` to the printers manager and the test backend.
   void AddAvailablePrinter(
       const std::string& printer_id,
+      const std::string& printer_display_name,
       std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities);
 
  private:

@@ -79,13 +79,12 @@ class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
   }
 
  protected:
-  void AddPrinter(const std::string& printer_id,
-                  const std::string& printer_name) {
-    chromeos::Printer printer;
-    printer.set_id(printer_id);
-    printer.set_display_name(printer_name);
-    helper_->GetPrintersManager()->AddPrinter(printer,
-                                              chromeos::PrinterClass::kSaved);
+  void AddPrinterWithSemanticCaps(
+      const std::string& printer_id,
+      const std::string& printer_display_name,
+      std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> caps) {
+    helper_->AddAvailablePrinter(printer_id, printer_display_name,
+                                 std::move(caps));
   }
 
  private:
@@ -113,7 +112,8 @@ class WebPrintingBrowserTest : public WebPrintingBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, GetPrinters) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddPrinter(kId, kName);
+  AddPrinterWithSemanticCaps(kId, kName,
+                             extensions::ConstructPrinterCapabilities());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_CALL(local_printer(), GetPrinters(_))
       .WillOnce(base::test::RunOnceCallback<0>(

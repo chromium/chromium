@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_thread.h"
 #include "printing/backend/test_print_backend.h"
 #endif
 
@@ -71,7 +72,6 @@ std::unique_ptr<KeyedService> BuildFakeCupsPrintersManager(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 PrintingTestHelper::PrintingTestHelper()
     : test_print_backend_(base::MakeRefCounted<printing::TestPrintBackend>()) {
-  CHECK(BrowserContextDependencyManager::GetInstance());
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -80,22 +80,32 @@ PrintingTestHelper::PrintingTestHelper()
 }
 
 PrintingTestHelper::~PrintingTestHelper() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   printing::PrintBackend::SetPrintBackendForTesting(nullptr);
-  print_backend_service_.reset();
-  test_remote_.reset_on_disconnect();
-  printing::PrintBackendServiceManager::GetInstance().ResetForTesting();
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (base::FeatureList::IsEnabled(
+          printing::features::kEnableOopPrintDrivers)) {
+    printing::PrintBackendServiceManager::GetInstance().ResetForTesting();
+  }
+#endif
 }
 
 void PrintingTestHelper::Init(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   profile_ = profile;
-  printing::PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
 
+  printing::PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Note that this test service is not launched in the constructor due to the
+  // mojo subsystem not having been initialized yet.
   if (base::FeatureList::IsEnabled(
           printing::features::kEnableOopPrintDrivers)) {
     print_backend_service_ =
         printing::PrintBackendServiceTestImpl::LaunchForTesting(
             test_remote_, test_print_backend_.get(), /*sandboxed=*/true);
+    // Replace disconnect handler.
+    test_remote_.reset_on_disconnect();
   }
 #endif
 }
@@ -114,8 +124,11 @@ ash::FakeCupsPrintersManager* PrintingTestHelper::GetPrintersManager() {
 
 void PrintingTestHelper::AddAvailablePrinter(
     const std::string& printer_id,
+    const std::string& printer_display_name,
     std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities) {
-  auto printer = chromeos::Printer(printer_id);
+  chromeos::Printer printer;
+  printer.set_id(printer_id);
+  printer.set_display_name(printer_display_name);
   printer.SetUri("ipp://192.168.1.0");
   GetPrintersManager()->AddPrinter(printer,
                                    chromeos::PrinterClass::kEnterprise);
