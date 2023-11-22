@@ -9390,12 +9390,19 @@
     "InvalidateLocalSurfaceIdPreCommit": [
         {
             "platforms": [
-                "android"
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "ios",
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Disabled_EmergencyKillSwitch",
-                    "disable_features": [
+                    "name": "Enabled",
+                    "enable_features": [
                         "InvalidateLocalSurfaceIdPreCommit"
                     ]
                 }
