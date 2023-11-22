@@ -109,6 +109,10 @@ void LayoutBoxModelObject::WillBeDestroyed() {
   if (HasLayer())
     DestroyLayer();
 
+  if (GetFrameView()) {
+    SetIsBackgroundAttachmentFixedObject(false);
+  }
+
   // Our layer should have been destroyed and cleared by now
   DCHECK(!HasLayer());
   DCHECK(!Layer());
@@ -433,20 +437,15 @@ void LayoutBoxModelObject::UpdateFromStyle() {
   SetCanContainAbsolutePositionObjects(
       ComputeIsAbsoluteContainer(&style_to_use));
   SetCanContainFixedPositionObjects(ComputeIsFixedContainer(&style_to_use));
-
-  bool is_background_attachment_fixed_object =
+  SetIsBackgroundAttachmentFixedObject(
       !BackgroundTransfersToView() &&
-      StyleRef().HasFixedAttachmentBackgroundImage();
-  SetIsBackgroundAttachmentFixedObject(is_background_attachment_fixed_object);
-  constexpr wtf_size_t kMaxCompositedBackgroundAttachmentFixed = 20;
+      StyleRef().HasFixedAttachmentBackgroundImage());
+}
+
+void LayoutBoxModelObject::UpdateCanCompositeBackgroundAttachmentFixed(
+    bool enable_composited_background_attachment_fixed) {
   SetCanCompositeBackgroundAttachmentFixed(
-      is_background_attachment_fixed_object &&
-      // Too many composited background-attachment:fixed hurt performance, so
-      // we want to avoid that with this heuristic (which doesn't need to be
-      // accurate so we simply check the number of all
-      // background-attachment:fixed objects).
-      GetFrameView()->BackgroundAttachmentFixedObjects().size() <=
-          kMaxCompositedBackgroundAttachmentFixed &&
+      enable_composited_background_attachment_fixed &&
       ComputeCanCompositeBackgroundAttachmentFixed());
 }
 

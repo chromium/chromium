@@ -1148,15 +1148,16 @@ void LocalFrameView::AdjustMediaTypeForPrinting(bool printing) {
   }
 }
 
-void LocalFrameView::AddBackgroundAttachmentFixedObject(LayoutObject* object) {
-  DCHECK(!background_attachment_fixed_objects_.Contains(object));
-  background_attachment_fixed_objects_.insert(object);
+void LocalFrameView::AddBackgroundAttachmentFixedObject(
+    LayoutBoxModelObject& object) {
+  DCHECK(!background_attachment_fixed_objects_.Contains(&object));
+  background_attachment_fixed_objects_.insert(&object);
   SetNeedsPaintPropertyUpdate();
 }
 
 void LocalFrameView::RemoveBackgroundAttachmentFixedObject(
-    LayoutObject* object) {
-  background_attachment_fixed_objects_.erase(object);
+    LayoutBoxModelObject& object) {
+  background_attachment_fixed_objects_.erase(&object);
   SetNeedsPaintPropertyUpdate();
 }
 
@@ -1258,6 +1259,20 @@ bool LocalFrameView::ShouldSetCursor() const {
   return page && page->IsPageVisible() &&
          !frame_->GetEventHandler().IsMousePositionUnknown() &&
          page->GetFocusController().IsActive();
+}
+
+void LocalFrameView::UpdateCanCompositeBackgroundAttachmentFixed() {
+  // Too many composited background-attachment:fixed hurt performance, so we
+  // want to avoid that with this heuristic (which doesn't need to be accurate
+  // so we simply check the number of all background-attachment:fixed objects).
+  constexpr wtf_size_t kMaxCompositedBackgroundAttachmentFixed = 8;
+  bool enable_composited_background_attachment_fixed =
+      background_attachment_fixed_objects_.size() <=
+      kMaxCompositedBackgroundAttachmentFixed;
+  for (const auto& object : background_attachment_fixed_objects_) {
+    object->UpdateCanCompositeBackgroundAttachmentFixed(
+        enable_composited_background_attachment_fixed);
+  }
 }
 
 void LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
@@ -3149,6 +3164,8 @@ bool LocalFrameView::UpdateStyleAndLayoutInternal() {
         }
       });
     }
+
+    UpdateCanCompositeBackgroundAttachmentFixed();
 
     if (NeedsLayout()) {
       SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),

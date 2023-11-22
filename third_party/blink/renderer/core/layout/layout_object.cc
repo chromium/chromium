@@ -3772,7 +3772,6 @@ void LayoutObject::WillBeDestroyed() {
   if (GetFrameView()) {
     GetFrameView()->RemovePendingTransformUpdate(*this);
     GetFrameView()->RemovePendingOpacityUpdate(*this);
-    SetIsBackgroundAttachmentFixedObject(false);
   }
 }
 
@@ -4799,15 +4798,21 @@ void LayoutObject::SetIsBackgroundAttachmentFixedObject(
     bool is_background_attachment_fixed_object) {
   NOT_DESTROYED();
   DCHECK(GetFrameView());
+  DCHECK(IsBoxModelObject());
   if (bitfields_.IsBackgroundAttachmentFixedObject() ==
-      is_background_attachment_fixed_object)
+      is_background_attachment_fixed_object) {
     return;
+  }
   bitfields_.SetIsBackgroundAttachmentFixedObject(
       is_background_attachment_fixed_object);
-  if (is_background_attachment_fixed_object)
-    GetFrameView()->AddBackgroundAttachmentFixedObject(this);
-  else
-    GetFrameView()->RemoveBackgroundAttachmentFixedObject(this);
+  if (is_background_attachment_fixed_object) {
+    GetFrameView()->AddBackgroundAttachmentFixedObject(
+        To<LayoutBoxModelObject>(*this));
+  } else {
+    SetCanCompositeBackgroundAttachmentFixed(false);
+    GetFrameView()->RemoveBackgroundAttachmentFixedObject(
+        To<LayoutBoxModelObject>(*this));
+  }
 }
 
 void LayoutObject::SetCanCompositeBackgroundAttachmentFixed(

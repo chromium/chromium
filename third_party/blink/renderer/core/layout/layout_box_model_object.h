@@ -406,6 +406,9 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                                         const PhysicalOffset& additional_offset,
                                         NGOutlineType) const;
 
+  void UpdateCanCompositeBackgroundAttachmentFixed(
+      bool enable_composited_background_attachment_fixed);
+
  protected:
   void WillBeDestroyed() override;
 

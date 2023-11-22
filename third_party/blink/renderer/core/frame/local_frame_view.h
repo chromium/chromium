@@ -88,6 +88,7 @@ class HTMLVideoElement;
 class JSONObject;
 class KURL;
 class LayoutBox;
+class LayoutBoxModelObject;
 class LayoutEmbeddedObject;
 class LayoutObject;
 class LayoutShiftTracker;
@@ -296,11 +297,11 @@ class CORE_EXPORT LocalFrameView final
   void AdjustMediaTypeForPrinting(bool printing);
 
   // Objects with background-attachment:fixed.
-  typedef HeapHashSet<Member<LayoutObject>> ObjectSet;
-  void AddBackgroundAttachmentFixedObject(LayoutObject*);
-  void RemoveBackgroundAttachmentFixedObject(LayoutObject*);
+  typedef HeapHashSet<Member<LayoutBoxModelObject>> BoxModelObjectSet;
+  void AddBackgroundAttachmentFixedObject(LayoutBoxModelObject&);
+  void RemoveBackgroundAttachmentFixedObject(LayoutBoxModelObject&);
   bool RequiresMainThreadScrollingForBackgroundAttachmentFixed() const;
-  const ObjectSet& BackgroundAttachmentFixedObjects() const {
+  const BoxModelObjectSet& BackgroundAttachmentFixedObjects() const {
     return background_attachment_fixed_objects_;
   }
   void InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
@@ -1005,6 +1006,8 @@ class CORE_EXPORT LocalFrameView final
 
   bool HasViewTransitionThrottlingRendering() const;
 
+  void UpdateCanCompositeBackgroundAttachmentFixed();
+
   typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;
   EmbeddedObjectSet part_update_set_;
 
@@ -1048,7 +1051,7 @@ class CORE_EXPORT LocalFrameView final
   Member<ScrollableAreaSet> animating_scrollable_areas_;
   // Scrollable areas which are user-scrollable, whether they overflow or not.
   Member<ScrollableAreaSet> user_scrollable_areas_;
-  ObjectSet background_attachment_fixed_objects_;
+  BoxModelObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 
   gfx::Size layout_size_;

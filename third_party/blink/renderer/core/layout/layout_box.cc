@@ -707,7 +707,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       SetNeedsCollectInlines();
     }
 
-    if (CanCompositeBackgroundAttachmentFixed() &&
+    if (IsBackgroundAttachmentFixedObject() &&
         new_style.BackgroundLayers().Clip() !=
             old_style->BackgroundLayers().Clip()) {
       SetNeedsPaintPropertyUpdate();
