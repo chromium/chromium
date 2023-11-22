@@ -609,19 +609,19 @@ class TestAutofillClientTemplate : public T {
     should_save_autofill_profiles_ = value;
   }
 
-  bool ConfirmSaveCardLocallyWasCalled() {
+  bool ConfirmSaveCardLocallyWasCalled() const {
     return confirm_save_credit_card_locally_called_;
   }
 
-  bool ConfirmSaveCardToCloudWasCalled() {
+  bool ConfirmSaveCardToCloudWasCalled() const {
     return confirm_save_credit_card_to_cloud_called_;
   }
 
-  bool ConfirmSaveIbanLocallyWasCalled() {
+  bool ConfirmSaveIbanLocallyWasCalled() const {
     return confirm_save_iban_locally_called_;
   }
 
-  bool ConfirmUploadIbanToCloudWasCalled() {
+  bool ConfirmUploadIbanToCloudWasCalled() const {
     return confirm_upload_iban_to_cloud_called_ &&
            !legal_message_lines_.empty();
   }
