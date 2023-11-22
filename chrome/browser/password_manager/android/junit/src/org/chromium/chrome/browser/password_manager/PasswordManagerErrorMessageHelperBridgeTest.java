@@ -92,7 +92,6 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         mSharedPrefsManager = ChromeSharedPreferences.getInstance();
@@ -122,7 +121,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
     }
 
     @Test
@@ -137,7 +136,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
     }
 
     @Test
@@ -153,7 +152,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
-        assertTrue(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());
+        assertTrue(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
     }
 
     @Test
@@ -161,7 +160,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         final long currentTimeMs = TimeUtils.currentTimeMillis();
         final long timeIncrementMs = 30;
         mFakeTimeTestRule.advanceMillis(timeIncrementMs);
-        PasswordManagerErrorMessageHelperBridge.saveErrorUiShownTimestamp();
+        PasswordManagerErrorMessageHelperBridge.saveErrorUiShownTimestamp(mProfile);
         verify(mPrefService)
                 .setString(
                         Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP,
@@ -185,7 +184,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                         any());
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
-                mWindowAndroidMock);
+                mWindowAndroidMock, mProfile);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -213,7 +212,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                         any());
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
-                mWindowAndroidMock);
+                mWindowAndroidMock, mProfile);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -227,14 +226,14 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     @Test
     public void testDontShowMessageWithtoutAccount() {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
     }
 
     @Test
     public void testDontTryToUpdateCredentialWithNoAccount() {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
-                mWindowAndroidMock);
+                mWindowAndroidMock, mProfile);
         verify(mFakeAccountManagerFacade, never())
                 .updateCredentials(any(Account.class), any(Activity.class), any(Callback.class));
     }
