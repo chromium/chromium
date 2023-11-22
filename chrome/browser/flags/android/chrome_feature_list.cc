@@ -230,7 +230,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextMenuSearchAndShopWithGoogleLens,
     &kContextMenuTranslateWithGoogleLens,
     &kContextMenuPopupForAllScreenSizes,
-    &kContextualSearchDelayedIntelligence,
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchForceCaption,
     &kContextualSearchSuppressShortView,
@@ -718,10 +717,6 @@ BASE_FEATURE(kLensCameraAssistedSearch,
 BASE_FEATURE(kLensOnQuickActionSearchWidget,
              "LensOnQuickActionSearchWidget",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextualSearchDelayedIntelligence,
-             "ContextualSearchDelayedIntelligence",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualSearchDisableOnlineDetection,
              "ContextualSearchDisableOnlineDetection",
