@@ -5452,17 +5452,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstRun.NewUserExperience.NtpBackgroundLoadTime" units="ms"
-    expires_after="M80">
-  <owner>johntlee@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    Records the time taken to load a NTP background image for preview. This is
-    recorded when a user clicks on a background to preview and the full-size
-    version of the background finishes loading.
-  </summary>
-</histogram>
-
 <histogram name="FirstRun.NewUserExperience.SetAsDefaultInteraction"
     enum="NuxSetAsDefaultInteractions" expires_after="never">
 <!-- expires-never: Captures users' initial interaction with chrome. We will
