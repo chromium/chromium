@@ -1,10 +1,8 @@
 <style include="cr-shared-style settings-shared">
   :host {
     display: block;
-    padding: 0 var(--cr-section-padding);
   }
-
- .icon-blue {
+  .icon-blue {
     fill: var(--google-blue-600);
   }
 
@@ -17,7 +15,7 @@
 </style>
 
 <settings-safety-hub-module header="[[headerString_]]"
-    header-icon="cr:extension">
+    header-icon="settings20:my_extensions">
   <div slot="button-container">
     <cr-button id="reviewButton" on-click="onButtonClick_">
       $i18n{safetyCheckReview}
