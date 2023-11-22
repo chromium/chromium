@@ -57,6 +57,7 @@ class TestBridge : public AutoTranslateSnackbarController::Bridge {
   void WasDismissed() override;
   bool IsSnackbarShowing() override;
   MOCK_METHOD(void, DismissSnackbar, (JNIEnv * env), (override));
+  MOCK_METHOD(bool, CanShowSnackbar, (), (override));
 
  private:
   bool is_showing_;
@@ -152,6 +153,7 @@ class AutoTranslateSnackbarControllerTest : public ::testing::Test {
 TEST_F(AutoTranslateSnackbarControllerTest, CreateAndDismissSnackbarNoAction) {
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_CALL(*bridge_, DismissSnackbar(env));
+  EXPECT_CALL(*bridge_, CanShowSnackbar()).WillRepeatedly(Return(true));
 
   // Show snackbar
   EXPECT_FALSE(bridge_->IsSnackbarShowing());
@@ -171,6 +173,7 @@ TEST_F(AutoTranslateSnackbarControllerTest,
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_CALL(*bridge_, DismissSnackbar(env));
   EXPECT_CALL(driver_, RevertTranslation(_));
+  EXPECT_CALL(*bridge_, CanShowSnackbar()).WillRepeatedly(Return(true));
 
   // Show snackbar and fake translation
   EXPECT_FALSE(bridge_->IsSnackbarShowing());
@@ -193,6 +196,7 @@ TEST_F(AutoTranslateSnackbarControllerTest,
 TEST_F(AutoTranslateSnackbarControllerTest, DismissFromNative) {
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_CALL(*bridge_, DismissSnackbar(env)).Times(2);
+  EXPECT_CALL(*bridge_, CanShowSnackbar()).WillRepeatedly(Return(true));
 
   // Show snackbar
   EXPECT_FALSE(bridge_->IsSnackbarShowing());
@@ -201,6 +205,32 @@ TEST_F(AutoTranslateSnackbarControllerTest, DismissFromNative) {
   EXPECT_EQ("tl", bridge_->GetTargetLanguage());
 
   auto_snackbar_controller_->NativeDismissSnackbar();
+}
+
+TEST_F(AutoTranslateSnackbarControllerTest,
+       CreateAuotTranslateSnackbarFailsThenSucceeds) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // The first call to CreateAutoTranslateSnakbarController fails.
+  EXPECT_CALL(*bridge_, CanShowSnackbar()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*bridge_, CreateAutoTranslateSnackbarController(env, _, _))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*bridge_, DismissSnackbar(env));
+
+  auto_snackbar_controller_->ShowSnackbar("tl");
+
+  // The Snackbar should not be showing if the controller was not created.
+  EXPECT_FALSE(auto_snackbar_controller_->IsShowing());
+
+  // The second call to CreateAutoTranslateSnakbarController succeeds.
+  EXPECT_CALL(*bridge_, CreateAutoTranslateSnackbarController(env, _, _))
+      .WillOnce(Return(true));
+
+  auto_snackbar_controller_->ShowSnackbar("tl");
+
+  // The Snackbar should now be showing since the controller was succefully
+  // created.
+  EXPECT_TRUE(auto_snackbar_controller_->IsShowing());
 }
 
 }  // namespace
