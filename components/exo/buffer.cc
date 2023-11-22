@@ -185,7 +185,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
                               base::OnceClosure callback);
 
   // Returns the mailbox for this texture.
-  gpu::Mailbox mailbox() const { return mailbox_; }
+  gpu::Mailbox mailbox() const { return shared_image_->mailbox(); }
 
  private:
   void DestroyResources();
@@ -201,7 +201,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
   const unsigned texture_target_;
   const unsigned query_type_;
   unsigned query_id_ = 0;
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   base::OnceClosure release_callback_;
   const base::TimeDelta wait_for_release_delay_;
   base::TimeTicks wait_for_release_time_;
@@ -226,13 +226,12 @@ Buffer::Texture::Texture(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_GLES2;
 
-  auto client_shared_image = sii->CreateSharedImage(
+  shared_image_ = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
       gpu::kNullSurfaceHandle);
-  CHECK(client_shared_image);
-  mailbox_ = client_shared_image->mailbox();
-  DCHECK(!mailbox_.IsZero());
+  CHECK(shared_image_);
+  DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
   ri->WaitSyncTokenCHROMIUM(sync_token_out.GetConstData());
@@ -267,23 +266,21 @@ Buffer::Texture::Texture(
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   if (media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
     auto si_format = GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
-    client_shared_image = sii->CreateSharedImage(
+    shared_image_ = sii->CreateSharedImage(
         si_format, gpu_memory_buffer_->GetSize(), color_space,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
         gpu_memory_buffer_->CloneHandle());
 
   } else {
-    client_shared_image = sii->CreateSharedImage(
+    shared_image_ = sii->CreateSharedImage(
         gpu_memory_buffer_, gpu_memory_buffer_manager,
         gfx::BufferPlane::DEFAULT, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, "ExoTexture");
   }
-  CHECK(client_shared_image);
-  mailbox_ = client_shared_image->mailbox();
-  DCHECK(!mailbox_.IsZero());
+  CHECK(shared_image_);
+  DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
   ri->WaitSyncTokenCHROMIUM(sync_token_out.GetConstData());
@@ -334,13 +331,13 @@ gpu::SyncToken Buffer::Texture::UpdateSharedImage(
   gpu::SyncToken sync_token;
   if (context_provider_) {
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-    DCHECK(!mailbox_.IsZero());
+    CHECK(shared_image_);
     // UpdateSharedImage gets called only after |mailbox_| can be reused.
     // A buffer can be reattached to a surface only after it has been returned
     // to wayland clients. We return buffers to clients only after the query
     // |query_type_| is available.
     sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
-                           mailbox_);
+                           shared_image_->mailbox());
     sync_token = sii->GenUnverifiedSyncToken();
     TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, gpu_memory_buffer_,
                                  "bound");
@@ -378,17 +375,18 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     base::OnceClosure callback) {
   gpu::SyncToken sync_token;
   if (context_provider_) {
-    DCHECK(!mailbox_.IsZero());
+    CHECK(shared_image_);
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
     sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
-                           mailbox_);
+                           shared_image_->mailbox());
     sync_token = sii->GenUnverifiedSyncToken();
 
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
     ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
     DCHECK_NE(query_id_, 0u);
     ri->BeginQueryEXT(query_type_, query_id_);
-    ri->CopySharedImage(mailbox_, destination->mailbox_,
+    ri->CopySharedImage(shared_image_->mailbox(),
+                        destination->shared_image_->mailbox(),
                         destination->texture_target_, 0, 0, 0, 0, size_.width(),
                         size_.height(), /*unpack_flip_y=*/false,
                         /*unpack_premultiply_alpha=*/false);
@@ -411,7 +409,7 @@ void Buffer::Texture::DestroyResources() {
       query_id_ = 0;
     }
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-    sii->DestroySharedImage(gpu::SyncToken(), mailbox_);
+    sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image_));
   }
 }
 
