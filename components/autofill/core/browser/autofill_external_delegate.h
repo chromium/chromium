@@ -61,11 +61,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
       AutofillSuggestionTriggerSource trigger_source) override;
   void DidPerformButtonActionForSuggestion(
       const Suggestion& suggestion) override;
-  bool GetDeletionConfirmationText(const std::u16string& value,
-                                   PopupItemId popup_item_id,
-                                   Suggestion::BackendId backend_id,
-                                   std::u16string* title,
-                                   std::u16string* body) override;
   bool RemoveSuggestion(const std::u16string& value,
                         PopupItemId popup_item_id,
                         Suggestion::BackendId backend_id) override;

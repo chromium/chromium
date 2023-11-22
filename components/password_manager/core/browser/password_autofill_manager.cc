@@ -539,15 +539,6 @@ void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
   NOTREACHED();
 }
 
-bool PasswordAutofillManager::GetDeletionConfirmationText(
-    const std::u16string& value,
-    autofill::PopupItemId popup_item_id,
-    autofill::Suggestion::BackendId backend_id,
-    std::u16string* title,
-    std::u16string* body) {
-  return false;
-}
-
 bool PasswordAutofillManager::RemoveSuggestion(
     const std::u16string& value,
     autofill::PopupItemId popup_item_id,

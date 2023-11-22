@@ -702,15 +702,6 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
   }
 }
 
-bool AutofillExternalDelegate::GetDeletionConfirmationText(
-    const std::u16string& value,
-    PopupItemId popup_item_id,
-    Suggestion::BackendId backend_id,
-    std::u16string* title,
-    std::u16string* body) {
-  return false;
-}
-
 bool AutofillExternalDelegate::RemoveSuggestion(
     const std::u16string& value,
     PopupItemId popup_item_id,
