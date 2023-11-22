@@ -1264,8 +1264,9 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
 }
 
 // Regression test for https://crbug.com/1439642.
+// TODO(crbug.com/1502769): Test is flaky.
 IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
-                       ContentScriptViaScriptingApiWhileIdle) {
+                       DISABLED_ContentScriptViaScriptingApiWhileIdle) {
   // The test orchestrates the following sequence of events.
   //
   // Step 1: `DidFinishNavigation` for a.com/iframe_cross_site.html
@@ -1320,21 +1321,11 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   dir.WriteManifest(kManifestTemplate);
   dir.WriteFile(FILE_PATH_LITERAL("page.html"), "<p>Extension page</p>");
   const char kContentScript[] = R"(
-      // TODO(https://crbug.com/1502769): Remove `console.log` after confirming
-      // that the test is no longer flaky
-      console.log('CONTENT SCRIPT: running...');
-
-      // `document_idle` waits for either `onload` or 200ms after
-      // `DOMContentLoaded` (ish).  In both of these cases `document.body`
-      // should be already available.
-      chrome.test.assertTrue(!!document.body);
-
-      document.body.innerText = 'content script has run';
-      chrome.test.notifyPass();
-
-      // TODO(https://crbug.com/1502769): Remove `console.log` after confirming
-      // that the test is no longer flaky
-      console.log('CONTENT SCRIPT: running... DONE.');
+      window.onload = function() {
+          chrome.test.assertEq('complete', document.readyState);
+          document.body.innerText = 'content script has run';
+          chrome.test.notifyPass();
+      }
   )";
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
