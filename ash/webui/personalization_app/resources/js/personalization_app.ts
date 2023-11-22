@@ -115,6 +115,7 @@ export {GooglePhotosSharedAlbumDialogElement, AcceptEvent} from './wallpaper/goo
 export {GooglePhotosZeroStateElement} from './wallpaper/google_photos_zero_state_element.js';
 export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
+export * from './wallpaper/sea_pen/sea_pen_actions.js';
 export {SeaPenCollectionElement} from './wallpaper/sea_pen/sea_pen_collection_element.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
 export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';

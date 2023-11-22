@@ -144,6 +144,7 @@ build_webui("build") {
     "js/utils.ts",
     "js/wallpaper/constants.ts",
     "js/wallpaper/google_photos_metrics_logger.ts",
+    "js/wallpaper/sea_pen/sea_pen_actions.ts",
     "js/wallpaper/utils.ts",
     "js/wallpaper/wallpaper_actions.ts",
     "js/wallpaper/wallpaper_controller.ts",

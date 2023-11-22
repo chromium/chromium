@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, Paths, PersonalizationRouterElement, SeaPenState, WallpaperActionName, WallpaperSubpageTopElement} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, Paths, PersonalizationRouterElement, SeaPenActionName, SeaPenState, WallpaperSubpageTopElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -202,7 +202,7 @@ suite('WallpaperSubpageTopElementTest', function() {
     assertDeepEquals(emptyState(), personalizationStore.data);
     // Actually run the reducers.
     personalizationStore.setReducersEnabled(true);
-    personalizationStore.expectAction(WallpaperActionName.SET_IMAGE_THUMBNAILS);
+    personalizationStore.expectAction(SeaPenActionName.SET_SEA_PEN_THUMBNAILS);
 
     // Update input query and click on search button.
     inputQuery.value = 'this is a test query';
@@ -211,7 +211,7 @@ suite('WallpaperSubpageTopElementTest', function() {
     assertEquals(selectedTemplateId, 'query');
 
     await personalizationStore.waitForAction(
-        WallpaperActionName.SET_IMAGE_THUMBNAILS);
+        SeaPenActionName.SET_SEA_PEN_THUMBNAILS);
 
     const expectedState: SeaPenState = {
       query: 'this is a test query',

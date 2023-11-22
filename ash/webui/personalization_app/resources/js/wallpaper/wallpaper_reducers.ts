@@ -12,6 +12,7 @@ import {PersonalizationState} from '../personalization_state.js';
 import {isImageDataUrl, isNonEmptyArray} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
+import {SeaPenActionName} from './sea_pen/sea_pen_actions.js';
 import {findAlbumById, isDefaultImage, isFilePath, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
@@ -639,13 +640,13 @@ function seaPenReducer(
     state: WallpaperState['seaPen'], action: Actions,
     _: PersonalizationState): WallpaperState['seaPen'] {
   switch (action.name) {
-    case WallpaperActionName.BEGIN_SEARCH_IMAGE_THUMBNAILS:
+    case SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS:
       return {
         ...state,
         thumbnailsLoading: true,
         query: action.query,
       };
-    case WallpaperActionName.SET_IMAGE_THUMBNAILS:
+    case SeaPenActionName.SET_SEA_PEN_THUMBNAILS:
       console.log('seaPenReducer, text: ', action.query);
       assert(!!action.query, 'input text is empty.');
       console.log('seapenReducer, thumbnails: ', action.images);
@@ -655,7 +656,7 @@ function seaPenReducer(
         query: action.query,
         thumbnails: action.images,
       };
-    case WallpaperActionName.SET_RECENT_WALLPAPER_IMAGES:
+    case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
       return {...state, recentWallpapers: action.recentWallpapers};
     default:
       return state;

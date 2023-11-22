@@ -14,6 +14,7 @@ import {PersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
 
 import {DisplayableImage, SeaPenWallpaper} from './constants.js';
+import * as seaPenAction from './sea_pen/sea_pen_actions.js';
 import {isDefaultImage, isFilePath, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected, isWallpaperImage} from './utils.js';
 import * as action from './wallpaper_actions.js';
 import {DailyRefreshType} from './wallpaper_state.js';
@@ -269,12 +270,12 @@ export async function fetchGooglePhotosPhotos(
 export async function searchWallpaperThumbnails(
     query: string, provider: SeaPenProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  store.dispatch(action.beginSearchImageThumbnailsAction(query));
+  store.dispatch(seaPenAction.beginSearchSeaPenThumbnailsAction(query));
   const {images} = await provider.searchWallpaper(query);
   if (!isNonEmptyArray(images)) {
     console.warn('Failed to generate thumbnails.');
   }
-  store.dispatch(action.setSeaPenThumbnailsAction(query, images));
+  store.dispatch(seaPenAction.setSeaPenThumbnailsAction(query, images));
 }
 
 export async function selectSeaPenWallpaper(
@@ -651,5 +652,5 @@ export async function getRecentWallpaperImages(store: PersonalizationStore):
       file_path: {path: '/sea_pen/333.jpg'},
     },
   ];
-  store.dispatch(action.setRecentWallpaperImagesAction(images));
+  store.dispatch(seaPenAction.setRecentSeaPenImagesAction(images));
 }
