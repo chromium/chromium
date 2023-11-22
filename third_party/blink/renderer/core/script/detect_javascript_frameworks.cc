@@ -26,8 +26,7 @@ namespace blink {
 namespace {
 
 constexpr char kGatsbyId[] = "___gatsby";
-constexpr char kNextjsId[] = "__next";
-constexpr char kNextjsData[] = "__NEXT_DATA__";
+constexpr char kNextjsData[] = "next";
 constexpr char kNuxtjsData[] = "__NUXT__";
 constexpr char kSapperData[] = "__SAPPER__";
 constexpr char kVuepressData[] = "__VUEPRESS__";
@@ -57,15 +56,11 @@ bool IsFrameworkIDUsed(Document& document, const AtomicString& framework_id) {
 }
 
 inline void CheckIdMatches(Document& document,
-                           JavaScriptFrameworkDetectionResult& result,
-                           bool& has_nextjs_id) {
+                           JavaScriptFrameworkDetectionResult& result) {
   DEFINE_STATIC_LOCAL(AtomicString, kReactId, ("react-root"));
   if (IsFrameworkIDUsed(document, AtomicString(kGatsbyId))) {
     result.detected_versions[JavaScriptFramework::kGatsby] =
         kNoFrameworkVersionDetected;
-  }
-  if (IsFrameworkIDUsed(document, AtomicString(kNextjsId))) {
-    has_nextjs_id = true;
   }
   if (IsFrameworkIDUsed(document, kReactId)) {
     result.detected_versions[JavaScriptFramework::kReact] =
@@ -140,12 +135,11 @@ inline void CheckPropertyMatches(Element& element,
 inline void CheckGlobalPropertyMatches(
     v8::Local<v8::Context> context,
     v8::Isolate* isolate,
-    JavaScriptFrameworkDetectionResult& result,
-    bool& has_nextjs_id) {
+    JavaScriptFrameworkDetectionResult& result) {
   static constexpr char kVueData[] = "Vue";
   static constexpr char kVue3Data[] = "__VUE__";
   static constexpr char kReactData[] = "React";
-  if (has_nextjs_id && IsFrameworkVariableUsed(context, kNextjsData)) {
+  if (IsFrameworkVariableUsed(context, kNextjsData)) {
     result.detected_versions[JavaScriptFramework::kNext] =
         kNoFrameworkVersionDetected;
   }
@@ -345,7 +339,6 @@ void TraverseTreeForFrameworks(Document& document,
   v8::TryCatch try_catch(isolate);
   JavaScriptFrameworkDetectionResult result;
   AtomicString detected_ng_version;
-  bool has_nextjs_id = false;
   if (!document.documentElement())
     return;
   DOMDataStore& dom_data_store = DOMWrapperWorld::MainWorld().DomDataStore();
@@ -354,8 +347,8 @@ void TraverseTreeForFrameworks(Document& document,
     CheckAttributeMatches(element, result, detected_ng_version);
     CheckPropertyMatches(element, dom_data_store, context, isolate, result);
   }
-  CheckIdMatches(document, result, has_nextjs_id);
-  CheckGlobalPropertyMatches(context, isolate, result, has_nextjs_id);
+  CheckIdMatches(document, result);
+  CheckGlobalPropertyMatches(context, isolate, result);
   DetectFrameworkVersions(document, context, isolate, result,
                           detected_ng_version);
   DCHECK(!try_catch.HasCaught());
