@@ -40945,6 +40945,7 @@ from previous Chrome versions.
   <int value="1626824478" label="ExperimentalAppBanners:disabled"/>
   <int value="1627416551" label="ImeInputLogicMozc:disabled"/>
   <int value="1627666567" label="ChromeOSAmbientMode:disabled"/>
+  <int value="1627854370" label="NearbyPresence:disabled"/>
   <int value="1628259213" label="DuetTabStripIntegrationAndroid:enabled"/>
   <int value="1628831121" label="SafeBrowsingUseLocalBlacklistsV2:enabled"/>
   <int value="1629047185" label="IPH_ExtensionsMenu:disabled"/>
@@ -41920,6 +41921,7 @@ from previous Chrome versions.
   <int value="2071229145" label="BloatedRendererDetection:enabled"/>
   <int value="2071340353" label="progress-bar-completion"/>
   <int value="2071461362" label="disable-credit-card-scan"/>
+  <int value="2071970646" label="NearbyPresence:enabled"/>
   <int value="2072050792" label="JourneysIncludeSyncedVisits:enabled"/>
   <int value="2072057275" label="UpdateHoverAtBeginFrame:disabled"/>
   <int value="2072231406" label="SingleProcessMash:disabled"/>

@@ -6844,6 +6844,10 @@ const char kNearbySharingSelfShareDescription[] =
     "Enables Self Share auto-accept and UI features to allow seamless sharing "
     "between a user's own devices.";
 
+const char kNearbyPresenceName[] = "Nearby Presence";
+const char kNearbyPresenceDescription[] =
+    "Enables Nearby Presence for scanning and discovery of nearby devices.";
+
 const char kOobeHidDetectionRevampName[] = "OOBE HID Detection Revamp";
 const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "

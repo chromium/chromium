@@ -3931,6 +3931,9 @@ extern const char kMultilingualTypingDescription[];
 extern const char kNearbySharingSelfShareName[];
 extern const char kNearbySharingSelfShareDescription[];
 
+extern const char kNearbyPresenceName[];
+extern const char kNearbyPresenceDescription[];
+
 extern const char kOobeHidDetectionRevampName[];
 extern const char kOobeHidDetectionRevampDescription[];
 

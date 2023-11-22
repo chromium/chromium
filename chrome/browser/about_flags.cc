@@ -7879,6 +7879,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanning)},
 
+    {"nearby-presence", flag_descriptions::kNearbyPresenceName,
+     flag_descriptions::kNearbyPresenceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kNearbyPresence)},
+
     {"pcie-billboard-notification",
      flag_descriptions::kPcieBillboardNotificationName,
      flag_descriptions::kPcieBillboardNotificationDescription, kOsCrOS,

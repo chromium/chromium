@@ -1850,6 +1850,11 @@ BASE_FEATURE(kNearbyKeepAliveFix,
              "NearbyKeepAliveFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Nearby Presence for scanning and discovery of nearby devices.
+BASE_FEATURE(kNearbyPresence,
+             "NearbyPresence",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Notifier Collision to allow popup notifications and tray bubbles not
 // overlap when showing on a display.
 BASE_FEATURE(kNotifierCollision,
@@ -3835,6 +3840,10 @@ bool CanEphemeralNetworkPoliciesBeEnabledByPolicy() {
 
 bool IsNearbyKeepAliveFixEnabled() {
   return base::FeatureList::IsEnabled(kNearbyKeepAliveFix);
+}
+
+bool IsNearbyPresenceEnabled() {
+  return base::FeatureList::IsEnabled(kNearbyPresence);
 }
 
 bool IsNotifierCollisionEnabled() {
