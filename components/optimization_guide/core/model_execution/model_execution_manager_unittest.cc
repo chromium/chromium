@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -155,6 +156,8 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
+  base::HistogramTester histogram_tester;
+
   proto::ComposeRequest request;
   request.set_user_input("a user typed this");
   base::RunLoop run_loop;
@@ -189,6 +192,10 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
       "access_token", base::Time::Max());
   EXPECT_TRUE(SimulateSuccessfulResponse());
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
+      true, 1);
 }
 
 TEST_F(ModelExecutionManagerTest,

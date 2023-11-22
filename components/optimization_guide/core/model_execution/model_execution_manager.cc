@@ -5,7 +5,9 @@
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -199,6 +201,16 @@ void SetExecutionResponse(proto::ModelExecutionFeature feature,
   }
 }
 
+void RecordSessionUsedRemoteExecutionHistogram(
+    proto::ModelExecutionFeature feature,
+    bool is_remote) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      is_remote);
+}
+
 }  // namespace
 
 using ModelExecutionError =
@@ -291,10 +303,12 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
   if (on_device_model_service_controller_) {
     auto session = on_device_model_service_controller_->StartSession(feature);
     if (session) {
+      RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/false);
       return session;
     }
   }
 
+  RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
   return std::make_unique<PassthroughSession>(feature, *this);
 }
 
