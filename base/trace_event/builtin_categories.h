@@ -190,6 +190,7 @@
   X("webengine.fidl")                                                    \
   X("weblayer")                                                          \
   X("WebCore")                                                           \
+  X("webnn")                                                             \
   X("webrtc")                                                            \
   X("webrtc_stats")                                                      \
   X("xr")                                                                \
@@ -295,6 +296,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("viz.visual_debugger"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("webgpu"))                                 \
+  X(TRACE_DISABLED_BY_DEFAULT("webnn"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("webrtc"))                                 \
   X(TRACE_DISABLED_BY_DEFAULT("worker.scheduler"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("xr.debug"))
