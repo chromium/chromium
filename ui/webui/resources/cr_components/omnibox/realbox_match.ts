@@ -76,6 +76,18 @@ export class RealboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      expandedStateIconsChromeRefresh: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
+      },
+
+      /** Whether action chip will have an outset focus ring. */
+      hasOutsetActionFocusRing: {
+        type: Boolean,
+        computed: `computeHasOutsetActionFocusRing_(match.actions)`,
+        reflectToAttribute: true,
+      },
+
       /**
        * Whether the match features an image (as opposed to an icon or favicon).
        */
@@ -177,6 +189,8 @@ export class RealboxMatchElement extends PolymerElement {
   }
 
   override ariaLabel: string;
+  expandedStateIconsChromeRefresh: boolean;
+  hasOutsetActionFocusRing: boolean;
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
@@ -331,6 +345,11 @@ export class RealboxMatchElement extends PolymerElement {
             this.renderTextWithClassifications_(
                     decodeString16(match.description), match.descriptionClass)
                 .innerHTML);
+  }
+
+  private computeHasOutsetActionFocusRing_() {
+    return this.expandedStateIconsChromeRefresh &&
+        this.match?.actions?.length > 0;
   }
 
   private computeTailSuggestPrefix_(): string {

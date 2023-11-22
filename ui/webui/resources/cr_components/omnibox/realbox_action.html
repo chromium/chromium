@@ -61,6 +61,14 @@
     box-shadow: inset 0 0 0 2px var(--google-blue-600);
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]):host-context(
+      .focus-outline-visible):host(:focus) {
+    margin: 2px;
+    margin-inline-end: 2px;
+    border: solid 1px #a8c7fa;
+    box-shadow: none;
+  }
+
 </style>
 <div class="contents" title="[[tooltip_]]" on-click="onActionClick_"
                      on-keydown="onActionKeyDown_">
