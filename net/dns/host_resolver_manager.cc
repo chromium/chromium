@@ -1409,8 +1409,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       int net_error,
       const DnsResponse* response) {
     DCHECK(transaction_info_it != transactions_in_progress_.end());
-    DCHECK(transactions_in_progress_.find(*transaction_info_it) !=
-           transactions_in_progress_.end());
+    DCHECK(base::Contains(transactions_in_progress_, *transaction_info_it));
 
     // Pull the TransactionInfo out of `transactions_in_progress_` now, so it
     // and its underlying DnsTransaction will be deleted on completion of
