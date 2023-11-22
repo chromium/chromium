@@ -605,11 +605,6 @@ extern const char kNTPViewHierarchyRepairDescription[];
 extern const char kOmniboxCompanyEntityIconAdjustmentName[];
 extern const char kOmniboxCompanyEntityIconAdjustmentDescription[];
 
-// Title and description for the flag to fetch contextual zero-prefix
-// suggestions on search results page.
-extern const char kOmniboxFocusTriggersSRPZeroSuggestName[];
-extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];
-
 // Title and description for the flag to enable Omnibox HTTPS upgrades for
 // schemeless navigations.
 extern const char kOmniboxHttpsUpgradesName[];
