@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_OUTGOING_PASSWORD_SHARING_INVITATION_MODEL_TYPE_CONTROLLER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_OUTGOING_PASSWORD_SHARING_INVITATION_MODEL_TYPE_CONTROLLER_H_
 
+#include "components/password_manager/core/browser/sync/password_account_storage_settings_watcher.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_service.h"
@@ -33,8 +34,11 @@ class OutgoingPasswordSharingInvitationModelTypeController
 
  private:
   void OnPasswordSharingEnabledPolicyChanged();
+  void OnAccountStorageSettingsChanged();
 
   const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<PrefService> pref_service_;
+  PasswordAccountStorageSettingsWatcher account_storage_settings_watcher_;
   BooleanPrefMember password_sharing_enabled_policy_;
 };
 
