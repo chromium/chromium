@@ -11,7 +11,7 @@ namespace wolvic {
 
 class WolvicContents : public content::WebContentsObserver {
  public:
-  WolvicContents(content::WebContents* web_contents);
+  WolvicContents(std::unique_ptr<content::WebContents> web_contents);
   void Init();
 
   WolvicContents(const WolvicContents&) = delete;
@@ -22,7 +22,7 @@ class WolvicContents : public content::WebContentsObserver {
   void DidFinishNavigation(content::NavigationHandle*) override;
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace content
