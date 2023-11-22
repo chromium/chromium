@@ -45,7 +45,7 @@ void AnimationFrameTimingMonitor::Shutdown() {
   Thread::Current()->RemoveTaskTimeObserver(this);
 }
 
-void AnimationFrameTimingMonitor::WillBeginMainFrame() {
+void AnimationFrameTimingMonitor::BeginMainFrame(base::TimeTicks frame_time) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (!current_frame_timing_info_) {
     current_frame_timing_info_ =
@@ -53,7 +53,9 @@ void AnimationFrameTimingMonitor::WillBeginMainFrame() {
   }
 
   current_frame_timing_info_->SetRenderStartTime(now);
+  current_frame_timing_info_->SetDesiredRenderStartTime(frame_time);
   state_ = State::kRenderingFrame;
+  ApplyTaskDuration(now - current_task_start_);
 }
 
 void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
@@ -72,7 +74,6 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   }
 
   CHECK(state_ == State::kRenderingFrame);
-  CHECK(!desired_render_start_time_.is_null());
   current_frame_timing_info_->SetRenderEndTime(base::TimeTicks::Now());
 
   if (did_pause_) {
@@ -86,13 +87,12 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   // start time.
   for (ScriptTimingInfo* script : current_scripts_) {
     if (script->DesiredExecutionStartTime().is_null()) {
-      script->SetDesiredExecutionStartTime(desired_render_start_time_);
+      script->SetDesiredExecutionStartTime(
+          current_frame_timing_info_->DesiredRenderStartTime());
     }
   }
   current_frame_timing_info_->SetScripts(current_scripts_);
   if (current_frame_timing_info_->Duration() >= kLongAnimationFrameDuration) {
-    current_frame_timing_info_->SetDesiredRenderStartTime(
-        desired_render_start_time_);
     if (!first_ui_event_timestamp_.is_null()) {
       current_frame_timing_info_->SetFirstUIEventTime(
           first_ui_event_timestamp_);
@@ -121,7 +121,6 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
     RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_);
   }
 
-  desired_render_start_time_ = base::TimeTicks();
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
@@ -134,6 +133,7 @@ void AnimationFrameTimingMonitor::WillProcessTask(base::TimeTicks start_time) {
   if (state_ == State::kIdle) {
     state_ = State::kProcessingTask;
   }
+  current_task_start_ = start_time;
 }
 
 void AnimationFrameTimingMonitor::ApplyTaskDuration(
@@ -164,6 +164,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   bool did_see_ui_events = false;
   std::swap(did_pause, did_pause_);
   std::swap(did_see_ui_events, did_see_ui_events_);
+  current_task_start_ = base::TimeTicks();
 
   base::TimeDelta task_duration = end_time - start_time;
   if (pending_script_info_ && ((pending_script_info_->type ==

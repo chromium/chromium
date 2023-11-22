@@ -1453,12 +1453,6 @@ void WebFrameWidgetImpl::DidObserveFirstScrollDelay(
   }
 }
 
-void WebFrameWidgetImpl::WillBeginMainFrame() {
-  if (animation_frame_timing_monitor_) {
-    animation_frame_timing_monitor_->WillBeginMainFrame();
-  }
-}
-
 bool WebFrameWidgetImpl::ShouldIgnoreInputEvents() {
   CHECK(GetPage());
   return IgnoreInputEvents(GetPage()->BrowsingContextGroupToken());
@@ -2373,7 +2367,7 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   // purpose of animation frame timing, this is the desired time to start
   // rendering, equivalent to the time when a work task is posted.
   if (animation_frame_timing_monitor_) {
-    animation_frame_timing_monitor_->SetDesiredRenderStartTime(last_frame_time);
+    animation_frame_timing_monitor_->BeginMainFrame(last_frame_time);
   }
 
   // Dirty bit on MouseEventManager is not cleared in OOPIFs after scroll
