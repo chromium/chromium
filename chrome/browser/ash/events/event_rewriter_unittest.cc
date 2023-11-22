@@ -4910,11 +4910,11 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
 class EventRewriterExtendedFkeysTest : public EventRewriterTest {
  public:
   void SetUp() override {
-    EventRewriterTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kInputDeviceSettingsSplit,
          ::features::kSupportF11AndF12KeyShortcuts},
         {});
+    EventRewriterTest::SetUp();
   }
 };
 
@@ -4928,31 +4928,17 @@ TEST_F(EventRewriterExtendedFkeysTest, TestRewriteExtendedFkeys) {
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
-  TestInternalChromeKeyboard({
-      // Alt+F1 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      // Shift+F2 -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_SHIFT_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-  });
+
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(F11Pressed(), RunRewriter(F1Pressed(ui::EF_ALT_DOWN)));
+  EXPECT_EQ(F12Pressed(), RunRewriter(F2Pressed(ui::EF_SHIFT_DOWN)));
 
   settings.f11 = ui::mojom::ExtendedFkeysModifier::kCtrlShift;
   settings.f12 = ui::mojom::ExtendedFkeysModifier::kAlt;
 
-  TestInternalChromeKeyboard({
-      // Ctrl+Shift+F1 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-        ui::DomKey::F1},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      // Alt+F2 -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-  });
+  EXPECT_EQ(F11Pressed(),
+            RunRewriter(F1Pressed(ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)));
+  EXPECT_EQ(F12Pressed(), RunRewriter(F2Pressed(ui::EF_ALT_DOWN)));
 }
 
 TEST_F(EventRewriterExtendedFkeysTest,
@@ -4966,11 +4952,10 @@ TEST_F(EventRewriterExtendedFkeysTest,
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
-  TestInternalChromeKeyboard({{
-      ui::ET_KEY_PRESSED,
-      {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-      {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-  }});
+  SetUpKeyboard(kInternalChromeKeyboard);
+
+  EXPECT_EQ(F1Pressed(ui::EF_ALT_DOWN),
+            RunRewriter(F1Pressed(ui::EF_ALT_DOWN)));
 }
 
 TEST_F(EventRewriterExtendedFkeysTest, TestRewriteExtendedFkeysTopRowAreFkeys) {
@@ -4983,37 +4968,18 @@ TEST_F(EventRewriterExtendedFkeysTest, TestRewriteExtendedFkeysTopRowAreFkeys) {
   EXPECT_CALL(*input_device_settings_controller_mock_,
               GetKeyboardSettings(kKeyboardDeviceId))
       .WillRepeatedly(testing::Return(&settings));
-  TestInternalChromeKeyboard({
-      // Alt+F1 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      // Ctrl+Alt+Shift+F1 -> Ctrl+Shift+F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
-        ui::DomKey::F1},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-        ui::DomKey::F11}},
-      // Shift+F2 -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_SHIFT_DOWN, ui::DomKey::F2},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-  });
+  SetUpKeyboard(kInternalChromeKeyboard);
+  EXPECT_EQ(F11Pressed(), RunRewriter(F1Pressed(ui::EF_ALT_DOWN)));
+  EXPECT_EQ(F11Pressed(ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
+            RunRewriter(F1Pressed(ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN |
+                                  ui::EF_ALT_DOWN)));
+  EXPECT_EQ(F12Pressed(), RunRewriter(F2Pressed(ui::EF_SHIFT_DOWN)));
 
   settings.top_row_are_fkeys = false;
-  TestInternalChromeKeyboard({
-      // Search+Alt+F1 -> F11
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-        ui::DomKey::F1},
-       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
-      // Search+Shift+F2 -> F12
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-        ui::DomKey::F2},
-       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
-  });
+  EXPECT_EQ(F11Pressed(),
+            RunRewriter(F1Pressed(ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN)));
+  EXPECT_EQ(F12Pressed(),
+            RunRewriter(F2Pressed(ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
 }
 
 class EventRewriterSettingsSplitTest : public EventRewriterTest {
