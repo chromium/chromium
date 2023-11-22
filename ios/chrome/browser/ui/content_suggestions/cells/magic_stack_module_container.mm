@@ -67,6 +67,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   UILabel* _title;
   UILabel* _subtitle;
   BOOL _isPlaceholder;
+  UIButton* _seeMoreButton;
 }
 
 - (instancetype)initWithType:(ContentSuggestionsModuleType)type {
@@ -164,6 +165,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
           setContentHuggingPriority:UILayoutPriorityDefaultHigh
                             forAxis:UILayoutConstraintAxisHorizontal];
       [titleStackView addArrangedSubview:showMoreButton];
+      showMoreButton.accessibilityIdentifier = showMoreButton.titleLabel.text;
+      _seeMoreButton = showMoreButton;
     } else if ([self shouldShowSubtitle]) {
       // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
       // config in its initializer so the container can build itself from a
@@ -229,9 +232,16 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     }
     [stackView addArrangedSubview:contentView];
 
-    self.accessibilityElements = [self shouldShowSubtitle]
-                                     ? @[ _title, _subtitle, contentView ]
-                                     : @[ _title, contentView ];
+    NSMutableArray* accessibilityElements =
+        [[NSMutableArray alloc] initWithObjects:_title, nil];
+    if ([self shouldShowSeeMore]) {
+      [accessibilityElements addObject:_seeMoreButton];
+    }
+    [accessibilityElements addObject:contentView];
+    if ([self shouldShowSubtitle]) {
+      [accessibilityElements addObject:_subtitle];
+    }
+    self.accessibilityElements = accessibilityElements;
 
     _contentViewWidthAnchor = [contentView.widthAnchor
         constraintEqualToConstant:[self contentViewWidth]];
