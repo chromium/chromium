@@ -5,6 +5,8 @@
 #include <stddef.h>
 
 #include <string>
+#include <tuple>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_enumerator.h"
@@ -15,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/with_feature_override.h"
 #include "base/thread_annotations.h"
@@ -130,6 +134,23 @@ const int kDefaultKeyModifier = blink::WebInputEvent::kMetaKey;
 const int kDefaultKeyModifier = blink::WebInputEvent::kControlKey;
 #endif
 
+struct PDFExtensionLoadTestPassToString {
+  std::string operator()(
+      const ::testing::TestParamInfo<std::tuple<int, bool>>& i) const {
+    return std::string(std::get<1>(i.param) ? "OOPIF_" : "GUESTVIEW_") +
+           base::NumberToString(std::get<0>(i.param));
+  }
+};
+
+struct PDFExtensionIsolatedContentTestPassToString {
+  std::string operator()(
+      const ::testing::TestParamInfo<std::tuple<bool, bool>>& i) const {
+    return std::string(std::get<1>(i.param) ? "OOPIF_" : "GUESTVIEW_") +
+           std::string(std::get<0>(i.param) ? "SITE_ISOLATED"
+                                            : "SITE_UNISOLATED");
+  }
+};
+
 // Calling PluginService::GetPlugins ensures that LoadPlugins is called
 // internally. This is an asynchronous task and this method uses a run loop to
 // wait for the loading task to complete.
@@ -145,7 +166,11 @@ void WaitForPluginServiceToLoad() {
 
 }  // namespace
 
+// TODO(crbug.com/1445746): Make `PDFExtensionTest` a
+// `base::test::WithFeatureOverride`.
 using PDFExtensionTest = PDFExtensionTestBase;
+
+using PDFExtensionTestWithoutOopifOverride = PDFExtensionTestBase;
 
 class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
  protected:
@@ -464,9 +489,14 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 }
 
-class PDFExtensionLoadTest : public PDFExtensionTest,
-                             public testing::WithParamInterface<int> {
+class PDFExtensionLoadTest
+    : public PDFExtensionTestWithoutOopifOverride,
+      public testing::WithParamInterface<std::tuple<int, bool>> {
  protected:
+  int load_test_part() const { return std::get<0>(GetParam()); }
+
+  bool UseOopif() const override { return std::get<1>(GetParam()); }
+
   // Load all the PDFs contained in chrome/test/data/<dir_name>. The files are
   // sharded across kNumberLoadTestParts using base::PersistentHash(filename).
   void LoadAllPdfsTest(const std::string& dir_name) {
@@ -485,7 +515,8 @@ class PDFExtensionLoadTest : public PDFExtensionTest,
 
       std::string pdf_file = dir_name + "/" + filename;
       SCOPED_TRACE(pdf_file);
-      if (base::PersistentHash(filename) % kNumberLoadTestParts == GetParam()) {
+      if (base::PersistentHash(filename) % kNumberLoadTestParts ==
+          load_test_part()) {
         LOG(INFO) << "Loading: " << pdf_file;
         testing::AssertionResult success =
             LoadPdf(embedded_test_server()->GetURL("/" + pdf_file));
@@ -522,9 +553,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, LoadPrivate) {
 #endif
 
 // We break PDFExtensionLoadTest up into kNumberLoadTestParts.
-INSTANTIATE_TEST_SUITE_P(PDFTestFiles,
-                         PDFExtensionLoadTest,
-                         testing::Range(0, kNumberLoadTestParts));
+INSTANTIATE_TEST_SUITE_P(
+    PDFTestFiles,
+    PDFExtensionLoadTest,
+    testing::Combine(testing::Range(0, kNumberLoadTestParts), testing::Bool()),
+    PDFExtensionLoadTestPassToString());
 
 using PDFExtensionBlobNavigationTest = PDFExtensionTest;
 
@@ -1548,14 +1581,37 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MultipleDomains) {
 
 namespace {
 
-class PDFExtensionIsolatedContentTest : public base::test::WithFeatureOverride,
-                                        public PDFExtensionTest {
+class PDFExtensionIsolatedContentTest
+    : public PDFExtensionTestWithoutOopifOverride,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
-  PDFExtensionIsolatedContentTest()
-      : base::test::WithFeatureOverride(features::kSitePerProcess) {}
+  bool site_isolated() const { return std::get<0>(GetParam()); }
+
+  bool UseOopif() const override { return std::get<1>(GetParam()); }
+
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    std::vector<base::test::FeatureRef> enabled =
+        PDFExtensionTestWithoutOopifOverride::GetEnabledFeatures();
+    if (site_isolated()) {
+      enabled.push_back(features::kSitePerProcess);
+    }
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionTestWithoutOopifOverride::GetDisabledFeatures();
+    if (!site_isolated()) {
+      disabled.push_back(features::kSitePerProcess);
+    }
+    return disabled;
+  }
 };
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionIsolatedContentTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionIsolatedContentTest,
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         PDFExtensionIsolatedContentTestPassToString());
 
 }  // namespace
 
@@ -1570,7 +1626,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, ExpectSiteIsolation) {
     GTEST_SKIP();
   }
 
-  EXPECT_EQ(IsParamFeatureEnabled(),
+  EXPECT_EQ(site_isolated(),
             content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
 

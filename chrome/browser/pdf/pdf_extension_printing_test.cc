@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -28,6 +30,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/pdf_features.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
@@ -67,6 +70,14 @@ using testing::AtMost;
 using testing::NiceMock;
 #endif
 
+struct PDFExtensionPrintingTestPassToString {
+  std::string operator()(
+      const ::testing::TestParamInfo<std::tuple<bool, bool>>& i) const {
+    return std::string(std::get<1>(i.param) ? "OOPIF_" : "GUESTVIEW_") +
+           std::string(std::get<0>(i.param) ? "SERVICE" : "BROWSER");
+  }
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
@@ -95,9 +106,10 @@ using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
-class PDFExtensionPrintingTest : public PDFExtensionTestBase,
-                                 public printing::PrintJob::Observer,
-                                 public testing::WithParamInterface<bool> {
+class PDFExtensionPrintingTest
+    : public PDFExtensionTestBase,
+      public printing::PrintJob::Observer,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   PDFExtensionPrintingTest() = default;
   ~PDFExtensionPrintingTest() override = default;
@@ -168,21 +180,26 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
+  bool UseOopif() const override { return std::get<1>(GetParam()); }
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    std::vector<base::test::FeatureRef> enabled =
+        PDFExtensionTestBase::GetEnabledFeatures();
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
-      return {printing::features::kEnableOopPrintDrivers};
+      enabled.push_back(printing::features::kEnableOopPrintDrivers);
     }
 #endif
-    return {};
+    return enabled;
   }
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionTestBase::GetDisabledFeatures();
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (!UseService()) {
-      return {printing::features::kEnableOopPrintDrivers};
+      disabled.push_back(printing::features::kEnableOopPrintDrivers);
     }
 #endif
-    return {};
+    return disabled;
   }
 
   void SetupPrintViewManagerForJobMonitoring(content::RenderFrameHost* frame) {
@@ -209,7 +226,7 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
 #endif
 
  private:
-  bool UseService() const { return GetParam(); }
+  bool UseService() const { return std::get<0>(GetParam()); }
 
   void OnCreatedPrintJob(printing::PrintJob* print_job) {
     EXPECT_FALSE(observing_print_job_);
@@ -428,12 +445,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionPrintingTest,
+                         testing::Combine(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-                         testing::Bool()
+                             testing::Bool(),
 #else
-                         testing::Values(false)
+                             testing::Values(false),
 #endif
-);
+                             testing::Bool()),
+                         PDFExtensionPrintingTestPassToString());
 
 class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
  public:
@@ -482,4 +501,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
   WaitForPrintJobDestruction();
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFExtensionBasicPrintingTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionBasicPrintingTest,
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         PDFExtensionPrintingTestPassToString());
