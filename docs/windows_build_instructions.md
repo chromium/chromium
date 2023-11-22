@@ -136,6 +136,13 @@ $ git config --global core.filemode false
 $ git config --global branch.autosetuprebase always
 ```
 
+While not necessarily required it can be helpful to configure git to allow long
+path support (beyond the Windows MAX_PATH limit):
+
+```shell
+git config --global core.longpaths true
+```
+
 Create a `chromium` directory for the checkout and change to it. You can call
 this whatever you like and put it wherever you like, as long as the full path
 has no spaces. However there are some performance benefits for Googlers in
