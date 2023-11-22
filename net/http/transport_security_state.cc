@@ -21,8 +21,6 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -445,19 +443,10 @@ TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
     return PKPStatus::OK;
   }
 
-  PKPStatus pin_validity = CheckPublicKeyPinsImpl(
-      host_port_pair, is_issued_by_known_root, public_key_hashes,
-      served_certificate_chain, validated_certificate_chain, report_status,
-      network_anonymization_key, pinning_failure_log);
-
-  // Don't track statistics when a local trust anchor would override the pinning
-  // anyway.
-  if (!is_issued_by_known_root)
-    return pin_validity;
-
-  UMA_HISTOGRAM_BOOLEAN("Net.PublicKeyPinSuccess",
-                        pin_validity == PKPStatus::OK);
-  return pin_validity;
+  return CheckPublicKeyPinsImpl(host_port_pair, is_issued_by_known_root,
+                                public_key_hashes, served_certificate_chain,
+                                validated_certificate_chain, report_status,
+                                network_anonymization_key, pinning_failure_log);
 }
 
 bool TransportSecurityState::HasPublicKeyPins(const std::string& host) {

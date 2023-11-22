@@ -2256,16 +2256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.PublicKeyPinSuccess" enum="BooleanSuccess"
-    expires_after="M77">
-  <owner>agl@chromium.org</owner>
-  <summary>
-    A validated certificate chain may be subject to additional
-    &quot;pinning&quot; requirements on a per-domain basis. This records the
-    fraction of successful matches between a certificate chain and a pin list.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicActiveSessions" units="units"
     expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
