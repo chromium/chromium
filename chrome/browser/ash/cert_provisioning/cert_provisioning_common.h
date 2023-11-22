@@ -178,6 +178,9 @@ struct CertProfile {
               base::TimeDelta renewal_period,
               ProtocolVersion protocol_version);
   CertProfile(const CertProfile& other);
+  CertProfile& operator=(const CertProfile&);
+  CertProfile(CertProfile&& source);
+  CertProfile& operator=(CertProfile&&);
   ~CertProfile();
 
   CertProfileId profile_id;

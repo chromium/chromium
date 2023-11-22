@@ -218,6 +218,12 @@ bool CertProvisioningWorkerDynamic::IsWaiting() const {
   return is_waiting_;
 }
 
+bool CertProvisioningWorkerDynamic::IsWorkerMarkedForReset() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return is_schedueled_for_reset_;
+}
+
 const CertProfile& CertProvisioningWorkerDynamic::GetCertProfile() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -322,6 +328,11 @@ void CertProvisioningWorkerDynamic::DoStep() {
       return;
   }
   NOTREACHED() << " " << static_cast<uint>(state_);
+}
+
+void CertProvisioningWorkerDynamic::MarkWorkerForReset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_schedueled_for_reset_ = true;
 }
 
 CertProvisioningWorkerDynamic::UpdateStateResult
@@ -948,6 +959,13 @@ void CertProvisioningWorkerDynamic::CancelScheduledTasks() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+// This method handles clean up.
+// One of the things to be cleaned up are generated keys. It is possible that a
+// worker is asked to cleanup and shutdown while a key is being generated for
+// it. In that case this cleanup will miss that key and it's important to make
+// sure that there is another mechanism that will eventually clean up the key.
+// VA and PKS keys both are covered and the mechanism is described in seperate
+// comments.
 void CertProvisioningWorkerDynamic::CleanUpAndRunCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -960,6 +978,8 @@ void CertProvisioningWorkerDynamic::CleanUpAndRunCallback() {
   }
 
   if (key_location_ == KeyLocation::kVaDatabase) {
+    // if the worker is still waiting for the key right now, then it will be
+    // eventually cleaned by the scheduler once it goes idle.
     DeleteVaKey(
         cert_scope_, profile_, GetKeyName(cert_profile_.profile_id),
         base::BindOnce(&CertProvisioningWorkerDynamic::OnDeleteVaKeyDone,
@@ -973,7 +993,9 @@ void CertProvisioningWorkerDynamic::CleanUpAndRunCallback() {
     return;
   }
 
-  // No extra clean up is necessary.
+  // If the worker is still waiting for a key from PlatformKeysService right
+  // now, PlatformKeysService will clean up the key when the key is generated
+  // and the worker is gone. No extra clean up is necessary.
   OnCleanUpDone();
 }
 

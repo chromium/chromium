@@ -48,7 +48,9 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   void DoStep() override;
   void Stop(CertProvisioningWorkerState state) override;
   void Pause() override;
+  void MarkWorkerForReset() override;
   bool IsWaiting() const override;
+  bool IsWorkerMarkedForReset() const override;
   const CertProfile& GetCertProfile() const override;
   const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;
@@ -182,6 +184,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   // The last error received in communicating to the backend server.
   absl::optional<BackendServerError> last_backend_server_error_;
   bool is_waiting_ = false;
+  bool is_schedueled_for_reset_ = false;
   // Used for an UMA metric to track situation when the worker did not receive
   // an invalidation for a completed server side task.
   bool is_continued_without_invalidation_for_uma_ = false;

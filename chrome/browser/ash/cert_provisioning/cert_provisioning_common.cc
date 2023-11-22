@@ -146,7 +146,9 @@ CertProfile::CertProfile(CertProfileId profile_id,
       protocol_version(protocol_version) {}
 
 CertProfile::CertProfile(const CertProfile& other) = default;
-
+CertProfile& CertProfile::operator=(const CertProfile&) = default;
+CertProfile::CertProfile(CertProfile&& source) = default;
+CertProfile& CertProfile::operator=(CertProfile&&) = default;
 CertProfile::CertProfile() = default;
 CertProfile::~CertProfile() = default;
 

@@ -496,7 +496,7 @@ void CertProvisioningSchedulerImpl::CreateCertProvisioningWorker(
 }
 
 void CertProvisioningSchedulerImpl::OnProfileFinished(
-    const CertProfile& profile,
+    CertProfile profile,
     CertProvisioningWorkerState state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -506,7 +506,7 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
     LOG(WARNING) << "Finished worker is not found";
     return;
   }
-
+  bool recreate = false;
   switch (state) {
     case CertProvisioningWorkerState::kSucceeded:
       VLOG(0) << "Successfully provisioned certificate for profile: "
@@ -518,6 +518,9 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
       ScheduleRetry(profile.profile_id);
       break;
     case CertProvisioningWorkerState::kCanceled:
+      if (worker_iter->second->IsWorkerMarkedForReset()) {
+        recreate = true;
+      }
       break;
     default:
       LOG(ERROR) << "Failed to process certificate profile: "
@@ -526,7 +529,38 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
       break;
   }
 
-  RemoveWorkerFromMap(worker_iter);
+  if (recreate) {
+    // Avoid updating the ui after removal of the worker as it it will close the
+    // dialogue while reseting. The ui will be updated when the new worker is
+    // created.
+    RemoveWorkerFromMap(worker_iter,
+                        /*send_visibile_state_changed_update=*/false);
+    CreateCertProvisioningWorker(std::move(profile));
+  } else {
+    RemoveWorkerFromMap(worker_iter,
+                        /*send_visible_state_changed_update=*/true);
+  }
+}
+
+bool CertProvisioningSchedulerImpl::ResetOneWorker(
+    const CertProfileId& cert_profile_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  absl::optional<CertProfile> cert_profile = GetOneCertProfile(cert_profile_id);
+  if (!cert_profile) {
+    return false;
+  }
+  CertProvisioningWorker* worker = FindWorker(cert_profile_id);
+  if (!worker) {
+    UpdateOneWorkerImpl(cert_profile_id);
+    return true;
+  }
+  if (worker->IsWorkerMarkedForReset()) {
+    return true;
+  }
+  worker->MarkWorkerForReset();
+  worker->Stop(CertProvisioningWorkerState::kCanceled);
+  return true;
 }
 
 CertProvisioningWorker* CertProvisioningSchedulerImpl::FindWorker(
@@ -550,9 +584,16 @@ CertProvisioningWorker* CertProvisioningSchedulerImpl::AddWorkerToMap(
 }
 
 void CertProvisioningSchedulerImpl::RemoveWorkerFromMap(
-    WorkerMap::iterator worker_iter) {
+    WorkerMap::iterator worker_iter,
+    bool send_visible_state_changed_update) {
   workers_.erase(worker_iter);
-  OnVisibleStateChanged();
+  // In a case like removing an existing worker for the intent of recreation,
+  // the ui should not be sent an update here as this will cause the worker
+  // dialogue to be closed. Instead, the ui update will be triggered by the new
+  // worker.
+  if (send_visible_state_changed_update) {
+    OnVisibleStateChanged();
+  }
 }
 
 absl::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(

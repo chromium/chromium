@@ -7,10 +7,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/net/x509_certificate_model.h"
@@ -25,6 +27,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -57,6 +60,31 @@ crosapi::mojom::CertProvisioning* GetCertProvisioningInterface(
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->cert_provisioning_ash();
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+// Performs common crosapi validation. Returns void in case of success.
+// Returns a string error message in case of a mismatch.
+// |min_version| is the minimum version of the ash implementation
+// of CertificateProvisioning necessary to support this
+// operation.
+base::expected<void, std::string> ValidateCrosapi(int min_version) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
+    CHECK_IS_TEST();
+    // Use the crosapi even though it's disabled - the test installs a fake.
+    return {};
+  }
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  int current_version =
+      service->GetInterfaceVersion<crosapi::mojom::CertProvisioning>();
+  if (current_version < min_version) {
+    return base::unexpected(base::StringPrintf(
+        "validate crosapi error: min_version:%i current_version:%i",
+        min_version, current_version));
+  }
+#endif  // #if BUILDFLAG(IS_CHROME_LACROS)
+
+  return {};
 }
 
 // Returns localized representation for the state of a certificate provisioning
@@ -192,6 +220,11 @@ void CertificateProvisioningUiHandler::RegisterMessages() {
       base::BindRepeating(&CertificateProvisioningUiHandler::
                               HandleTriggerCertificateProvisioningProcessUpdate,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "triggerCertificateProvisioningProcessReset",
+      base::BindRepeating(&CertificateProvisioningUiHandler::
+                              HandleTriggerCertificateProvisioningProcessReset,
+                          base::Unretained(this)));
 }
 
 void CertificateProvisioningUiHandler::OnStateChanged() {
@@ -229,6 +262,27 @@ void CertificateProvisioningUiHandler::
 
   if (cert_provisioning_interface_) {
     cert_provisioning_interface_->UpdateOneProcess(cert_profile_id.GetString());
+  }
+}
+
+void CertificateProvisioningUiHandler::
+    HandleTriggerCertificateProvisioningProcessReset(
+        const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& cert_profile_id = args[0];
+  if (!cert_profile_id.is_string()) {
+    return;
+  }
+
+  if (cert_provisioning_interface_) {
+    base::expected<void, std::string> success = ValidateCrosapi(
+        crosapi::mojom::CertProvisioning::kResetOneProcessMinVersion);
+    if (success.has_value()) {
+      cert_provisioning_interface_->ResetOneProcess(
+          cert_profile_id.GetString());
+    } else {
+      LOG(ERROR) << "cert-prov cros_api validation error: " << success.error();
+    }
   }
 }
 

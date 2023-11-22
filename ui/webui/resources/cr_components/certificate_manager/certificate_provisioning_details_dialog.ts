@@ -56,6 +56,11 @@ export class CertificateProvisioningDetailsDialogElement extends
         .triggerCertificateProvisioningProcessUpdate(this.model.certProfileId);
   }
 
+  private onReset_() {
+    CertificateProvisioningBrowserProxyImpl.getInstance()
+        .triggerCertificateProvisioningProcessReset(this.model.certProfileId);
+  }
+
   private shouldHideLastFailedStatus_(): boolean {
     return this.model.lastUnsuccessfulMessage.length === 0;
   }

@@ -102,4 +102,9 @@ interface CertProvisioning {
   // out to the server-side and check for the current status. Otherwise it might
   // do nothing.
   UpdateOneProcess@2(string cert_profile_id);
+
+  // Instructs Ash to start over the provisioning of the certificate with
+  //`cert_profile_id`.
+  [MinVersion=2]
+  ResetOneProcess@3(string cert_profile_id);
 };

@@ -29,7 +29,7 @@ class CertProvisioningInvalidator;
 // A OnceCallback that is invoked when the CertProvisioningWorker is done and
 // has a result (which could be success or failure).
 using CertProvisioningWorkerCallback =
-    base::OnceCallback<void(const CertProfile& profile,
+    base::OnceCallback<void(CertProfile profile,
                             CertProvisioningWorkerState state)>;
 
 class CertProvisioningWorker;
@@ -95,9 +95,14 @@ class CertProvisioningWorker {
   virtual void Stop(CertProvisioningWorkerState state) = 0;
   // Make worker pause all activity and wait for DoStep.
   virtual void Pause() = 0;
+  // Mark worker that it is undergoing a reset process.
+  virtual void MarkWorkerForReset() = 0;
   // Returns true, if the worker is waiting for some future event. |DoStep| can
   // be called to try continue right now.
   virtual bool IsWaiting() const = 0;
+  // Returns true if the worker is to be recreated due to a user-initiated
+  // "reset" action.
+  virtual bool IsWorkerMarkedForReset() const = 0;
   // Returns CertProfile that this worker is working on.
   virtual const CertProfile& GetCertProfile() const = 0;
   // Returns public key or an empty string if the key is not created yet.

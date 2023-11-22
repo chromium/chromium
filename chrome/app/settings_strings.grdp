@@ -866,6 +866,9 @@
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_REFRESH" desc="Text on the button to refresh the status of a certificate provisioning process.">
         Refresh
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_RESET" desc="Text on the button to reset a certificate provisioning process.">
+        Reset
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS" desc="Text on the button to show debug details about a certificate provisioning process and title of the dialog that shows the details.">
         Details
       </message>

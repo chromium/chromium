@@ -233,6 +233,12 @@ bool CertProvisioningWorkerStatic::IsWaiting() const {
   return is_waiting_;
 }
 
+bool CertProvisioningWorkerStatic::IsWorkerMarkedForReset() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return is_schedueled_for_reset_;
+}
+
 const CertProfile& CertProvisioningWorkerStatic::GetCertProfile() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -332,6 +338,11 @@ void CertProvisioningWorkerStatic::DoStep() {
       return;
   }
   NOTREACHED() << " " << static_cast<uint>(state_);
+}
+
+void CertProvisioningWorkerStatic::MarkWorkerForReset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_schedueled_for_reset_ = true;
 }
 
 void CertProvisioningWorkerStatic::UpdateState(
@@ -853,6 +864,13 @@ void CertProvisioningWorkerStatic::CancelScheduledTasks() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+// This method handles clean up.
+// One of the things to be cleaned up are generated keys. It is possible that a
+// worker is asked to cleanup and shutdown while a key is being generated for
+// it. In that case this cleanup will miss that key and it's important to make
+// sure that there is another mechanism that will eventually clean up the key.
+// VA and PKS keys both are covered and the mechanism is described in seperate
+// comments.
 void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -874,6 +892,8 @@ void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
   // Keep conditions mutually exclusive.
   if ((prev_state_idx >= key_generated_idx) &&
       (prev_state_idx < key_registered_idx)) {
+    // if the worker is still waiting for the key right now, then it will be
+    // eventually cleaned by the scheduler once it goes idle.
     DeleteVaKey(cert_scope_, profile_, GetKeyName(cert_profile_.profile_id),
                 base::BindOnce(&CertProvisioningWorkerStatic::OnDeleteVaKeyDone,
                                weak_factory_.GetWeakPtr()));
@@ -888,8 +908,9 @@ void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
                        weak_factory_.GetWeakPtr()));
     return;
   }
-
-  // No extra clean up is necessary.
+  // If the worker is still waiting for a key from PlatformKeysService right
+  // now, PlatformKeysService will clean up the key when the key is generated
+  // and the worker is gone. No extra clean up is necessary.
   OnCleanUpDone();
 }
 
