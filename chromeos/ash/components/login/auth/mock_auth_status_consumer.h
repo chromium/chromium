@@ -24,8 +24,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   MOCK_METHOD1(OnRetailModeAuthSuccess, void(const UserContext& user_context));
   MOCK_METHOD1(OnAuthSuccess, void(const UserContext& user_context));
   MOCK_METHOD0(OnOffTheRecordAuthSuccess, void(void));
-  MOCK_METHOD1(OnPasswordChangeDetectedLegacy,
-               void(const UserContext& user_context));
   MOCK_METHOD2(OnOnlinePasswordUnusable,
                void(std::unique_ptr<UserContext> user_context, bool));
   MOCK_METHOD1(OnPasswordChangeDetectedFor, void(const AccountId& account));

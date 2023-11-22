@@ -246,10 +246,6 @@ class WizardController : public OobeUI::Observer {
   void SetSharedURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
-  // Configure and show GAIA password changed screen.
-  void ShowGaiaPasswordChangedScreenLegacy(const AccountId& account_id,
-                                           bool has_error);
-
   // Configure and show the signin fatal error screen.
   void ShowSignInFatalErrorScreen(SignInFatalErrorScreen::Error error,
                                   base::Value::Dict params);

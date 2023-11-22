@@ -59,10 +59,6 @@ RecoveryEligibilityScreen::RecoveryEligibilityScreen(
 RecoveryEligibilityScreen::~RecoveryEligibilityScreen() = default;
 
 bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
-  if (!features::IsCryptohomeRecoveryEnabled()) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
-  }
   if (wizard_context.skip_post_login_screens_for_tests) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
@@ -94,7 +90,7 @@ void RecoveryEligibilityScreen::ProcessOptions() {
     // Don't ask about recovery consent for managed users - use the policy value
     // instead.
     context()->recovery_setup.ask_about_recovery_consent =
-        IsRecoveryOptInAvailable(IsUserEnterpriseManaged());
+        !IsUserEnterpriseManaged();
     context()->recovery_setup.recovery_factor_opted_in =
         GetRecoveryDefaultState(
             IsUserEnterpriseManaged(),

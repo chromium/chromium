@@ -74,14 +74,10 @@ const test::UIPath kForgotPasswordStep = {"gaia-password-changed",
 const test::UIPath kOldPasswordInput = {"gaia-password-changed",
                                         "oldPasswordInput"};
 const test::UIPath kSendPasswordButton = {"gaia-password-changed", "next"};
-const test::UIPath kForgotPassword = {"gaia-password-changed",
-                                      "forgotPasswordLink"};
 const test::UIPath kForgotPasswordButton = {"gaia-password-changed",
                                             "forgotPasswordButton"};
-const test::UIPath kTryAgain = {"gaia-password-changed", "tryAgain"};
 const test::UIPath kTryAgainRecovery = {"gaia-password-changed", "backButton"};
 const test::UIPath kProceedAnyway = {"gaia-password-changed", "proceedAnyway"};
-const test::UIPath kCancel = {"gaia-password-changed", "cancel"};
 const test::UIPath kForgotCancel = {"gaia-password-changed", "cancelForgot"};
 
 const test::UIPath kFirstOnboardingScreen = {"consolidated-consent"};
@@ -267,32 +263,21 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
   WaitForPasswordChangeScreen();
   test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
 
-  // Click forgot password link.
-  test::OobeJS().ClickOnPath(kForgotPassword);
+  // Click forgot password button.
+  test::OobeJS().ClickOnPath(kForgotPasswordButton);
 
   test::OobeJS().CreateDisplayedWaiter(false, kPasswordStep)->Wait();
 
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    test::OobeJS().ExpectVisiblePath(kTryAgainRecovery);
-  } else {
-    test::OobeJS().ExpectVisiblePath(kTryAgain);
-  }
+  test::OobeJS().ExpectVisiblePath(kTryAgainRecovery);
   test::OobeJS().ExpectVisiblePath(kProceedAnyway);
 
   // Click "Proceed anyway".
   test::OobeJS().ClickOnPath(kProceedAnyway);
 
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    // With cryptohome recovery we re-create session and re-run onboarding.
-    OobeWindowVisibilityWaiter(true).Wait();
-    test::OobeJS().CreateVisibilityWaiter(true, kFirstOnboardingScreen)->Wait();
-  } else {
-    // User session should start, and whole OOBE screen is expected to be
-    // hidden.
-    OobeWindowVisibilityWaiter(false).Wait();
+  // With cryptohome recovery we re-create session and re-run onboarding.
+  OobeWindowVisibilityWaiter(true).Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kFirstOnboardingScreen)->Wait();
 
-    login_mixin_.WaitForActiveSession();
-  }
   EXPECT_FALSE(TestingFileExists());
 }
 
@@ -305,25 +290,15 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, TryAgainAfterForgetLinkClick) {
   test::OobeJS().CreateDisplayedWaiter(true, kPasswordStep)->Wait();
 
   // Click forgot password button.
-  test::OobeJS().ClickOnPath(kForgotPassword);
+  test::OobeJS().ClickOnPath(kForgotPasswordButton);
 
   test::OobeJS().CreateDisplayedWaiter(false, kPasswordStep)->Wait();
-  test::UIPath featureTryAgainPath;
-  test::UIPath nonFeatureTryAgainPath;
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    featureTryAgainPath = kTryAgainRecovery;
-    nonFeatureTryAgainPath = kTryAgain;
-  } else {
-    featureTryAgainPath = kTryAgain;
-    nonFeatureTryAgainPath = kTryAgainRecovery;
-  }
 
-  test::OobeJS().ExpectVisiblePath(featureTryAgainPath);
-  test::OobeJS().ExpectHiddenPath(nonFeatureTryAgainPath);
+  test::OobeJS().ExpectVisiblePath(kTryAgainRecovery);
   test::OobeJS().ExpectVisiblePath(kProceedAnyway);
 
   // Go back to old password input by clicking Try Again.
-  test::OobeJS().ClickOnPath(featureTryAgainPath);
+  test::OobeJS().ClickOnPath(kTryAgainRecovery);
 
   test::OobeJS().CreateDisplayedWaiter(true, kPasswordStep)->Wait();
 
@@ -349,16 +324,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, ClosePasswordChangedDialog) {
 
   test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
 
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    // Switch to "Forgot password" step.
-    test::OobeJS().ClickOnPath(kForgotPasswordButton);
-    test::OobeJS().CreateDisplayedWaiter(true, kForgotPasswordStep)->Wait();
-    // Click the close button.
-    test::OobeJS().ClickOnPath(kForgotCancel);
-  } else {
-    // Click the close button.
-    test::OobeJS().ClickOnPath(kCancel);
-  }
+  // Switch to "Forgot password" step.
+  test::OobeJS().ClickOnPath(kForgotPasswordButton);
+  test::OobeJS().CreateDisplayedWaiter(true, kForgotPasswordStep)->Wait();
+  // Click the close button.
+  test::OobeJS().ClickOnPath(kForgotCancel);
 
   OobeWindowVisibilityWaiter(false).Wait();
   EXPECT_FALSE(

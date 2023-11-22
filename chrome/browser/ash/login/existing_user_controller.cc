@@ -674,20 +674,6 @@ void ExistingUserController::ShowTPMError() {
   GetLoginDisplayHost()->StartWizard(TpmErrorView::kScreenId);
 }
 
-void ExistingUserController::ShowPasswordChangedDialogLegacy(
-    const UserContext& user_context) {
-  CHECK(login_performer_);
-  VLOG(1) << "Show password changed dialog"
-          << ", count=" << login_performer_->password_changed_callback_count();
-
-  // True if user has already made an attempt to enter old password and failed.
-  bool show_invalid_old_password_error =
-      login_performer_->password_changed_callback_count() > 1;
-
-  GetLoginDisplayHost()->GetSigninUI()->ShowPasswordChangedDialogLegacy(
-      user_context.GetAccountId(), show_invalid_old_password_error);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // ExistingUserController, LoginPerformer::Delegate implementation:
 //
@@ -955,28 +941,6 @@ void ExistingUserController::OnOffTheRecordAuthSuccess() {
   }
 }
 
-void ExistingUserController::OnPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
-  DCHECK(!ash::features::IsCryptohomeRecoveryEnabled());
-  is_login_in_progress_ = false;
-
-  // Must not proceed without signature verification.
-  if (CrosSettingsProvider::TRUSTED !=
-      cros_settings_->PrepareTrustedValues(base::BindOnce(
-          &ExistingUserController::OnPasswordChangeDetectedLegacy,
-          weak_factory_.GetWeakPtr(), user_context))) {
-    // Value of owner email is still not verified.
-    // Another attempt will be invoked after verification completion.
-    return;
-  }
-
-  for (auto& auth_status_consumer : auth_status_consumers_) {
-    auth_status_consumer.OnPasswordChangeDetectedLegacy(user_context);
-  }
-
-  ShowPasswordChangedDialogLegacy(user_context);
-}
-
 void ExistingUserController::OnOnlinePasswordUnusable(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {
@@ -1000,7 +964,6 @@ void ExistingUserController::OnOnlinePasswordUnusable(
 void ExistingUserController::OnOnlinePasswordUnusableImpl(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {
-  DCHECK(ash::features::IsCryptohomeRecoveryEnabled());
   DCHECK(user_context);
   is_login_in_progress_ = false;
 

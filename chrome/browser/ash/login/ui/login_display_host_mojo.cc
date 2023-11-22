@@ -320,16 +320,6 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
   }
 }
 
-void LoginDisplayHostMojo::ShowPasswordChangedDialogLegacy(
-    const AccountId& account_id,
-    bool show_password_error) {
-  EnsureOobeDialogLoaded();
-  DCHECK(GetOobeUI());
-  wizard_controller_->ShowGaiaPasswordChangedScreenLegacy(account_id,
-                                                          show_password_error);
-  ShowDialog();
-}
-
 void LoginDisplayHostMojo::StartCryptohomeRecovery(
     std::unique_ptr<UserContext> user_context) {
   DCHECK(GetOobeUI());
@@ -823,14 +813,6 @@ void LoginDisplayHostMojo::OnAuthSuccess(const UserContext& user_context) {
                      false /* password changed */);
     gaia_reauth_account_id_.reset();
   }
-}
-
-void LoginDisplayHostMojo::OnPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
-  if (user_context.GetAccountId().is_valid()) {
-    SendReauthReason(user_context.GetAccountId(), true /* password changed */);
-  }
-  gaia_reauth_account_id_.reset();
 }
 
 void LoginDisplayHostMojo::OnPasswordChangeDetectedFor(

@@ -655,13 +655,11 @@ WizardController::CreateScreens() {
   append(std::make_unique<RecoveryEligibilityScreen>(
       base::BindRepeating(&WizardController::OnRecoveryEligibilityScreenExit,
                           weak_factory_.GetWeakPtr())));
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    append(std::make_unique<CryptohomeRecoverySetupScreen>(
-        oobe_ui->GetView<CryptohomeRecoverySetupScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(
-            &WizardController::OnCryptohomeRecoverySetupScreenExit,
-            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<CryptohomeRecoverySetupScreen>(
+      oobe_ui->GetView<CryptohomeRecoverySetupScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(
+          &WizardController::OnCryptohomeRecoverySetupScreenExit,
+          weak_factory_.GetWeakPtr())));
   append(std::make_unique<TermsOfServiceScreen>(
       oobe_ui->GetView<TermsOfServiceScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnTermsOfServiceScreenExit,
@@ -783,22 +781,10 @@ WizardController::CreateScreens() {
   append(std::make_unique<TpmErrorScreen>(
       oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
 
-  if (ash::features::IsCryptohomeRecoveryEnabled()) {
-    auto gaia_password_change_screen =
-        std::make_unique<GaiaPasswordChangedScreen>(
-            base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
-                                weak_factory_.GetWeakPtr()),
-            oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()->AsWeakPtr());
-    append(std::move(gaia_password_change_screen));
-  } else {
-    auto gaia_password_change_screen =
-        std::make_unique<GaiaPasswordChangedScreenLegacy>(
-            base::BindRepeating(
-                &WizardController::OnPasswordChangeLegacyScreenExit,
-                weak_factory_.GetWeakPtr()),
-            oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()->AsWeakPtr());
-    append(std::move(gaia_password_change_screen));
-  }
+  append(std::make_unique<GaiaPasswordChangedScreen>(
+      base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
+                          weak_factory_.GetWeakPtr()),
+      oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()->AsWeakPtr()));
 
   append(std::make_unique<FamilyLinkNoticeScreen>(
       oobe_ui->GetView<FamilyLinkNoticeScreenHandler>()->AsWeakPtr(),
@@ -879,12 +865,10 @@ WizardController::CreateScreens() {
             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    append(std::make_unique<CryptohomeRecoveryScreen>(
-        oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnCryptohomeRecoveryScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<CryptohomeRecoveryScreen>(
+      oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnCryptohomeRecoveryScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   if (features::IsOobeChoobeEnabled()) {
     append(std::make_unique<ChoobeScreen>(
@@ -1007,23 +991,9 @@ void WizardController::ShowLoginScreen() {
   GetLoginDisplayHost()->StartSignInScreen();
 }
 
-void WizardController::ShowGaiaPasswordChangedScreenLegacy(
-    const AccountId& account_id,
-    bool has_error) {
-  DCHECK(!ash::features::IsCryptohomeRecoveryEnabled());
-  GaiaPasswordChangedScreenLegacy* screen =
-      GetScreen<GaiaPasswordChangedScreenLegacy>();
-  screen->Configure(account_id, has_error);
-  if (current_screen_ != screen) {
-    SetCurrentScreen(screen);
-  } else {
-    screen->Show(wizard_context_);
-  }
-}
 
 void WizardController::ShowGaiaPasswordChangedScreen(
     std::unique_ptr<UserContext> user_context) {
-  DCHECK(features::IsCryptohomeRecoveryEnabled());
   wizard_context_->user_context = std::move(user_context);
   SetCurrentScreen(GetScreen<GaiaPasswordChangedScreen>());
 }
@@ -1110,15 +1080,10 @@ void WizardController::ShowSyncConsentScreen() {
 }
 
 void WizardController::StartAuthFactorsSetup() {
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    ShowCryptohomeRecoverySetupScreen();
-  } else {
-    ShowFingerprintSetupScreen();
-  }
+  ShowCryptohomeRecoverySetupScreen();
 }
 
 void WizardController::ShowCryptohomeRecoverySetupScreen() {
-  CHECK(features::IsCryptohomeRecoveryEnabled());
   SetCurrentScreen(GetScreen(CryptohomeRecoverySetupScreenView::kScreenId));
 }
 
@@ -1271,7 +1236,6 @@ void WizardController::ShowArcVmDataMigrationScreen() {
 
 void WizardController::ShowCryptohomeRecoveryScreen(
     std::unique_ptr<UserContext> user_context) {
-  DCHECK(features::IsCryptohomeRecoveryEnabled());
   wizard_context_->user_context = std::move(user_context);
   wizard_context_->knowledge_factor_setup.auth_setup_flow =
       WizardContext::AuthChangeFlow::kRecovery;

@@ -2153,39 +2153,15 @@ void LockContentsView::ShowAuthErrorMessage() {
   int unlock_attempt = unlock_attempt_by_user_[account_id];
   UserState* user_state = FindStateForUser(account_id);
 
-  // Show gaia signin if this is login and the user has failed too many times.
-  // Do not show on secondary login screen – even though it has type kLogin – as
-  // there is no OOBE there.
-  if (!ash::features::IsCryptohomeRecoveryEnabled()) {
-    // Pin login attempt does not trigger Gaia dialog. Pin auth method will be
-    // disabled after 5 failed attempts.
-    int pin_unlock_attempt = pin_unlock_attempt_by_user_[account_id];
-    if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        (unlock_attempt - pin_unlock_attempt) >=
-            kLoginAttemptsBeforeGaiaDialog &&
-        Shell::Get()->session_controller()->GetSessionState() !=
-            session_manager::SessionState::LOGIN_SECONDARY) {
-      Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-          big_view->auth_user()->current_user().basic_user_info.account_id);
-      return;
-    }
-  }
-
   std::u16string error_text;
-  if (ash::features::IsCryptohomeRecoveryEnabled()) {
-    if (user_state->show_pin) {
-      error_text += l10n_util::GetStringUTF16(
-          unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME_NEW
-                             : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
-    } else {
-      error_text += l10n_util::GetStringUTF16(
-          unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD_2ND_TIME
-                             : IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD);
-    }
+  if (user_state->show_pin) {
+    error_text += l10n_util::GetStringUTF16(
+        unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME_NEW
+                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
   } else {
     error_text += l10n_util::GetStringUTF16(
-        unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
-                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
+        unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD_2ND_TIME
+                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD);
   }
 
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
@@ -2214,7 +2190,7 @@ void LockContentsView::ShowAuthErrorMessage() {
     *bold_start += shortcut_offset_in_string;
   }
 
-  if (ash::features::IsCryptohomeRecoveryEnabled() && unlock_attempt > 1) {
+  if (unlock_attempt > 1) {
     base::StrAppend(&error_text,
                     {u"\n\n", l10n_util::GetStringUTF16(
                                   user_state->show_pin
@@ -2242,19 +2218,17 @@ void LockContentsView::ShowAuthErrorMessage() {
   container->AddChildView(std::move(label));
   container->AddChildView(std::move(learn_more_button));
 
-  if (ash::features::IsCryptohomeRecoveryEnabled()) {
-    // The recover user flow is only accessible from the login screen but
-    // not from the lock screen.
-    if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        Shell::Get()->session_controller()->GetSessionState() !=
-            session_manager::SessionState::LOGIN_SECONDARY) {
-      auto recover_user_button = std::make_unique<PillButton>(
-          base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
+  // The recover user flow is only accessible from the login screen but
+  // not from the lock screen.
+  if (screen_type_ == LockScreen::ScreenType::kLogin &&
+      Shell::Get()->session_controller()->GetSessionState() !=
+          session_manager::SessionState::LOGIN_SECONDARY) {
+    auto recover_user_button = std::make_unique<PillButton>(
+        base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
 
-      container->AddChildView(std::move(recover_user_button));
-    }
+    container->AddChildView(std::move(recover_user_button));
   }
 
   auth_error_bubble_->SetAnchorView(

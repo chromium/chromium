@@ -94,8 +94,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnCancelPasswordChangedFlow() override;
   void ShowEnableConsumerKioskScreen() override;
   bool HasUserPods() override;
-  void ShowPasswordChangedDialogLegacy(const AccountId& account_id,
-                                       bool show_password_error) override;
   void StartCryptohomeRecovery(
       std::unique_ptr<UserContext> user_context) override;
   void RunLocalAuthentication(

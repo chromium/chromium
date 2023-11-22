@@ -52,9 +52,6 @@ const GaiaPasswordChangedBase = mixinBehaviors(
 /**
  * @typedef {{
  *   oldPasswordInput:  CrInputElement,
- *   oldPasswordInput2:  CrInputElement,
- *   cancel:  OobeTextButton,
- *   tryAgain:  OobeTextButton,
  *   proceedAnyway:  OobeTextButton,
  * }}
  */
@@ -104,11 +101,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
       },
 
       passwordInput_: Object,
-
-      isCryptohomeRecoveryUIFlowEnabled_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isCryptohomeRecoveryUIFlowEnabled'),
-      },
     };
   }
 
@@ -137,9 +129,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     super.ready();
     this.initializeLoginScreen('GaiaPasswordChangedScreen');
 
-    this.passwordInput_ = this.isCryptohomeRecoveryUIFlowEnabled_ ?
-        this.$.oldPasswordInput2 :
-        this.$.oldPasswordInput;
+    this.passwordInput_ = this.$.oldPasswordInput;
     addSubmitListener(this.passwordInput_, this.submit_.bind(this));
   }
 
@@ -156,10 +146,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     this.reset();
     this.email = data.email;
     this.passwordInvalid_ = data.showError;
-    if (this.isCryptohomeRecoveryUIFlowEnabled_) {
-      this.$.tryAgain.textKey = 'oldPasswordHint';
-      this.$.proceedAnyway.textKey = 'continueAndDeleteDataButton';
-    }
+    this.$.proceedAnyway.textKey = 'continueAndDeleteDataButton';
   }
 
   reset() {
@@ -186,18 +173,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   suggestRecovery() {
     this.disabled = false;
     this.setUIStep(GaiaPasswordChangedUIState.RECOVERY);
-  }
-
-  /**
-   * Returns the label for the forgot password dialog.
-   * @param {string} locale The i18n locale.
-   * @returns {string} The translated label text.
-   */
-  getForgotPasswordLabel_(locale) {
-    if (this.isCryptohomeRecoveryUIFlowEnabled_) {
-      return this.i18nDynamic(locale, 'dataLossWarningTitle');
-    }
-    return '';
   }
 
   /**
@@ -233,11 +208,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     }
     this.setUIStep(GaiaPasswordChangedUIState.FORGOT);
     this.clearPassword();
-  }
-
-  /** @private */
-  onTryAgainClicked_() {
-    this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
   }
 
   /** @private */

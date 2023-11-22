@@ -95,7 +95,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnOffTheRecordAuthSuccess() override;
-  void OnPasswordChangeDetectedLegacy(const UserContext& user_context) override;
   void OnOnlinePasswordUnusable(std::unique_ptr<UserContext>, bool) override;
   void OnOldEncryptionDetected(std::unique_ptr<UserContext>,
                                bool has_incomplete_migration) override;
@@ -115,15 +114,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
 
   // True if password change has been detected.
   bool password_changed() { return password_changed_; }
-
-  // Number of times we've been called with OnPasswordChangeDetected().
-  // If user enters incorrect old password, same LoginPerformer instance will
-  // be called so callback count makes it possible to distinguish initial
-  // "password changed detected" event from further attempts to enter old
-  // password for cryptohome migration (when > 1).
-  int password_changed_callback_count() {
-    return password_changed_callback_count_;
-  }
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
@@ -194,7 +184,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   void NotifyAuthFailure(const AuthFailure& error);
   void NotifyAuthSuccess(const UserContext& user_context);
   void NotifyOffTheRecordAuthSuccess();
-  void NotifyPasswordChangeDetectedLegacy(const UserContext& user_context);
   void NotifyOnlinePasswordUnusable(std::unique_ptr<UserContext> user_context,
                                     bool online_password_mismatch);
   void NotifyOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
@@ -223,7 +212,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   // True if password change has been detected.
   // Once correct password is entered homedir migration is executed.
   bool password_changed_ = false;
-  int password_changed_callback_count_ = 0;
 
   // Authorization mode type.
   AuthorizationMode auth_mode_ = AuthorizationMode::kInternal;

@@ -578,14 +578,6 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
-  AuthPerformer auth_performer(UserDataAuthClient::Get());
-  legacy::CryptohomePinEngine cryptohome_pin_engine(&auth_performer);
-  if (cryptohome_pin_engine.ShouldSkipSetupBecauseOfPolicy(
-          user_context.GetAccountId()) &&
-      !features::IsCryptohomeRecoveryEnabled() &&
-      RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy()) {
-    return;
-  }
   wizard_context_->extra_factors_token = AuthSessionStorage::Get()->Store(
       std::make_unique<UserContext>(user_context));
 }

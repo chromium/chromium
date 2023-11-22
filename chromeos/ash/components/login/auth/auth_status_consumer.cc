@@ -9,11 +9,6 @@
 
 namespace ash {
 
-void AuthStatusConsumer::OnPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
-  NOTREACHED();
-}
-
 void AuthStatusConsumer::OnOnlinePasswordUnusable(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {

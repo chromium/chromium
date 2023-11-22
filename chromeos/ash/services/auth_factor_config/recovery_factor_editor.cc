@@ -30,8 +30,6 @@ void RecoveryFactorEditor::Configure(
     const std::string& auth_token,
     bool enabled,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  CHECK(features::IsCryptohomeRecoveryEnabled());
-
   auth_factor_config_->IsEditable(
       auth_token, mojom::AuthFactor::kRecovery,
       base::BindOnce(&RecoveryFactorEditor::OnGetEditable,

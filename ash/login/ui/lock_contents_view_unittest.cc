@@ -1063,10 +1063,6 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
 }
 
 TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
-  // Enable the "recover user" button.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCryptohomeRecovery);
-
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
       DataDispatcher(),
@@ -1193,45 +1189,6 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFirstFailedLoginAttempt) {
 
   // Verify ShowGaiaSignin is not triggered for other users.
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  submit_password();
-  Mock::VerifyAndClearExpectations(client.get());
-}
-
-// Gaia is shown in login on the 4th bad password attempt.
-TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
-  base::test::ScopedFeatureList feature_list;
-  // With recovery feature enabled, the online login is not forced after bad
-  // password attempts.
-  feature_list.InitAndDisableFeature(features::kCryptohomeRecovery);
-
-  // Build lock screen with a single user.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(contents));
-
-  auto client = std::make_unique<MockLoginScreenClient>();
-  client->set_authenticate_user_callback_result(false);
-
-  auto submit_password = [&]() {
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-    base::RunLoop().RunUntilIdle();
-  };
-
-  // The first n-1 attempts do not trigger ShowGaiaSignin.
-  EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1;
-       ++i) {
-    submit_password();
-  }
-  Mock::VerifyAndClearExpectations(client.get());
-
-  // The final attempt triggers ShowGaiaSignin.
-  EXPECT_CALL(*client, ShowGaiaSignin(users()[0].basic_user_info.account_id))
-      .Times(1);
   submit_password();
   Mock::VerifyAndClearExpectations(client.get());
 }
@@ -3318,10 +3275,8 @@ TEST_F(LockContentsViewUnitTest, LoginExtensionUiWithNoUsers) {
 
 class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
  public:
-  LockContentsViewWithKioskLicenseTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kCryptohomeRecovery);
-  }
+  LockContentsViewWithKioskLicenseTest() {}
+
   LockContentsViewWithKioskLicenseTest(LockContentsViewWithKioskLicenseTest&) =
       delete;
   LockContentsViewWithKioskLicenseTest& operator=(

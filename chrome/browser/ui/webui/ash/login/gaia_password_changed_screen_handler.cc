@@ -58,13 +58,6 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_ENABLE_BUTTON);
 }
 
-void GaiaPasswordChangedScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* dict) {
-  dict->Set("isCryptohomeRecoveryUIFlowEnabled",
-            features::IsCryptohomeRecoveryEnabled());
-  BaseScreenHandler::GetAdditionalParameters(dict);
-}
-
 void GaiaPasswordChangedScreenHandler::Show(const std::string& email,
                                             bool has_error) {
   base::Value::Dict data;

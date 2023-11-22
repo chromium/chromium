@@ -328,8 +328,6 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
                              ui::GetChromeOSDeviceName()));
   html_source->AddString("fingerprintLearnMoreLink",
                          chrome::kFingerprintLearnMoreURL);
-  html_source->AddBoolean("cryptohomeRecoveryEnabled",
-                          features::IsCryptohomeRecoveryEnabled());
   html_source->AddString("recoveryLearnMoreUrl", chrome::kRecoveryLearnMoreURL);
 }
 

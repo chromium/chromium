@@ -51,7 +51,7 @@ void ProfilePrefsAuthPolicyConnector::SetLoginScreenAuthPolicyConnector(
 
 absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryInitialState(
     const AccountId& account) {
-  return features::IsCryptohomeRecoveryEnabled() && !IsUserManaged(account);
+  return !IsUserManaged(account);
 }
 
 absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryDefaultState(
@@ -67,9 +67,6 @@ absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryDefaultState(
 
 absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryMandatoryState(
     const AccountId& account) {
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    return absl::nullopt;
-  }
   if (!IsUserManaged(account)) {
     return absl::nullopt;
   }

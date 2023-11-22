@@ -181,7 +181,6 @@ class ExistingUserController : public content::NotificationObserver,
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnOffTheRecordAuthSuccess() override;
-  void OnPasswordChangeDetectedLegacy(const UserContext& user_context) override;
   void OnOnlinePasswordUnusable(std::unique_ptr<UserContext>,
                                 bool online_password_mismatch) override;
   void OnLocalAuthenticationRequired(
@@ -230,9 +229,6 @@ class ExistingUserController : public content::NotificationObserver,
 
   // Shows "critical TPM error" screen.
   void ShowTPMError();
-
-  // Shows "password changed" dialog.
-  void ShowPasswordChangedDialogLegacy(const UserContext& user_context);
 
   // Creates `login_performer_` if necessary and calls login() on it.
   void PerformLogin(const UserContext& user_context,

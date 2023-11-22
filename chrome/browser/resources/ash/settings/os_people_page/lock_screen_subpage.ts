@@ -121,17 +121,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
-       * True if cryptohome recovery feature is enabled.
-       */
-      cryptohomeRecoveryEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('cryptohomeRecoveryEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * State of the recovery toggle. Is |null| iff recovery is not a
        * available.
        */
@@ -183,7 +172,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private numFingerprintDescription_: string;
   private lockScreenNotificationsEnabled_: boolean;
   private lockScreenHideSensitiveNotificationSupported_: boolean;
-  private cryptohomeRecoveryEnabled_: boolean;
   private recovery_: chrome.settingsPrivate.PrefObject|null;
   private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   private recoveryChangeInProcess_: boolean;
@@ -274,9 +262,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   }
 
   private recoveryToggleSubLabel_(): string {
-    if (!this.cryptohomeRecoveryEnabled_) {
-      return '';
-    }
     if (this.recovery_) {
       return this.i18n('recoveryToggleSubLabel');
     }
@@ -284,14 +269,14 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   }
 
   private recoveryToggleLearnMoreUrl_(): string {
-    if (!this.cryptohomeRecoveryEnabled_ || this.recovery_) {
+    if (this.recovery_) {
       return '';
     }
     return this.i18n('recoveryLearnMoreUrl');
   }
 
   private recoveryToggleDisabled_(): boolean {
-    if (!this.cryptohomeRecoveryEnabled_ || !this.recovery_) {
+    if (!this.recovery_) {
       return true;
     }
     return this.recoveryChangeInProcess_;

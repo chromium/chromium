@@ -272,11 +272,7 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, OptinsVisiblity) {
   test::OobeJS().ExpectEnabledPath(kUsageStatsToggle);
   test::OobeJS().ExpectHiddenPath(kBackup);
 
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    test::OobeJS().ExpectEnabledPath(kRecovery);
-  } else {
-    test::OobeJS().ExpectHiddenPath(kRecovery);
-  }
+  test::OobeJS().ExpectEnabledPath(kRecovery);
 
   test::OobeJS().ExpectHiddenPath(kLocation);
   test::OobeJS().ExpectHiddenPath(kFooter);
@@ -412,11 +408,7 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest,
   test::OobeJS().ExpectVisiblePath(kBackup);
   test::OobeJS().ExpectEnabledPath(kBackupToggle);
 
-  if (features::IsCryptohomeRecoveryEnabled()) {
-    test::OobeJS().ExpectEnabledPath(kRecovery);
-  } else {
-    test::OobeJS().ExpectHiddenPath(kRecovery);
-  }
+  test::OobeJS().ExpectEnabledPath(kRecovery);
 
   test::OobeJS().ExpectVisiblePath(kLocation);
   test::OobeJS().ExpectEnabledPath(kLocationToggle);

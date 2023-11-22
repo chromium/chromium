@@ -559,18 +559,6 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
              "CryptAuthV2Enrollment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the cryptohome recovery feature:
-// - Enable recovery via the recovery service.
-// - New UI for Cryptohome recovery and Gaia password changed screen.
-// - Adds a "recover user" button to the error bubble that opens when the
-//   user fails to enter their correct password.
-// - Enables the UI to enable or disable cryptohome recovery in the settings
-// page. Also guards the wiring of cryptohome recovery settings to the
-// cryptohome backend.
-BASE_FEATURE(kCryptohomeRecovery,
-             "CryptohomeRecovery",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Temporary flag, needed to interlace code and tast test changes,
 // will be removed before M-121 branch.
 // - if enabled, keeps the old flow where recovery screen performs
@@ -3282,10 +3270,6 @@ bool IsCrosPrivacyHubLocationEnabled() {
 bool IsCrosPrivacyHubV0Enabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubV0) ||
          IsVideoConferenceEnabled();
-}
-
-bool IsCryptohomeRecoveryEnabled() {
-  return base::FeatureList::IsEnabled(kCryptohomeRecovery);
 }
 
 bool IsDeskButtonEnabled() {

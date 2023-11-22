@@ -250,11 +250,6 @@ class AuthSessionAuthenticatorTest : public testing::Test,
         .WillOnce([this](const AuthFailure& error) {
           on_auth_failure_future_.SetValue(error);
         });
-    EXPECT_CALL(auth_status_consumer_, OnPasswordChangeDetectedLegacy(_))
-        .Times(AtMost(1))
-        .WillOnce([this](const UserContext& user_context) {
-          on_password_change_detected_future_.SetValue(user_context);
-        });
     EXPECT_CALL(auth_status_consumer_, OnOnlinePasswordUnusable(_, _))
         .Times(AtMost(1))
         .WillOnce([this](std::unique_ptr<UserContext> user_context,
@@ -424,49 +419,11 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
   EXPECT_EQ(got_user_context.GetAccountId(), kAccountId);
   EXPECT_EQ(got_user_context.GetAuthSessionId(), kFirstAuthSessionId);
 }
-// Test the `CompleteLogin()` method in the password change scenario for the
-// existing regular user.
-TEST_P(AuthSessionAuthenticatorTest,
-       CompleteLoginRegularExistingPasswordChange) {
-  disabled_features_.emplace_back(ash::features::kCryptohomeRecovery);
-  RefreshFeatureList();
-  // Arrange.
-  CreateAuthenticator();
-  auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
-  user_context->SetKey(Key(kPassword));
-  EXPECT_CALL(userdataauth(),
-              StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
-                                                     AUTH_INTENT_DECRYPT),
-                               _))
-      .WillOnce(ReplyWith(BuildStartReply(
-          kFirstAuthSessionId,
-          /*user_exists=*/true,
-          /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
-  // Set up the cryptohome authentication request to return a failure, since
-  // we're simulating the case when it only knows about the old password.
-  EXPECT_CALL(userdataauth(),
-              AuthenticateAuthFactor(
-                  AllOf(WithFirstAuthSessionId(),
-                        WithPasswordFactorAuth(kCryptohomeGaiaKeyLabel)),
-                  _))
-      .WillOnce(ReplyWith(BuildAuthenticateFactorFailureReply()));
-
-  // Act.
-  authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
-  const UserContext got_user_context =
-      on_password_change_detected_future().Get();
-
-  // Assert.
-  EXPECT_EQ(got_user_context.GetAccountId(), kAccountId);
-  EXPECT_EQ(got_user_context.GetAuthSessionId(), kFirstAuthSessionId);
-}
 
 // Test the `CompleteLogin()` method in the password change scenario for the
 // existing regular user.
 TEST_P(AuthSessionAuthenticatorTest,
        CompleteLoginRegularExistingPasswordChangeRecoveryEnabled) {
-  enabled_features_.emplace_back(ash::features::kCryptohomeRecovery);
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(

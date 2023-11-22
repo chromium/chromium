@@ -354,11 +354,6 @@ void ErrorScreen::OnOffTheRecordAuthSuccess() {
   RestartChrome(command_line, RestartChromeReason::kGuest);
 }
 
-void ErrorScreen::OnPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
-  LOG(FATAL);
-}
-
 void ErrorScreen::OnOnlinePasswordUnusable(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {

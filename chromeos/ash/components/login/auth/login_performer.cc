@@ -110,19 +110,6 @@ void LoginPerformer::OnOffTheRecordAuthSuccess() {
                                 weak_factory_.GetWeakPtr()));
 }
 
-void LoginPerformer::OnPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auth_events_recorder_->OnPasswordChange();
-  password_changed_ = true;
-  password_changed_callback_count_++;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetectedLegacy,
-                     weak_factory_.GetWeakPtr(), user_context));
-}
-
 void LoginPerformer::OnOnlinePasswordUnusable(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {
@@ -305,14 +292,6 @@ void LoginPerformer::NotifyOffTheRecordAuthSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   delegate_->OnOffTheRecordAuthSuccess();
-}
-
-void LoginPerformer::NotifyPasswordChangeDetectedLegacy(
-    const UserContext& user_context) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(delegate_);
-  user_context_ = user_context;
-  delegate_->OnPasswordChangeDetectedLegacy(user_context);
 }
 
 void LoginPerformer::NotifyOnlinePasswordUnusable(

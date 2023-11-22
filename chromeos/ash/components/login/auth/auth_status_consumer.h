@@ -29,8 +29,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthStatusConsumer
   virtual void OnAuthSuccess(const UserContext& user_context) = 0;
   // The current guest login attempt has succeeded.
   virtual void OnOffTheRecordAuthSuccess() {}
-  // The same password didn't work both online and offline.
-  virtual void OnPasswordChangeDetectedLegacy(const UserContext& user_context);
   // Password verified by the online flow does work for local
   // authentication.
   // This is the method that should actually handle the scenario.

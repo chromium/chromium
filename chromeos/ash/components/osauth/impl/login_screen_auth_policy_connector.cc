@@ -28,8 +28,7 @@ LoginScreenAuthPolicyConnector::~LoginScreenAuthPolicyConnector() = default;
 
 absl::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryInitialState(
     const AccountId& account) {
-  return features::IsCryptohomeRecoveryEnabled() &&
-         !IsUserManaged(local_state_, account);
+  return !IsUserManaged(local_state_, account);
 }
 
 absl::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryDefaultState(

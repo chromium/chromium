@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
@@ -45,9 +44,7 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
  public:
   explicit CryptohomeRecoveryScreenTestBase(
       const LoginManagerMixin::TestUserInfo& test_user)
-      : test_user_(test_user) {
-    feature_list_.InitAndEnableFeature(features::kCryptohomeRecovery);
-  }
+      : test_user_(test_user) {}
 
   ~CryptohomeRecoveryScreenTestBase() override = default;
 
@@ -141,7 +138,6 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
   FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
                                                   embedded_test_server()};
   absl::optional<CryptohomeRecoveryScreen::Result> result_;
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   void HandleScreenExit(CryptohomeRecoveryScreen::Result result) {

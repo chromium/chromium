@@ -1005,11 +1005,7 @@ void AuthSessionAuthenticator::HandlePasswordChangeDetected(
     if (!consumer_) {
       return;
     }
-    if (ash::features::IsCryptohomeRecoveryEnabled()) {
-      consumer_->OnOnlinePasswordUnusable(std::move(context), true);
-    } else {
-      consumer_->OnPasswordChangeDetectedLegacy(*context);
-    }
+    consumer_->OnOnlinePasswordUnusable(std::move(context), true);
     return;
   }
   std::move(fallback).Run(std::move(context), std::move(error));

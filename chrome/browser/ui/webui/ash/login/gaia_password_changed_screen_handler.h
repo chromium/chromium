@@ -51,7 +51,6 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
 };
 
 }  // namespace ash

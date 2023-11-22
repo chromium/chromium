@@ -110,11 +110,6 @@ void AuthFactorConfig::IsSupportedWithContext(
 
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      if (!features::IsCryptohomeRecoveryEnabled()) {
-        std::move(callback).Run(false);
-        return;
-      }
-
       std::move(callback).Run(cryptohome_supported_factors.Has(
           cryptohome::AuthFactorType::kRecovery));
       return;
@@ -161,7 +156,6 @@ void AuthFactorConfig::IsConfiguredWithContext(
 
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      DCHECK(features::IsCryptohomeRecoveryEnabled());
       std::move(callback).Run(
           config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery));
       return;
@@ -224,7 +218,6 @@ void AuthFactorConfig::GetManagementType(
     base::OnceCallback<void(mojom::ManagementType)> callback) {
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      DCHECK(features::IsCryptohomeRecoveryEnabled());
       const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
       CHECK(user);
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
@@ -286,7 +279,6 @@ void AuthFactorConfig::IsEditableWithContext(
 
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      DCHECK(features::IsCryptohomeRecoveryEnabled());
       const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
       CHECK(user);
 

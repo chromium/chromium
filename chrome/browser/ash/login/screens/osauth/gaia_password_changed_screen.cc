@@ -177,12 +177,11 @@ void GaiaPasswordChangedScreen::OnGetConfiguration(
     FinishWithResult(Result::CRYPTOHOME_ERROR);
     return;
   }
-  bool can_set_recovery = features::IsCryptohomeRecoveryEnabled();
 
   // TODO(b/257225574): Currently setting up recovery requires profile.
   // Actually add recovery when we migrate from quick_unlock as
   // UserContext storage.
-  can_set_recovery &= false;
+  bool can_set_recovery = false;
 
   if (can_set_recovery) {
     auto factors_config =
