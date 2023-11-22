@@ -1547,11 +1547,13 @@ enum PositionType {
     // listen to changes across all trees. Pass a filter to determine what
     // specific tree changes to listen to, and note that listnening to all
     // tree changes can be expensive.
-    [nocompile] static void addTreeChangeObserver(
+    [nocompile, doesNotSupportPromises="Event callback"]
+    static void addTreeChangeObserver(
         TreeChangeObserverFilter filter, TreeChangeObserver observer);
 
     // Remove a tree change observer.
-    [nocompile] static void removeTreeChangeObserver(
+    [nocompile, doesNotSupportPromises="Event callback"]
+    static void removeTreeChangeObserver(
         TreeChangeObserver observer);
 
     // Sets the selection in a tree. This creates a selection in a single

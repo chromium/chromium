@@ -132,9 +132,11 @@ namespace platformKeys {
     // apply PKCS#1 v1.5 padding but not hash the given data.
     // <p>Currently, this method only supports the "RSASSA-PKCS1-v1_5" and
     // "ECDSA" algorithms.</p>
-    [nocompile] static void getKeyPair(ArrayBuffer certificate,
-                                       object parameters,
-                                       GetKeyPairCallback callback);
+    [nocompile, doesNotSupportPromises=
+        "Multi-parameter callback crbug.com/1313625"]
+    static void getKeyPair(ArrayBuffer certificate,
+                           object parameters,
+                           GetKeyPairCallback callback);
 
     // Passes the key pair identified by <code>publicKeySpkiDer</code> for
     // usage with $(ref:platformKeys.subtleCrypto) to <code>callback</code>.
@@ -155,9 +157,11 @@ namespace platformKeys {
     // named-curve P-256 and "RSASSA-PKCS1-v1_5" algorithm with one of the
     // hashing algorithms "none", "SHA-1", "SHA-256", "SHA-384", and
     // "SHA-512".</p>
-    [nocompile] static void getKeyPairBySpki(ArrayBuffer publicKeySpkiDer,
-                                             object parameters,
-                                             GetKeyPairCallback callback);
+    [nocompile, doesNotSupportPromises=
+        "Multi-parameter callback crbug.com/1313625"]
+    static void getKeyPairBySpki(ArrayBuffer publicKeySpkiDer,
+                                 object parameters,
+                                 GetKeyPairCallback callback);
 
     // An implementation of WebCrypto's
     // <a href="http://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface">

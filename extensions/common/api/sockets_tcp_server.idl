@@ -144,6 +144,8 @@ namespace sockets.tcpServer {
     // depends on the Operating System (SOMAXCONN), which ensures a reasonable
     // queue length for most applications.
     // |callback| : Called when listen operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void listen(long socketId,
                        DOMString address,
                        long port,

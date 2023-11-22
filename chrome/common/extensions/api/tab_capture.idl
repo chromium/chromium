@@ -91,6 +91,7 @@ namespace tabCapture {
     //   <code>null</code>.  <code>null</code> indicates an error has occurred
     //   and the client may query $(ref:runtime.lastError) to access the error
     //   details.
+    [doesNotSupportPromises="Custom hook sets lastError crbug.com/1504349"]
     static void capture(CaptureOptions options,
                         GetTabMediaCallback callback);
 
