@@ -178,7 +178,7 @@ TEST_F(InlineLayoutAlgorithmTest, BreakToken) {
   InlineNode inline_node(block_flow);
   LogicalSize size(LayoutUnit(50), LayoutUnit(20));
 
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       WritingMode::kHorizontalTb,
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       /* is_new_fc */ false);

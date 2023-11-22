@@ -109,9 +109,8 @@ ConstraintSpace ConstructBlockLayoutTestConstraintSpace(
           ? FragmentationType::kFragmentColumn
           : FragmentationType::kFragmentNone;
 
-  NGConstraintSpaceBuilder builder(writing_direction.GetWritingMode(),
-                                   writing_direction,
-                                   is_new_formatting_context);
+  ConstraintSpaceBuilder builder(writing_direction.GetWritingMode(),
+                                 writing_direction, is_new_formatting_context);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
   builder.SetInlineAutoBehavior(stretch_inline_size_if_auto

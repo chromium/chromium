@@ -215,7 +215,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
       effective_rowspan = std::min(max_rows, effective_rowspan);
     }
 
-    NGConstraintSpaceBuilder space_builder(
+    ConstraintSpaceBuilder space_builder(
         table_writing_direction.GetWritingMode(), cell_writing_direction,
         /* is_new_fc */ true);
 
@@ -1403,7 +1403,7 @@ void SetupTableCellConstraintSpaceBuilder(
     bool is_table_block_size_specified,
     bool has_collapsed_borders,
     LayoutResultCacheSlot cache_slot,
-    NGConstraintSpaceBuilder* builder) {
+    ConstraintSpaceBuilder* builder) {
   const auto& cell_style = cell.Style();
   const auto table_writing_mode = table_writing_direction.GetWritingMode();
   const wtf_size_t end_column = std::min(

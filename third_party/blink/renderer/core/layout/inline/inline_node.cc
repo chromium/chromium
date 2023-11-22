@@ -1892,8 +1892,8 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 
       BlockNode float_node(To<LayoutBox>(floating_object));
 
-      NGMinMaxConstraintSpaceBuilder builder(space, style, float_node,
-                                             /* is_new_fc */ true);
+      MinMaxConstraintSpaceBuilder builder(space, style, float_node,
+                                           /* is_new_fc */ true);
       builder.SetAvailableBlockSize(space.AvailableSize().block_size);
       builder.SetPercentageResolutionBlockSize(
           space.PercentageResolutionBlockSize());

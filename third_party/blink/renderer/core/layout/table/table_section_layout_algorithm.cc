@@ -71,9 +71,9 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
     DCHECK_EQ(table_data.table_writing_direction.GetWritingMode(),
               constraint_space.GetWritingMode());
 
-    NGConstraintSpaceBuilder row_space_builder(
-        constraint_space, table_data.table_writing_direction,
-        /* is_new_fc */ true);
+    ConstraintSpaceBuilder row_space_builder(constraint_space,
+                                             table_data.table_writing_direction,
+                                             /* is_new_fc */ true);
     row_space_builder.SetAvailableSize(available_size);
     row_space_builder.SetPercentageResolutionSize(available_size);
     row_space_builder.SetIsFixedInlineSize(true);

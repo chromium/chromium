@@ -1586,8 +1586,8 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
               {oof_writing_direction, container_physical_content_size});
 
   // Need a constraint space to resolve offsets.
-  NGConstraintSpaceBuilder builder(GetConstraintSpace(), oof_writing_direction,
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(GetConstraintSpace(), oof_writing_direction,
+                                 /* is_new_fc */ true);
   builder.SetAvailableSize(container_content_size);
   builder.SetPercentageResolutionSize(container_content_size);
 
@@ -2140,9 +2140,9 @@ const NGLayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       physical_size.ConvertToLogical(GetConstraintSpace().GetWritingMode());
   bool is_repeatable = false;
 
-  NGConstraintSpaceBuilder builder(GetConstraintSpace(),
-                                   style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(GetConstraintSpace(),
+                                 style.GetWritingDirection(),
+                                 /* is_new_fc */ true);
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(
       container_content_size_in_candidate_writing_mode);

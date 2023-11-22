@@ -67,8 +67,8 @@ ConstraintSpace CreateConstraintSpaceForFloat(
     absl::optional<BoxStrut> margins = absl::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
   const ConstraintSpace& parent_space = unpositioned_float.parent_space;
-  NGConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),
+                                 /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(unpositioned_float.parent_style,
                                           unpositioned_float.node, &builder);
   builder.SetIsPaintedAtomically(true);

@@ -294,7 +294,7 @@ LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder& builder,
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
-                                       NGConstraintSpaceBuilder* builder,
+                                       ConstraintSpaceBuilder* builder,
                                        bool is_new_fc,
                                        bool requires_content_before_breaking) {
   DCHECK(parent_space.HasBlockFragmentation());
@@ -1272,7 +1272,7 @@ ConstraintSpace CreateConstraintSpaceForFragmentainer(
     LogicalSize percentage_resolution_size,
     bool balance_columns,
     NGBreakAppeal min_break_appeal) {
-  NGConstraintSpaceBuilder space_builder(
+  ConstraintSpaceBuilder space_builder(
       parent_space, parent_space.GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(fragmentainer_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
@@ -1312,9 +1312,9 @@ NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
 ConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol) {
   WritingDirectionMode writing_direction_mode =
       multicol.Style().GetWritingDirection();
-  NGConstraintSpaceBuilder space_builder(
-      writing_direction_mode.GetWritingMode(), writing_direction_mode,
-      /* is_new_fc */ true);
+  ConstraintSpaceBuilder space_builder(writing_direction_mode.GetWritingMode(),
+                                       writing_direction_mode,
+                                       /* is_new_fc */ true);
   // This constraint space isn't going to be used for actual sizing. Yet,
   // someone will use it for initial geometry calculation, and if the multicol
   // has percentage sizes, DCHECKs will fail if we don't set any available size

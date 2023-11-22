@@ -46,8 +46,8 @@ TableTypes::Caption ComputeCaptionConstraint(
   for (const BlockNode& caption : grouped_children.captions) {
     // Caption %-block-sizes are treated as auto, as there isn't a reasonable
     // block-size to resolve against.
-    NGMinMaxConstraintSpaceBuilder builder(table_space, table_style, caption,
-                                           /* is_new_fc */ true);
+    MinMaxConstraintSpaceBuilder builder(table_space, table_style, caption,
+                                         /* is_new_fc */ true);
     builder.SetAvailableBlockSize(kIndefiniteSize);
     const auto space = builder.ToConstraintSpace();
 
@@ -66,9 +66,9 @@ ConstraintSpace CreateCaptionConstraintSpace(
     const BlockNode& caption,
     LogicalSize available_size,
     absl::optional<LayoutUnit> block_offset = absl::nullopt) {
-  NGConstraintSpaceBuilder builder(table_constraint_space,
-                                   caption.Style().GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(table_constraint_space,
+                                 caption.Style().GetWritingDirection(),
+                                 /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(table_style, caption, &builder);
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(available_size);
@@ -997,7 +997,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
                                           wtf_size_t section_index,
                                           LayoutUnit reserved_space,
                                           ESectionRepeatMode repeat_mode) {
-    NGConstraintSpaceBuilder section_space_builder(
+    ConstraintSpaceBuilder section_space_builder(
         GetConstraintSpace(), table_writing_direction, /* is_new_fc */ true);
 
     LogicalSize available_size = {section_available_inline_size,

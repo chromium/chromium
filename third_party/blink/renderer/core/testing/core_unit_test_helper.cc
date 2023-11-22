@@ -161,7 +161,7 @@ void RenderingTest::SetChildFrameHTML(const String& html) {
 
 ConstraintSpace RenderingTest::ConstraintSpaceForAvailableSize(
     LayoutUnit inline_size) const {
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       WritingMode::kHorizontalTb,
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       /* is_new_fc */ false);

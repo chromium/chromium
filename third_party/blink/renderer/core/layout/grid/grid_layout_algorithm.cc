@@ -3194,7 +3194,7 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
     absl::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
   const auto& container_constraint_space = GetConstraintSpace();
 
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       container_constraint_space, grid_item.node.Style().GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
 

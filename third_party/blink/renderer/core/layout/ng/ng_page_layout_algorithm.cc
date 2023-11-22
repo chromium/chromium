@@ -105,9 +105,9 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
 
 ConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(
     const LogicalSize& page_size) const {
-  NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
-                                         Style().GetWritingDirection(),
-                                         /* is_new_fc */ true);
+  ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
+                                       Style().GetWritingDirection(),
+                                       /* is_new_fc */ true);
   space_builder.SetAvailableSize(page_size);
   space_builder.SetPercentageResolutionSize(page_size);
   space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);

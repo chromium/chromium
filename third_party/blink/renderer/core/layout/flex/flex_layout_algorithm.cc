@@ -463,8 +463,8 @@ bool FlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
     const BlockNode& child) const {
-  NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
-                                         /* is_new_fc */ true);
+  MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
+                                       /* is_new_fc */ true);
   builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
   builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
   builder.SetReplacedPercentageResolutionBlockSize(
@@ -478,9 +478,9 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     const BlockNode& flex_item,
     absl::optional<LayoutUnit> override_inline_size) const {
   const ComputedStyle& child_style = flex_item.Style();
-  NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
-                                         child_style.GetWritingDirection(),
-                                         /* is_new_fc */ true);
+  ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
+                                       child_style.GetWritingDirection(),
+                                       /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item, &space_builder);
   space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
@@ -516,9 +516,9 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
     const BlockNode& flex_item) const {
-  NGConstraintSpaceBuilder space_builder(
-      GetConstraintSpace(), flex_item.Style().GetWritingDirection(),
-      /* is_new_fc */ true);
+  ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
+                                       flex_item.Style().GetWritingDirection(),
+                                       /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item, &space_builder);
 
   // This space is only used for resolving lengths, not for layout. We only
@@ -557,9 +557,9 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     absl::optional<LayoutUnit> block_offset_for_fragmentation,
     bool min_block_size_should_encompass_intrinsic_size) const {
   const ComputedStyle& child_style = flex_item_node.Style();
-  NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
-                                         child_style.GetWritingDirection(),
-                                         /* is_new_fc */ true);
+  ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
+                                       child_style.GetWritingDirection(),
+                                       /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item_node,
                                           &space_builder);
   space_builder.SetIsPaintedAtomically(true);

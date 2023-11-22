@@ -241,7 +241,7 @@ void LayoutSVGText::UpdateLayout() {
   const gfx::RectF old_boundaries = ObjectBoundingBox();
 
   const ComputedStyle& style = StyleRef();
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       style.GetWritingMode(), style.GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
   builder.SetAvailableSize(LogicalSize());

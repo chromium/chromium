@@ -341,8 +341,8 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
       child_float_input.float_right_inline_size = float_right_inline_size;
     }
 
-    NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
-                                           child_is_new_fc);
+    MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
+                                         child_is_new_fc);
     builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
     builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
     builder.SetReplacedPercentageResolutionBlockSize(
@@ -2789,9 +2789,9 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
   absl::optional<LayoutUnit> child_inline_size;
   auto ChildInlineSize = [&]() -> LayoutUnit {
     if (!child_inline_size) {
-      NGConstraintSpaceBuilder builder(GetConstraintSpace(),
-                                       child_style.GetWritingDirection(),
-                                       /* is_new_fc */ false);
+      ConstraintSpaceBuilder builder(GetConstraintSpace(),
+                                     child_style.GetWritingDirection(),
+                                     /* is_new_fc */ false);
       builder.SetAvailableSize(ChildAvailableSize());
       builder.SetPercentageResolutionSize(child_percentage_size_);
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
@@ -2845,8 +2845,8 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   const ComputedStyle& child_style = child.Style();
   const auto child_writing_direction = child_style.GetWritingDirection();
   const auto& constraint_space = GetConstraintSpace();
-  NGConstraintSpaceBuilder builder(constraint_space, child_writing_direction,
-                                   is_new_fc);
+  ConstraintSpaceBuilder builder(constraint_space, child_writing_direction,
+                                 is_new_fc);
 
   if (UNLIKELY(
           !IsParallelWritingMode(constraint_space.GetWritingMode(),
@@ -3288,8 +3288,8 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
   }
 
   const ComputedStyle& rt_style = ruby_text_child.Style();
-  NGConstraintSpaceBuilder builder(GetConstraintSpace(),
-                                   rt_style.GetWritingDirection(), true);
+  ConstraintSpaceBuilder builder(GetConstraintSpace(),
+                                 rt_style.GetWritingDirection(), true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), ruby_text_child, &builder);
   builder.SetAvailableSize(ChildAvailableSize());
   if (IsParallelWritingMode(GetConstraintSpace().GetWritingMode(),

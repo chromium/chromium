@@ -459,9 +459,9 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
       return *result_without_children;
   } else {
     if (BlockNode legend = Node().GetRenderedLegend()) {
-      NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(),
-                                             legend,
-                                             /* is_new_fc */ true);
+      MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(),
+                                           legend,
+                                           /* is_new_fc */ true);
       builder.SetAvailableBlockSize(kIndefiniteSize);
       const auto space = builder.ToConstraintSpace();
 
@@ -481,9 +481,8 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
   if (!has_inline_size_containment) {
     BlockNode content = Node().GetFieldsetContent();
     DCHECK(content);
-    NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(),
-                                           content,
-                                           /* is_new_fc */ true);
+    MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), content,
+                                         /* is_new_fc */ true);
     builder.SetAvailableBlockSize(kIndefiniteSize);
     const auto space = builder.ToConstraintSpace();
 
@@ -505,9 +504,9 @@ const ConstraintSpace FieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
     BlockNode legend,
     LogicalSize available_size,
     LogicalSize percentage_size) {
-  NGConstraintSpaceBuilder builder(GetConstraintSpace(),
-                                   legend.Style().GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(GetConstraintSpace(),
+                                 legend.Style().GetWritingDirection(),
+                                 /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), legend, &builder);
 
   builder.SetAvailableSize(available_size);
@@ -521,9 +520,9 @@ FieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
     LogicalSize padding_box_size,
     LayoutUnit block_offset) {
   DCHECK(fieldset_content.CreatesNewFormattingContext());
-  NGConstraintSpaceBuilder builder(
-      GetConstraintSpace(), fieldset_content.Style().GetWritingDirection(),
-      /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(GetConstraintSpace(),
+                                 fieldset_content.Style().GetWritingDirection(),
+                                 /* is_new_fc */ true);
   builder.SetAvailableSize(padding_box_size);
   builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   // We pass the container's PercentageResolutionSize because percentage

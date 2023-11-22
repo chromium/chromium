@@ -268,7 +268,7 @@ added to the [FragmentItems] in the containing block of the inline formatting co
 Computing baselines in LayoutNG goes the following process.
 
 1. Users of baseline should request what kind and type of the baseline
-   they need by calling [NGConstraintSpaceBuilder]`::AddBaselineRequest()`.
+   they need by calling [ConstraintSpaceBuilder]`::AddBaselineRequest()`.
 2. Call [LayoutInputNode]`::Layout()`,
    that calls appropriate layout algorithm.
 3. Each layout algorithm computes baseline according to the requests.
@@ -373,6 +373,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [BidiParagraph]: ../../../platform/text/bidi_paragraph.h
 [BlockNode]: ../ng/ng_block_node.h
 [ConstraintSpace]: ../ng/ng_constraint_space.h
+[ConstraintSpaceBuilder]: ../ng/ng_constraint_space_builder.h
 [FontBaseline]: ../../../platform/fonts/font_baseline.h
 [FragmentItem]: ng_fragment_item.h
 [FragmentItems]: ng_fragment_items.h
@@ -388,7 +389,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGBaselineRequest]: ng_baseline.h
 [NGBoxFragment]: ../ng/ng_box_fragment.h
 [NGBoxFragmentBuilder]: ../ng/ng_box_fragment_builder.h
-[NGConstraintSpaceBuilder]: ../ng/ng_constraint_space_builder.h
 [NGPhysicalBoxFragment]: ../ng/ng_physical_box_fragment.h
 [NGPhysicalFragment]: ../ng/ng_physical_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h

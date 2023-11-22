@@ -26,9 +26,9 @@ static ConstraintSpace ConstructConstraintSpace(
     WritingMode writing_mode = WritingMode::kHorizontalTb) {
   LogicalSize size = {LayoutUnit(inline_size), LayoutUnit(block_size)};
 
-  NGConstraintSpaceBuilder builder(writing_mode,
-                                   {writing_mode, TextDirection::kLtr},
-                                   /* is_new_fc */ false);
+  ConstraintSpaceBuilder builder(writing_mode,
+                                 {writing_mode, TextDirection::kLtr},
+                                 /* is_new_fc */ false);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
   builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
@@ -175,11 +175,11 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
   )HTML");
 
   MinMaxSizes sizes = {LayoutUnit(30), LayoutUnit(40)};
-  const auto space = NGConstraintSpaceBuilder(
-                         WritingMode::kHorizontalTb,
-                         {WritingMode::kHorizontalTb, TextDirection::kLtr},
-                         /* is_new_fc */ false)
-                         .ToConstraintSpace();
+  const auto space =
+      ConstraintSpaceBuilder(WritingMode::kHorizontalTb,
+                             {WritingMode::kHorizontalTb, TextDirection::kLtr},
+                             /* is_new_fc */ false)
+          .ToConstraintSpace();
 
   MinMaxSizes expected = sizes;
   BlockNode node(To<LayoutBox>(GetLayoutObjectByElementId("test1")));

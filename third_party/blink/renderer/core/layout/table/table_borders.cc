@@ -410,8 +410,8 @@ BoxStrut TableBorders::CellBorder(
                           ClampColspan(column, cell.TableCellColspan()));
   }
   return ComputeBorders(
-      NGConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
-                               table_writing_direction, /* is_new_fc */ false)
+      ConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
+                             table_writing_direction, /* is_new_fc */ false)
           .ToConstraintSpace(),
       cell);
 }
@@ -424,9 +424,9 @@ BoxStrut TableBorders::CellPaddingForMeasure(
   if (!cell_style.MayHavePadding())
     return BoxStrut();
   return ComputePadding(
-      NGConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
-                               table_writing_direction,
-                               /* is_new_fc */ false)
+      ConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
+                             table_writing_direction,
+                             /* is_new_fc */ false)
           .ToConstraintSpace(),
       cell_style);
 }

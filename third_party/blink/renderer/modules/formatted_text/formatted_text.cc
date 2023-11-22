@@ -186,7 +186,7 @@ PaintRecord FormattedText::PaintFormattedText(Document& document,
   UpdateComputedStylesIfNeeded(document, font);
   BlockNode block_node(block_);
 
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       WritingMode::kHorizontalTb,
       {block_->StyleRef().GetWritingMode(), block_->StyleRef().Direction()},
       /* is_new_fc */ true);

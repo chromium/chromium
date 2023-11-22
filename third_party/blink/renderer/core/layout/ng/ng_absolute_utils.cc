@@ -407,9 +407,9 @@ bool ComputeOofInlineDimensions(
     }
 
     // Create a new space, setting the fixed block-size.
-    NGConstraintSpaceBuilder builder(style.GetWritingMode(),
-                                     style.GetWritingDirection(),
-                                     /* is_new_fc */ true);
+    ConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                   style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
     builder.SetAvailableSize(
         {space.AvailableSize().inline_size, dimensions->size.block_size});
     builder.SetIsFixedBlockSize(true);
@@ -522,9 +522,9 @@ const NGLayoutResult* ComputeOofBlockDimensions(
 
     if (!result) {
       // Create a new space, setting the fixed block-size.
-      NGConstraintSpaceBuilder builder(style.GetWritingMode(),
-                                       style.GetWritingDirection(),
-                                       /* is_new_fc */ true);
+      ConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                     style.GetWritingDirection(),
+                                     /* is_new_fc */ true);
       builder.SetAvailableSize(
           {dimensions->size.inline_size, space.AvailableSize().block_size});
       builder.SetIsFixedInlineSize(true);

@@ -229,7 +229,7 @@ LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder&,
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
-                                       NGConstraintSpaceBuilder*,
+                                       ConstraintSpaceBuilder*,
                                        bool is_new_fc,
                                        bool requires_content_before_breaking);
 

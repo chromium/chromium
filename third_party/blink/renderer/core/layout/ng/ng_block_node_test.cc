@@ -179,11 +179,11 @@ TEST_F(BlockNodeForTest, MinContentForControls) {
   constexpr int kExpectedMinWidth = 4;
 
   // The space doesn't matter for this test.
-  const auto space = NGConstraintSpaceBuilder(
-                         WritingMode::kHorizontalTb,
-                         {WritingMode::kHorizontalTb, TextDirection::kLtr},
-                         /* is_new_fc */ true)
-                         .ToConstraintSpace();
+  const auto space =
+      ConstraintSpaceBuilder(WritingMode::kHorizontalTb,
+                             {WritingMode::kHorizontalTb, TextDirection::kLtr},
+                             /* is_new_fc */ true)
+          .ToConstraintSpace();
 
   for (const auto* id : ids) {
     BlockNode box(GetLayoutBoxByElementId(id));

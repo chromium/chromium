@@ -105,7 +105,7 @@ The first thing to do for a node that is to participate in block fragmentation
 hook it up with the fragmentation machinery when setting up the constraint space
 for that node. Every algorithm (fragmented or not) needs to set up a constraint
 space for each child somehow, and this is done by setting up an
-NGConstraintSpaceBuilder. This is where we need to add a call to
+ConstraintSpaceBuilder. This is where we need to add a call to
 [SetupSpaceBuilderForFragmentation()](ng_fragmentation_utils.h) as the final
 step before constructing the constraint space. This sets up the
 [fragmentainer](https://www.w3.org/TR/css-break-3/#fragmentainer) (column /

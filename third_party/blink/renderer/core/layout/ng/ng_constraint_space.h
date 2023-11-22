@@ -28,7 +28,7 @@
 
 namespace blink {
 
-class NGConstraintSpaceBuilder;
+class ConstraintSpaceBuilder;
 
 enum FragmentationType {
   kFragmentNone,
@@ -845,7 +845,7 @@ class CORE_EXPORT ConstraintSpace final {
   String ToString() const;
 
  private:
-  friend class NGConstraintSpaceBuilder;
+  friend class ConstraintSpaceBuilder;
 
   // This struct defines all of the inputs to layout which we consider rare.
   // Primarily this is:

@@ -22,20 +22,20 @@ namespace blink {
 
 class ExclusionSpace;
 
-class CORE_EXPORT NGConstraintSpaceBuilder final {
+class CORE_EXPORT ConstraintSpaceBuilder final {
   STACK_ALLOCATED();
 
  public:
   // The setters on this builder are in the writing mode of parent_space.
-  NGConstraintSpaceBuilder(const ConstraintSpace& parent_space,
-                           WritingDirectionMode writing_direction,
-                           bool is_new_fc,
-                           bool adjust_inline_size_if_needed = true)
-      : NGConstraintSpaceBuilder(parent_space.GetWritingMode(),
-                                 writing_direction,
-                                 is_new_fc,
-                                 /* force_orthogonal_writing_mode_root */ false,
-                                 adjust_inline_size_if_needed) {
+  ConstraintSpaceBuilder(const ConstraintSpace& parent_space,
+                         WritingDirectionMode writing_direction,
+                         bool is_new_fc,
+                         bool adjust_inline_size_if_needed = true)
+      : ConstraintSpaceBuilder(parent_space.GetWritingMode(),
+                               writing_direction,
+                               is_new_fc,
+                               /* force_orthogonal_writing_mode_root */ false,
+                               adjust_inline_size_if_needed) {
     if (parent_space.ShouldPropagateChildBreakValues())
       SetShouldPropagateChildBreakValues();
     if (parent_space.ShouldRepeat())
@@ -50,11 +50,11 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   // actually the parent's, it's the same as out_writing_mode.
   // When this occurs we would miss setting the kOrthogonalWritingModeRoot flag
   // unless we force it.
-  NGConstraintSpaceBuilder(WritingMode parent_writing_mode,
-                           WritingDirectionMode writing_direction,
-                           bool is_new_fc,
-                           bool force_orthogonal_writing_mode_root = false,
-                           bool adjust_inline_size_if_needed = true)
+  ConstraintSpaceBuilder(WritingMode parent_writing_mode,
+                         WritingDirectionMode writing_direction,
+                         bool is_new_fc,
+                         bool force_orthogonal_writing_mode_root = false,
+                         bool adjust_inline_size_if_needed = true)
       : space_(writing_direction),
         is_in_parallel_flow_(
             IsParallelWritingMode(parent_writing_mode,
@@ -583,17 +583,17 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 #endif
 };
 
-// This is a helper class for use in |NGLayoutAlgorithm::ComputeMinMaxSizes|.
-// It exposes a subset of the |NGonstraintSpace| builder methods. Additionally
+// This is a helper class for use in |LayoutAlgorithm::ComputeMinMaxSizes|.
+// It exposes a subset of the |ConstraintSpace| builder methods. Additionally
 // it sets the orthogonal fallback inline-size if needed.
-class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
+class CORE_EXPORT MinMaxConstraintSpaceBuilder final {
   STACK_ALLOCATED();
 
  public:
-  NGMinMaxConstraintSpaceBuilder(const ConstraintSpace& parent_space,
-                                 const ComputedStyle& parent_style,
-                                 const LayoutInputNode& child,
-                                 bool is_new_fc)
+  MinMaxConstraintSpaceBuilder(const ConstraintSpace& parent_space,
+                               const ComputedStyle& parent_style,
+                               const LayoutInputNode& child,
+                               bool is_new_fc)
       : delegate_(parent_space,
                   child.Style().GetWritingDirection(),
                   is_new_fc) {
@@ -625,7 +625,7 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
   }
 
  private:
-  NGConstraintSpaceBuilder delegate_;
+  ConstraintSpaceBuilder delegate_;
 };
 
 }  // namespace blink

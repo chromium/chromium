@@ -26,7 +26,7 @@ bool AdjustToClearance(LayoutUnit clearance_offset, BfcOffset* offset) {
 
 void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
                                      const LayoutInputNode child,
-                                     NGConstraintSpaceBuilder* builder) {
+                                     ConstraintSpaceBuilder* builder) {
   DCHECK(!IsParallelWritingMode(parent_style.GetWritingMode(),
                                 child.Style().GetWritingMode()));
 

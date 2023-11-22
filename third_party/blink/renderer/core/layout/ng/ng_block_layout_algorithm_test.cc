@@ -230,7 +230,7 @@ TEST_F(BlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
   )HTML");
 
   auto create_space = [&](auto size) -> ConstraintSpace {
-    NGConstraintSpaceBuilder builder(
+    ConstraintSpaceBuilder builder(
         WritingMode::kHorizontalTb,
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* is_new_formatting_context */ false);
@@ -296,7 +296,7 @@ TEST_F(BlockLayoutAlgorithmTest, LineOffsetCaching) {
   )HTML");
 
   auto create_space = [&](auto size, auto bfc_offset) -> ConstraintSpace {
-    NGConstraintSpaceBuilder builder(
+    ConstraintSpaceBuilder builder(
         WritingMode::kHorizontalTb,
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* is_new_formatting_context */ false);

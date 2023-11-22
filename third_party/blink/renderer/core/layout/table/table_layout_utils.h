@@ -13,9 +13,9 @@
 namespace blink {
 
 class BlockNode;
+class ConstraintSpaceBuilder;
 class LogicalBoxFragment;
 class NGBoxFragmentBuilder;
-class NGConstraintSpaceBuilder;
 class TableBorders;
 class TableNode;
 enum class LayoutResultCacheSlot;
@@ -53,7 +53,7 @@ void SetupTableCellConstraintSpaceBuilder(
     bool is_restricted_block_size_table,
     bool has_collapsed_borders,
     LayoutResultCacheSlot,
-    NGConstraintSpaceBuilder*);
+    ConstraintSpaceBuilder*);
 
 wtf_size_t ComputeMaximumNonMergeableColumnCount(
     const HeapVector<BlockNode>& columns,

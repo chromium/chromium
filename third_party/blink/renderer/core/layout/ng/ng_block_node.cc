@@ -1543,9 +1543,9 @@ const NGLayoutResult* BlockNode::LayoutAtomicInline(
     const ComputedStyle& parent_style,
     bool use_first_line_style,
     BaselineAlgorithmType baseline_algorithm_type) {
-  NGConstraintSpaceBuilder builder(parent_constraint_space,
-                                   Style().GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(parent_constraint_space,
+                                 Style().GetWritingDirection(),
+                                 /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, *this, &builder);
 
   builder.SetIsPaintedAtomically(true);

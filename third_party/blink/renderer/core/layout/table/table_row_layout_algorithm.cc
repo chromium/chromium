@@ -63,9 +63,9 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
         DCHECK_EQ(table_data.table_writing_direction.GetWritingMode(),
                   GetConstraintSpace().GetWritingMode());
 
-        NGConstraintSpaceBuilder builder(GetConstraintSpace(),
-                                         cell.Style().GetWritingDirection(),
-                                         /* is_new_fc */ true);
+        ConstraintSpaceBuilder builder(GetConstraintSpace(),
+                                       cell.Style().GetWritingDirection(),
+                                       /* is_new_fc */ true);
 
         SetupTableCellConstraintSpaceBuilder(
             table_data.table_writing_direction, cell, cell_data.borders,

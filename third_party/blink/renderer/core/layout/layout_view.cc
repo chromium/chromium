@@ -263,8 +263,8 @@ void LayoutView::ClearHitTestCache() {
 LayoutUnit LayoutView::ComputeMinimumWidth() {
   const ComputedStyle& style = StyleRef();
   WritingMode mode = style.GetWritingMode();
-  NGConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
+                                 /* is_new_fc */ true);
   return BlockNode(this)
       .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
                           builder.ToConstraintSpace())
@@ -846,7 +846,7 @@ void LayoutView::UpdateLayout() {
   }
 
   const auto& style = StyleRef();
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       style.GetWritingMode(), style.GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
   builder.SetAvailableSize(InitialContainingBlockSize());

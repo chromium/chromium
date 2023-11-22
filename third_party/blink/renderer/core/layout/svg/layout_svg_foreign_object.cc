@@ -140,7 +140,7 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // specifying them through CSS.
   overridden_location_ = LayoutPoint(zoomed_location);
 
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       style.GetWritingMode(), style.GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
   builder.SetAvailableSize(zoomed_size);

@@ -19,9 +19,9 @@ class NGAbsoluteUtilsTest : public RenderingTest {
  protected:
   ConstraintSpace CreateConstraintSpace(
       WritingDirectionMode writing_direction) {
-    NGConstraintSpaceBuilder builder(WritingMode::kHorizontalTb,
-                                     writing_direction,
-                                     /* is_new_fc */ true);
+    ConstraintSpaceBuilder builder(WritingMode::kHorizontalTb,
+                                   writing_direction,
+                                   /* is_new_fc */ true);
     builder.SetAvailableSize({LayoutUnit(200), LayoutUnit(300)});
     return builder.ToConstraintSpace();
   }

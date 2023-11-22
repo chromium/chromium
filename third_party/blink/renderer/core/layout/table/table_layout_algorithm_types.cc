@@ -139,9 +139,8 @@ TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
   auto MinMaxSizesFunc = [&]() -> MinMaxSizes {
     if (!cached_min_max_sizes) {
       const auto cell_writing_direction = style.GetWritingDirection();
-      NGConstraintSpaceBuilder builder(table_writing_mode,
-                                       cell_writing_direction,
-                                       /* is_new_fc */ true);
+      ConstraintSpaceBuilder builder(table_writing_mode, cell_writing_direction,
+                                     /* is_new_fc */ true);
       builder.SetTableCellBorders(cell_border, cell_writing_direction,
                                   table_writing_direction);
       builder.SetIsTableCell(true);

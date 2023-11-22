@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class NGConstraintSpaceBuilder;
+class ConstraintSpaceBuilder;
 struct BfcOffset;
 
 // Adjusts {@code offset} to the clearance line.
@@ -31,12 +31,12 @@ CORE_EXPORT bool AdjustToClearance(LayoutUnit clearance_offset,
 // [1] https://www.w3.org/TR/css-writing-modes-3/#orthogonal-auto
 void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
                                      const LayoutInputNode child,
-                                     NGConstraintSpaceBuilder* builder);
+                                     ConstraintSpaceBuilder* builder);
 
 inline void SetOrthogonalFallbackInlineSizeIfNeeded(
     const ComputedStyle& parent_style,
     const LayoutInputNode child,
-    NGConstraintSpaceBuilder* builder) {
+    ConstraintSpaceBuilder* builder) {
   if (LIKELY(IsParallelWritingMode(parent_style.GetWritingMode(),
                                    child.Style().GetWritingMode())))
     return;

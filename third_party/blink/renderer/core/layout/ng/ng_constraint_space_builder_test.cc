@@ -9,14 +9,14 @@
 namespace blink {
 namespace {
 
-using NGConstraintSpaceBuilderTest = RenderingTest;
+using ConstraintSpaceBuilderTest = RenderingTest;
 
 // Asserts that indefinite inline length becomes initial containing
 // block width for horizontal-tb inside vertical document.
-TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
+TEST(ConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
   PhysicalSize icb_size{kIndefiniteSize, LayoutUnit(51)};
 
-  NGConstraintSpaceBuilder horizontal_builder(
+  ConstraintSpaceBuilder horizontal_builder(
       WritingMode::kHorizontalTb,
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       /* is_new_fc */ true);
@@ -27,7 +27,7 @@ TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
   horizontal_builder.SetAvailableSize(fixed_size);
   horizontal_builder.SetPercentageResolutionSize(fixed_size);
 
-  NGConstraintSpaceBuilder vertical_builder(
+  ConstraintSpaceBuilder vertical_builder(
       horizontal_builder.ToConstraintSpace(),
       {WritingMode::kVerticalLr, TextDirection::kLtr},
       /* is_new_fc */ true);
@@ -44,10 +44,10 @@ TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
 
 // Asserts that indefinite inline length becomes initial containing
 // block height for vertical-lr inside horizontal document.
-TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromVerticalICB) {
+TEST(ConstraintSpaceBuilderTest, AvailableSizeFromVerticalICB) {
   PhysicalSize icb_size{LayoutUnit(51), kIndefiniteSize};
 
-  NGConstraintSpaceBuilder horizontal_builder(
+  ConstraintSpaceBuilder horizontal_builder(
       WritingMode::kVerticalLr, {WritingMode::kVerticalLr, TextDirection::kLtr},
       /* is_new_fc */ true);
   LogicalSize fixed_size{LayoutUnit(100), LayoutUnit(200)};
@@ -57,7 +57,7 @@ TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromVerticalICB) {
   horizontal_builder.SetAvailableSize(fixed_size);
   horizontal_builder.SetPercentageResolutionSize(fixed_size);
 
-  NGConstraintSpaceBuilder vertical_builder(
+  ConstraintSpaceBuilder vertical_builder(
       horizontal_builder.ToConstraintSpace(),
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       /* is_new_fc */ true);

@@ -72,9 +72,9 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kLayoutFragment);
   DCHECK(options_ && resolver_);
 
-  NGConstraintSpaceBuilder builder(parent_space,
-                                   child.Style().GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(parent_space,
+                                 child.Style().GetWritingDirection(),
+                                 /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &builder);
 
   bool is_fixed_inline_size = false;
@@ -157,8 +157,8 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kIntrinsicSizes);
   DCHECK(resolver_);
 
-  NGMinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
-                                         /* is_new_fc */ true);
+  MinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
+                                       /* is_new_fc */ true);
   builder.SetAvailableBlockSize(child_available_block_size);
   const auto space = builder.ToConstraintSpace();
 

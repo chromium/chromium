@@ -21,9 +21,9 @@ namespace blink {
 class NGInlineLayoutTest : public SimTest {
  public:
   ConstraintSpace ConstraintSpaceForElement(LayoutBlockFlow* block_flow) {
-    NGConstraintSpaceBuilder builder(block_flow->Style()->GetWritingMode(),
-                                     block_flow->Style()->GetWritingDirection(),
-                                     /* is_new_fc */ false);
+    ConstraintSpaceBuilder builder(block_flow->Style()->GetWritingMode(),
+                                   block_flow->Style()->GetWritingDirection(),
+                                   /* is_new_fc */ false);
     builder.SetAvailableSize(LogicalSize(LayoutUnit(), LayoutUnit()));
     builder.SetPercentageResolutionSize(
         LogicalSize(LayoutUnit(), LayoutUnit()));

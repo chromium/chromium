@@ -2664,8 +2664,8 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   DCHECK(mode_ == LineBreakerMode::kMinContent || !max_size_cache_);
   BlockNode child(To<LayoutBox>(item.GetLayoutObject()));
 
-  NGMinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(),
-                                         child, /* is_new_fc */ true);
+  MinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(), child,
+                                       /* is_new_fc */ true);
   builder.SetAvailableBlockSize(constraint_space_.AvailableSize().block_size);
   builder.SetPercentageResolutionBlockSize(
       constraint_space_.PercentageResolutionBlockSize());

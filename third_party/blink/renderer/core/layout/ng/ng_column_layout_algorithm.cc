@@ -425,8 +425,8 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
         continue;
       child_result = ComputeSpannersMinMaxSizes(*child_block);
     } else {
-      NGMinMaxConstraintSpaceBuilder builder(
-          GetConstraintSpace(), Style(), *child_block, /* is_new_fc */ true);
+      MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(),
+                                           *child_block, /* is_new_fc */ true);
       builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
       const ConstraintSpace child_space = builder.ToConstraintSpace();
       child_result = ComputeMinAndMaxContentContribution(Style(), *child_block,
@@ -1470,9 +1470,9 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
 
 ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
     const LogicalSize& column_size) const {
-  NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
-                                         Style().GetWritingDirection(),
-                                         /* is_new_fc */ true);
+  ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
+                                       Style().GetWritingDirection(),
+                                       /* is_new_fc */ true);
   space_builder.SetFragmentationType(kFragmentColumn);
   space_builder.SetShouldPropagateChildBreakValues();
   space_builder.SetAvailableSize({column_size.inline_size, kIndefiniteSize});
@@ -1489,7 +1489,7 @@ ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
     const BlockNode& spanner,
     LayoutUnit block_offset) const {
   auto child_writing_direction = spanner.Style().GetWritingDirection();
-  NGConstraintSpaceBuilder space_builder(
+  ConstraintSpaceBuilder space_builder(
       GetConstraintSpace(), child_writing_direction, /* is_new_fc */ true);
   if (!IsParallelWritingMode(GetConstraintSpace().GetWritingMode(),
                              child_writing_direction.GetWritingMode())) {
@@ -1514,9 +1514,9 @@ ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
 }
 
 ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForMinMax() const {
-  NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
-                                         Style().GetWritingDirection(),
-                                         /* is_new_fc */ true);
+  ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
+                                       Style().GetWritingDirection(),
+                                       /* is_new_fc */ true);
   space_builder.SetIsAnonymous(true);
   space_builder.SetIsInColumnBfc();
 

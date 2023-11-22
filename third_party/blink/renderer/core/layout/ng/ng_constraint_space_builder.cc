@@ -27,7 +27,7 @@ ConstraintSpace::PercentageStorage GetPercentageStorage(
 
 }  // namespace
 
-void NGConstraintSpaceBuilder::SetPercentageResolutionSize(
+void ConstraintSpaceBuilder::SetPercentageResolutionSize(
     LogicalSize percentage_resolution_size) {
 #if DCHECK_IS_ON()
   DCHECK(is_available_size_set_);
@@ -75,7 +75,7 @@ void NGConstraintSpaceBuilder::SetPercentageResolutionSize(
   }
 }
 
-void NGConstraintSpaceBuilder::SetReplacedPercentageResolutionSize(
+void ConstraintSpaceBuilder::SetReplacedPercentageResolutionSize(
     LogicalSize replaced_percentage_resolution_size) {
 #if DCHECK_IS_ON()
   DCHECK(is_available_size_set_);

@@ -255,8 +255,8 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
     if (auto* button_box = button->GetLayoutBox()) {
       const ComputedStyle& button_style = button_box->StyleRef();
       WritingMode mode = button_style.GetWritingMode();
-      NGConstraintSpaceBuilder builder(mode, button_style.GetWritingDirection(),
-                                       /* is_new_fc */ true);
+      ConstraintSpaceBuilder builder(mode, button_style.GetWritingDirection(),
+                                     /* is_new_fc */ true);
       LayoutUnit max =
           BlockNode(button_box)
               .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,

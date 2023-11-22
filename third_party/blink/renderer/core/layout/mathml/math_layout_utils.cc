@@ -29,7 +29,7 @@ ConstraintSpace CreateConstraintSpaceForMathChild(
   const ComputedStyle& parent_style = parent_node.Style();
   const ComputedStyle& child_style = child.Style();
   DCHECK(child.CreatesNewFormattingContext());
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       parent_space, child_style.GetWritingDirection(), true /* is_new_fc */);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &builder);
   builder.SetAvailableSize(child_available_size);
@@ -50,8 +50,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const BlockNode& child,
     LayoutUnit child_available_block_size) {
   DCHECK(child.CreatesNewFormattingContext());
-  NGMinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
-                                         true /* is_new_fc */);
+  MinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
+                                       true /* is_new_fc */);
   builder.SetAvailableBlockSize(child_available_block_size);
   builder.SetPercentageResolutionBlockSize(child_available_block_size);
   const auto space = builder.ToConstraintSpace();

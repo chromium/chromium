@@ -117,9 +117,9 @@ class InlineNodeTest : public RenderingTest {
 
   MinMaxSizes ComputeMinMaxSizes(InlineNode node) {
     const auto space =
-        NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
-                                 node.Style().GetWritingDirection(),
-                                 /* is_new_fc */ false)
+        ConstraintSpaceBuilder(node.Style().GetWritingMode(),
+                               node.Style().GetWritingDirection(),
+                               /* is_new_fc */ false)
             .ToConstraintSpace();
 
     return node

@@ -313,9 +313,9 @@ void FrameSetLayoutAlgorithm::LayoutChild(const LayoutInputNode& child,
       container_builder_.Size(), GetConstraintSpace().GetWritingMode());
   const auto container_direction = Style().GetWritingDirection();
   const bool kNewFormattingContext = true;
-  NGConstraintSpaceBuilder space_builder(container_direction.GetWritingMode(),
-                                         child.Style().GetWritingDirection(),
-                                         kNewFormattingContext);
+  ConstraintSpaceBuilder space_builder(container_direction.GetWritingMode(),
+                                       child.Style().GetWritingDirection(),
+                                       kNewFormattingContext);
   space_builder.SetAvailableSize(available_size);
   space_builder.SetIsFixedInlineSize(true);
   space_builder.SetIsFixedBlockSize(true);
