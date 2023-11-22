@@ -32,10 +32,12 @@ ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
           is_off_the_record ? browser_client->off_the_record_browser_context()
                             : browser_client->browser_context()));
 
-  auto wolvic_contents = std::make_unique<WolvicContents>(web_contents.get());
+  auto* web_contents_impl = web_contents.get();
+  auto wolvic_contents =
+      std::make_unique<WolvicContents>(std::move(web_contents));
   wolvic_contents.release()->Init();
 
-  return web_contents.release()->GetJavaWebContents();
+  return web_contents_impl->GetJavaWebContents();
 }
 
 void JNI_Tab_SetWebContentsDelegate(

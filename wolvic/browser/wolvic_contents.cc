@@ -36,10 +36,10 @@ class WolvicContentsUserData : public base::SupportsUserData::Data {
   std::unique_ptr<WolvicContents> contents_;
 };
 
-WolvicContents::WolvicContents(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      web_contents_(web_contents) {
-}
+WolvicContents::WolvicContents(
+    std::unique_ptr<content::WebContents> web_contents)
+    : content::WebContentsObserver(web_contents.get()),
+      web_contents_(std::move(web_contents)) {}
 
 void
 WolvicContents::Init() {
