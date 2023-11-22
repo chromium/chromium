@@ -2066,6 +2066,10 @@ void InlineNode::AdjustFontForTextCombineUprightAll() const {
   for (const auto width_variant : kWidthVariants) {
     description.SetWidthVariant(width_variant);
     Font compressed_font(description, font_selector);
+    // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
+    if (!compressed_font.PrimaryFont()) {
+      continue;
+    }
     ShapeText(MutableData(), nullptr, nullptr, &compressed_font);
     if (CalculateWidthForTextCombine(ItemsData(false)) <= desired_width) {
       text_combine.SetCompressedFont(compressed_font);
