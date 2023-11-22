@@ -535,13 +535,22 @@ void CursorWindowController::UpdateCursorImage() {
   std::vector<gfx::ImageSkia> images;
   gfx::Point hot_point_in_physical_pixels;
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
-    const SkBitmap& bitmap = cursor_.custom_bitmap();
+    SkBitmap bitmap = cursor_.custom_bitmap();
+    gfx::Point hotspot = cursor_.custom_hotspot();
     if (bitmap.isNull()) {
       return;
     }
     cursor_scale = cursor_.image_scale_factor();
+
+    // Custom cursor's bitmap is already rotated. Revert the rotation because
+    // software cursor's rotation is handled by viz.
+    const display::Display::Rotation inverted_rotation =
+        static_cast<display::Display::Rotation>(
+            (4 - static_cast<int>(display_.rotation())) % 4);
+    wm::ScaleAndRotateCursorBitmapAndHotpoint(1.0f, inverted_rotation, &bitmap,
+                                              &hotspot);
     images.push_back(gfx::ImageSkia::CreateFromBitmap(bitmap, cursor_scale));
-    hot_point_in_physical_pixels = cursor_.custom_hotspot();
+    hot_point_in_physical_pixels = hotspot;
   } else {
     // Do not use the device scale factor, as the cursor will be scaled
     // by compositor. HW cursor will not be scaled by display zoom, so the
