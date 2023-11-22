@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
@@ -1354,9 +1355,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   std::set<std::string> identifiers;
   for (NSString* sessionID in sessionIDs) {
-    identifiers.insert(base::SysNSStringToUTF8(sessionID));
-    identifiers.insert(base::SysNSStringToUTF8(
-        [sessionID stringByAppendingString:@"-Inactive"]));
+    // Need to remove storage for both regular and inactive Browser. Removing
+    // data does nothing if there are no data to delete, so there is no need
+    // to check whether inactive tabs are enabled here.
+    const std::string identifier = base::SysNSStringToUTF8(sessionID);
+    identifiers.insert(session_util::GetSessionIdentifier(identifier, false));
+    identifiers.insert(session_util::GetSessionIdentifier(identifier, true));
   }
 
   ChromeBrowserState* browserState = self.appState.mainBrowserState;

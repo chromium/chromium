@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -34,13 +35,6 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
-
-namespace {
-
-// Suffix to append to the session ID when creating an inactive browser.
-NSString* kInactiveSessionIDSuffix = @"-Inactive";
-
-}  // namespace
 
 @implementation BrowserViewWrangler {
   raw_ptr<ChromeBrowserState> _browserState;
@@ -374,12 +368,7 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
 // Configures the BrowserAgent with the session identifier for `browser`.
 - (void)setSessionIDForBrowser:(Browser*)browser {
-  NSString* browserSessionID = _sceneState.sceneSessionID;
-  if (browser->IsInactive()) {
-    browserSessionID =
-        [browserSessionID stringByAppendingString:kInactiveSessionIDSuffix];
-  }
-  const std::string identifier = base::SysNSStringToUTF8(browserSessionID);
+  const std::string identifier = session_util::GetSessionIdentifier(browser);
 
   SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(identifier);
 

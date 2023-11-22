@@ -16,6 +16,7 @@ source_set("sessions") {
   public_deps = [ "//components/sessions" ]
   deps = [
     ":serialisation",
+    ":session_util",
     "//base",
     "//components/keyed_service/ios",
     "//components/tab_groups",
@@ -81,8 +82,6 @@ source_set("serialisation") {
     "NSCoder+Compatibility.mm",
     "session_ios.h",
     "session_ios.mm",
-    "session_util.h",
-    "session_util.mm",
     "session_window_ios.h",
     "session_window_ios.mm",
     "web_state_list_serialization.h",
@@ -91,15 +90,29 @@ source_set("serialisation") {
   deps = [
     ":session_constants",
     "//base",
-    "//components/sessions",
+    "//components/sessions:session_id",
     "//ios/chrome/browser/sessions/proto",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ios/web/public/session",
-    "//net",
+  ]
+}
+
+source_set("session_util") {
+  sources = [
+    "session_util.h",
+    "session_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sessions",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
   ]
 }
 
