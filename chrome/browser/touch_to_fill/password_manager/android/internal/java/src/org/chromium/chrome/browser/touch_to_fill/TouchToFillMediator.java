@@ -14,10 +14,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Fo
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
@@ -101,20 +99,20 @@ class TouchToFillMediator {
         ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
-        sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER,
-                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(TITLE, getTitle(webAuthnCredentials, credentials))
-                        .with(FORMATTED_URL,
-                                UrlFormatter.formatUrlForSecurityDisplay(
-                                        url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
-                        .with(ORIGIN_SECURE, isOriginSecure)
-                        .with(SHOW_SUBMIT_SUBTITLE, triggerSubmission)
-                        // TODO(crbug.com/1471888): Use the TTF resource provider instead and use a
-                        // 32dp icon.
-                        .with(IMAGE_DRAWABLE_ID,
-                                PasswordManagerResourceProviderFactory.create()
-                                        .getPasswordManagerIcon())
-                        .build()));
+        sheetItems.add(
+                new ListItem(
+                        TouchToFillProperties.ItemType.HEADER,
+                        new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                .with(TITLE, getTitle(webAuthnCredentials, credentials))
+                                .with(SUBTITLE, getSubtitle(url, isOriginSecure, triggerSubmission))
+                                // TODO(crbug.com/1471888): Use the TTF resource provider instead
+                                // and use a
+                                // 32dp icon.
+                                .with(
+                                        IMAGE_DRAWABLE_ID,
+                                        PasswordManagerResourceProviderFactory.create()
+                                                .getPasswordManagerIcon())
+                                .build()));
 
         int fillableItemsTotal = credentials.size() + webAuthnCredentials.size();
         int fillableItemPosition = 0;
@@ -181,6 +179,25 @@ class TouchToFillMediator {
         }
 
         return mContext.getString(R.string.touch_to_fill_sheet_uniform_title);
+    }
+
+    private String getSubtitle(GURL url, boolean isOriginSecure, boolean triggerSubmission) {
+        String formattedUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        if (triggerSubmission) {
+            return String.format(
+                    mContext.getString(
+                            isOriginSecure
+                                    ? R.string.touch_to_fill_sheet_subtitle_submission
+                                    : R.string.touch_to_fill_sheet_subtitle_insecure_submission),
+                    formattedUrl);
+        } else {
+            return isOriginSecure
+                    ? formattedUrl
+                    : String.format(
+                            mContext.getString(R.string.touch_to_fill_sheet_subtitle_not_secure),
+                            formattedUrl);
+        }
     }
 
     private String getManageButtonText(

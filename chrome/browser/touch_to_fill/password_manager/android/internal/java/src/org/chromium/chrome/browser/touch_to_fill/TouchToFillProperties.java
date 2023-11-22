@@ -125,19 +125,14 @@ class TouchToFillProperties {
      * Properties defined here reflect the visible state of the header in the TouchToFill sheet.
      */
     static class HeaderProperties {
-        static final PropertyModel.ReadableBooleanPropertyKey SHOW_SUBMIT_SUBTITLE =
-                new PropertyModel.ReadableBooleanPropertyKey("submit_credential");
-        static final PropertyModel.ReadableObjectPropertyKey<String> FORMATTED_URL =
-                new PropertyModel.ReadableObjectPropertyKey<>("formatted_url");
-        static final PropertyModel.ReadableBooleanPropertyKey ORIGIN_SECURE =
-                new PropertyModel.ReadableBooleanPropertyKey("origin_secure");
         static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
                 new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> TITLE =
                 new PropertyModel.ReadableObjectPropertyKey<>("title");
+        static final PropertyModel.ReadableObjectPropertyKey<String> SUBTITLE =
+                new PropertyModel.ReadableObjectPropertyKey<>("subtitle");
 
-        static final PropertyKey[] ALL_KEYS = {
-                SHOW_SUBMIT_SUBTITLE, FORMATTED_URL, ORIGIN_SECURE, IMAGE_DRAWABLE_ID, TITLE};
+        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE, SUBTITLE};
 
         private HeaderProperties() {}
     }

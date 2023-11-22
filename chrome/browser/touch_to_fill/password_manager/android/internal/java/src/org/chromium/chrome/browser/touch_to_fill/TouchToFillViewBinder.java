@@ -15,10 +15,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Fo
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
@@ -28,7 +26,6 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
-import android.content.Context;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -278,41 +275,18 @@ class TouchToFillViewBinder {
     }
 
     /**
-     * Helper function to infer the subtitle of Touch To Fill sheet.
-     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
-     * @param context The {@link Context} of the header to update.
-     * @return The title of Touch To Fill sheet.
-     */
-    private static String getSubtitle(PropertyModel model, Context context) {
-        if (model.get(SHOW_SUBMIT_SUBTITLE)) {
-            return String.format(
-                    context.getString(model.get(ORIGIN_SECURE)
-                                    ? R.string.touch_to_fill_sheet_subtitle_submission
-                                    : R.string.touch_to_fill_sheet_subtitle_insecure_submission),
-                    model.get(FORMATTED_URL));
-        } else {
-            return model.get(ORIGIN_SECURE)
-                    ? model.get(FORMATTED_URL)
-                    : String.format(
-                            context.getString(R.string.touch_to_fill_sheet_subtitle_not_secure),
-                            model.get(FORMATTED_URL));
-        }
-    }
-
-    /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link View} of the header to update.
      * @param key The {@link PropertyKey} which changed.
      */
     private static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == SHOW_SUBMIT_SUBTITLE || key == TITLE || key == FORMATTED_URL
-                || key == ORIGIN_SECURE || key == IMAGE_DRAWABLE_ID) {
+        if (key == SUBTITLE || key == TITLE || key == IMAGE_DRAWABLE_ID) {
             TextView sheetTitleText = view.findViewById(R.id.touch_to_fill_sheet_title);
             sheetTitleText.setText(model.get(TITLE));
 
             TextView sheetSubtitleText = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
-            sheetSubtitleText.setText(getSubtitle(model, view.getContext()));
+            sheetSubtitleText.setText(model.get(SUBTITLE));
 
             ImageView sheetHeaderImage = view.findViewById(R.id.touch_to_fill_sheet_header_image);
             sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(

@@ -26,10 +26,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Fo
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
@@ -180,10 +178,13 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(TITLE),
                 is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
-        assertThat(itemList.get(0).model.get(FORMATTED_URL), is(TEST_URL_FORMATTED));
-        assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
-        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
-
+        assertThat(
+                itemList.get(0).model.get(SUBTITLE),
+                is(
+                        String.format(
+                                mContext.getString(
+                                        R.string.touch_to_fill_sheet_subtitle_submission),
+                                TEST_URL_FORMATTED)));
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
@@ -217,9 +218,7 @@ public class TouchToFillControllerTest {
         assertThat(
                 itemList.get(0).model.get(TITLE),
                 is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
-        assertThat(itemList.get(0).model.get(FORMATTED_URL), is(TEST_URL_FORMATTED));
-        assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
-
+        assertThat(itemList.get(0).model.get(SUBTITLE), is(TEST_URL_FORMATTED));
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
         assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
         assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
@@ -310,7 +309,16 @@ public class TouchToFillControllerTest {
                 is(mContext.getString(R.string.manage_passwords)));
 
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
-        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
+        assertThat(
+                itemList.get(0).model.get(TITLE),
+                is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
+        assertThat(
+                itemList.get(0).model.get(SUBTITLE),
+                is(
+                        String.format(
+                                mContext.getString(
+                                        R.string.touch_to_fill_sheet_subtitle_submission),
+                                TEST_URL_FORMATTED)));
 
         assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
         assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(true));

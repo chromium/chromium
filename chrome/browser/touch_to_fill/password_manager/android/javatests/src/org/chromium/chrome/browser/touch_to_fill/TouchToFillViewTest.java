@@ -26,10 +26,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Fo
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
@@ -197,8 +195,14 @@ public class TouchToFillViewTest {
                                                                             .getString(
                                                                                     R.string
                                                                                             .touch_to_fill_sheet_uniform_title))
-                                                            .with(FORMATTED_URL, "www.example.org")
-                                                            .with(ORIGIN_SECURE, true)
+                                                            .with(
+                                                                    SUBTITLE,
+                                                                    String.format(
+                                                                            getActivity()
+                                                                                    .getString(
+                                                                                            R.string
+                                                                                                    .touch_to_fill_sheet_subtitle_submission),
+                                                                            "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -234,8 +238,14 @@ public class TouchToFillViewTest {
                                                                             .getString(
                                                                                     R.string
                                                                                             .touch_to_fill_sheet_uniform_title))
-                                                            .with(FORMATTED_URL, "www.example.org")
-                                                            .with(ORIGIN_SECURE, true)
+                                                            .with(
+                                                                    SUBTITLE,
+                                                                    String.format(
+                                                                            getActivity()
+                                                                                    .getString(
+                                                                                            R.string
+                                                                                                    .touch_to_fill_sheet_subtitle_submission),
+                                                                            "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -267,8 +277,7 @@ public class TouchToFillViewTest {
                                                     TouchToFillProperties.ItemType.HEADER,
                                                     new PropertyModel.Builder(
                                                                     HeaderProperties.ALL_KEYS)
-                                                            .with(FORMATTED_URL, "www.example.org")
-                                                            .with(ORIGIN_SECURE, true)
+                                                            .with(SUBTITLE, "www.example.org")
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -296,8 +305,14 @@ public class TouchToFillViewTest {
                                                     TouchToFillProperties.ItemType.HEADER,
                                                     new PropertyModel.Builder(
                                                                     HeaderProperties.ALL_KEYS)
-                                                            .with(FORMATTED_URL, "m.example.org")
-                                                            .with(ORIGIN_SECURE, false)
+                                                            .with(
+                                                                    SUBTITLE,
+                                                                    String.format(
+                                                                            getActivity()
+                                                                                    .getString(
+                                                                                            R.string
+                                                                                                    .touch_to_fill_sheet_subtitle_not_secure),
+                                                                            "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -325,9 +340,14 @@ public class TouchToFillViewTest {
                                                     TouchToFillProperties.ItemType.HEADER,
                                                     new PropertyModel.Builder(
                                                                     HeaderProperties.ALL_KEYS)
-                                                            .with(SHOW_SUBMIT_SUBTITLE, true)
-                                                            .with(FORMATTED_URL, "m.example.org")
-                                                            .with(ORIGIN_SECURE, true)
+                                                            .with(
+                                                                    SUBTITLE,
+                                                                    String.format(
+                                                                            getActivity()
+                                                                                    .getString(
+                                                                                            R.string
+                                                                                                    .touch_to_fill_sheet_subtitle_submission),
+                                                                            "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -355,9 +375,14 @@ public class TouchToFillViewTest {
                                                     TouchToFillProperties.ItemType.HEADER,
                                                     new PropertyModel.Builder(
                                                                     HeaderProperties.ALL_KEYS)
-                                                            .with(SHOW_SUBMIT_SUBTITLE, true)
-                                                            .with(FORMATTED_URL, "m.example.org")
-                                                            .with(ORIGIN_SECURE, false)
+                                                            .with(
+                                                                    SUBTITLE,
+                                                                    String.format(
+                                                                            getActivity()
+                                                                                    .getString(
+                                                                                            R.string
+                                                                                                    .touch_to_fill_sheet_subtitle_insecure_submission),
+                                                                            "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider
@@ -733,8 +758,7 @@ public class TouchToFillViewTest {
                                                                             .getString(
                                                                                     R.string
                                                                                             .touch_to_fill_sheet_uniform_title))
-                                                            .with(FORMATTED_URL, "www.example.org")
-                                                            .with(ORIGIN_SECURE, true)
+                                                            .with(SUBTITLE, "www.example.org")
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     mResourceProvider

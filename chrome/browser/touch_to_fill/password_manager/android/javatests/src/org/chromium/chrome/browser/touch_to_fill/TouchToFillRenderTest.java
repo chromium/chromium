@@ -9,9 +9,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
@@ -378,8 +377,7 @@ public class TouchToFillRenderTest {
                                 TouchToFillProperties.ItemType.HEADER,
                                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                                         .with(TITLE, title)
-                                        .with(FORMATTED_URL, TEST_URL.getSpec())
-                                        .with(ORIGIN_SECURE, true)
+                                        .with(SUBTITLE, TEST_URL.getSpec())
                                         .with(
                                                 IMAGE_DRAWABLE_ID,
                                                 mResourceProvider.getPasswordManagerIcon())
