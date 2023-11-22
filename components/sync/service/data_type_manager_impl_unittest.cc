@@ -312,7 +312,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOne) {
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.connected_types().Empty());
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThatSkipsEngineConnection) {
@@ -478,7 +478,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThenBoth) {
             configurer_.connected_types());
   EXPECT_EQ(ModelTypeSet({PREFERENCES}),
             dtm_->GetTypesWithPendingDownloadForInitialSync());
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
 
   // Step 4.
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
@@ -526,7 +526,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThenSwitch) {
   Configure({PREFERENCES});
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(ModelTypeSet({PREFERENCES}), configurer_.connected_types());
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 
   // Step 4.
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
@@ -721,16 +721,14 @@ TEST_F(SyncDataTypeManagerImplTest, MigrateAll) {
   to_migrate.Put(PRIORITY_PREFERENCES);
   to_migrate.PutAll(ControlTypes());
 
-  EXPECT_EQ(0, GetController(PRIORITY_PREFERENCES)
-                   ->model()
-                   ->clear_metadata_call_count());
+  EXPECT_EQ(
+      0, GetController(PRIORITY_PREFERENCES)->model()->clear_metadata_count());
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
   dtm_->PurgeForMigration(to_migrate);
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-  EXPECT_EQ(1, GetController(PRIORITY_PREFERENCES)
-                   ->model()
-                   ->clear_metadata_call_count());
+  EXPECT_EQ(
+      1, GetController(PRIORITY_PREFERENCES)->model()->clear_metadata_count());
 
   // The DTM will call ConfigureDataTypes(), even though it is unnecessary.
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // no enabled types
@@ -744,9 +742,8 @@ TEST_F(SyncDataTypeManagerImplTest, MigrateAll) {
   FinishDownload(ControlTypes(), ModelTypeSet());  // control types
   FinishDownload({PRIORITY_PREFERENCES}, ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
-  EXPECT_EQ(1, GetController(PRIORITY_PREFERENCES)
-                   ->model()
-                   ->clear_metadata_call_count());
+  EXPECT_EQ(
+      1, GetController(PRIORITY_PREFERENCES)->model()->clear_metadata_count());
 }
 
 // Test receipt of a Configure request while a purge is in flight.
@@ -770,8 +767,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureDuringPurge) {
   observer_.ResetExpectations();
 
   // Called during the first call to Configure() and during PurgeForMigration().
-  EXPECT_EQ(2,
-            GetController(PREFERENCES)->model()->clear_metadata_call_count());
+  EXPECT_EQ(2, GetController(PREFERENCES)->model()->clear_metadata_count());
 
   // Before the backend configuration completes, ask for a different
   // set of types.  This request asks for
@@ -794,10 +790,9 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureDuringPurge) {
   FinishDownload({BOOKMARKS, PREFERENCES}, ModelTypeSet());
 
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
   // No clears during/after the last Configure().
-  EXPECT_EQ(2,
-            GetController(PREFERENCES)->model()->clear_metadata_call_count());
+  EXPECT_EQ(2, GetController(PREFERENCES)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfiguration) {
@@ -1045,7 +1040,7 @@ TEST_F(SyncDataTypeManagerImplTest, FailingPreconditionKeepData) {
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.connected_types().Empty());
 
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, FailingPreconditionClearData) {
@@ -1069,7 +1064,7 @@ TEST_F(SyncDataTypeManagerImplTest, FailingPreconditionClearData) {
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(0U, configurer_.connected_types().Size());
 
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 // Tests that unready types are not started after ResetDataTypeErrors and
@@ -1480,7 +1475,7 @@ TEST_F(SyncDataTypeManagerImplTest, StopWithDisableSync) {
   dtm_->Stop(SyncStopMetadataFate::CLEAR_METADATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.connected_types().Empty());
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStarting) {
@@ -1503,7 +1498,7 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStarting) {
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
   ASSERT_EQ(DataTypeManager::STOPPED, dtm_->state());
   ASSERT_TRUE(configurer_.connected_types().Empty());
-  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
 
   // Now we restart with a reduced set of data types.
   SetConfigureStartExpectation();
@@ -1519,7 +1514,7 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStarting) {
   // This should have purged the data for the excluded type.
   EXPECT_TRUE(last_configure_params().to_purge.Has(BOOKMARKS));
   // Stop(CLEAR_METADATA) is called if (re)started without the type.
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnReconfiguring) {
@@ -1555,7 +1550,7 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnReconfiguring) {
   EXPECT_TRUE(last_configure_params().to_purge.Has(BOOKMARKS));
   // Also Stop(CLEAR_METADATA) has been called on the controller since the type
   // is no longer enabled.
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, ShouldRecordInitialConfigureTimeHistogram) {

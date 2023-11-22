@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "components/sync/service/sync_service_impl.h"
 
-#include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/test/fake_data_type_controller.h"
@@ -541,7 +538,7 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
-  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 
   // The service should stop when switching to managed mode.
   pref_service()->SetBoolean(prefs::internal::kSyncManaged, true);
@@ -556,7 +553,7 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
             sync_service()->GetTransportState());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
-  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 
   // When switching back to unmanaged, Sync-the-transport should start up
   // automatically, which causes (re)creation of SyncEngine and
@@ -829,10 +826,9 @@ TEST_F(SyncServiceImplStartupTest,
   sync_service()->Initialize();
 
   // Metadata was cleared for disabled types ...
-  EXPECT_EQ(1,
-            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(READING_LIST)->model()->clear_metadata_count());
   // ... but not for the ones not disabled.
-  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncServiceImplStartupTest,
@@ -859,10 +855,9 @@ TEST_F(SyncServiceImplStartupTest,
   engine()->TriggerInitializationCompletion(/*success=*/true);
   ASSERT_TRUE(sync_service()->IsEngineInitialized());
   // Metadata was cleared for disabled types ...
-  EXPECT_EQ(1,
-            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(READING_LIST)->model()->clear_metadata_count());
   // ... but not for the ones not disabled.
-  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncServiceImplStartupTest,
@@ -892,10 +887,9 @@ TEST_F(SyncServiceImplStartupTest,
   setup_in_progress_handle.reset();
 
   // Metadata was cleared for disabled types ...
-  EXPECT_EQ(1,
-            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(READING_LIST)->model()->clear_metadata_count());
   // ... but not for the ones not disabled.
-  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 }  // namespace syncer

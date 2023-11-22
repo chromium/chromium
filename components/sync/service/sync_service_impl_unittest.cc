@@ -1195,7 +1195,7 @@ TEST_F(SyncServiceImplTest, ResetLocalSyncData) {
   ASSERT_TRUE(service()->IsSyncFeatureEnabled());
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
   ASSERT_EQ(service()->GetActiveDataTypes(),
             ModelTypeSet({NIGORI, BOOKMARKS, DEVICE_INFO}));
 
@@ -1211,7 +1211,7 @@ TEST_F(SyncServiceImplTest, ResetLocalSyncData) {
             service()->GetTransportState());
   EXPECT_EQ(service()->GetActiveDataTypes(),
             ModelTypeSet({NIGORI, BOOKMARKS, DEVICE_INFO}));
-  EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_call_count(), 0);
+  EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_count(), 0);
 }
 
 // Test that when SyncServiceImpl receives actionable error
@@ -1224,7 +1224,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_FALSE(
@@ -1295,7 +1295,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   EXPECT_THAT(trusted_vault_client()->GetStoredKeys(primary_account_gaia_id),
               IsEmpty());
 
-  EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_call_count(), 0);
+  EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_count(), 0);
 
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
@@ -1621,10 +1621,10 @@ TEST_F(SyncServiceImplTest, ShouldCallStopUponResetEngineIfAlreadyShutDown) {
   ASSERT_EQ(SyncService::TransportState::PAUSED,
             service()->GetTransportState());
 
-  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
   // Clearing metadata should work even if the engine is not running.
   service()->StopAndClear();
-  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {

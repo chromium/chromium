@@ -54,8 +54,8 @@ void FakeModelTypeControllerDelegate::SimulateModelError(
   base::RunLoop().RunUntilIdle();
 }
 
-int FakeModelTypeControllerDelegate::clear_metadata_call_count() const {
-  return clear_metadata_call_count_;
+int FakeModelTypeControllerDelegate::clear_metadata_count() const {
+  return clear_metadata_count_;
 }
 
 void FakeModelTypeControllerDelegate::OnSyncStarting(
@@ -84,7 +84,7 @@ void FakeModelTypeControllerDelegate::OnSyncStarting(
 void FakeModelTypeControllerDelegate::OnSyncStopping(
     SyncStopMetadataFate metadata_fate) {
   if (metadata_fate == CLEAR_METADATA) {
-    ++clear_metadata_call_count_;
+    ++clear_metadata_count_;
   }
 }
 
@@ -115,7 +115,7 @@ FakeModelTypeControllerDelegate::MakeActivationResponse() const {
 }
 
 void FakeModelTypeControllerDelegate::ClearMetadataWhileStopped() {
-  ++clear_metadata_call_count_;
+  ++clear_metadata_count_;
 }
 
 }  // namespace syncer
