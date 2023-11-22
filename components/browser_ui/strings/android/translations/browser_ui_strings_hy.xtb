@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Թույլատրված է</translation>
 <translation id="429312253194641664">Կայքում մեդիա ֆայլ է նվագարկվում</translation>
 <translation id="42981349822642051">Ընդարձակել</translation>
+<translation id="4336566011000459927">Այսօր Chrome-ը կրկին կսահմանափակի քուքիները</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> տիրույթով բոլոր կայքերը</translation>
 <translation id="4402755511846832236">Արգելել կայքերին տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4412992751769744546">Թույլատրել 3-րդ կողմի քուքիները</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Կայքին կապակցումը պաշտպանված չէ</translation>
 <translation id="6181444274883918285">Ավելացնել բացառություն</translation>
 <translation id="6192792657125177640">Բացառություններ</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Վաղը Chrome-ը կրկին կարգելափակի քուքիները}one{# օրից քուքիները կրկին կարգելափակվեն}other{# օրից քուքիները կրկին կարգելափակվեն}}</translation>
 <translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7804248752222191302">Կայքն օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="7807060072011926525">Տրամադրված է Google-ի կողմից</translation>
+<translation id="7822573154188733812">Chrome-ն արգելափակում է՝ ձեր գործողությունները դիտարկիչում հետագծելու նպատակով կայքերի կողմից երրորդ կողմի քուքիների օգտագործումը։ Անցեք կարգավորումներ՝ <ph name="BEGIN_LINK" />հետագծումից պաշտպանության պարամետրերը կառավարելու համար<ph name="END_LINK" />։</translation>
 <translation id="7835852323729233924">Մեդիա բովանդակության նվագարկում</translation>
 <translation id="783819812427904514">Միացնել տեսանյութի ձայնը</translation>
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Ցանկացած կայք, որն այցելում եք, կարող է գովազդ ցուցադրել ձեզ</translation>
 <translation id="8087000398470557479">Այս բովանդակությունը <ph name="DOMAIN_NAME" />-ից է, մատուցվում է Google-ի կողմից:</translation>
 <translation id="8088603949666785339">«Այլ ընտրանքներ» պատկերակ, <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Վաղը Chrome-ը կրկին կսահմանափակի քուքիները}one{# օրից Chrome-ը կրկին կսահմանափակի քուքիները}other{# օրից Chrome-ը կրկին կսահմանափակի քուքիները}}</translation>
 <translation id="8116925261070264013">Անջատած ձայնով կայքեր</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
 <translation id="8131740175452115882">Հաստատել</translation>

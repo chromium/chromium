@@ -295,7 +295,7 @@
 <translation id="6177128806592000436">এই সাইটে আপনার সংযোগ নিরাপদ নয়</translation>
 <translation id="6181444274883918285">ব্যতিক্রমী সাইট যোগ করুন</translation>
 <translation id="6192792657125177640">ব্যতিক্রমগুলি</translation>
-<translation id="6194967801833346599">{DAYS,plural, =1{Chrome আগামীকাল আবার কুকি ব্লক করে দেবে}one{Chrome কুকির ব্যবহার সীমিত করা পর্যন্ত # দিন সময় আছে}other{Chrome কুকির ব্যবহার সীমিত করা পর্যন্ত # দিন সময় আছে}}</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome আগামীকাল আবার কুকি ব্লক করে দেবে}one{কুকির ব্যবহার আবার ব্লক করা পর্যন্ত # দিন সময় আছে}other{কুকির ব্যবহার আবার ব্লক করা পর্যন্ত # দিন সময় আছে}}</translation>
 <translation id="6195163219142236913">থার্ড-পার্টি কুকি সীমিত করা হয়েছে</translation>
 <translation id="6196640612572343990">তৃতীয় পক্ষের কুকিজ অবরুদ্ধ করুন</translation>
 <translation id="6205314730813004066">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
@@ -385,7 +385,7 @@
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7804248752222191302">একটি সাইট আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="7807060072011926525">Google-এর প্রদান করা ফিড</translation>
-<translation id="7822573154188733812">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট, যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chrome তা ব্লক করে দেয়। <ph name="BEGIN_LINK" />'ট্র্যাকিং প্রোটেকশন' ফিচার ম্যানেজ<ph name="END_LINK" /> করতে সেটিংসে যান।</translation>
+<translation id="7822573154188733812">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট, যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chrome তা ব্লক করে দেয়। <ph name="BEGIN_LINK" />ট্র্যাকিং করার সুরক্ষা ম্যানেজ<ph name="END_LINK" /> করতে সেটিংসে যান।</translation>
 <translation id="7835852323729233924">মিডিয়া চালানো হচ্ছে</translation>
 <translation id="783819812427904514">ভিডিওটি আনমিউট করুন</translation>
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
@@ -402,7 +402,7 @@
 <translation id="8077120325605624147">আপনি ভিজিট করেন এমন যেকোনও সাইট আপনাকে যেকোনও বিজ্ঞাপন দেখাতে পারে</translation>
 <translation id="8087000398470557479">এই কন্টেন্ট Google দ্বারা বিতরণ করা <ph name="DOMAIN_NAME" /> থেকে এসেছে।</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />-এ আরও বিকল্প</translation>
-<translation id="8113501330600751161">{DAYS,plural, =1{Chrome আগামীকাল আবার কুকির ব্যবহার সীমিত করে দেবে}one{কুকির ব্যবহার সীমিত করা পর্যন্ত # দিন সময় আছে}other{কুকির ব্যবহার সীমিত করা পর্যন্ত # দিন সময় আছে}}</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome আগামীকাল আবার কুকির ব্যবহার সীমিত করে দেবে}one{Chrome আবার কুকির ব্যবহার সীমিত করা পর্যন্ত # দিন সময় আছে}other{Chrome আবার কুকির ব্যবহার সীমিত করা পর্যন্ত # দিন সময় আছে}}</translation>
 <translation id="8116925261070264013">মিউট করা আছে</translation>
 <translation id="813082847718468539">সাইটের তথ্য দর্শন করুন</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>

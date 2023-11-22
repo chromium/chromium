@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Permitida</translation>
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="42981349822642051">Ampliar</translation>
+<translation id="4336566011000459927">Chrome volverá limitar as cookies hoxe</translation>
 <translation id="4338831206024587507">Todos os sitios do dominio <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impide que os sitios saiban se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">A túa conexión a este sitio non é segura</translation>
 <translation id="6181444274883918285">Engadir excepción do sitio</translation>
 <translation id="6192792657125177640">Excepcións</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome volverá bloquear as cookies mañá}other{Faltan # días para que se volvan bloquear as cookies}}</translation>
 <translation id="6195163219142236913">Cookies de terceiros limitadas</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6205314730813004066">Privacidade nos anuncios</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7804248752222191302">Un sitio está utilizando a cámara</translation>
 <translation id="7807060072011926525">Ofrecido por Google</translation>
+<translation id="7822573154188733812">Chrome evita que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar as proteccións contra o seguimento<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Reproducindo contido multimedia</translation>
 <translation id="783819812427904514">Activar o son do vídeo</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Calquera sitio que visites pode mostrarche anuncios</translation>
 <translation id="8087000398470557479">Este contido procede de <ph name="DOMAIN_NAME" />, ofrecido por Google.</translation>
 <translation id="8088603949666785339">Máis opcións en <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome volverá limitar as cookies mañá}other{Faltan # días para que Chrome volva limitar as cookies}}</translation>
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="813082847718468539">Consulta a información do sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>

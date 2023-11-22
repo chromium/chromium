@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
 <translation id="429312253194641664">Saytda media-fayl ijro etilmoqda</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
+<translation id="4336566011000459927">Chrome cookie fayllarni bugun yana cheklaydi</translation>
 <translation id="4338831206024587507">Barcha saytlar <ph name="DOMAIN" /> ostida</translation>
 <translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4412992751769744546">Tashqi saytlarga cookie fayllarni saqlashga ruxsat berish</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Bu sayt bilan o‘rnatilgan aloqa himoyalanmagan.</translation>
 <translation id="6181444274883918285">Istisno sayt qo‘shish</translation>
 <translation id="6192792657125177640">Istisno saytlar</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome cookie fayllarni ertadan yana bloklaydi}other{Cookie fayllar yana bloklanishiga # kun qoldi}}</translation>
 <translation id="6195163219142236913">Tashqi cookie fayllar cheklangan</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7804248752222191302">Sayt kameradan foydalanmoqda</translation>
 <translation id="7807060072011926525">Google taqdim qilgan</translation>
+<translation id="7822573154188733812">Chrome saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllardan foydalanuvchi saytlarni bloklaydi. <ph name="BEGIN_LINK" />Kuzatuvdan himoyani boshqarish<ph name="END_LINK" /> uchun sozlamalarga kiring.</translation>
 <translation id="7835852323729233924">Mediani ijro etish</translation>
 <translation id="783819812427904514">Video ovozini yoqish</translation>
 <translation id="7846076177841592234">Belgilashni bekor qilish</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Siz ochgan har qanday sayt istalgan reklamani koʻrsatishi mumkin</translation>
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" /> sayti kontenti, Google tomonidan taqdim etildi.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />: boshqa amallar</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome cookie fayllarni ertaga yana cheklaydi}other{Chrome cookie fayllarni # kundan keyin yana cheklaydi}}</translation>
 <translation id="8116925261070264013">Ovozsiz</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>

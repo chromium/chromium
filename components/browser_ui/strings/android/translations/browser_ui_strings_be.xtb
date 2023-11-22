@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Дазволена</translation>
 <translation id="429312253194641664">Сайт прайграе мультымедыя</translation>
 <translation id="42981349822642051">Разгарнуць</translation>
+<translation id="4336566011000459927">Сягоння Chrome зноў абмяжуе выкарыстанне файлаў cookie</translation>
 <translation id="4338831206024587507">Усе сайты дамена <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Не даваць сайтам знаць, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4412992751769744546">Дазволіць староннія файлы cookie</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Ваша падключэнне да гэтага сайта небяспечнае</translation>
 <translation id="6181444274883918285">Дадаць выключэнне з сайтаў</translation>
 <translation id="6192792657125177640">Выключэнні</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Заўтра Chrome зноў заблакіруе файлы cookie}one{Праз # дзень файлы cookie зноў будуць заблакіраваны}few{Праз # дні файлы cookie зноў будуць заблакіраваны}many{Праз # дзён файлы cookie зноў будуць заблакіраваны}other{Праз # дня файлы cookie зноў будуць заблакіраваны}}</translation>
 <translation id="6195163219142236913">Староннія файлы cookie абмежаваны</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6205314730813004066">Прыватнасць у рэкламе</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7804248752222191302">Сайт выкарыстоўвае камеру</translation>
 <translation id="7807060072011926525">Ад кампаніі Google</translation>
+<translation id="7822573154188733812">Chrome блакіруе для сайтаў магчымасць выкарыстоўваць староннія файлы cookie, якія дазваляюць адсочваць вашы дзеянні ў інтэрнэце. Кіраваць <ph name="BEGIN_LINK" />абаронай ад адсочвання<ph name="END_LINK" /> можна ў наладах.</translation>
 <translation id="7835852323729233924">Прайграванне мультымедыя</translation>
 <translation id="783819812427904514">Уключыць гук відэа</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>
 <translation id="8087000398470557479">Змесціва з <ph name="DOMAIN_NAME" />, пастаўшчык – Google.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />: іншыя дзеянні</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Заўтра Chrome зноў абмяжуе выкарыстанне файлаў cookie}one{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дзень}few{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дні}many{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дзён}other{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дня}}</translation>
 <translation id="8116925261070264013">Без гуку</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>

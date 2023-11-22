@@ -295,7 +295,7 @@
 <translation id="6177128806592000436">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι ασφαλής</translation>
 <translation id="6181444274883918285">Προσθήκη εξαίρεσης ιστότοπου</translation>
 <translation id="6192792657125177640">Εξαιρέσεις</translation>
-<translation id="6194967801833346599">{DAYS,plural, =1{Το Chrome θα αποκλείσει ξανά τα cookie αύριο}other{# ημέρες έως ότου αποκλειστούν ξανά τα cookie}}</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Το Chrome θα αποκλείσει ξανά τα cookie αύριο}other{# ημέρες έως ότου αποκλειστούν ξανά τα cookie}}</translation>
 <translation id="6195163219142236913">Τα cookie τρίτου μέρους περιορίζονται</translation>
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
@@ -402,7 +402,7 @@
 <translation id="8077120325605624147">Οποιοσδήποτε ιστότοπος που επισκέπτεστε μπορεί να προβάλει οποιαδήποτε διαφήμιση σε εσάς</translation>
 <translation id="8087000398470557479">Αυτό το περιεχόμενο προέρχεται από το <ph name="DOMAIN_NAME" /> και παρέχεται από την Google.</translation>
 <translation id="8088603949666785339">Περισσότερες επιλογές στο <ph name="BANNER_TITLE" /></translation>
-<translation id="8113501330600751161">{DAYS,plural, =1{Το Chrome θα περιορίσει ξανά τα cookie αύριο}other{# ημέρες έως ότου το Chrome περιορίσει ξανά τα cookie}}</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Το Chrome θα περιορίσει ξανά τα cookie αύριο}other{# ημέρες έως ότου το Chrome περιορίσει ξανά τα cookie}}</translation>
 <translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="813082847718468539">Προβολή πληροφοριών τοποθεσίας</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>

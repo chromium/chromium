@@ -295,7 +295,7 @@
 <translation id="6177128806592000436">Hindi ligtas ang iyong koneksyon sa site na ito</translation>
 <translation id="6181444274883918285">Magdagdag ng pagbubukod ng site</translation>
 <translation id="6192792657125177640">Mga Pagbubukod</translation>
-<translation id="6194967801833346599">{DAYS,plural, =1{Magba-block ulit ang Chrome ng cookies bukas}one{# araw bago i-block ulit ang cookies}other{# na araw bago i-block ulit ang cookies}}</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Magba-block ulit ang Chrome ng cookies bukas}one{# araw bago mag-block ulit ng cookies}other{# na araw bago mag-block ulit ng cookies}}</translation>
 <translation id="6195163219142236913">Limitado ang third-party na cookies</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
@@ -385,7 +385,7 @@
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7804248752222191302">Ginagamit ng isang site ang iyong camera</translation>
 <translation id="7807060072011926525">Ibinibigay ng Google</translation>
-<translation id="7822573154188733812">Bina-block ng Chrome ang mga site para hindi makagamit ng third-party na cookies para ma-track ka habang nagba-browse ka. Tingnan ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
+<translation id="7822573154188733812">Bina-block ng Chrome ang mga site sa paggamit ng third-party na cookies para ma-track ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Nagpe-play ng media</translation>
 <translation id="783819812427904514">I-unmute ang video</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>

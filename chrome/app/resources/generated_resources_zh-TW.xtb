@@ -1049,7 +1049,7 @@
     <ph name="LINE_BREAKS2" />
     這項操作不會影響其他裝置上的應用程式或內容。</translation>
 <translation id="1809734401532861917">將我的書籤、歷史記錄、密碼和其他設定新增至 <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">如要在手機上使用儲存的密碼，請依序掃描 QR code、下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
+<translation id="1810070166657251157">如要在手機上使用儲存的密碼，請掃描 QR code 下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
 <translation id="1810366086647840386">映像檔伺服器</translation>
 <translation id="1811908311154949291">無痕模式下的 Fenced Frame：<ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
@@ -6632,7 +6632,7 @@
 <translation id="6242852299490624841">將焦點移至這個分頁</translation>
 <translation id="6243774244933267674">無法與伺服器連線</translation>
 <translation id="6244245036423700521">匯入 ONC 檔案</translation>
-<translation id="6245523954602476652">你可以在 Google 密碼管理工具中取得這個密碼。</translation>
+<translation id="6245523954602476652">你可以透過 Google 密碼管理工具使用這組密碼。</translation>
 <translation id="6246790815526961700">從裝置上傳</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6247620186971210352">找不到應用程式</translation>

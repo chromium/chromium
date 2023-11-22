@@ -192,6 +192,7 @@
 <translation id="4278390842282768270">Được cho phép</translation>
 <translation id="429312253194641664">Một trang web đang phát nội dung đa phương tiện</translation>
 <translation id="42981349822642051">Mở rộng</translation>
+<translation id="4336566011000459927">Hôm nay, Chrome sẽ hạn chế cookie trở lại</translation>
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4412992751769744546">Cho phép cookie của bên thứ ba</translation>
@@ -294,6 +295,7 @@
 <translation id="6177128806592000436">Kết nối của bạn tới trang web này không an toàn</translation>
 <translation id="6181444274883918285">Thêm trang web ngoại lệ</translation>
 <translation id="6192792657125177640">Ngoại lệ</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome sẽ chặn cookie trở lại vào ngày mai}other{Cookie sẽ bị chặn trở lại sau # ngày nữa}}</translation>
 <translation id="6195163219142236913">Cookie của bên thứ ba bị hạn chế</translation>
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
@@ -383,6 +385,7 @@
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7804248752222191302">Một trang web đang sử dụng máy ảnh của bạn</translation>
 <translation id="7807060072011926525">Do Google cung cấp</translation>
+<translation id="7822573154188733812">Chrome cấm các trang web sử dụng cookie của bên thứ ba để theo dõi bạn khi bạn duyệt web. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý các biện pháp chống theo dõi<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Đang phát nội dung nghe nhìn</translation>
 <translation id="783819812427904514">Bật tiếng video</translation>
 <translation id="7846076177841592234">Hủy chọn</translation>
@@ -399,6 +402,7 @@
 <translation id="8077120325605624147">Mọi trang web bạn truy cập đều có thể hiện quảng cáo cho bạn</translation>
 <translation id="8087000398470557479">Nội dung này đến từ <ph name="DOMAIN_NAME" />, do Google phân phối.</translation>
 <translation id="8088603949666785339">Xem thêm lựa chọn khác trong <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome sẽ hạn chế cookie trở lại vào ngày mai}other{Chrome sẽ hạn chế cookie trở lại sau # ngày nữa}}</translation>
 <translation id="8116925261070264013">Đã ẩn</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8131740175452115882">Xác nhận</translation>

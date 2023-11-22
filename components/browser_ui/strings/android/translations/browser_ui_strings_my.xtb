@@ -402,7 +402,7 @@
 <translation id="8077120325605624147">သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်တိုင်းက မည်သည့်ကြော်ငြာကိုမဆို ပြနိုင်သည်</translation>
 <translation id="8087000398470557479">ဤအကြောင်းအရာသည် Google မှနေ၍ပံ့ပိုးပေးထားသည့် <ph name="DOMAIN_NAME" /> မှဖြစ်သည်။</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> တွင်နောက်ထပ် ရွေးစရာများ</translation>
-<translation id="8113501330600751161">{DAYS,plural, =1{Chrome သည် ကွတ်ကီးများကို မနက်ဖြန် ထပ်မံကန့်သတ်ပါမည်}other{Chrome သည် ကွတ်ကီးများကို ထပ်မံကန့်သတ်ရန် # ရက်အလို}}</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome သည် ကွတ်ကီးများကို မနက်ဖြန် ထပ်မံကန့်သတ်ပါမည်}other{Chrome က ကွတ်ကီးများကို ထပ်မံကန့်သတ်ရန် # ရက်အလို}}</translation>
 <translation id="8116925261070264013">ဖျောက်ထားသည်</translation>
 <translation id="813082847718468539">ဆိုက် အချက်အလက်များကို ကြည့်ရန်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
