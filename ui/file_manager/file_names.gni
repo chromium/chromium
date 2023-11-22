@@ -31,7 +31,6 @@ static_js_files = [
   "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
   "file_manager/common/js/progress_center_common.js",
-  "file_manager/common/js/storage.js",
   "file_manager/common/js/ui.js",
   "file_manager/common/js/volume_manager_types.js",
 
@@ -171,6 +170,7 @@ ts_files = [
   "file_manager/common/js/lru_cache.ts",
   "file_manager/common/js/recent_date_bucket.ts",
   "file_manager/common/js/script_loader.ts",
+  "file_manager/common/js/storage.ts",
   "file_manager/common/js/translations.ts",
   "file_manager/common/js/trash.ts",
   "file_manager/common/js/trusted_script_url_policy_util.ts",
@@ -428,6 +428,7 @@ ts_test_files = [
   "file_manager/common/js/file_types_base_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
   "file_manager/common/js/recent_date_bucket_unittest.ts",
+  "file_manager/common/js/storage_unittest.ts",
   "file_manager/common/js/translations_unittest.ts",
   "file_manager/common/js/volume_manager_types_unittest.ts",
   "file_manager/common/js/util_unittest.ts",
@@ -606,7 +607,6 @@ unittest_files = [
   "file_manager/common/js/async_util_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
-  "file_manager/common/js/storage_unittest.js",
   "file_manager/common/js/test_error_reporting.js",
   "file_manager/common/js/unittest_util.js",
 

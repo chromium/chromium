@@ -5,7 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {storage, ValueChanged} from '../../common/js/storage.js';
+import {storage} from '../../common/js/storage.js';
 import {makeTaskID} from '../../common/js/util.js';
 
 /**
@@ -80,7 +80,8 @@ export class TaskHistory extends EventTarget {
 
   /**
    * Handles local storage change event to update the current history.
-   * @param {!Object<string, !ValueChanged>} changes
+   * @param {!Object<string,
+   *     !import("../../common/js/storage.js").ChangedValue>} changes
    * @param {string} areaName
    * @private
    */
