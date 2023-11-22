@@ -154,9 +154,25 @@ HEADER = headers.header(
                     alt = "Chromium Android console",
                 ),
                 headers.link(
+                    text = "angle",
+                    url = "/p/{}/g/chromium.angle".format(settings.project),
+                    alt = "Chromium ANGLE console",
+                ),
+                headers.link(
+                    text = "blink.infra",
+                    url = "/p/{}/g/blink.infra".format(settings.project),
+                    alt = "Chromium Blink Infra console",
+                ),
+                headers.link(
                     text = "checks",
                     url = "/p/{}/g/checks".format(settings.project),
                     alt = "Checks console",
+                ),
+                headers.link(
+                    text = "chromiumos",
+                    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+                    url = "/p/{}/g/chromium.chromiumos".format(settings.project),
+                    alt = "ChromiumOS console",
                 ),
                 headers.link(
                     text = "clang",
@@ -173,15 +189,20 @@ HEADER = headers.header(
                     alt = "Chromium Dawn console",
                 ),
                 headers.link(
-                    text = "fuzz",
-                    url = "/p/{}/g/chromium.fuzz".format(settings.project),
-                    alt = "Chromium Fuzz console",
+                    text = "flakiness",
+                    url = "/p/{}/g/chromium.flakiness".format(settings.project),
+                    alt = "Chromium Flakiness console",
                 ),
                 headers.link(
                     text = "fuchsia",
                     branch_selector = branches.selector.FUCHSIA_BRANCHES,
                     url = "/p/{}/g/chromium.fuchsia".format(settings.project),
                     alt = "Chromium Fuchsia console",
+                ),
+                headers.link(
+                    text = "fuzz",
+                    url = "/p/{}/g/chromium.fuzz".format(settings.project),
+                    alt = "Chromium Fuzz console",
                 ),
                 headers.link(
                     text = "fyi",
@@ -222,11 +243,6 @@ HEADER = headers.header(
                     alt = "Chromium Perf FYI console",
                 ),
                 headers.link(
-                    text = "angle",
-                    url = "/p/{}/g/chromium.angle".format(settings.project),
-                    alt = "Chromium ANGLE console",
-                ),
-                headers.link(
                     text = "swangle",
                     url = "/p/{}/g/chromium.swangle".format(settings.project),
                     alt = "Chromium SWANGLE console",
@@ -240,17 +256,6 @@ HEADER = headers.header(
                     text = "webrtc",
                     url = "/p/{}/g/chromium.webrtc".format(settings.project),
                     alt = "Chromium WebRTC console",
-                ),
-                headers.link(
-                    text = "chromiumos",
-                    branch_selector = branches.selector.CROS_LTS_BRANCHES,
-                    url = "/p/{}/g/chromium.chromiumos".format(settings.project),
-                    alt = "ChromiumOS console",
-                ),
-                headers.link(
-                    text = "flakiness",
-                    url = "/p/{}/g/chromium.flakiness".format(settings.project),
-                    alt = "Chromium Flakiness console",
                 ),
             ],
         ),

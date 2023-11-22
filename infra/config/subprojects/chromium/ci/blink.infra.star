@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 """Definitions of builders in the blink.infra builder group."""
 
+load("//lib/builders.star", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     console_view = "blink.infra",
     execution_timeout = 10 * time.hour,
 )
@@ -67,4 +69,36 @@ ci.builder(
         ],
     },
     service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+ci.builder(
+    name = "blink-fuzzy-diff-analyzer",
+    description_html = "Runs Fuzzy Diff Analyzer on flaky image web tests bugs.",
+    executable = "recipe:chromium/generic_script_runner",
+    # Run every 6 hours.
+    schedule = "0 */6 * * *",
+    triggered_by = [],
+    builderless = True,
+    cores = 8,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "fda",
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+    properties = {
+        "scripts": [
+            {
+                "step_name": "analyze_flaky_image_web_tests",
+                "script": "third_party/blink/tools/run_fuzzy_diff_analyzer.py",
+                "args": [
+                    "--project",
+                    "chrome-unexpected-pass-data",
+                    "--sample-period",
+                    "3",
+                    "--check-bugs-only",
+                    "--attach-analysis-result",
+                ],
+            },
+        ],
+    },
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
