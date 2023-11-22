@@ -187,33 +187,6 @@ void OnNavigationRequestFailed(
     const NavigationRequest& nav_request,
     const network::URLLoaderCompletionStatus& status);
 
-// Logs fetch keepalive requests proxied via browser to Network panel.
-//
-// As the implementation requires a RenderFrameHost to locate a
-// RenderFrameDevToolsAgentHost to attach the logs to, `frame_free_node` must
-// not be nullptr. This doesn't really fit the whole need as such requests may
-// be sent after RenderFrameHost unload.
-//
-// Caller also needs to make sure to avoid duplicated logging that may already
-// happens in the request initiator renderer.
-void OnFetchKeepAliveRequestWillBeSent(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const network::ResourceRequest& request,
-    absl::optional<
-        std::pair<const GURL&,
-                  const network::mojom::URLResponseHeadDevToolsInfo&>>
-        redirect_info = absl::nullopt);
-void OnFetchKeepAliveResponseReceived(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const GURL& url,
-    const network::mojom::URLResponseHead& head);
-void OnFetchKeepAliveRequestComplete(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const network::URLLoaderCompletionStatus& status);
-
 void OnAuctionWorkletNetworkRequestWillBeSent(
     int frame_tree_node_id,
     const network::ResourceRequest& request,
