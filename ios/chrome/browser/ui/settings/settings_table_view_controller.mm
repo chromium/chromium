@@ -935,6 +935,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _safetyCheckItem.leadingIconTintColor = UIColor.whiteColor;
   _safetyCheckItem.leadingIconCornerRadius =
       kColorfulBackgroundSymbolCornerRadius;
+  _safetyCheckItem.accessibilityIdentifier = kSettingsSafetyCheckCellId;
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
     [self updateSafetyCheckItemTrailingIcon];

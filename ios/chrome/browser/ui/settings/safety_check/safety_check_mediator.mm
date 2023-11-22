@@ -291,6 +291,8 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     _checkStartState = CheckStartStateDefault;
     _checkStartItem =
         [[TableViewTextItem alloc] initWithType:CheckStartItemType];
+    _checkStartItem.accessibilityIdentifier =
+        kSafetyCheckCheckNowButtonAccessibilityID;
     _checkStartItem.text = GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
     _checkStartItem.textColor = [UIColor colorNamed:kBlueColor];
     _checkStartItem.accessibilityTraits |= UIAccessibilityTraitButton;

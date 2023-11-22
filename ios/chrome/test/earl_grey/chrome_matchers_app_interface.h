@@ -351,6 +351,9 @@
 // Returns matcher for the Save passwords cell on the main Settings screen.
 + (id<GREYMatcher>)settingsMenuPasswordsButton;
 
+// Returns matcher for the Safety Check cell on the main Settings screen.
++ (id<GREYMatcher>)settingsMenuSafetyCheckButton;
+
 // Returns matcher for the payment request collection view.
 + (id<GREYMatcher>)paymentRequestView;
 

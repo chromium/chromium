@@ -450,6 +450,10 @@ id<GREYMatcher> SettingsMenuPasswordsButton() {
   return [ChromeMatchersAppInterface settingsMenuPasswordsButton];
 }
 
+id<GREYMatcher> SettingsMenuSafetyCheckButton() {
+  return [ChromeMatchersAppInterface settingsMenuSafetyCheckButton];
+}
+
 id<GREYMatcher> PaymentRequestView() {
   return [ChromeMatchersAppInterface paymentRequestView];
 }

@@ -140,7 +140,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/reading_list",
-    "//ios/chrome/browser/ui/settings/safety_check",
+    "//ios/chrome/browser/ui/settings/safety_check:constants",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/ui/start_surface:feature_flags",

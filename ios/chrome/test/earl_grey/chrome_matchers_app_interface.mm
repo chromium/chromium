@@ -766,6 +766,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kSettingsPasswordsCellId);
 }
 
++ (id<GREYMatcher>)settingsMenuSafetyCheckButton {
+  return grey_accessibilityID(kSettingsSafetyCheckCellId);
+}
+
 // TODO(crbug.com/1021752): Remove this stub.
 + (id<GREYMatcher>)paymentRequestView {
   return nil;

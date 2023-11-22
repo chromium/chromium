@@ -360,6 +360,9 @@ id<GREYMatcher> SettingsMenuPrivacyButton();
 // Returns a matcher for the Save passwords cell on the main Settings screen.
 id<GREYMatcher> SettingsMenuPasswordsButton();
 
+// Returns matcher for the Safety Check cell on the main Settings screen.
+id<GREYMatcher> SettingsMenuSafetyCheckButton();
+
 // Returns a matcher for the Notifications cell on the main Settings
 // screen.
 id<GREYMatcher> SettingsMenuNotificationsButton();
