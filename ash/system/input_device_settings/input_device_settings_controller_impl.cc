@@ -1880,7 +1880,8 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
     metrics_manager_->RecordNewButtonRegisteredMetrics(
         button, kGraphicsTabletDeviceType);
   }
-  // TODO(dpad): Update graphics tablet prefs.
+  graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
+      active_pref_service_, graphics_tablet);
   DispatchGraphicsTabletSettingsChanged(graphics_tablet_ptr->id);
 
   UpdateDuplicateDeviceSettings(
