@@ -1139,8 +1139,8 @@ TEST_F(
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
             std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Fill address"), Suggestion::Text(u"-"),
-                  Suggestion::Text(u"John H. Doe")}}));
+                {{Suggestion::Text(u"Fill full address"),
+                  Suggestion::Text(u"-"), Suggestion::Text(u"John H. Doe")}}));
 }
 
 // When there is no differentiating label, we add only the granular filling
