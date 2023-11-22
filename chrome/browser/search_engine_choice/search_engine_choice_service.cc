@@ -172,55 +172,6 @@ void SearchEngineChoiceService::RegisterLocalStatePrefs(
                                  base::FilePath());
 }
 
-// static
-search_engines::ChoiceData SearchEngineChoiceService::GetChoiceDataFromProfile(
-    Profile& profile) {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return {};
-  }
-
-  PrefService* pref_service = profile.GetPrefs();
-  int64_t search_engine_choice_timestamp = pref_service->GetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
-
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(&profile);
-  CHECK(template_url_service);
-  const TemplateURLData& default_search_engine =
-      template_url_service->GetDefaultSearchProvider()->data();
-
-  return {.timestamp = search_engine_choice_timestamp,
-          .default_search_engine = default_search_engine};
-}
-
-// static
-void SearchEngineChoiceService::UpdateProfileFromChoiceData(
-    Profile& profile,
-    search_engines::ChoiceData& choice_data) {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return;
-  }
-
-  if (choice_data.timestamp != 0) {
-    PrefService* pref_service = profile.GetPrefs();
-    pref_service->SetInt64(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-        choice_data.timestamp);
-  }
-
-  TemplateURLData& default_search_engine = choice_data.default_search_engine;
-  if (!default_search_engine.keyword().empty() &&
-      !default_search_engine.url().empty()) {
-    TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(&profile);
-    CHECK(template_url_service);
-    TemplateURL template_url(default_search_engine);
-    template_url_service->SetUserSelectedDefaultSearchProvider(&template_url);
-  }
-}
-
 bool SearchEngineChoiceService::IsShowingDialog(Browser* browser) {
   return base::Contains(browsers_with_open_dialogs_, browser);
 }

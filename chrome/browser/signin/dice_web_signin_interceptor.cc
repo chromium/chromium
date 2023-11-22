@@ -33,8 +33,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
@@ -65,9 +63,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/search_engines/search_engine_choice_utils.h"
-#include "components/search_engines/template_url_data.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -280,19 +275,6 @@ DiceWebSigninInterceptor::~DiceWebSigninInterceptor() = default;
 
 DiceWebSigninInterceptor::ResetableState::ResetableState() = default;
 DiceWebSigninInterceptor::ResetableState::~ResetableState() = default;
-
-DiceWebSigninInterceptor::ProfilePresets::ProfilePresets(
-    SkColor profile_color,
-    int64_t search_engine_choice_timestamp,
-    const TemplateURLData& default_search_engine)
-    : profile_color(profile_color),
-      search_engine_choice_timestamp(search_engine_choice_timestamp),
-      default_search_engine(default_search_engine) {}
-
-DiceWebSigninInterceptor::ProfilePresets::ProfilePresets(SkColor profile_color)
-    : profile_color(profile_color) {}
-
-DiceWebSigninInterceptor::ProfilePresets::~ProfilePresets() = default;
 
 // static
 void DiceWebSigninInterceptor::RegisterProfilePrefs(
@@ -945,19 +927,6 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
   DCHECK(state_->interception_bubble_handle_);
   std::u16string profile_name =
       profiles::GetDefaultNameForNewSignedInProfile(account_info);
-  ProfilePresets profile_presets(profile_color);
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    search_engines::ChoiceData choice_data =
-        SearchEngineChoiceService::GetChoiceDataFromProfile(*profile_);
-
-    profile_presets.search_engine_choice_timestamp = choice_data.timestamp;
-    profile_presets.default_search_engine =
-        std::move(choice_data.default_search_engine);
-  }
-#endif
 
   DCHECK(!state_->dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
@@ -965,10 +934,8 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
       std::make_unique<DiceSignedInProfileCreator>(
           profile_, state_->account_id_, profile_name,
           profiles::GetPlaceholderAvatarIndex(),
-          base::BindOnce(
-              &DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
-              base::Unretained(this),
-              absl::optional<ProfilePresets>(std::move(profile_presets))));
+          base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
+                         base::Unretained(this), profile_color));
 }
 
 void DiceWebSigninInterceptor::OnChromeSigninChoice(
@@ -1031,7 +998,7 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
 }
 
 void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
-    absl::optional<ProfilePresets> profile_presets,
+    absl::optional<SkColor> profile_color,
     Profile* new_profile) {
   DCHECK(state_->dice_signed_in_profile_creator_);
   state_->dice_signed_in_profile_creator_.reset();
@@ -1041,11 +1008,11 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
     return;
   }
 
-  // The profile presets are defined only when the profile has just been created
+  // The profile color is defined only when the profile has just been created
   // (with interception type kMultiUser or kEnterprise). If the profile is not
-  // new (kProfileSwitch) or if it is a guest profile, then the presets are not
+  // new (kProfileSwitch) or if it is a guest profile, then the color is not
   // updated.
-  bool is_new_profile = profile_presets.has_value();
+  bool is_new_profile = profile_color.has_value();
   if (is_new_profile) {
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_USER_SIGNIN_INTERCEPTION);
@@ -1056,27 +1023,11 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
       if (features::IsChromeWebuiRefresh2023()) {
         ThemeServiceFactory::GetForProfile(new_profile)
             ->SetUserColorAndBrowserColorVariant(
-                profile_presets->profile_color,
-                ui::mojom::BrowserColorVariant::kTonalSpot);
+                *profile_color, ui::mojom::BrowserColorVariant::kTonalSpot);
       } else {
         ThemeServiceFactory::GetForProfile(new_profile)
-            ->BuildAutogeneratedThemeFromColor(profile_presets->profile_color);
+            ->BuildAutogeneratedThemeFromColor(*profile_color);
       }
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-      // The new profile inherits the default search provider and the search
-      // engine choice timestamp from the previous profile.
-      if (search_engines::IsChoiceScreenFlagEnabled(
-              search_engines::ChoicePromo::kAny)) {
-        search_engines::ChoiceData choice_data{
-            .timestamp = profile_presets->search_engine_choice_timestamp,
-            .default_search_engine =
-                std::move(profile_presets->default_search_engine)};
-
-        SearchEngineChoiceService::UpdateProfileFromChoiceData(*new_profile,
-                                                               choice_data);
-      }
-#endif
     }
 
     // TODO(crbug/1450011): Move this to DiceSignedInProfileCreator when
