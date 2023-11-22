@@ -4,7 +4,7 @@
 
 #include "android_webview/nonembedded/component_updater/registration.h"
 
-#include <memory>
+#include <vector>
 
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/nonembedded/component_updater/aw_component_installer_policy_shim.h"
@@ -25,46 +25,27 @@
 
 namespace android_webview {
 
-namespace {
-// Number of components that are always downloaded on the default path (not
-// guarded by any flags). Update when changing the components WebView registers.
-constexpr int kNumWebViewComponents = 2;
-
-void RegisterComponentInstallerPolicyShim(
-    std::unique_ptr<component_updater::ComponentInstallerPolicy> policy,
-    base::OnceCallback<bool(const component_updater::ComponentRegistration&)>
-        register_callback,
-    base::OnceClosure registration_finished) {
-  base::MakeRefCounted<component_updater::ComponentInstaller>(
-      std::make_unique<AwComponentInstallerPolicyShim>(std::move(policy)))
-      ->Register(std::move(register_callback),
-                 std::move(registration_finished));
-}
-
-}  // namespace
-
 void RegisterComponentsForUpdate(
     base::RepeatingCallback<bool(
         const component_updater::ComponentRegistration&)> register_callback,
     base::OnceClosure on_finished) {
-  int num_webview_components = kNumWebViewComponents;
+  // Set of non-AW components that are always downloaded on the default path
+  // (not guarded by any flags). Update when changing the non-AW components
+  // WebView registers. Note: 'non-AW' refers to classes that do not contain
+  // AwComponentInstallerPolicy as a parent class
+  std::vector<std::unique_ptr<component_updater::ComponentInstallerPolicy>>
+      component_installer_list;
+  // Set of AW components that are always downloaded on the default path (not
+  // guarded by any flags). Update when changing the AW components WebView
+  // registers. Note: 'AW' refers to classes that contain
+  // AwComponentInstallerPolicy as a parent class
+  std::vector<std::unique_ptr<AwComponentInstallerPolicy>>
+      aw_component_installer_list;
 
-  bool trust_tokens_component_enabled =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewEnableTrustTokensComponent);
-  if (trust_tokens_component_enabled) {
-    num_webview_components++;
-  }
-
-  base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(num_webview_components, std::move(on_finished));
-
-  RegisterComponentInstallerPolicyShim(
+  component_installer_list.push_back(
       std::make_unique<
-          component_updater::OriginTrialsComponentInstallerPolicy>(),
-      register_callback, barrier_closure);
-
-  RegisterComponentInstallerPolicyShim(
+          component_updater::OriginTrialsComponentInstallerPolicy>());
+  component_installer_list.push_back(
       std::make_unique<
           component_updater::MaskedDomainListComponentInstallerPolicy>(
           /*on_list_ready=*/base::BindRepeating(
@@ -75,23 +56,41 @@ void RegisterComponentsForUpdate(
                 } else {
                   LOG(ERROR) << "Could not read Masked Domain List file";
                 }
-              })),
-      register_callback, barrier_closure);
+              })));
+  aw_component_installer_list.push_back(
+      std::make_unique<AwPackageNamesAllowlistComponentInstallerPolicy>());
 
-  // TODO(https://crbug.com/1170468): decide if this component is still needed.
-  // Note: We're using a command-line switch because finch features isn't
-  // supported in nonembedded WebView.
-  if (trust_tokens_component_enabled) {
-    RegisterComponentInstallerPolicyShim(
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewEnableTrustTokensComponent)) {
+    // TODO(https://crbug.com/1170468): decide if this component is still
+    // needed. Note: We're using a command-line switch because finch features
+    // isn't supported in nonembedded WebView.
+    component_installer_list.push_back(
         std::make_unique<component_updater::
                              TrustTokenKeyCommitmentsComponentInstallerPolicy>(
             /* on_commitments_ready= */ base::BindRepeating(
-                [](const std::string& raw_commitments) { NOTREACHED(); })),
-        register_callback, barrier_closure);
+                [](const std::string& raw_commitments) { NOTREACHED(); })));
   }
 
-  RegisterWebViewAppsPackageNamesAllowlistComponent(register_callback,
-                                                    barrier_closure);
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      component_installer_list.size() + aw_component_installer_list.size(),
+      std::move(on_finished));
+  for (auto& component : component_installer_list) {
+    base::MakeRefCounted<component_updater::ComponentInstaller>(
+        std::make_unique<AwComponentInstallerPolicyShim>(std::move(component)))
+        ->Register(base::OnceCallback<bool(
+                       const component_updater::ComponentRegistration&)>(
+                       register_callback),
+                   base::OnceClosure(barrier_closure));
+  }
+  for (auto& component : aw_component_installer_list) {
+    base::MakeRefCounted<component_updater::ComponentInstaller>(
+        std::move(component))
+        ->Register(base::OnceCallback<bool(
+                       const component_updater::ComponentRegistration&)>(
+                       register_callback),
+                   base::OnceClosure(barrier_closure));
+  }
 }
 
 }  // namespace android_webview

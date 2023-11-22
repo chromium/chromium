@@ -38,6 +38,8 @@ import java.io.File;
 public class AwComponentUpdateService extends JobService {
     private static final String TAG = "AwCUS";
 
+    private static SharedPreferences sSharedPreferences;
+
     private ResultReceiver mFinishCallback;
 
     // Histogram names.
@@ -56,8 +58,11 @@ public class AwComponentUpdateService extends JobService {
     private static final int DIRECTORY_SIZE_MIN_BUCKET = 100;
     private static final int DIRECTORY_SIZE_MAX_BUCKET = 500000;
     private static final int DIRECTORY_SIZE_NUM_BUCKETS = 50;
-    private static final String SHARED_PREFERENCES_NAME = "AwComponentUpdateServicePreferences";
-    private static final String KEY_UNEXPECTED_EXIT = "UnexpectedExit";
+
+    @VisibleForTesting
+    public static final String SHARED_PREFERENCES_NAME = "AwComponentUpdateServicePreferences";
+
+    @VisibleForTesting public static final String KEY_UNEXPECTED_EXIT = "UnexpectedExit";
 
     /**
      * The service can be both started by {@link android.app.job.JobScheduler} as a {@link
@@ -211,7 +216,9 @@ public class AwComponentUpdateService extends JobService {
 
     private void maybeRecordUnexpectedExit() {
         final SharedPreferences sharedPreferences =
-                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                sSharedPreferences != null
+                        ? sSharedPreferences
+                        : getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         if (sharedPreferences.contains(KEY_UNEXPECTED_EXIT)) {
             RecordHistogram.recordBooleanHistogram(HISTOGRAM_COMPONENT_UPDATER_UNEXPECTED_EXIT,
                     sharedPreferences.getBoolean(KEY_UNEXPECTED_EXIT, false));
@@ -220,8 +227,15 @@ public class AwComponentUpdateService extends JobService {
 
     private void setUnexpectedExit(boolean unfinished) {
         final SharedPreferences sharedPreferences =
-                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                sSharedPreferences != null
+                        ? sSharedPreferences
+                        : getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         sharedPreferences.edit().putBoolean(KEY_UNEXPECTED_EXIT, unfinished).apply();
+    }
+
+    @VisibleForTesting
+    public static void setSharedPreferences(SharedPreferences sharedPreferences) {
+        sSharedPreferences = sharedPreferences;
     }
 
     @NativeMethods

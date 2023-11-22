@@ -47,13 +47,6 @@ class AwPackageNamesAllowlistComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 
-// Call once during startup to make the component update service aware of
-// the package name logging component.
-void RegisterWebViewAppsPackageNamesAllowlistComponent(
-    base::OnceCallback<bool(const component_updater::ComponentRegistration&)>
-        register_callback,
-    base::OnceClosure registration_finished);
-
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_INSTALLER_POLICIES_AW_PACKAGE_NAMES_ALLOWLIST_COMPONENT_INSTALLER_POLICY_H_

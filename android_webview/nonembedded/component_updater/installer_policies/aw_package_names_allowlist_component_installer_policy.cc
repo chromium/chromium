@@ -45,16 +45,6 @@ AwPackageNamesAllowlistComponentInstallerPolicy::OnCustomInstall(
   return update_client::CrxInstaller::Result(/* error = */ 0);
 }
 
-void RegisterWebViewAppsPackageNamesAllowlistComponent(
-    base::OnceCallback<bool(const component_updater::ComponentRegistration&)>
-        register_callback,
-    base::OnceClosure registration_finished) {
-  base::MakeRefCounted<component_updater::ComponentInstaller>(
-      std::make_unique<AwPackageNamesAllowlistComponentInstallerPolicy>())
-      ->Register(std::move(register_callback),
-                 std::move(registration_finished));
-}
-
 bool AwPackageNamesAllowlistComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
   return true;
