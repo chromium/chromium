@@ -310,6 +310,9 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_CANCEL" desc="Label for button to cancel and return to previous page.">
     Cancel
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CARRIER_LOCKED_DEVICE" desc="Label for informing the user this device is carrier locked.When carrier locked, device will only allow to connect to specific mobile provider">
+    Downloaded profile may not be usable if mobile network provider is locked. Contact your provider for support.
+  </message>
 
   <!-- ChromeOS Strings -->
   <message name="IDS_ECHO_CONSENT_DIALOG_TEXT" desc="Dialog text shown when user is asked to give consent to proceed with redeeming an ECHO offer.">

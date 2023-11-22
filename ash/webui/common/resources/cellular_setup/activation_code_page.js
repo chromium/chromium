@@ -16,7 +16,10 @@ import './cellular_setup_icons.html.js';
 import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrosNetworkConfig, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './activation_code_page.html.js';
 
@@ -168,6 +171,22 @@ Polymer({
     },
 
     /**
+     * If true, device is locked to specific cellular operator.
+     */
+    isDeviceCarrierLocked_: {
+      type: Boolean,
+      value: false,
+    },
+
+    isCellularCarrierLockEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+      },
+    },
+
+    /**
      * Indicates whether or not |activationCode| matches the correct activation
      * code format. If there is a partial match (i.e. the code is incomplete but
      * matches the format so far), this will be false.
@@ -177,6 +196,26 @@ Polymer({
       type: Boolean,
       value: false,
     },
+  },
+
+  /** @private {?CrosNetworkConfigInterface} */
+  networkConfig_: null,
+
+  /** @override */
+  created() {
+    if (!this.isCellularCarrierLockEnabled_) {
+      return;
+    }
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+    this.networkConfig_.getDeviceStateList().then(response => {
+      const devices = response.result;
+      const deviceState =
+          devices.find(device => device.type == NetworkType.kCellular) || null;
+      if (deviceState) {
+        this.isDeviceCarrierLocked_ = deviceState.isCarrierLocked;
+      }
+    });
   },
 
   /**
@@ -258,6 +297,14 @@ Polymer({
    */
   isScanningAvailable_() {
     return this.cameraCount_ > 0 && !!this.qrCodeDetector_;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowCarrierLockWarning_() {
+    return this.isCellularCarrierLockEnabled_ && this.isDeviceCarrierLocked_;
   },
 
   /**
