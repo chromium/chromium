@@ -556,6 +556,10 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
+  CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()))
+      ->SetThirdPartyCookieSetting(
+          embedded_test_server()->GetURL("a.test", "/"), CONTENT_SETTING_ALLOW);
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
