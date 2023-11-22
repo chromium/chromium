@@ -255,10 +255,13 @@ class AuthSessionAuthenticatorTest : public testing::Test,
         .WillOnce([this](const UserContext& user_context) {
           on_password_change_detected_future_.SetValue(user_context);
         });
-    EXPECT_CALL(auth_status_consumer_, OnPasswordChangeDetected(_))
+    EXPECT_CALL(auth_status_consumer_, OnOnlinePasswordUnusable(_, _))
         .Times(AtMost(1))
-        .WillOnce([this](std::unique_ptr<UserContext> user_context) {
-          on_password_change_detected_future_.SetValue(*user_context);
+        .WillOnce([this](std::unique_ptr<UserContext> user_context,
+                         bool online_password_mismatch) {
+          if (online_password_mismatch) {
+            on_password_change_detected_future_.SetValue(*user_context);
+          }
         });
     EXPECT_CALL(auth_status_consumer_, OnOffTheRecordAuthSuccess())
         .Times(AtMost(1))

@@ -977,12 +977,14 @@ void ExistingUserController::OnPasswordChangeDetectedLegacy(
   ShowPasswordChangedDialogLegacy(user_context);
 }
 
-void ExistingUserController::OnPasswordChangeDetected(
-    std::unique_ptr<UserContext> user_context) {
+void ExistingUserController::OnOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   // Workaround for PrepareTrustedValues and need to move unique_ptr:
   base::OnceClosure callback =
-      base::BindOnce(&ExistingUserController::OnPasswordChangeDetectedImpl,
-                     weak_factory_.GetWeakPtr(), std::move(user_context));
+      base::BindOnce(&ExistingUserController::OnOnlinePasswordUnusableImpl,
+                     weak_factory_.GetWeakPtr(), std::move(user_context),
+                     online_password_mismatch);
   auto [continue_async, continue_now] =
       base::SplitOnceCallback(std::move(callback));
   // Must not proceed without signature verification.
@@ -995,15 +997,18 @@ void ExistingUserController::OnPasswordChangeDetected(
   std::move(continue_now).Run();
 }
 
-void ExistingUserController::OnPasswordChangeDetectedImpl(
-    std::unique_ptr<UserContext> user_context) {
+void ExistingUserController::OnOnlinePasswordUnusableImpl(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   DCHECK(ash::features::IsCryptohomeRecoveryEnabled());
   DCHECK(user_context);
   is_login_in_progress_ = false;
 
-  for (auto& auth_status_consumer : auth_status_consumers_) {
-    auth_status_consumer.OnPasswordChangeDetectedFor(
-        user_context->GetAccountId());
+  if (online_password_mismatch) {
+    for (auto& auth_status_consumer : auth_status_consumers_) {
+      auth_status_consumer.OnPasswordChangeDetectedFor(
+          user_context->GetAccountId());
+    }
   }
 
   GetLoginDisplayHost()->GetSigninUI()->StartCryptohomeRecovery(

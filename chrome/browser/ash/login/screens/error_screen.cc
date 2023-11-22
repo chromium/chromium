@@ -359,8 +359,9 @@ void ErrorScreen::OnPasswordChangeDetectedLegacy(
   LOG(FATAL);
 }
 
-void ErrorScreen::OnPasswordChangeDetected(
-    std::unique_ptr<UserContext> user_context) {
+void ErrorScreen::OnOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   LOG(FATAL);
 }
 

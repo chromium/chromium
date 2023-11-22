@@ -123,17 +123,21 @@ void LoginPerformer::OnPasswordChangeDetectedLegacy(
                      weak_factory_.GetWeakPtr(), user_context));
 }
 
-void LoginPerformer::OnPasswordChangeDetected(
-    std::unique_ptr<UserContext> user_context) {
+void LoginPerformer::OnOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auth_events_recorder_->OnPasswordChange();
-  password_changed_ = true;
+  if (online_password_mismatch) {
+    auth_events_recorder_->OnPasswordChange();
+    password_changed_ = true;
+  }
   DCHECK(user_context);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetected,
-                     weak_factory_.GetWeakPtr(), std::move(user_context)));
+      base::BindOnce(&LoginPerformer::NotifyOnlinePasswordUnusable,
+                     weak_factory_.GetWeakPtr(), std::move(user_context),
+                     online_password_mismatch));
 }
 
 void LoginPerformer::OnLocalAuthenticationRequired(
@@ -311,12 +315,14 @@ void LoginPerformer::NotifyPasswordChangeDetectedLegacy(
   delegate_->OnPasswordChangeDetectedLegacy(user_context);
 }
 
-void LoginPerformer::NotifyPasswordChangeDetected(
-    std::unique_ptr<UserContext> user_context) {
+void LoginPerformer::NotifyOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   DCHECK(user_context);
-  delegate_->OnPasswordChangeDetected(std::move(user_context));
+  delegate_->OnOnlinePasswordUnusable(std::move(user_context),
+                                      online_password_mismatch);
 }
 
 void LoginPerformer::NotifyLocalAuthenticationRequired(

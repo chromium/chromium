@@ -14,9 +14,12 @@ void AuthStatusConsumer::OnPasswordChangeDetectedLegacy(
   NOTREACHED();
 }
 
-void AuthStatusConsumer::OnPasswordChangeDetected(
-    std::unique_ptr<UserContext> user_context) {
-  OnPasswordChangeDetectedFor(user_context->GetAccountId());
+void AuthStatusConsumer::OnOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
+  if (online_password_mismatch) {
+    OnPasswordChangeDetectedFor(user_context->GetAccountId());
+  }
 }
 
 void AuthStatusConsumer::OnPasswordChangeDetectedFor(const AccountId& account) {

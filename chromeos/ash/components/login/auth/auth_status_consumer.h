@@ -34,9 +34,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthStatusConsumer
   // Password verified by the online flow does work for local
   // authentication.
   // This is the method that should actually handle the scenario.
-  // `context` has online-verified password as a `Key`.
-  virtual void OnPasswordChangeDetected(
-      std::unique_ptr<UserContext> user_context);
+  // `context` has online-verified password as a `Key`, and also as
+  // the `OnlinePassword`.
+  // `online_password_mismatch` allows to differentiate situation where
+  // `OnlinePassword` is present, but fails cryptohome authentication.
+  virtual void OnOnlinePasswordUnusable(
+      std::unique_ptr<UserContext> user_context,
+      bool online_password_mismatch);
   // Auxiliary method, used to get notified about password change without
   // actually handling it.
   virtual void OnPasswordChangeDetectedFor(const AccountId& account);

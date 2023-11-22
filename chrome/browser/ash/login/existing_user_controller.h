@@ -182,7 +182,8 @@ class ExistingUserController : public content::NotificationObserver,
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnOffTheRecordAuthSuccess() override;
   void OnPasswordChangeDetectedLegacy(const UserContext& user_context) override;
-  void OnPasswordChangeDetected(std::unique_ptr<UserContext>) override;
+  void OnOnlinePasswordUnusable(std::unique_ptr<UserContext>,
+                                bool online_password_mismatch) override;
   void OnLocalAuthenticationRequired(
       std::unique_ptr<UserContext> user_context) override;
   void OnOldEncryptionDetected(std::unique_ptr<UserContext>,
@@ -190,7 +191,8 @@ class ExistingUserController : public content::NotificationObserver,
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
 
-  void OnPasswordChangeDetectedImpl(std::unique_ptr<UserContext>);
+  void OnOnlinePasswordUnusableImpl(std::unique_ptr<UserContext>,
+                                    bool online_password_mismatch);
 
   // Handles the continuation of successful login after an attempt has been made
   // to divert to a hibernate resume flow. The execution of this method means

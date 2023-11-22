@@ -26,8 +26,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   MOCK_METHOD0(OnOffTheRecordAuthSuccess, void(void));
   MOCK_METHOD1(OnPasswordChangeDetectedLegacy,
                void(const UserContext& user_context));
-  MOCK_METHOD1(OnPasswordChangeDetected,
-               void(std::unique_ptr<UserContext> user_context));
+  MOCK_METHOD2(OnOnlinePasswordUnusable,
+               void(std::unique_ptr<UserContext> user_context, bool));
   MOCK_METHOD1(OnPasswordChangeDetectedFor, void(const AccountId& account));
 
   // The following functions can be used in gmock Invoke() clauses.
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void OnFailQuit(const AuthFailure& error);
   void OnFailQuitAndFail(const AuthFailure& error);
 
-  // Compatible with AuthStatusConsumer::OnPasswordChangeDetected()
+  // Compatible with AuthStatusConsumer::OnOnlinePasswordUnusable()
   void OnMigrateQuit();
   void OnMigrateQuitAndFail();
 

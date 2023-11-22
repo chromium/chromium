@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   void OnAuthSuccess(const UserContext& user_context) override;
   void OnOffTheRecordAuthSuccess() override;
   void OnPasswordChangeDetectedLegacy(const UserContext& user_context) override;
-  void OnPasswordChangeDetected(std::unique_ptr<UserContext>) override;
+  void OnOnlinePasswordUnusable(std::unique_ptr<UserContext>, bool) override;
   void OnOldEncryptionDetected(std::unique_ptr<UserContext>,
                                bool has_incomplete_migration) override;
   void OnLocalAuthenticationRequired(
@@ -195,7 +195,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   void NotifyAuthSuccess(const UserContext& user_context);
   void NotifyOffTheRecordAuthSuccess();
   void NotifyPasswordChangeDetectedLegacy(const UserContext& user_context);
-  void NotifyPasswordChangeDetected(std::unique_ptr<UserContext> user_context);
+  void NotifyOnlinePasswordUnusable(std::unique_ptr<UserContext> user_context,
+                                    bool online_password_mismatch);
   void NotifyOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
                                    bool has_incomplete_migration);
   void NotifyLocalAuthenticationRequired(
