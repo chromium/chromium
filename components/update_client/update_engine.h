@@ -208,7 +208,7 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   // to uniquely identify an update context.
   const std::string session_id;
 
-  // Persists data using the prefs service. Not owned by this class.
+  // Persists data using the prefs service.
   raw_ptr<PersistedData> persisted_data = nullptr;
 
   // True if this context is for an update check operation.

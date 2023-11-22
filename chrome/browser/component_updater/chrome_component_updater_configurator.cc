@@ -94,8 +94,7 @@ class ChromeConfigurator : public update_client::Configurator {
   absl::optional<base::FilePath> GetBackgroundDownloaderCache() const;
 
   ConfiguratorImpl configurator_impl_;
-  raw_ptr<PrefService>
-      pref_service_;  // This member is not owned by this class.
+  raw_ptr<PrefService> pref_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
