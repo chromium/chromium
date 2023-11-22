@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -42,13 +41,6 @@
 #endif
 
 using blink::mojom::MediaDeviceType;
-
-namespace features {
-// When enabled, MediaDevicesDispatcherHost does not block back/forward cache.
-BASE_FEATURE(kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost,
-             "EnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace features
 
 namespace content {
 
@@ -101,15 +93,11 @@ void MediaDevicesDispatcherHost::Create(
                        if (!render_frame_host)
                          return;
 
-                       if (!base::FeatureList::IsEnabled(
-                               features::
-                                   kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost)) {
-                         BackForwardCache::DisableForRenderFrameHost(
-                             render_frame_host,
-                             BackForwardCacheDisable::DisabledReason(
-                                 BackForwardCacheDisable::DisabledReasonId::
-                                     kMediaDevicesDispatcherHost));
-                       }
+                       BackForwardCache::DisableForRenderFrameHost(
+                           render_frame_host,
+                           BackForwardCacheDisable::DisabledReason(
+                               BackForwardCacheDisable::DisabledReasonId::
+                                   kMediaDevicesDispatcherHost));
                      },
                      render_frame_host_id));
 }

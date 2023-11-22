@@ -12,7 +12,6 @@
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
-#include "content/browser/renderer_host/media/media_devices_dispatcher_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
@@ -1130,39 +1129,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-// The bool parameter is used for switching
-// `kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost`.
-class BackForwardCacheForPagesWithMediaDevicesDispatcherHostTest
-    : public BackForwardCacheBrowserTest,
-      public testing::WithParamInterface<bool> {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (IsBFCacheForPagesWithMediaDevicesDispatcherHostEnabled()) {
-      EnableFeatureAndSetParams(
-          features::
-              kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost,
-          "", "");
-    } else {
-      DisableFeature(
-          features::
-              kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost);
-    }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  bool IsBFCacheForPagesWithMediaDevicesDispatcherHostEnabled() {
-    return GetParam();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BackForwardCacheForPagesWithMediaDevicesDispatcherHostTest,
-    testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheForPagesWithMediaDevicesDispatcherHostTest,
-    DoesNotCacheIfRecordingAudio) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfRecordingAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   BackForwardCacheDisabledTester tester;
@@ -1170,6 +1138,8 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to an empty page.
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  int process_id = current_frame_host()->GetProcess()->GetID();
+  int routing_id = current_frame_host()->GetRoutingID();
 
   // Request for audio recording.
   EXPECT_EQ("success", EvalJs(current_frame_host(), R"(
@@ -1189,27 +1159,21 @@ IN_PROC_BROWSER_TEST_P(
   // have been cached.
   deleted.WaitUntilDeleted();
 
-  // 3) Go back.
+  // 3) Go back. Note that the reason for kWasGrantedMediaAccess occurs after
+  // MediaDevicesDispatcherHost is called, hence, both are reasons for the page
+  // not being restored.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-
-  if (IsBFCacheForPagesWithMediaDevicesDispatcherHostEnabled()) {
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess}, {}, {}, {},
-                      {}, FROM_HERE);
-  } else {
-    // Note that the reason for kWasGrantedMediaAccess occurs after
-    // MediaDevicesDispatcherHost is called, hence, both are reasons for the
-    // page not being restored.
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
-                       NotRestoredReason::kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, {}, FROM_HERE);
-  }
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
+  ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
+                     NotRestoredReason::kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, {}, FROM_HERE);
+  EXPECT_TRUE(
+      tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheForPagesWithMediaDevicesDispatcherHostTest,
-    DoesNotCacheIfSubframeRecordingAudio) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfSubframeRecordingAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   BackForwardCacheDisabledTester tester;
@@ -1218,6 +1182,9 @@ IN_PROC_BROWSER_TEST_P(
   GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* rfh = current_frame_host();
+  int process_id =
+      rfh->child_at(0)->current_frame_host()->GetProcess()->GetID();
+  int routing_id = rfh->child_at(0)->current_frame_host()->GetRoutingID();
 
   // Request for audio recording from the subframe.
   EXPECT_EQ("success", EvalJs(rfh->child_at(0)->current_frame_host(), R"(
@@ -1237,27 +1204,22 @@ IN_PROC_BROWSER_TEST_P(
   // have been cached.
   deleted.WaitUntilDeleted();
 
-  // 3) Go back.
+  // 3) Go back. Note that the reason for kWasGrantedMediaAccess occurs after
+  // MediaDevicesDispatcherHost is called, hence, both are reasons for the page
+  // not being restored.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
 
-  if (IsBFCacheForPagesWithMediaDevicesDispatcherHostEnabled()) {
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess}, {}, {}, {},
-                      {}, FROM_HERE);
-  } else {
-    // Note that the reason for kWasGrantedMediaAccess occurs after
-    // MediaDevicesDispatcherHost is called, hence, both are reasons for the
-    // page not being restored.
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
-                       NotRestoredReason::kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, {}, FROM_HERE);
-  }
+  ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
+                     NotRestoredReason::kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, {}, FROM_HERE);
+  EXPECT_TRUE(
+      tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheForPagesWithMediaDevicesDispatcherHostTest,
-    DoesNotCacheIfMediaDeviceSubscribedButDoesCacheIfFlagEnabled) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfMediaDeviceSubscribed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   BackForwardCacheDisabledTester tester;
@@ -1265,8 +1227,10 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to a page with an iframe.
   GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-
   RenderFrameHostImpl* rfh = current_frame_host();
+  int process_id =
+      rfh->child_at(0)->current_frame_host()->GetProcess()->GetID();
+  int routing_id = rfh->child_at(0)->current_frame_host()->GetRoutingID();
 
   EXPECT_EQ("success", EvalJs(rfh->child_at(0)->current_frame_host(), R"(
     new Promise(resolve => {
@@ -1279,33 +1243,26 @@ IN_PROC_BROWSER_TEST_P(
   RenderFrameDeletedObserver deleted(current_frame_host());
 
   // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // The page was subscribed to media devices when we navigated away, so it
+  // shouldn't have been cached.
+  deleted.WaitUntilDeleted();
 
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-
-  if (IsBFCacheForPagesWithMediaDevicesDispatcherHostEnabled()) {
-    // The page should be BFCached when the flag is enabled because
-    // the only blocker when it's disabled is `kMediaDevicesDispatcherHost`.
-    ExpectRestored(FROM_HERE);
-  } else {
-    // The page was subscribed to media devices when we navigated away, so it
-    // shouldn't have been cached.
-    deleted.WaitUntilDeleted();
-
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                      {}, {reason}, {}, FROM_HERE);
-  }
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
+  ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
+                    {}, {reason}, {}, FROM_HERE);
+  EXPECT_TRUE(
+      tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
 
 // Checks that the page is not restored from BFCache when it calls
-// mediaDevice.enumerateDevices() unless the flag is enabled.
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheForPagesWithMediaDevicesDispatcherHostTest,
-    DoesNotCacheIfDevicesEnumeratedButDoesCacheIfFlagEnabled) {
+// mediaDevice.enumerateDevices().
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfDevicesEnumerated) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to an empty page.
@@ -1323,21 +1280,15 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-  if (IsBFCacheForPagesWithMediaDevicesDispatcherHostEnabled()) {
-    // 3) Go back. The page should be cached when the flag is enabled.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectRestored(FROM_HERE);
-  } else {
-    // The page shouldn't be cached when the flag is disabled.
-    ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
+  // The page that enumerates media devices shouldn't be cached.
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
-    // 3) Go back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                      {}, {reason}, {}, FROM_HERE);
-  }
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
+  ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
+                    {}, {reason}, {}, FROM_HERE);
 }
 
 // Checks that the page is not restored from BFCache when it calls
@@ -1345,9 +1296,8 @@ IN_PROC_BROWSER_TEST_P(
 // Since mediaDevice.getDisplayMedia() is not supported in Android, this test
 // can't run on the OS.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheForPagesWithMediaDevicesDispatcherHostTest,
-    DoesNotCacheIfDisplayMediaAccessGranted) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfDisplayMediaAccessGranted) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to an empty page.
@@ -1369,22 +1319,13 @@ IN_PROC_BROWSER_TEST_P(
   // The page where display media permission is requested shouldn't be cached.
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
-  if (IsBFCacheForPagesWithMediaDevicesDispatcherHostEnabled()) {
-    // 3) Go back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess}, {}, {}, {},
-                      {}, FROM_HERE);
-  } else {
-    // 3) Go back. kMediaDevicesDispatcherHost should be one of the blockers for
-    // BFCache when the flag is disabled.
-    // Also, kWasGrantedMediaAccess occurs after kMediaDevicesDispatcherHost.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
-                       NotRestoredReason::kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, {}, FROM_HERE);
-  }
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
+  ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
+                     NotRestoredReason::kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, {}, FROM_HERE);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

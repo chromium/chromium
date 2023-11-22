@@ -24,11 +24,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "url/origin.h"
 
-namespace features {
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost);
-}  // namespace features
-
 namespace content {
 
 class MediaStreamManager;
