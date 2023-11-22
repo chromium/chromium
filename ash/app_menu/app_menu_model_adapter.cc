@@ -4,6 +4,9 @@
 
 #include "ash/app_menu/app_menu_model_adapter.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/app_menu/notification_menu_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -64,12 +67,14 @@ void AppMenuModelAdapter::Run(const gfx::Rect& menu_anchor_rect,
   DCHECK(model_);
 
   menu_open_time_ = base::TimeTicks::Now();
-  root_ = CreateMenu();
+  std::unique_ptr<views::MenuItemView> root = CreateMenu();
+  root_ = root.get();
   if (ash::features::IsNotificationsInContextMenuEnabled()) {
     notification_menu_controller_ =
         std::make_unique<NotificationMenuController>(app_id_, root_, this);
   }
-  menu_runner_ = std::make_unique<views::MenuRunner>(root_, run_types);
+  menu_runner_ =
+      std::make_unique<views::MenuRunner>(std::move(root), run_types);
   menu_runner_->RunMenuAt(widget_owner_, nullptr /* MenuButtonController */,
                           menu_anchor_rect, menu_anchor_position, source_type_);
 }

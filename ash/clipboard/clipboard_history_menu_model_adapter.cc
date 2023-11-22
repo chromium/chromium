@@ -4,7 +4,9 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/clipboard/clipboard_history.h"
@@ -414,13 +416,14 @@ void ClipboardHistoryMenuModelAdapter::Run(
     clipboard_image_factory->Activate();
   }
 
-  root_view_ = CreateMenu();
+  std::unique_ptr<views::MenuItemView> root_view = CreateMenu();
+  root_view_ = root_view.get();
   root_view_->SetTitle(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_TITLE));
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      root_view_, views::MenuRunner::CONTEXT_MENU |
-                      views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
-                      views::MenuRunner::FIXED_ANCHOR);
+      std::move(root_view), views::MenuRunner::CONTEXT_MENU |
+                                views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
+                                views::MenuRunner::FIXED_ANCHOR);
   menu_runner_->RunMenuAt(
       /*parent=*/nullptr, /*button_controller=*/nullptr, anchor_rect,
       views::MenuAnchorPosition::kBubbleBottomRight, source_type);

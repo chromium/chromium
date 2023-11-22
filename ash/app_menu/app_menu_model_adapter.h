@@ -105,13 +105,12 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   // The callback which is triggered when the menu is closed.
   base::OnceClosure on_menu_closed_callback_;
 
-  // The root MenuItemView which contains all child MenuItemViews. Owned by
-  // |menu_runner_|.
-  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_ =
-      nullptr;
-
   // Used to show the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // The root MenuItemView which contains all child MenuItemViews. Owned by
+  // `menu_runner_`.
+  raw_ptr<views::MenuItemView, ExperimentalAsh> root_ = nullptr;
 
   // The timestamp taken when the menu is opened. Used in metrics.
   base::TimeTicks menu_open_time_;

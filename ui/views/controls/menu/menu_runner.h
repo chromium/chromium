@@ -128,9 +128,6 @@ class VIEWS_EXPORT MenuRunner {
 
   // Creates a runner for a custom-created toolkit-views menu.
   MenuRunner(std::unique_ptr<MenuItemView> menu, int32_t run_types);
-  // Deprecated: Move to the above version that makes it explicit that
-  // `MenuRunner` takes ownership of `MenuItemView`.
-  MenuRunner(MenuItemView* menu, int32_t run_types);
 
   MenuRunner(const MenuRunner&) = delete;
   MenuRunner& operator=(const MenuRunner&) = delete;

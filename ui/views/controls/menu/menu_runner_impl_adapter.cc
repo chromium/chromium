@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
@@ -18,8 +17,7 @@ MenuRunnerImplAdapter::MenuRunnerImplAdapter(
     base::RepeatingClosure on_menu_done_callback)
     : menu_model_adapter_(
           new MenuModelAdapter(menu_model, std::move(on_menu_done_callback))),
-      impl_(new MenuRunnerImpl(
-          base::WrapUnique<MenuItemView>(menu_model_adapter_->CreateMenu()))) {}
+      impl_(new MenuRunnerImpl(menu_model_adapter_->CreateMenu())) {}
 
 bool MenuRunnerImplAdapter::IsRunning() const {
   return impl_->IsRunning();

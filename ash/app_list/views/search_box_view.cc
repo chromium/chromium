@@ -389,9 +389,10 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
   void ShowFilterMenu(SearchBoxView* search_box) {
     int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                     views::MenuRunner::FIXED_ANCHOR;
-    filter_menu_root_ = CreateMenu();
-    filter_menu_runner_ =
-        std::make_unique<views::MenuRunner>(filter_menu_root_, run_types);
+    std::unique_ptr<views::MenuItemView> filter_menu_root = CreateMenu();
+    filter_menu_root_ = filter_menu_root.get();
+    filter_menu_runner_ = std::make_unique<views::MenuRunner>(
+        std::move(filter_menu_root), run_types);
     filter_menu_runner_->RunMenuAt(
         search_box->GetWidget(), nullptr /*button_controller*/,
         search_box->filter_button()->GetBoundsInScreen(),

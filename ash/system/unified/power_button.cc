@@ -234,12 +234,14 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
         context_menu_model_.get(),
         base::BindRepeating(&MenuController::OnMenuClosed,
                             base::Unretained(this)));
-    root_menu_item_view_ = menu_model_adapter_->CreateMenu();
+    std::unique_ptr<views::MenuItemView> menu =
+        menu_model_adapter_->CreateMenu();
+    root_menu_item_view_ = menu.get();
     int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                     views::MenuRunner::CONTEXT_MENU |
                     views::MenuRunner::FIXED_ANCHOR;
     menu_runner_ =
-        std::make_unique<views::MenuRunner>(root_menu_item_view_, run_types);
+        std::make_unique<views::MenuRunner>(std::move(menu), run_types);
 
     menu_runner_->RunMenuAt(source->GetWidget(), /*button_controller=*/nullptr,
                             source->GetBoundsInScreen(),
@@ -315,9 +317,9 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   // Called when the context menu is closed. Used as a callback for
   // `menu_model_adapter_`.
   void OnMenuClosed() {
+    root_menu_item_view_ = nullptr;
     menu_runner_.reset();
     context_menu_model_.reset();
-    root_menu_item_view_ = nullptr;
     menu_model_adapter_.reset();
     power_button_->UpdateView();
   }
@@ -330,8 +332,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
-  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh>
-      root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_item_view_ = nullptr;
 
   // Owned by views hierarchy.
   raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;

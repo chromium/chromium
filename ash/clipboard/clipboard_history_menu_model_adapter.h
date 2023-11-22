@@ -138,13 +138,12 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // The model which holds the contents of the menu.
   std::unique_ptr<MenuModelWithWillCloseCallback> const model_;
 
-  // The root MenuItemView which contains all child MenuItemViews. Owned by
-  // |menu_runner_|.
-  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_view_ =
-      nullptr;
-
-  // Responsible for showing |root_view_|.
+  // Responsible for showing `root_view_`.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // The root MenuItemView which contains all child MenuItemViews. Owned by
+  // `menu_runner_`.
+  raw_ptr<views::MenuItemView, ExperimentalAsh> root_view_ = nullptr;
 
   // The timestamp taken when the menu is opened. Used in metrics.
   base::TimeTicks menu_open_time_;

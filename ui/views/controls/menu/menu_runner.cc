@@ -30,9 +30,6 @@ MenuRunner::MenuRunner(std::unique_ptr<MenuItemView> menu, int32_t run_types)
     : run_types_(run_types),
       impl_(new internal::MenuRunnerImpl(std::move(menu))) {}
 
-MenuRunner::MenuRunner(MenuItemView* menu, int32_t run_types)
-    : MenuRunner(base::WrapUnique<MenuItemView>(menu), run_types) {}
-
 MenuRunner::~MenuRunner() {
   // Release causes the deletion of the object.
   impl_.ExtractAsDangling()->Release();
