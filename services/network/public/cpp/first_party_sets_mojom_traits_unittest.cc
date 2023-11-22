@@ -94,6 +94,7 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
   net::SchemefulSite b(GURL("https://b.test"));
   net::SchemefulSite b_cctld(GURL("https://b.cctld"));
   net::SchemefulSite c(GURL("https://c.test"));
+  net::SchemefulSite c_cctld(GURL("https://c.cctld"));
 
   net::GlobalFirstPartySets original(
       base::Version("1.2.3"),
@@ -105,11 +106,14 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
           {c,
            net::FirstPartySetEntry(a, net::SiteType::kService, absl::nullopt)},
       },
-      /*aliases=*/{{b_cctld, b}});
+      /*aliases=*/{{c_cctld, c}});
 
   original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
-      {{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
-       {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)}}));
+      /*set_entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary,
+                                                   absl::nullopt)},
+                       {b, net::FirstPartySetEntry(
+                               a, net::SiteType::kAssociated, 0)}},
+      /*aliases=*/{{b_cctld, b}}));
 
   net::GlobalFirstPartySets round_tripped;
 
@@ -126,6 +130,7 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
   net::SchemefulSite b(GURL("https://b.test"));
   net::SchemefulSite b_cctld(GURL("https://b.cctld"));
   net::SchemefulSite c(GURL("https://c.test"));
+  net::SchemefulSite c_cctld(GURL("https://c.cctld"));
 
   net::GlobalFirstPartySets original(
       base::Version(),
@@ -137,11 +142,14 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
           {c,
            net::FirstPartySetEntry(a, net::SiteType::kService, absl::nullopt)},
       },
-      /*aliases=*/{{b_cctld, b}});
+      /*aliases=*/{{c_cctld, c}});
 
   original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
-      {{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
-       {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)}}));
+      /*set_entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary,
+                                                   absl::nullopt)},
+                       {b, net::FirstPartySetEntry(
+                               a, net::SiteType::kAssociated, 0)}},
+      /*aliases=*/{{b_cctld, b}}));
 
   net::GlobalFirstPartySets round_tripped;
 
@@ -154,9 +162,9 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
   // base::Version::operator== crashes for invalid versions, so we don't check
   // equality of `round_tripped` and `original` that way. However, we can verify
   // that the original entries and alias are not present in `round_tripped`:
-  EXPECT_THAT(round_tripped.FindEntries({a, b, b_cctld, c},
+  EXPECT_THAT(round_tripped.FindEntries({a, b, b_cctld, c, c_cctld},
                                         net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(Key(a), Key(b)));
+              UnorderedElementsAre(Key(a), Key(b), Key(b_cctld)));
 }
 
 TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {

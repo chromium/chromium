@@ -153,12 +153,14 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
                    R"({"primary": "https://example.test", "associatedSites": )"
                    R"(["https://associatedsite1.test"]})");
   loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>({
+      /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                     net::FirstPartySetEntry>({
           {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
                                         absl::nullopt)},
           {associated2,
            net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      })));
+      }),
+      /*aliases=*/{}));
 
   EXPECT_THAT(
       WaitAndGetResult().FindEntry(associated2,
@@ -172,21 +174,25 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
   const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
 
   loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>({
+      /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                     net::FirstPartySetEntry>({
           {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
                                         absl::nullopt)},
           {associated1,
            net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      })));
+      }),
+      /*aliases=*/{}));
 
   // All but the first SetManuallySpecifiedSet call should be ignored.
   loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>({
+      /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                     net::FirstPartySetEntry>({
           {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
                                         absl::nullopt)},
           {associated2,
            net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      })));
+      }),
+      /*aliases=*/{}));
 
   SetComponentSets(loader(), base::Version(), "");
 

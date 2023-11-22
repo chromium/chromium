@@ -30,7 +30,8 @@ class NET_EXPORT LocalSetDeclaration {
   // the same set (i.e. they must have the same primary site). The set must not
   // be a singleton (i.e. must have more than one entry, or must be empty).
   explicit LocalSetDeclaration(
-      base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries);
+      base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases);
 
   ~LocalSetDeclaration();
 

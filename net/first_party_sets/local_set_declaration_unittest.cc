@@ -31,12 +31,41 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
       {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
   });
 
-  EXPECT_THAT(LocalSetDeclaration(entries).entries(),
+  EXPECT_THAT(LocalSetDeclaration(entries, /*aliases=*/{}).entries(),
               UnorderedElementsAre(
                   Pair(primary, FirstPartySetEntry(primary, SiteType::kPrimary,
                                                    absl::nullopt)),
                   Pair(associated,
                        FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
+}
+
+TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
+  SchemefulSite primary(GURL("https://primary.test"));
+  SchemefulSite primary_cctld(GURL("https://primary.cctld"));
+  SchemefulSite associated(GURL("https://associated.test"));
+  SchemefulSite associated_cctld(GURL("https://associated.cctld"));
+
+  base::flat_map<SchemefulSite, FirstPartySetEntry> entries({
+      {primary, FirstPartySetEntry(primary, SiteType::kPrimary, absl::nullopt)},
+      {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+  });
+
+  base::flat_map<SchemefulSite, SchemefulSite> aliases(
+      {{primary_cctld, primary}, {associated_cctld, associated}});
+
+  // TODO(https://crbug.com/1503736): Store aliases separately from regular
+  // entries.
+  EXPECT_THAT(
+      LocalSetDeclaration(entries, aliases).entries(),
+      UnorderedElementsAre(
+          Pair(primary,
+               FirstPartySetEntry(primary, SiteType::kPrimary, absl::nullopt)),
+          Pair(associated,
+               FirstPartySetEntry(primary, SiteType::kAssociated, 0)),
+          Pair(primary_cctld,
+               FirstPartySetEntry(primary, SiteType::kPrimary, absl::nullopt)),
+          Pair(associated_cctld,
+               FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
 }
 
 }  // namespace net

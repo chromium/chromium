@@ -329,7 +329,8 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
       {net::SchemefulSite(GURL(manual_primary)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
                                net::SiteType::kPrimary, absl::nullopt)}};
-  global_sets.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(manual_sets));
+  global_sets.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
 
   net::FirstPartySetsContextConfig config(
       {{net::SchemefulSite(GURL(site_member1)),
@@ -443,7 +444,8 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
       {net::SchemefulSite(GURL(manual_primary)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
                                net::SiteType::kPrimary, absl::nullopt)}};
-  global_sets.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(manual_sets));
+  global_sets.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
 
   net::FirstPartySetsContextConfig config(
       {{net::SchemefulSite(GURL(site_member1)),
@@ -589,7 +591,8 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
       {net::SchemefulSite(GURL(manual_primary)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
                                net::SiteType::kPrimary, absl::nullopt)}};
-  global_sets.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(manual_sets));
+  global_sets.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
 
   net::FirstPartySetsContextConfig config(
       {{net::SchemefulSite(GURL(site_member1)),
@@ -981,7 +984,8 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
       {manual_primary,
        net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
                                absl::nullopt)}};
-  global_sets.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(manual_sets));
+  global_sets.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
 
   OpenDatabase();
   // Trigger the lazy-initialization and insert data with a invalid version, so
@@ -1097,7 +1101,8 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
       {manual_primary,
        net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
                                absl::nullopt)}};
-  global_sets.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(manual_sets));
+  global_sets.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration(/*set_entries=*/manual_sets, /*aliases=*/{}));
 
   net::FirstPartySetsContextConfig config(
       {{config_site_member1,

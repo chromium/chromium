@@ -797,14 +797,7 @@ net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
     return net::LocalSetDeclaration();
   }
 
-  for (const auto& [alias, canonical] : aliases) {
-    auto it = entries.find(canonical);
-    CHECK(it != entries.end());
-    bool inserted = entries.emplace(alias, it->second).second;
-    CHECK(inserted);
-  }
-
-  return net::LocalSetDeclaration(std::move(entries));
+  return net::LocalSetDeclaration(std::move(entries), std::move(aliases));
 }
 
 std::ostream& operator<<(
