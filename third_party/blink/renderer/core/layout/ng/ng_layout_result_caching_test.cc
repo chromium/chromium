@@ -15,7 +15,7 @@ namespace {
 // rendering tests which contain two children: "test" and "src".
 //
 // Both have layout initially performed on them, however the "src" will have a
-// different |NGConstraintSpace| which is then used to test either a cache hit
+// different |ConstraintSpace| which is then used to test either a cache hit
 // or miss.
 class NGLayoutResultCachingTest : public RenderingTest {
  protected:
@@ -23,7 +23,7 @@ class NGLayoutResultCachingTest : public RenderingTest {
 
   const NGLayoutResult* TestCachedLayoutResultWithBreakToken(
       LayoutBox* box,
-      const NGConstraintSpace& constraint_space,
+      const ConstraintSpace& constraint_space,
       const NGBlockBreakToken* break_token) {
     absl::optional<FragmentGeometry> fragment_geometry;
     NGLayoutCacheStatus cache_status;
@@ -33,7 +33,7 @@ class NGLayoutResultCachingTest : public RenderingTest {
 
   const NGLayoutResult* TestCachedLayoutResult(
       LayoutBox* box,
-      const NGConstraintSpace& constraint_space,
+      const ConstraintSpace& constraint_space,
       NGLayoutCacheStatus* out_cache_status = nullptr) {
     absl::optional<FragmentGeometry> fragment_geometry;
     NGLayoutCacheStatus cache_status;
@@ -72,7 +72,7 @@ TEST_F(NGLayoutResultCachingTest, HitDifferentExclusionSpace) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -112,7 +112,7 @@ TEST_F(NGLayoutResultCachingTest, HitDifferentBFCOffset) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -166,7 +166,7 @@ TEST_F(NGLayoutResultCachingTest, HitDifferentBFCOffsetSameMarginStrut) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -203,7 +203,7 @@ TEST_F(NGLayoutResultCachingTest, MissDescendantAboveBlockStart1) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -240,7 +240,7 @@ TEST_F(NGLayoutResultCachingTest, MissDescendantAboveBlockStart2) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -277,7 +277,7 @@ TEST_F(NGLayoutResultCachingTest, HitOOFDescendantAboveBlockStart) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -319,7 +319,7 @@ TEST_F(NGLayoutResultCachingTest, HitLineBoxDescendantAboveBlockStart) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -354,7 +354,7 @@ TEST_F(NGLayoutResultCachingTest, MissFloatInitiallyIntruding1) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -389,7 +389,7 @@ TEST_F(NGLayoutResultCachingTest, MissFloatInitiallyIntruding2) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -423,7 +423,7 @@ TEST_F(NGLayoutResultCachingTest, MissFloatWillIntrude1) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -457,7 +457,7 @@ TEST_F(NGLayoutResultCachingTest, MissFloatWillIntrude2) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -491,7 +491,7 @@ TEST_F(NGLayoutResultCachingTest, HitPushedByFloats1) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -525,7 +525,7 @@ TEST_F(NGLayoutResultCachingTest, HitPushedByFloats2) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -560,7 +560,7 @@ TEST_F(NGLayoutResultCachingTest, MissPushedByFloats1) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -595,7 +595,7 @@ TEST_F(NGLayoutResultCachingTest, MissPushedByFloats2) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -623,7 +623,7 @@ TEST_F(NGLayoutResultCachingTest, HitDifferentRareData) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -651,7 +651,7 @@ TEST_F(NGLayoutResultCachingTest, HitPercentageMinWidth) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -679,7 +679,7 @@ TEST_F(NGLayoutResultCachingTest, HitFixedMinWidth) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -720,7 +720,7 @@ TEST_F(NGLayoutResultCachingTest, HitShrinkToFit) {
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
 
   NGLayoutCacheStatus cache_status;
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -791,7 +791,7 @@ TEST_F(NGLayoutResultCachingTest, MissShrinkToFit) {
   auto* src4 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src4"));
 
   NGLayoutCacheStatus cache_status;
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -847,7 +847,7 @@ TEST_F(NGLayoutResultCachingTest, HitShrinkToFitSameIntrinsicSizes) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -880,7 +880,7 @@ TEST_F(NGLayoutResultCachingTest, HitShrinkToFitDifferentParent) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -913,7 +913,7 @@ TEST_F(NGLayoutResultCachingTest, MissQuirksModePercentageBasedChild) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -951,7 +951,7 @@ TEST_F(NGLayoutResultCachingTest, HitQuirksModePercentageBasedParentAndChild) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -983,7 +983,7 @@ TEST_F(NGLayoutResultCachingTest, HitStandardsModePercentageBasedChild) {
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1028,7 +1028,7 @@ TEST_F(NGLayoutResultCachingTest, ChangeTableCellBlockSizeConstrainedness) {
   auto* src3 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src3"));
 
   NGLayoutCacheStatus cache_status;
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1069,7 +1069,7 @@ TEST_F(NGLayoutResultCachingTest, OptimisticFloatPlacementNoRelayout) {
 
   auto* empty = To<LayoutBlockFlow>(GetLayoutObjectByElementId("empty"));
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       empty->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
 
   // We shouldn't have a "forced" BFC block-offset, as the "empty"
@@ -1130,7 +1130,7 @@ TEST_F(NGLayoutResultCachingTest, SelfCollapsingShifting) {
 
   NGLayoutCacheStatus cache_status;
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1201,7 +1201,7 @@ TEST_F(NGLayoutResultCachingTest, ClearancePastAdjoiningFloatsMovement) {
 
   NGLayoutCacheStatus cache_status;
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1260,7 +1260,7 @@ TEST_F(NGLayoutResultCachingTest, MarginStrutMovementSelfCollapsing) {
 
   NGLayoutCacheStatus cache_status;
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1348,7 +1348,7 @@ TEST_F(NGLayoutResultCachingTest, MarginStrutMovementInFlow) {
 
   NGLayoutCacheStatus cache_status;
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1401,7 +1401,7 @@ TEST_F(NGLayoutResultCachingTest, MarginStrutMovementPercentage) {
 
   NGLayoutCacheStatus cache_status;
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1431,7 +1431,7 @@ TEST_F(NGLayoutResultCachingTest, HitIsFixedBlockSizeIndefinite) {
 
   NGLayoutCacheStatus cache_status;
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1463,7 +1463,7 @@ TEST_F(NGLayoutResultCachingTest, MissIsFixedBlockSizeIndefinite) {
 
   NGLayoutCacheStatus cache_status;
 
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1506,7 +1506,7 @@ TEST_F(NGLayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
 
   // "src1" only had one "measure" pass performed, and should hit the "measure"
   // cache-slot for "test1".
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1558,7 +1558,7 @@ TEST_F(NGLayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
 
   // "src1" only had one "measure" pass performed, and should hit the "measure"
   // cache-slot for "test1".
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
@@ -1599,7 +1599,7 @@ TEST_F(NGLayoutResultCachingTest, HitFlexLegacyImg) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1631,7 +1631,7 @@ TEST_F(NGLayoutResultCachingTest, HitFlexLegacyGrid) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1676,7 +1676,7 @@ TEST_F(NGLayoutResultCachingTest, HitOrthogonalRoot) {
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       target->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(target, space, &cache_status);
@@ -1830,7 +1830,7 @@ TEST_F(NGLayoutResultCachingTest, MissTablePercent) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1854,7 +1854,7 @@ TEST_F(NGLayoutResultCachingTest, HitTableRowAdd) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1878,7 +1878,7 @@ TEST_F(NGLayoutResultCachingTest, MissTableRowAdd) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1902,7 +1902,7 @@ TEST_F(NGLayoutResultCachingTest, HitTableRowRemove) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1926,7 +1926,7 @@ TEST_F(NGLayoutResultCachingTest, MissTableRowRemove) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1950,7 +1950,7 @@ TEST_F(NGLayoutResultCachingTest, HitTableSectionAdd) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -1974,7 +1974,7 @@ TEST_F(NGLayoutResultCachingTest, HitTableSectionRemove) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -2002,7 +2002,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
 
   const NGLayoutResult* test_result1 = test->GetCachedLayoutResult(nullptr);
   ASSERT_TRUE(test_result1);
-  const NGConstraintSpace& test_space1 =
+  const ConstraintSpace& test_space1 =
       test_result1->GetConstraintSpaceForCaching();
   const auto* test_break_token1 =
       To<NGBlockBreakToken>(test_result1->PhysicalFragment().BreakToken());
@@ -2010,7 +2010,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const NGLayoutResult* test_result2 =
       test->GetCachedLayoutResult(test_break_token1);
   ASSERT_TRUE(test_result2);
-  const NGConstraintSpace& test_space2 =
+  const ConstraintSpace& test_space2 =
       test_result2->GetConstraintSpaceForCaching();
   const auto* test_break_token2 =
       To<NGBlockBreakToken>(test_result2->PhysicalFragment().BreakToken());
@@ -2018,13 +2018,13 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const NGLayoutResult* test_result3 =
       test->GetCachedLayoutResult(test_break_token2);
   ASSERT_TRUE(test_result3);
-  const NGConstraintSpace& test_space3 =
+  const ConstraintSpace& test_space3 =
       test_result3->GetConstraintSpaceForCaching();
   EXPECT_FALSE(test_result3->PhysicalFragment().BreakToken());
 
   const NGLayoutResult* src_result1 = src->GetCachedLayoutResult(nullptr);
   ASSERT_TRUE(src_result1);
-  const NGConstraintSpace& src_space1 =
+  const ConstraintSpace& src_space1 =
       src_result1->GetConstraintSpaceForCaching();
   const auto* src_break_token1 =
       To<NGBlockBreakToken>(src_result1->PhysicalFragment().BreakToken());
@@ -2032,7 +2032,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const NGLayoutResult* src_result2 =
       src->GetCachedLayoutResult(src_break_token1);
   ASSERT_TRUE(src_result2);
-  const NGConstraintSpace& src_space2 =
+  const ConstraintSpace& src_space2 =
       src_result2->GetConstraintSpaceForCaching();
   const auto* src_break_token2 =
       To<NGBlockBreakToken>(src_result2->PhysicalFragment().BreakToken());
@@ -2040,7 +2040,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const NGLayoutResult* src_result3 =
       src->GetCachedLayoutResult(src_break_token2);
   ASSERT_TRUE(src_result3);
-  const NGConstraintSpace& src_space3 =
+  const ConstraintSpace& src_space3 =
       src_result3->GetConstraintSpaceForCaching();
   EXPECT_FALSE(src_result3->PhysicalFragment().BreakToken());
 
@@ -2089,11 +2089,11 @@ TEST_F(NGLayoutResultCachingTest, BlockOffsetChangeInFragmentainer) {
   auto* test3 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test3"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  const NGConstraintSpace& test1_space =
+  const ConstraintSpace& test1_space =
       test1->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
-  const NGConstraintSpace& test2_space =
+  const ConstraintSpace& test2_space =
       test2->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
-  const NGConstraintSpace& test3_space =
+  const ConstraintSpace& test3_space =
       test3->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
 
   // The element is one pixel above the fragmentation line. Still unbroken. We
@@ -2138,11 +2138,11 @@ TEST_F(NGLayoutResultCachingTest, BfcRootBlockOffsetChangeInFragmentainer) {
   auto* test3 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test3"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  const NGConstraintSpace& test1_space =
+  const ConstraintSpace& test1_space =
       test1->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
-  const NGConstraintSpace& test2_space =
+  const ConstraintSpace& test2_space =
       test2->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
-  const NGConstraintSpace& test3_space =
+  const ConstraintSpace& test3_space =
       test3->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
 
   // The element is one pixel above the fragmentation line. Still unbroken. We
@@ -2182,7 +2182,7 @@ TEST_F(NGLayoutResultCachingTest, HitBlockOffsetUnchangedInFragmentainer) {
   NGLayoutCacheStatus cache_status;
   ASSERT_NE(src->GetSingleCachedLayoutResult(), nullptr);
   ASSERT_NE(test->GetSingleCachedLayoutResult(), nullptr);
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
@@ -2213,7 +2213,7 @@ TEST_F(NGLayoutResultCachingTest, HitNewFormattingContextInFragmentainer) {
   NGLayoutCacheStatus cache_status;
   ASSERT_NE(src->GetSingleCachedLayoutResult(), nullptr);
   ASSERT_NE(test->GetSingleCachedLayoutResult(), nullptr);
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   EXPECT_TRUE(space.IsInitialColumnBalancingPass());
   const NGLayoutResult* result =
@@ -2244,9 +2244,9 @@ TEST_F(NGLayoutResultCachingTest, MissMonolithicChangeInFragmentainer) {
 
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
-  const NGConstraintSpace& src_space =
+  const ConstraintSpace& src_space =
       src->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
-  const NGConstraintSpace& test_space =
+  const ConstraintSpace& test_space =
       test->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching();
 
   EXPECT_FALSE(TestCachedLayoutResult(src, test_space));
@@ -2272,7 +2272,7 @@ TEST_F(NGLayoutResultCachingTest, MissGridIncorrectIntrinsicSize) {
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
   NGLayoutCacheStatus cache_status;
-  NGConstraintSpace space =
+  ConstraintSpace space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const NGLayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);

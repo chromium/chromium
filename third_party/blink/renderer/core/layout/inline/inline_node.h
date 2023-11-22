@@ -16,10 +16,10 @@
 
 namespace blink {
 
+class ConstraintSpace;
 class InlineChildLayoutContext;
 class NGBreakToken;
 class NGColumnSpannerPath;
-class NGConstraintSpace;
 class NGLayoutResult;
 class OffsetMapping;
 struct InlineItemsData;
@@ -36,7 +36,7 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
     return To<LayoutBlockFlow>(box_.Get());
   }
 
-  const NGLayoutResult* Layout(const NGConstraintSpace&,
+  const NGLayoutResult* Layout(const ConstraintSpace&,
                                const NGBreakToken*,
                                const NGColumnSpannerPath*,
                                InlineChildLayoutContext* context) const;
@@ -45,7 +45,7 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   // box. min-content is the inline size when lines wrap at every break
   // opportunity, and max-content is when lines do not wrap at all.
   MinMaxSizesResult ComputeMinMaxSizes(WritingMode container_writing_mode,
-                                       const NGConstraintSpace&,
+                                       const ConstraintSpace&,
                                        const MinMaxSizesFloatInput&) const;
 
   // Instruct to re-compute |PrepareLayout| on the next layout.

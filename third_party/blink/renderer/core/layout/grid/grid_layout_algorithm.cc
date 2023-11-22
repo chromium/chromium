@@ -443,7 +443,7 @@ GridArea SubgriddedAreaInParent(const SubgriddedItemData& opt_subgrid_data) {
 
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
     const GridItemData& subgrid_data,
-    const NGConstraintSpace& space) {
+    const ConstraintSpace& space) {
   DCHECK(subgrid_data.IsSubgrid());
 
   bool needs_to_compute_min_max_sizes = false;
@@ -949,7 +949,7 @@ namespace {
 
 const NGLayoutResult* LayoutGridItemForMeasure(
     const GridItemData& grid_item,
-    const NGConstraintSpace& constraint_space,
+    const ConstraintSpace& constraint_space,
     SizingConstraint sizing_constraint) {
   const auto& node = grid_item.node;
 
@@ -3184,7 +3184,7 @@ void AlignmentOffsetForOutOfFlow(const AxisEdge inline_axis_edge,
 
 }  // namespace
 
-NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
+ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
     LayoutResultCacheSlot cache_slot,
     const GridItemData& grid_item,
     const LogicalSize& containing_grid_area_size,
@@ -3238,7 +3238,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
   return builder.ToConstraintSpace();
 }
 
-NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
+ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
     const GridItemData& grid_item,
     const GridLayoutData& layout_data,
     GridLayoutSubtree&& opt_layout_subtree,
@@ -3286,7 +3286,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
                                opt_fragment_relative_block_offset);
 }
 
-NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
+ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const SubgriddedItemData& subgridded_item,
     GridTrackSizingDirection track_direction,
     const LogicalSize& fixed_available_size) const {
@@ -3308,7 +3308,7 @@ NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
                                fixed_available_size);
 }
 
-NGConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
+ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
     const SubgriddedItemData& subgrid_data) const {
   DCHECK(subgrid_data.IsSubgrid());
 

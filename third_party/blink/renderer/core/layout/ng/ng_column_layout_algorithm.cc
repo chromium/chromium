@@ -353,7 +353,7 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
   }
 
   // First calculate the min/max sizes of columns.
-  NGConstraintSpace space = CreateConstraintSpaceForMinMax();
+  ConstraintSpace space = CreateConstraintSpaceForMinMax();
   FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       space, Node(), /* break_token */ nullptr, /* is_intrinsic */ true);
   BlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
@@ -428,7 +428,7 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
       NGMinMaxConstraintSpaceBuilder builder(
           GetConstraintSpace(), Style(), *child_block, /* is_new_fc */ true);
       builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
-      const NGConstraintSpace child_space = builder.ToConstraintSpace();
+      const ConstraintSpace child_space = builder.ToConstraintSpace();
       child_result = ComputeMinAndMaxContentContribution(Style(), *child_block,
                                                          child_space);
     }
@@ -730,7 +730,7 @@ const NGLayoutResult* ColumnLayoutAlgorithm::LayoutRow(
 
     do {
       // Lay out one column. Each column will become a fragment.
-      NGConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
+      ConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
           GetConstraintSpace(), kFragmentColumn, column_size,
           ColumnPercentageResolutionSize(), balance_columns,
           min_break_appeal.value_or(kBreakAppealLastResort));
@@ -1215,7 +1215,7 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
   // breaks. It will make us lay out all the multicol content as one single tall
   // strip (unless there are forced breaks). When we're done with this layout
   // pass, we can examine the result and calculate an ideal column block-size.
-  NGConstraintSpace space = CreateConstraintSpaceForBalancing(column_size);
+  ConstraintSpace space = CreateConstraintSpaceForBalancing(column_size);
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, Node(), BreakToken());
 
@@ -1468,7 +1468,7 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   return (size - extra).ClampNegativeToZero();
 }
 
-NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
+ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
     const LogicalSize& column_size) const {
   NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
                                          Style().GetWritingDirection(),
@@ -1485,7 +1485,7 @@ NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
   return space_builder.ToConstraintSpace();
 }
 
-NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
+ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
     const BlockNode& spanner,
     LayoutUnit block_offset) const {
   auto child_writing_direction = spanner.Style().GetWritingDirection();
@@ -1513,8 +1513,7 @@ NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
   return space_builder.ToConstraintSpace();
 }
 
-NGConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForMinMax()
-    const {
+ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForMinMax() const {
   NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
                                          Style().GetWritingDirection(),
                                          /* is_new_fc */ true);

@@ -26,8 +26,8 @@ enum class LengthResolveType { kMinSize, kMaxSize, kMainSize };
 inline bool InlineLengthMayChange(const ComputedStyle& style,
                                   const Length& length,
                                   LengthResolveType type,
-                                  const NGConstraintSpace& new_space,
-                                  const NGConstraintSpace& old_space,
+                                  const ConstraintSpace& new_space,
+                                  const ConstraintSpace& old_space,
                                   const NGLayoutResult& layout_result) {
   DCHECK_EQ(new_space.InlineAutoBehavior(), old_space.InlineAutoBehavior());
 
@@ -60,8 +60,8 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
 }
 
 inline bool BlockLengthMayChange(const Length& length,
-                                 const NGConstraintSpace& new_space,
-                                 const NGConstraintSpace& old_space) {
+                                 const ConstraintSpace& new_space,
+                                 const ConstraintSpace& old_space) {
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
   if (length.IsFillAvailable() ||
       (length.IsAuto() && new_space.IsBlockAutoBehaviorStretch())) {
@@ -74,8 +74,8 @@ inline bool BlockLengthMayChange(const Length& length,
 }
 
 bool BlockSizeMayChange(const BlockNode& node,
-                        const NGConstraintSpace& new_space,
-                        const NGConstraintSpace& old_space,
+                        const ConstraintSpace& new_space,
+                        const ConstraintSpace& old_space,
                         const NGLayoutResult& layout_result) {
   DCHECK_EQ(new_space.IsFixedBlockSize(), old_space.IsFixedBlockSize());
   DCHECK_EQ(new_space.IsInitialBlockSizeIndefinite(),
@@ -117,8 +117,8 @@ bool BlockSizeMayChange(const BlockNode& node,
 // constraint space will give a different size compared to the old one, when
 // computed style and child content remain unchanged.
 bool SizeMayChange(const BlockNode& node,
-                   const NGConstraintSpace& new_space,
-                   const NGConstraintSpace& old_space,
+                   const ConstraintSpace& new_space,
+                   const ConstraintSpace& old_space,
                    const NGLayoutResult& layout_result) {
   DCHECK_EQ(new_space.IsFixedInlineSize(), old_space.IsFixedInlineSize());
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
@@ -180,8 +180,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     const BlockNode& node,
     const FragmentGeometry& fragment_geometry,
     const NGLayoutResult& layout_result,
-    const NGConstraintSpace& new_space,
-    const NGConstraintSpace& old_space) {
+    const ConstraintSpace& new_space,
+    const ConstraintSpace& old_space) {
   const ComputedStyle& style = node.Style();
   const NGPhysicalBoxFragment& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
@@ -437,7 +437,7 @@ bool IntrinsicSizeWillChange(
     const BlockNode& node,
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
-    const NGConstraintSpace& new_space,
+    const ConstraintSpace& new_space,
     absl::optional<FragmentGeometry>* fragment_geometry) {
   const ComputedStyle& style = node.Style();
   if (new_space.IsInlineAutoBehaviorStretch() && !NeedMinMaxSize(style))
@@ -465,11 +465,11 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockNode& node,
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
-    const NGConstraintSpace& new_space,
+    const ConstraintSpace& new_space,
     absl::optional<FragmentGeometry>* fragment_geometry) {
   DCHECK_EQ(cached_layout_result.Status(), NGLayoutResult::kSuccess);
 
-  const NGConstraintSpace& old_space =
+  const ConstraintSpace& old_space =
       cached_layout_result.GetConstraintSpaceForCaching();
 
   if (!new_space.MaySkipLayout(old_space))
@@ -504,7 +504,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
 
 bool MaySkipLayoutWithinBlockFormattingContext(
     const NGLayoutResult& cached_layout_result,
-    const NGConstraintSpace& new_space,
+    const ConstraintSpace& new_space,
     absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
     MarginStrut* end_margin_strut) {
@@ -513,7 +513,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
   DCHECK(block_offset_delta);
   DCHECK(end_margin_strut);
 
-  const NGConstraintSpace& old_space =
+  const ConstraintSpace& old_space =
       cached_layout_result.GetConstraintSpaceForCaching();
 
   bool is_margin_strut_equal =

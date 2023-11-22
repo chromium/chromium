@@ -16,11 +16,11 @@
 namespace blink {
 
 class BlockNode;
+class ConstraintSpace;
 class CustomLayoutScope;
 class FragmentResultOptions;
 class IntrinsicSizesResultOptions;
 class LayoutUnit;
-class NGConstraintSpace;
 class ScriptState;
 class SerializedScriptValue;
 class V8IntrinsicSizesCallback;
@@ -55,7 +55,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
     // Runs the web developer defined layout, returns true if everything
     // succeeded. It populates the FragmentResultOptions dictionary, and
     // fragment_result_data.
-    bool Layout(const NGConstraintSpace&,
+    bool Layout(const ConstraintSpace&,
                 const Document&,
                 const BlockNode&,
                 const LogicalSize& border_box_size,
@@ -66,7 +66,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
 
     // Runs the web developer defined intrinsicSizes, returns true if everything
     // succeeded. It populates the IntrinsicSizesResultOptions dictionary.
-    bool IntrinsicSizes(const NGConstraintSpace&,
+    bool IntrinsicSizes(const ConstraintSpace&,
                         const Document&,
                         const BlockNode&,
                         const LogicalSize& border_box_size,

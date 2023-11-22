@@ -29,7 +29,7 @@ class CORE_EXPORT TableLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
   static LayoutUnit ComputeTableInlineSize(const TableNode& node,
-                                           const NGConstraintSpace& space,
+                                           const ConstraintSpace& space,
                                            const BoxStrut& border_padding);
 
   // Useful when trying to compute table's block sizes.

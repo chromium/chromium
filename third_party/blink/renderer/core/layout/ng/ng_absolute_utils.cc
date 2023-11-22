@@ -373,7 +373,7 @@ InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
 bool ComputeOofInlineDimensions(
     const BlockNode& node,
     const ComputedStyle& style,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const InsetModifiedContainingBlock& imcb,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
@@ -499,7 +499,7 @@ bool ComputeOofInlineDimensions(
 const NGLayoutResult* ComputeOofBlockDimensions(
     const BlockNode& node,
     const ComputedStyle& style,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const InsetModifiedContainingBlock& imcb,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,

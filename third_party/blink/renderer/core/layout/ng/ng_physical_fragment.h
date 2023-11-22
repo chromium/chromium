@@ -634,7 +634,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
 
   // Returns true if we aren't able to re-use this fragment if the
-  // |NGConstraintSpace::PercentageResolutionBlockSize| changes.
+  // |ConstraintSpace::PercentageResolutionBlockSize| changes.
   bool DependsOnPercentageBlockSize() const {
     return depends_on_percentage_block_size_;
   }

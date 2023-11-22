@@ -18,7 +18,7 @@ class LineBreakCandidateTest : public RenderingTest {
   bool ComputeCandidates(const InlineNode& node,
                          LayoutUnit available_width,
                          LineBreakCandidates& candidates) {
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     ExclusionSpace exclusion_space;
     LeadingFloats leading_floats;
     LineLayoutOpportunity line_opportunity(available_width);

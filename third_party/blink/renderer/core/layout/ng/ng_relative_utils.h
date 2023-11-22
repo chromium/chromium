@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class NGConstraintSpace;
+class ConstraintSpace;
 
 // Implements relative positioning:
 // https://www.w3.org/TR/css-position-3/#rel-pos
@@ -30,11 +30,11 @@ CORE_EXPORT LogicalOffset ComputeRelativeOffsetForBoxFragment(
     const LogicalSize& available_size);
 
 CORE_EXPORT LogicalOffset
-ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
+ComputeRelativeOffsetForInline(const ConstraintSpace& space,
                                const ComputedStyle& child_style);
 
 CORE_EXPORT LogicalOffset
-ComputeRelativeOffsetForOOFInInline(const NGConstraintSpace& space,
+ComputeRelativeOffsetForOOFInInline(const ConstraintSpace& space,
                                     const ComputedStyle& child_style);
 
 }  // namespace blink

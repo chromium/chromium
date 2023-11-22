@@ -222,7 +222,7 @@ inline MinMaxSizesResult ComputeMinMaxSizesWithAlgorithm(
   return result;
 }
 
-bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
+bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
                                       const MinMaxSizesFloatInput& float_input,
                                       const BlockNode& node) {
   // Obviously can't use the cache if our intrinsic logical widths are dirty.
@@ -316,7 +316,7 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
 }  // namespace
 
 const NGLayoutResult* BlockNode::Layout(
-    const NGConstraintSpace& constraint_space,
+    const ConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path) const {
@@ -588,8 +588,7 @@ const NGLayoutResult* BlockNode::SimplifiedLayout(
          box_->ChildLayoutBlockedByDisplayLock());
 
   // Perform layout on ourselves using the previous constraint space.
-  const NGConstraintSpace space(
-      previous_result->GetConstraintSpaceForCaching());
+  const ConstraintSpace space(previous_result->GetConstraintSpaceForCaching());
   const NGLayoutResult* result = Layout(space, /* break_token */ nullptr);
 
   if (result->Status() != NGLayoutResult::kSuccess) {
@@ -625,7 +624,7 @@ const NGLayoutResult* BlockNode::SimplifiedLayout(
 }
 
 const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
-    const NGConstraintSpace& constraint_space,
+    const ConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token) const {
   // We read and write the physical fragments vector in LayoutBox here, which
   // isn't allowed if side-effects are disabled. Call-sites must make sure that
@@ -735,7 +734,7 @@ const NGLayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
   // layout result.
   // E.g. when we have a fixed-length top position constraint (top: 5px), we
   // are in the correct writing mode (htb-ltr), and we have a fixed width.
-  const NGConstraintSpace& space =
+  const ConstraintSpace& space =
       cached_layout_result->GetConstraintSpaceForCaching();
   if (space.PercentageResolutionSize() != container_content_size)
     return nullptr;
@@ -772,7 +771,7 @@ void BlockNode::PrepareForLayout() const {
 
 void BlockNode::FinishLayout(
     LayoutBlockFlow* block_flow,
-    const NGConstraintSpace& constraint_space,
+    const ConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
     const NGLayoutResult* layout_result,
     const absl::optional<PhysicalSize>& old_box_size) const {
@@ -888,7 +887,7 @@ void BlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
 MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
     const MinMaxSizesType type,
-    const NGConstraintSpace& constraint_space,
+    const ConstraintSpace& constraint_space,
     const MinMaxSizesFloatInput float_input) const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
@@ -1142,7 +1141,7 @@ String BlockNode::ToString() const {
 }
 
 void BlockNode::CopyFragmentDataToLayoutBox(
-    const NGConstraintSpace& constraint_space,
+    const ConstraintSpace& constraint_space,
     const NGLayoutResult& layout_result,
     const NGBlockBreakToken* previous_break_token) const {
   const auto& physical_fragment =
@@ -1244,7 +1243,7 @@ void BlockNode::PlaceChildrenInLayoutBox(
 
 void BlockNode::PlaceChildrenInFlowThread(
     LayoutMultiColumnFlowThread* flow_thread,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGPhysicalBoxFragment& physical_fragment,
     const NGBlockBreakToken* previous_container_break_token) const {
   // Stitch the contents of the columns together in the legacy flow thread, and
@@ -1540,7 +1539,7 @@ bool BlockNode::HasIndex() const {
 }
 
 const NGLayoutResult* BlockNode::LayoutAtomicInline(
-    const NGConstraintSpace& parent_constraint_space,
+    const ConstraintSpace& parent_constraint_space,
     const ComputedStyle& parent_style,
     bool use_first_line_style,
     BaselineAlgorithmType baseline_algorithm_type) {
@@ -1559,7 +1558,7 @@ const NGLayoutResult* BlockNode::LayoutAtomicInline(
       parent_constraint_space.PercentageResolutionSize());
   builder.SetReplacedPercentageResolutionSize(
       parent_constraint_space.ReplacedPercentageResolutionSize());
-  NGConstraintSpace constraint_space = builder.ToConstraintSpace();
+  ConstraintSpace constraint_space = builder.ToConstraintSpace();
   const NGLayoutResult* result = Layout(constraint_space);
   if (!NGDisableSideEffectsScope::IsDisabled()) {
     // TODO(kojii): Investigate why ClearNeedsLayout() isn't called
@@ -1582,7 +1581,7 @@ const NGLayoutResult* BlockNode::RunSimplifiedLayout(
 }
 
 void BlockNode::UpdateMarginPaddingInfoIfNeeded(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGPhysicalFragment& fragment) const {
   // Table-cells don't have margins, and aren't grid-items.
   if (space.IsTableCell())
@@ -1616,7 +1615,7 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
 // in the parents writing mode.
 void BlockNode::UpdateShapeOutsideInfoIfNeeded(
     const NGLayoutResult& layout_result,
-    const NGConstraintSpace& constraint_space) const {
+    const ConstraintSpace& constraint_space) const {
   if (!box_->IsFloating() || !box_->GetShapeOutsideInfo())
     return;
 

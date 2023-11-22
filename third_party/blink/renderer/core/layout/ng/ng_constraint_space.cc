@@ -19,7 +19,7 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGConstraintSpace {
+struct SameSizeAsConstraintSpace {
   LogicalSize available_size;
   union {
     BfcOffset bfc_offset;
@@ -29,11 +29,11 @@ struct SameSizeAsNGConstraintSpace {
   unsigned bitfields[1];
 };
 
-ASSERT_SIZE(NGConstraintSpace, SameSizeAsNGConstraintSpace);
+ASSERT_SIZE(ConstraintSpace, SameSizeAsConstraintSpace);
 
 }  // namespace
 
-String NGConstraintSpace::ToString() const {
+String ConstraintSpace::ToString() const {
   return String::Format("Offset: %s,%s Size: %sx%s Clearance: %s",
                         BfcOffset().line_offset.ToString().Ascii().c_str(),
                         BfcOffset().block_offset.ToString().Ascii().c_str(),

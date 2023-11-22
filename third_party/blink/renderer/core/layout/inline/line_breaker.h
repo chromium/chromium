@@ -43,7 +43,7 @@ class CORE_EXPORT LineBreaker {
  public:
   LineBreaker(InlineNode,
               LineBreakerMode,
-              const NGConstraintSpace&,
+              const ConstraintSpace&,
               const LineLayoutOpportunity&,
               const LeadingFloats& leading_floats,
               const InlineBreakToken*,
@@ -90,7 +90,7 @@ class CORE_EXPORT LineBreaker {
   // Compute InlineItemResult for an open tag item.
   // Returns true if this item has edge and may have non-zero inline size.
   static bool ComputeOpenTagResult(const InlineItem&,
-                                   const NGConstraintSpace&,
+                                   const ConstraintSpace&,
                                    bool is_in_svg_text,
                                    InlineItemResult*);
 
@@ -357,7 +357,7 @@ class CORE_EXPORT LineBreaker {
   // |InlineNode::TextContentForContentSize|.
   String text_content_;
 
-  const NGConstraintSpace& constraint_space_;
+  const ConstraintSpace& constraint_space_;
   ExclusionSpace* exclusion_space_;
   const InlineBreakToken* break_token_;
   const NGColumnSpannerPath* column_spanner_path_;

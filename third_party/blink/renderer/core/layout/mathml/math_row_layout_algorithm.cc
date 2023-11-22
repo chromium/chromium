@@ -62,7 +62,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       !inherits_block_stretch_size_constraint &&
       constraint_space.HasTargetStretchInlineSize();
 
-  NGConstraintSpace::MathTargetStretchBlockSizes stretch_sizes;
+  ConstraintSpace::MathTargetStretchBlockSizes stretch_sizes;
   if (!inherits_block_stretch_size_constraint &&
       !inherits_inline_stretch_size_constraint) {
     auto UpdateBlockStretchSizes =
@@ -102,7 +102,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
         if (child.IsOutOfFlowPositioned())
           continue;
         DCHECK(IsBlockAxisStretchyOperator(To<BlockNode>(child)));
-        NGConstraintSpace::MathTargetStretchBlockSizes zero_stretch_sizes;
+        ConstraintSpace::MathTargetStretchBlockSizes zero_stretch_sizes;
         const auto child_constraint_space = CreateConstraintSpaceForMathChild(
             Node(), ChildAvailableSize(), constraint_space, child,
             LayoutResultCacheSlot::kMeasure, zero_stretch_sizes);
@@ -125,7 +125,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
           To<BlockNode>(child), BorderScrollbarPadding().StartOffset());
       continue;
     }
-    NGConstraintSpace child_constraint_space;
+    ConstraintSpace child_constraint_space;
     if (inherits_block_stretch_size_constraint &&
         IsBlockAxisStretchyOperator(To<BlockNode>(child))) {
       child_constraint_space = CreateConstraintSpaceForMathChild(

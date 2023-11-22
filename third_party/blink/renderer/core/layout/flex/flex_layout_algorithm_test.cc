@@ -49,7 +49,7 @@ TEST_F(FlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
     </div>
   )HTML");
 
-  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize));
   BlockNode box(GetDocument().body()->GetLayoutBox());

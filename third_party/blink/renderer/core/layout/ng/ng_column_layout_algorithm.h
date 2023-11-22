@@ -12,9 +12,9 @@
 namespace blink {
 
 class BlockNode;
+class ConstraintSpace;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
-class NGConstraintSpace;
 enum class NGBreakStatus;
 struct LogicalSize;
 struct MarginStrut;
@@ -112,12 +112,12 @@ class CORE_EXPORT ColumnLayoutAlgorithm
     return LogicalSize(column_inline_size_, ChildAvailableSize().block_size);
   }
 
-  NGConstraintSpace CreateConstraintSpaceForBalancing(
+  ConstraintSpace CreateConstraintSpaceForBalancing(
       const LogicalSize& column_size) const;
-  NGConstraintSpace CreateConstraintSpaceForSpanner(
+  ConstraintSpace CreateConstraintSpaceForSpanner(
       const BlockNode& spanner,
       LayoutUnit block_offset) const;
-  NGConstraintSpace CreateConstraintSpaceForMinMax() const;
+  ConstraintSpace CreateConstraintSpaceForMinMax() const;
 
   // The sum of all the current column children's block-sizes, as if they were
   // stacked, including any block-size that is added as a result of

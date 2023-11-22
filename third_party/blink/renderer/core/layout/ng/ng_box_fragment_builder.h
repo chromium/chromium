@@ -40,7 +40,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
  public:
   NGBoxFragmentBuilder(LayoutInputNode node,
                        const ComputedStyle* style,
-                       const NGConstraintSpace& space,
+                       const ConstraintSpace& space,
                        WritingDirectionMode writing_direction)
       : NGFragmentBuilder(node, style, space, writing_direction),
         is_inline_formatting_context_(node.IsInline()) {}
@@ -49,7 +49,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   // has InlineItem but does not have corresponding LayoutInputNode.
   NGBoxFragmentBuilder(LayoutObject* layout_object,
                        const ComputedStyle* style,
-                       const NGConstraintSpace& space,
+                       const ConstraintSpace& space,
                        WritingDirectionMode writing_direction)
       : NGFragmentBuilder(/* node */ nullptr,
                           std::move(style),

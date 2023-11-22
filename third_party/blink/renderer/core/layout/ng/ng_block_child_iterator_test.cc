@@ -20,7 +20,7 @@ const NGBlockBreakToken* CreateBreakToken(
     const NGBreakTokenVector* child_break_tokens = nullptr,
     bool has_seen_all_children = false) {
   NGBoxFragmentBuilder builder(
-      node, &node.Style(), NGConstraintSpace(),
+      node, &node.Style(), ConstraintSpace(),
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr));
   DCHECK(!builder.HasBreakTokenData());
   builder.SetBreakTokenData(MakeGarbageCollected<NGBlockBreakTokenData>());

@@ -19,7 +19,7 @@ class OutOfFlowLayoutPartTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     BlockNode container(element->GetLayoutBox());
-    NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+    ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
     return BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);

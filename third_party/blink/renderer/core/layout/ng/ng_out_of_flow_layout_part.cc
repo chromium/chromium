@@ -338,7 +338,7 @@ OutOfFlowLayoutPart::InitialContainingBlockFixedSize(BlockNode container) {
 
 OutOfFlowLayoutPart::OutOfFlowLayoutPart(
     const BlockNode& container_node,
-    const NGConstraintSpace& container_space,
+    const ConstraintSpace& container_space,
     NGBoxFragmentBuilder* container_builder)
     : container_builder_(container_builder),
       is_absolute_container_(container_node.IsAbsoluteContainer()),
@@ -971,7 +971,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // Create a simplified container builder for multicol children. It cannot be
   // used to generate a fragment (since no size has been set, for one), but is
   // suitable for holding child fragmentainers while we're cloning them.
-  NGConstraintSpace limited_multicol_constraint_space =
+  ConstraintSpace limited_multicol_constraint_space =
       CreateConstraintSpaceForMulticol(multicol);
   FragmentGeometry limited_fragment_geometry = CalculateInitialFragmentGeometry(
       limited_multicol_constraint_space, multicol, /* break_token */ nullptr);
@@ -1194,7 +1194,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // We have located the right multicol fragment to replace. Re-use its old
     // constraint space and establish a layout algorithm to regenerate the
     // fragment.
-    const NGConstraintSpace& constraint_space =
+    const ConstraintSpace& constraint_space =
         old_result->GetConstraintSpaceForCaching();
     FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
         constraint_space, multicol, /* break_token */ nullptr);
@@ -1625,7 +1625,7 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
 
 const NGLayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
     NodeToLayout& oof_node_to_layout,
-    const NGConstraintSpace* fragmentainer_constraint_space,
+    const ConstraintSpace* fragmentainer_constraint_space,
     bool is_last_fragmentainer_so_far) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   OffsetInfo& offset_info = oof_node_to_layout.offset_info;
@@ -2046,7 +2046,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
 const NGLayoutResult* OutOfFlowLayoutPart::Layout(
     const NodeToLayout& oof_node_to_layout,
-    const NGConstraintSpace* fragmentainer_constraint_space,
+    const ConstraintSpace* fragmentainer_constraint_space,
     bool is_last_fragmentainer_so_far) {
   const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
 
@@ -2115,7 +2115,7 @@ bool OutOfFlowLayoutPart::IsContainingBlockForCandidate(
 //    position calculation.
 const NGLayoutResult* OutOfFlowLayoutPart::GenerateFragment(
     const NodeToLayout& oof_node_to_layout,
-    const NGConstraintSpace* fragmentainer_constraint_space,
+    const ConstraintSpace* fragmentainer_constraint_space,
     bool is_last_fragmentainer_so_far) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
@@ -2199,7 +2199,7 @@ const NGLayoutResult* OutOfFlowLayoutPart::GenerateFragment(
         /* is_new_fc */ true,
         /* requires_content_before_breaking */ false);
   }
-  NGConstraintSpace space = builder.ToConstraintSpace();
+  ConstraintSpace space = builder.ToConstraintSpace();
 
   if (is_repeatable)
     return node.LayoutRepeatableRoot(space, break_token);
@@ -2231,7 +2231,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
       !is_new_fragment)
     return;
 
-  const NGConstraintSpace& space = GetFragmentainerConstraintSpace(index);
+  const ConstraintSpace& space = GetFragmentainerConstraintSpace(index);
 
   // If we are a new fragment, find a non-spanner fragmentainer as a basis.
   wtf_size_t original_index = index;
@@ -2291,7 +2291,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
 
 void OutOfFlowLayoutPart::AddOOFToFragmentainer(
     NodeToLayout& descendant,
-    const NGConstraintSpace* fragmentainer_space,
+    const ConstraintSpace* fragmentainer_space,
     LogicalOffset fragmentainer_offset,
     wtf_size_t index,
     bool is_last_fragmentainer_so_far,
@@ -2499,7 +2499,7 @@ LogicalOffset OutOfFlowLayoutPart::UpdatedFragmentainerOffset(
   return offset;
 }
 
-NGConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
+ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
     wtf_size_t index) {
   auto& children = FragmentationContextChildren();
   wtf_size_t num_children = children.size();

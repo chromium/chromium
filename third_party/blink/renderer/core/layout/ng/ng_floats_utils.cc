@@ -61,12 +61,12 @@ LayoutOpportunity FindLayoutOpportunityForFloat(
 
 // Creates a constraint space for an unpositioned float. origin_block_offset
 // should only be set when we want to fragmentation to occur.
-NGConstraintSpace CreateConstraintSpaceForFloat(
+ConstraintSpace CreateConstraintSpaceForFloat(
     const UnpositionedFloat& unpositioned_float,
     absl::optional<LayoutUnit> origin_block_offset = absl::nullopt,
     absl::optional<BoxStrut> margins = absl::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
-  const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
+  const ConstraintSpace& parent_space = unpositioned_float.parent_space;
   NGConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),
                                    /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(unpositioned_float.parent_style,
@@ -106,7 +106,7 @@ ExclusionShapeData* CreateExclusionShapeData(
     const UnpositionedFloat& unpositioned_float) {
   const LayoutBox* layout_box = unpositioned_float.node.GetLayoutBox();
   DCHECK(layout_box->GetShapeOutsideInfo());
-  const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
+  const ConstraintSpace& parent_space = unpositioned_float.parent_space;
   TextDirection direction = parent_space.Direction();
 
   // We make the margins on the shape-data relative to line-left/line-right.
@@ -125,7 +125,7 @@ ExclusionShapeData* CreateExclusionShapeData(
       break;
     case CSSBoxType::kPadding:
     case CSSBoxType::kContent:
-      const NGConstraintSpace space =
+      const ConstraintSpace space =
           CreateConstraintSpaceForFloat(unpositioned_float);
       BoxStrut strut = ComputeBorders(space, unpositioned_float.node);
       if (style.ShapeOutside()->CssBox() == CSSBoxType::kContent)
@@ -171,7 +171,7 @@ void LayoutFloatWithoutFragmentation(UnpositionedFloat* unpositioned_float) {
   if (unpositioned_float->layout_result)
     return;
 
-  const NGConstraintSpace space =
+  const ConstraintSpace space =
       CreateConstraintSpaceForFloat(*unpositioned_float);
 
   // Pass in the break token if one exists. This can happen when we relayout
@@ -197,7 +197,7 @@ LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
   const auto& fragment = unpositioned_float->layout_result->PhysicalFragment();
   DCHECK(!fragment.BreakToken());
 
-  const NGConstraintSpace& parent_space = unpositioned_float->parent_space;
+  const ConstraintSpace& parent_space = unpositioned_float->parent_space;
 
   return (LogicalFragment(parent_space.GetWritingDirection(), fragment)
               .InlineSize() +
@@ -208,7 +208,7 @@ LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
 PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
                               ExclusionSpace* exclusion_space) {
   DCHECK(unpositioned_float);
-  const NGConstraintSpace& parent_space = unpositioned_float->parent_space;
+  const ConstraintSpace& parent_space = unpositioned_float->parent_space;
   BlockNode node = unpositioned_float->node;
   bool is_same_writing_mode =
       node.Style().GetWritingMode() == parent_space.GetWritingMode();
@@ -271,7 +271,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
 
     bool is_at_fragmentainer_start;
     do {
-      NGConstraintSpace space = CreateConstraintSpaceForFloat(
+      ConstraintSpace space = CreateConstraintSpaceForFloat(
           *unpositioned_float,
           fragmentainer_delta - parent_space.ExpectedBfcBlockOffset(),
           fragment_margins);

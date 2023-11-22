@@ -159,7 +159,7 @@ void RenderingTest::SetChildFrameHTML(const String& html) {
   ChildDocument().View()->BeginLifecycleUpdates();
 }
 
-NGConstraintSpace RenderingTest::ConstraintSpaceForAvailableSize(
+ConstraintSpace RenderingTest::ConstraintSpaceForAvailableSize(
     LayoutUnit inline_size) const {
   NGConstraintSpaceBuilder builder(
       WritingMode::kHorizontalTb,

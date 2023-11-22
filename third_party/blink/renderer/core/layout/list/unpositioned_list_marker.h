@@ -19,9 +19,9 @@ namespace blink {
 
 class BlockNode;
 class ComputedStyle;
+class ConstraintSpace;
 class LayoutOutsideListMarker;
 class LayoutUnit;
-class NGConstraintSpace;
 class NGBoxFragmentBuilder;
 class NGLayoutResult;
 class NGPhysicalFragment;
@@ -64,11 +64,11 @@ class CORE_EXPORT UnpositionedListMarker final {
   // to align to, and that caller should try next child, or use the
   // |AddToBoxWithoutLineBoxes()| method.
   absl::optional<LayoutUnit> ContentAlignmentBaseline(
-      const NGConstraintSpace&,
+      const ConstraintSpace&,
       FontBaseline,
       const NGPhysicalFragment& content) const;
   // Add a fragment for an outside list marker.
-  void AddToBox(const NGConstraintSpace&,
+  void AddToBox(const ConstraintSpace&,
                 FontBaseline,
                 const NGPhysicalFragment& content,
                 const BoxStrut&,
@@ -80,7 +80,7 @@ class CORE_EXPORT UnpositionedListMarker final {
   // Add a fragment for an outside list marker when the list item has no line
   // boxes. Also adjust |intrinsic_block_size| if it was smaller than the list
   // marker.
-  void AddToBoxWithoutLineBoxes(const NGConstraintSpace&,
+  void AddToBoxWithoutLineBoxes(const ConstraintSpace&,
                                 FontBaseline,
                                 const NGLayoutResult& marker_layout_result,
                                 NGBoxFragmentBuilder*,
@@ -91,7 +91,7 @@ class CORE_EXPORT UnpositionedListMarker final {
     return marker_layout_object_ == other.marker_layout_object_;
   }
 
-  const NGLayoutResult* Layout(const NGConstraintSpace& parent_space,
+  const NGLayoutResult* Layout(const ConstraintSpace& parent_space,
                                const ComputedStyle& parent_style,
                                FontBaseline) const;
 
@@ -102,7 +102,7 @@ class CORE_EXPORT UnpositionedListMarker final {
   void Trace(Visitor*) const;
 
  private:
-  LayoutUnit ComputeIntrudedFloatOffset(const NGConstraintSpace&,
+  LayoutUnit ComputeIntrudedFloatOffset(const ConstraintSpace&,
                                         const NGBoxFragmentBuilder*,
                                         const BoxStrut&,
                                         LayoutUnit) const;

@@ -29,7 +29,7 @@ class LineWidthsTest : public RenderingTest {
  public:
   absl::optional<LineWidths> ComputeLineWidths(InlineNode node) {
     const LayoutUnit width = FragmentWidth(node);
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     const ComputedStyle& style = node.Style();
     NGBoxFragmentBuilder container_builder(node, &style, space,
                                            style.GetWritingDirection());

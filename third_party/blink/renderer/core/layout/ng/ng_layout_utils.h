@@ -10,7 +10,7 @@
 
 namespace blink {
 
-class NGConstraintSpace;
+class ConstraintSpace;
 class NGLayoutResult;
 struct MarginStrut;
 
@@ -39,7 +39,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockNode& node,
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
-    const NGConstraintSpace& new_space,
+    const ConstraintSpace& new_space,
     absl::optional<FragmentGeometry>* fragment_geometry);
 
 // Returns true if for a given |new_space|, the |cached_layout_result| won't be
@@ -55,7 +55,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
 // and |end_margin_strut| are in an undefined state and should not be used.
 bool MaySkipLayoutWithinBlockFormattingContext(
     const NGLayoutResult& cached_layout_result,
-    const NGConstraintSpace& new_space,
+    const ConstraintSpace& new_space,
     absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
     MarginStrut* end_margin_strut);

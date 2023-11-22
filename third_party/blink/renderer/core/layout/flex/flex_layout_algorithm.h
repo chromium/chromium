@@ -68,17 +68,17 @@ class CORE_EXPORT FlexLayoutAlgorithm
   bool IsContainerCrossSizeDefinite() const;
 
   enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
-  NGConstraintSpace BuildSpaceForIntrinsicInlineSize(
+  ConstraintSpace BuildSpaceForIntrinsicInlineSize(
       const BlockNode& flex_item) const;
-  NGConstraintSpace BuildSpaceForFlexBasis(const BlockNode& flex_item) const;
-  NGConstraintSpace BuildSpaceForIntrinsicBlockSize(
+  ConstraintSpace BuildSpaceForFlexBasis(const BlockNode& flex_item) const;
+  ConstraintSpace BuildSpaceForIntrinsicBlockSize(
       const BlockNode& flex_item,
       absl::optional<LayoutUnit> override_inline_size) const;
   // |line_cross_size_for_stretch| should only be set when running the final
   // layout pass for stretch, when the line cross size is definite.
   // |block_offset_for_fragmentation| should only be set when running the final
   // layout pass for fragmentation. Both may be set at the same time.
-  NGConstraintSpace BuildSpaceForLayout(
+  ConstraintSpace BuildSpaceForLayout(
       const BlockNode& flex_item_node,
       LayoutUnit item_main_axis_final_size,
       absl::optional<LayoutUnit> override_inline_size = absl::nullopt,

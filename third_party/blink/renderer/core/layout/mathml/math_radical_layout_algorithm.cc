@@ -82,7 +82,7 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
   if (base) {
     // Handle layout of base child. For <msqrt> the base is anonymous and uses
     // the row layout algorithm.
-    NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
+    ConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), GetConstraintSpace(), base);
     base_layout_result = base.Layout(constraint_space);
     const auto& base_fragment =
@@ -98,7 +98,7 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
   if (index) {
     // Handle layout of index child.
     // (https://w3c.github.io/mathml-core/#root-with-index).
-    NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
+    ConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), GetConstraintSpace(), index);
     index_layout_result = index.Layout(constraint_space);
     const auto& index_fragment =

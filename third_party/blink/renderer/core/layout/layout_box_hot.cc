@@ -68,7 +68,7 @@ bool LayoutBox::IsUserScrollable() const {
 }
 
 const NGLayoutResult* LayoutBox::CachedLayoutResult(
-    const NGConstraintSpace& new_space,
+    const ConstraintSpace& new_space,
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
@@ -212,7 +212,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
                        PhysicalFragmentCount() > 1;
 
   {
-    const NGConstraintSpace& old_space =
+    const ConstraintSpace& old_space =
         cached_layout_result->GetConstraintSpaceForCaching();
 
     // Check the BFC offset. Even if they don't match, there're some cases we
@@ -507,7 +507,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // between all the rows in a table. Make constraint space table data for
   // reused row fragment be identical to the one used by other row fragments.
   if (IsTableRow() && IsLayoutNGObject()) {
-    const_cast<NGConstraintSpace&>(
+    const_cast<ConstraintSpace&>(
         cached_layout_result->GetConstraintSpaceForCaching())
         .ReplaceTableRowData(*new_space.TableData(), new_space.TableRowIndex());
   }

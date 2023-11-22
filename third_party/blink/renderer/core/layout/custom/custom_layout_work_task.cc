@@ -48,7 +48,7 @@ void CustomLayoutWorkTask::Trace(Visitor* visitor) const {
   visitor->Trace(options_);
 }
 
-void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
+void CustomLayoutWorkTask::Run(const ConstraintSpace& parent_space,
                                const ComputedStyle& parent_style,
                                const LayoutUnit child_available_block_size,
                                bool* child_depends_on_block_constraints) {
@@ -66,7 +66,7 @@ void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
 }
 
 void CustomLayoutWorkTask::RunLayoutFragmentTask(
-    const NGConstraintSpace& parent_space,
+    const ConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     LayoutInputNode child) {
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kLayoutFragment);
@@ -149,7 +149,7 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
 }
 
 void CustomLayoutWorkTask::RunIntrinsicSizesTask(
-    const NGConstraintSpace& parent_space,
+    const ConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     const LayoutUnit child_available_block_size,
     LayoutInputNode child,

@@ -68,7 +68,7 @@ EBreakBetween JoinFragmentainerBreakValues(EBreakBetween first_value,
   return first_value;
 }
 
-bool IsForcedBreakValue(const NGConstraintSpace& constraint_space,
+bool IsForcedBreakValue(const ConstraintSpace& constraint_space,
                         EBreakBetween break_value) {
   if (constraint_space.ShouldIgnoreForcedBreaks())
     return false;
@@ -87,7 +87,7 @@ bool IsForcedBreakValue(const NGConstraintSpace& constraint_space,
 }
 
 template <typename Property>
-bool IsAvoidBreakValue(const NGConstraintSpace& constraint_space,
+bool IsAvoidBreakValue(const ConstraintSpace& constraint_space,
                        Property break_value) {
   if (break_value == Property::kAvoid)
     return constraint_space.HasBlockFragmentation();
@@ -103,9 +103,9 @@ bool IsAvoidBreakValue(const NGConstraintSpace& constraint_space,
 // The properties break-after, break-before and break-inside may all specify
 // avoid* values. break-after and break-before use EBreakBetween, and
 // break-inside uses EBreakInside.
-template bool CORE_TEMPLATE_EXPORT IsAvoidBreakValue(const NGConstraintSpace&,
+template bool CORE_TEMPLATE_EXPORT IsAvoidBreakValue(const ConstraintSpace&,
                                                      EBreakBetween);
-template bool CORE_TEMPLATE_EXPORT IsAvoidBreakValue(const NGConstraintSpace&,
+template bool CORE_TEMPLATE_EXPORT IsAvoidBreakValue(const ConstraintSpace&,
                                                      EBreakInside);
 
 EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
@@ -151,7 +151,7 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
 }
 
 bool IsBreakableAtStartOfResumedContainer(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGLayoutResult& child_layout_result,
     const NGBoxFragmentBuilder& builder) {
   if (child_layout_result.Status() != NGLayoutResult::kSuccess)
@@ -164,14 +164,14 @@ bool IsBreakableAtStartOfResumedContainer(
                                               is_first_for_node);
 }
 
-bool IsBreakableAtStartOfResumedContainer(const NGConstraintSpace& space,
+bool IsBreakableAtStartOfResumedContainer(const ConstraintSpace& space,
                                           const NGBoxFragmentBuilder& builder,
                                           bool is_first_for_node) {
   return space.MinBreakAppeal() != kBreakAppealLastResort &&
          IsBreakInside(builder.PreviousBreakToken()) && is_first_for_node;
 }
 
-NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
+NGBreakAppeal CalculateBreakAppealBefore(const ConstraintSpace& space,
                                          LayoutInputNode child,
                                          const NGLayoutResult& layout_result,
                                          const NGBoxFragmentBuilder& builder,
@@ -186,7 +186,7 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
 }
 
 NGBreakAppeal CalculateBreakAppealBefore(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     NGLayoutResult::EStatus layout_result_status,
     EBreakBetween break_between,
     bool has_container_separation,
@@ -225,7 +225,7 @@ NGBreakAppeal CalculateBreakAppealBefore(
 }
 
 NGBreakAppeal CalculateBreakAppealInside(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGLayoutResult& layout_result,
     absl::optional<NGBreakAppeal> hypothetical_appeal) {
   if (layout_result.HasForcedBreak())
@@ -291,7 +291,7 @@ LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder& builder,
   return LogicalOffset(LayoutUnit(), builder.ChildAvailableSize().block_size);
 }
 
-void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
+void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
                                        NGConstraintSpaceBuilder* builder,
@@ -353,7 +353,7 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
 }
 
 void SetupFragmentBuilderForFragmentation(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const LayoutInputNode& node,
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder* builder) {
@@ -466,7 +466,7 @@ bool ShouldIncludeBlockEndBorderPadding(const NGBoxFragmentBuilder& builder) {
 }
 
 NGBreakStatus FinishFragmentation(BlockNode node,
-                                  const NGConstraintSpace& space,
+                                  const ConstraintSpace& space,
                                   LayoutUnit trailing_border_padding,
                                   LayoutUnit space_left,
                                   NGBoxFragmentBuilder* builder) {
@@ -725,7 +725,7 @@ NGBreakStatus FinishFragmentation(BlockNode node,
 }
 
 NGBreakStatus FinishFragmentationForFragmentainer(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     NGBoxFragmentBuilder* builder) {
   DCHECK(builder->IsFragmentainerBoxType());
   const NGBlockBreakToken* previous_break_token = builder->PreviousBreakToken();
@@ -814,7 +814,7 @@ bool HasBreakOpportunityBeforeNextChild(
 }
 
 NGBreakStatus BreakBeforeChildIfNeeded(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     LayoutInputNode child,
     const NGLayoutResult& layout_result,
     LayoutUnit fragmentainer_block_offset,
@@ -858,7 +858,7 @@ NGBreakStatus BreakBeforeChildIfNeeded(
   return NGBreakStatus::kBrokeBefore;
 }
 
-void BreakBeforeChild(const NGConstraintSpace& space,
+void BreakBeforeChild(const ConstraintSpace& space,
                       LayoutInputNode child,
                       const NGLayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
@@ -891,7 +891,7 @@ void BreakBeforeChild(const NGConstraintSpace& space,
   builder->AddBreakBeforeChild(child, appeal, is_forced_break);
 }
 
-void PropagateSpaceShortage(const NGConstraintSpace& space,
+void PropagateSpaceShortage(const ConstraintSpace& space,
                             const NGLayoutResult* layout_result,
                             LayoutUnit fragmentainer_block_offset,
                             NGFragmentBuilder* builder,
@@ -911,7 +911,7 @@ void PropagateSpaceShortage(const NGConstraintSpace& space,
 }
 
 LayoutUnit CalculateSpaceShortage(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGLayoutResult* layout_result,
     LayoutUnit fragmentainer_block_offset,
     absl::optional<LayoutUnit> block_size_override) {
@@ -959,7 +959,7 @@ void UpdateMinimalSpaceShortage(absl::optional<LayoutUnit> new_space_shortage,
   }
 }
 
-bool MovePastBreakpoint(const NGConstraintSpace& space,
+bool MovePastBreakpoint(const ConstraintSpace& space,
                         LayoutInputNode child,
                         const NGLayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
@@ -1035,7 +1035,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
   return move_past;
 }
 
-bool MovePastBreakpoint(const NGConstraintSpace& space,
+bool MovePastBreakpoint(const ConstraintSpace& space,
                         const NGLayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
                         NGBreakAppeal appeal_before,
@@ -1141,7 +1141,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 }
 
 void UpdateEarlyBreakAtBlockChild(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     BlockNode child,
     const NGLayoutResult& layout_result,
     NGBreakAppeal appeal_before,
@@ -1206,7 +1206,7 @@ void UpdateEarlyBreakAtBlockChild(
       MakeGarbageCollected<NGEarlyBreak>(child, appeal_before));
 }
 
-bool AttemptSoftBreak(const NGConstraintSpace& space,
+bool AttemptSoftBreak(const ConstraintSpace& space,
                       LayoutInputNode child,
                       const NGLayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
@@ -1265,8 +1265,8 @@ bool IsEarlyBreakTarget(const NGEarlyBreak& early_break,
   return early_break.IsBreakBefore() && early_break.GetBlockNode() == child;
 }
 
-NGConstraintSpace CreateConstraintSpaceForFragmentainer(
-    const NGConstraintSpace& parent_space,
+ConstraintSpace CreateConstraintSpaceForFragmentainer(
+    const ConstraintSpace& parent_space,
     FragmentationType fragmentation_type,
     LogicalSize fragmentainer_size,
     LogicalSize percentage_resolution_size,
@@ -1297,7 +1297,7 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
 
 NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
     const BlockNode& multicol,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const FragmentGeometry& fragment_geometry) {
   const ComputedStyle* style = &multicol.Style();
   NGBoxFragmentBuilder multicol_container_builder(multicol, style, space,
@@ -1309,7 +1309,7 @@ NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
   return multicol_container_builder;
 }
 
-NGConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol) {
+ConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol) {
   WritingDirectionMode writing_direction_mode =
       multicol.Style().GetWritingDirection();
   NGConstraintSpaceBuilder space_builder(

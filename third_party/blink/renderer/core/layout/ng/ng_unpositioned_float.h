@@ -19,7 +19,7 @@
 namespace blink {
 
 class ComputedStyle;
-class NGConstraintSpace;
+class ConstraintSpace;
 
 // Struct that keeps all information needed to position floats in LayoutNG.
 struct CORE_EXPORT UnpositionedFloat final {
@@ -32,7 +32,7 @@ struct CORE_EXPORT UnpositionedFloat final {
                     const LogicalSize percentage_size,
                     const LogicalSize replaced_percentage_size,
                     const BfcOffset& origin_bfc_offset,
-                    const NGConstraintSpace& parent_space,
+                    const ConstraintSpace& parent_space,
                     const ComputedStyle& parent_style)
       : node(node),
         token(token),
@@ -50,7 +50,7 @@ struct CORE_EXPORT UnpositionedFloat final {
   const LogicalSize percentage_size;
   const LogicalSize replaced_percentage_size;
   const BfcOffset origin_bfc_offset;
-  const NGConstraintSpace& parent_space;
+  const ConstraintSpace& parent_space;
   const ComputedStyle& parent_style;
 
   // layout_result and margins are used as a cache when measuring the

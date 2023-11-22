@@ -22,7 +22,7 @@ namespace {
 
 struct SameSizeAsNGLayoutResult
     : public GarbageCollected<SameSizeAsNGLayoutResult> {
-  const NGConstraintSpace space;
+  const ConstraintSpace space;
   Member<void*> physical_fragment;
   Member<void*> rare_data_;
   union {
@@ -142,7 +142,7 @@ NGLayoutResult::NGLayoutResult(NGFragmentBuilderPassKey key,
 }
 
 NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
-                               const NGConstraintSpace& new_space,
+                               const ConstraintSpace& new_space,
                                const MarginStrut& new_end_margin_strut,
                                LayoutUnit bfc_line_offset,
                                absl::optional<LayoutUnit> bfc_block_offset,

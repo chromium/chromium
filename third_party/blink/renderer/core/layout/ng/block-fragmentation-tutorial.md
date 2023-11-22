@@ -11,7 +11,7 @@ Main spec: https://www.w3.org/TR/css-break-3/
 
 ## Overview ##
 
-Any layout algorithm for block nodes takes NGConstraintSpace, BlockNode and
+Any layout algorithm for block nodes takes ConstraintSpace, BlockNode and
 NGBlockBreakToken as input, and writes output to NGBoxFragmentBuilder, which
 will eventually generate an NGPhysicalBoxFragment wrapped inside an
 NGLayoutResult. This will serve as input to the parent algorithm, which will
@@ -22,7 +22,7 @@ machinery, which mainly consists of utility functions in
 [ng_fragmentation_utils.cc](ng_fragmentation_utils.cc). This way each layout
 algorithm can easily hook up with the various stages or aspects of block
 fragmentation of a node. The utility functions will perform the relevant
-operations on these core NG structures (NGConstraintSpace, BlockNode,
+operations on these core NG structures (ConstraintSpace, BlockNode,
 NGBlockBreakToken, NGLayoutResult, and so on).
 
 The purpose of the fragmentation machinery is to find the ideal (most appealing)

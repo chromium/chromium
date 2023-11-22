@@ -32,7 +32,7 @@ void BaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {
 
 const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
     BlockNode node,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGBreakToken* break_token) {
   AdvanceToLayoutPhase();
 
@@ -50,7 +50,7 @@ const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
 const NGPhysicalBoxFragment*
 BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
     BlockNode node,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGBreakToken* break_token) {
   AdvanceToLayoutPhase();
 
@@ -98,7 +98,7 @@ const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(
   return To<NGPhysicalBoxFragment>(child.get());
 }
 
-NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
+ConstraintSpace ConstructBlockLayoutTestConstraintSpace(
     WritingDirectionMode writing_direction,
     LogicalSize size,
     bool stretch_inline_size_if_auto,

@@ -22,8 +22,8 @@
 
 namespace blink {
 
+class ConstraintSpace;
 class LogicalFragment;
-class NGConstraintSpace;
 enum class NGBreakStatus;
 
 // This struct is used for communicating to a child the position of the previous
@@ -116,7 +116,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
                             LayoutUnit* additional_line_offset);
 
   // Creates a new constraint space for the current child.
-  NGConstraintSpace CreateConstraintSpaceForChild(
+  ConstraintSpace CreateConstraintSpaceForChild(
       const LayoutInputNode child,
       const NGBreakToken* child_break_token,
       const InflowChildData& child_data,
@@ -151,7 +151,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   //     <div id="zero" style="margin: 1px"></div>
   LayoutUnit PositionSelfCollapsingChildWithParentBfc(
       const LayoutInputNode& child,
-      const NGConstraintSpace& child_space,
+      const ConstraintSpace& child_space,
       const InflowChildData& child_data,
       const NGLayoutResult&) const;
 
@@ -217,7 +217,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   NGLayoutResult::EStatus FinishInflow(
       LayoutInputNode child,
       const NGBreakToken* child_break_token,
-      const NGConstraintSpace&,
+      const ConstraintSpace&,
       bool has_clearance_past_adjoining_floats,
       const NGLayoutResult*,
       InflowChildData*,

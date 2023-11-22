@@ -27,7 +27,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
  public:
   // The setters on this builder are in the writing mode of parent_space.
-  NGConstraintSpaceBuilder(const NGConstraintSpace& parent_space,
+  NGConstraintSpaceBuilder(const ConstraintSpace& parent_space,
                            WritingDirectionMode writing_direction,
                            bool is_new_fc,
                            bool adjust_inline_size_if_needed = true)
@@ -507,8 +507,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
         target_stretch_inline_size);
   }
 
-  void SetTargetStretchBlockSizes(NGConstraintSpace::MathTargetStretchBlockSizes
-                                      target_stretch_block_sizes) {
+  void SetTargetStretchBlockSizes(
+      ConstraintSpace::MathTargetStretchBlockSizes target_stretch_block_sizes) {
     DCHECK_GE(target_stretch_block_sizes.ascent, LayoutUnit());
     DCHECK_GE(target_stretch_block_sizes.descent, LayoutUnit());
     space_.EnsureRareData()->SetTargetStretchBlockSizes(
@@ -525,7 +525,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   }
 
   // Creates a new constraint space.
-  const NGConstraintSpace ToConstraintSpace() {
+  const ConstraintSpace ToConstraintSpace() {
 #if DCHECK_IS_ON()
     DCHECK(!to_constraint_space_called_)
         << "ToConstraintSpace should only be called once.";
@@ -545,7 +545,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   }
 
  private:
-  NGConstraintSpace space_;
+  ConstraintSpace space_;
 
   // Orthogonal writing mode roots may need a fallback, to prevent available
   // inline size from being indefinite, which isn't allowed. This is the
@@ -590,7 +590,7 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
   STACK_ALLOCATED();
 
  public:
-  NGMinMaxConstraintSpaceBuilder(const NGConstraintSpace& parent_space,
+  NGMinMaxConstraintSpaceBuilder(const ConstraintSpace& parent_space,
                                  const ComputedStyle& parent_style,
                                  const LayoutInputNode& child,
                                  bool is_new_fc)
@@ -620,7 +620,7 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
     delegate_.SetBlockAutoBehavior(auto_behavior);
   }
 
-  const NGConstraintSpace ToConstraintSpace() {
+  const ConstraintSpace ToConstraintSpace() {
     return delegate_.ToConstraintSpace();
   }
 

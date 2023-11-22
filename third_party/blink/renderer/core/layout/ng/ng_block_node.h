@@ -14,12 +14,12 @@
 
 namespace blink {
 
+class ConstraintSpace;
 class FragmentItems;
 class InlineNode;
 class LayoutBox;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
-class NGConstraintSpace;
 class NGEarlyBreak;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
@@ -38,7 +38,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   BlockNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
-  const NGLayoutResult* Layout(const NGConstraintSpace& constraint_space,
+  const NGLayoutResult* Layout(const ConstraintSpace& constraint_space,
                                const NGBlockBreakToken* break_token = nullptr,
                                const NGEarlyBreak* = nullptr,
                                const NGColumnSpannerPath* = nullptr) const;
@@ -55,11 +55,11 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // element during printing, or table header / footer). To be called once for
   // each container fragment in which it repeats.
   //
-  // NGConstraintSpace::ShouldRepeat() will tell whether the node is
+  // ConstraintSpace::ShouldRepeat() will tell whether the node is
   // (potentially [1]) going to repeat again (in which case an outgoing "repeat"
   // break token will be created, or if this is the last time.
   // FinishRepeatableRoot() will be invoked if it's the last time. It is allowed
-  // to call this function with NGConstraintSpace::ShouldRepeat() set to true
+  // to call this function with ConstraintSpace::ShouldRepeat() set to true
   // every time, but then the calling code needs to call FinishRepeatableRoot()
   // when it realizes that we're done.
   //
@@ -76,7 +76,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // (mainly), we need to clone the fragment as many times as it repeats, and we
   // also need to make sure that the break tokens are reasonably intact -
   // including the sequence numbers. This is why we need this.
-  const NGLayoutResult* LayoutRepeatableRoot(const NGConstraintSpace&,
+  const NGLayoutResult* LayoutRepeatableRoot(const ConstraintSpace&,
                                              const NGBlockBreakToken*) const;
 
   // Finalize the cloned layout results of a repeatable root. This will
@@ -124,7 +124,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   MinMaxSizesResult ComputeMinMaxSizes(
       WritingMode container_writing_mode,
       const MinMaxSizesType,
-      const NGConstraintSpace&,
+      const ConstraintSpace&,
       const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput()) const;
 
   LayoutInputNode FirstChild() const;
@@ -201,7 +201,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   // Layout an atomic inline; e.g., inline block.
   const NGLayoutResult* LayoutAtomicInline(
-      const NGConstraintSpace& parent_constraint_space,
+      const ConstraintSpace& parent_constraint_space,
       const ComputedStyle& parent_style,
       bool use_first_line_style,
       BaselineAlgorithmType baseline_algorithm_type);
@@ -256,7 +256,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // If this node is a LayoutNGMixin, the caller must pass the layout object for
   // this node cast to a LayoutBlockFlow as the first argument.
   void FinishLayout(LayoutBlockFlow*,
-                    const NGConstraintSpace&,
+                    const ConstraintSpace&,
                     const NGBlockBreakToken*,
                     const NGLayoutResult*,
                     const absl::optional<PhysicalSize>& old_box_size) const;
@@ -269,7 +269,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // After we run the layout algorithm, this function copies back the geometry
   // data to the layout box.
   void CopyFragmentDataToLayoutBox(
-      const NGConstraintSpace&,
+      const ConstraintSpace&,
       const NGLayoutResult&,
       const NGBlockBreakToken* previous_break_token) const;
   void CopyFragmentItemsToLayoutBox(
@@ -281,17 +281,17 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
                                 bool needs_invalidation_check = false) const;
   void PlaceChildrenInFlowThread(
       LayoutMultiColumnFlowThread*,
-      const NGConstraintSpace&,
+      const ConstraintSpace&,
       const NGPhysicalBoxFragment&,
       const NGBlockBreakToken* previous_container_break_token) const;
 
   void UpdateMarginPaddingInfoIfNeeded(
-      const NGConstraintSpace&,
+      const ConstraintSpace&,
       const NGPhysicalFragment& fragment) const;
 
   void UpdateShapeOutsideInfoIfNeeded(
       const NGLayoutResult&,
-      const NGConstraintSpace& constraint_space) const;
+      const ConstraintSpace& constraint_space) const;
 };
 
 template <>

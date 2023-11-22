@@ -96,7 +96,7 @@ class LineBreakStrategy {
 
   void Prepare(InlineChildLayoutContext* context,
                const InlineNode& node,
-               const NGConstraintSpace& space,
+               const ConstraintSpace& space,
                base::span<const LayoutOpportunity> opportunities,
                const LineLayoutOpportunity& line_opportunity,
                const LeadingFloats& leading_floats,
@@ -136,7 +136,7 @@ class LineBreakStrategy {
  private:
   void Balance(InlineChildLayoutContext* context,
                const InlineNode& node,
-               const NGConstraintSpace& space,
+               const ConstraintSpace& space,
                const base::span<const LayoutOpportunity>& opportunities,
                const LineLayoutOpportunity& line_opportunity,
                const LeadingFloats& leading_floats,
@@ -189,7 +189,7 @@ class LineBreakStrategy {
   }
 
   void Optimize(const InlineNode& node,
-                const NGConstraintSpace& space,
+                const ConstraintSpace& space,
                 const base::span<const LayoutOpportunity>& opportunities,
                 const LeadingFloats& leading_floats,
                 const InlineBreakToken* break_token,
@@ -232,7 +232,7 @@ class LineBreakStrategy {
 
 InlineLayoutAlgorithm::InlineLayoutAlgorithm(
     InlineNode inline_node,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const InlineBreakToken* break_token,
     const NGColumnSpannerPath* column_spanner_path,
     InlineChildLayoutContext* context)
@@ -932,7 +932,7 @@ void InlineLayoutAlgorithm::PlaceOutOfFlowObjects(
 
   // The location of the "next" line.
   //
-  // This uses NGConstraintSpace::Direction rather than
+  // This uses ConstraintSpace::Direction rather than
   // LineInfo::BaseDirection as this is for a block-level object rather than
   // an inline-level object.
   //

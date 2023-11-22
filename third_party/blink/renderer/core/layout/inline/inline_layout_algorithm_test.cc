@@ -183,7 +183,7 @@ TEST_F(InlineLayoutAlgorithmTest, BreakToken) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       /* is_new_fc */ false);
   builder.SetAvailableSize(size);
-  NGConstraintSpace constraint_space = builder.ToConstraintSpace();
+  ConstraintSpace constraint_space = builder.ToConstraintSpace();
 
   NGBoxFragmentBuilder container_builder(
       block_flow, block_flow->Style(), constraint_space,

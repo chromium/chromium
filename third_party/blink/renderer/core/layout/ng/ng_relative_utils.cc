@@ -99,7 +99,7 @@ LogicalOffset ComputeRelativeOffsetForBoxFragment(
                                available_size);
 }
 
-LogicalOffset ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
+LogicalOffset ComputeRelativeOffsetForInline(const ConstraintSpace& space,
                                              const ComputedStyle& child_style) {
   if (child_style.GetPosition() != EPosition::kRelative)
     return LogicalOffset();
@@ -126,7 +126,7 @@ LogicalOffset ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
 }
 
 LogicalOffset ComputeRelativeOffsetForOOFInInline(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const ComputedStyle& child_style) {
   if (child_style.GetPosition() != EPosition::kRelative)
     return LogicalOffset();

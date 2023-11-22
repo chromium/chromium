@@ -76,7 +76,7 @@ class CORE_EXPORT NGLayoutResult final
   // parameter. Note, when |bfc_block_offset| is |nullopt|, |BfcBlockOffset| is
   // still replaced with |nullopt|.
   NGLayoutResult(const NGLayoutResult& other,
-                 const NGConstraintSpace& new_space,
+                 const ConstraintSpace& new_space,
                  const MarginStrut& new_end_margin_strut,
                  LayoutUnit bfc_line_offset,
                  absl::optional<LayoutUnit> bfc_block_offset,
@@ -479,9 +479,7 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   // Returns the space which generated this object for caching purposes.
-  const NGConstraintSpace& GetConstraintSpaceForCaching() const {
-    return space_;
-  }
+  const ConstraintSpace& GetConstraintSpaceForCaching() const { return space_; }
 
   // This exposes a mutable part of the layout result just for the
   // |OutOfFlowLayoutPart|.
@@ -1013,7 +1011,7 @@ class CORE_EXPORT NGLayoutResult final
   };
 
   // The constraint space which generated this layout result.
-  const NGConstraintSpace space_;
+  const ConstraintSpace space_;
 
   Member<const NGPhysicalFragment> physical_fragment_;
 

@@ -17,7 +17,7 @@ namespace {
 
 class NGAbsoluteUtilsTest : public RenderingTest {
  protected:
-  NGConstraintSpace CreateConstraintSpace(
+  ConstraintSpace CreateConstraintSpace(
       WritingDirectionMode writing_direction) {
     NGConstraintSpaceBuilder builder(WritingMode::kHorizontalTb,
                                      writing_direction,
@@ -94,7 +94,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
 
   void ComputeOutOfFlowInlineDimensions(
       const BlockNode& node,
-      const NGConstraintSpace& space,
+      const ConstraintSpace& space,
       const BoxStrut& border_padding,
       const LogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
@@ -130,7 +130,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
 
   void ComputeOutOfFlowBlockDimensions(
       const BlockNode& node,
-      const NGConstraintSpace& space,
+      const ConstraintSpace& space,
       const BoxStrut& border_padding,
       const LogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
@@ -165,10 +165,10 @@ class NGAbsoluteUtilsTest : public RenderingTest {
   }
 
   Persistent<Element> element_;
-  NGConstraintSpace ltr_space_;
-  NGConstraintSpace rtl_space_;
-  NGConstraintSpace vlr_space_;
-  NGConstraintSpace vrl_space_;
+  ConstraintSpace ltr_space_;
+  ConstraintSpace rtl_space_;
+  ConstraintSpace vlr_space_;
+  ConstraintSpace vrl_space_;
 };
 
 TEST_F(NGAbsoluteUtilsTest, Horizontal) {

@@ -223,7 +223,7 @@ inline bool HasUnpositionedFloats(const InlineItemResults& item_results) {
   return !item_results.empty() && item_results.back().has_unpositioned_floats;
 }
 
-LayoutUnit ComputeInlineEndSize(const NGConstraintSpace& space,
+LayoutUnit ComputeInlineEndSize(const ConstraintSpace& space,
                                 const ComputedStyle* style) {
   DCHECK(style);
   BoxStrut margins = ComputeMarginsForSelf(space, *style);
@@ -267,7 +267,7 @@ inline void RemoveLastItem(LineInfo* line_info) {
 // The inline-end size from all of these ancestors contribute to the "used
 // size" of the float, and may cause the float to be pushed down.
 LayoutUnit ComputeFloatAncestorInlineEndSize(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const HeapVector<InlineItem>& items,
     wtf_size_t item_index) {
   LayoutUnit inline_end_size;
@@ -367,7 +367,7 @@ void LineBreaker::UpdateAvailableWidth() {
 
 LineBreaker::LineBreaker(InlineNode node,
                          LineBreakerMode mode,
-                         const NGConstraintSpace& space,
+                         const ConstraintSpace& space,
                          const LineLayoutOpportunity& line_opportunity,
                          const LeadingFloats& leading_floats,
                          const InlineBreakToken* break_token,
@@ -2940,11 +2940,10 @@ void LineBreaker::HandleOutOfFlowPositioned(const InlineItem& item,
   MoveToNextOf(item);
 }
 
-bool LineBreaker::ComputeOpenTagResult(
-    const InlineItem& item,
-    const NGConstraintSpace& constraint_space,
-    bool is_in_svg_text,
-    InlineItemResult* item_result) {
+bool LineBreaker::ComputeOpenTagResult(const InlineItem& item,
+                                       const ConstraintSpace& constraint_space,
+                                       bool is_in_svg_text,
+                                       InlineItemResult* item_result) {
   DCHECK_EQ(item.Type(), InlineItem::kOpenTag);
   DCHECK(item.Style());
   const ComputedStyle& style = *item.Style();

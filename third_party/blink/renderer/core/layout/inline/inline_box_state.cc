@@ -258,7 +258,7 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
 }
 
 InlineBoxState* InlineLayoutStateStack::OnOpenTag(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const InlineItem& item,
     const InlineItemResult& item_result,
     FontBaseline baseline_type,
@@ -272,7 +272,7 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
 }
 
 InlineBoxState* InlineLayoutStateStack::OnOpenTag(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const InlineItem& item,
     const InlineItemResult& item_result,
     FontBaseline baseline_type,
@@ -299,11 +299,10 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
   return box;
 }
 
-InlineBoxState* InlineLayoutStateStack::OnCloseTag(
-    const NGConstraintSpace& space,
-    LogicalLineItems* line_box,
-    InlineBoxState* box,
-    FontBaseline baseline_type) {
+InlineBoxState* InlineLayoutStateStack::OnCloseTag(const ConstraintSpace& space,
+                                                   LogicalLineItems* line_box,
+                                                   InlineBoxState* box,
+                                                   FontBaseline baseline_type) {
   DCHECK_EQ(box, &stack_.back());
   box->has_end_edge = true;
   EndBoxState(space, box, line_box, baseline_type);
@@ -314,7 +313,7 @@ InlineBoxState* InlineLayoutStateStack::OnCloseTag(
   return &stack_.back();
 }
 
-void InlineLayoutStateStack::OnEndPlaceItems(const NGConstraintSpace& space,
+void InlineLayoutStateStack::OnEndPlaceItems(const ConstraintSpace& space,
                                              LogicalLineItems* line_box,
                                              FontBaseline baseline_type) {
   for (auto& box : base::Reversed(stack_)) {
@@ -334,7 +333,7 @@ void InlineLayoutStateStack::OnEndPlaceItems(const NGConstraintSpace& space,
   }
 }
 
-void InlineLayoutStateStack::EndBoxState(const NGConstraintSpace& space,
+void InlineLayoutStateStack::EndBoxState(const ConstraintSpace& space,
                                          InlineBoxState* box,
                                          LogicalLineItems* line_box,
                                          FontBaseline baseline_type) {
@@ -410,7 +409,7 @@ void InlineLayoutStateStack::AddBoxFragmentPlaceholder(
 }
 
 // Add a |BoxData|, for each close-tag that needs a box fragment.
-void InlineLayoutStateStack::AddBoxData(const NGConstraintSpace& space,
+void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
                                         InlineBoxState* box,
                                         LogicalLineItems* line_box) {
   DCHECK(box->needs_box_fragment);
@@ -755,7 +754,7 @@ LayoutUnit InlineLayoutStateStack::ComputeInlinePositions(
 }
 
 void InlineLayoutStateStack::ApplyRelativePositioning(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     LogicalLineItems* line_box) {
   if (box_data_list_.empty())
     return;
@@ -785,7 +784,7 @@ void InlineLayoutStateStack::ApplyRelativePositioning(
     box_data.rect.offset += accumulated_offsets[box_data.fragment_start];
 }
 
-void InlineLayoutStateStack::CreateBoxFragments(const NGConstraintSpace& space,
+void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
                                                 LogicalLineItems* line_box,
                                                 bool is_opaque) {
   DCHECK(!box_data_list_.empty());
@@ -816,7 +815,7 @@ void InlineLayoutStateStack::CreateBoxFragments(const NGConstraintSpace& space,
 }
 
 const NGLayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     LogicalLineItems* line_box,
     bool is_opaque) {
   DCHECK(item);

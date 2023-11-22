@@ -60,7 +60,7 @@ class ScoreLineBreakerTest : public RenderingTest {
 
   Vector<float> ComputeScores(const InlineNode& node) {
     const LayoutUnit width = FragmentWidth(node);
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     LineWidths line_widths(width);
     const InlineBreakToken* break_token = nullptr;
     ExclusionSpace exclusion_space;
@@ -97,7 +97,7 @@ TEST_F(ScoreLineBreakerTest, LastLines) {
   )HTML");
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
@@ -195,7 +195,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
       has_after ? "After 789 1234 6789 1234 6789 1234 6789 12" : ""));
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
@@ -253,7 +253,7 @@ TEST_F(ScoreLineBreakerTest, ForcedBreak) {
   )HTML");
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   LineInfoList& line_info_list = context.GetLineInfoList();
@@ -386,7 +386,7 @@ TEST_P(DisabledByLineBreakerTest, Data) {
 
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineWidths line_widths(width);
   ScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   const InlineBreakToken* break_token = nullptr;

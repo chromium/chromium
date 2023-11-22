@@ -84,9 +84,9 @@ enum class AutoSizeBehavior : uint8_t {
 // store a result in.
 enum class LayoutResultCacheSlot { kLayout, kMeasure };
 
-// The NGConstraintSpace represents a set of constraints and available space
+// The ConstraintSpace represents a set of constraints and available space
 // which a layout algorithm may produce a LogicalFragment within.
-class CORE_EXPORT NGConstraintSpace final {
+class CORE_EXPORT ConstraintSpace final {
   // Though some STACK_ALLOCATED classes, |NGFragmentBuilder| and
   // |NGLineBreaker|, have reference to it, DISALLOW_NEW is applied here for
   // performance reason.
@@ -102,10 +102,10 @@ class CORE_EXPORT NGConstraintSpace final {
     kRareDataPercentage
   };
 
-  NGConstraintSpace()
-      : NGConstraintSpace({WritingMode::kHorizontalTb, TextDirection::kLtr}) {}
+  ConstraintSpace()
+      : ConstraintSpace({WritingMode::kHorizontalTb, TextDirection::kLtr}) {}
 
-  NGConstraintSpace(const NGConstraintSpace& other)
+  ConstraintSpace(const ConstraintSpace& other)
       : available_size_(other.available_size_),
         exclusion_space_(other.exclusion_space_),
         bitfields_(other.bitfields_) {
@@ -114,7 +114,7 @@ class CORE_EXPORT NGConstraintSpace final {
     else
       bfc_offset_ = other.bfc_offset_;
   }
-  NGConstraintSpace(NGConstraintSpace&& other)
+  ConstraintSpace(ConstraintSpace&& other)
       : available_size_(other.available_size_),
         exclusion_space_(std::move(other.exclusion_space_)),
         bitfields_(other.bitfields_) {
@@ -126,7 +126,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
   }
 
-  NGConstraintSpace& operator=(const NGConstraintSpace& other) {
+  ConstraintSpace& operator=(const ConstraintSpace& other) {
     available_size_ = other.available_size_;
     if (HasRareData())
       delete rare_data_;
@@ -138,7 +138,7 @@ class CORE_EXPORT NGConstraintSpace final {
     bitfields_ = other.bitfields_;
     return *this;
   }
-  NGConstraintSpace& operator=(NGConstraintSpace&& other) {
+  ConstraintSpace& operator=(ConstraintSpace&& other) {
     available_size_ = other.available_size_;
     if (HasRareData())
       delete rare_data_;
@@ -153,14 +153,14 @@ class CORE_EXPORT NGConstraintSpace final {
     return *this;
   }
 
-  NGConstraintSpace CloneWithoutFragmentation() const {
+  ConstraintSpace CloneWithoutFragmentation() const {
     DCHECK(HasBlockFragmentation());
-    NGConstraintSpace copy = *this;
+    ConstraintSpace copy = *this;
     copy.DisableFurtherFragmentation();
     return copy;
   }
 
-  ~NGConstraintSpace() {
+  ~ConstraintSpace() {
     if (HasRareData())
       delete rare_data_;
   }
@@ -761,7 +761,7 @@ class CORE_EXPORT NGConstraintSpace final {
   // be possible to skip re-layout. If true is returned, the caller is expected
   // to verify that any constraint space size (available size, percentage size,
   // and so on) and BFC offset changes won't require re-layout, before skipping.
-  bool MaySkipLayout(const NGConstraintSpace& other) const {
+  bool MaySkipLayout(const ConstraintSpace& other) const {
     if (!bitfields_.MaySkipLayout(other.bitfields_))
       return false;
 
@@ -780,10 +780,10 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // Returns true if the size constraints (stretch-block-size,
   // fixed-inline-size) are equal.
-  bool AreInlineSizeConstraintsEqual(const NGConstraintSpace& other) const {
+  bool AreInlineSizeConstraintsEqual(const ConstraintSpace& other) const {
     return bitfields_.AreInlineSizeConstraintsEqual(other.bitfields_);
   }
-  bool AreBlockSizeConstraintsEqual(const NGConstraintSpace& other) const {
+  bool AreBlockSizeConstraintsEqual(const ConstraintSpace& other) const {
     if (!bitfields_.AreBlockSizeConstraintsEqual(other.bitfields_))
       return false;
     if (!HasRareData() && !other.HasRareData())
@@ -793,7 +793,7 @@ class CORE_EXPORT NGConstraintSpace final {
                other.MinBlockSizeShouldEncompassIntrinsicSize();
   }
 
-  bool AreSizesEqual(const NGConstraintSpace& other) const {
+  bool AreSizesEqual(const ConstraintSpace& other) const {
     if (available_size_ != other.available_size_)
       return false;
 
@@ -1622,7 +1622,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,
   // always initialize the bfc_offset_.
-  explicit NGConstraintSpace(WritingDirectionMode writing_direction)
+  explicit ConstraintSpace(WritingDirectionMode writing_direction)
       : available_size_(kIndefiniteSize, kIndefiniteSize),
         bfc_offset_(),
         bitfields_(writing_direction) {}
@@ -1661,7 +1661,7 @@ class CORE_EXPORT NGConstraintSpace final {
 };
 
 inline std::ostream& operator<<(std::ostream& stream,
-                                const NGConstraintSpace& value) {
+                                const ConstraintSpace& value) {
   return stream << value.ToString();
 }
 

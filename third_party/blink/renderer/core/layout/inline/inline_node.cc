@@ -1598,7 +1598,7 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
 }
 
 const NGLayoutResult* InlineNode::Layout(
-    const NGConstraintSpace& constraint_space,
+    const ConstraintSpace& constraint_space,
     const NGBreakToken* break_token,
     const NGColumnSpannerPath* column_spanner_path,
     InlineChildLayoutContext* context) const {
@@ -1656,7 +1656,7 @@ String InlineNode::TextContentForStickyImagesQuirk(
 
 static LayoutUnit ComputeContentSize(InlineNode node,
                                      WritingMode container_writing_mode,
-                                     const NGConstraintSpace& space,
+                                     const ConstraintSpace& space,
                                      const MinMaxSizesFloatInput& float_input,
                                      LineBreakerMode mode,
                                      LineBreaker::MaxSizeCache* max_size_cache,
@@ -1965,7 +1965,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 
 MinMaxSizesResult InlineNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const MinMaxSizesFloatInput& float_input) const {
   PrepareLayoutIfNeeded();
 

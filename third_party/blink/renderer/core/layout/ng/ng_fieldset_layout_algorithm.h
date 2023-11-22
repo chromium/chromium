@@ -12,9 +12,9 @@
 
 namespace blink {
 
-enum class NGBreakStatus;
+class ConstraintSpace;
 class NGBlockBreakToken;
-class NGConstraintSpace;
+enum class NGBreakStatus;
 
 class CORE_EXPORT FieldsetLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode,
@@ -44,11 +44,11 @@ class CORE_EXPORT FieldsetLayoutAlgorithm
       LogicalSize adjusted_padding_box_size,
       bool has_legend);
 
-  const NGConstraintSpace CreateConstraintSpaceForLegend(
+  const ConstraintSpace CreateConstraintSpaceForLegend(
       BlockNode legend,
       LogicalSize available_size,
       LogicalSize percentage_size);
-  const NGConstraintSpace CreateConstraintSpaceForFieldsetContent(
+  const ConstraintSpace CreateConstraintSpaceForFieldsetContent(
       BlockNode fieldset_content,
       LogicalSize padding_box_size,
       LayoutUnit block_offset);

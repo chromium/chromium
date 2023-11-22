@@ -63,7 +63,7 @@ const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
   BoxStrut content_margins;
   const NGLayoutResult* content_layout_result = nullptr;
   if (content) {
-    NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
+    ConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), GetConstraintSpace(), content);
     content_layout_result = content.Layout(constraint_space);
     const auto& content_fragment =

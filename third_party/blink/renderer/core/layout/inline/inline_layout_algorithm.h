@@ -19,6 +19,7 @@
 
 namespace blink {
 
+class ConstraintSpace;
 class ExclusionSpace;
 class InlineBreakToken;
 class InlineChildLayoutContext;
@@ -27,7 +28,6 @@ class InlineLayoutStateStack;
 class InlineNode;
 class LineInfo;
 class NGColumnSpannerPath;
-class NGConstraintSpace;
 struct InlineBoxState;
 struct InlineItemResult;
 struct LeadingFloats;
@@ -44,7 +44,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                              InlineBreakToken> {
  public:
   InlineLayoutAlgorithm(InlineNode,
-                        const NGConstraintSpace&,
+                        const ConstraintSpace&,
                         const InlineBreakToken*,
                         const NGColumnSpannerPath*,
                         InlineChildLayoutContext* context);

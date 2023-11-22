@@ -45,11 +45,11 @@
 
 namespace blink {
 
+class ConstraintSpace;
 class CustomLayoutChild;
 class LayoutMultiColumnSpannerPlaceholder;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
-class NGConstraintSpace;
 class NGEarlyBreak;
 class NGLayoutResult;
 class ShapeOutsideInfo;
@@ -689,7 +689,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   //
   // TODO(ikilpatrick): Move this function into BlockNode.
   const NGLayoutResult* CachedLayoutResult(
-      const NGConstraintSpace&,
+      const ConstraintSpace&,
       const NGBlockBreakToken*,
       const NGEarlyBreak*,
       const NGColumnSpannerPath*,

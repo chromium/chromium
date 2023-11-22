@@ -43,7 +43,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
  public:
   OutOfFlowLayoutPart(const BlockNode& container_node,
-                      const NGConstraintSpace& container_space,
+                      const ConstraintSpace& container_space,
                       NGBoxFragmentBuilder* container_builder);
   void Run();
 
@@ -150,7 +150,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
    public:
     BlockNode node;
-    const NGConstraintSpace constraint_space;
+    const ConstraintSpace constraint_space;
     const LogicalStaticPosition static_position;
     PhysicalSize container_physical_content_size;
     const ContainingBlockInfo container_info;
@@ -162,7 +162,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool requires_content_before_breaking = false;
 
     NodeInfo(BlockNode node,
-             const NGConstraintSpace constraint_space,
+             const ConstraintSpace constraint_space,
              const LogicalStaticPosition static_position,
              PhysicalSize container_physical_content_size,
              const ContainingBlockInfo container_info,
@@ -266,7 +266,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       return kFragmentPage;
     return kFragmentColumn;
   }
-  const NGConstraintSpace& GetConstraintSpace() const {
+  const ConstraintSpace& GetConstraintSpace() const {
     return container_builder_->GetConstraintSpace();
   }
 
@@ -307,7 +307,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   const NGLayoutResult* LayoutOOFNode(
       NodeToLayout& oof_node_to_layout,
-      const NGConstraintSpace* fragmentainer_constraint_space = nullptr,
+      const ConstraintSpace* fragmentainer_constraint_space = nullptr,
       bool is_last_fragmentainer_so_far = false);
 
   // TODO(almaher): We are calculating more than just the offset. Consider
@@ -330,14 +330,14 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   const NGLayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,
-      const NGConstraintSpace* fragmentainer_constraint_space,
+      const ConstraintSpace* fragmentainer_constraint_space,
       bool is_last_fragmentainer_so_far);
 
   bool IsContainingBlockForCandidate(const LogicalOofPositionedNode&);
 
   const NGLayoutResult* GenerateFragment(
       const NodeToLayout& oof_node_to_layout,
-      const NGConstraintSpace* fragmentainer_constraint_space,
+      const ConstraintSpace* fragmentainer_constraint_space,
       bool is_last_fragmentainer_so_far);
 
   // Performs layout on the OOFs stored in |pending_descendants| and
@@ -358,7 +358,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       bool* has_actual_break_inside,
       HeapVector<NodeToLayout>* fragmented_descendants);
   void AddOOFToFragmentainer(NodeToLayout& descendant,
-                             const NGConstraintSpace* fragmentainer_space,
+                             const ConstraintSpace* fragmentainer_space,
                              LogicalOffset fragmentainer_offset,
                              wtf_size_t index,
                              bool is_last_fragmentainer_so_far,
@@ -374,7 +374,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       wtf_size_t index,
       LogicalOffset fragmentainer_progression,
       bool create_new_fragment);
-  NGConstraintSpace GetFragmentainerConstraintSpace(wtf_size_t index);
+  ConstraintSpace GetFragmentainerConstraintSpace(wtf_size_t index);
   void ComputeStartFragmentIndexAndRelativeOffset(
       WritingMode default_writing_mode,
       LayoutUnit block_estimate,

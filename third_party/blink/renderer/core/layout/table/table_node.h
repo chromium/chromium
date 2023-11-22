@@ -22,13 +22,13 @@ class CORE_EXPORT TableNode final : public BlockNode {
 
   const TableBorders* GetTableBorders() const;
 
-  LayoutUnit ComputeCaptionBlockSize(const NGConstraintSpace& space) const;
+  LayoutUnit ComputeCaptionBlockSize(const ConstraintSpace& space) const;
 
   scoped_refptr<const TableTypes::Columns> GetColumnConstraints(
       const TableGroupedChildren&,
       const BoxStrut& border_padding) const;
 
-  LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
+  LayoutUnit ComputeTableInlineSize(const ConstraintSpace&,
                                     const BoxStrut& border_padding) const;
 
   // Tables are special in that their max intrinsic-size can be "infinite"

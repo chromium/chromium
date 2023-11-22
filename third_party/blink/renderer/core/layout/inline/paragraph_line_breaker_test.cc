@@ -17,7 +17,7 @@ class ParagraphLineBreakerTest : public RenderingTest {
     const NGPhysicalBoxFragment* fragment =
         node.GetLayoutBox()->GetPhysicalFragment(0);
     const LayoutUnit width = fragment->Size().width;
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     LineLayoutOpportunity line_opportunity(width);
     return ParagraphLineBreaker::AttemptParagraphBalancing(node, space,
                                                            line_opportunity);

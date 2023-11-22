@@ -38,7 +38,7 @@ namespace blink {
 namespace {
 
 TableTypes::Caption ComputeCaptionConstraint(
-    const NGConstraintSpace& table_space,
+    const ConstraintSpace& table_space,
     const ComputedStyle& table_style,
     const TableGroupedChildren& grouped_children) {
   // Caption inline size constraints.
@@ -60,8 +60,8 @@ TableTypes::Caption ComputeCaptionConstraint(
   return caption_min_max;
 }
 
-NGConstraintSpace CreateCaptionConstraintSpace(
-    const NGConstraintSpace& table_constraint_space,
+ConstraintSpace CreateCaptionConstraintSpace(
+    const ConstraintSpace& table_constraint_space,
     const ComputedStyle& table_style,
     const BlockNode& caption,
     LogicalSize available_size,
@@ -90,10 +90,10 @@ NGConstraintSpace CreateCaptionConstraintSpace(
 }
 
 TableLayoutAlgorithm::CaptionResult LayoutCaption(
-    const NGConstraintSpace& table_constraint_space,
+    const ConstraintSpace& table_constraint_space,
     const ComputedStyle& table_style,
     LayoutUnit table_inline_size,
-    const NGConstraintSpace& caption_constraint_space,
+    const ConstraintSpace& caption_constraint_space,
     const BlockNode& caption,
     BoxStrut margins,
     const NGBlockBreakToken* break_token = nullptr,
@@ -116,7 +116,7 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
 // that matters here (not the content-box) when it comes to resolving
 // percentages.
 BoxStrut ComputeCaptionMargins(
-    const NGConstraintSpace& table_constraint_space,
+    const ConstraintSpace& table_constraint_space,
     const BlockNode& caption,
     LayoutUnit table_border_box_inline_size,
     const NGBlockBreakToken* caption_break_token = nullptr) {
@@ -133,14 +133,14 @@ void ComputeCaptionFragments(
     const TableGroupedChildren& grouped_children,
     HeapVector<TableLayoutAlgorithm::CaptionResult>* captions,
     LayoutUnit& captions_block_size) {
-  const NGConstraintSpace& table_constraint_space =
+  const ConstraintSpace& table_constraint_space =
       table_builder.GetConstraintSpace();
   const LayoutUnit table_inline_size = table_builder.InlineSize();
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (BlockNode caption : grouped_children.captions) {
     BoxStrut margins = ComputeCaptionMargins(table_constraint_space, caption,
                                              table_inline_size);
-    NGConstraintSpace caption_constraint_space = CreateCaptionConstraintSpace(
+    ConstraintSpace caption_constraint_space = CreateCaptionConstraintSpace(
         table_constraint_space, table_style, caption, available_size);
 
     // If we are discarding the results (compute-only) and we are after layout
@@ -191,7 +191,7 @@ LayoutUnit ComputeUndistributableTableSpace(
 // Empty table sizes have been a source of many inconsistencies
 // between browsers.
 LayoutUnit ComputeEmptyTableInlineSize(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const ComputedStyle& table_style,
     const LayoutUnit assignable_table_inline_size,
     const LayoutUnit undistributable_space,
@@ -221,7 +221,7 @@ LayoutUnit ComputeEmptyTableInlineSize(
 // standard: https://www.w3.org/TR/css-tables-3/#computing-the-table-width
 LayoutUnit ComputeAssignableTableInlineSize(
     const TableNode& table,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const TableTypes::Columns& column_constraints,
     const TableTypes::Caption& caption_constraint,
     const LayoutUnit undistributable_space,
@@ -494,7 +494,7 @@ LayoutUnit EndTableBoxLayout(LayoutUnit table_border_padding_block_end,
 
 LayoutUnit TableLayoutAlgorithm::ComputeTableInlineSize(
     const TableNode& table,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const BoxStrut& table_border_padding) {
   const bool is_fixed_layout = table.Style().IsFixedTableLayout();
   // Tables need autosizer.
@@ -1224,7 +1224,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       child_block_start_margin = margins.block_start;
       child_block_end_margin = margins.block_end;
 
-      NGConstraintSpace child_space = CreateCaptionConstraintSpace(
+      ConstraintSpace child_space = CreateCaptionConstraintSpace(
           constraint_space, Style(), child, available_size,
           child_block_offset + child_block_start_margin);
       CaptionResult caption = LayoutCaption(
@@ -1319,7 +1319,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
             repeated_header_block_size + repeated_footer_block_size;
       }
 
-      NGConstraintSpace child_space = CreateSectionConstraintSpace(
+      ConstraintSpace child_space = CreateSectionConstraintSpace(
           child, child_block_offset - repeated_header_block_size,
           entry.GetSectionIndex(), reserved_space, repeat_mode);
       if (is_repeated_section) {
@@ -1481,7 +1481,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     }
 
     LogicalOffset offset(section_inline_offset, adjusted_child_block_offset);
-    NGConstraintSpace child_space = CreateSectionConstraintSpace(
+    ConstraintSpace child_space = CreateSectionConstraintSpace(
         grouped_children.footer, offset.block_offset, entry.GetSectionIndex(),
         /* reserved_space */ LayoutUnit(), kMayRepeatAgain);
     const NGLayoutResult* result = grouped_children.footer.LayoutRepeatableRoot(

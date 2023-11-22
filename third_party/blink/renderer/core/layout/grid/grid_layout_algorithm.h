@@ -208,7 +208,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       SizingConstraint sizing_constraint,
       const GridSizingTrackCollection& track_collection) const;
 
-  NGConstraintSpace CreateConstraintSpace(
+  ConstraintSpace CreateConstraintSpace(
       LayoutResultCacheSlot cache_slot,
       const GridItemData& grid_item,
       const LogicalSize& containing_grid_area_size,
@@ -220,7 +220,7 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
-  NGConstraintSpace CreateConstraintSpaceForLayout(
+  ConstraintSpace CreateConstraintSpaceForLayout(
       const GridItemData& grid_item,
       const GridLayoutData& layout_data,
       GridLayoutSubtree&& opt_layout_subtree = GridLayoutSubtree(),
@@ -230,12 +230,12 @@ class CORE_EXPORT GridLayoutAlgorithm
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
           absl::nullopt) const;
 
-  NGConstraintSpace CreateConstraintSpaceForMeasure(
+  ConstraintSpace CreateConstraintSpaceForMeasure(
       const SubgriddedItemData& subgridded_item,
       GridTrackSizingDirection track_direction,
       const LogicalSize& fixed_available_size = kIndefiniteLogicalSize) const;
 
-  NGConstraintSpace CreateConstraintSpaceForSubgridAlgorithm(
+  ConstraintSpace CreateConstraintSpaceForSubgridAlgorithm(
       const SubgriddedItemData& subgrid_data) const;
 
   // Layout the |grid_items|, and add them to the builder.

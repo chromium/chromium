@@ -50,7 +50,7 @@ class LineBreakerTest : public RenderingTest {
       bool fill_first_space_ = false) {
     DCHECK(node);
     node.PrepareLayoutIfNeeded();
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     const InlineBreakToken* break_token = nullptr;
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
@@ -89,7 +89,7 @@ class LineBreakerTest : public RenderingTest {
                           base::span<LineInfo> line_info_list) {
     DCHECK(node);
     node.PrepareLayoutIfNeeded();
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     const InlineBreakToken* break_token = nullptr;
     ExclusionSpace exclusion_space;
     LeadingFloats leading_floats;
@@ -1230,7 +1230,7 @@ TEST_P(CanBreakInsideTest, Data) {
       BreakLines(target, available_width, line_info_list);
   ASSERT_EQ(num_lines, 1u);
 
-  NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
   const InlineBreakToken* break_token = nullptr;
   ExclusionSpace exclusion_space;
   LeadingFloats leading_floats;

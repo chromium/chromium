@@ -24,7 +24,7 @@ class NGLayoutResult;
 class LayoutAlgorithmOperations {
  public:
   // Actual layout function. Lays out the children and descendants within the
-  // constraints given by the NGConstraintSpace. Returns a layout result with
+  // constraints given by the ConstraintSpace. Returns a layout result with
   // the resulting layout information.
   // TODO(layout-dev): attempt to make this function const.
   virtual const NGLayoutResult* Layout() = 0;
@@ -44,7 +44,7 @@ struct LayoutAlgorithmParams {
   LayoutAlgorithmParams(
       BlockNode node,
       const FragmentGeometry& fragment_geometry,
-      const NGConstraintSpace& space,
+      const ConstraintSpace& space,
       const NGBlockBreakToken* break_token = nullptr,
       const NGEarlyBreak* early_break = nullptr,
       const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks = nullptr)
@@ -57,7 +57,7 @@ struct LayoutAlgorithmParams {
 
   BlockNode node;
   const FragmentGeometry& fragment_geometry;
-  const NGConstraintSpace& space;
+  const ConstraintSpace& space;
   const NGBlockBreakToken* break_token;
   const NGEarlyBreak* early_break;
   const NGColumnSpannerPath* column_spanner_path = nullptr;
@@ -74,7 +74,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
  public:
   LayoutAlgorithm(NGInputNodeType node,
                   const ComputedStyle* style,
-                  const NGConstraintSpace& space,
+                  const ConstraintSpace& space,
                   TextDirection direction,
                   const NGBreakTokenType* break_token)
       : node_(node),
@@ -109,7 +109,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   virtual ~LayoutAlgorithm() = default;
 
  protected:
-  const NGConstraintSpace& GetConstraintSpace() const {
+  const ConstraintSpace& GetConstraintSpace() const {
     return container_builder_.GetConstraintSpace();
   }
 
@@ -192,7 +192,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
     // right thing, since, as far as input is concerned, this node is meant to
     // perform block fragmentation (and it may already have produced multiple
     // fragment, but this one will be the last).
-    NGConstraintSpace new_space =
+    ConstraintSpace new_space =
         GetConstraintSpace().CloneWithoutFragmentation();
 
     LayoutAlgorithmParams params(Node(),

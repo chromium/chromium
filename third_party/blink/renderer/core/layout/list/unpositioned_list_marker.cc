@@ -37,7 +37,7 @@ LayoutUnit UnpositionedListMarker::InlineOffset(
 }
 
 const NGLayoutResult* UnpositionedListMarker::Layout(
-    const NGConstraintSpace& parent_space,
+    const ConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     FontBaseline baseline_type) const {
   DCHECK(marker_layout_object_);
@@ -53,7 +53,7 @@ const NGLayoutResult* UnpositionedListMarker::Layout(
 }
 
 absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     FontBaseline baseline_type,
     const NGPhysicalFragment& content) const {
   // Compute the baseline of the child content.
@@ -78,7 +78,7 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
 }
 
 void UnpositionedListMarker::AddToBox(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     FontBaseline baseline_type,
     const NGPhysicalFragment& content,
     const BoxStrut& border_scrollbar_padding,
@@ -122,7 +122,7 @@ void UnpositionedListMarker::AddToBox(
 }
 
 void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     FontBaseline baseline_type,
     const NGLayoutResult& marker_layout_result,
     NGBoxFragmentBuilder* container_builder,
@@ -158,7 +158,7 @@ void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
 // Find the opportunity for marker, and compare it to ListItem, then compute the
 // diff as intruded offset.
 LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGBoxFragmentBuilder* container_builder,
     const BoxStrut& border_scrollbar_padding,
     LayoutUnit marker_block_offset) const {

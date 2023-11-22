@@ -17,13 +17,13 @@
 
 namespace blink {
 
-NGConstraintSpace CreateConstraintSpaceForMathChild(
+ConstraintSpace CreateConstraintSpaceForMathChild(
     const BlockNode& parent_node,
     const LogicalSize& child_available_size,
-    const NGConstraintSpace& parent_space,
+    const ConstraintSpace& parent_space,
     const LayoutInputNode& child,
     LayoutResultCacheSlot cache_slot,
-    const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
+    const absl::optional<ConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes,
     const absl::optional<LayoutUnit> target_stretch_inline_size) {
   const ComputedStyle& parent_style = parent_node.Style();
@@ -46,7 +46,7 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
-    const NGConstraintSpace& parent_space,
+    const ConstraintSpace& parent_space,
     const BlockNode& child,
     LayoutUnit child_available_block_size) {
   DCHECK(child.CreatesNewFormattingContext());

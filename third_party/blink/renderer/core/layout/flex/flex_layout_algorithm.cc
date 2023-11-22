@@ -418,7 +418,7 @@ bool FlexLayoutAlgorithm::IsUsedFlexBasisDefinite(
     *out_flex_basis = flex_basis;
   if (flex_basis.IsAuto() || flex_basis.IsContent())
     return false;
-  const NGConstraintSpace& space = BuildSpaceForFlexBasis(child);
+  const ConstraintSpace& space = BuildSpaceForFlexBasis(child);
   if (MainAxisIsInlineAxis(child))
     return !InlineLengthUnresolvable(space, flex_basis);
   return !BlockLengthUnresolvable(space, flex_basis);
@@ -461,7 +461,7 @@ bool FlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
          DoesItemStretch(child);
 }
 
-NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
+ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
     const BlockNode& child) const {
   NGMinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
                                          /* is_new_fc */ true);
@@ -474,7 +474,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
   return builder.ToConstraintSpace();
 }
 
-NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
+ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     const BlockNode& flex_item,
     absl::optional<LayoutUnit> override_inline_size) const {
   const ComputedStyle& child_style = flex_item.Style();
@@ -514,7 +514,7 @@ NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   return space_builder.ToConstraintSpace();
 }
 
-NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
+ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
     const BlockNode& flex_item) const {
   NGConstraintSpaceBuilder space_builder(
       GetConstraintSpace(), flex_item.Style().GetWritingDirection(),
@@ -549,7 +549,7 @@ Length FlexLayoutAlgorithm::GetUsedFlexBasis(const BlockNode& child) const {
   return specified_flex_basis;
 }
 
-NGConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
+ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     const BlockNode& flex_item_node,
     LayoutUnit item_main_axis_final_size,
     absl::optional<LayoutUnit> override_inline_size,
@@ -701,7 +701,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       all_items_match_container_alignment = (item_offset == line_offset);
     }
 
-    NGConstraintSpace flex_basis_space = BuildSpaceForFlexBasis(child);
+    ConstraintSpace flex_basis_space = BuildSpaceForFlexBasis(child);
 
     PhysicalBoxStrut physical_child_margins =
         ComputePhysicalMargins(flex_basis_space, child_style);
@@ -829,7 +829,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             border_padding_in_child_writing_mode);
       }
       if (!layout_result) {
-        NGConstraintSpace child_space =
+        ConstraintSpace child_space =
             BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
         // TODO(crbug.com/1272533): This shouldn't return border/padding for
         // children which are layout-clean. More cache slots are needed to
@@ -1290,7 +1290,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       flex_item_output.ng_input_node = flex_item.ng_input_node_;
       flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
 
-      NGConstraintSpace child_space = BuildSpaceForLayout(
+      ConstraintSpace child_space = BuildSpaceForLayout(
           flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize(),
           flex_item.max_content_contribution_);
 
@@ -1459,7 +1459,7 @@ NGLayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
       const NGLayoutResult* layout_result = nullptr;
       if (DoesItemStretch(flex_item.ng_input_node)) {
-        NGConstraintSpace child_space = BuildSpaceForLayout(
+        ConstraintSpace child_space = BuildSpaceForLayout(
             flex_item.ng_input_node, flex_item.main_axis_final_size,
             /* override_inline_size */ absl::nullopt,
             line_output.line_cross_size);
@@ -1787,7 +1787,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     const bool min_block_size_should_encompass_intrinsic_size =
         MinBlockSizeShouldEncompassIntrinsicSize(*flex_item);
-    NGConstraintSpace child_space = BuildSpaceForLayout(
+    ConstraintSpace child_space = BuildSpaceForLayout(
         flex_item->ng_input_node, flex_item->main_axis_final_size,
         /* override_inline_size */ absl::nullopt, line_cross_size_for_stretch,
         offset.block_offset, min_block_size_should_encompass_intrinsic_size);
@@ -2202,7 +2202,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
   for (const FlexItem& item : algorithm_.all_items_) {
     const BlockNode& child = item.ng_input_node_;
 
-    const NGConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
+    const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     MinMaxSizesResult min_max_content_contributions =
         ComputeMinAndMaxContentContribution(Style(), child, space);
     depends_on_block_constraints |=
@@ -2315,7 +2315,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
     number_of_items++;
 
-    const NGConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
+    const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     MinMaxSizesResult child_result =
         ComputeMinAndMaxContentContribution(Style(), child, space);
     BoxStrut child_margins =

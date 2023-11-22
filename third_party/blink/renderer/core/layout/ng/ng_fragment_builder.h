@@ -57,7 +57,7 @@ class CORE_EXPORT NGFragmentBuilder {
     style_variant_ = style_variant;
   }
 
-  const NGConstraintSpace& GetConstraintSpace() const { return space_; }
+  const ConstraintSpace& GetConstraintSpace() const { return space_; }
 
   WritingDirectionMode GetWritingDirection() const {
     return writing_direction_;
@@ -507,7 +507,7 @@ class CORE_EXPORT NGFragmentBuilder {
  protected:
   NGFragmentBuilder(const LayoutInputNode& node,
                     const ComputedStyle* style,
-                    const NGConstraintSpace& space,
+                    const ConstraintSpace& space,
                     WritingDirectionMode writing_direction)
       : node_(node),
         space_(space),
@@ -551,7 +551,7 @@ class CORE_EXPORT NGFragmentBuilder {
           nullptr) const;
 
   LayoutInputNode node_;
-  const NGConstraintSpace& space_;
+  const ConstraintSpace& space_;
   const ComputedStyle* style_;
   WritingDirectionMode writing_direction_;
   StyleVariant style_variant_;

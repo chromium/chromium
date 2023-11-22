@@ -29,7 +29,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public NGFragmentBuilder {
  public:
   LineBoxFragmentBuilder(InlineNode node,
                          const ComputedStyle* style,
-                         const NGConstraintSpace& space,
+                         const ConstraintSpace& space,
                          WritingDirectionMode writing_direction)
       : NGFragmentBuilder(
             node,

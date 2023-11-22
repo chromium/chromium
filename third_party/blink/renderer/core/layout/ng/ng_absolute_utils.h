@@ -16,8 +16,8 @@
 namespace blink {
 
 class BlockNode;
+class ConstraintSpace;
 class NGBoxFragmentBuilder;
-class NGConstraintSpace;
 class NGLayoutResult;
 struct LogicalStaticPosition;
 
@@ -123,7 +123,7 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
 CORE_EXPORT bool ComputeOofInlineDimensions(
     const BlockNode&,
     const ComputedStyle& style,
-    const NGConstraintSpace&,
+    const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
@@ -136,7 +136,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
 CORE_EXPORT const NGLayoutResult* ComputeOofBlockDimensions(
     const BlockNode&,
     const ComputedStyle& style,
-    const NGConstraintSpace&,
+    const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,

@@ -26,7 +26,7 @@ for every kind of layout:
    - The list of children [BlockNode](ng_block_node.h)es to perform layout upon, and their
      respective style objects.
 
- - The [NGConstraintSpace](ng_constraint_space.h) which represents the "space"
+ - The [ConstraintSpace](ng_constraint_space.h) which represents the "space"
    in which the current layout should produce a
    [NGPhysicalFragment](ng_physical_fragment.h).
 

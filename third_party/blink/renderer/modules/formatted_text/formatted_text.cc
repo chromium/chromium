@@ -192,7 +192,7 @@ PaintRecord FormattedText::PaintFormattedText(Document& document,
       /* is_new_fc */ true);
   LogicalSize available_size = {inline_constraint_, block_constraint_};
   builder.SetAvailableSize(available_size);
-  NGConstraintSpace space = builder.ToConstraintSpace();
+  ConstraintSpace space = builder.ToConstraintSpace();
   const NGLayoutResult* block_results = block_node.Layout(space, nullptr);
   const auto& fragment =
       To<NGPhysicalBoxFragment>(block_results->PhysicalFragment());

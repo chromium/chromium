@@ -85,7 +85,7 @@ CSSLayoutDefinition::Instance::Instance(CSSLayoutDefinition* definition,
       instance_(definition->GetScriptState()->GetIsolate(), instance) {}
 
 bool CSSLayoutDefinition::Instance::Layout(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const Document& document,
     const BlockNode& node,
     const LogicalSize& border_box_size,
@@ -227,7 +227,7 @@ bool CSSLayoutDefinition::Instance::Layout(
 }
 
 bool CSSLayoutDefinition::Instance::IntrinsicSizes(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const Document& document,
     const BlockNode& node,
     const LogicalSize& border_box_size,

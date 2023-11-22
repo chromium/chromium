@@ -86,7 +86,7 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
           container_builder_.RequiresContentBeforeBreaking());
     }
 
-    NGConstraintSpace row_space = row_space_builder.ToConstraintSpace();
+    ConstraintSpace row_space = row_space_builder.ToConstraintSpace();
     const NGLayoutResult* row_result = row.Layout(row_space, row_break_token);
 
     if (constraint_space.HasBlockFragmentation()) {

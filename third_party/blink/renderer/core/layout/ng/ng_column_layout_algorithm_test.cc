@@ -18,7 +18,7 @@ class ColumnLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     BlockNode container(element->GetLayoutBox());
-    NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+    ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
     return BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
@@ -88,7 +88,7 @@ TEST_F(ColumnLayoutAlgorithmTest, EmptyMulticol) {
   )HTML");
 
   BlockNode container(GetLayoutBoxByElementId("container"));
-  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   const NGPhysicalBoxFragment* parent_fragment =
@@ -128,7 +128,7 @@ TEST_F(ColumnLayoutAlgorithmTest, EmptyBlock) {
   )HTML");
 
   BlockNode container(GetLayoutBoxByElementId("container"));
-  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   const NGPhysicalBoxFragment* parent_fragment =
@@ -177,7 +177,7 @@ TEST_F(ColumnLayoutAlgorithmTest, BlockInOneColumn) {
   )HTML");
 
   BlockNode container(GetLayoutBoxByElementId("container"));
-  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   const NGPhysicalBoxFragment* parent_fragment =
@@ -2749,7 +2749,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   LayoutObject* layout_object = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(layout_object);
   BlockNode node = BlockNode(To<LayoutBox>(layout_object));
-  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   FragmentGeometry fragment_geometry =

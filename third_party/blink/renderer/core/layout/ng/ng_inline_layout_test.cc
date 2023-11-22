@@ -20,7 +20,7 @@ namespace blink {
 
 class NGInlineLayoutTest : public SimTest {
  public:
-  NGConstraintSpace ConstraintSpaceForElement(LayoutBlockFlow* block_flow) {
+  ConstraintSpace ConstraintSpaceForElement(LayoutBlockFlow* block_flow) {
     NGConstraintSpaceBuilder builder(block_flow->Style()->GetWritingMode(),
                                      block_flow->Style()->GetWritingDirection(),
                                      /* is_new_fc */ false);
@@ -42,7 +42,7 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
-  NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
+  ConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   BlockNode node(block_flow);
 
   FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
@@ -68,7 +68,7 @@ TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
-  NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
+  ConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   BlockNode node(block_flow);
 
   FragmentGeometry fragment_geometry =

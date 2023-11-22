@@ -93,7 +93,7 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
 
   DCHECK(page_size.inline_size != kIndefiniteSize);
   DCHECK(page_size.block_size != kIndefiniteSize);
-  NGConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
+  ConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
   BlockLayoutAlgorithm child_algorithm(
@@ -103,7 +103,7 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
   return &To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 }
 
-NGConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(
+ConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(
     const LogicalSize& page_size) const {
   NGConstraintSpaceBuilder space_builder(GetConstraintSpace(),
                                          Style().GetWritingDirection(),

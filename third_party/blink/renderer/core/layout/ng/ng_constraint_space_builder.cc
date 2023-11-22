@@ -10,19 +10,19 @@ namespace blink {
 
 namespace {
 
-NGConstraintSpace::PercentageStorage GetPercentageStorage(
+ConstraintSpace::PercentageStorage GetPercentageStorage(
     LayoutUnit percentage_size,
     LayoutUnit available_size) {
   if (percentage_size == available_size)
-    return NGConstraintSpace::kSameAsAvailable;
+    return ConstraintSpace::kSameAsAvailable;
 
   if (percentage_size == kIndefiniteSize)
-    return NGConstraintSpace::kIndefinite;
+    return ConstraintSpace::kIndefinite;
 
   if (percentage_size == LayoutUnit())
-    return NGConstraintSpace::kZero;
+    return ConstraintSpace::kZero;
 
-  return NGConstraintSpace::kRareDataPercentage;
+  return ConstraintSpace::kRareDataPercentage;
 }
 
 }  // namespace
@@ -38,7 +38,7 @@ void NGConstraintSpaceBuilder::SetPercentageResolutionSize(
         GetPercentageStorage(percentage_resolution_size.inline_size,
                              space_.available_size_.inline_size);
     if (UNLIKELY(space_.bitfields_.percentage_inline_storage ==
-                 NGConstraintSpace::kRareDataPercentage)) {
+                 ConstraintSpace::kRareDataPercentage)) {
       space_.EnsureRareData()->percentage_resolution_size.inline_size =
           percentage_resolution_size.inline_size;
     }
@@ -47,7 +47,7 @@ void NGConstraintSpaceBuilder::SetPercentageResolutionSize(
         GetPercentageStorage(percentage_resolution_size.block_size,
                              space_.available_size_.block_size);
     if (space_.bitfields_.percentage_block_storage ==
-        NGConstraintSpace::kRareDataPercentage) {
+        ConstraintSpace::kRareDataPercentage) {
       space_.EnsureRareData()->percentage_resolution_size.block_size =
           percentage_resolution_size.block_size;
     }
@@ -59,7 +59,7 @@ void NGConstraintSpaceBuilder::SetPercentageResolutionSize(
         GetPercentageStorage(percentage_resolution_size.block_size,
                              space_.available_size_.inline_size);
     if (space_.bitfields_.percentage_inline_storage ==
-        NGConstraintSpace::kRareDataPercentage) {
+        ConstraintSpace::kRareDataPercentage) {
       space_.EnsureRareData()->percentage_resolution_size.inline_size =
           percentage_resolution_size.block_size;
     }
@@ -68,7 +68,7 @@ void NGConstraintSpaceBuilder::SetPercentageResolutionSize(
         GetPercentageStorage(percentage_resolution_size.inline_size,
                              space_.available_size_.block_size);
     if (space_.bitfields_.percentage_block_storage ==
-        NGConstraintSpace::kRareDataPercentage) {
+        ConstraintSpace::kRareDataPercentage) {
       space_.EnsureRareData()->percentage_resolution_size.block_size =
           percentage_resolution_size.inline_size;
     }
@@ -91,7 +91,7 @@ void NGConstraintSpaceBuilder::SetReplacedPercentageResolutionSize(
         GetPercentageStorage(replaced_percentage_resolution_size.block_size,
                              space_.available_size_.block_size);
     if (space_.bitfields_.replaced_percentage_block_storage ==
-        NGConstraintSpace::kRareDataPercentage) {
+        ConstraintSpace::kRareDataPercentage) {
       space_.EnsureRareData()->replaced_percentage_resolution_block_size =
           replaced_percentage_resolution_size.block_size;
     }
@@ -108,7 +108,7 @@ void NGConstraintSpaceBuilder::SetReplacedPercentageResolutionSize(
     space_.bitfields_.replaced_percentage_block_storage =
         GetPercentageStorage(block_size, space_.available_size_.block_size);
     if (space_.bitfields_.replaced_percentage_block_storage ==
-        NGConstraintSpace::kRareDataPercentage) {
+        ConstraintSpace::kRareDataPercentage) {
       space_.EnsureRareData()->replaced_percentage_resolution_block_size =
           block_size;
     }

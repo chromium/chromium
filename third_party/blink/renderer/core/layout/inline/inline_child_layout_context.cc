@@ -35,7 +35,7 @@ static_assert(
 // determine whether it's reasonable to pre-allocate a buffer for all the
 // estimated fragment items inside the node.
 bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
-  const NGConstraintSpace& space = fragment_builder.GetConstraintSpace();
+  const ConstraintSpace& space = fragment_builder.GetConstraintSpace();
   return space.HasBlockFragmentation() &&
          space.HasKnownFragmentainerBlockSize();
 }

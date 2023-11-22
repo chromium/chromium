@@ -501,7 +501,7 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
   return result;
 }
 
-const NGConstraintSpace FieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
+const ConstraintSpace FieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
     BlockNode legend,
     LogicalSize available_size,
     LogicalSize percentage_size) {
@@ -515,7 +515,7 @@ const NGConstraintSpace FieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
   return builder.ToConstraintSpace();
 }
 
-const NGConstraintSpace
+const ConstraintSpace
 FieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
     BlockNode fieldset_content,
     LogicalSize padding_box_size,

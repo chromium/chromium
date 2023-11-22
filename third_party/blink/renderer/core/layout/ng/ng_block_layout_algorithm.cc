@@ -89,7 +89,7 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
 }
 
 inline const NGLayoutResult* LayoutBlockChild(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
@@ -103,7 +103,7 @@ inline const NGLayoutResult* LayoutBlockChild(
 }
 
 inline const NGLayoutResult* LayoutInflow(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const NGBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
@@ -167,7 +167,7 @@ inline bool HasClearancePastAdjoiningFloats(
 // and after the clearance. None of this matters, though, because we know where
 // to place this block if clearance applies: exactly at the ConstraintSpace's
 // ClearanceOffset().
-bool ApplyClearance(const NGConstraintSpace& constraint_space,
+bool ApplyClearance(const ConstraintSpace& constraint_space,
                     LayoutUnit* bfc_block_offset) {
   if (constraint_space.HasClearanceOffset() &&
       *bfc_block_offset < constraint_space.ClearanceOffset()) {
@@ -1763,7 +1763,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
         (opportunity_size + child_data.margins.InlineSum())
             .ClampNegativeToZero();
 
-    NGConstraintSpace child_space = CreateConstraintSpaceForChild(
+    ConstraintSpace child_space = CreateConstraintSpaceForChild(
         child, child_break_token, child_data,
         {child_available_inline_size, ChildAvailableSize().block_size},
         /* is_new_fc */ true, opportunity.rect.start_offset.block_offset);
@@ -1952,7 +1952,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
       ComputeChildData(*previous_inflow_position, child, child_break_token,
                        /* is_new_fc */ false);
   child_data.is_pushed_by_floats = is_pushed_by_floats;
-  NGConstraintSpace child_space = CreateConstraintSpaceForChild(
+  ConstraintSpace child_space = CreateConstraintSpaceForChild(
       child, child_break_token, child_data, ChildAvailableSize(),
       /* is_new_fc */ false, forced_bfc_block_offset,
       has_clearance_past_adjoining_floats,
@@ -1974,7 +1974,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
 NGLayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     LayoutInputNode child,
     const NGBreakToken* child_break_token,
-    const NGConstraintSpace& child_space,
+    const ConstraintSpace& child_space,
     bool has_clearance_past_adjoining_floats,
     const NGLayoutResult* layout_result,
     InflowChildData* child_data,
@@ -2144,7 +2144,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     // already be past the relevant floats.
     child_data->is_pushed_by_floats = layout_result->IsPushedByFloats();
 
-    NGConstraintSpace new_child_space = CreateConstraintSpaceForChild(
+    ConstraintSpace new_child_space = CreateConstraintSpaceForChild(
         child, child_break_token, *child_data, ChildAvailableSize(),
         /* is_new_fc */ false, child_bfc_block_offset);
     layout_result =
@@ -2527,7 +2527,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
 
 LayoutUnit BlockLayoutAlgorithm::PositionSelfCollapsingChildWithParentBfc(
     const LayoutInputNode& child,
-    const NGConstraintSpace& child_space,
+    const ConstraintSpace& child_space,
     const InflowChildData& child_data,
     const NGLayoutResult& layout_result) const {
   DCHECK(layout_result.IsSelfCollapsing());
@@ -2795,7 +2795,7 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
       builder.SetAvailableSize(ChildAvailableSize());
       builder.SetPercentageResolutionSize(child_percentage_size_);
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
-      NGConstraintSpace space = builder.ToConstraintSpace();
+      ConstraintSpace space = builder.ToConstraintSpace();
 
       const auto block_child = To<BlockNode>(child);
       BoxStrut child_border_padding = ComputeBorders(space, block_child) +
@@ -2833,7 +2833,7 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
   return margins;
 }
 
-NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
+ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     const LayoutInputNode child,
     const NGBreakToken* child_break_token,
     const InflowChildData& child_data,
@@ -2888,7 +2888,7 @@ NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 
   bool has_bfc_block_offset = container_builder_.BfcBlockOffset().has_value();
 
-  // Propagate the |NGConstraintSpace::ForcedBfcBlockOffset| down to our
+  // Propagate the |ConstraintSpace::ForcedBfcBlockOffset| down to our
   // children.
   if (!has_bfc_block_offset && constraint_space.ForcedBfcBlockOffset()) {
     builder.SetForcedBfcBlockOffset(*constraint_space.ForcedBfcBlockOffset());
@@ -2924,13 +2924,13 @@ NGConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
       }
     }
   } else if (constraint_space.OptimisticBfcBlockOffset()) {
-    // Propagate the |NGConstraintSpace::OptimisticBfcBlockOffset| down to our
+    // Propagate the |ConstraintSpace::OptimisticBfcBlockOffset| down to our
     // children.
     builder.SetOptimisticBfcBlockOffset(
         *constraint_space.OptimisticBfcBlockOffset());
   }
 
-  // Propagate the |NGConstraintSpace::AncestorHasClearancePastAdjoiningFloats|
+  // Propagate the |ConstraintSpace::AncestorHasClearancePastAdjoiningFloats|
   // flag down to our children.
   if (!has_bfc_block_offset &&
       constraint_space.AncestorHasClearancePastAdjoiningFloats()) {
@@ -3200,7 +3200,7 @@ bool BlockLayoutAlgorithm::PositionOrPropagateListMarker(
     return true;
   container_builder_.ClearUnpositionedListMarker();
 
-  const NGConstraintSpace& space = GetConstraintSpace();
+  const ConstraintSpace& space = GetConstraintSpace();
   const NGPhysicalFragment& content = layout_result.PhysicalFragment();
   FontBaseline baseline_type = Style().GetFontBaseline();
   if (auto content_baseline =
@@ -3244,7 +3244,7 @@ bool BlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
   DCHECK(container_builder_.GetUnpositionedListMarker());
 
   auto list_marker = container_builder_.GetUnpositionedListMarker();
-  const NGConstraintSpace& space = GetConstraintSpace();
+  const ConstraintSpace& space = GetConstraintSpace();
   FontBaseline baseline_type = Style().GetFontBaseline();
   // Layout the list marker.
   const NGLayoutResult* marker_layout_result =
@@ -3394,7 +3394,7 @@ LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(
   const InflowChildData child_data =
       ComputeChildData(previous_inflow_position, placeholder,
                        /* child_break_token */ nullptr, is_new_fc);
-  const NGConstraintSpace space = CreateConstraintSpaceForChild(
+  const ConstraintSpace space = CreateConstraintSpaceForChild(
       placeholder, /* child_break_token */ nullptr, child_data, available_size,
       is_new_fc);
 
