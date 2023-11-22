@@ -801,8 +801,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1368936): Test is flaky on Linux, Windows and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1368936): Test is flaky on Linux and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CreateForceSignedInProfile DISABLED_CreateForceSignedInProfile
 #else
 #define MAYBE_CreateForceSignedInProfile CreateForceSignedInProfile
@@ -835,9 +835,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   force_signin_webui_url =
       AddFromProfilePickerURLParameter(force_signin_webui_url);
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      force_signin_webui_url, content::NotificationService::AllSources());
-  url_observer.Wait();
+  // Memorize the WebContents that shows the sign-in URL.
+  auto* signin_web_contents =
+      profile_picker_view->get_dialog_web_contents_for_testing();
+  WaitForLoadStop(force_signin_webui_url, signin_web_contents);
   LOG(WARNING) << "DEBUG - Finished waiting for the dialog.";
 
   // The dialog view should be created.
@@ -847,8 +848,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // A new profile should have been created for the forced sign-in flow.
   EXPECT_EQ(2u, g_browser_process->profile_manager()->GetNumberOfProfiles());
   // Get the profile that was used to load the `force_signin_webui_url`.
-  Profile* force_signin_profile = Profile::FromBrowserContext(
-      url_observer.web_contents()->GetBrowserContext());
+  Profile* force_signin_profile =
+      Profile::FromBrowserContext(signin_web_contents->GetBrowserContext());
   EXPECT_TRUE(force_signin_profile);
   // Make sure that the force_signin profile is different from the main one.
   EXPECT_FALSE(force_signin_profile->IsSameOrParent(browser()->profile()));

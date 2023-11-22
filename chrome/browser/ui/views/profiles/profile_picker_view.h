@@ -117,6 +117,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   };
 
   State state_for_testing() { return state_; }
+  content::WebContents* get_dialog_web_contents_for_testing() const {
+    return dialog_host_.get_web_contents_for_testing();
+  }
 
  protected:
   // To display the Profile picker, use ProfilePicker::Show().
