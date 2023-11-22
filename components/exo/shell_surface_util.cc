@@ -167,11 +167,13 @@ Surface* GetShellRootSurface(const aura::Window* window) {
   return window->GetProperty(kRootSurfaceKey);
 }
 
-ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window) {
+ShellSurfaceBase* GetShellSurfaceBaseForWindow(const aura::Window* window) {
   // Only windows with a surface can have a shell surface.
   if (!GetShellRootSurface(window))
     return nullptr;
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+  // This is safe to const-cast for Aura.
+  const views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      const_cast<aura::Window*>(window));
   if (!widget)
     return nullptr;
   ShellSurfaceBase* shell_surface_base =

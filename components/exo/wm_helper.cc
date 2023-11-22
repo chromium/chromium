@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -147,6 +148,23 @@ class ExoDebugWindowHierarchyDelegate
   }
 };
 
+class ExoThottleControllerWindowDelegate
+    : public ash::ThottleControllerWindowDelegate {
+ public:
+  viz::FrameSinkId GetFrameSinkIdForWindow(
+      const aura::Window* window) const override {
+    auto* shell_surface = GetShellSurfaceBaseForWindow(window);
+    if (shell_surface) {
+      // Expect only the widget's window to map to the shell surface.
+      // This is so we don't return the same frame sink multiple times during
+      // the tree traversal.
+      DCHECK_EQ(shell_surface->GetWidget()->GetNativeWindow(), window);
+      return shell_surface->GetSurfaceId().frame_sink_id();
+    }
+    return window->GetFrameSinkId();
+  }
+};
+
 }  // namespace
 
 WMHelper::LifetimeManager::LifetimeManager() = default;
@@ -178,6 +196,8 @@ WMHelper::WMHelper() : vsync_timing_manager_(this) {
 
   ash::debug::SetDebugWindowHierarchyDelegate(
       std::make_unique<ExoDebugWindowHierarchyDelegate>());
+  ash::SetThottleControllerWindowDelegate(
+      std::make_unique<ExoThottleControllerWindowDelegate>());
 }
 
 WMHelper::~WMHelper() {

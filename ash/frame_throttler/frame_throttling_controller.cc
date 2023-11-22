@@ -26,10 +26,20 @@ namespace ash {
 
 namespace {
 
+std::unique_ptr<ThottleControllerWindowDelegate> instance = nullptr;
+
+viz::FrameSinkId GetFrameSinkId(const aura::Window* window) {
+  if (instance) {
+    return instance->GetFrameSinkIdForWindow(window);
+  }
+  return window->GetFrameSinkId();
+}
+
 void CollectFrameSinkIds(const aura::Window* window,
                          base::flat_set<viz::FrameSinkId>* frame_sink_ids) {
-  if (window->GetFrameSinkId().is_valid()) {
-    frame_sink_ids->insert(window->GetFrameSinkId());
+  auto id = GetFrameSinkId(window);
+  if (id.is_valid()) {
+    frame_sink_ids->insert(id);
     return;
   }
   for (auto* child : window->children()) {
@@ -49,7 +59,7 @@ void CollectBrowserFrameSinkIdsInWindow(
   if (inside_browser || ash::AppType::BROWSER ==
                             static_cast<ash::AppType>(
                                 window->GetProperty(aura::client::kAppType))) {
-    const auto& id = window->GetFrameSinkId();
+    auto id = GetFrameSinkId(window);
     if (id.is_valid() && ids.contains(id))
       frame_sink_ids->insert(id);
     inside_browser = true;
@@ -62,6 +72,11 @@ void CollectBrowserFrameSinkIdsInWindow(
 }
 
 }  // namespace
+
+void SetThottleControllerWindowDelegate(
+    std::unique_ptr<ThottleControllerWindowDelegate> delegate) {
+  instance = std::move(delegate);
+}
 
 ThrottleCandidates::ThrottleCandidates() = default;
 
@@ -336,7 +351,7 @@ void FrameThrottlingController::CollectLacrosWindowsInWindow(
   }
 
   if (inside_lacros) {
-    const auto& id = window->GetFrameSinkId();
+    auto id = GetFrameSinkId(window);
     if (id.is_valid() && ids.contains(id)) {
       DCHECK(lacros_window);
       candidates->insert(std::make_pair(lacros_window, id));
@@ -356,7 +371,7 @@ void FrameThrottlingController::CollectLacrosCandidates(
     aura::Window* window,
     base::flat_map<aura::Window*, viz::FrameSinkId>* candidates,
     aura::Window* lacros_window) {
-  const auto& id = window->GetFrameSinkId();
+  auto id = GetFrameSinkId(window);
   if (id.is_valid()) {
     DCHECK(lacros_window);
     candidates->insert(std::make_pair(lacros_window, id));

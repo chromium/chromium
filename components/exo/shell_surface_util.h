@@ -79,7 +79,7 @@ Surface* GetShellRootSurface(const aura::Window* window);
 
 // Returns the ShellSurfaceBase for the given |window|, or nullptr if no such
 // surface exists.
-ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window);
+ShellSurfaceBase* GetShellSurfaceBaseForWindow(const aura::Window* window);
 
 // Returns the target surface for the located event |event|.  If an
 // event handling is grabbed by an window, it'll first examine that
