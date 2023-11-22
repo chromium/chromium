@@ -82,6 +82,10 @@ std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
 
 // Invoke screen reader alert to notify the user of the state.
 void AnnounceToScreenReader(const int message_id) {
+// TODO(crbug.com/1443341): Sending announcements results in a failure in
+// `AuraLinuxAccessibilityInProcessBrowserTest::IndexInParentWithModal` and
+// flaky fail when running Chrome.
+#if !BUILDFLAG(IS_LINUX)
   const Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser) {
     VLOG(2) << "Browser is not ready to announce";
@@ -95,6 +99,7 @@ void AnnounceToScreenReader(const int message_id) {
 
   browser_view->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(message_id));
+#endif
 }
 
 void RecordAcceptLanguages(const std::string& accept_languages) {
