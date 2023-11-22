@@ -245,7 +245,7 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
 
   [signout_coordinator_ start];
 
-  histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout", 0u);
+  histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout2", 0u);
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
 
@@ -268,14 +268,14 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
 
   [signout_coordinator_ start];
 
-  histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout", 1u);
-  histogram_tester.ExpectBucketCount(
-      "Sync.UnsyncedDataOnSignout",
-      syncer::ModelTypeForHistograms(syncer::BOOKMARKS), 1u);
+  histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout2", 1u);
+  histogram_tester.ExpectBucketCount("Sync.UnsyncedDataOnSignout2",
+                                     syncer::ModelTypeForHistograms::kBookmarks,
+                                     1u);
   // Only a few "interesting" data types are recorded. PREFERENCES is not.
   histogram_tester.ExpectBucketCount(
-      "Sync.UnsyncedDataOnSignout",
-      syncer::ModelTypeForHistograms(syncer::PREFERENCES), 0u);
+      "Sync.UnsyncedDataOnSignout2",
+      syncer::ModelTypeForHistograms::kPreferences, 0u);
 
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }

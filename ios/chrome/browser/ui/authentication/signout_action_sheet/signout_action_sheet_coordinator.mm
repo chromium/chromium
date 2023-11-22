@@ -284,8 +284,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                  syncer::CONTACT_INFO});
   if (!set.Empty()) {
     for (syncer::ModelType type : set) {
-      base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout",
-                                    syncer::ModelTypeForHistograms(type));
+      base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
+                                    syncer::ModelTypeHistogramValue(type));
     }
     [self startActionSheetCoordinatorForSignout];
   } else {

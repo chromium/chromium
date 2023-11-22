@@ -125,8 +125,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.BatchUpload.Requests" enum="SyncModelTypes"
-    expires_after="2024-09-14">
+<histogram name="Sync.BatchUpload.Requests2" enum="SyncModelTypes"
+    expires_after="2024-11-20">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <component>Services&gt;Sync</component>
@@ -1980,8 +1980,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.UnsyncedDataOnSignout" enum="SyncModelTypes"
-    expires_after="2024-10-26">
+<histogram name="Sync.UnsyncedDataOnSignout2" enum="SyncModelTypes"
+    expires_after="2024-11-20">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <component>Services&gt;Sync</component>

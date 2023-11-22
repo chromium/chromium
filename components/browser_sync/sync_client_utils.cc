@@ -297,8 +297,8 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
   // This runs the query for the requested data types.
   void Run() {
     for (syncer::ModelType type : types_) {
-      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests",
-                                    syncer::ModelTypeForHistograms(type));
+      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests2",
+                                    syncer::ModelTypeHistogramValue(type));
     }
 
     if (types_.Has(syncer::PASSWORDS)) {
