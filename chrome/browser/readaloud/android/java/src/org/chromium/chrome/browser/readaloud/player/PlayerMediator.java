@@ -123,8 +123,10 @@ class PlayerMediator implements InteractionHandler {
                 mPlayback.pause();
                 return;
 
-            case PAUSED:
             case STOPPED:
+                mPlayback.seek(0L);
+                // fall through
+            case PAUSED:
                 mPlayback.play();
                 return;
 

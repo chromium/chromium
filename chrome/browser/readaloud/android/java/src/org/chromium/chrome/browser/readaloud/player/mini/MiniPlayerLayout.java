@@ -231,19 +231,17 @@ public class MiniPlayerLayout extends LinearLayout {
                         getResources().getString(R.string.readaloud_pause));
                 break;
 
+            case STOPPED:
             case PAUSED:
                 if (mLastPlaybackState != PLAYING && mLastPlaybackState != PAUSED) {
                     showOnly(mNormalLayout);
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
-
                 mPlayPauseView.setImageResource(R.drawable.mini_play_button);
                 mPlayPauseView.setContentDescription(
                         getResources().getString(R.string.readaloud_play));
                 break;
 
-            // TODO(b/301657446): handle this case
-            case STOPPED:
             default:
                 break;
         }

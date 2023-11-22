@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -220,6 +221,12 @@ public class PlayerMediatorUnitTest {
         mMediator.setPlaybackState(PlaybackListener.State.PAUSED);
 
         mMediator.onPlayPauseClick();
+        verify(mPlayback).play();
+
+        Mockito.reset(mPlayback);
+        mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
+        mMediator.onPlayPauseClick();
+        verify(mPlayback).seek(0L);
         verify(mPlayback).play();
     }
 

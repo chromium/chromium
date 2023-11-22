@@ -110,6 +110,21 @@ public class MiniPlayerLayoutUnitTest {
     }
 
     @Test
+    public void testStoppedState() {
+        mLayout.onPlaybackStateChanged(PlaybackListener.State.STOPPED);
+
+        assertEquals(View.VISIBLE, mLayout.findViewById(R.id.progress_bar).getVisibility());
+
+        // Only the "normal" layout is visible.
+        assertEquals(View.GONE, mLayout.findViewById(R.id.buffering_layout).getVisibility());
+        assertEquals(View.VISIBLE, mLayout.findViewById(R.id.normal_layout).getVisibility());
+        assertEquals(View.GONE, mLayout.findViewById(R.id.error_layout).getVisibility());
+
+        // Can't directly test the play button drawable so instead check the a11y string.
+        assertEquals("Play", mLayout.findViewById(R.id.play_button).getContentDescription());
+    }
+
+    @Test
     public void testErrorState() {
         mLayout.onPlaybackStateChanged(PlaybackListener.State.ERROR);
 
