@@ -354,3 +354,19 @@ declare_args() {
   raw_ptr_zero_on_move = raw_ptr_zero_on_move_default
   raw_ptr_zero_on_destruct = raw_ptr_zero_on_destruct_default
 }
+
+# PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
+# access the generate "buildflags" and the "raw_ptr" definitions implemented
+# with RawPtrNoOpImpl. Everything else is considered not supported.
+#
+# Since there are no other good ways to detect MSVC's cl.exe, we are reusing the
+# same definition used by Chrome in //base/BUILD.gn. See
+# https://crbug.com/988071.
+is_clang_or_gcc = is_clang || !is_win
+
+if (!is_clang_or_gcc) {
+  assert(!use_partition_alloc,
+         "PartitionAlloc's allocator does not support this compiler")
+  assert(!use_allocator_shim,
+         "PartitionAlloc's allocator shim does not support this compiler")
+}
