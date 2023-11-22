@@ -82,6 +82,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
+        observer: 'onIsEditingSubmittedInputChanged_',
       },
       isEditSubmitEnabled_: {
         type: Boolean,
@@ -263,6 +264,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onEditClick_() {
     this.editedInput_ = this.input_;
     this.isEditingSubmittedInput_ = true;
+  }
+
+  private onIsEditingSubmittedInputChanged_() {
+    if (this.isEditingSubmittedInput_) {
+      // When switching to editing the submitted input, manually move focus
+      // to the input.
+      this.$.editTextarea.focusInput();
+    }
   }
 
   private onRefresh_() {

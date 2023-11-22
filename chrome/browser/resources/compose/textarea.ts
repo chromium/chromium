@@ -66,6 +66,10 @@ export class ComposeTextareaElement extends PolymerElement {
   private tooShort_: boolean;
   value: string;
 
+  focusInput() {
+    this.$.input.focus();
+  }
+
   private onEditClick_() {
     this.dispatchEvent(
         new CustomEvent('edit-click', {bubbles: true, composed: true}));
