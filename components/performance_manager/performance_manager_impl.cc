@@ -105,10 +105,17 @@ std::unique_ptr<PerformanceManagerImpl> PerformanceManagerImpl::Create(
   std::unique_ptr<PerformanceManagerImpl> instance =
       base::WrapUnique(new PerformanceManagerImpl());
 
-  GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PerformanceManagerImpl::OnStartImpl,
-                     base::Unretained(instance.get()), std::move(on_start)));
+  if (base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
+    // Invoke `OnStartImpl()` synchronously instead of via a posted task, so
+    // that any call to `CallOnGraphImpl()` that follows can access
+    // `g_performance_manager->ui_task_runner_`.
+    instance->OnStartImpl(std::move(on_start));
+  } else {
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PerformanceManagerImpl::OnStartImpl,
+                       base::Unretained(instance.get()), std::move(on_start)));
+  }
 
   return instance;
 }
