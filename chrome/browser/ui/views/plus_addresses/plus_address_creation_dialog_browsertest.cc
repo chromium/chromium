@@ -103,6 +103,14 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, BasicUiVerify) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, CloseWebContents) {
+  // First, show the UI normally.
+  ShowUi(std::string());
+  // Close the web contents, ensuring there aren't issues with teardown.
+  // See crbug.com/1502957.
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+}
+
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, DoubleInit) {
   // First, show the UI normally.
   ShowUi(std::string());
