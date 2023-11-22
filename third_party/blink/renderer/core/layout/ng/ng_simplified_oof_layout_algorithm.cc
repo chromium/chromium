@@ -30,7 +30,7 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
   container_builder_.SetHasOutOfFlowFragmentChild(true);
 
   const NGBlockBreakToken* old_fragment_break_token =
-      previous_fragment.BreakToken();
+      previous_fragment.GetBreakToken();
   if (old_fragment_break_token) {
     container_builder_.SetHasColumnSpanner(
         old_fragment_break_token->IsCausedByColumnSpanner());

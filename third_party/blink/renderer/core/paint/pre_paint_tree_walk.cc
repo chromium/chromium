@@ -346,7 +346,7 @@ NGPrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
   const auto* fragment = To<NGPhysicalBoxFragment>(child.fragment.Get());
   return NGPrePaintInfo(fragment, child.offset,
                         context.current_container.fragmentainer_idx,
-                        fragment->IsFirstForNode(), !fragment->BreakToken(),
+                        fragment->IsFirstForNode(), !fragment->GetBreakToken(),
                         /* is_inside_fragment_child */ false,
                         context.current_container.IsInFragmentationContext());
 }
@@ -877,8 +877,9 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     return;
   // Multicol containers only contain special legacy children invisible to
   // LayoutNG, so we need to clean them manually.
-  if (fragment.BreakToken())
+  if (fragment.GetBreakToken()) {
     return;  // Wait until we've reached the end.
+  }
   for (const LayoutObject* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
     DCHECK(child->IsLayoutFlowThread() || child->IsLayoutMultiColumnSet() ||
@@ -965,7 +966,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
 
         if (item.BoxFragment() && !item.BoxFragment()->IsInlineBox()) {
           box_fragment = item.BoxFragment();
-          is_last_for_node = !box_fragment->BreakToken();
+          is_last_for_node = !box_fragment->GetBreakToken();
           break;
         } else {
           // Inlines will pass their containing block fragment (and its incoming
@@ -1083,7 +1084,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
           box_fragment = To<NGPhysicalBoxFragment>(link.get());
           paint_offset = link.offset;
           is_first_for_node = box_fragment->IsFirstForNode();
-          is_last_for_node = !box_fragment->BreakToken();
+          is_last_for_node = !box_fragment->GetBreakToken();
           break;
         }
         // If we didn't find a fragment for the child, it means that the child
@@ -1166,7 +1167,7 @@ void PrePaintTreeWalk::WalkChildren(
       DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
       const auto* first_fragment =
           To<NGPhysicalBoxFragment>(box->GetPhysicalFragment(0));
-      DCHECK(!first_fragment->BreakToken());
+      DCHECK(!first_fragment->GetBreakToken());
       if (first_fragment->IsFragmentationContextRoot() &&
           box->CanTraversePhysicalFragments())
         traversable_fragment = first_fragment;

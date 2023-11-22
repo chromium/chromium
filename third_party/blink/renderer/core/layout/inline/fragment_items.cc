@@ -33,7 +33,7 @@ void CheckIsLast(const FragmentItem& item) {
   if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
     if (!fragment->IsInline()) {
       DCHECK(!fragment->IsInlineBox());
-      DCHECK_EQ(item.IsLastForNode(), !fragment->BreakToken());
+      DCHECK_EQ(item.IsLastForNode(), !fragment->GetBreakToken());
     }
   }
 }
@@ -134,7 +134,7 @@ void FragmentItems::FinalizeAfterLayout(
         // fragment items (even if we're in an inline formatting context). So
         // we're not going to find the last fragment by just looking for items.
         DCHECK(item.BoxFragment() && !item.BoxFragment()->IsInlineBox());
-        item.SetIsLastForNode(!item.BoxFragment()->BreakToken());
+        item.SetIsLastForNode(!item.BoxFragment()->GetBreakToken());
       } else {
         DCHECK(layout_object->IsInline());
         // This will be updated later if following fragments are found.
@@ -269,8 +269,9 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
     // partial. Remove the last fragment if it is the end of the
     // fragmentation to do so, but we should figure out how to setup the
     // states without doing this.
-    if (!line_box_fragment.BreakToken())
+    if (!line_box_fragment.GetBreakToken()) {
       return &item;
+    }
 
     last_line_start = &item;
     cursor.MoveToNextSkippingChildren();

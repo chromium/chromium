@@ -510,7 +510,7 @@ bool IsEndRowFragmented(const NGPhysicalBoxFragment& section) {
     if (!child->IsTableRow()) {
       continue;
     }
-    const auto* break_token = To<NGBlockBreakToken>(child->BreakToken());
+    const auto* break_token = To<NGBlockBreakToken>(child->GetBreakToken());
     return IsBreakInside(break_token) && !break_token->IsAtBlockEnd();
   }
   return false;

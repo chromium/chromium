@@ -615,7 +615,7 @@ class CORE_EXPORT NGPhysicalFragment
     const PhysicalFragmentLink* buffer_;
   };
 
-  const NGBreakToken* BreakToken() const { return break_token_.Get(); }
+  const NGBreakToken* GetBreakToken() const { return break_token_.Get(); }
 
   base::span<const PhysicalFragmentLink> Children() const;
 

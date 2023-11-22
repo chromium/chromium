@@ -48,7 +48,7 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
   Vector<LayoutUnit> row_offsets = {LayoutUnit()};
   wtf_size_t actual_start_row_index = 0u;
 
-  NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
+  NGBlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken(),
                                       /* calculate_child_idx */ true);
   for (auto entry = child_iterator.NextChild();
        BlockNode row = To<BlockNode>(entry.node);
@@ -97,7 +97,7 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
           !is_first_non_collapsed_row, &container_builder_);
       if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
         return RelayoutAndBreakEarlier<TableSectionLayoutAlgorithm>(
-            container_builder_.EarlyBreak());
+            container_builder_.GetEarlyBreak());
       }
       if (break_status == NGBreakStatus::kBrokeBefore)
         break;
@@ -142,8 +142,9 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
     block_size = constraint_space.AvailableSize().block_size;
   } else {
     block_size = offset.block_offset;
-    if (BreakToken())
-      block_size += BreakToken()->ConsumedBlockSize();
+    if (GetBreakToken()) {
+      block_size += GetBreakToken()->ConsumedBlockSize();
+    }
   }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);

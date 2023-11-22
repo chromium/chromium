@@ -154,9 +154,9 @@ is that all the layout algorithm needs to do when laying out children, is:
 * Figure out where to begin - which child is the first that wasn't fully laid
   out in the previous fragmentainer (if any)? Check the incoming break token for
   the node that was passed to the layout algorithm, by calling
-  [BreakToken()](ng_layout_algorithm.h). There will be a child break token for
-  each unfinished child. Block break tokens form a tree. Children are found in
-  [NGBlockBreakToken::ChildBreakTokens()](ng_block_break_token.h). These will
+  [GetBreakToken()](ng_layout_algorithm.h). There will be a child break token
+  for each unfinished child. Block break tokens form a tree. Children are found
+  in [NGBlockBreakToken::ChildBreakTokens()](ng_block_break_token.h). These will
   need to be resumed and laid out by passing the corresponding child break token
   to [LayoutInputNode::Layout()](ng_layout_input_node.h). When done with all
   the incoming child break tokens, and as long as we didn't break again, proceed
@@ -226,7 +226,7 @@ ComputeBlockSizeForFragment(). Knowing the total block-size from all fragments
 allows us to constrain the block-size correctly, since the relevant computed CSS
 values know nothing about fragmentation. The space taken up by previous
 fragments can be retrieved from
-[BreakToken()->ConsumedBlockSize()](ng_block_break_token.h).
+[GetBreakToken()->ConsumedBlockSize()](ng_block_break_token.h).
 
 As mentioned earlier, normally the right thing to do before performing block
 fragmentation steps is to check if
@@ -371,10 +371,10 @@ columns not getting anywhere, proabably). This is where
 play. No child break tokens either means that we're done with the children, or
 that we haven't started yet. HasSeenAllChildren() will tell us what to do. In
 this case it returns true, so we'll just finish layout.
-[BreakToken()->ConsumedBlockSize()](ng_block_break_token.h) will be used to tell
-us how much space we actually need to fit in this column. We were able to fit
-100px in the previous column, so that's our previously consumed block-size. The
-specified height is 150px, so we need room for another 50px, which will
+[GetBreakToken()->ConsumedBlockSize()](ng_block_break_token.h) will be used to
+tell us how much space we actually need to fit in this column. We were able to
+fit 100px in the previous column, so that's our previously consumed block-size.
+The specified height is 150px, so we need room for another 50px, which will
 fit. Create another fragment for #container and return to the parent layout
 algorithm (the BlockLayoutAlgorithm for the second column). The column only
 had one break token child, i.e. the one for #container. We'll proceed with its

@@ -20,7 +20,7 @@ PageLayoutAlgorithm::PageLayoutAlgorithm(const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params) {}
 
 const NGLayoutResult* PageLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+  DCHECK(!GetBreakToken());
   auto writing_direction = GetConstraintSpace().GetWritingDirection();
   const NGBlockBreakToken* break_token = nullptr;
   LayoutUnit intrinsic_block_size;
@@ -59,7 +59,7 @@ const NGLayoutResult* PageLayoutAlgorithm::Layout() {
     intrinsic_block_size = std::max(intrinsic_block_size,
                                     page_offset.block_offset + page_block_size);
     page_offset.block_offset += page_block_size;
-    break_token = page->BreakToken();
+    break_token = page->GetBreakToken();
     page_index++;
   } while (break_token);
 
@@ -95,7 +95,7 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
   DCHECK(page_size.block_size != kIndefiniteSize);
   ConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
   FragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
+      CalculateInitialFragmentGeometry(child_space, Node(), GetBreakToken());
   BlockLayoutAlgorithm child_algorithm(
       {Node(), fragment_geometry, child_space, break_token});
   child_algorithm.SetBoxType(NGPhysicalFragment::kPageBox);

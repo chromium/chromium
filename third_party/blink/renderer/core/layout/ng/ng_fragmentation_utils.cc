@@ -232,7 +232,7 @@ NGBreakAppeal CalculateBreakAppealInside(
     return kBreakAppealPerfect;
   const auto& physical_fragment = layout_result.PhysicalFragment();
   const auto* break_token =
-      DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken());
+      DynamicTo<NGBlockBreakToken>(physical_fragment.GetBreakToken());
   NGBreakAppeal appeal;
   bool consider_break_inside_avoidance;
   if (hypothetical_appeal) {
@@ -242,7 +242,7 @@ NGBreakAppeal CalculateBreakAppealInside(
     appeal = *hypothetical_appeal;
     consider_break_inside_avoidance = true;
   } else {
-    appeal = layout_result.BreakAppeal();
+    appeal = layout_result.GetBreakAppeal();
     consider_break_inside_avoidance = IsBreakInside(break_token);
   }
 
@@ -1053,7 +1053,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
   const auto& physical_fragment = layout_result.PhysicalFragment();
   LogicalFragment fragment(space.GetWritingDirection(), physical_fragment);
   const auto* break_token =
-      DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken());
+      DynamicTo<NGBlockBreakToken>(physical_fragment.GetBreakToken());
 
   LayoutUnit space_left =
       FragmentainerCapacity(space) - fragmentainer_block_offset;
@@ -1105,11 +1105,11 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
         if (flex_column_break_info) {
           if (!flex_column_break_info->early_break ||
               appeal_inside >=
-                  flex_column_break_info->early_break->BreakAppeal()) {
+                  flex_column_break_info->early_break->GetBreakAppeal()) {
             move_past = true;
           }
         } else if (!builder || !builder->HasEarlyBreak() ||
-                   appeal_inside >= builder->EarlyBreak().BreakAppeal()) {
+                   appeal_inside >= builder->GetEarlyBreak().GetBreakAppeal()) {
           move_past = true;
         }
       }
@@ -1152,7 +1152,7 @@ void UpdateEarlyBreakAtBlockChild(
   // help honor any break avoidance requests that come after this child. But
   // breaking *before* the child might help.
   const auto* break_token =
-      To<NGBlockBreakToken>(layout_result.PhysicalFragment().BreakToken());
+      To<NGBlockBreakToken>(layout_result.PhysicalFragment().GetBreakToken());
   // See if there's a good breakpoint inside the child.
   NGBreakAppeal appeal_inside = kBreakAppealLastResort;
   if (const NGEarlyBreak* breakpoint = layout_result.GetEarlyBreak()) {
@@ -1160,11 +1160,11 @@ void UpdateEarlyBreakAtBlockChild(
     DCHECK(!IsBreakInside(break_token));
 
     appeal_inside = CalculateBreakAppealInside(space, layout_result,
-                                               breakpoint->BreakAppeal());
+                                               breakpoint->GetBreakAppeal());
     if (flex_column_break_info) {
       if (!flex_column_break_info->early_break ||
-          flex_column_break_info->early_break->BreakAppeal() <=
-              breakpoint->BreakAppeal()) {
+          flex_column_break_info->early_break->GetBreakAppeal() <=
+              breakpoint->GetBreakAppeal()) {
         // Found a good breakpoint inside the child. Add the child to the early
         // break chain for the current column.
         auto* parent_break = MakeGarbageCollected<NGEarlyBreak>(
@@ -1172,8 +1172,8 @@ void UpdateEarlyBreakAtBlockChild(
         flex_column_break_info->early_break = parent_break;
       }
     } else if (!builder->HasEarlyBreak() ||
-               builder->EarlyBreak().BreakAppeal() <=
-                   breakpoint->BreakAppeal()) {
+               builder->GetEarlyBreak().GetBreakAppeal() <=
+                   breakpoint->GetBreakAppeal()) {
       // Found a good breakpoint inside the child. Add the child to the early
       // break container chain, and store it.
       auto* parent_break =
@@ -1191,16 +1191,18 @@ void UpdateEarlyBreakAtBlockChild(
 
   if (flex_column_break_info) {
     if (flex_column_break_info->early_break &&
-        flex_column_break_info->early_break->BreakAppeal() > appeal_before)
+        flex_column_break_info->early_break->GetBreakAppeal() > appeal_before) {
       return;
+    }
     flex_column_break_info->early_break =
         MakeGarbageCollected<NGEarlyBreak>(child, appeal_before);
     return;
   }
 
   if (builder->HasEarlyBreak() &&
-      builder->EarlyBreak().BreakAppeal() > appeal_before)
+      builder->GetEarlyBreak().GetBreakAppeal() > appeal_before) {
     return;
+  }
 
   builder->SetEarlyBreak(
       MakeGarbageCollected<NGEarlyBreak>(child, appeal_before));
@@ -1221,10 +1223,11 @@ bool AttemptSoftBreak(const ConstraintSpace& space,
   if (flex_column_break_info) {
     found_earlier_break =
         flex_column_break_info->early_break &&
-        flex_column_break_info->early_break->BreakAppeal() > appeal_before;
+        flex_column_break_info->early_break->GetBreakAppeal() > appeal_before;
   } else {
-    found_earlier_break = builder->HasEarlyBreak() &&
-                          builder->EarlyBreak().BreakAppeal() > appeal_before;
+    found_earlier_break =
+        builder->HasEarlyBreak() &&
+        builder->GetEarlyBreak().GetBreakAppeal() > appeal_before;
   }
   if (found_earlier_break) {
     // Found a better place to break. Before aborting, calculate and report
@@ -1332,7 +1335,7 @@ const NGBlockBreakToken* PreviousFragmentainerBreakToken(
         container_builder.Children()[i - 1].fragment.Get();
     if (previous_fragment->IsFragmentainerBox()) {
       previous_break_token = To<NGBlockBreakToken>(
-          To<NGPhysicalBoxFragment>(previous_fragment)->BreakToken());
+          To<NGPhysicalBoxFragment>(previous_fragment)->GetBreakToken());
       break;
     }
   }
@@ -1355,7 +1358,7 @@ const NGBlockBreakToken* FindPreviousBreakToken(
   DCHECK_GT(box->PhysicalFragmentCount(), 1u);
 
   const NGPhysicalBoxFragment* previous_fragment;
-  if (const NGBlockBreakToken* break_token = fragment.BreakToken()) {
+  if (const NGBlockBreakToken* break_token = fragment.GetBreakToken()) {
     // The sequence number of the outgoing break token is the same as the index
     // of this fragment.
     DCHECK_GE(break_token->SequenceNumber(), 1u);
@@ -1367,7 +1370,7 @@ const NGBlockBreakToken* FindPreviousBreakToken(
     previous_fragment =
         box->GetPhysicalFragment(box->PhysicalFragmentCount() - 2);
   }
-  return previous_fragment->BreakToken();
+  return previous_fragment->GetBreakToken();
 }
 
 wtf_size_t BoxFragmentIndex(const NGPhysicalBoxFragment& fragment) {
@@ -1401,7 +1404,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
         // Not a fragmentainer (could be a spanner, OOF, etc.)
         continue;
       }
-      const auto* token = To<NGBlockBreakToken>(child->BreakToken());
+      const auto* token = To<NGBlockBreakToken>(child->GetBreakToken());
       idx = token->SequenceNumber() + 1;
       break;
     }
@@ -1419,8 +1422,8 @@ PhysicalOffset OffsetInStitchedFragments(
   LayoutUnit fragment_block_offset;
   const LayoutBox* layout_box = To<LayoutBox>(fragment.GetLayoutObject());
   const auto& first_fragment = *layout_box->GetPhysicalFragment(0);
-  if (first_fragment.BreakToken() &&
-      first_fragment.BreakToken()->IsRepeated()) {
+  if (first_fragment.GetBreakToken() &&
+      first_fragment.GetBreakToken()->IsRepeated()) {
     // Repeated content isn't stitched.
     stitched_block_size =
         LogicalFragment(writing_direction, first_fragment).BlockSize();
@@ -1449,7 +1452,7 @@ PhysicalOffset OffsetInStitchedFragments(
         // Look at the preceding break token.
         idx--;
         const NGBlockBreakToken* break_token =
-            layout_box->GetPhysicalFragment(idx)->BreakToken();
+            layout_box->GetPhysicalFragment(idx)->GetBreakToken();
         if (!break_token->IsAtBlockEnd()) {
           stitched_block_size += break_token->ConsumedBlockSize();
           break;

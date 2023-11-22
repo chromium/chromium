@@ -1619,7 +1619,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   ASSERT_EQ(children.size(), 5u);
 
   const auto& column1 = To<NGPhysicalBoxFragment>(*children[0]);
-  const NGBlockBreakToken* break_token = column1.BreakToken();
+  const NGBlockBreakToken* break_token = column1.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 0u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 100);
@@ -1627,7 +1627,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   EXPECT_FALSE(break_token->IsCausedByColumnSpanner());
 
   const auto& column2 = To<NGPhysicalBoxFragment>(*children[1]);
-  break_token = column2.BreakToken();
+  break_token = column2.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 1u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 200);
@@ -1638,7 +1638,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   EXPECT_TRUE(spanner.IsColumnSpanAll());
 
   const auto& column3 = To<NGPhysicalBoxFragment>(*children[3]);
-  break_token = column3.BreakToken();
+  break_token = column3.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 2u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 250);
@@ -1646,7 +1646,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   EXPECT_FALSE(break_token->IsCausedByColumnSpanner());
 
   const auto& column4 = To<NGPhysicalBoxFragment>(*children[4]);
-  EXPECT_FALSE(column4.BreakToken());
+  EXPECT_FALSE(column4.GetBreakToken());
 }
 
 // Make sure the fragmentainer break tokens are correct when a new column is
@@ -1679,7 +1679,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   ASSERT_EQ(children.size(), 5u);
 
   const auto& column1 = To<NGPhysicalBoxFragment>(*children[0]);
-  const NGBlockBreakToken* break_token = column1.BreakToken();
+  const NGBlockBreakToken* break_token = column1.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 0u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 100);
@@ -1687,7 +1687,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   EXPECT_TRUE(break_token->IsCausedByColumnSpanner());
 
   const auto& column2 = To<NGPhysicalBoxFragment>(*children[1]);
-  break_token = column2.BreakToken();
+  break_token = column2.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 1u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 200);
@@ -1698,7 +1698,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   EXPECT_TRUE(spanner.IsColumnSpanAll());
 
   const auto& column3 = To<NGPhysicalBoxFragment>(*children[3]);
-  break_token = column3.BreakToken();
+  break_token = column3.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 2u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 250);
@@ -1706,7 +1706,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   EXPECT_FALSE(break_token->IsCausedByColumnSpanner());
 
   const auto& column4 = To<NGPhysicalBoxFragment>(*children[4]);
-  EXPECT_FALSE(column4.BreakToken());
+  EXPECT_FALSE(column4.GetBreakToken());
 }
 
 // crbug.com/1296900

@@ -152,7 +152,7 @@ void MathFractionLayoutAlgorithm::GatherChildren(BlockNode* numerator,
 }
 
 const NGLayoutResult* MathFractionLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+  DCHECK(!GetBreakToken());
 
   BlockNode numerator = nullptr;
   BlockNode denominator = nullptr;

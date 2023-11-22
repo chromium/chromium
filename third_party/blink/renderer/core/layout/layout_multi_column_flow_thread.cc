@@ -1190,7 +1190,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
         has_processed_first_column_in_flow_thread = true;
       }
     }
-    break_token = container_fragment.BreakToken();
+    break_token = container_fragment.GetBreakToken();
     if (!break_token || break_token->IsRepeated() ||
         break_token->IsAtBlockEnd()) {
       break;

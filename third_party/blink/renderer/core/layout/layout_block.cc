@@ -329,7 +329,7 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   // We may get here in multiple-fragment cases if the object is repeated
   // (inside table headers and footers, for instance).
   DCHECK(PhysicalFragmentCount() <= 1u ||
-         GetPhysicalFragment(0)->BreakToken()->IsRepeated());
+         GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
 
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (UNLIKELY(NeedsLayout() && !ChildLayoutBlockedByDisplayLock())) {
@@ -471,7 +471,7 @@ bool LayoutBlock::NodeAtPoint(HitTestResult& result,
   // We may get here in multiple-fragment cases if the object is repeated
   // (inside table headers and footers, for instance).
   DCHECK(PhysicalFragmentCount() <= 1u ||
-         GetPhysicalFragment(0)->BreakToken()->IsRepeated());
+         GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
 
   if (PhysicalFragmentCount()) {
     const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);

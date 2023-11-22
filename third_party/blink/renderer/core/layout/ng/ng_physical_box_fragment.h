@@ -392,15 +392,15 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                             IncludeBorderBottom(), IncludeBorderLeft());
   }
 
-  const NGBlockBreakToken* BreakToken() const {
-    return To<NGBlockBreakToken>(NGPhysicalFragment::BreakToken());
+  const NGBlockBreakToken* GetBreakToken() const {
+    return To<NGBlockBreakToken>(NGPhysicalFragment::GetBreakToken());
   }
 
   // Return true if this is the first fragment generated from a node.
   bool IsFirstForNode() const { return bit_field_.get<IsFirstForNodeFlag>(); }
 
   // Return true if this is the only fragment generated from a node.
-  bool IsOnlyForNode() const { return IsFirstForNode() && !BreakToken(); }
+  bool IsOnlyForNode() const { return IsFirstForNode() && !GetBreakToken(); }
 
   bool HasDescendantsForTablePart() const {
     DCHECK(IsTablePart() || IsTableCell());

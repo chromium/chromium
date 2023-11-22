@@ -21,7 +21,7 @@ ASSERT_SIZE(InlineBreakToken, SameSizeAsInlineBreakToken);
 
 }  // namespace
 
-const NGBlockBreakToken* InlineBreakToken::BlockBreakToken() const {
+const NGBlockBreakToken* InlineBreakToken::GetBlockBreakToken() const {
   if (!(flags_ & kHasSubBreakToken))
     return nullptr;
   return sub_break_token_[0].Get();

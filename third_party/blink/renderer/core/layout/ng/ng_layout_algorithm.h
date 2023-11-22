@@ -123,7 +123,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
 
   const NGInputNodeType& Node() const { return node_; }
 
-  const NGBreakTokenType* BreakToken() const { return break_token_; }
+  const NGBreakTokenType* GetBreakToken() const { return break_token_; }
 
   const BoxStrut& Borders() const { return container_builder_.Borders(); }
   const BoxStrut& Padding() const { return container_builder_.Padding(); }
@@ -159,7 +159,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
 
     LayoutAlgorithmParams params(Node(),
                                  container_builder_.InitialFragmentGeometry(),
-                                 GetConstraintSpace(), BreakToken(),
+                                 GetConstraintSpace(), GetBreakToken(),
                                  &breakpoint, additional_early_breaks);
     Algorithm algorithm_with_break(params);
     return RelayoutAndBreakEarlier(&algorithm_with_break);
@@ -197,7 +197,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
 
     LayoutAlgorithmParams params(Node(),
                                  container_builder_.InitialFragmentGeometry(),
-                                 new_space, BreakToken());
+                                 new_space, GetBreakToken());
     Algorithm algorithm_without_fragmentation(params);
     auto& new_builder = algorithm_without_fragmentation.container_builder_;
     new_builder.SetBoxType(container_builder_.BoxType());

@@ -315,7 +315,7 @@ void NGFragmentBuilder::PropagateFromFragment(
   // if we're only to add break tokens manually.
   if (has_block_fragmentation_ && !child.IsFragmentainerBox() &&
       !break_token_ && !should_add_break_tokens_manually_) {
-    const NGBreakToken* child_break_token = child.BreakToken();
+    const NGBreakToken* child_break_token = child.GetBreakToken();
     switch (child.Type()) {
       case NGPhysicalFragment::kFragmentBox:
         if (child_break_token)

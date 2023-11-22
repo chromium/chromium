@@ -132,7 +132,7 @@ PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBoxForLine(
 }
 
 bool PhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
-  const auto* break_token = To<InlineBreakToken>(BreakToken());
+  const auto* break_token = To<InlineBreakToken>(GetBreakToken());
   return break_token && !break_token->IsForcedBreak();
 }
 

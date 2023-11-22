@@ -16,7 +16,7 @@ MathSpaceLayoutAlgorithm::MathSpaceLayoutAlgorithm(
 }
 
 const NGLayoutResult* MathSpaceLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+  DCHECK(!GetBreakToken());
 
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
   LayoutUnit block_size = ComputeBlockSizeForFragment(

@@ -426,7 +426,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     early_break_ = breakpoint;
   }
   bool HasEarlyBreak() const { return early_break_; }
-  const NGEarlyBreak& EarlyBreak() const {
+  const NGEarlyBreak& GetEarlyBreak() const {
     DCHECK(early_break_);
     return *early_break_;
   }

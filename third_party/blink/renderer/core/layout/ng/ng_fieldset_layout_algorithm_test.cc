@@ -560,7 +560,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, NoFragmentation) {
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(176, 126), fragment->Size());
-  ASSERT_FALSE(fragment->BreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 }
 
 // Tests that a fieldset will fragment if it reaches the fragmentation line.
@@ -586,17 +586,17 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SimpleFragmentation) {
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(176, 200), fragment->Size());
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
   EXPECT_EQ(PhysicalSize(176, 200), fragment->Size());
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
   EXPECT_EQ(PhysicalSize(176, 126), fragment->Size());
-  ASSERT_FALSE(fragment->BreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 }
 
 // Tests that a fieldset with no content or padding will fragment if it reaches
@@ -620,7 +620,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -630,8 +630,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -668,7 +668,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -679,8 +679,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -691,8 +691,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -731,7 +731,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -742,8 +742,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -754,8 +754,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -794,7 +794,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -804,8 +804,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -844,7 +844,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -854,8 +854,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -898,7 +898,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -908,8 +908,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:176x200
@@ -919,8 +919,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -964,7 +964,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -974,8 +974,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -986,8 +986,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:176x0
@@ -1022,7 +1022,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1035,8 +1035,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1080,7 +1080,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest,
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1092,8 +1092,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1134,7 +1134,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedLegend) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_FALSE(fragment->BreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1180,7 +1180,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1195,8 +1195,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1208,8 +1208,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1245,7 +1245,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1256,8 +1256,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1296,7 +1296,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1307,8 +1307,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1319,8 +1319,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1361,7 +1361,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1371,8 +1371,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1412,7 +1412,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1425,8 +1425,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1468,7 +1468,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1478,8 +1478,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1567,7 +1567,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1577,8 +1577,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1622,7 +1622,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1632,8 +1632,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1670,7 +1670,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1680,8 +1680,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1691,8 +1691,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1727,7 +1727,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1737,8 +1737,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1748,8 +1748,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1789,7 +1789,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1799,8 +1799,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  EXPECT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  EXPECT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1838,7 +1838,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
 
   const NGPhysicalBoxFragment* fragment =
       BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   String dump = DumpFragmentTree(fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1848,8 +1848,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_TRUE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_TRUE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
@@ -1859,8 +1859,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
   EXPECT_EQ(expectation, dump);
 
   fragment = BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
+      node, space, fragment->GetBreakToken());
+  ASSERT_FALSE(fragment->GetBreakToken());
 
   dump = DumpFragmentTree(fragment);
   expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.

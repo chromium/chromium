@@ -2577,7 +2577,7 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result,
   NOT_DESTROYED();
   if (result->GetConstraintSpaceForCaching().CacheSlot() ==
       LayoutResultCacheSlot::kMeasure) {
-    DCHECK(!result->PhysicalFragment().BreakToken());
+    DCHECK(!result->PhysicalFragment().GetBreakToken());
     DCHECK(
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
     DCHECK_EQ(index, 0u);
@@ -2637,8 +2637,8 @@ void LayoutBox::SetLayoutResult(const NGLayoutResult* result,
       //
       // TODO(layout-dev): Other solutions to handling interactions between OOFs
       // and spanner breaks may need to be considered.
-      if (!box_fragment.BreakToken() ||
-          box_fragment.BreakToken()->IsCausedByColumnSpanner() ||
+      if (!box_fragment.GetBreakToken() ||
+          box_fragment.GetBreakToken()->IsCausedByColumnSpanner() ||
           box_fragment.IsFragmentationContextRoot()) {
         // Before forgetting any old fragments and their items, we need to clear
         // associations.
@@ -2654,8 +2654,9 @@ void LayoutBox::SetLayoutResult(const NGLayoutResult* result,
   DCHECK(index == layout_results_.size() || index == kNotFound);
   AppendLayoutResult(result);
 
-  if (!box_fragment.BreakToken())
+  if (!box_fragment.GetBreakToken()) {
     FinalizeLayoutResults();
+  }
 }
 
 void LayoutBox::AppendLayoutResult(const NGLayoutResult* result) {
@@ -2697,7 +2698,7 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
   InvalidateCachedGeometry();
   CheckDidAddFragment(*this, fragment, index);
 
-  if (got_new_fragment && !fragment.BreakToken()) {
+  if (got_new_fragment && !fragment.GetBreakToken()) {
     // If this is the last result, the results vector better agree on that.
     DCHECK_EQ(index, layout_results_.size() - 1);
 
@@ -2707,7 +2708,7 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
 
 void LayoutBox::FinalizeLayoutResults() {
   DCHECK(!layout_results_.empty());
-  DCHECK(!layout_results_.back()->PhysicalFragment().BreakToken());
+  DCHECK(!layout_results_.back()->PhysicalFragment().GetBreakToken());
 #if EXPENSIVE_DCHECKS_ARE_ON()
   CheckMayHaveFragmentItems();
 #endif
@@ -2825,8 +2826,9 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
   // layout inside.
   if (!layout_results_.empty()) {
     const NGPhysicalBoxFragment* first_fragment = GetPhysicalFragment(0);
-    if (first_fragment->BreakToken())
+    if (first_fragment->GetBreakToken()) {
       return nullptr;
+    }
   }
 
   // TODO(mstensho): Measure-results can never fragment, can they? This check
@@ -3310,7 +3312,7 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
     else
       layout_overflow->UniteEvenIfEmpty(fragment_layout_overflow);
 
-    if (const auto* break_token = fragment.BreakToken()) {
+    if (const auto* break_token = fragment.GetBreakToken()) {
       // The legacy engine doesn't understand our concept of repeated
       // fragments. Stop now. The overflow rectangle will represent the
       // fragment(s) generated under the first repeated root.
@@ -3601,7 +3603,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     // writing mode, or to the right in vertical. Flipped blocks is handled
     // later, after the loop.
     if (last_fragment) {
-      const NGBlockBreakToken* break_token = last_fragment->BreakToken();
+      const NGBlockBreakToken* break_token = last_fragment->GetBreakToken();
       DCHECK(break_token);
       const LayoutUnit block_offset = break_token->ConsumedBlockSize();
       if (blink::IsHorizontalWritingMode(writing_mode)) {
@@ -3620,8 +3622,9 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     // The legacy engine doesn't understand our concept of repeated
     // fragments. Stop now. The overflow rectangle will represent the
     // fragment(s) generated under the first repeated root.
-    if (fragment.BreakToken() && fragment.BreakToken()->IsRepeated())
+    if (fragment.GetBreakToken() && fragment.GetBreakToken()->IsRepeated()) {
       break;
+    }
   }
 
   if (!has_overflow) {
@@ -3814,7 +3817,7 @@ PhysicalSize LayoutBox::ComputeSize() const {
       size.block_size = fragment_logical_size.block_size +
                         previous_break_token->ConsumedBlockSizeForLegacy();
     }
-    previous_break_token = physical_fragment.BreakToken();
+    previous_break_token = physical_fragment.GetBreakToken();
     // Continue in order to update logical height, unless this fragment is
     // past the block-end of the generating node (happens with overflow) or
     // is a repeated one.

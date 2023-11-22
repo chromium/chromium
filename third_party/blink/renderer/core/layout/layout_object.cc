@@ -1313,7 +1313,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   }
 
   // Fragmented nodes cannot be relayout roots.
-  if (fragment.BreakToken()) {
+  if (fragment.GetBreakToken()) {
     return false;
   }
 

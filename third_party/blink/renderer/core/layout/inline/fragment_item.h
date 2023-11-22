@@ -293,7 +293,7 @@ class CORE_EXPORT FragmentItem final {
   // Calling this function for other types is not valid.
   const InlineBreakToken* GetInlineBreakToken() const {
     if (const PhysicalLineBoxFragment* line_box = LineBoxFragment()) {
-      return To<InlineBreakToken>(line_box->BreakToken());
+      return To<InlineBreakToken>(line_box->GetBreakToken());
     }
     NOTREACHED();
     return nullptr;

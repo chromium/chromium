@@ -1023,7 +1023,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
           converter.ToLogical(child.Offset(), fragment->Size());
       if (fragment->IsFragmentainerBox()) {
         current_column_break_token =
-            To<NGBlockBreakToken>(fragment->BreakToken());
+            To<NGBlockBreakToken>(fragment->GetBreakToken());
         current_column_index = multicol_children.size();
         last_fragment_with_fragmentainer = multicol_box_fragment;
       }
@@ -1038,7 +1038,8 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // (representing the last column laid out in that fragment). Thus, search
     // for |current_column_break_token| in |multicol_box_fragment|'s list of
     // child break tokens and update the stored MulticolChildInfo if found.
-    const NGBlockBreakToken* break_token = multicol_box_fragment->BreakToken();
+    const NGBlockBreakToken* break_token =
+        multicol_box_fragment->GetBreakToken();
     if (current_column_index != kNotFound && break_token &&
         break_token->ChildBreakTokens().size()) {
       // If there is a column break token, it will be the last item in its
@@ -1335,7 +1336,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
           // column balancing. However, if the containing block has not finished
           // layout, we should wait to lay out the OOF in case its position is
           // dependent on its containing block's final size.
-          if (containing_block->PhysicalFragments().back().BreakToken()) {
+          if (containing_block->PhysicalFragments().back().GetBreakToken()) {
             delayed_descendants_.push_back(descendant);
             continue;
           }
@@ -2353,7 +2354,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
 
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-  const NGBlockBreakToken* break_token = physical_fragment.BreakToken();
+  const NGBlockBreakToken* break_token = physical_fragment.GetBreakToken();
   if (break_token) {
     // We must continue layout in the next fragmentainer. Update any information
     // in NodeToLayout, and add the node to |fragmented_descendants|.
@@ -2385,8 +2386,9 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
     // tell the column algorithm when this happens so that it knows to attempt
     // to expand the columns in such cases.
     if (!column_balancing_info_->has_violating_break) {
-      if (space_shortage > LayoutUnit() && !physical_fragment.BreakToken())
+      if (space_shortage > LayoutUnit() && !physical_fragment.GetBreakToken()) {
         column_balancing_info_->has_violating_break = true;
+      }
     }
     return;
   }

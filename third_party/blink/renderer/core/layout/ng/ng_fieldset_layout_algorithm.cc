@@ -61,8 +61,9 @@ FieldsetLayoutAlgorithm::FieldsetLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params),
       writing_direction_(GetConstraintSpace().GetWritingDirection()),
-      consumed_block_size_(BreakToken() ? BreakToken()->ConsumedBlockSize()
-                                        : LayoutUnit()) {
+      consumed_block_size_(GetBreakToken()
+                               ? GetBreakToken()->ConsumedBlockSize()
+                               : LayoutUnit()) {
   DCHECK(params.fragment_geometry.scrollbar.IsEmpty());
   border_box_size_ = container_builder_.InitialBorderBoxSize();
 }
@@ -80,7 +81,7 @@ const NGLayoutResult* FieldsetLayoutAlgorithm::Layout() {
   // inside the scrollport, padding also needs to be handled by the anonymous
   // child.
   intrinsic_block_size_ =
-      IsBreakInside(BreakToken()) ? LayoutUnit() : Borders().block_start;
+      IsBreakInside(GetBreakToken()) ? LayoutUnit() : Borders().block_start;
 
   if (InvolvedInBlockFragmentation(container_builder_)) {
     container_builder_.SetBreakTokenData(
@@ -95,7 +96,7 @@ const NGLayoutResult* FieldsetLayoutAlgorithm::Layout() {
   }
 
   intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      GetConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
+      GetConstraintSpace(), Node(), GetBreakToken(), BorderScrollbarPadding(),
       intrinsic_block_size_ + Borders().block_end);
 
   // Recompute the block-axis size now that we know our content size.
@@ -131,7 +132,7 @@ const NGLayoutResult* FieldsetLayoutAlgorithm::Layout() {
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
       return RelayoutAndBreakEarlier<FieldsetLayoutAlgorithm>(
-          container_builder_.EarlyBreak());
+          container_builder_.GetEarlyBreak());
     } else if (status == NGBreakStatus::kDisableFragmentation) {
       return RelayoutWithoutFragmentation<FieldsetLayoutAlgorithm>();
     }
@@ -162,7 +163,7 @@ const NGLayoutResult* FieldsetLayoutAlgorithm::Layout() {
 NGBreakStatus FieldsetLayoutAlgorithm::LayoutChildren() {
   const NGBlockBreakToken* content_break_token = nullptr;
   bool has_seen_all_children = false;
-  if (const auto* token = BreakToken()) {
+  if (const auto* token = GetBreakToken()) {
     const auto child_tokens = token->ChildBreakTokens();
     if (base::checked_cast<wtf_size_t>(child_tokens.size())) {
       const NGBlockBreakToken* child_token =
@@ -185,12 +186,13 @@ NGBreakStatus FieldsetLayoutAlgorithm::LayoutChildren() {
 
   BlockNode legend = Node().GetRenderedLegend();
   if (legend) {
-    if (!IsBreakInside(BreakToken()))
+    if (!IsBreakInside(GetBreakToken())) {
       LayoutLegend(legend);
+    }
     LayoutUnit legend_size_contribution;
-    if (IsBreakInside(BreakToken())) {
+    if (IsBreakInside(GetBreakToken())) {
       const auto* token_data =
-          To<FieldsetBreakTokenData>(BreakToken()->TokenData());
+          To<FieldsetBreakTokenData>(GetBreakToken()->TokenData());
       legend_size_contribution = token_data->legend_block_size_contribution;
     } else {
       // We're at the first fragment. The current layout position
@@ -247,7 +249,7 @@ void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
 
   auto legend_space = CreateConstraintSpaceForLegend(
       legend, ChildAvailableSize(), percentage_size);
-  const NGLayoutResult* result = legend.Layout(legend_space, BreakToken());
+  const NGLayoutResult* result = legend.Layout(legend_space, GetBreakToken());
 
   // Legends are monolithic, so abortions are not expected.
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
@@ -338,7 +340,7 @@ NGBreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
   }
 
   const NGLayoutResult* result = nullptr;
-  bool is_past_end = BreakToken() && BreakToken()->IsAtBlockEnd();
+  bool is_past_end = GetBreakToken() && GetBreakToken()->IsAtBlockEnd();
 
   LayoutUnit max_content_block_size = LayoutUnit::Max();
   if (adjusted_padding_box_size.block_size == kIndefiniteSize) {

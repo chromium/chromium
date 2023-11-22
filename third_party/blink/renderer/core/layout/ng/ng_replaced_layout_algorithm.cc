@@ -18,7 +18,7 @@ ReplacedLayoutAlgorithm::ReplacedLayoutAlgorithm(
 }
 
 const NGLayoutResult* ReplacedLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken() || BreakToken()->IsBreakBefore());
+  DCHECK(!GetBreakToken() || GetBreakToken()->IsBreakBefore());
   // TODO(crbug.com/1252693): kIgnoreBlockLengths applies inline constraints
   // through the aspect ratio. But the aspect ratio is ignored when computing
   // the intrinsic block size for NON-replaced elements. This is inconsistent

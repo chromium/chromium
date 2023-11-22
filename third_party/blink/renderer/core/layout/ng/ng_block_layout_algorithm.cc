@@ -268,7 +268,7 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
   if (const BlockNode marker_node = Node().ListMarkerBlockNodeIfListItem()) {
     if (ShouldPlaceUnpositionedListMarker() &&
         !marker_node.ListMarkerOccupiesWholeLine() &&
-        (!BreakToken() || BreakToken()->HasUnpositionedListMarker())) {
+        (!GetBreakToken() || GetBreakToken()->HasUnpositionedListMarker())) {
       container_builder_.SetUnpositionedListMarker(
           UnpositionedListMarker(marker_node));
     }
@@ -503,7 +503,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 
       LayoutAlgorithmParams params(
           Node(), container_builder_.InitialFragmentGeometry(),
-          GetConstraintSpace(), BreakToken(), result->GetEarlyBreak());
+          GetConstraintSpace(), GetBreakToken(), result->GetEarlyBreak());
       params.column_spanner_path = column_spanner_path_;
       BlockLayoutAlgorithm algorithm_with_break(params);
       return RelayoutAndBreakEarlier(&algorithm_with_break);
@@ -561,7 +561,7 @@ NOINLINE const NGLayoutResult*
 BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
-                               GetConstraintSpace(), BreakToken(), nullptr);
+                               GetConstraintSpace(), GetBreakToken(), nullptr);
   BlockLayoutAlgorithm algorithm_ignoring_line_clamp(params);
   algorithm_ignoring_line_clamp.ignore_line_clamp_ = true;
   NGBoxFragmentBuilder& new_builder =
@@ -614,15 +614,15 @@ inline const NGLayoutResult* BlockLayoutAlgorithm::Layout(
       is_resuming_ ? LayoutUnit() : container_builder_.Padding().block_start,
       /* self_collapsing_child_had_clearance */ false};
 
-  if (BreakToken()) {
-    if (IsBreakInside(BreakToken()) && !BreakToken()->IsForcedBreak() &&
-        !BreakToken()->IsCausedByColumnSpanner()) {
+  if (GetBreakToken()) {
+    if (IsBreakInside(GetBreakToken()) && !GetBreakToken()->IsForcedBreak() &&
+        !GetBreakToken()->IsCausedByColumnSpanner()) {
       // If the block container is being resumed after an unforced break,
       // margins inside may be adjoining with the fragmentainer boundary.
       previous_inflow_position.margin_strut.discard_margins = true;
     }
 
-    if (BreakToken()->MonolithicOverflow()) {
+    if (GetBreakToken()->MonolithicOverflow()) {
       // If we have been pushed by monolithic overflow that started on a
       // previous page, we'll behave as if there's a valid breakpoint before the
       // first child here, and that it has perfect break appeal. This isn't
@@ -706,7 +706,7 @@ inline const NGLayoutResult* BlockLayoutAlgorithm::Layout(
   // |previous_inflow_position| and |BreakToken()|.
   const InlineBreakToken* previous_inline_break_token = nullptr;
 
-  NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken());
+  NGBlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken());
 
   // If this layout is blocked by a display-lock, then we pretend this node has
   // no children and that there are no break tokens. Due to this, we skip layout
@@ -921,7 +921,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
       HasLineEvenIfEmpty(Node().GetLayoutBox())) {
     intrinsic_block_size_ = std::max(
         intrinsic_block_size_, BorderScrollbarPadding().block_start +
-                                   Node().EmptyLineBlockSize(BreakToken()));
+                                   Node().EmptyLineBlockSize(GetBreakToken()));
     if (container_builder_.IsInitialColumnBalancingPass()) {
       container_builder_.PropagateTallestUnbreakableBlockSize(
           intrinsic_block_size_);
@@ -1039,7 +1039,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
 
   LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      constraint_space, Node(), BreakToken(), BorderScrollbarPadding(),
+      constraint_space, Node(), GetBreakToken(), BorderScrollbarPadding(),
       intrinsic_block_size_,
       CalculateQuirkyBodyMarginBlockSum(end_margin_strut));
 
@@ -1057,8 +1057,10 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
   // to fit as much as necessary. Basically: don't mess up (clamp) the measument
   // we've already done.
   LayoutUnit previously_consumed_block_size;
-  if (UNLIKELY(BreakToken() && !container_builder_.IsFragmentainerBoxType()))
-    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
+  if (UNLIKELY(GetBreakToken() &&
+               !container_builder_.IsFragmentainerBoxType())) {
+    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+  }
 
   // Recompute the block-axis size now that we know our content size.
   border_box_size.block_size = ComputeBlockSizeForFragment(
@@ -1073,7 +1075,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
   //    ourselves at the very start of the fragmentainer).
   //  - We got interrupted by a column spanner.
   if (!container_builder_.BfcBlockOffset() &&
-      (border_box_size.block_size || BreakToken() ||
+      (border_box_size.block_size || GetBreakToken() ||
        container_builder_.FoundColumnSpanner())) {
     if (!ResolveBfcBlockOffset(previous_inflow_position))
       return container_builder_.Abort(NGLayoutResult::kBfcBlockOffsetResolved);
@@ -1179,7 +1181,7 @@ const NGLayoutResult* BlockLayoutAlgorithm::FinishLayout(
 }
 
 void BlockLayoutAlgorithm::AlignContent(LayoutUnit content_block_size) {
-  if (IsBreakInside(BreakToken())) {
+  if (IsBreakInside(GetBreakToken())) {
     // Do nothing for the second or later fragments.
     return;
   }
@@ -1372,7 +1374,7 @@ void BlockLayoutAlgorithm::HandleFloat(
     // overflowing into this one, move past it. And subtract any such overflow
     // from the parent flow, as floats establish a parallel flow.
     origin_bfc_offset.block_offset += child_break_token->MonolithicOverflow() -
-                                      BreakToken()->MonolithicOverflow();
+                                      GetBreakToken()->MonolithicOverflow();
   }
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
@@ -2294,7 +2296,7 @@ NGLayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
 
   if (child.IsInline()) {
     *previous_inline_break_token =
-        To<InlineBreakToken>(physical_fragment.BreakToken());
+        To<InlineBreakToken>(physical_fragment.GetBreakToken());
   } else {
     *previous_inline_break_token = nullptr;
   }
@@ -2356,7 +2358,7 @@ InflowChildData BlockLayoutAlgorithm::ComputeChildData(
     }
 
     if (child_block_break_token->MonolithicOverflow() &&
-        (Node().IsPaginatedRoot() || !BreakToken()->MonolithicOverflow())) {
+        (Node().IsPaginatedRoot() || !GetBreakToken()->MonolithicOverflow())) {
       // Every container that needs to be pushed to steer clear of monolithic
       // overflow on a previous page will have this stored in its break token.
       // So we'll only add the additional offset here if the child is the
@@ -2485,7 +2487,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     // initial column balancing pass.
     if (const auto* physical_fragment = DynamicTo<NGPhysicalBoxFragment>(
             &layout_result.PhysicalFragment())) {
-      if (const NGBlockBreakToken* token = physical_fragment->BreakToken()) {
+      if (const NGBlockBreakToken* token = physical_fragment->GetBreakToken()) {
         // TODO(mstensho): Don't apply the margin to all overflowing fragments
         // (if any). It should only be applied after the fragment where we
         // reached the block-end of the node.
@@ -2683,7 +2685,7 @@ NGBreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
     if (int line_count = container_builder_.LineCount()) {
       if (!first_overflowing_line_)
         first_overflowing_line_ = line_count;
-      bool is_first_fragment = !BreakToken();
+      bool is_first_fragment = !GetBreakToken();
       // Figure out how many lines we need before the break. That entails to
       // attempt to honor the orphans request.
       int minimum_line_count = Style().Orphans();
@@ -2763,8 +2765,9 @@ void BlockLayoutAlgorithm::UpdateEarlyBreakBetweenLines() {
     appeal = kBreakAppealViolatingOrphansAndWidows;
   }
   if (container_builder_.HasEarlyBreak() &&
-      container_builder_.EarlyBreak().BreakAppeal() > appeal)
+      container_builder_.GetEarlyBreak().GetBreakAppeal() > appeal) {
     return;
+  }
   const NGEarlyBreak* breakpoint =
       MakeGarbageCollected<NGEarlyBreak>(line_number, appeal);
   container_builder_.SetEarlyBreak(breakpoint);
@@ -3278,7 +3281,7 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
   DCHECK(Node().IsRubyColumn());
 
   const NGBlockBreakToken* break_token = nullptr;
-  if (const auto* token = BreakToken()) {
+  if (const auto* token = GetBreakToken()) {
     for (const auto& child_token : token->ChildBreakTokens()) {
       if (child_token->InputNode() == ruby_text_child) {
         break_token = To<NGBlockBreakToken>(child_token.Get());

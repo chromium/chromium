@@ -192,19 +192,19 @@ TEST_F(InlineLayoutAlgorithmTest, BreakToken) {
   const NGLayoutResult* layout_result =
       inline_node.Layout(constraint_space, nullptr, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();
-  EXPECT_TRUE(line1.BreakToken());
+  EXPECT_TRUE(line1.GetBreakToken());
 
   // Perform 2nd layout with the break token from the 1st line.
   const NGLayoutResult* layout_result2 = inline_node.Layout(
-      constraint_space, line1.BreakToken(), nullptr, &context);
+      constraint_space, line1.GetBreakToken(), nullptr, &context);
   const auto& line2 = layout_result2->PhysicalFragment();
-  EXPECT_TRUE(line2.BreakToken());
+  EXPECT_TRUE(line2.GetBreakToken());
 
   // Perform 3rd layout with the break token from the 2nd line.
   const NGLayoutResult* layout_result3 = inline_node.Layout(
-      constraint_space, line2.BreakToken(), nullptr, &context);
+      constraint_space, line2.GetBreakToken(), nullptr, &context);
   const auto& line3 = layout_result3->PhysicalFragment();
-  EXPECT_FALSE(line3.BreakToken());
+  EXPECT_FALSE(line3.GetBreakToken());
 }
 
 // This test ensures box fragments are generated when necessary, even when the

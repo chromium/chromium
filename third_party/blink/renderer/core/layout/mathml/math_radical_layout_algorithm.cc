@@ -62,7 +62,7 @@ void MathRadicalLayoutAlgorithm::GatherChildren(
 }
 
 const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+  DCHECK(!GetBreakToken());
   DCHECK(IsValidMathMLRadical(Node()));
 
   const auto baseline_type = Style().GetFontBaseline();

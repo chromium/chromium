@@ -47,7 +47,7 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
   }
   const NGEarlyBreak* BreakInside() const { return break_inside_child_.Get(); }
 
-  NGBreakAppeal BreakAppeal() const {
+  NGBreakAppeal GetBreakAppeal() const {
     return static_cast<NGBreakAppeal>(break_appeal_);
   }
 

@@ -737,7 +737,7 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   PrepareNextLine(line_info);
 
   if (break_token_ && break_token_->IsInParallelBlockFlow()) {
-    const auto* block_break_token = break_token_->BlockBreakToken();
+    const auto* block_break_token = break_token_->GetBlockBreakToken();
     DCHECK(block_break_token);
     const InlineItem& item = Items()[break_token_->StartItemIndex()];
     DCHECK_EQ(item.GetLayoutObject(),
@@ -879,7 +879,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
     }
     if (item.Type() == InlineItem::kBlockInInline) {
       const NGBlockBreakToken* block_break_token =
-          break_token_ ? break_token_->BlockBreakToken() : nullptr;
+          break_token_ ? break_token_->GetBlockBreakToken() : nullptr;
       HandleBlockInInline(item, block_break_token, line_info);
       continue;
     }
@@ -2742,7 +2742,7 @@ void LineBreaker::HandleBlockInInline(
     item_result->layout_result = layout_result;
 
     if (const auto* outgoing_block_break_token = To<NGBlockBreakToken>(
-            layout_result->PhysicalFragment().BreakToken())) {
+            layout_result->PhysicalFragment().GetBreakToken())) {
       // The block broke inside. If the block itself fits, but some content
       // inside overflowed, we now need to enter a parallel flow, i.e. resume
       // the block-in-inline in the next fragmentainer, but continue layout of
@@ -3667,7 +3667,7 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
     // to the inline break token that we're about to create.
     const auto& block_in_inline_fragment =
         To<NGPhysicalBoxFragment>(block_in_inline->PhysicalFragment());
-    sub_break_token = block_in_inline_fragment.BreakToken();
+    sub_break_token = block_in_inline_fragment.GetBreakToken();
   }
 
   DCHECK_EQ(line_info.HasForcedBreak(), is_after_forced_break_);

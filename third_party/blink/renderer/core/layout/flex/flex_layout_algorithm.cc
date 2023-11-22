@@ -249,7 +249,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   bool should_process_block_end = true;
   bool should_process_block_center = true;
   const LayoutUnit previous_consumed_block_size =
-      BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+      GetBreakToken() ? GetBreakToken()->ConsumedBlockSize() : LayoutUnit();
 
   // We will attempt to add OOFs in the fragment in which their static
   // position belongs. However, the last fragment has the most up-to-date flex
@@ -291,7 +291,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
         CrossAxisStaticPositionEdge(Style(), child.Style());
 
     // This code block just collects UMA stats.
-    if (!IsBreakInside(BreakToken())) {
+    if (!IsBreakInside(GetBreakToken())) {
       const auto& style = Style();
       const auto& child_style = child.Style();
       const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
@@ -342,7 +342,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
 
     // Determine the static-position based off the axis-edge.
     if (block_axis_edge == AxisEdge::kStart) {
-      DCHECK(!IsBreakInside(BreakToken()));
+      DCHECK(!IsBreakInside(GetBreakToken()));
       block_edge = BlockEdge::kBlockStart;
     } else if (block_axis_edge == AxisEdge::kCenter) {
       if (!should_process_block_center) {
@@ -1076,7 +1076,7 @@ FlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   DCHECK(!ignore_child_scrollbar_changes_);
   LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), BreakToken(), /* early_break */ nullptr);
+      GetConstraintSpace(), GetBreakToken(), /* early_break */ nullptr);
   FlexLayoutAlgorithm algorithm(params);
   algorithm.ignore_child_scrollbar_changes_ = true;
   return algorithm.Layout();
@@ -1087,7 +1087,7 @@ const NGLayoutResult* FlexLayoutAlgorithm::RelayoutAndBreakEarlierForFlex(
   DCHECK(previous_result->GetEarlyBreak());
   LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), BreakToken(), previous_result->GetEarlyBreak(),
+      GetConstraintSpace(), GetBreakToken(), previous_result->GetEarlyBreak(),
       &column_early_breaks_);
   FlexLayoutAlgorithm algorithm_with_break(params);
   algorithm_with_break.ignore_child_scrollbar_changes_ =
@@ -1113,8 +1113,9 @@ const NGLayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
 
   bool use_empty_line_block_size;
-  if (IsBreakInside(BreakToken())) {
-    const auto* flex_data = To<FlexBreakTokenData>(BreakToken()->TokenData());
+  if (IsBreakInside(GetBreakToken())) {
+    const auto* flex_data =
+        To<FlexBreakTokenData>(GetBreakToken()->TokenData());
     total_intrinsic_block_size_ = flex_data->intrinsic_block_size;
     flex_line_outputs = flex_data->flex_lines;
     row_break_between_outputs = flex_data->row_break_between;
@@ -1135,7 +1136,7 @@ const NGLayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
       GetConstraintSpace(), Style(), BorderPadding(),
       total_intrinsic_block_size_, container_builder_.InlineSize());
 
-  if (!IsBreakInside(BreakToken())) {
+  if (!IsBreakInside(GetBreakToken())) {
     ApplyFinalAlignmentAndReversals(&flex_line_outputs);
     NGLayoutResult::EStatus status = GiveItemsFinalPositionAndSize(
         &flex_line_outputs, &row_break_between_outputs);
@@ -1144,8 +1145,9 @@ const NGLayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
   LayoutUnit previously_consumed_block_size;
-  if (UNLIKELY(BreakToken()))
-    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
+  if (UNLIKELY(GetBreakToken())) {
+    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+  }
 
   intrinsic_block_size_ = BorderScrollbarPadding().block_start;
   LayoutUnit block_size;
@@ -1164,7 +1166,7 @@ const NGLayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
       return container_builder_.Abort(status);
 
     intrinsic_block_size_ = ClampIntrinsicBlockSize(
-        GetConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
+        GetConstraintSpace(), Node(), GetBreakToken(), BorderScrollbarPadding(),
         intrinsic_block_size_ + BorderScrollbarPadding().block_end);
 
     block_size = ComputeBlockSizeForFragment(
@@ -1226,8 +1228,9 @@ const NGLayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
 #if DCHECK_IS_ON()
-  if (!IsBreakInside(BreakToken()) && !cross_size_adjustments_)
+  if (!IsBreakInside(GetBreakToken()) && !cross_size_adjustments_) {
     CheckFlexLines(flex_line_outputs);
+  }
 #endif
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
@@ -1349,12 +1352,12 @@ void FlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
   total_intrinsic_block_size_ = BorderScrollbarPadding().block_start;
 
   if (use_empty_line_block_size)
-    total_intrinsic_block_size_ += Node().EmptyLineBlockSize(BreakToken());
+    total_intrinsic_block_size_ += Node().EmptyLineBlockSize(GetBreakToken());
   else
     total_intrinsic_block_size_ += algorithm_.IntrinsicContentBlockSize();
 
   total_intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      GetConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
+      GetConstraintSpace(), Node(), GetBreakToken(), BorderScrollbarPadding(),
       total_intrinsic_block_size_ + BorderScrollbarPadding().block_end);
 }
 
@@ -1406,7 +1409,7 @@ void FlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
 NGLayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs) {
-  DCHECK(!IsBreakInside(BreakToken()));
+  DCHECK(!IsBreakInside(GetBreakToken()));
   LayoutUnit final_content_cross_size;
   if (is_column_) {
     final_content_cross_size =
@@ -1564,7 +1567,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   DCHECK(row_break_between_outputs);
   DCHECK(break_before_row);
 
-  FlexItemIterator item_iterator(*flex_line_outputs, BreakToken(), is_column_);
+  FlexItemIterator item_iterator(*flex_line_outputs, GetBreakToken(),
+                                 is_column_);
 
   Vector<bool> has_inflow_child_break_inside_line(flex_line_outputs->size(),
                                                   false);
@@ -1579,8 +1583,9 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   }
 
   LayoutUnit previously_consumed_block_size;
-  if (BreakToken())
-    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
+  if (GetBreakToken()) {
+    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+  }
 
   BaselineAccumulator baseline_accumulator(Style());
   bool broke_before_row =
@@ -1704,7 +1709,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     if (IsBreakInside(item_break_token)) {
       offset.block_offset = LayoutUnit();
-    } else if (IsBreakInside(BreakToken())) {
+    } else if (IsBreakInside(GetBreakToken())) {
       LayoutUnit offset_adjustment =
           previously_consumed_block_size - line_output.item_offset_adjustment;
       offset.block_offset -= offset_adjustment;
@@ -1907,8 +1912,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                                 physical_fragment);
 
-    bool is_at_block_end = !physical_fragment.BreakToken() ||
-                           physical_fragment.BreakToken()->IsAtBlockEnd();
+    bool is_at_block_end = !physical_fragment.GetBreakToken() ||
+                           physical_fragment.GetBreakToken()->IsAtBlockEnd();
     LayoutUnit item_block_end = offset.block_offset + fragment.BlockSize();
     if (is_at_block_end) {
       // Only add the block-end margin if the item has reached the end of its
@@ -1924,7 +1929,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     if (is_column_) {
       flex_item->total_remaining_block_size -= fragment.BlockSize();
       if (flex_item->total_remaining_block_size < LayoutUnit() &&
-          !physical_fragment.BreakToken()) {
+          !physical_fragment.GetBreakToken()) {
         LayoutUnit expansion = -flex_item->total_remaining_block_size;
         line_output.item_offset_adjustment += expansion;
       }
@@ -1997,7 +2002,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       if (!has_processed_first_line_)
         has_processed_first_line_ = true;
 
-      if (!physical_fragment.BreakToken() ||
+      if (!physical_fragment.GetBreakToken() ||
           line_output.has_seen_all_children) {
         if (flex_line_idx < flex_line_outputs->size() - 1 && !is_column_ &&
             !item_iterator.HasMoreBreakTokens()) {
@@ -2474,7 +2479,7 @@ bool FlexLayoutAlgorithm::MovePastRowBreakPoint(
   // most appealing spot to break.
   if ((has_container_separation || breakable_at_start_of_container) &&
       (!container_builder_.HasEarlyBreak() ||
-       appeal_before >= container_builder_.EarlyBreak().BreakAppeal())) {
+       appeal_before >= container_builder_.GetEarlyBreak().GetBreakAppeal())) {
     container_builder_.SetEarlyBreak(
         MakeGarbageCollected<NGEarlyBreak>(row_index, appeal_before));
   }
@@ -2512,8 +2517,8 @@ const NGLayoutResult* FlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
 
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
-                               GetConstraintSpace(), BreakToken(), early_break_,
-                               additional_early_breaks_);
+                               GetConstraintSpace(), GetBreakToken(),
+                               early_break_, additional_early_breaks_);
   FlexLayoutAlgorithm algorithm_with_row_cross_sizes(params,
                                                      &row_cross_size_updates_);
   auto& new_builder = algorithm_with_row_cross_sizes.container_builder_;

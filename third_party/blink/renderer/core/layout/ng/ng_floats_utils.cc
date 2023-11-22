@@ -195,7 +195,7 @@ LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
   DCHECK(unpositioned_float->layout_result);
 
   const auto& fragment = unpositioned_float->layout_result->PhysicalFragment();
-  DCHECK(!fragment.BreakToken());
+  DCHECK(!fragment.GetBreakToken());
 
   const ConstraintSpace& parent_space = unpositioned_float->parent_space;
 
@@ -334,8 +334,8 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
           FragmentainerOffsetAtBfc(parent_space) +
           opportunity.rect.start_offset.block_offset +
           fragment_margins.block_start;
-      const auto* break_token =
-          To<NGBlockBreakToken>(layout_result->PhysicalFragment().BreakToken());
+      const auto* break_token = To<NGBlockBreakToken>(
+          layout_result->PhysicalFragment().GetBreakToken());
       bool is_at_block_end = !break_token || break_token->IsAtBlockEnd();
       if (!is_at_block_end) {
         // We need to resume in the next fragmentainer (or even push the whole
@@ -411,7 +411,8 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
     // If the float broke inside and will continue to take up layout space in
     // the next fragmentainer, it means that we cannot fit any subsequent
     // content that wants clearance past this float.
-    if (const NGBlockBreakToken* break_token = physical_fragment.BreakToken()) {
+    if (const NGBlockBreakToken* break_token =
+            physical_fragment.GetBreakToken()) {
       if (!break_token->IsAtBlockEnd())
         exclusion_space->SetHasBreakInsideFloat(float_type);
     }
@@ -430,7 +431,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   }
 
   LayoutUnit minimum_space_shortage;
-  if (break_before_token || physical_fragment.BreakToken()) {
+  if (break_before_token || physical_fragment.GetBreakToken()) {
     // Broke before or inside the float.
     if (parent_space.HasKnownFragmentainerBlockSize() &&
         parent_space.BlockFragmentationType() == kFragmentColumn) {

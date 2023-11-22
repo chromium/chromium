@@ -20,7 +20,7 @@ namespace {
 void RemoveClonedResults(LayoutBox& layout_box) {
   for (wtf_size_t idx = 0; idx < layout_box.PhysicalFragmentCount(); idx++) {
     const NGBlockBreakToken* break_token =
-        layout_box.GetPhysicalFragment(idx)->BreakToken();
+        layout_box.GetPhysicalFragment(idx)->GetBreakToken();
     if (!break_token || break_token->IsRepeated()) {
       layout_box.ShrinkLayoutResults(idx + 1);
       return;
@@ -42,7 +42,7 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
 
   for (wtf_size_t idx = 0; idx < fragment_count; idx++, sequence_number++) {
     const auto& fragment = *layout_box.GetPhysicalFragment(idx);
-    const NGBlockBreakToken* break_token = fragment.BreakToken();
+    const NGBlockBreakToken* break_token = fragment.GetBreakToken();
     if (break_token && break_token->IsRepeated())
       break_token = nullptr;
     if (break_token) {
@@ -75,7 +75,7 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
       const auto& fragmentainer =
           *To<NGPhysicalBoxFragment>(child_link.fragment.Get());
       const NGBlockBreakToken* fragmentainer_break_token =
-          fragmentainer.BreakToken();
+          fragmentainer.GetBreakToken();
       if (fragmentainer_break_token && fragmentainer_break_token->IsRepeated())
         fragmentainer_break_token = nullptr;
       if (fragmentainer_break_token) {
@@ -183,8 +183,8 @@ const NGLayoutResult* NGFragmentRepeater::Repeat(const NGLayoutResult& other) {
   cloned_fragment.GetMutableForCloning().ClearIsFirstForNode();
 
   layout_box.AppendLayoutResult(cloned_result);
-  if (is_last_fragment_ && (!cloned_fragment.BreakToken() ||
-                            cloned_fragment.BreakToken()->IsRepeated())) {
+  if (is_last_fragment_ && (!cloned_fragment.GetBreakToken() ||
+                            cloned_fragment.GetBreakToken()->IsRepeated())) {
     // We've reached the end. We can finally add missing break tokens, and
     // update cloned sequence numbers.
     UpdateBreakTokens(layout_box);
@@ -197,7 +197,7 @@ const NGLayoutResult* NGFragmentRepeater::Repeat(const NGLayoutResult& other) {
 const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
     const LayoutBox& layout_box,
     const NGPhysicalBoxFragment& fragment) const {
-  if (const NGBlockBreakToken* break_token = fragment.BreakToken()) {
+  if (const NGBlockBreakToken* break_token = fragment.GetBreakToken()) {
     if (!break_token->IsRepeated())
       return layout_box.GetLayoutResult(break_token->SequenceNumber());
   }
@@ -210,7 +210,7 @@ const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
   // established inside the repeated root.
   for (const NGLayoutResult* result : layout_box.GetLayoutResults()) {
     const NGBlockBreakToken* break_token =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment()).BreakToken();
+        To<NGPhysicalBoxFragment>(result->PhysicalFragment()).GetBreakToken();
     if (!break_token || break_token->IsRepeated())
       return result;
   }

@@ -373,7 +373,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   const auto* child_box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(child_fragment);
   const NGBlockBreakToken* token =
-      child_box_fragment ? child_box_fragment->BreakToken() : nullptr;
+      child_box_fragment ? child_box_fragment->GetBreakToken() : nullptr;
 
   // Figure out if this child break is in the same flow as this parent. If it's
   // an out-of-flow positioned box, it's not. If it's in a parallel flow, it's

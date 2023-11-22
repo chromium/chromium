@@ -49,14 +49,14 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
         LayoutUnit cell_block_size =
             has_rowspan ? cell_data.rowspan_block_size : row_block_size;
 
-        if (IsBreakInside(cell_break_token) && IsBreakInside(BreakToken()) &&
+        if (IsBreakInside(cell_break_token) && IsBreakInside(GetBreakToken()) &&
             !has_rowspan) {
           // The table row may have consumed more space than the cell, if some
           // sibling cell has overflowed the fragmentainer. Subtract this
           // difference, so that this cell won't overflow the row - unless the
           // cell is rowspanned. In that case it doesn't make sense to
           // compensate against just the current row.
-          cell_block_size -= BreakToken()->ConsumedBlockSize() -
+          cell_block_size -= GetBreakToken()->ConsumedBlockSize() -
                              cell_break_token->ConsumedBlockSize();
         }
 
@@ -138,7 +138,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
     results.clear();
     has_inflow_break_inside = false;
 
-    NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
+    NGBlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken(),
                                         /* calculate_child_idx */ true);
     for (auto entry = child_iterator.NextChild();
          BlockNode cell = To<BlockNode>(entry.node);
@@ -192,7 +192,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
             std::max(max_cell_block_size, fragment.BlockSize());
       }
 
-      if (const auto* outgoing_break_token = physical_fragment.BreakToken();
+      if (const auto* outgoing_break_token = physical_fragment.GetBreakToken();
           outgoing_break_token && !has_inflow_break_inside && !has_rowspan) {
         has_inflow_break_inside = !outgoing_break_token->IsAtBlockEnd();
       }
@@ -217,9 +217,9 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
   PlaceCells(row.block_size, row_baseline);
 
   LayoutUnit previous_consumed_row_block_size;
-  if (IsBreakInside(BreakToken())) {
+  if (IsBreakInside(GetBreakToken())) {
     const auto* table_row_data =
-        To<TableRowBreakTokenData>(BreakToken()->TokenData());
+        To<TableRowBreakTokenData>(GetBreakToken()->TokenData());
     previous_consumed_row_block_size =
         table_row_data->previous_consumed_row_block_size;
   }

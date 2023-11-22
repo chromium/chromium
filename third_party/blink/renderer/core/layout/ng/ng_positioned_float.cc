@@ -17,7 +17,8 @@ const NGBlockBreakToken* PositionedFloat::BreakToken() const {
   if (break_before_token) {
     return break_before_token.Get();
   }
-  return To<NGBlockBreakToken>(layout_result->PhysicalFragment().BreakToken());
+  return To<NGBlockBreakToken>(
+      layout_result->PhysicalFragment().GetBreakToken());
 }
 
 }  // namespace blink

@@ -258,8 +258,9 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
   // re-layout now, and break at the early breakpoint (i.e. the status is
   // kNeedsEarlierBreak).
   if (builder->early_break_ &&
-      (!physical_fragment_ || !physical_fragment_->BreakToken()))
+      (!physical_fragment_ || !physical_fragment_->GetBreakToken())) {
     EnsureRareData()->early_break = builder->early_break_;
+  }
 
   if (builder->column_spanner_path_) {
     EnsureRareData()->EnsureBlockData()->column_spanner_path =
@@ -363,7 +364,7 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
 void NGLayoutResult::AssertSoleBoxFragment() const {
   DCHECK(physical_fragment_->IsBox());
   DCHECK(To<NGPhysicalBoxFragment>(PhysicalFragment()).IsFirstForNode());
-  DCHECK(!physical_fragment_->BreakToken());
+  DCHECK(!physical_fragment_->GetBreakToken());
 }
 #endif
 

@@ -97,7 +97,7 @@ bool LayoutNGBlockFlow::NodeAtPoint(HitTestResult& result,
   // We may get here in multiple-fragment cases if the object is repeated
   // (inside table headers and footers, for instance).
   DCHECK(PhysicalFragmentCount() <= 1u ||
-         GetPhysicalFragment(0)->BreakToken()->IsRepeated());
+         GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
 
   if (!MayIntersect(result, hit_test_location, accumulated_offset)) {
     return false;

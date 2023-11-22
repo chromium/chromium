@@ -54,8 +54,8 @@ MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
           GetConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(GetConstraintSpace(), Node(), BreakToken(),
-                                    BorderScrollbarPadding()),
+          CalculateDefaultBlockSize(GetConstraintSpace(), Node(),
+                                    GetBreakToken(), BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->IntrinsicSizes(
           GetConstraintSpace(), document, Node(), border_box_size,
@@ -79,7 +79,7 @@ MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
 }
 
 const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
-  DCHECK(!IsBreakInside(BreakToken()));
+  DCHECK(!IsBreakInside(GetBreakToken()));
 
   if (!Node().IsCustomLayoutLoaded())
     return FallbackLayout();
@@ -108,8 +108,8 @@ const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
           GetConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(GetConstraintSpace(), Node(), BreakToken(),
-                                    BorderScrollbarPadding()),
+          CalculateDefaultBlockSize(GetConstraintSpace(), Node(),
+                                    GetBreakToken(), BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->Layout(GetConstraintSpace(), document, Node(), border_box_size,
                         BorderScrollbarPadding(), &scope,

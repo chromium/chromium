@@ -366,7 +366,7 @@ const NGLayoutResult* BlockNode::Layout(
     // be missed (which could cause trouble for InlineCursor when walking the
     // items).
     bool clear_trailing_results =
-        new_fragment.BreakToken() && new_fragment.HasItems();
+        new_fragment.GetBreakToken() && new_fragment.HasItems();
     StoreResultInLayoutBox(layout_result, break_token, clear_trailing_results);
     box_->ClearHasBrokenSpine();
   }
@@ -472,7 +472,7 @@ const NGLayoutResult* BlockNode::Layout(
 
   absl::optional<PhysicalSize> optional_old_box_size;
   if (layout_result->Status() == NGLayoutResult::kSuccess &&
-      !layout_result->PhysicalFragment().BreakToken()) {
+      !layout_result->PhysicalFragment().GetBreakToken()) {
     optional_old_box_size = box_->Size();
   }
 
@@ -644,7 +644,7 @@ const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
     // We're generating the first fragment for repeated content. Perform regular
     // layout.
     result = Layout(constraint_space, break_token);
-    DCHECK(!result->PhysicalFragment().BreakToken());
+    DCHECK(!result->PhysicalFragment().GetBreakToken());
   } else {
     // We're repeating. Create a shallow clone of the first result. Once we're
     // at the last fragment, we'll actually create a deep clone.
@@ -852,7 +852,7 @@ void BlockNode::FinishLayout(
     DCHECK(!physical_fragment.HasItems());
   }
 
-  if (!layout_result->PhysicalFragment().BreakToken()) {
+  if (!layout_result->PhysicalFragment().GetBreakToken()) {
     DCHECK(old_box_size);
     if (box_->Size() != *old_box_size) {
       box_->SizeChanged();
@@ -1146,7 +1146,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
     const NGBlockBreakToken* previous_break_token) const {
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
-  bool is_last_fragment = !physical_fragment.BreakToken();
+  bool is_last_fragment = !physical_fragment.GetBreakToken();
 
   // TODO(mstensho): This should always be done by the parent algorithm, since
   // we may have auto margins, which only the parent is able to resolve. Remove
@@ -1174,7 +1174,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
              box_->PhysicalFragments()) {
           PlaceChildrenInFlowThread(flow_thread, constraint_space,
                                     multicol_fragment, incoming_break_token);
-          incoming_break_token = multicol_fragment.BreakToken();
+          incoming_break_token = multicol_fragment.GetBreakToken();
         }
       }
     } else {
@@ -1321,11 +1321,12 @@ void BlockNode::PlaceChildrenInFlowThread(
                                    previous_column_break_token);
     }
 
-    previous_column_break_token = child_fragment.BreakToken();
+    previous_column_break_token = child_fragment.GetBreakToken();
   }
 
-  if (!physical_fragment.BreakToken())
+  if (!physical_fragment.GetBreakToken()) {
     flow_thread->FinishLayoutFromNG(flow_thread_offset);
+  }
 }
 
 // Copies data back to the legacy layout tree for a given child fragment.

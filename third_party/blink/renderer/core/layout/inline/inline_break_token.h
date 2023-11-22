@@ -67,7 +67,7 @@ class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
   }
 
   // The BreakToken when a block-in-inline or float is block-fragmented.
-  const NGBlockBreakToken* BlockBreakToken() const;
+  const NGBlockBreakToken* GetBlockBreakToken() const;
 
   // True if the current position has open tags that has `box-decoration-break:
   // clone`. They should be cloned to the start of the next line.

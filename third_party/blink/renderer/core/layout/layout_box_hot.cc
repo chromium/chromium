@@ -107,10 +107,11 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       To<NGPhysicalBoxFragment>(cached_layout_result->PhysicalFragment());
 
   // No fun allowed for repeated content.
-  if ((physical_fragment.BreakToken() &&
-       physical_fragment.BreakToken()->IsRepeated()) ||
-      (break_token && break_token->IsRepeated()))
+  if ((physical_fragment.GetBreakToken() &&
+       physical_fragment.GetBreakToken()->IsRepeated()) ||
+      (break_token && break_token->IsRepeated())) {
     return nullptr;
+  }
 
   // If the display-lock blocked child layout, then we don't clear child needs
   // layout bits. However, we can still use the cached result, since we will
@@ -208,7 +209,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   bool is_margin_strut_equal;
   bool is_exclusion_space_equal;
   bool is_fragmented = IsBreakInside(break_token) ||
-                       physical_fragment.BreakToken() ||
+                       physical_fragment.GetBreakToken() ||
                        PhysicalFragmentCount() > 1;
 
   {
@@ -301,8 +302,9 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       // FinishFragmentation() clamps break appeal down to
       // kBreakAppealLastResort. Maybe there are better ways.
       if (break_token && break_token->IsBreakBefore() &&
-          cached_layout_result->BreakAppeal() < kBreakAppealPerfect)
+          cached_layout_result->GetBreakAppeal() < kBreakAppealPerfect) {
         return nullptr;
+      }
 
       // If the node didn't break into multiple fragments, we might be able to
       // re-use the result. If the fragmentainer block-size has changed, or if

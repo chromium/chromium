@@ -26,7 +26,8 @@ namespace blink {
 //
 // LayoutInputNode* node = ...;
 // NGPhysicalFragment* fragment = node->Layout(space);
-// NGPhysicalFragment* fragment2 = node->Layout(space, fragment->BreakToken());
+// NGPhysicalFragment* fragment2 =
+//     node->Layout(space, fragment->GetBreakToken());
 //
 // The break token should encapsulate enough information to "resume" the layout.
 class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {

@@ -1672,8 +1672,10 @@ void InlineCursor::DecrementFragmentIndex() {
   // Note: |LayoutBox::GetPhysicalFragment(wtf_size_t)| is O(1).
   const auto& root_box_fragment =
       *root_block_flow_->GetPhysicalFragment(fragment_index_ - 1);
-  if (const NGBlockBreakToken* break_token = root_box_fragment.BreakToken())
+  if (const NGBlockBreakToken* break_token =
+          root_box_fragment.GetBreakToken()) {
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
+  }
 }
 
 void InlineCursor::IncrementFragmentIndex() {
@@ -1681,8 +1683,10 @@ void InlineCursor::IncrementFragmentIndex() {
   fragment_index_++;
   if (!root_box_fragment_)
     return;
-  if (const NGBlockBreakToken* break_token = root_box_fragment_->BreakToken())
+  if (const NGBlockBreakToken* break_token =
+          root_box_fragment_->GetBreakToken()) {
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
+  }
 }
 
 void InlineCursor::MoveToIncludingCulledInline(

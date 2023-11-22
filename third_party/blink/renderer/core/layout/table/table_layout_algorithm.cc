@@ -717,7 +717,7 @@ const NGLayoutResult* TableLayoutAlgorithm::RelayoutAsLastTableBox() {
   DCHECK(!is_known_to_be_last_table_box_);
   LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), BreakToken(), /* early_break */ nullptr);
+      GetConstraintSpace(), GetBreakToken(), /* early_break */ nullptr);
   TableLayoutAlgorithm algorithm(params);
   algorithm.is_known_to_be_last_table_box_ = true;
 
@@ -746,12 +746,12 @@ void TableLayoutAlgorithm::ComputeRows(
   DCHECK_EQ(cell_block_constraints->size(), 0u);
 
   const TableBreakTokenData* table_break_data = nullptr;
-  if (BreakToken()) {
+  if (GetBreakToken()) {
     table_break_data =
-        DynamicTo<TableBreakTokenData>(BreakToken()->TokenData());
+        DynamicTo<TableBreakTokenData>(GetBreakToken()->TokenData());
   }
   if (table_break_data) {
-    DCHECK(IsBreakInside(BreakToken()));
+    DCHECK(IsBreakInside(GetBreakToken()));
     *rows = table_break_data->rows;
     *cell_block_constraints = table_break_data->cell_block_constraints;
     *sections = table_break_data->sections;
@@ -914,11 +914,11 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
   LayoutUnit monolithic_overflow;
   bool is_past_table_box = false;
-  if (BreakToken()) {
-    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
-    monolithic_overflow = BreakToken()->MonolithicOverflow();
+  if (GetBreakToken()) {
+    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+    monolithic_overflow = GetBreakToken()->MonolithicOverflow();
     incoming_table_break_data =
-        DynamicTo<TableBreakTokenData>(BreakToken()->TokenData());
+        DynamicTo<TableBreakTokenData>(GetBreakToken()->TokenData());
     if (incoming_table_break_data) {
       previously_consumed_table_box_block_size =
           incoming_table_break_data->consumed_table_box_block_size;
@@ -1073,7 +1073,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       (grouped_children.header || grouped_children.footer)) {
     LayoutUnit max_section_block_size =
         GetConstraintSpace().FragmentainerBlockSize() / 4;
-    TableChildIterator child_iterator(grouped_children, BreakToken());
+    TableChildIterator child_iterator(grouped_children, GetBreakToken());
     for (auto entry = child_iterator.NextChild();
          BlockNode child = entry.GetNode();
          entry = child_iterator.NextChild()) {
@@ -1153,7 +1153,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
   LayoutUnit repeated_header_block_size;
   bool broke_inside = false;
   bool has_ended_table_box_layout = false;
-  TableChildIterator child_iterator(grouped_children, BreakToken());
+  TableChildIterator child_iterator(grouped_children, GetBreakToken());
   // Generate section fragments; and also caption fragments, if we need to
   // regenerate them (block fragmentation).
   for (auto entry = child_iterator.NextChild();

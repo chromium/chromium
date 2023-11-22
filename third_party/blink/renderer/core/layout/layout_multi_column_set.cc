@@ -55,7 +55,7 @@ class ChildFragmentIterator {
     if (fragment_index_ >= container_.PhysicalFragmentCount()) {
       return false;
     }
-    const auto* break_token = CurrentFragment()->BreakToken();
+    const auto* break_token = CurrentFragment()->GetBreakToken();
     return !break_token || !break_token->IsRepeated();
   }
 
@@ -129,7 +129,7 @@ LayoutPoint ComputeLocation(const NGPhysicalBoxFragment& column_box,
   const NGBlockBreakToken* previous_container_break_token = nullptr;
   if (fragment_index > 0) {
     previous_container_break_token =
-        container.GetPhysicalFragment(fragment_index - 1)->BreakToken();
+        container.GetPhysicalFragment(fragment_index - 1)->GetBreakToken();
   }
   // We have calculated the physical offset relative to the border edge of
   // this multicol container fragment. We'll now convert it to a legacy

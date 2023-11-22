@@ -209,8 +209,10 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
             &current_fragment_converter, &containing_block_converter);
       }
     }
-    if (const NGBlockBreakToken* break_token = physical_fragment.BreakToken())
+    if (const NGBlockBreakToken* break_token =
+            physical_fragment.GetBreakToken()) {
       current_block_offset = break_token->ConsumedBlockSize();
+    }
   }
 }
 

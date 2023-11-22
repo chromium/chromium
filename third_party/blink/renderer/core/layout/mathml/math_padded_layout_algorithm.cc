@@ -55,7 +55,7 @@ void MathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
 }
 
 const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+  DCHECK(!GetBreakToken());
 
   BlockNode content = nullptr;
   GetContentAsAnonymousMrow(&content);

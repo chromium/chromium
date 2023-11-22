@@ -408,7 +408,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
       Node(), line_style, baseline_type_, quirks_mode_, line_box);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   if (is_box_states_from_context_)
-    CheckBoxStates(*line_info, BreakToken());
+    CheckBoxStates(*line_info, GetBreakToken());
 #endif
 
   bool has_out_of_flow_positioned_items = false;
@@ -872,7 +872,7 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
   container_builder_.SetIsBlockInInline();
   container_builder_.SetInlineSize(fragment.InlineSize());
 
-  container_builder_.ClampBreakAppeal(result.BreakAppeal());
+  container_builder_.ClampBreakAppeal(result.GetBreakAppeal());
 
   if (!result.IsSelfCollapsing()) {
     // Block-in-inline is wrapped in an anonymous block that has no margins.
@@ -1045,7 +1045,7 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
     if (child.unpositioned_float) {
       // If we're resuming in a parallel fragmentation flow, the line breaker
       // should not leave any unpositioned floats behind.
-      DCHECK(!BreakToken() || !BreakToken()->IsInParallelBlockFlow());
+      DCHECK(!GetBreakToken() || !GetBreakToken()->IsInParallelBlockFlow());
 
       PositionedFloat positioned_float =
           PositionFloat(origin_bfc_block_offset, child.unpositioned_float,
@@ -1431,7 +1431,7 @@ const NGLayoutResult* InlineLayoutAlgorithm::Layout() {
           {constraint_space.GetBfcOffset().line_offset, bfc_block_offset},
           constraint_space.AvailableSize().inline_size);
 
-  const InlineBreakToken* break_token = BreakToken();
+  const InlineBreakToken* break_token = GetBreakToken();
 
   if (break_token && break_token->IsInParallelBlockFlow()) {
     container_builder_.SetIsLineForParallelFlow();
@@ -1730,7 +1730,7 @@ const NGLayoutResult* InlineLayoutAlgorithm::Layout() {
 void InlineLayoutAlgorithm::PositionLeadingFloats(
     ExclusionSpace& exclusion_space,
     LeadingFloats& leading_floats) {
-  if (BreakToken() && BreakToken()->IsInParallelBlockFlow()) {
+  if (GetBreakToken() && GetBreakToken()->IsInParallelBlockFlow()) {
     // Bail, and let the line breaker deal with any kind of parallel flow.
     return;
   }
@@ -1738,7 +1738,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
   const HeapVector<InlineItem>& items =
       Node().ItemsData(/* is_first_line */ false).items;
 
-  unsigned index = BreakToken() ? BreakToken()->StartItemIndex() : 0;
+  unsigned index = GetBreakToken() ? GetBreakToken()->StartItemIndex() : 0;
   PositionedFloatVector& positioned_floats = leading_floats.floats;
   for (; index < items.size(); ++index) {
     const InlineItem& item = items[index];

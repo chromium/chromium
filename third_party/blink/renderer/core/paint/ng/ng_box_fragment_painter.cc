@@ -324,8 +324,9 @@ bool NodeAtPointInFragment(const NGPhysicalBoxFragment& fragment,
 // context. We need to provide this ID when block-fragmenting, so that we can
 // cache the painting of each individual fragment.
 unsigned FragmentainerUniqueIdentifier(const NGPhysicalBoxFragment& fragment) {
-  if (const auto* break_token = fragment.BreakToken())
+  if (const auto* break_token = fragment.GetBreakToken()) {
     return break_token->SequenceNumber() + 1;
+  }
   return 0;
 }
 

@@ -183,7 +183,7 @@ void MathUnderOverLayoutAlgorithm::GatherChildren(BlockNode* base,
 }
 
 const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+  DCHECK(!GetBreakToken());
   DCHECK(IsValidMathMLScript(Node()));
 
   BlockNode base = nullptr;

@@ -190,7 +190,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
 }
 
 const NGLayoutResult* MathRowLayoutAlgorithm::Layout() {
-  DCHECK(!IsBreakInside(BreakToken()));
+  DCHECK(!IsBreakInside(GetBreakToken()));
 
   bool is_display_block_math =
       Node().IsMathRoot() && (Style().Display() == EDisplay::kBlockMath);

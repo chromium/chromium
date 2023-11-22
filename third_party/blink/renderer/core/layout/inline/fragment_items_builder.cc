@@ -271,7 +271,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
         // Block-in-inline should have been prevented by |EndOfReusableItems|.
         DCHECK(!line_fragment->IsBlockInInline());
         const auto* break_token =
-            To<InlineBreakToken>(line_fragment->BreakToken());
+            To<InlineBreakToken>(line_fragment->GetBreakToken());
         DCHECK(break_token);
         const InlineItemsData* current_items_data;
         if (UNLIKELY(break_token->UseFirstLineStyle()))

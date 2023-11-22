@@ -45,7 +45,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
   if (keep_old_size) {
     // When we're cloning a fragment to insert additional fragmentainers to hold
     // OOFs, re-use the old break token. This may not be the last fragment.
-    container_builder_.PresetNextBreakToken(physical_fragment.BreakToken());
+    container_builder_.PresetNextBreakToken(physical_fragment.GetBreakToken());
   }
 
   if (is_block_flow && !physical_fragment.IsFieldsetContainer()) {

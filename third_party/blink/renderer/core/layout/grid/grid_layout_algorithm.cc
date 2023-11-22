@@ -220,13 +220,14 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   GridSizingTree grid_sizing_tree;
   HeapVector<Member<LayoutBox>> oof_children;
 
-  if (IsBreakInside(BreakToken())) {
+  if (IsBreakInside(GetBreakToken())) {
     // TODO(layout-dev): When we support variable inlinesize fragments we'll
     // need to re-run |ComputeGridGeometry| for the different inline size while
     // making sure that we don't recalculate the automatic repetitions (which
     // depend on the available size), as this might change the grid structure
     // significantly (e.g., pull a child up into the first row).
-    const auto* grid_data = To<GridBreakTokenData>(BreakToken()->TokenData());
+    const auto* grid_data =
+        To<GridBreakTokenData>(GetBreakToken()->TokenData());
     grid_sizing_tree = grid_data->grid_sizing_tree.CopyForFragmentation();
     intrinsic_block_size = grid_data->intrinsic_block_size;
   } else {
@@ -250,8 +251,9 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
-    if (IsBreakInside(BreakToken())) {
-      const auto* grid_data = To<GridBreakTokenData>(BreakToken()->TokenData());
+    if (IsBreakInside(GetBreakToken())) {
+      const auto* grid_data =
+          To<GridBreakTokenData>(GetBreakToken()->TokenData());
 
       previously_consumed_grid_block_size = consumed_grid_block_size =
           grid_data->consumed_grid_block_size;
@@ -842,11 +844,11 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
     if (sizing_data.grid_items.IsEmpty() && node.HasLineIfEmpty()) {
       *intrinsic_block_size = std::max(
           *intrinsic_block_size, border_scrollbar_padding.BlockSum() +
-                                     node.EmptyLineBlockSize(BreakToken()));
+                                     node.EmptyLineBlockSize(GetBreakToken()));
     }
 
     *intrinsic_block_size = ClampIntrinsicBlockSize(
-        constraint_space, node, BreakToken(), border_scrollbar_padding,
+        constraint_space, node, GetBreakToken(), border_scrollbar_padding,
         *intrinsic_block_size);
   }
 
@@ -3713,8 +3715,9 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
   LayoutUnit fragmentainer_space = FragmentainerSpaceLeft(constraint_space);
   base::span<const Member<const NGBreakToken>> child_break_tokens;
-  if (BreakToken())
-    child_break_tokens = BreakToken()->ChildBreakTokens();
+  if (GetBreakToken()) {
+    child_break_tokens = GetBreakToken()->ChildBreakTokens();
+  }
 
   auto PlaceItems = [&]() {
     // Reset our state.
@@ -3754,7 +3757,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
                   .has_descendant_that_depends_on_percentage_block_size);
 
       LayoutUnit unavailable_block_size;
-      if (IsBreakInside(BreakToken()) && IsBreakInside(break_token)) {
+      if (IsBreakInside(GetBreakToken()) && IsBreakInside(break_token)) {
         // If a sibling grid item has overflowed the fragmentainer (in a
         // previous fragment) due to monolithic content, the grid container has
         // been stretched to encompass it, but the other grid items (like this
@@ -3763,7 +3766,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         // order to compensate for this, or this item might overflow the grid
         // row.
         const auto* grid_data =
-            To<GridBreakTokenData>(BreakToken()->TokenData());
+            To<GridBreakTokenData>(GetBreakToken()->TokenData());
         unavailable_block_size = grid_data->consumed_grid_block_size -
                                  (item_placement_data.offset.block_offset +
                                   break_token->ConsumedBlockSize());
@@ -3908,7 +3911,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         }
 
         LayoutUnit item_expansion;
-        if (result->PhysicalFragment().BreakToken()) {
+        if (result->PhysicalFragment().GetBreakToken()) {
           // This item may have a break, and will want to expand into the next
           // fragmentainer, (causing the row to expand into the next
           // fragmentainer). We can't use the size of the fragment, as we don't
@@ -4069,7 +4072,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
   const bool is_fixed_container = node.IsAbsoluteContainer();
 
   const LayoutUnit previous_consumed_block_size =
-      BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+      GetBreakToken() ? GetBreakToken()->ConsumedBlockSize() : LayoutUnit();
   const LogicalSize total_fragment_size = {container_builder_.InlineSize(),
                                            block_size};
   const auto default_containing_block_size =

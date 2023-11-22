@@ -63,8 +63,9 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     // If this child is an empty line-box, the list marker should be aligned
     // with the next non-empty line box produced. (This can occur with floats
     // producing empty line-boxes).
-    if (line_box.IsEmptyLineBox() && line_box.BreakToken())
+    if (line_box.IsEmptyLineBox() && line_box.GetBreakToken()) {
       return absl::nullopt;
+    }
 
     return line_box.Metrics().ascent;
   }

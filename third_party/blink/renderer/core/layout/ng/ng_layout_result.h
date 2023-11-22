@@ -375,7 +375,7 @@ class CORE_EXPORT NGLayoutResult final
   // context). If there are any suboptimal breaks, we may want to push the
   // entire multicol container to the next outer fragmentainer, if it's likely
   // that we'll avoid suboptimal column breaks inside that way.
-  NGBreakAppeal BreakAppeal() const {
+  NGBreakAppeal GetBreakAppeal() const {
     return static_cast<NGBreakAppeal>(bitfields_.break_appeal);
   }
 

@@ -612,13 +612,13 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   if (fragment_count == 1) {
     post_layout = box->GetPhysicalFragment(0);
     DCHECK(post_layout);
-  } else if (const auto* break_token = BreakToken()) {
+  } else if (const auto* break_token = GetBreakToken()) {
     const unsigned index = break_token->SequenceNumber();
     if (index < fragment_count) {
       post_layout = box->GetPhysicalFragment(index);
       DCHECK(post_layout);
-      DCHECK(!post_layout->BreakToken() ||
-             post_layout->BreakToken()->SequenceNumber() == index);
+      DCHECK(!post_layout->GetBreakToken() ||
+             post_layout->GetBreakToken()->SequenceNumber() == index);
     }
   } else {
     post_layout = &box->PhysicalFragments().back();
@@ -710,8 +710,9 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   PhysicalRect clip_rect =
       OverflowClipRect(location, overlay_scrollbar_clip_behavior);
-  if (!incoming_break_token && !BreakToken())
+  if (!incoming_break_token && !GetBreakToken()) {
     return clip_rect;
+  }
 
   // Clip the stitched box clip rectangle against the bounds of the fragment.
   //
@@ -1095,7 +1096,7 @@ void NGPhysicalBoxFragment::RecalcInkOverflow() {
   if (UNLIKELY(IsFragmentainerBox()))
     return;
 
-  if (BreakToken()) {
+  if (GetBreakToken()) {
     DCHECK_NE(this, &OwnerLayoutBox()->PhysicalFragments().back());
     return;
   }
