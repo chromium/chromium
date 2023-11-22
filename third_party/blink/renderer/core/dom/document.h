@@ -447,6 +447,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   DOMImplementation& implementation();
 
+  // Typically, but not guaranteed, to be non-null.
+  //
+  // ```js
+  // document.documentElement.remove();
+  // // document.documentElement is now null
+  // ```
   Element* documentElement() const { return document_element_.Get(); }
 
   Location* location() const;
