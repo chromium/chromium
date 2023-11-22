@@ -602,7 +602,7 @@ void JumpList::PostRunUpdate() {
 
   // Parameter evaluation order is unspecified in C++. Do the first bind and
   // then move it into PostTaskAndReply to ensure the pointer value is obtained
-  // before base::Passed() is called.
+  // before std::move() is called.
   auto run_update = base::BindOnce(
       &JumpList::RunUpdateJumpList, app_id_, profile_dir, most_visited_pages_,
       recently_closed_pages_, GetCmdLineProfileDir(),
