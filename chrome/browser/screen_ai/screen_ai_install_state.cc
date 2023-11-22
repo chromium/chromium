@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/native_library.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -25,6 +24,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/cpu.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/native_library.h"
 #endif
 
 namespace {
@@ -82,6 +85,9 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
     return false;
   }
 
+#if !BUILDFLAG(IS_WIN)
+  return true;
+#else
   // Sometimes the library cannot be loaded due to an installation error or OS
   // limitations.
   base::NativeLibraryLoadError lib_error;
@@ -90,16 +96,14 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
   bool available = (library != nullptr);
   base::UmaHistogramBoolean("Accessibility.ScreenAI.LibraryAvailableOnVerify",
                             available);
-#if BUILDFLAG(IS_WIN)
   base::UmaHistogramSparse("Accessibility.ScreenAI.LibraryAccessResultOnVerify",
                            lib_error.code);
-#endif
-
   if (available) {
     base::UnloadNativeLibrary(library);
   }
 
   return available;
+#endif
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {
