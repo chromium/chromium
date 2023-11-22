@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/buildflags/buildflags.h"
@@ -44,7 +45,8 @@ class ServiceWorkerHost :
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     public PermissionsManager::Observer,
 #endif
-    public mojom::ServiceWorkerHost {
+    public mojom::ServiceWorkerHost,
+    public content::RenderProcessHostObserver {
  public:
   explicit ServiceWorkerHost(
       content::RenderProcessHost* render_process_host,
@@ -124,12 +126,20 @@ class ServiceWorkerHost :
   }
 #endif
 
+  // content::RenderProcessHostObserver implementation.
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+
  private:
   // Returns the browser context associated with the render process this
   // `ServiceWorkerHost` belongs to.
   content::BrowserContext* GetBrowserContext();
 
   void RemoteDisconnected();
+
+  // Destroys this instance by removing it from the ServiceWorkerHostList.
+  void Destroy();
 
   // This is safe because ServiceWorkerHost is tied to the life time of
   // RenderProcessHost.

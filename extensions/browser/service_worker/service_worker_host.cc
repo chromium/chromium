@@ -67,9 +67,13 @@ ServiceWorkerHost::ServiceWorkerHost(
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
       &ServiceWorkerHost::RemoteDisconnected, base::Unretained(this)));
+
+  render_process_host_->AddObserver(this);
 }
 
-ServiceWorkerHost::~ServiceWorkerHost() = default;
+ServiceWorkerHost::~ServiceWorkerHost() {
+  render_process_host_->RemoveObserver(this);
+}
 
 // static
 void ServiceWorkerHost::BindReceiver(
@@ -116,10 +120,8 @@ void ServiceWorkerHost::RemoteDisconnected() {
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   permissions_observer_.Reset();
 #endif
-  if (auto* service_worker_host_list = ServiceWorkerHostList::Get(
-          render_process_host_, /*create_if_not_exists=*/false)) {
-    base::EraseIf(service_worker_host_list->list, base::MatchesUniquePtr(this));
-  }
+  Destroy();
+  // This instance has now been destroyed.
 }
 
 void ServiceWorkerHost::DidInitializeServiceWorkerContext(
@@ -369,6 +371,26 @@ void ServiceWorkerHost::OpenChannelToTab(
       document_id ? *document_id : std::string(), channel_type, channel_name,
       std::move(port), std::move(port_host));
 #endif
+}
+
+void ServiceWorkerHost::Destroy() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* service_worker_host_list = ServiceWorkerHostList::Get(
+      render_process_host_, /*create_if_not_exists=*/false);
+  CHECK(service_worker_host_list);
+  // base::EraseIf will lead to a call to the destructor for this object.
+  base::EraseIf(service_worker_host_list->list, base::MatchesUniquePtr(this));
+}
+
+void ServiceWorkerHost::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  CHECK_EQ(host, render_process_host_);
+  // TODO(crbug.com/1407197): Investigate clearing the user data from
+  // RenderProcessHostImpl::Cleanup.
+  Destroy();
+  // This instance has now been deleted.
 }
 
 }  // namespace extensions
