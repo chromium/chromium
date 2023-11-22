@@ -535,6 +535,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2"
+    enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2024-11-07">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Similar to the metric SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours.
+    Records whether an ESB user has sent a Protego ping to the Safe Browsing
+    consumer API servers within the last 24 hours. If a ping was sent since the
+    last time this metric was logged, then this metric will report the type of
+    that ping, otherwise it will report that none was sent. Different from
+    ProtegoRequestSentInLast24Hours, if the user has sent a ping of multiple
+    types since the last time this metric was logged, kWithToken will be
+    reported. This metric is logged at most once per day and only for users that
+    have enhanced protection enabled.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.EsbDisabled.LastBypassEventType"
     enum="SBMetricsCollectorEventType" expires_after="2024-03-23">
   <owner>xinghuilu@chromium.org</owner>

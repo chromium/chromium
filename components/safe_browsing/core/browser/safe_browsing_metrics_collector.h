@@ -163,6 +163,15 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(
       SafeBrowsingMetricsCollectorTest,
       ProtegoRequestLogsWithoutTokenWhenPingBeforeCollectorHasEverRun);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      NewProtegoRequestLogsWithTokenWhenWithTokenWasSendWithinLast24HRS);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      NewProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSendWithinLast24HRS);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      NewProtegoRequestLogsWithTokenWhenNoPingWasSendWithinLast24HRS);
 
   // The type of Protego ping that was sent by an enhanced protection
   // user. These values are persisted to logs. Entries should not be renumbered

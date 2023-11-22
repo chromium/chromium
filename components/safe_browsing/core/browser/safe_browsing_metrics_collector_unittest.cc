@@ -926,4 +926,63 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       /* expected_count */ 1);
 }
 
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       NewProtegoRequestLogsWithTokenWhenWithTokenWasSendWithinLast24HRS) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Minutes(30));
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Minutes(10));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
+      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      /* expected_count */ 1);
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
+      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(
+    SafeBrowsingMetricsCollectorTest,
+    NewProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSendWithinLast24HRS) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Minutes(10));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
+      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      /* expected_count */ 1);
+}
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       NewProtegoRequestLogsWithTokenWhenNoPingWasSendWithinLast24HRS) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Days(1) - base::Minutes(30));
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Days(1) - base::Minutes(40));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
+      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      /* expected_count */ 1);
+}
+
 }  // namespace safe_browsing
