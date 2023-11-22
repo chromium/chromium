@@ -135,7 +135,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.register(scripts),
-        `Error: Could not load javascript '${scriptFile}' for content script.`);
+        `Error: Could not load javascript '${scriptFile}' for script.`);
 
     chrome.test.succeed();
   },

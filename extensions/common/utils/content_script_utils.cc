@@ -56,7 +56,7 @@ constexpr char kForbiddenInlineCodeScriptError[] =
 bool IsScriptValid(const base::FilePath& path,
                    const base::FilePath& relative_path,
                    size_t max_script_length,
-                   int message_id,
+                   int file_not_read_error_id,
                    std::string* error,
                    std::vector<InstallWarning>* warnings,
                    size_t& remaining_length) {
@@ -70,22 +70,21 @@ bool IsScriptValid(const base::FilePath& path,
     return true;
   }
 
-  std::string content;
-  std::string file_not_read_error =
-      l10n_util::GetStringFUTF8(message_id, relative_path.LossyDisplayName());
-
   if (!base::PathExists(path)) {
-    *error = file_not_read_error;
+    *error = l10n_util::GetStringFUTF8(file_not_read_error_id,
+                                       relative_path.LossyDisplayName());
     return false;
   }
 
+  std::string content;
   bool read_successful =
       base::ReadFileToStringWithMaxSize(path, &content, max_script_length);
   // If the size of the file in `path` exceeds `max_script_length`,
   // ReadFileToStringWithMaxSize will return false but `content` will contain
   // the file's content truncated to `max_script_length`.
   if (!read_successful && content.length() != max_script_length) {
-    *error = file_not_read_error;
+    *error = l10n_util::GetStringFUTF8(file_not_read_error_id,
+                                       relative_path.LossyDisplayName());
     return false;
   }
 

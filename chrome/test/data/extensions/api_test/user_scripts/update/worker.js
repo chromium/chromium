@@ -159,8 +159,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.update(scriptsToUpdate),
-        `Error: Could not load javascript '${
-            nonExistentFile}' for content script.`);
+        `Error: Could not load javascript '${nonExistentFile}' for script.`);
 
     // Verify previously registered user scripts were not affected.
     registeredScripts = await chrome.userScripts.getScripts();
