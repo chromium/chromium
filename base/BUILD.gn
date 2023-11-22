@@ -4254,15 +4254,6 @@ if (is_android || is_robolectric) {
 }  # is_android || is_robolectric
 
 if (is_android) {
-  # TODO(smaier): delete this once deps have been correctly added everywhere.
-  java_group("jni_java") {
-    public_deps = [
-      # Public because @CheckDiscard is added to generated *Jni.java files.
-      "//build/android:build_java",
-      "//third_party/jni_zero:jni_zero_java",
-    ]
-  }
-
   java_cpp_features("java_features_srcjar") {
     # External code should depend on ":base_java" instead.
     visibility = [ ":*" ]
@@ -4289,13 +4280,13 @@ if (is_android) {
     ]
     deps = [
       ":base_java",
-      ":jni_java",
       "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
     sources = [
       "android/java/src/org/chromium/base/process_launcher/BindService.java",
@@ -4322,7 +4313,6 @@ if (is_android) {
     ]
 
     deps = [
-      ":jni_java",
       "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
@@ -4493,9 +4483,10 @@ if (is_android) {
   android_library("base_shared_preferences_java") {
     deps = [
       ":base_java",
-      ":jni_java",
+      "//build/android:build_java",
       "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     sources = [
