@@ -228,6 +228,11 @@ class DriveFsSessionForTest : public DriveFsSession {
                       const std::string& app_id,
                       const std::vector<std::string>& scopes,
                       GetAccessTokenCallback callback) override {}
+  void GetAccessTokenWithExpiry(
+      const std::string& client_id,
+      const std::string& app_id,
+      const std::vector<std::string>& scopes,
+      GetAccessTokenWithExpiryCallback callback) override {}
   void OnSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {}
   void OnItemProgress(mojom::ProgressEventPtr item_progress) override {}
   void OnFilesChanged(std::vector<mojom::FileChangePtr> changes) override {}

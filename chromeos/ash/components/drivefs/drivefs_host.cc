@@ -125,6 +125,27 @@ class DriveFsHost::MountState : public DriveFsSession {
                       const std::vector<std::string>& scopes,
                       GetAccessTokenCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
+    host_->account_token_delegate_->GetAccessToken(
+        !token_fetch_attempted_,
+        base::BindOnce(
+            [](GetAccessTokenCallback callback, mojom::AccessTokenStatus status,
+               mojom::AccessTokenPtr access_token) {
+              if (status != mojom::AccessTokenStatus::kSuccess) {
+                std::move(callback).Run(status, "");
+                return;
+              }
+              std::move(callback).Run(status, access_token->token);
+            },
+            std::move(callback)));
+    token_fetch_attempted_ = true;
+  }
+
+  void GetAccessTokenWithExpiry(
+      const std::string& client_id,
+      const std::string& app_id,
+      const std::vector<std::string>& scopes,
+      GetAccessTokenWithExpiryCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
     host_->account_token_delegate_->GetAccessToken(!token_fetch_attempted_,
                                                    std::move(callback));
     token_fetch_attempted_ = true;

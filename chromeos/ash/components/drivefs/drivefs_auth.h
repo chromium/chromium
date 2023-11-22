@@ -32,6 +32,9 @@ class PrimaryAccountAccessTokenFetcher;
 
 namespace drivefs {
 
+using AccessTokenCallback =
+    mojom::DriveFsDelegate::GetAccessTokenWithExpiryCallback;
+
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
  public:
   class Delegate {
@@ -75,9 +78,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
 
   absl::optional<std::string> GetCachedAccessToken();
 
-  virtual void GetAccessToken(
-      bool use_cached,
-      mojom::DriveFsDelegate::GetAccessTokenCallback callback);
+  virtual void GetAccessToken(bool use_cached, AccessTokenCallback callback);
 
  private:
   void GotChromeAccessToken(GoogleServiceAuthError error,
@@ -98,8 +99,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
-  // Pending callback for an in-flight GetAccessToken request.
-  mojom::DriveFsDelegate::GetAccessTokenCallback get_access_token_callback_;
+  // Pending callback for an in-flight GetAccessToken{WithExpiry} request.
+  AccessTokenCallback get_access_token_callback_;
 
   std::string last_token_;
   base::Time last_token_expiry_;
