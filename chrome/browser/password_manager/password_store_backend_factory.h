@@ -17,11 +17,28 @@ class AffiliationsPrefetcher;
 class PasswordStoreBackend;
 }
 
+// Creates the password store backend for the profile store. Depending on
+// the platform, this can be backed by the login database, or by
+// the android backend. The `affiliations_prefetcher` is used
+// to cancel prefetching for affiliations in case the android backend
+// is ready to provide logins for affiliations directly.
 std::unique_ptr<password_manager::PasswordStoreBackend>
-CreatePasswordStoreBackend(
+CreateProfilePasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    password_manager::AffiliationsPrefetcher* affiliations_prefetcher,
-    password_manager::IsAccountStore is_account_store);
+    password_manager::AffiliationsPrefetcher* affiliations_prefetcher);
+
+// Creates the password store backend for the account store. Depending on
+// the platform, this can be backed by the login database, or by
+// the android backend. The `affiliations_prefetcher` is used
+// to cancel prefetching for affiliations in case the android backend
+// is ready to provide logins for affiliations directly.
+std::unique_ptr<password_manager::PasswordStoreBackend>
+CreateAccountPasswordStoreBackend(
+    const base::FilePath& login_db_directory,
+    PrefService* prefs,
+    std::unique_ptr<password_manager::UnsyncedCredentialsDeletionNotifier>
+        unsynced_deletions_notifier,
+    password_manager::AffiliationsPrefetcher* affiliations_prefetcher);
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_BACKEND_FACTORY_H_

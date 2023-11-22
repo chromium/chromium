@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -23,11 +24,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<password_manager::PasswordStoreBackend>
-CreatePasswordStoreBackend(
+CreateProfilePasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    password_manager::AffiliationsPrefetcher* affiliations_prefetcher,
-    password_manager::IsAccountStore is_account_store) {
+    password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
@@ -57,12 +57,49 @@ CreatePasswordStoreBackend(
             syncer::WipeModelUponSyncDisabledBehavior::kNever),
         std::make_unique<password_manager::PasswordStoreAndroidBackend>(
             prefs, affiliations_prefetcher),
-        prefs, is_account_store);
+        prefs, password_manager::IsAccountStore(false));
   }
-  CHECK(!is_account_store);
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
       password_manager::CreateLoginDatabaseForProfileStorage(
           login_db_directory),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
+#endif
+}
+
+std::unique_ptr<password_manager::PasswordStoreBackend>
+CreateAccountPasswordStoreBackend(
+    const base::FilePath& login_db_directory,
+    PrefService* prefs,
+    std::unique_ptr<password_manager::UnsyncedCredentialsDeletionNotifier>
+        unsynced_deletions_notifier,
+    password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
+  std::unique_ptr<password_manager::LoginDatabase> login_db(
+      password_manager::CreateLoginDatabaseForAccountStorage(
+          login_db_directory));
+#if BUILDFLAG(IS_ANDROID)
+  // The min GMS Core version required by the account backend is larger than
+  // the one checked by `CanCreateBackend`. If an account backend is being
+  // created, it means that the version check already passed before, so no
+  // need to check `CanCreateBackend` here.
+  CHECK(password_manager::PasswordStoreAndroidBackendBridgeHelper::
+            CanCreateBackend());
+  CHECK(password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs));
+
+  // Note: The built-in backend is backed by the login database and Chrome
+  // syncs it. As such, it expects local data to be cleared every time when
+  // sync is permanently disabled and thus uses
+  // WipeModelUponSyncDisabledBehavior::kAlways.
+  return std::make_unique<
+      password_manager::PasswordStoreBackendMigrationDecorator>(
+      std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+          std::move(login_db),
+          syncer::WipeModelUponSyncDisabledBehavior::kAlways),
+      std::make_unique<password_manager::PasswordStoreAndroidBackend>(
+          prefs, affiliations_prefetcher),
+      prefs, password_manager::IsAccountStore(true));
+#else
+  return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+      std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
+      std::move(unsynced_deletions_notifier));
 #endif
 }

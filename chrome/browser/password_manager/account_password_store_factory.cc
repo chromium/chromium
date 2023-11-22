@@ -19,6 +19,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
+#include "chrome/browser/password_manager/password_store_backend_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -124,23 +126,17 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     return nullptr;
 #endif
 
-  std::unique_ptr<password_manager::LoginDatabase> login_db(
-      password_manager::CreateLoginDatabaseForAccountStorage(
-          profile->GetPath()));
-
   scoped_refptr<password_manager::PasswordStore> ps =
 #if BUILDFLAG(IS_ANDROID)
-      new password_manager::PasswordStore(
-          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-              std::move(login_db),
-              syncer::WipeModelUponSyncDisabledBehavior::kAlways));
+      new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
+          profile->GetPath(), profile->GetPrefs(),
+          /*unsynced_deletions_notifier=*/nullptr,
+          AffiliationsPrefetcherFactory::GetForProfile(profile)));
 #else
-      new password_manager::PasswordStore(
-          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-              std::move(login_db),
-              syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-              std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(
-                  profile)));
+      new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
+          profile->GetPath(), profile->GetPrefs(),
+          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile),
+          /*affiliations_prefetcher=*/nullptr));
 #endif
 
   password_manager::AffiliationService* affiliation_service =
@@ -161,8 +157,11 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::Seconds(60), network_context_getter);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Android gets logins with affiliations directly from the backend.
   AffiliationsPrefetcherFactory::GetForProfile(profile)->RegisterPasswordStore(
       ps.get());
+#endif
 
   return ps;
 }
@@ -177,6 +176,14 @@ AccountPasswordStoreFactory::GetForProfile(Profile* profile,
           password_manager::features::kEnablePasswordsAccountStorage)) {
     return nullptr;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!password_manager_android_util::UsesSplitStoresAndUPMForLocal(
+          profile->GetPrefs())) {
+    return nullptr;
+  }
+#endif
+
   // |profile| gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.
