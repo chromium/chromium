@@ -1421,6 +1421,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     std::vector<GURL> report_urls;
     std::vector<GURL> debug_loss_report_urls;
     std::vector<GURL> debug_win_report_urls;
+    base::flat_map<blink::FencedFrame::ReportingDestination, url::Origin>
+        ad_reporting_url_declarer_origins;
     base::flat_map<blink::FencedFrame::ReportingDestination,
                    FencedFrameReporter::ReportingUrlMap>
         ad_beacon_map;
@@ -1899,6 +1901,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     DCHECK(reporter_);
     result_.report_urls = interest_group_manager_->TakeReportUrlsOfType(
         InterestGroupManagerImpl::ReportType::kSendReportTo);
+    result_.ad_reporting_url_declarer_origins =
+        reporter_->fenced_frame_reporter()
+            ->GetReportingUrlDeclarerOriginsForTesting();
     result_.ad_beacon_map =
         reporter_->fenced_frame_reporter()->GetAdBeaconMapForTesting();
     result_.ad_macros =
@@ -3428,6 +3433,10 @@ TEST_F(AuctionRunnerTest, Basic) {
                        /*highest_scoring_other_bid=*/1,
                        /*highest_scoring_other_bid_currency=*/absl::nullopt,
                        /*made_highest_scoring_other_bid=*/false)));
+  EXPECT_THAT(result_.ad_reporting_url_declarer_origins,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ReportingDestination::kSeller, kSeller),
+                  testing::Pair(ReportingDestination::kBuyer, kBidder2)));
   EXPECT_THAT(
       result_.ad_beacon_map,
       testing::UnorderedElementsAre(
@@ -4040,6 +4049,12 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
                        /*highest_scoring_other_bid=*/0,
                        /*highest_scoring_other_bid_currency=*/absl::nullopt,
                        /*made_highest_scoring_other_bid=*/false)));
+  EXPECT_THAT(result_.ad_reporting_url_declarer_origins,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ReportingDestination::kSeller, kSeller),
+                  testing::Pair(ReportingDestination::kComponentSeller,
+                                kComponentSeller2),
+                  testing::Pair(ReportingDestination::kBuyer, kBidder2)));
   EXPECT_THAT(
       result_.ad_beacon_map,
       testing::UnorderedElementsAre(

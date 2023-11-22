@@ -371,6 +371,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // function from OnSellerReportResultComplete since this is also called by
   // `InitializeFromServerResponse()`.
   bool AddReportResultResult(
+      const url::Origin& seller_origin,
       const absl::optional<GURL>& seller_report_url,
       const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
       blink::FencedFrame::ReportingDestination destination,
@@ -410,6 +411,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // `InitializeFromServerResponse()` since macro expanded reporting is not
   // supported from server auction.
   bool AddReportWinResult(
+      const url::Origin& bidder_origin,
       const absl::optional<GURL>& bidder_report_url,
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
       const absl::optional<base::flat_map<std::string, std::string>>&

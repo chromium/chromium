@@ -61,6 +61,7 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
     BrowserContext* browser_context,
     PageImpl* page,
     const url::Origin& main_frame_origin,
+    const url::Origin& shared_storage_origin,
     const net::SchemefulSite& shared_storage_site,
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
@@ -90,8 +91,8 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
   if (!urls_with_metadata[index]->reporting_metadata.empty()) {
     fenced_frame_reporter = FencedFrameReporter::CreateForSharedStorage(
         storage_partition->GetURLLoaderFactoryForBrowserProcess(),
-        browser_context, urls_with_metadata[index]->reporting_metadata,
-        main_frame_origin);
+        browser_context, shared_storage_origin,
+        urls_with_metadata[index]->reporting_metadata, main_frame_origin);
   }
   return SharedStorageURNMappingResult(
       mapped_url,
@@ -274,8 +275,8 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
             .OnSharedStorageURNMappingResultDetermined(
                 urn_uuid, CreateSharedStorageURNMappingResult(
                               storage_partition_, browser_context_, page_.get(),
-                              main_frame_origin_, shared_storage_site_,
-                              std::move(it->second),
+                              main_frame_origin_, shared_storage_origin_,
+                              shared_storage_site_, std::move(it->second),
                               /*index=*/0, /*budget_remaining=*/0.0,
                               failed_due_to_no_budget));
 
@@ -985,7 +986,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     SharedStorageURNMappingResult mapping_result =
         CreateSharedStorageURNMappingResult(
             storage_partition_, browser_context_, page_.get(),
-            main_frame_origin_, shared_storage_site_,
+            main_frame_origin_, shared_storage_origin_, shared_storage_site_,
             std::move(urls_with_metadata), index, budget_result.bits,
             failed_due_to_no_budget);
 
