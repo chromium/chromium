@@ -40,6 +40,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   ToolbarController(
       const std::vector<ResponsiveElementInfo>& responsive_elements,
+      const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       views::View* overflow_button);
@@ -97,6 +98,13 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // Return the default responsive elements list in the toolbar.
   static std::vector<ResponsiveElementInfo> GetDefaultResponsiveElements();
 
+  // Return the element list in desired overflow order. The list should contain
+  // only the immediate children of toolbar i.e. those managed by
+  // `toolbar_container_view_` layout manager. For those inside a child
+  // container (e.g. PinnedToolbarActionsContainer) of `toolbar_container_view_`
+  // they should have their own overflow order.
+  static std::vector<ui::ElementIdentifier> GetDefaultOverflowOrder();
+
   // Return the action name from element identifier. Return empty if not found.
   static std::string GetActionNameFromElementIdentifier(
       ui::ElementIdentifier identifier);
@@ -147,7 +155,8 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // The toolbar elements managed by this controller.
   // This also serves as a map that its indices are used as command ids in
-  // overflowed menu model.
+  // overflowed menu model. To facilitate menu creation elements order should
+  // match overflow menu top to bottom.
   const std::vector<ResponsiveElementInfo> responsive_elements_;
 
   // The starting flex order assigned to the last overflowed element in

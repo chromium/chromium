@@ -38,10 +38,12 @@ class MockToolbarController : public ToolbarController {
   MockToolbarController(
       const std::vector<ToolbarController::ResponsiveElementInfo>&
           responsive_elements,
+      const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       views::View* overflow_button)
       : ToolbarController(responsive_elements,
+                          elements_in_overflow_order,
                           element_flex_order_start,
                           toolbar_container_view,
                           overflow_button) {}
@@ -97,7 +99,8 @@ TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
   MockToolbarController toolbar_controller(
       std::vector<ToolbarController::ResponsiveElementInfo>(
           {{kDummyButton, 0, kDummyActivateView, kDummyObservedView}}),
-      1, container_view(), overflow_button());
+      std::vector<ui::ElementIdentifier>({kDummyButton}), 1, container_view(),
+      overflow_button());
 
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(widget());
@@ -122,10 +125,12 @@ class TestToolbarController : public ToolbarController {
   TestToolbarController(
       const std::vector<ToolbarController::ResponsiveElementInfo>&
           responsive_elements,
+      const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       views::View* overflow_button)
       : ToolbarController(responsive_elements,
+                          elements_in_overflow_order,
                           element_flex_order_start,
                           toolbar_container_view,
                           overflow_button) {}
@@ -184,6 +189,8 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
             {{kDummyButton1, 0, kDummyActivateView, kDummyObservedView},
              {kDummyButton2, 0, kDummyActivateView, kDummyObservedView},
              {kDummyButton3, 0, kDummyActivateView, kDummyObservedView}}),
+        std::vector<ui::ElementIdentifier>(
+            {kDummyButton3, kDummyButton2, kDummyButton1}),
         kElementFlexOrderStart, toolbar_container_view_, overflow_button_);
     overflow_button_->set_create_menu_model_callback(
         base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
@@ -275,7 +282,7 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   event_generator()->PressLeftButton();
 
   const ui::SimpleMenuModel* menu = overflow_menu();
-  const auto& overflowed_buttons = GetOverflowedElements();
+  const auto overflowed_buttons = GetOverflowedElements();
 
   // Overflowed buttons should match overflow menu.
   EXPECT_TRUE(menu);
@@ -342,6 +349,85 @@ TEST_F(ToolbarControllerUnitTest, PopOutButton) {
   EXPECT_FALSE(toolbar_controller()->PopOut(kDummyButton4));
 }
 
+// Buttons overflow in order: 3, 2, 1.
+TEST_F(ToolbarControllerUnitTest, ButtonsOverflowRightToLeftInContainer) {
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Enough space to accommodate 3 buttons.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * test_buttons().size(),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Not enough space. Button3 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+
+  // Keep resizing smaller. Button2 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 2),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+
+  // Keep resizing smaller. Button1 is hidden.
+  widget()->SetSize(gfx::Size(1, kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+}
+
+// Buttons overflow in order: 1, 2, 3.
+TEST_F(ToolbarControllerUnitTest, ButtonsOverflowLeftToRightInContainer) {
+  std::unique_ptr<ToolbarController> dummy_controller =
+      std::make_unique<TestToolbarController>(
+          std::vector<ToolbarController::ResponsiveElementInfo>(
+              {{kDummyButton1, 0, kDummyActivateView, kDummyObservedView},
+               {kDummyButton2, 0, kDummyActivateView, kDummyObservedView},
+               {kDummyButton3, 0, kDummyActivateView, kDummyObservedView}}),
+          std::vector<ui::ElementIdentifier>(
+              {kDummyButton1, kDummyButton2, kDummyButton3}),
+          kElementFlexOrderStart, toolbar_container_view(),
+          const_cast<views::View*>(overflow_button()));
+
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Enough space to accommodate 3 buttons.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * test_buttons().size(),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Not enough space. Button1 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Keep resizing smaller. Button2 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 2),
+                              kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Keep resizing smaller. Button3 is hidden.
+  widget()->SetSize(gfx::Size(1, kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+}
+
 TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
   views::View* button3 = test_buttons()[2];
   button3->SetEnabled(false);
@@ -359,7 +445,7 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
   event_generator()->PressLeftButton();
 
   const ui::SimpleMenuModel* menu = overflow_menu();
-  const auto& overflowed_buttons = GetOverflowedElements();
+  const auto overflowed_buttons = GetOverflowedElements();
 
   EXPECT_TRUE(menu);
   EXPECT_EQ(overflowed_buttons.size(), menu->GetItemCount());

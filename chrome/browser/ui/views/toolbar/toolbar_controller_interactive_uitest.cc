@@ -125,7 +125,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   auto CheckMenuMatchesOverflowedElements() {
     return Steps(Check(base::BindLambdaForTesting([this]() {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
-      const auto& overflowed_elements = GetOverflowedElements();
+      const auto overflowed_elements = GetOverflowedElements();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
       EXPECT_EQ(menu->GetItemCount(), overflowed_elements.size());
@@ -198,18 +198,6 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   // The minimum width the toolbar view can be without any elements dropped out.
   int overflow_threshold_width_;
 };
-
-IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest, FlexOrderCorrect) {
-  int order_start = element_flex_order_start();
-  for (const auto& element : responsive_elements()) {
-    const views::View* toolbar_element =
-        FindToolbarElementWithId(element.overflow_identifier);
-    if (toolbar_element) {
-      EXPECT_EQ(order_start++,
-                toolbar_element->GetProperty(views::kFlexBehaviorKey)->order());
-    }
-  }
-}
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
                        StartBrowserWithThresholdWidth) {

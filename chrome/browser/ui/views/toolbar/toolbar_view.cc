@@ -976,13 +976,13 @@ void ToolbarView::InitLayout() {
   }
 
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    // Order 1 is reserved for transient buttons.
-    constexpr int kToolbarFlexOrderStart = 2;
+    constexpr int kToolbarFlexOrderStart = 1;
 
     // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
         ToolbarController::GetDefaultResponsiveElements(),
-        kToolbarFlexOrderStart, container_view_, overflow_button_);
+        ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
+        container_view_, overflow_button_);
 
     overflow_button_->set_create_menu_model_callback(
         base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,

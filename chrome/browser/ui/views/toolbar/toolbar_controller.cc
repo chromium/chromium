@@ -21,6 +21,23 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+base::flat_map<ui::ElementIdentifier, int> CalculateFlexOrder(
+    const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
+    int element_flex_order_start) {
+  base::flat_map<ui::ElementIdentifier, int> id_to_order_map;
+
+  // Loop in reverse order to ensure the first element gets the largest flex
+  // order and overflows the first.
+  for (auto it = elements_in_overflow_order.rbegin();
+       it != elements_in_overflow_order.rend(); ++it) {
+    id_to_order_map[*it] = element_flex_order_start++;
+  }
+
+  return id_to_order_map;
+}
+}  // namespace
+
 ToolbarController::PopOutState::PopOutState() = default;
 ToolbarController::PopOutState::~PopOutState() = default;
 
@@ -59,6 +76,7 @@ void ToolbarController::PopOutHandler::OnElementHidden(
 ToolbarController::ToolbarController(
     const std::vector<ToolbarController::ResponsiveElementInfo>&
         responsive_elements,
+    const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
     int element_flex_order_start,
     views::View* toolbar_container_view,
     views::View* overflow_button)
@@ -70,6 +88,8 @@ ToolbarController::ToolbarController(
     return;
   }
 
+  const auto id_to_order_map =
+      CalculateFlexOrder(elements_in_overflow_order, element_flex_order_start);
   for (const auto& element : responsive_elements) {
     auto* const toolbar_element = FindToolbarElementWithId(
         toolbar_container_view_, element.overflow_identifier);
@@ -86,8 +106,9 @@ ToolbarController::ToolbarController(
           views::MaximumFlexSizeRule::kPreferred);
       toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
     }
-    flex_spec = toolbar_element->GetProperty(views::kFlexBehaviorKey)
-                    ->WithOrder(element_flex_order_start++);
+    flex_spec =
+        toolbar_element->GetProperty(views::kFlexBehaviorKey)
+            ->WithOrder(id_to_order_map.at(element.overflow_identifier));
     toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
 
     // Check `responsive_elements_` is constructed correctly i.e.
@@ -116,8 +137,11 @@ ToolbarController::~ToolbarController() = default;
 std::vector<ToolbarController::ResponsiveElementInfo>
 ToolbarController::GetDefaultResponsiveElements() {
   // TODO(crbug.com/1445573): Fill in observed identifier.
+  // Order matters because it should match overflow menu order top to bottom.
   return std::vector<ToolbarController::ResponsiveElementInfo>(
-      {{kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
+      {{kToolbarForwardButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
+        kToolbarForwardButtonElementId},
+       {kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
         kToolbarHomeButtonElementId},
        {kToolbarChromeLabsButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
         kToolbarChromeLabsButtonElementId, kToolbarChromeLabsBubbleElementId},
@@ -126,12 +150,19 @@ ToolbarController::GetDefaultResponsiveElements() {
         kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId},
        {kToolbarDownloadButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
         kToolbarDownloadButtonElementId, kToolbarDownloadBubbleElementId},
-       {kToolbarForwardButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
-        kToolbarForwardButtonElementId},
-       {kToolbarAvatarButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
-        kToolbarAvatarButtonElementId, kToolbarAvatarBubbleElementId},
        {kToolbarNewTabButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
-        kToolbarNewTabButtonElementId}});
+        kToolbarNewTabButtonElementId},
+       {kToolbarAvatarButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
+        kToolbarAvatarButtonElementId, kToolbarAvatarBubbleElementId}});
+}
+
+std::vector<ui::ElementIdentifier>
+ToolbarController::GetDefaultOverflowOrder() {
+  return std::vector<ui::ElementIdentifier>(
+      {kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId,
+       kToolbarMediaButtonElementId, kToolbarDownloadButtonElementId,
+       kToolbarNewTabButtonElementId, kToolbarForwardButtonElementId,
+       kToolbarAvatarButtonElementId});
 }
 
 // Every activate identifier should have an action name in order to emit
