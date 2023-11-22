@@ -7,6 +7,8 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
 
@@ -36,33 +38,31 @@ TabletMode::~TabletMode() {
 
 TabletMode::Waiter::Waiter(bool enable)
     : enable_(enable), run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {
-  if (TabletMode::Get()->InTabletMode() == enable_)
+  if (display::Screen::GetScreen()->InTabletMode() == enable_) {
     run_loop_.Quit();
-  else
-    TabletMode::Get()->AddObserver(this);
+  } else {
+    display::Screen::GetScreen()->AddObserver(this);
+  }
 }
 
 TabletMode::Waiter::~Waiter() {
-  TabletMode::Get()->RemoveObserver(this);
+  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void TabletMode::Waiter::Wait() {
   run_loop_.Run();
 }
 
-void TabletMode::Waiter::OnTabletModeStarted() {
-  if (enable_)
+void TabletMode::Waiter::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if ((enable_ && state == display::TabletState::kInTabletMode) ||
+      (!enable_ && state == display::TabletState::kInClamshellMode)) {
     run_loop_.QuitWhenIdle();
-}
-
-void TabletMode::Waiter::OnTabletModeEnded() {
-  if (!enable_)
-    run_loop_.QuitWhenIdle();
+  }
 }
 
 bool TabletMode::IsInTabletMode() {
-  const TabletMode* singleton = TabletMode::Get();
-  return singleton && singleton->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 }  // namespace ash

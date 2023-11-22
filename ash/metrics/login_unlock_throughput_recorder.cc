@@ -29,6 +29,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
+#include "ui/display/screen.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 
@@ -80,9 +81,8 @@ class AnimationObserver : public views::BoundsAnimatorObserver {
 };
 
 std::string GetDeviceModeSuffix() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode()
-             ? "TabletMode"
-             : "ClamshellMode";
+  return display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
+                                                      : "ClamshellMode";
 }
 
 void RecordDurationMetrics(

@@ -9,6 +9,11 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/run_loop.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -17,7 +22,7 @@ namespace ash {
 class ASH_PUBLIC_EXPORT TabletMode {
  public:
   // Helper class to wait until the tablet mode transition is complete.
-  class Waiter : public TabletModeObserver {
+  class Waiter : public display::DisplayObserver {
    public:
     explicit Waiter(bool enable);
 
@@ -28,9 +33,8 @@ class ASH_PUBLIC_EXPORT TabletMode {
 
     void Wait();
 
-    // TabletModeObserver:
-    void OnTabletModeStarted() override;
-    void OnTabletModeEnded() override;
+    // display::DisplayObserver:
+    void OnDisplayTabletStateChanged(display::TabletState state) override;
 
    private:
     bool enable_;
@@ -46,9 +50,18 @@ class ASH_PUBLIC_EXPORT TabletMode {
   virtual void AddObserver(TabletModeObserver* observer) = 0;
   virtual void RemoveObserver(TabletModeObserver* observer) = 0;
 
+  // Deprecated, do NOT use this. Please use
+  // display::Screen::GetScreen()->InTabletMode() instead. To override tablet
+  // state for testing, use display::Screen::OverrideTabletStateForTesting.
+  // TODO(crbug.com/1502114): Remove this.
+  //
   // Returns true if the system is in tablet mode.
   virtual bool InTabletMode() const = 0;
 
+  // Deprecated, do NOT use this. Please use
+  // display::Screen::GetScreen()->InTabletMode() instead.
+  // TODO(crbug.com/1502114): Remove this.
+  //
   // Returns true if TabletMode singleton exists and is in the tablet mode.
   static bool IsInTabletMode();
 

@@ -9,7 +9,6 @@
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -34,8 +33,7 @@ namespace ash {
 
 // Provides layout and drawing config for the Shelf. Note That some of these
 // values could change at runtime.
-class ASH_EXPORT ShelfConfig : public TabletModeObserver,
-                               public SessionObserver,
+class ASH_EXPORT ShelfConfig : public SessionObserver,
                                public AppListControllerObserver,
                                public display::DisplayObserver,
                                public VirtualKeyboardModel::Observer,
@@ -72,14 +70,11 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state);
 
-  // TabletModeObserver:
-  void OnTabletModeStarting() override;
-  void OnTabletModeEnding() override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
@@ -409,7 +404,7 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   std::unique_ptr<ShelfSplitViewObserver> split_view_observer_;
 
   // Receive callbacks from DisplayObserver.
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::ObserverList<Observer> observers_;
 };

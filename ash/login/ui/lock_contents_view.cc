@@ -57,7 +57,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -87,6 +86,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -193,10 +193,6 @@ keyboard::KeyboardUIController* GetKeyboardControllerForWidget(
 
 bool IsPublicAccountUser(const LoginUserInfo& user) {
   return user.basic_user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-}
-
-bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
 //
@@ -2203,7 +2199,8 @@ void LockContentsView::ShowAuthErrorMessage() {
   int bold_length = 0;
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.
-  if (ime_controller->GetVisibleImes().size() > 1 && !IsTabletMode()) {
+  if (ime_controller->GetVisibleImes().size() > 1 &&
+      !display::Screen::GetScreen()->InTabletMode()) {
     error_text += u" ";
     bold_start = error_text.length();
     std::u16string shortcut =

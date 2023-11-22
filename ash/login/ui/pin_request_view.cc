@@ -26,6 +26,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -82,10 +84,6 @@ constexpr int kPinRequestViewMinimumHeightDp =
     AccessCodeInput::kAccessCodeInputFieldHeightDp +
     kAccessCodeToPinKeyboardDistanceDp + kPinKeyboardToFooterDistanceDp +
     kArrowButtonSizeDp + kPinRequestViewMainHorizontalInsetDp;  // = 266
-
-bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
 
 }  // namespace
 
@@ -418,8 +416,6 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   pin_keyboard_view_->SetVisible(PinKeyboardVisible());
 
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
-
   SetPreferredSize(GetPinRequestViewSize());
 }
 
@@ -441,29 +437,33 @@ std::u16string PinRequestView::GetAccessibleWindowTitle() const {
   return default_accessible_title_;
 }
 
-void PinRequestView::OnTabletModeStarted() {
-  if (!pin_keyboard_always_enabled_) {
-    VLOG(1) << "Showing PIN keyboard in PinRequestView";
-    pin_keyboard_view_->SetVisible(true);
-    // This will trigger ChildPreferredSizeChanged in parent view and Layout()
-    // in view. As the result whole hierarchy will go through re-layout.
-    UpdatePreferredSize();
+void PinRequestView::OnDisplayTabletStateChanged(display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      if (!pin_keyboard_always_enabled_) {
+        VLOG(1) << "Showing PIN keyboard in PinRequestView";
+        pin_keyboard_view_->SetVisible(true);
+        // This will trigger ChildPreferredSizeChanged in parent view and
+        // Layout() in view. As the result whole hierarchy will go through
+        // re-layout.
+        UpdatePreferredSize();
+      }
+      break;
+    case display::TabletState::kInClamshellMode:
+      if (!pin_keyboard_always_enabled_) {
+        VLOG(1) << "Hiding PIN keyboard in PinRequestView";
+        DCHECK(pin_keyboard_view_);
+        pin_keyboard_view_->SetVisible(false);
+        // This will trigger ChildPreferredSizeChanged in parent view and
+        // Layout() in view. As the result whole hierarchy will go through
+        // re-layout.
+        UpdatePreferredSize();
+      }
+      break;
   }
-}
-
-void PinRequestView::OnTabletModeEnded() {
-  if (!pin_keyboard_always_enabled_) {
-    VLOG(1) << "Hiding PIN keyboard in PinRequestView";
-    DCHECK(pin_keyboard_view_);
-    pin_keyboard_view_->SetVisible(false);
-    // This will trigger ChildPreferredSizeChanged in parent view and Layout()
-    // in view. As the result whole hierarchy will go through re-layout.
-    UpdatePreferredSize();
-  }
-}
-
-void PinRequestView::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void PinRequestView::SubmitCode() {
@@ -577,7 +577,8 @@ void PinRequestView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 // If |pin_keyboard_always_enabled_| is not set, pin keyboard is only shown in
 // tablet mode.
 bool PinRequestView::PinKeyboardVisible() const {
-  return pin_keyboard_always_enabled_ || IsTabletMode();
+  return pin_keyboard_always_enabled_ ||
+         display::Screen::GetScreen()->InTabletMode();
 }
 
 gfx::Size PinRequestView::GetPinRequestViewSize() const {

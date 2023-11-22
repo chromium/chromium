@@ -922,13 +922,14 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
       FinishInitTabletMode();
     }
   } else {
+    // We may have entered tablet mode, then tried to exit before the screenshot
+    // was taken. In this case `tablet_mode_window_manager_` will be null.
+    if (tablet_mode_window_manager_) {
+      tablet_mode_window_manager_->SetIgnoreWmEventsForExit();
+    }
+
     Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kExitingTabletMode);
-
-    // We may have entered tablet mode, then tried to exit before the screenshot
-    // was taken. In this case |tablet_mode_window_manager_| will be null.
-    if (tablet_mode_window_manager_)
-      tablet_mode_window_manager_->SetIgnoreWmEventsForExit();
 
     for (auto& observer : tablet_mode_observers_)
       observer.OnTabletModeEnding();

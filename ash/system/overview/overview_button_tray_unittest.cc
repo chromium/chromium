@@ -449,21 +449,17 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // When there is a window, a screenshot will be taken and entering tablet mode
-  // becomes asynchronous.
+  // becomes asynchronous, but the display tablet state is synchronously
+  // updated.
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
 
   EXPECT_FALSE(GetTray()->GetVisible());
-  TabletMode::Waiter waiter(/*enable=*/true);
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
-  EXPECT_FALSE(GetTray()->GetVisible());
-
-  waiter.Wait();
-
   EXPECT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
   EXPECT_TRUE(GetTray()->GetVisible());
 
-  // However, disabling tablet mode is always synchronous.
+  // Disabling tablet mode is always synchronous.
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
   EXPECT_FALSE(TabletModeControllerTestApi().IsTabletModeStarted());
   EXPECT_FALSE(GetTray()->GetVisible());

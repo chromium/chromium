@@ -7,10 +7,10 @@
 #include "ash/constants/app_types.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
@@ -52,7 +52,7 @@ void RecordUMA(ui::EventPointerType type, ui::EventTarget* event_target) {
   views::Widget* target = views::Widget::GetTopLevelWidgetForNativeView(
       static_cast<aura::Window*>(event_target));
   DownEventFormFactor form_factor = DownEventFormFactor::kClamshell;
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     chromeos::OrientationType screen_orientation =
         Shell::Get()->screen_orientation_controller()->GetCurrentOrientation();
     if (screen_orientation == chromeos::OrientationType::kLandscapePrimary ||

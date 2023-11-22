@@ -70,7 +70,6 @@
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/system_wallpaper_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_parenting_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
@@ -99,6 +98,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -850,8 +850,7 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
                                  ->GetDisplayNearestWindow(GetRootWindow())
                                  .id();
 
-  const bool tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
   root_window_menu_model_adapter_ =
       std::make_unique<RootWindowMenuModelAdapter>(
           std::make_unique<ShelfContextMenuModel>(nullptr, display_id,

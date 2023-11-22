@@ -4,15 +4,12 @@
 
 #include "ash/metrics/histogram_macros.h"
 
-#include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
 bool InTabletMode() {
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-  return tablet_mode_controller && tablet_mode_controller->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 }  // namespace ash
