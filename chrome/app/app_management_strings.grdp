@@ -155,7 +155,7 @@
     Data stored in app: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL" desc="The label for the settings row button to manage app language selection section of OS Settings which opens a dialog.">
-    App Language
+    App language
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL" desc="The label to select or display app language as system default in app language selection of OS Settings.">
     Device language
