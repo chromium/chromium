@@ -28,6 +28,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -130,7 +131,9 @@ std::string ReadFileToString(const base::FilePath& path) {
 void RemoveLocalBackgroundImageCopy(Profile* profile) {
   // Delete wallpaper search image.
   if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch)) {
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
     WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(profile);
   }
   // Delete uploaded image.
@@ -161,7 +164,9 @@ void NtpCustomBackgroundService::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kNtpCustomBackgroundLocalToDeviceId, "");
   // Register wallpaper search profile prefs.
   if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch)) {
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
     WallpaperSearchBackgroundManager::RegisterProfilePrefs(registry);
   }
 }
@@ -179,7 +184,9 @@ void NtpCustomBackgroundService::ResetNtpTheme(Profile* profile) {
 void NtpCustomBackgroundService::ResetProfilePrefs(Profile* profile) {
   // Clear wallpaper search profile prefs.
   if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch)) {
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
     WallpaperSearchBackgroundManager::ResetProfilePrefs(profile);
   }
   // Clear theme.
@@ -380,7 +387,9 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch)) {
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&ReadFileToString, path),

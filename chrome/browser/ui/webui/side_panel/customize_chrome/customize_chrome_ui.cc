@@ -71,9 +71,14 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       module_id_names_(ntp::MakeModuleIdNames(
           NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))),
       page_factory_receiver_(this),
-      wallpaper_search_background_manager_(
-          std::make_unique<WallpaperSearchBackgroundManager>(profile_)),
       id_(RandInt64()) {
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
+    wallpaper_search_background_manager_ =
+        std::make_unique<WallpaperSearchBackgroundManager>(profile_);
+  }
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
 
@@ -340,6 +345,7 @@ void CustomizeChromeUI::CreateWallpaperSearchHandler(
     mojo::ReportBadMessage("Only allowed to create one Mojo pipe per WebUI.");
     return;
   }
+  CHECK(wallpaper_search_background_manager_);
   wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
       std::move(handler), std::move(client), profile_, image_decoder_.get(),
       wallpaper_search_background_manager_.get(), id_);
