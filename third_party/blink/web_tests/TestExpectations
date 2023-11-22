@@ -1530,7 +1530,6 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 # https://crbug.com/1488371.
 # See https://docs.google.com/document/d/1FH0iG8G8mEebjMpVA_zvSfHBWUhWqC92jRFctaGcxrc/edit#heading=h.pacsgp238vkn
 
-crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/history/history-replace-updates-current-item.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-subframe-unload-handler.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-unload-handler.html [ Failure Skip Timeout ]
@@ -1595,6 +1594,7 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/cors/cors-keep
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/redirect/redirect-keepalive.any.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/metadata/unload.https.sub.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/targeted-navigation-in-unload-handler.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Timeout Skip ]
 
 ######## End Unload Deprecation
 

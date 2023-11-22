@@ -2101,3 +2101,11 @@ crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/requestmidiaccess-upgrade.http
 
 # WebNN GPU backend is supported on Win11 by default.
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-enabled/external/wpt/webnn/gpu/* [ Skip ]
+
+######## Unload Deprecation
+# This is for tests in the "deprecate-unload" virtual suite that
+# cannot be fixed, e.g. because they are explicitly testing unload.
+
+crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip ]
+
+######## End Unload Deprecation
