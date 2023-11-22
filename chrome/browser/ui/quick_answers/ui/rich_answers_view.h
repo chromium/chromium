@@ -16,6 +16,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -37,6 +38,10 @@ struct QuickAnswer;
 class RichAnswersPreTargetHandler;
 
 // A bubble style view to show RichAnswer.
+//
+// `RichAnswersView` implements the common logic and UI between result-type
+// specific cards, e.g. settings button (both UI and on-click handling).
+// Subclasses are responsible for populating their UI on `GetContentsView()`.
 class RichAnswersView : public views::View {
  public:
   METADATA_HEADER(RichAnswersView);
@@ -66,16 +71,21 @@ class RichAnswersView : public views::View {
                   base::WeakPtr<QuickAnswersUiController> controller,
                   const ResultType result_type);
 
- private:
-  void InitLayout();
-  void AddResultTypeIcon();
-  void AddFrameButtons();
-  void AddGoogleSearchLink();
-  void OnGoogleSearchLinkClicked();
-  void UpdateBounds();
+  void AddSettingsButtonTo(views::View* container_view);
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
+
+  // Used by subclasses to populate ResultType-specific contents.
+  // This will never return nullptr after `RichAnswerView` constructor call.
+  views::View* GetContentView();
+
+ private:
+  void InitLayout();
+  void AddResultTypeIcon();
+  void AddGoogleSearchLink();
+  void OnGoogleSearchLinkClicked();
+  void UpdateBounds();
 
   gfx::Rect anchor_view_bounds_;
 

@@ -30,6 +30,9 @@ class RichAnswersDefinitionView : public RichAnswersView {
  private:
   void InitLayout();
 
+  raw_ptr<views::View> content_view_ = nullptr;
+  raw_ptr<views::View> title_view_ = nullptr;
+
   base::WeakPtrFactory<RichAnswersDefinitionView> weak_factory_{this};
 };
 

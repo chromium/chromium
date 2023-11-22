@@ -8,8 +8,8 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 namespace quick_answers {
 
@@ -32,6 +32,15 @@ RichAnswersDefinitionView::~RichAnswersDefinitionView() = default;
 
 void RichAnswersDefinitionView::InitLayout() {
   // TODO (b/265254908): Populate definition view contents.
+  content_view_ = GetContentView();
+
+  title_view_ = content_view_->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .Build());
+  AddSettingsButtonTo(title_view_);
 }
 
 BEGIN_METADATA(RichAnswersDefinitionView, RichAnswersView)

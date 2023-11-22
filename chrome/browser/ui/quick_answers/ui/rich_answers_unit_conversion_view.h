@@ -31,6 +31,9 @@ class RichAnswersUnitConversionView : public RichAnswersView {
  private:
   void InitLayout();
 
+  raw_ptr<views::View> content_view_ = nullptr;
+  raw_ptr<views::View> title_view_ = nullptr;
+
   base::WeakPtrFactory<RichAnswersUnitConversionView> weak_factory_{this};
 };
 
