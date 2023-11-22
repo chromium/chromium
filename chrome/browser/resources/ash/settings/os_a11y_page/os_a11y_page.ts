@@ -118,7 +118,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
           if (isRevampWayfindingEnabled()) {
             return {
               imageDescription: 'os-settings:a11y-image-description',
-              showInQuickSettings: 'os-settings:a11y-show-in-quick-settings',
+              showInQuickSettings: 'os-settings:accessibility-revamp',
               textToSpeech: 'os-settings:a11y-text-to-speech',
               displayAndMagnification:
                   'os-settings:a11y-display-and-magnification',
