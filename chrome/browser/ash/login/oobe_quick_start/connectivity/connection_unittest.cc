@@ -88,7 +88,7 @@ constexpr uint64_t kSessionId = 184467440;
 constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
                                             0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
 
-constexpr base::TimeDelta kResponseTimeout = base::Seconds(3);
+constexpr base::TimeDelta kResponseTimeout = base::Seconds(60);
 
 constexpr char kGaiaTransferResultName[] = "QuickStart.GaiaTransferResult";
 

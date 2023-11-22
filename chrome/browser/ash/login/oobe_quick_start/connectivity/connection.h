@@ -40,7 +40,7 @@ class QuickStartMessage;
 class Connection
     : public TargetDeviceConnectionBroker::AuthenticatedConnection {
  public:
-  static constexpr base::TimeDelta kDefaultRoundTripTimeout = base::Seconds(3);
+  static constexpr base::TimeDelta kDefaultRoundTripTimeout = base::Seconds(60);
 
   using HandshakeSuccessCallback = base::OnceCallback<void(bool)>;
   using ConnectionAuthenticatedCallback = base::OnceCallback<void(

@@ -165,11 +165,16 @@ void Connection::NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) {
 }
 
 void Connection::RequestAccountInfo(base::OnceClosure callback) {
+  // During this roundtrip the source device may prompt the user to select an
+  // account before responding, so we will provide a very generous timeout. (In
+  // case, for example, the user has walked away after the verification step.)
+  constexpr base::TimeDelta timeout = base::Minutes(30);
   SendMessageAndDecodeResponse(
       requests::BuildBootstrapOptionsRequest(),
       QuickStartResponseType::kBootstrapConfigurations,
       base::BindOnce(&Connection::OnBootstrapConfigurationsResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      timeout);
 }
 
 void Connection::RequestAccountTransferAssertion(
