@@ -51,7 +51,8 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
       bool show_questionnaire,
       bool from_chrome_labs_or_kaleidoscope,
       bool from_autofill,
-      const base::Value::Dict& autofill_metadata);
+      const base::Value::Dict& autofill_metadata,
+      const base::Value::Dict& ai_metadata);
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<FeedbackPrivateAPI>*

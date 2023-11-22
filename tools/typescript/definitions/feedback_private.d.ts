@@ -51,6 +51,7 @@ declare namespace chrome {
       fromAutofill?: boolean;
       autofillMetadata?: string;
       isOffensiveOrUnsafe?: boolean;
+      aiMetadata?: string;
     }
 
     enum Status {

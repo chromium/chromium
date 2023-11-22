@@ -10,6 +10,7 @@ import './jelly_colors.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FeedbackBrowserProxy, FeedbackBrowserProxyImpl} from './feedback_browser_proxy.js';
@@ -46,6 +47,7 @@ let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
   systemInformation: [],
   useSystemWindowFrame: false,
   isOffensiveOrUnsafe: undefined,
+  aiMetadata: undefined,
 };
 
 
@@ -64,7 +66,7 @@ async function sendFeedbackReport(useSystemInfo: boolean) {
               chrome.feedbackPrivate.LandingPageType.NORMAL ?
           FEEDBACK_LANDING_PAGE :
           FEEDBACK_LANDING_PAGE_TECHSTOP;
-      window.open(landingPage, '_blank');
+      OpenWindowProxyImpl.getInstance().openUrl(landingPage);
     }
   } else {
     console.warn(
@@ -460,6 +462,9 @@ function sendReport(): boolean {
   if (feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.AI) {
     feedbackInfo.isOffensiveOrUnsafe =
         getRequiredElement<HTMLInputElement>('offensive-checkbox').checked;
+    if (!getRequiredElement<HTMLInputElement>('log-id-checkbox').checked) {
+      feedbackInfo.aiMetadata = undefined;
+    }
   }
 
   feedbackInfo.description = textarea.value;
@@ -641,6 +646,7 @@ function initialize() {
       getRequiredElement('free-form-text').textContent =
           loadTimeData.getString('freeFormTextAi');
       getRequiredElement('offensive-container').hidden = false;
+      getRequiredElement('log-id-container').hidden = false;
     }
 
     const whenScreenshotUpdated = takeScreenshot().then(function(

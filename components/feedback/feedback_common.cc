@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -218,6 +220,15 @@ void FeedbackCommon::PrepareReport(
   if (is_offensive_or_unsafe_.has_value()) {
     AddFeedbackData(feedback_data, kIsOffensiveOrUnsafeKey,
                     is_offensive_or_unsafe_.value() ? "true" : "false");
+  }
+  if (!ai_metadata_.empty()) {
+    // Add feedback data for each key/value pair.
+    absl::optional<base::Value::Dict> dict =
+        base::JSONReader::ReadDict(ai_metadata_);
+    CHECK(dict);
+    for (auto pair : dict.value()) {
+      AddFeedbackData(feedback_data, pair.first, pair.second.GetString());
+    }
   }
 }
 

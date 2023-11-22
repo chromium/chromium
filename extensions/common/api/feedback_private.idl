@@ -117,6 +117,9 @@ namespace feedbackPrivate {
 
     // Whether or not the content is offensive or unsafe.
     boolean? isOffensiveOrUnsafe;
+
+    // A JSON formatted string containing ai metadata.
+    DOMString? aiMetadata;
   };
 
   // Possible statuses that can result from sending feedback.

@@ -78,6 +78,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   const absl::optional<bool>& is_offensive_or_unsafe() {
     return is_offensive_or_unsafe_;
   }
+  std::string& ai_metadata() { return ai_metadata_; }
 
   const AttachedFile* attachment(size_t i) const { return &attachments_[i]; }
   size_t attachments() const { return attachments_.size(); }
@@ -113,6 +114,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   void set_is_offensive_or_unsafe(const absl::optional<bool>& value) {
     is_offensive_or_unsafe_ = value;
   }
+  void set_ai_metadata(const std::string& value) { ai_metadata_ = value; }
 
  protected:
   virtual ~FeedbackCommon();
@@ -147,6 +149,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   std::string autofill_metadata_;
   bool include_chrome_platform_ = true;
   absl::optional<bool> is_offensive_or_unsafe_;
+  std::string ai_metadata_;
 
   std::string image_;
 

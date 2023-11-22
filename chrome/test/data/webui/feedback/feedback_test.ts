@@ -4,8 +4,10 @@
 
 import {FeedbackBrowserProxyImpl} from 'chrome://feedback/js/feedback_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestFeedbackBrowserProxy} from './test_feedback_browser_proxy.js';
@@ -47,16 +49,24 @@ suite('FeedbackTest', function() {
 });
 
 suite('AIFeedbackTest', function() {
+  const LOG_ID: string = 'TEST_LOG_ID';
   let browserProxy: TestFeedbackBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
 
   suiteSetup(function() {
     const whenReadyForTesting =
         eventToPromise('ready-for-testing', document.documentElement);
 
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
     // Signal to the prod page that test setup steps have completed.
     browserProxy = new TestFeedbackBrowserProxy();
-    browserProxy.setDialogArguments(JSON.stringify(
-        {flow: chrome.feedbackPrivate.FeedbackFlow.AI, categoryTag: 'test'}));
+    browserProxy.setDialogArguments(JSON.stringify({
+      flow: chrome.feedbackPrivate.FeedbackFlow.AI,
+      categoryTag: 'test',
+      aiMetadata: JSON.stringify({log_id: LOG_ID}),
+    }));
     FeedbackBrowserProxyImpl.setInstance(browserProxy);
     window.whenTestSetupDoneResolver.resolve();
 
@@ -70,6 +80,16 @@ suite('AIFeedbackTest', function() {
     // Note: The UI is not recreated between tests, so must clear any state that
     // could leak between tests here.
   });
+
+  function simulateSendReport() {
+    // Make sure description is not empty and send button is not disabled.
+    getRequiredElement<HTMLTextAreaElement>('description-text').value = 'test';
+    const button = getRequiredElement<HTMLButtonElement>('send-report-button');
+    // Send button is being disabled after click in production code, but in
+    // tests we want to be able to click on the button multiple times.
+    button.disabled = false;
+    button.click();
+  }
 
   test('Description', function() {
     assertEquals(
@@ -85,10 +105,26 @@ suite('AIFeedbackTest', function() {
   test('OffensiveContainerVisibility', async function() {
     assertTrue(isVisible(getRequiredElement('offensive-container')));
     getRequiredElement('offensive-checkbox').click();
-    getRequiredElement<HTMLTextAreaElement>('description-text').value = 'test';
-    getRequiredElement('send-report-button').click();
+    simulateSendReport();
     const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
         await browserProxy.whenCalled('sendFeedback');
     assertTrue(feedbackInfo.isOffensiveOrUnsafe!);
+  });
+
+  test('IncludeServerLogs', async function() {
+    assertTrue(isVisible(getRequiredElement('log-id-container')));
+    simulateSendReport();
+    const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
+        await browserProxy.whenCalled('sendFeedback');
+    assertDeepEquals({log_id: LOG_ID}, JSON.parse(feedbackInfo.aiMetadata!));
+  });
+
+  test('ExcludeServerLogs', async function() {
+    assertTrue(isVisible(getRequiredElement('log-id-container')));
+    getRequiredElement('log-id-checkbox').click();
+    simulateSendReport();
+    const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
+        await browserProxy.whenCalled('sendFeedback');
+    assertEquals(undefined, feedbackInfo.aiMetadata);
   });
 });

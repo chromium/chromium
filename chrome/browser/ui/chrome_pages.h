@@ -146,25 +146,25 @@ void ShowExtensions(Browser* browser,
 
 // ShowFeedbackPage() uses |browser| to determine the URL of the current tab.
 // |browser| should be NULL if there are no currently open browser windows.
-void ShowFeedbackPage(
-    const Browser* browser,
-    FeedbackSource source,
-    const std::string& description_template,
-    const std::string& description_placeholder_text,
-    const std::string& category_tag,
-    const std::string& extra_diagnostics,
-    base::Value::Dict autofill_metadata = base::Value::Dict());
+void ShowFeedbackPage(const Browser* browser,
+                      FeedbackSource source,
+                      const std::string& description_template,
+                      const std::string& description_placeholder_text,
+                      const std::string& category_tag,
+                      const std::string& extra_diagnostics,
+                      base::Value::Dict autofill_metadata = base::Value::Dict(),
+                      base::Value::Dict ai_metadata = base::Value::Dict());
 
 // Displays the Feedback ui.
-void ShowFeedbackPage(
-    const GURL& page_url,
-    Profile* profile,
-    FeedbackSource source,
-    const std::string& description_template,
-    const std::string& description_placeholder_text,
-    const std::string& category_tag,
-    const std::string& extra_diagnostics,
-    base::Value::Dict autofill_metadata = base::Value::Dict());
+void ShowFeedbackPage(const GURL& page_url,
+                      Profile* profile,
+                      FeedbackSource source,
+                      const std::string& description_template,
+                      const std::string& description_placeholder_text,
+                      const std::string& category_tag,
+                      const std::string& extra_diagnostics,
+                      base::Value::Dict autofill_metadata = base::Value::Dict(),
+                      base::Value::Dict ai_metadata = base::Value::Dict());
 
 void ShowHelp(Browser* browser, HelpSource source);
 void ShowHelpForProfile(Profile* profile, HelpSource source);

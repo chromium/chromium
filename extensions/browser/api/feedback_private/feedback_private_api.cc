@@ -229,7 +229,8 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     bool show_questionnaire,
     bool from_chrome_labs_or_kaleidoscope,
     bool from_autofill,
-    const base::Value::Dict& autofill_metadata) {
+    const base::Value::Dict& autofill_metadata,
+    const base::Value::Dict& ai_metadata) {
   auto info = std::make_unique<FeedbackInfo>();
 
   info->description = description_template;
@@ -240,7 +241,10 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   info->from_autofill = from_autofill;
   std::string autofill_metadata_json;
   base::JSONWriter::Write(autofill_metadata, &autofill_metadata_json);
-  info->autofill_metadata = autofill_metadata_json;
+  info->autofill_metadata = std::move(autofill_metadata_json);
+  std::string ai_metadata_json;
+  base::JSONWriter::Write(ai_metadata, &ai_metadata_json);
+  info->ai_metadata = std::move(ai_metadata_json);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   info->from_assistant = from_assistant;
   info->include_bluetooth_logs = include_bluetooth_logs;
