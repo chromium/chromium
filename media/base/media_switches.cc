@@ -792,6 +792,12 @@ BASE_FEATURE(kVaapiIgnoreDriverChecks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
+// NVIDIA VA-API drivers do not support Chromium and can sometimes cause
+// crashes, disable VA-API on NVIDIA GPUs by default. See crbug.com/1492880.
+BASE_FEATURE(kVaapiOnNvidiaGPUs,
+             "VaapiOnNvidiaGPUs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable VA-API hardware low power encoder for all codecs on intel Gen9x gpu.
 BASE_FEATURE(kVaapiLowPowerEncoderGen9x,
              "VaapiLowPowerEncoderGen9x",
