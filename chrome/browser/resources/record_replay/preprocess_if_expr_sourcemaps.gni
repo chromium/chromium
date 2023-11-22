@@ -1,0 +1,54 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/code_coverage/create_js_source_maps/create_js_source_maps.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+
+template("preprocess_if_expr_sourcemaps") {
+  _out_folder = target_gen_dir
+  if (defined(invoker.out_folder)) {
+    _out_folder = invoker.out_folder
+  }
+
+  if (enable_webui_inline_sourcemaps) {
+    _preprocess_if_expr_target_name = "${target_name}__preprocess_if_expr"
+    _preprocess_if_expr_out_folder = "$_out_folder/preprocess_if_expr"
+  } else {
+    _preprocess_if_expr_target_name = target_name
+    _preprocess_if_expr_out_folder = _out_folder
+  }
+
+  preprocess_if_expr(_preprocess_if_expr_target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "out_folder",
+                             "enable_removal_comments",
+                           ])
+    out_folder = _preprocess_if_expr_out_folder
+    enable_removal_comments = enable_webui_inline_sourcemaps
+  }
+
+  if (enable_webui_inline_sourcemaps) {
+    _in_folder = "."
+    if (defined(invoker.in_folder)) {
+      _in_folder = invoker.in_folder
+    }
+
+    create_js_source_maps(target_name) {
+      inline_sourcemaps = true
+      originals = []
+      sources = []
+      outputs = []
+      foreach(in_file, invoker.in_files) {
+        assert(get_path_info(in_file, "extension") == "ts" ||
+               get_path_info(in_file, "extension") == "js")
+        originals += [ "$_in_folder/$in_file" ]
+        sources += [ "$_preprocess_if_expr_out_folder/" + in_file ]
+        outputs += [ "$_out_folder/" + in_file ]
+      }
+      deps = [ ":$_preprocess_if_expr_target_name" ]
+    }
+  }
+}

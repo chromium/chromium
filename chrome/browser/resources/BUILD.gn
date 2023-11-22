@@ -43,6 +43,7 @@ group("resources") {
       "password_manager:resources",
       "privacy_sandbox:resources",
       "profile_internals:resources",
+      "record_replay:resources",
       "settings:resources",
       "side_panel:resources",
       "side_panel/customize_chrome:resources",

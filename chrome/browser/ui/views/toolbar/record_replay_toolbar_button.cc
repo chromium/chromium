@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iostream>
+
 #include "chrome/browser/ui/views/toolbar/record_replay_toolbar_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct RecordReplayToolbarButtonWebContentsObserver
   : public content::WebContentsObserver
@@ -34,13 +39,43 @@ RecordReplayToolbarButton::RecordReplayToolbarButton(Browser* browser)
       browser_(browser),
       web_contents_(nullptr),
       post_recording_web_contents_(nullptr),
-      web_contents_observer_(nullptr) {
+      web_contents_observer_(nullptr),
+      recordreplay_contents_(nullptr) {
   SetVectorIcons(kRecordReplayIcon, kRecordReplayIcon);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 }
 
 RecordReplayToolbarButton::~RecordReplayToolbarButton() = default;
+
+void RecordReplayToolbarButton::OnPaintBackground(gfx::Canvas* canvas) {
+  if (!recordreplay_contents_) {
+    CreateHiddenWebContents();
+  }
+
+  ToolbarButton::OnPaintBackground(canvas);
+}
+
+void RecordReplayToolbarButton::CreateHiddenWebContents() {
+  // create a hidden webcontents to run the business logic
+  content::WebContents::CreateParams recordreplay_params(
+    browser_->profile(),
+    content::SiteInstance::CreateForURL(
+      browser_->profile(),
+      GURL(base::StringPiece(chrome::kChromeUIRecordReplayPageURL))
+    )
+  );
+  recordreplay_params.is_never_visible = true;
+
+  recordreplay_contents_ = content::WebContents::Create(recordreplay_params);
+  recordreplay_contents_->SetDelegate(browser_); // what does the delegate do?
+  recordreplay_contents_->GetController().LoadURL(
+    GURL(base::StringPiece(chrome::kChromeUIRecordReplayPageURL)),
+    content::Referrer(),
+    ui::PAGE_TRANSITION_TYPED, // wrong.  the user didn't type this
+    std::string()
+  );
+}
 
 void RecordReplayToolbarButton::ButtonPressed() {
   // Check to see if we're currently recording a tab.

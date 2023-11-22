@@ -1,0 +1,105 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# largely cribbed from new_tab_page/BUILD.gn
+import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+import("./record_replay.gni")
+import("./preprocess_if_expr_sourcemaps.gni")
+import("./ts_library_sourcemaps.gni")
+
+assert(!is_android)
+
+grd_prefix = "record_replay"
+preprocess_folder = "preprocessed"
+
+if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+}
+
+preprocess_if_expr_sourcemaps("preprocess") {
+  defines = [ "is_official_build=$is_official_build" ]
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = ts_files
+}
+
+grit("resources") {
+  defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
+
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+
+  deps = [
+    ":build_grd",
+  ]
+
+  outputs = [
+    "grit/record_replay_resources.h",
+    "grit/record_replay_resources_map.cc",
+    "grit/record_replay_resources_map.h",
+    "record_replay_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+if (optimize_webui) {
+  optimize_webui("optimized_js") {
+    host = "recordreplay"
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    deps = [ ":build_ts" ]
+    js_module_in_files = [
+      "record_replay.js",
+    ]
+    out_manifest = "$target_gen_dir/$build_manifest"
+    js_out_files = [
+      "record_replay.rollup.js",
+    ]
+  }
+}
+
+ts_library_sourcemaps("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  if (enable_webui_inline_sourcemaps) {
+    tsconfig_base = "tsconfig_base_sourcemaps.json"
+  } else {
+    tsconfig_base = "tsconfig_base.json"
+  }
+  in_files = ts_files
+
+  extra_deps = [
+    ":preprocess",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "record_replay.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = []
+  
+  if (optimize_webui) {
+    deps += [
+      ":optimized_js",
+    ]
+    resource_path_rewrites = [
+      "record_replay.rollup.js|record_replay.js",
+    ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps += [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
+}

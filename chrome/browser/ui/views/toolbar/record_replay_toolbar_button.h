@@ -20,7 +20,9 @@ class RecordReplayToolbarButton: public ToolbarButton {
   RecordReplayToolbarButton& operator=(const RecordReplayToolbarButton&) = delete;
   ~RecordReplayToolbarButton() override;
 
+  void OnPaintBackground(gfx::Canvas* canvas) override;
  private:
+  void CreateHiddenWebContents();
   void ButtonPressed();
   void StartRecording();
   void StopRecording();
@@ -29,11 +31,14 @@ class RecordReplayToolbarButton: public ToolbarButton {
   void RefreshIconState();
   void EnsurePostRecordingWebContents();
 
+
   const raw_ptr<Browser> browser_;
   content::WebContents* web_contents_;
   content::WebContents* post_recording_web_contents_;
   std::unique_ptr<RecordReplayToolbarButtonWebContentsObserver>
     web_contents_observer_;
+  // our hidden webcontent running business/auth logic.
+  std::unique_ptr<content::WebContents> recordreplay_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RECORD_REPLAY_TOOLBAR_BUTTON_H_

@@ -164,6 +164,12 @@ extern const char kChromeUIPrivacySandboxDialogURL[];
 extern const char kChromeUIProfileInternalsHost[];
 extern const char kChromeUIQuitHost[];
 extern const char kChromeUIQuitURL[];
+// recordreplay
+extern const char kChromeUIRecordReplayHost[];
+extern const char kChromeUIRecordReplayIconHost[];
+extern const char kChromeUIRecordReplayPageHost[];
+extern const char kChromeUIRecordReplayPageURL[];
+// /recordreplay
 extern const char kChromeUIResetPasswordHost[];
 extern const char kChromeUIResetPasswordURL[];
 extern const char kChromeUIRestartHost[];

@@ -1614,6 +1614,8 @@ static_library("ui") {
       "webui/profile_internals/profile_internals_ui.h",
       "webui/realbox/realbox_handler.cc",
       "webui/realbox/realbox_handler.h",
+      "webui/record_replay/record_replay_ui.cc",
+      "webui/record_replay/record_replay_ui.h",
       "webui/sanitized_image_source.cc",
       "webui/sanitized_image_source.h",
       "webui/settings/about_handler.cc",
