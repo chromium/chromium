@@ -2250,25 +2250,11 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
     const CSSValue& value,
     bool for_visited_link) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    CSSValueID value_id = identifier_value->GetValueID();
-    if (value_id == CSSValueID::kCurrentcolor) {
-      return StyleAutoColor::CurrentColor();
-    }
-    if (value_id == CSSValueID::kAuto) {
+    if (identifier_value->GetValueID() == CSSValueID::kAuto) {
       return StyleAutoColor::AutoColor();
     }
-    if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
-      return StyleAutoColor(
-          state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-              value, Color(), state.StyleBuilder().UsedColorScheme(),
-              for_visited_link),
-          value_id);
-    }
   }
-  return StyleAutoColor(
-      state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-          value, Color(), state.StyleBuilder().UsedColorScheme(),
-          for_visited_link));
+  return StyleAutoColor(ConvertStyleColor(state, value, for_visited_link));
 }
 
 SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
