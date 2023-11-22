@@ -33,6 +33,9 @@ message Tab {
 message TabOrganizationRequest {
   // The tabs that are requested to be organized.
   repeated Tab tabs = 1;
+
+  // The tab that was active at the time the user requested tab organization.
+  int64 active_tab_id = 2;
 }
 
 message TabOrganizationResponse {
