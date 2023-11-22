@@ -821,4 +821,20 @@ public class ReadAloudControllerUnitTest {
         mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
         verify(mPlayback).play();
     }
+
+    @Test
+    public void testStoppingAnyPlayback() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
+        verify(mPlayback).play();
+
+        // request to stop any playback
+        mController.maybeStopPlayback(null);
+        verify(mPlayback).release();
+        verify(mPlayerCoordinator).dismissPlayers();
+    }
 }

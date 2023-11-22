@@ -1299,6 +1299,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         markSessionEnd();
 
+        // If there's any active read aloud playback, stop it when activity goes into background.
+        if (mRootUiCoordinator.getReadAloudControllerSupplier().hasValue()) {
+            mRootUiCoordinator
+                    .getReadAloudControllerSupplier()
+                    .get()
+                    .maybeStopPlayback(/* tab= */ null);
+        }
+
         super.onPauseWithNative();
     }
 

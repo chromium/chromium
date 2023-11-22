@@ -421,13 +421,15 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     /**
      * Dismiss the player UI if present and stop and release playback if playing.
      *
-     * @param tab Playing tab.
+     * @param tab if specified, a playback will be stopped if it was triggered for this tab; if null
+     *     any active playback will be stopped.
      */
-    public void maybeStopPlayback(Tab tab) {
+    public void maybeStopPlayback(@Nullable Tab tab) {
         if (mCurrentlyPlayingTab == null && mPlayerCoordinator != null) {
             // in case there's an error and UI is drawn
             mPlayerCoordinator.dismissPlayers();
-        } else if (mCurrentlyPlayingTab != null && mCurrentlyPlayingTab.getId() == tab.getId()) {
+        } else if (mCurrentlyPlayingTab != null
+                && (tab == null || mCurrentlyPlayingTab.getId() == tab.getId())) {
             mPlayerCoordinator.dismissPlayers();
             resetCurrentPlayback();
         }
