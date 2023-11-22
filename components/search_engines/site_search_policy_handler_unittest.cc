@@ -19,6 +19,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,6 +38,7 @@ struct TestProvider {
   const char* name;
   const char* shortcut;
   const char* url;
+  bool featured_by_policy = false;
   const char* favicon;
 };
 
@@ -45,6 +47,7 @@ TestProvider kValidTestProviders[] = {
     {.name = "work name",
      .shortcut = "work",
      .url = "https://work.com/{searchTerms}",
+     .featured_by_policy = true,
      .favicon = "https://work.com/favicon.ico"},
     {.name = "docs name",
      .shortcut = "docs",
@@ -193,11 +196,13 @@ TestProvider kNonHttpsUrlTestProviders[] = {
 // Creates a simple list item for the site search policy.
 base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
                                                 const std::string& shortcut,
-                                                const std::string& url) {
+                                                const std::string& url,
+                                                bool featured_by_policy) {
   base::Value::Dict entry;
   entry.Set(SiteSearchPolicyHandler::kName, name);
   entry.Set(SiteSearchPolicyHandler::kShortcut, shortcut);
   entry.Set(SiteSearchPolicyHandler::kUrl, url);
+  entry.Set(SiteSearchPolicyHandler::kFeatured, featured_by_policy);
   return entry;
 }
 
@@ -212,6 +217,7 @@ base::Value::Dict GenerateSiteSearchPolicyEntry(TestProvider test_case) {
   if (test_case.url) {
     entry.Set(SiteSearchPolicyHandler::kUrl, test_case.url);
   }
+  entry.Set(SiteSearchPolicyHandler::kFeatured, test_case.featured_by_policy);
   return entry;
 }
 
@@ -243,6 +249,19 @@ MATCHER_P2(HasBooleanField,
 
 // Accepts a dictionary that has a double field `field_name` with non-zero
 // value.
+MATCHER_P2(HasIntegerField,
+           field_name,
+           expected_value,
+           base::StringPrintf("%s integer field `%s` with value `%d`",
+                              negation ? "does not contain" : "contains",
+                              field_name,
+                              expected_value)) {
+  absl::optional<int> dict_value = (arg).GetDict().FindInt(field_name);
+  return dict_value && *dict_value == expected_value;
+}
+
+// Accepts a dictionary that has a double field `field_name` with non-zero
+// value.
 MATCHER_P(HasDoubleField,
           field_name,
           base::StringPrintf("%s double field `%s` with non-zero value",
@@ -259,7 +278,11 @@ testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case) {
       HasStringField(DefaultSearchManager::kShortName, test_case.name),
       HasStringField(DefaultSearchManager::kKeyword, test_case.shortcut),
       HasStringField(DefaultSearchManager::kURL, test_case.url),
-      HasBooleanField(DefaultSearchManager::kCreatedByPolicy, true),
+      HasBooleanField(DefaultSearchManager::kFeaturedByPolicy,
+                      test_case.featured_by_policy),
+      HasIntegerField(
+          DefaultSearchManager::kCreatedByPolicy,
+          static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch)),
       HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
       HasStringField(DefaultSearchManager::kFaviconURL, test_case.favicon),
       HasBooleanField(DefaultSearchManager::kSafeForAutoReplace, false),
@@ -397,7 +420,7 @@ TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
   for (int i = 0; i <= SiteSearchPolicyHandler::kMaxSiteSearchProviders; ++i) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(
         base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
-        base::StringPrintf("https://site_%d.com/q={searchTerms}", i)));
+        base::StringPrintf("https://site_%d.com/q={searchTerms}", i), false));
   }
 
   policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,

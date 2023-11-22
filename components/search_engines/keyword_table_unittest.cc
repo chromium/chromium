@@ -62,7 +62,8 @@ class KeywordTableTest : public testing::Test {
     keyword.date_created = base::Time::UnixEpoch();
     keyword.last_modified = base::Time::UnixEpoch();
     keyword.last_visited = base::Time::UnixEpoch();
-    keyword.created_by_policy = true;
+    keyword.created_by_policy =
+        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
     keyword.usage_count = 32;
     keyword.prepopulate_id = 10;
     keyword.sync_guid = "1234-5678-90AB-CDEF";
@@ -70,6 +71,7 @@ class KeywordTableTest : public testing::Test {
     keyword.alternate_urls.push_back("a_url2");
     keyword.starter_pack_id = 1;
     keyword.enforced_by_policy = true;
+    keyword.featured_by_policy = true;
     AddKeyword(keyword);
     return keyword;
   }
@@ -143,6 +145,7 @@ TEST_F(KeywordTableTest, Keywords) {
   EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
   EXPECT_EQ(keyword.starter_pack_id, restored_keyword.starter_pack_id);
   EXPECT_EQ(keyword.enforced_by_policy, restored_keyword.enforced_by_policy);
+  EXPECT_EQ(keyword.featured_by_policy, restored_keyword.featured_by_policy);
 
   RemoveKeyword(restored_keyword.id);
 
@@ -163,6 +166,7 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   keyword.created_from_play_api = true;
   keyword.starter_pack_id = 0;
   keyword.enforced_by_policy = false;
+  keyword.featured_by_policy = false;
   UpdateKeyword(keyword);
 
   KeywordTable::Keywords keywords(GetKeywords());
@@ -184,6 +188,7 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
   EXPECT_EQ(keyword.starter_pack_id, restored_keyword.starter_pack_id);
   EXPECT_EQ(keyword.enforced_by_policy, restored_keyword.enforced_by_policy);
+  EXPECT_EQ(keyword.featured_by_policy, restored_keyword.featured_by_policy);
 }
 
 TEST_F(KeywordTableTest, KeywordWithNoFavicon) {

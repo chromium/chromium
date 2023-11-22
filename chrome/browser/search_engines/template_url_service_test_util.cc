@@ -86,7 +86,7 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     const std::string& guid,
     base::Time last_modified,
     bool safe_for_autoreplace,
-    bool created_by_policy,
+    TemplateURLData::CreatedByPolicy created_by_policy,
     int prepopulate_id) {
   DCHECK(!base::StartsWith(guid, "key"))
       << "Don't use test GUIDs with the form \"key1\". Use \"guid1\" instead "

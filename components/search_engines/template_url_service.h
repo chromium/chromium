@@ -144,7 +144,7 @@ class TemplateURLService : public WebDataServiceConsumer,
                                   const GURL& url);
 
   // Returns whether the engine is a "pre-existing" engine, either from the
-  // prepopulate list or created by policy.
+  // prepopulate list or created by DefaultSearchProvider* policy.
   bool IsPrepopulatedOrCreatedByPolicy(const TemplateURL* template_url) const;
 
   // Returns whether |template_url| should be shown in the list of engines

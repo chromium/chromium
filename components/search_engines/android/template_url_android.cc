@@ -36,7 +36,8 @@ jboolean JNI_TemplateUrl_IsPrepopulatedOrCreatedByPolicy(
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id() > 0 ||
-         template_url->created_by_policy() ||
+         template_url->created_by_policy() !=
+             TemplateURLData::CreatedByPolicy::kNoPolicy ||
          template_url->created_from_play_api();
 }
 

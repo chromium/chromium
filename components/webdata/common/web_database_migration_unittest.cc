@@ -139,7 +139,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 121;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 122;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1287,5 +1287,27 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion120ToCurrent) {
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
     EXPECT_FALSE(connection.DoesTableExist("server_addresses"));
     EXPECT_FALSE(connection.DoesTableExist("server_address_metadata"));
+  }
+}
+
+// Tests that the `featured_by_policy` column is added to the keywords table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion121ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_121.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(121, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "featured_by_policy"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "featured_by_policy"));
   }
 }

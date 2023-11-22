@@ -58,7 +58,12 @@ base::Value SiteSearchDictFromPolicyValue(
   CHECK(url);
   dict.Set(DefaultSearchManager::kURL, *url);
 
-  dict.Set(DefaultSearchManager::kCreatedByPolicy, true);
+  dict.Set(
+      DefaultSearchManager::kFeaturedByPolicy,
+      policy_dict.FindBool(SiteSearchPolicyHandler::kFeatured).value_or(false));
+
+  dict.Set(DefaultSearchManager::kCreatedByPolicy,
+           static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
   dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
 
   // TODO(b/307543761): Create a new field `featured_by_policy` and setting
@@ -232,6 +237,7 @@ bool ShortcutAlreadySeen(
 const char SiteSearchPolicyHandler::kName[] = "name";
 const char SiteSearchPolicyHandler::kShortcut[] = "shortcut";
 const char SiteSearchPolicyHandler::kUrl[] = "url";
+const char SiteSearchPolicyHandler::kFeatured[] = "featured";
 
 const int SiteSearchPolicyHandler::kMaxSiteSearchProviders = 100;
 
@@ -274,6 +280,9 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   for (const base::Value& provider : site_search_providers) {
     const std::string& shortcut = GetShortcut(provider);
     const std::string& url = GetUrl(provider);
+
+    // TODO(b/309457951): Add validation to ensure that at most 3 entries are
+    //                    featured_by_policy.
 
     bool invalid_entry =
         ShortcutIsEmpty(policy_name(), shortcut, errors) ||

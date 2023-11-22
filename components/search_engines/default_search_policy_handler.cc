@@ -19,6 +19,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
 
 namespace policy {
@@ -211,7 +212,9 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   dict.Set(DefaultSearchManager::kLastModified,
            static_cast<double>(base::Time::Now().ToInternalValue()));
   dict.Set(DefaultSearchManager::kUsageCount, 0);
-  dict.Set(DefaultSearchManager::kCreatedByPolicy, true);
+  dict.Set(DefaultSearchManager::kCreatedByPolicy,
+           static_cast<int>(
+               TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
 
   // For the name and keyword, default to the host if not specified.  If
   // there is no host (as is the case with file URLs of the form:

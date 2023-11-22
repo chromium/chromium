@@ -13,6 +13,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/template_url_data.h"
 
 namespace policy {
 
@@ -199,6 +200,9 @@ TEST_F(DefaultSearchPolicyHandlerTest, FullyDefined) {
   const base::Value::Dict* dictionary = temp->GetIfDict();
   ASSERT_TRUE(dictionary);
 
+  ASSERT_EQ(dictionary->FindInt(DefaultSearchManager::kCreatedByPolicy),
+            static_cast<int>(
+                TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
   const std::string* value = nullptr;
   ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kURL));
   EXPECT_EQ(kSearchURL, *value);
@@ -300,6 +304,9 @@ TEST_F(DefaultSearchPolicyHandlerTest, MinimallyDefined) {
   ASSERT_TRUE(dictionary);
 
   // Name and keyword should be derived from host.
+  ASSERT_EQ(dictionary->FindInt(DefaultSearchManager::kCreatedByPolicy),
+            static_cast<int>(
+                TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
   const std::string* value = nullptr;
   ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kURL));
   EXPECT_EQ(kSearchURL, *value);
@@ -354,6 +361,9 @@ TEST_F(DefaultSearchPolicyHandlerTest, FileURL) {
   const base::Value::Dict* dictionary = temp->GetIfDict();
   ASSERT_TRUE(dictionary);
 
+  ASSERT_EQ(dictionary->FindInt(DefaultSearchManager::kCreatedByPolicy),
+            static_cast<int>(
+                TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
   const std::string* value = nullptr;
   ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kURL));
   EXPECT_EQ(kFileSearchURL, *value);

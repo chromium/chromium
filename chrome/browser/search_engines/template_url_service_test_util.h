@@ -43,7 +43,8 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     const std::string& guid = std::string(),
     base::Time last_modified = base::Time::FromTimeT(100),
     bool safe_for_autoreplace = false,
-    bool created_by_policy = false,
+    TemplateURLData::CreatedByPolicy created_by_policy =
+        TemplateURLData::CreatedByPolicy::kNoPolicy,
     int prepopulate_id = 999999);
 
 class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {

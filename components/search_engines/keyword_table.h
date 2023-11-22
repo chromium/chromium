@@ -74,6 +74,8 @@ class Statement;
 //                          in version 103.
 //   enforced_by_policy     See TemplateURLData::enforced_by_policy. This was
 //                          added in version 112.
+//   featured_by_policy     See TemplateURLData::featured_by_policy. This was
+//                          added in version 122.
 //
 // This class also manages some fields in the |meta| table:
 //
@@ -149,6 +151,7 @@ class KeywordTable : public WebDatabaseTable {
   bool MigrateToVersion97AddIsActiveColumn();
   bool MigrateToVersion103AddStarterPackIdColumn();
   bool MigrateToVersion112AddEnforcedByPolicyColumn();
+  bool MigrateToVersion122AddSiteSearchPolicyColumns();
 
  private:
   friend class KeywordTableTest;
