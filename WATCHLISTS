@@ -1960,6 +1960,9 @@
    'shortcut_customization_ui': {
       'filepath': 'ash/webui/shortcut_customization_ui/',
     },
+    'siso_config': {
+      'filepath': 'build/config/siso/',
+    },
     'site_engagement': {
       'filepath': 'chrome/browser/engagement/|'\
                   'chrome/browser/ui/webui/engagement/',
@@ -3141,6 +3144,7 @@
         ['jimmyxgong+watch-shortcut-customization-ui@chromium.org',
          'cambickel+watch-shortcut-customization-ui@google.com',
          'longbowei+watch-shortcut-customization-ui@google.com'],
+    'siso_config': ['chrome-build-team@google.com'],
     'site_engagement': ['dominickn+watch-engagement@chromium.org'],
     'site_instance': ['ajwong+watch@chromium.org',
                       'alexmos+watch@chromium.org',
