@@ -18,6 +18,22 @@ namespace recording {
 // as they're natively stored in a `kN32_SkColorType`-color-type bitmap, and
 // comparing instances while ignoring the alpha component.
 struct RgbColor {
+  RgbColor() = default;
+  RgbColor(uint8_t red, uint8_t green, uint8_t blue)
+#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
+      : b(blue),
+        g(green),
+        r(red)
+#elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
+      : r(red),
+        g(green),
+        b(blue)
+#else
+#error "The color format must be either BGRA or RGBA"
+#endif
+  {
+  }
+
   bool operator==(const RgbColor& rhs) const {
     return r == rhs.r && g == rhs.g && b == rhs.b;
   }

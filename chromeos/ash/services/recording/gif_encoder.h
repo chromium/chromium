@@ -14,6 +14,7 @@
 #include "chromeos/ash/services/recording/gif_encoding_types.h"
 #include "chromeos/ash/services/recording/gif_file_writer.h"
 #include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
+#include "chromeos/ash/services/recording/octree_color_quantizer.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
 
 namespace recording {
@@ -111,8 +112,9 @@ class GifEncoder : public RecordingEncoder {
   // implementation.
   void WriteColorPalette(uint8_t color_bit_depth);
 
-  // Sets the encoder's `color_palette_` to the given `new_color_palette`.
-  void SetColorPalette(ColorTable new_color_palette);
+  // Moves the given `new_color_quantizer` into `color_quantizer_` and extracts
+  // a new color palette from it into `color_palette_`.
+  void SetQuantizer(OctreeColorQuantizer&& new_color_quantizer);
 
   // The thread pool task runner on which the color palettes are built every
   // `kMinNumberOfFramesBetweenPaletteRebuilds` frames except for the very first
@@ -132,6 +134,11 @@ class GifEncoder : public RecordingEncoder {
   // The presentation time of the most recent video frame prior to the one being
   // encoded at the moment.
   base::TimeTicks last_frame_time_;
+
+  // The color quantizer which we use to build the color palette and find the
+  // indices of the closest colors in that palette for each pixel in the video
+  // frames we're encoding.
+  OctreeColorQuantizer color_quantizer_;
 
   // The list of colors (up to 256 colors) that will be written to the GIF file
   // as the color table. These colors are extracted from each received frame
