@@ -844,10 +844,13 @@ void TransportClientSocketPool::OnSSLConfigForServersChanged(
   // If the proxy chain includes a server from `servers` and uses SSL settings
   // (HTTPS or QUIC), refresh every group.
   // TODO(https://crbug.com/1491092): Check each ProxyServer in `proxy_chain_`.
-  bool proxy_matches =
-      proxy_chain_.proxy_server().is_http_like() &&
-      !proxy_chain_.proxy_server().is_http() &&
-      servers.contains(proxy_chain_.proxy_server().host_port_pair());
+  bool proxy_matches = false;
+  for (const ProxyServer& proxy_server : proxy_chain_.proxy_servers()) {
+    if (proxy_server.is_http_like() && !proxy_server.is_http() &&
+        servers.contains(proxy_server.host_port_pair())) {
+      proxy_matches = true;
+    }
+  }
 
   bool refreshed_any = false;
   for (auto it = group_map_.begin(); it != group_map_.end();) {

@@ -5936,11 +5936,17 @@ TEST_P(ClientSocketPoolBaseRefreshTest,
 }
 
 TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
+  // Create a proxy chain containing `myproxy` (which is refreshed) and
+  // nonrefreshedproxy (which is not), verifying that if any proxy in a chain is
+  // refreshed, all groups are refreshed.
+  ProxyChain proxy_chain({
+      PacResultElementToProxyServer("HTTPS myproxy:70"),
+      PacResultElementToProxyServer("HTTPS nonrefreshedproxy:70"),
+  });
   CreatePoolWithIdleTimeouts(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup,
                              kUnusedIdleSocketTimeout,
                              ClientSocketPool::used_idle_socket_timeout(),
-                             false /* no backup connect jobs */,
-                             PacResultElementToProxyChain("HTTPS myproxy:70"));
+                             false /* no backup connect jobs */, proxy_chain);
 
   const ClientSocketPool::GroupId kGroupId1 =
       TestGroupId("a", 443, url::kHttpsScheme);
