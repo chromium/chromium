@@ -124,13 +124,13 @@ public class CallbackControllerTest {
         verifyNoMoreInteractions(target);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testNestedDestroy() {
+        // Destroying from within a callback should work fine.
         CallbackController callbackController = new CallbackController();
         CallbackTarget target = Mockito.mock(CallbackTarget.class);
         Runnable wrapped = callbackController.makeCancelable(callbackController::destroy);
 
-        // This should throw an AssertionError.
         wrapped.run();
     }
 }
