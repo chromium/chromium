@@ -36,7 +36,7 @@ namespace blink {
 
 EditContext::EditContext(ScriptState* script_state, const EditContextInit* dict)
     : ActiveScriptWrappable<EditContext>({}),
-      ExecutionContextClient(ExecutionContext::From(script_state)) {
+      execution_context_(ExecutionContext::From(script_state)) {
   DCHECK(IsMainThread());
   UseCounter::Count(GetExecutionContext(), WebFeature::kEditContext);
 
@@ -62,7 +62,11 @@ const AtomicString& EditContext::InterfaceName() const {
 }
 
 ExecutionContext* EditContext::GetExecutionContext() const {
-  return ExecutionContextClient::GetExecutionContext();
+  return execution_context_;
+}
+
+LocalDOMWindow* EditContext::DomWindow() const {
+  return To<LocalDOMWindow>(GetExecutionContext());
 }
 
 bool EditContext::HasPendingActivity() const {
@@ -663,6 +667,14 @@ void EditContext::AttachElement(HTMLElement* element_to_attach) {
   CHECK(attached_elements_.empty())
       << "An EditContext can be only be associated with a single element";
 
+  // We assume throughout this class that since EditContext is only associated
+  // with at most one element, it can only have one ExecutionContext. If things
+  // change such that an EditContext can be associated with multiple elements,
+  // the way we manage the ExecutionContext will need to be reworked such
+  // that we return the ExecutionContext of the element that has most recently
+  // received focus.
+  execution_context_ = element_to_attach->GetExecutionContext();
+
   attached_elements_.push_back(element_to_attach);
 }
 
@@ -798,10 +810,10 @@ WebRange EditContext::GetSelectionOffsets() const {
 
 void EditContext::Trace(Visitor* visitor) const {
   ActiveScriptWrappable::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
   EventTarget::Trace(visitor);
   ElementRareDataField::Trace(visitor);
   visitor->Trace(attached_elements_);
+  visitor->Trace(execution_context_);
 }
 
 }  // namespace blink

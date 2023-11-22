@@ -31,7 +31,6 @@ class InputMethodController;
 
 class CORE_EXPORT EditContext final : public EventTarget,
                                       public ActiveScriptWrappable<EditContext>,
-                                      public ExecutionContextClient,
                                       public WebInputMethodController,
                                       public ElementRareDataField {
   DEFINE_WRAPPERTYPEINFO();
@@ -117,6 +116,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // EventTarget overrides
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
+
+  LocalDOMWindow* DomWindow() const;
 
   // ActiveScriptWrappable overrides.
   bool HasPendingActivity() const override;
@@ -284,6 +285,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   uint32_t composition_range_end_ = 0;
   // Elements that are associated with this EditContext.
   HeapVector<Member<HTMLElement>> attached_elements_;
+
+  WeakMember<ExecutionContext> execution_context_;
 };
 
 }  // namespace blink
