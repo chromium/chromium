@@ -10618,7 +10618,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UpgradeDetector.RollbackReason"
-    enum="UpgradeDetectorRollbackReason" expires_after="2023-11-30">
+    enum="UpgradeDetectorRollbackReason" expires_after="2024-06-01">
   <owner>mpolzer@google.com</owner>
   <owner>crisguerrero@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
