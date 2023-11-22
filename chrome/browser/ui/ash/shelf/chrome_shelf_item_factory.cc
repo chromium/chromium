@@ -48,12 +48,6 @@ std::unique_ptr<ash::ShelfItem> ChromeShelfItemFactory::CreateShelfItemForApp(
     item->is_promise_app =
         ShelfControllerHelper::IsPromiseApp(profile_, app_id);
     item->package_id = ShelfControllerHelper::GetAppPackageId(profile_, app_id);
-
-    if (item->is_promise_app) {
-      // TODO(b/302408509): Temporary fix for ShelfViews crash that happens only
-      // when a ShelfItem created by sync has kPending/ kInstalling app states.
-      item->app_status = ash::AppStatus::kReady;
-    }
   }
 
   return item;
