@@ -4,6 +4,8 @@
 
 source_set("idle") {
   sources = [
+    "action.h",
+    "action.mm",
     "action_runner.h",
     "action_runner_impl.h",
     "action_runner_impl.mm",
@@ -11,16 +13,18 @@ source_set("idle") {
     "idle_service.mm",
     "idle_service_factory.h",
     "idle_service_factory.mm",
-    "idle_service_observer_bridge.h",
-    "idle_service_observer_bridge.mm",
   ]
   deps = [
     "//base",
+    "//components/browsing_data/core",
     "//components/enterprise/idle",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/prefs",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/discover_feed:discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
   ]
@@ -28,24 +32,25 @@ source_set("idle") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "idle_service_unittest.mm" ]
+  sources = [
+    "action_runner_impl_unittest.mm",
+    "action_unittest.mm",
+    "idle_service_unittest.mm",
+  ]
   deps = [
     ":idle",
     "//base",
     "//base/test:test_support",
-    "//components/account_id",
-    "//components/enterprise",
     "//components/enterprise:test_support",
     "//components/enterprise/idle",
     "//components/policy/core/browser:test_support",
     "//components/pref_registry",
     "//components/prefs",
+    "//ios/chrome/browser/browsing_data/model:test_support",
     "//ios/chrome/browser/prefs/model",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }

@@ -39,9 +39,12 @@ const char kClearCachedImagesAndFilesActionName[] =
     "clear_cached_images_and_files";
 const char kClearPasswordSigninActionName[] = "clear_password_signin";
 const char kClearAutofillActionName[] = "clear_autofill";
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
+const char kSignOut[] = "sign_out";
+const char kCloseTabs[] = "close_tabs";
+#else
 const char kClearSiteSettingsActionName[] = "clear_site_settings";
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 const char kReloadPagesActionName[] = "reload_pages";
 }  // namespace
 
@@ -75,11 +78,18 @@ absl::optional<ActionType> NameToActionType(const std::string& name) {
   if (name == kClearAutofillActionName) {
     return ActionType::kClearAutofill;
   }
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
+  if (name == kSignOut) {
+    return ActionType::kSignOut;
+  }
+  if (name == kCloseTabs) {
+    return ActionType::kCloseTabs;
+  }
+#else
   if (name == kClearSiteSettingsActionName) {
     return ActionType::kClearSiteSettings;
   }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
   if (name == kReloadPagesActionName) {
     return ActionType::kReloadPages;
   }

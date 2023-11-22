@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_ACTION_RUNNER_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_ACTION_RUNNER_H_
 
+#import "base/functional/callback.h"
+
 namespace enterprise_idle {
 
 // Runs actions specified by the IdleTimeoutActions policy. Wrapper around
@@ -12,6 +14,8 @@ namespace enterprise_idle {
 // One per profile. Owned by `IdleService`.
 class ActionRunner {
  public:
+  using ActionsCompletedCallback = base::OnceCallback<void()>;
+
   explicit ActionRunner() = default;
   virtual ~ActionRunner() = default;
   ActionRunner(const ActionRunner&) = delete;
@@ -22,7 +26,7 @@ class ActionRunner {
   // Runs all the actions, in order of priority. Actions are run sequentially,
   // not in parallel. If an action fails for whatever reason, skips the
   // remaining actions.
-  virtual void Run() = 0;
+  virtual void Run(ActionsCompletedCallback actions_completed_callback) = 0;
 };
 
 }  // namespace enterprise_idle

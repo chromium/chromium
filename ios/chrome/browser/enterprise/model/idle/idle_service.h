@@ -74,6 +74,8 @@ class IdleService : public KeyedService {
   // the last state the browser was  idle in.
   void RunActionsForState(LastState last_state);
   void RunActions();
+  // Shows the snackbar after actions have completed.
+  void OnActionsCompleted();
   // Calculates the time to when the browser might become idle.
   base::TimeDelta GetPossibleTimeToIdle();
 

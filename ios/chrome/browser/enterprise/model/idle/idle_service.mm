@@ -156,7 +156,8 @@ void IdleService::RunActionsForState(LastState last_state) {
 }
 
 void IdleService::RunActions() {
-  action_runner_->Run();
+  action_runner_->Run(base::BindOnce(&IdleService::OnActionsCompleted,
+                                     weak_factory_.GetWeakPtr()));
 }
 
 void IdleService::SetLastActiveTime() {
@@ -167,6 +168,10 @@ void IdleService::SetLastActiveTime() {
 base::Time IdleService::GetLastActiveTime() {
   return GetApplicationContext()->GetLocalState()->GetTime(
       enterprise_idle::prefs::kLastActiveTimestamp);
+}
+
+void IdleService::OnActionsCompleted() {
+  // TODO: Implement this method to show snackbar.
 }
 
 void IdleService::SetActionRunnerForTesting(
