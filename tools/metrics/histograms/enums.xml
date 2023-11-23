@@ -19508,6 +19508,7 @@ Called by update_extension_histograms.py.-->
   <int value="1844" label="ACCESSIBILITY_PRIVATE_GETTTSDLCCONTENTS"/>
   <int value="1845" label="OS_DIAGNOSTICS_CREATEFANROUTINE"/>
   <int value="1846" label="OS_DIAGNOSTICS_ISFANROUTINEARGUMENTSUPPORTED"/>
+  <int value="1847" label="AUTOTESTPRIVATE_OVERRIDEORCARESPONSE"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

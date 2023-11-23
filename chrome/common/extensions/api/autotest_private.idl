@@ -836,6 +836,14 @@ namespace autotestPrivate {
   // Response callback to report if a field trial exists and has been activated.
   callback IsFieldTrialActiveCallback = void(boolean active);
 
+  // Request data containing the mock responses from
+  // overrideOrcaResponseForTesting.
+  dictionary OrcaResponseArray {
+    DOMString[] responses;
+  };
+
+  callback OverrideOrcaResponseForTestingCallback = void(boolean success);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1592,6 +1600,12 @@ namespace autotestPrivate {
     // Returns keyboard layout used for current input method.
     [supportsPromises] static void getCurrentInputMethodDescriptor(
         GetCurrentInputMethodDescriptorCallback callback);
+
+    // Overrides the response from Orca Provider and returns the boolean value
+    // that indicates if the overriding is successful or not.
+    [supportsPromises] static void overrideOrcaResponseForTesting(
+        OrcaResponseArray array,
+        OverrideOrcaResponseForTestingCallback callback);
 
     // ARC set interactive enable/disable state.
     // |enabled|: Enable ARC interactive.

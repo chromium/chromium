@@ -1698,6 +1698,18 @@ class AutotestPrivateIsInputMethodReadyForTestingFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateOverrideOrcaResponseForTestingFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateOverrideOrcaResponseForTestingFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.overrideOrcaResponseForTesting",
+                             AUTOTESTPRIVATE_OVERRIDEORCARESPONSE)
+
+ private:
+  ~AutotestPrivateOverrideOrcaResponseForTestingFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateMakeFuseboxTempDirFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.makeFuseboxTempDir",

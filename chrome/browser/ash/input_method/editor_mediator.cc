@@ -16,6 +16,8 @@
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chrome/browser/ash/input_method/editor_text_query_provider.h"
+#include "chrome/browser/ash/input_method/editor_text_query_provider_for_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,7 +61,7 @@ void EditorMediator::SetUpNewEditorService() {
     text_actuator_ = std::make_unique<EditorTextActuator>(
         profile_, text_actuator_remote.InitWithNewEndpointAndPassReceiver(),
         this);
-    text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
+    text_query_provider_ = std::make_unique<TextQueryProviderForOrca>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
         profile_, editor_switch_.get());
     editor_client_connector_ = std::make_unique<EditorClientConnector>(
@@ -233,6 +235,18 @@ void EditorMediator::Shutdown() {
   text_query_provider_ = nullptr;
   consent_store_ = nullptr;
   editor_switch_ = nullptr;
+}
+
+bool EditorMediator::SetTextQueryProviderResponseForTesting(
+    const std::vector<std::string>& mock_results) {
+  auto pending_receiver = text_query_provider_->Unbind();
+
+  if (!pending_receiver.has_value()) {
+    return false;
+  }
+  text_query_provider_ = std::make_unique<TextQueryProviderForTesting>(
+      std::move(pending_receiver.value()), mock_results);  // IN-TEST
+  return true;
 }
 
 }  // namespace ash::input_method

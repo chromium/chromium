@@ -1906,6 +1906,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_GETTTSDLCCONTENTS = 1844,
   OS_DIAGNOSTICS_CREATEFANROUTINE = 1845,
   OS_DIAGNOSTICS_ISFANROUTINEARGUMENTSUPPORTED = 1846,
+  AUTOTESTPRIVATE_OVERRIDEORCARESPONSE = 1847,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

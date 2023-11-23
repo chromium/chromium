@@ -111,6 +111,7 @@
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
@@ -122,6 +123,7 @@
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
@@ -6365,6 +6367,35 @@ AutotestPrivateIsInputMethodReadyForTestingFunction::Run() {
       ash::IMEBridge::Get()->GetCurrentEngineHandler();
   return RespondNow(
       WithArguments(engine && engine->IsReadyForTesting()));  // IN-TEST
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateOverrideOrcaResponseForTestingFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateOverrideOrcaResponseForTestingFunction::
+    AutotestPrivateOverrideOrcaResponseForTestingFunction() = default;
+
+AutotestPrivateOverrideOrcaResponseForTestingFunction::
+    ~AutotestPrivateOverrideOrcaResponseForTestingFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateOverrideOrcaResponseForTestingFunction::Run() {
+  absl::optional<api::autotest_private::OverrideOrcaResponseForTesting::Params>
+      params =
+          api::autotest_private::OverrideOrcaResponseForTesting::Params::Create(
+              args());
+
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ash::input_method::EditorMediator* editor_mediator =
+      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+          ash::ProfileHelper::Get()->GetProfileByUser(
+              user_manager::UserManager::Get()->GetActiveUser()));
+
+  return RespondNow(
+      WithArguments(editor_mediator->SetTextQueryProviderResponseForTesting(
+          params->array.responses)));  // IN-TEST
 }
 
 ///////////////////////////////////////////////////////////////////////////////
