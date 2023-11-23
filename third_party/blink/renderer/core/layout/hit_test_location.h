@@ -56,6 +56,9 @@ class CORE_EXPORT HitTestLocation {
   // rect-based. When we hit test a transformed box and transform the hit test
   // location into the box's local coordinate space, the bounding box should
   // also be transformed accordingly.
+  //
+  // TODO(mustaq): Clean up the mix of coordinate units in params (floating
+  // point vs LayoutUnit).
   explicit HitTestLocation(const gfx::PointF& point,
                            const PhysicalRect& bounding_box);
 

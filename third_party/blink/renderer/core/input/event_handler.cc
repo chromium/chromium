@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/cursors.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1711,6 +1712,12 @@ bool EventHandler::BestNodeForHitTestResult(
       (result.GetScrollbar() || result.IsOverResizer())) {
     return false;
   }
+
+  CHECK(location.BoundingBox().Contains(location.Point()) ||
+        (location.BoundingBox().Right() == LayoutUnit::Max() &&
+         location.Point().left == LayoutUnit::Max()) ||
+        (location.BoundingBox().Bottom() == LayoutUnit::Max() &&
+         location.Point().top == LayoutUnit::Max()));
 
   gfx::Point touch_hotspot =
       frame_->View()->ConvertToRootFrame(location.RoundedPoint());

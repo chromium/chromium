@@ -550,7 +550,6 @@ bool FindBestTouchAdjustmentCandidate(
     const gfx::Point& touch_hotspot,
     const gfx::Rect& touch_area,
     const HeapVector<Member<Node>>& nodes) {
-  DCHECK(touch_area.Contains(touch_hotspot));
   touch_adjustment::NodeFilter node_filter;
   touch_adjustment::AppendSubtargetsForNode append_subtargets_for_node;
 
