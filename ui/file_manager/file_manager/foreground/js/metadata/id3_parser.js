@@ -546,7 +546,7 @@ export class Id3Parser extends MetadataParser {
     const metadataParser = new FunctionParallel(
         // @ts-ignore: error TS2322: Type 'FunctionSequence' is not assignable
         // to type 'Function'.
-        'mp3metadataParser', [id3v1Parser, id3v2Parser], this, () => {
+        [id3v1Parser, id3v2Parser], this, () => {
           callback.call(null, metadata);
         }, onError);
 
