@@ -216,6 +216,7 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     &BadRealloc,        /* realloc_function */
     &BadFree,           /* free_function */
     nullptr,            /* get_size_estimate_function */
+    nullptr,            /* good_size_function */
     nullptr,            /* claimed_address_function */
     nullptr,            /* batch_malloc_function */
     nullptr,            /* batch_free_function */
