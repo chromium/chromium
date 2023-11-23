@@ -1,0 +1,19 @@
+[package]
+name = "font-types"
+version = "0.4.1"
+edition = "2021"
+license = "MIT/Apache-2.0"
+description = "Scalar types used in fonts."
+repository = "https://github.com/googlefonts/fontations"
+readme = "README.md"
+categories = ["text-processing"]
+
+[features]
+std = []
+default = ["std"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[dev-dependencies]
+serde_json = "1.0"

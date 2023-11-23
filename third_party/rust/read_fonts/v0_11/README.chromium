@@ -1,8 +1,0 @@
-Name: read-fonts
-URL: https://crates.io/crates/read-fonts
-Description: Reading OpenType font files.
-Version: 0.11.2
-Security Critical: yes
-Shipped: yes
-License: Apache 2.0
-Revision: 803fd76866db3dd6ccfbe4279eb39cf3f73d598e
