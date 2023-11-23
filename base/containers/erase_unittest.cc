@@ -89,15 +89,5 @@ TEST(Erase, Multimap) {
   RunEraseIfTest<std::multimap<int, int, std::greater<>>>();
 }
 
-TEST(Erase, Set) {
-  RunEraseIfTest<std::set<std::pair<int, int>>>();
-  RunEraseIfTest<std::set<std::pair<int, int>, std::greater<>>>();
-}
-
-TEST(Erase, Multiset) {
-  RunEraseIfTest<std::multiset<std::pair<int, int>>>();
-  RunEraseIfTest<std::multiset<std::pair<int, int>, std::greater<>>>();
-}
-
 }  // namespace
 }  // namespace base

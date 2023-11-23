@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <memory>
+#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -3538,7 +3538,7 @@ void WebContentsImpl::OnRenderWidgetHostDestroyed(
 
   // Clear a pending widget that has been closed before being shown.
   size_t num_erased =
-      base::EraseIf(pending_widgets_, [render_widget_host](const auto& pair) {
+      std::erase_if(pending_widgets_, [render_widget_host](const auto& pair) {
         return pair.second == render_widget_host;
       });
   DCHECK_EQ(1u, num_erased);
@@ -3933,7 +3933,7 @@ void WebContentsImpl::FullscreenStateChanged(
   // If |rfh| is no longer in fullscreen, remove it and any descendants.
   // See https://fullscreen.spec.whatwg.org.
   size_t size_before_deletion = fullscreen_frames_.size();
-  base::EraseIf(fullscreen_frames_, [&](RenderFrameHostImpl* current) {
+  std::erase_if(fullscreen_frames_, [&](RenderFrameHostImpl* current) {
     while (current) {
       if (current == rfh) {
         return true;

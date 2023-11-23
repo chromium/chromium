@@ -5,10 +5,10 @@
 #include "extensions/browser/api/messaging/extension_message_port.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -324,7 +324,7 @@ void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
   CHECK(frames_.empty());
   // Avoid overlap in the set of frames to make sure that it does not matter
   // when UnregisterFrame is called.
-  base::EraseIf(
+  std::erase_if(
       pending_frames_,
       [&port](const content::GlobalRenderFrameHostToken& frame_token) {
         return port.HasFrame(frame_token);

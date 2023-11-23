@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <optional>
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -128,12 +128,12 @@ void PasswordReuseDetector::ClearCachedAccountStorePasswords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& key_value : passwords_with_matching_reused_credentials_) {
     // Delete account stored credentials.
-    base::EraseIf(key_value.second, [](const auto& credential) {
+    std::erase_if(key_value.second, [](const auto& credential) {
       return credential.in_store == PasswordForm::Store::kAccountStore;
     });
   }
   // Delete all passwords with no matching credentials.
-  base::EraseIf(passwords_with_matching_reused_credentials_,
+  std::erase_if(passwords_with_matching_reused_credentials_,
                 [](const auto& pair) { return pair.second.empty(); });
 }
 
@@ -318,7 +318,7 @@ void PasswordReuseDetector::ClearGaiaPasswordHash(const std::string& username) {
   if (!gaia_password_hash_data_list_)
     return;
 
-  base::EraseIf(*gaia_password_hash_data_list_,
+  std::erase_if(*gaia_password_hash_data_list_,
                 [&username](const PasswordHashData& data) {
                   return AreUsernamesSame(username, true, data.username,
                                           data.is_gaia_password);
@@ -340,7 +340,7 @@ void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
   if (!gaia_password_hash_data_list_)
     return;
 
-  base::EraseIf(
+  std::erase_if(
       *gaia_password_hash_data_list_, [](const PasswordHashData& data) {
         std::string email =
             CanonicalizeUsername(data.username, data.is_gaia_password);

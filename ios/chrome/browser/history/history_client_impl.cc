@@ -4,8 +4,9 @@
 
 #include "ios/chrome/browser/history/history_client_impl.h"
 
+#include <set>
+
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -150,7 +151,7 @@ void HistoryClientImpl::HandleBookmarksRemovedFromModel(
   // `other_model`.
   std::set<GURL> removed_from_both_models = removed_urls;
   if (other_model) {
-    base::EraseIf(removed_from_both_models, [other_model](const GURL& url) {
+    std::erase_if(removed_from_both_models, [other_model](const GURL& url) {
       return other_model->IsBookmarked(url);
     });
   }

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/hid/hid_chooser_context.h"
 
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_set.h"
 #include "base/containers/map_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -439,7 +439,7 @@ void HidChooserContext::RevokeEphemeralDevicePermission(
 
   std::set<std::string>& device_guids = it->second;
   bool revoked_permission =
-      base::EraseIf(device_guids, [&](const auto& guid) {
+      std::erase_if(device_guids, [&](const auto& guid) {
         auto* device_ptr = base::FindPtrOrNull(devices_, guid);
         return device_ptr &&
                device_ptr->physical_device_id == device.physical_device_id;

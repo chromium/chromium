@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/debug/debugger.h"
@@ -1735,7 +1734,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     };
 
     base::EraseIf(transactions_needed_, has_non_fatal_or_empty_error);
-    base::EraseIf(transactions_in_progress_, has_non_fatal_or_empty_error);
+    std::erase_if(transactions_in_progress_, has_non_fatal_or_empty_error);
   }
 
   void OnFailure(

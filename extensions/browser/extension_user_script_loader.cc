@@ -14,9 +14,8 @@
 #include <set>
 #include <string>
 #include <utility>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_set.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -650,7 +649,7 @@ void ExtensionUserScriptLoader::AddDynamicScripts(
   // Only proceed with adding scripts that the extension still intends to add.
   // This guards again an edge case where scripts registered by an API call
   // are quickly unregistered.
-  base::EraseIf(scripts, [&pending_ids = pending_dynamic_script_ids_](
+  std::erase_if(scripts, [&pending_ids = pending_dynamic_script_ids_](
                              const std::unique_ptr<UserScript>& script) {
     return !base::Contains(pending_ids, script->id());
   });
@@ -1012,13 +1011,13 @@ void ExtensionUserScriptLoader::OnDynamicScriptsRemoved(
   // `removed_script_ids` have actually been removed and the corresponding IPC
   // has been sent.
   if (!error.has_value()) {
-    base::EraseIf(
+    std::erase_if(
         loaded_dynamic_scripts_,
         [&removed_script_ids](const std::unique_ptr<UserScript>& script) {
           return base::Contains(removed_script_ids, script->id());
         });
 
-    base::EraseIf(persistent_dynamic_script_ids_,
+    std::erase_if(persistent_dynamic_script_ids_,
                   [&removed_script_ids](const auto& id) {
                     return base::Contains(removed_script_ids, id);
                   });

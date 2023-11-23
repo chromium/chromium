@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
-#include "base/containers/cxx20_erase_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -165,7 +164,7 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
   }
 
   // Filter out any apps that should not be installed.
-  base::EraseIf(apps.value(), [this](const PreloadAppDefinition& app) {
+  std::erase_if(apps.value(), [this](const PreloadAppDefinition& app) {
     return !ShouldInstallApp(app);
   });
 
