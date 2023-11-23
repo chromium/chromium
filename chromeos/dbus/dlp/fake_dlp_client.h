@@ -35,6 +35,7 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
                           CheckFilesTransferCallback callback) override;
   void RequestFileAccess(const dlp::RequestFileAccessRequest request,
                          RequestFileAccessCallback callback) override;
+  void GetDatabaseEntries(GetDatabaseEntriesCallback callback) override;
   bool IsAlive() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

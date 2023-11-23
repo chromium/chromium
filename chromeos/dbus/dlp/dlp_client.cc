@@ -167,6 +167,17 @@ class DlpClientImpl : public DlpClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetDatabaseEntries(GetDatabaseEntriesCallback callback) override {
+    dbus::MethodCall method_call(dlp::kDlpInterface,
+                                 dlp::kGetDatabaseEntriesMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DlpClientImpl::HandleGetDatabaseEntriesResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   bool IsAlive() const override { return is_alive_; }
 
   void AddObserver(Observer* observer) override {
@@ -258,6 +269,16 @@ class DlpClientImpl : public DlpClient {
       return;
     }
     std::move(callback).Run(response_proto, std::move(fd));
+  }
+
+  void HandleGetDatabaseEntriesResponse(GetDatabaseEntriesCallback callback,
+                                        dbus::Response* response) {
+    dlp::GetDatabaseEntriesResponse response_proto;
+    const char* error_message = DeserializeProto(response, &response_proto);
+    if (error_message) {
+      response_proto.set_error_message(error_message);
+    }
+    std::move(callback).Run(response_proto);
   }
 
   void NameOwnerChangedReceived(const std::string& old_owner,
