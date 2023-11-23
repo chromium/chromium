@@ -501,6 +501,23 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsToCalculationExpression) {
   }
 }
 
+TEST(CSSMathExpressionNode, IdentifierLiteralConversion) {
+  const CSSMathExpressionIdentifierLiteral* css_node =
+      CSSMathExpressionIdentifierLiteral::Create(AtomicString("test"));
+  EXPECT_TRUE(css_node->IsIdentifierLiteral());
+  EXPECT_EQ(css_node->Category(), kCalcIdent);
+  EXPECT_EQ(css_node->GetValue(), AtomicString("test"));
+  scoped_refptr<const CalculationExpressionNode> calc_node =
+      css_node->ToCalculationExpression(CSSToLengthConversionData());
+  EXPECT_TRUE(calc_node->IsIdentifier());
+  EXPECT_EQ(To<CalculationExpressionIdentifierNode>(*calc_node).Value(),
+            AtomicString("test"));
+  auto* node = CSSMathExpressionNode::Create(*calc_node);
+  EXPECT_TRUE(node->IsIdentifierLiteral());
+  EXPECT_EQ(To<CSSMathExpressionIdentifierLiteral>(node)->GetValue(),
+            AtomicString("test"));
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

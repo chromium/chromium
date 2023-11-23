@@ -142,6 +142,10 @@ static CalculationResultCategory UnitCategory(
     case CSSPrimitiveValue::UnitType::kDotsPerCentimeter:
       return kCalcResolution;
 
+    // Identifier
+    case CSSPrimitiveValue::UnitType::kIdent:
+      return kCalcIdent;
+
     default:
       return kCalcOther;
   }
@@ -772,6 +776,7 @@ double CSSMathExpressionNumericLiteral::ComputeDouble(
     case kCalcPercentLength:
     case kCalcPercent:
     case kCalcOther:
+    case kCalcIdent:
       NOTREACHED();
       break;
   }
@@ -792,6 +797,7 @@ double CSSMathExpressionNumericLiteral::ComputeLengthPx(
     case kCalcTime:
     case kCalcResolution:
     case kCalcOther:
+    case kCalcIdent:
       NOTREACHED();
       break;
   }
@@ -846,28 +852,33 @@ bool CSSMathExpressionNumericLiteral::InvolvesPercentageComparisons() const {
 static const CalculationResultCategory
     kAddSubtractResult[kCalcOther][kCalcOther] = {
         /* CalcNumber */ {kCalcNumber, kCalcOther, kCalcOther, kCalcOther,
-                          kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+                          kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+                          kCalcOther},
         /* CalcLength */
         {kCalcOther, kCalcLength, kCalcPercentLength, kCalcPercentLength,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
         /* CalcPercent */
         {kCalcOther, kCalcPercentLength, kCalcPercent, kCalcPercentLength,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
         /* CalcPercentLength */
         {kCalcOther, kCalcPercentLength, kCalcPercentLength, kCalcPercentLength,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
         /* CalcAngle  */
         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcAngle, kCalcOther,
-         kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther, kCalcOther},
         /* CalcTime */
         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcTime,
-         kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther, kCalcOther},
         /* CalcFrequency */
         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcFrequency, kCalcOther},
+         kCalcFrequency, kCalcOther, kCalcOther},
         /* CalcResolution */
         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcResolution}};
+         kCalcOther, kCalcResolution, kCalcOther},
+        /* CalcIdent */
+        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+         kCalcOther, kCalcOther, kCalcOther},
+};
 
 static CalculationResultCategory DetermineCategory(
     const CSSMathExpressionNode& left_side,
@@ -923,6 +934,23 @@ static CalculationResultCategory DetermineComparisonCategory(
 
   return category;
 }
+
+// ------ Start of CSSMathExpressionIdentifierLiteral member functions -
+
+CSSMathExpressionIdentifierLiteral::CSSMathExpressionIdentifierLiteral(
+    AtomicString identifier)
+    : CSSMathExpressionNode(UnitCategory(CSSPrimitiveValue::UnitType::kIdent),
+                            false /* has_comparisons*/,
+                            false /* needs_tree_scope_population*/),
+      identifier_(std::move(identifier)) {}
+
+scoped_refptr<const CalculationExpressionNode>
+CSSMathExpressionIdentifierLiteral::ToCalculationExpression(
+    const CSSLengthResolver&) const {
+  return base::MakeRefCounted<CalculationExpressionIdentifierNode>(identifier_);
+}
+
+// ------ End of CSSMathExpressionIdentifierLiteral member functions ----
 
 // ------ Start of CSSMathExpressionOperation member functions ------
 
@@ -1914,6 +1942,8 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
     case kCalcPercentLength:
     case kCalcOther:
       return CSSPrimitiveValue::UnitType::kUnknown;
+    case kCalcIdent:
+      return CSSPrimitiveValue::UnitType::kIdent;
   }
 
   NOTREACHED();
@@ -2878,6 +2908,11 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     const auto& pixels_and_percent =
         To<CalculationExpressionPixelsAndPercentNode>(node);
     return Create(pixels_and_percent.GetPixelsAndPercent());
+  }
+
+  if (node.IsIdentifier()) {
+    return CSSMathExpressionIdentifierLiteral::Create(
+        To<CalculationExpressionIdentifierNode>(node).Value());
   }
 
   if (node.IsAnchorQuery()) {
