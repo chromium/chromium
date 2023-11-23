@@ -1,1 +1,1 @@
-chromeos-chrome-arm-exp-121-6126.0-1700479769-benchmark-121.0.6136.0-r1-redacted.afdo.xz
+chromeos-chrome-arm-exp-121-6126.0-1700479769-benchmark-121.0.6142.0-r2-redacted.afdo.xz
