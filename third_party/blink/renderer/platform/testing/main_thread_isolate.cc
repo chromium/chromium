@@ -20,8 +20,9 @@ MainThreadIsolate::~MainThreadIsolate() {
   ThreadState::Current()->CollectAllGarbageForTesting();
   ThreadScheduler::Current()->SetV8Isolate(nullptr);
   V8PerIsolateData::WillBeDestroyed(isolate());
-  V8PerIsolateData::Destroy(isolate());
+  v8::Isolate* isolate = isolate_.get();
   isolate_ = nullptr;
+  V8PerIsolateData::Destroy(isolate);
 }
 
 }  // namespace blink::test

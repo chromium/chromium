@@ -339,4 +339,23 @@ test("blink_unittests_v2") {
     "//third_party/blink/renderer/platform",
     "//v8",
   ]
+
+  if (is_android) {
+    deps += [
+      "//content/public/android:content_java",
+      "//content/shell/android:content_shell_assets",
+      "//net/android:net_java",
+    ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//build/config/fuchsia/test/network.shard.test-cml",
+
+      # TODO(https://crbug.com/1185811): Investigate removing the requirement
+      # for VmexResource.
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+    ]
+  }
 }
