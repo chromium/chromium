@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
@@ -46,7 +46,7 @@ constexpr base::TimeDelta kInputAdvanceTime = base::Milliseconds(2);
 
 // Command-line switch to request dumping the recorded output to a WAV file for
 // analyzing the recorded output from one of the tests.
-constexpr base::StringPiece kDumpAsWavSwitch = "dump-as-wav";
+constexpr std::string_view kDumpAsWavSwitch = "dump-as-wav";
 
 // Test parameters.
 struct InputAndOutputParams {

@@ -36,7 +36,7 @@ class SoundsManagerImpl : public SoundsManager {
 
   // SoundsManager implementation:
   bool Initialize(SoundKey key,
-                  const base::StringPiece& data,
+                  const std::string_view& data,
                   media::AudioCodec codec) override;
   bool Play(SoundKey key) override;
   bool Stop(SoundKey key) override;
@@ -55,7 +55,7 @@ class SoundsManagerImpl : public SoundsManager {
 };
 
 bool SoundsManagerImpl::Initialize(SoundKey key,
-                                   const base::StringPiece& data,
+                                   const std::string_view& data,
                                    media::AudioCodec codec) {
   if (AudioStreamHandler* handler = GetHandler(key)) {
     DCHECK(handler->IsInitialized());
