@@ -80,6 +80,11 @@ BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 // Feature flag to enable the session serialization optimizations.
 BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
 
+// Feature flag that force the use of the synthesized native WKWebView
+// session instead of the (maybe inexistent) saved native session. The
+// purpose of this flag it to allow to testing this code path.
+BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
+
 // When true, the new loadSimulatedRequest API should be used when displaying
 // error pages.
 bool IsLoadSimulatedRequestAPIEnabled();

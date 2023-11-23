@@ -12,7 +12,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -471,7 +470,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  config.features_disabled.push_back(
+      web::features::kForceSynthesizedRestoreSession);
   return config;
 }
 
