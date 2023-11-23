@@ -47,7 +47,7 @@ message RequestConfig {
 message InputData {
   reserved 2, 3;
 
-  required string text = 1;
+  optional string text = 1;
   optional string tag = 4;
 }
 
