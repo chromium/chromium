@@ -28,8 +28,8 @@ class PlayerFrameBitmapPainter {
     private Runnable mFirstPaintListener;
     private boolean mDestroyed;
 
-    PlayerFrameBitmapPainter(@NonNull Runnable invalidateCallback,
-            @Nullable Runnable firstPaintListener) {
+    PlayerFrameBitmapPainter(
+            @NonNull Runnable invalidateCallback, @Nullable Runnable firstPaintListener) {
         mInvalidateCallback = invalidateCallback;
         mFirstPaintListener = firstPaintListener;
     }
@@ -52,9 +52,7 @@ class PlayerFrameBitmapPainter {
         mInvalidateCallback.run();
     }
 
-    /**
-     * Draws bitmaps on a given {@link Canvas} for the current viewport.
-     */
+    /** Draws bitmaps on a given {@link Canvas} for the current viewport. */
     void onDraw(Canvas canvas) {
         if (mDestroyed) return;
 
@@ -84,10 +82,14 @@ class PlayerFrameBitmapPainter {
                 // Calculate the portion of this tileBitmap that is visible in mViewPort.
                 int bitmapLeft = Math.max(mViewPort.left - (col * mTileSize.getWidth()), 0);
                 int bitmapTop = Math.max(mViewPort.top - (row * mTileSize.getHeight()), 0);
-                int bitmapRight = Math.min(mTileSize.getWidth(),
-                        bitmapLeft + mViewPort.right - (col * mTileSize.getWidth()));
-                int bitmapBottom = Math.min(mTileSize.getHeight(),
-                        bitmapTop + mViewPort.bottom - (row * mTileSize.getHeight()));
+                int bitmapRight =
+                        Math.min(
+                                mTileSize.getWidth(),
+                                bitmapLeft + mViewPort.right - (col * mTileSize.getWidth()));
+                int bitmapBottom =
+                        Math.min(
+                                mTileSize.getHeight(),
+                                bitmapTop + mViewPort.bottom - (row * mTileSize.getHeight()));
                 mDrawBitmapSrc.set(bitmapLeft, bitmapTop, bitmapRight, bitmapBottom);
 
                 // Calculate the portion of the canvas that tileBitmap is gonna be drawn on.

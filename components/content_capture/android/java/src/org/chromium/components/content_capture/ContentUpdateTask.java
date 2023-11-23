@@ -8,11 +8,11 @@ import android.view.autofill.AutofillId;
 
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
-/**
- * The task to update the captured content in platform.
- */
+/** The task to update the captured content in platform. */
 class ContentUpdateTask extends ProcessContentCaptureDataTask {
-    public ContentUpdateTask(FrameSession session, ContentCaptureFrame contentCaptureFrame,
+    public ContentUpdateTask(
+            FrameSession session,
+            ContentCaptureFrame contentCaptureFrame,
             PlatformSession platformSession) {
         super(session, contentCaptureFrame, platformSession);
     }
@@ -25,11 +25,17 @@ class ContentUpdateTask extends ProcessContentCaptureDataTask {
 
     private AutofillId notifyViewTextChanged(
             PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {
-        AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId(
-                parentPlatformSessionData.contentCaptureSession,
-                mPlatformSession.getRootPlatformSessionData().autofillId, data.getId());
-        PlatformAPIWrapper.getInstance().notifyViewTextChanged(
-                parentPlatformSessionData.contentCaptureSession, autofillId, data.getValue());
+        AutofillId autofillId =
+                PlatformAPIWrapper.getInstance()
+                        .newAutofillId(
+                                parentPlatformSessionData.contentCaptureSession,
+                                mPlatformSession.getRootPlatformSessionData().autofillId,
+                                data.getId());
+        PlatformAPIWrapper.getInstance()
+                .notifyViewTextChanged(
+                        parentPlatformSessionData.contentCaptureSession,
+                        autofillId,
+                        data.getValue());
         return autofillId;
     }
 }

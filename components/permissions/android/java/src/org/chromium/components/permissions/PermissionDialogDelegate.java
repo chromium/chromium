@@ -82,14 +82,14 @@ public class PermissionDialogDelegate {
 
     public void onDismiss() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get().dismissed(
-                mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get()
+                .dismissed(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
     public void destroy() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get().destroy(
-                mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get()
+                .destroy(mNativeDelegatePtr, PermissionDialogDelegate.this);
         mNativeDelegatePtr = 0;
     }
 
@@ -102,9 +102,7 @@ public class PermissionDialogDelegate {
         return PermissionDialogDelegateJni.get().getRequestTypeEnumSize();
     }
 
-    /**
-     * Called from C++ by |nativeDelegatePtr| to destroy the dialog.
-     */
+    /** Called from C++ by |nativeDelegatePtr| to destroy the dialog. */
     @CalledByNative
     private void dismissFromNative() {
         assert mDialogController != null;
@@ -174,9 +172,13 @@ public class PermissionDialogDelegate {
     @NativeMethods
     interface Natives {
         void accept(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
         void cancel(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
         void dismissed(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
         void destroy(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
         int getRequestTypeEnumSize();
     }
 }

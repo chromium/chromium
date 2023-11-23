@@ -4,23 +4,15 @@
 
 package org.chromium.components.infobars;
 
-/**
- * Functions needed to display an InfoBar UI.
- */
+/** Functions needed to display an InfoBar UI. */
 public interface InfoBarInteractionHandler {
-    /**
-     * Handles click on the infobar. It is invoked before one of the following functions.
-     */
+    /** Handles click on the infobar. It is invoked before one of the following functions. */
     public void onClick();
 
-    /**
-     * Takes some action related to the link being clicked.
-     */
+    /** Takes some action related to the link being clicked. */
     public void onLinkClicked();
 
-    /**
-     * Takes some action related to the close button being clicked.
-     */
+    /** Takes some action related to the close button being clicked. */
     public void onCloseButtonClicked();
 
     /**

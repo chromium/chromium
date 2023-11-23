@@ -42,9 +42,7 @@ import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * View representing the message banner.
- */
+/** View representing the message banner. */
 public class MessageBannerView extends BoundedLinearLayout {
     private ImageView mIconView;
     private TextView mTitle;
@@ -79,7 +77,10 @@ public class MessageBannerView extends BoundedLinearLayout {
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
-        mSecondaryButton.setOnClickListener((View v) -> { handleSecondaryButtonClick(); });
+        mSecondaryButton.setOnClickListener(
+                (View v) -> {
+                    handleSecondaryButtonClick();
+                });
         LinearLayout mainContent = findViewById(R.id.message_main_content);
         mainContent.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         // Elevation does not work on low end device.
@@ -90,8 +91,10 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     void enableA11y(boolean enabled) {
-        setImportantForAccessibility(enabled ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
-                                             : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        setImportantForAccessibility(
+                enabled
+                        ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
 
     void setTitle(String title) {
@@ -120,8 +123,9 @@ public class MessageBannerView extends BoundedLinearLayout {
     void setDescriptionIcon(Drawable drawable) {
         mDescription.setVisibility(drawable == null ? GONE : VISIBLE);
         mDescriptionDrawable = drawable;
-        mDescription.setDrawableTintColor(AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_secondary_tint_list));
+        mDescription.setDrawableTintColor(
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_secondary_tint_list));
         ((TextView) mDescription).setCompoundDrawablesRelative(drawable, null, null, null);
     }
 
@@ -130,8 +134,10 @@ public class MessageBannerView extends BoundedLinearLayout {
             int defaultIconSize =
                     getResources().getDimensionPixelOffset(R.dimen.message_description_icon_size);
             if (enabled) {
-                int newWidth = defaultIconSize * mDescriptionDrawable.getIntrinsicWidth()
-                        / mDescriptionDrawable.getIntrinsicHeight();
+                int newWidth =
+                        defaultIconSize
+                                * mDescriptionDrawable.getIntrinsicWidth()
+                                / mDescriptionDrawable.getIntrinsicHeight();
                 mDescription.setDrawableWidth(newWidth);
             } else {
                 mDescription.setDrawableWidth(defaultIconSize);
@@ -166,8 +172,9 @@ public class MessageBannerView extends BoundedLinearLayout {
             return;
         }
         BitmapDrawable drawable = (BitmapDrawable) mIconView.getDrawable();
-        RoundedBitmapDrawable bitmap = ViewUtils.createRoundedBitmapDrawable(
-                getResources(), drawable.getBitmap(), cornerRadius);
+        RoundedBitmapDrawable bitmap =
+                ViewUtils.createRoundedBitmapDrawable(
+                        getResources(), drawable.getBitmap(), cornerRadius);
         mIconView.setImageDrawable(bitmap);
     }
 
@@ -203,13 +210,14 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     void setPrimaryButtonClickListener(OnClickListener listener) {
-        mPrimaryButton.setOnClickListener((view) -> {
-            // Ignore click events if a progress bar is showing.
-            if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
-                    && !TextUtils.isEmpty(mPrimaryButtonText)) {
-                listener.onClick(view);
-            }
-        });
+        mPrimaryButton.setOnClickListener(
+                (view) -> {
+                    // Ignore click events if a progress bar is showing.
+                    if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                            && !TextUtils.isEmpty(mPrimaryButtonText)) {
+                        listener.onClick(view);
+                    }
+                });
     }
 
     void setSecondaryIcon(Drawable icon) {
@@ -288,7 +296,8 @@ public class MessageBannerView extends BoundedLinearLayout {
             return;
         }
 
-        mSecondaryButton.setDelegate(mSecondaryMenuButtonDelegate != null
+        mSecondaryButton.setDelegate(
+                mSecondaryMenuButtonDelegate != null
                         ? mSecondaryMenuButtonDelegate
                         : buildDelegateForSingleMenuItem());
 

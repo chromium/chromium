@@ -54,14 +54,15 @@ public class UpdateScheduler {
         // update tasks would be cancelled.
         if (mTaskFinishedCallback != null) return;
 
-        TaskInfo taskInfo = TaskInfo.createOneOffTask(TaskIds.COMPONENT_UPDATE_JOB_ID, delayMs,
-                                            Integer.MAX_VALUE)
-                                    .setUpdateCurrent(true)
-                                    .setRequiredNetworkType(TaskInfo.NetworkType.UNMETERED)
-                                    .setIsPersisted(true)
-                                    .build();
-        BackgroundTaskSchedulerFactory.getScheduler().schedule(
-                ContextUtils.getApplicationContext(), taskInfo);
+        TaskInfo taskInfo =
+                TaskInfo.createOneOffTask(
+                                TaskIds.COMPONENT_UPDATE_JOB_ID, delayMs, Integer.MAX_VALUE)
+                        .setUpdateCurrent(true)
+                        .setRequiredNetworkType(TaskInfo.NetworkType.UNMETERED)
+                        .setIsPersisted(true)
+                        .build();
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 
     @CalledByNative
@@ -87,13 +88,14 @@ public class UpdateScheduler {
 
     @CalledByNative
     private void cancelTask() {
-        BackgroundTaskSchedulerFactory.getScheduler().cancel(
-                ContextUtils.getApplicationContext(), TaskIds.COMPONENT_UPDATE_JOB_ID);
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .cancel(ContextUtils.getApplicationContext(), TaskIds.COMPONENT_UPDATE_JOB_ID);
     }
 
     @NativeMethods
     interface Natives {
         void onStartTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+
         void onStopTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
     }
 }

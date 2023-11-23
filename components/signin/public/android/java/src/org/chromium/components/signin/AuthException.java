@@ -48,16 +48,12 @@ public class AuthException extends Exception {
         mIsTransientError = isTransientError;
     }
 
-    /**
-     * @return Whether the error is transient and we can retry.
-     */
+    /** @return Whether the error is transient and we can retry. */
     public boolean isTransientError() {
         return mIsTransientError;
     }
 
-    /**
-     * Joins messages from all exceptions in the causal chain into a single string.
-     */
+    /** Joins messages from all exceptions in the causal chain into a single string. */
     public String stringifyCausalChain() {
         StringBuilder builder = new StringBuilder(toString());
         for (Throwable cause = getCause(); cause != null; cause = cause.getCause()) {

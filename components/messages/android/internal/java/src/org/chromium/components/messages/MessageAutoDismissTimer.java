@@ -8,24 +8,18 @@ import android.os.Handler;
 
 import org.chromium.base.ThreadUtils;
 
-/**
- * Auto dismiss timer for messages.
- */
+/** Auto dismiss timer for messages. */
 class MessageAutoDismissTimer {
     private long mDuration;
     private Runnable mRunnableOnTimeUp;
     private Handler mAutoDismissTimer;
 
-    /**
-     * @param duration Duration in mills.
-     */
+    /** @param duration Duration in mills. */
     public MessageAutoDismissTimer() {
         mAutoDismissTimer = new Handler(ThreadUtils.getUiThreadLooper());
     }
 
-    /**
-     * Reset the timer. Do nothing if this timer has been cancelled already.
-     */
+    /** Reset the timer. Do nothing if this timer has been cancelled already. */
     void resetTimer() {
         if (mRunnableOnTimeUp == null) return;
         Runnable runnable = mRunnableOnTimeUp;
@@ -33,18 +27,14 @@ class MessageAutoDismissTimer {
         startTimer(mDuration, runnable);
     }
 
-    /**
-     * Cancel the timer. The registered runnable will not be run.
-     */
+    /** Cancel the timer. The registered runnable will not be run. */
     void cancelTimer() {
         if (mRunnableOnTimeUp == null) return;
         mAutoDismissTimer.removeCallbacksAndMessages(null);
         mRunnableOnTimeUp = null;
     }
 
-    /**
-     * @param runnableOnTimeUp Runnable called when time is up.
-     */
+    /** @param runnableOnTimeUp Runnable called when time is up. */
     void startTimer(long duration, Runnable runnableOnTimeUp) {
         mDuration = duration;
         assert mDuration > 0;

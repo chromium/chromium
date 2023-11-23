@@ -36,9 +36,7 @@ public class MinidumpUploadJobImplTest {
 
     private static final String BOUNDARY = "TESTBOUNDARY";
 
-    /**
-     * Test to ensure the minidump uploading mechanism allows the expected number of upload retries.
-     */
+    /** Test to ensure the minidump uploading mechanism allows the expected number of upload retries. */
     @Test
     public void testRetryCountRespected() throws IOException {
         final CrashReportingPermissionManager permManager =

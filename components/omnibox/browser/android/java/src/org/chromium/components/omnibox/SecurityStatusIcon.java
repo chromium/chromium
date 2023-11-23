@@ -12,9 +12,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /** Utility class to get security state info for the omnibox. */
 public class SecurityStatusIcon {
-    /**
-     * @return the id of the resource identifying the icon corresponding to the securityLevel.
-     */
+    /** @return the id of the resource identifying the icon corresponding to the securityLevel. */
     @DrawableRes
     public static int getSecurityIconResource(
             @ConnectionSecurityLevel int securityLevel,
@@ -42,9 +40,7 @@ public class SecurityStatusIcon {
         return 0;
     }
 
-    /**
-     * @return The resource ID of the content description for the security icon.
-     */
+    /** @return The resource ID of the content description for the security icon. */
     @StringRes
     public static int getSecurityIconContentDescriptionResourceId(
             @ConnectionSecurityLevel int securityLevel) {

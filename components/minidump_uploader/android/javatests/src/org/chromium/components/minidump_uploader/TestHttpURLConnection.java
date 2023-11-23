@@ -20,13 +20,12 @@ import java.net.URL;
  * minidumps correctly.
  */
 public class TestHttpURLConnection extends HttpURLConnection {
-    static final String DEFAULT_EXPECTED_CONTENT_TYPE = String.format(
-            MinidumpUploader.CONTENT_TYPE_TMPL, MinidumpUploaderTestConstants.BOUNDARY);
+    static final String DEFAULT_EXPECTED_CONTENT_TYPE =
+            String.format(
+                    MinidumpUploader.CONTENT_TYPE_TMPL, MinidumpUploaderTestConstants.BOUNDARY);
     private final String mExpectedContentType;
 
-    /**
-     * The value of the "Content-Type" property if the property has been set.
-     */
+    /** The value of the "Content-Type" property if the property has been set. */
     private String mContentTypePropertyValue = "";
 
     public TestHttpURLConnection(URL url) {

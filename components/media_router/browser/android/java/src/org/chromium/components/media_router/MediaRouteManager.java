@@ -37,8 +37,12 @@ public interface MediaRouteManager {
      * @param wasLaunched whether the presentation on the other end of the route was launched or
      *                    just joined.
      */
-    public void onRouteCreated(String mediaRouteId, String mediaSinkId, int requestId,
-            MediaRouteProvider provider, boolean wasLaunched);
+    public void onRouteCreated(
+            String mediaRouteId,
+            String mediaSinkId,
+            int requestId,
+            MediaRouteProvider provider,
+            boolean wasLaunched);
 
     /**
      * Called when the router failed to create a route.

@@ -22,7 +22,7 @@ public interface TrackingProtectionDelegate {
 
     /** Set the value of the Do Not Track Pref. */
     void setDoNotTrack(boolean enabled);
-    
+
     /** @return the browser context associated with the settings page. */
     BrowserContextHandle getBrowserContext();
 

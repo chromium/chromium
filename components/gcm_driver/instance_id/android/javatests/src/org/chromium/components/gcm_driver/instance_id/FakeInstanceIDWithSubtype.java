@@ -40,12 +40,13 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
             sSubtypeInstances.clear();
             boolean wasEnabled = sFakeFactoryForTesting != null;
             if (enable) {
-                sFakeFactoryForTesting = new FakeFactory() {
-                    @Override
-                    public InstanceIDWithSubtype create(String subtype) {
-                        return new FakeInstanceIDWithSubtype(subtype);
-                    }
-                };
+                sFakeFactoryForTesting =
+                        new FakeFactory() {
+                            @Override
+                            public InstanceIDWithSubtype create(String subtype) {
+                                return new FakeInstanceIDWithSubtype(subtype);
+                            }
+                        };
             } else {
                 sFakeFactoryForTesting = null;
             }
@@ -63,8 +64,9 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
     public static Pair<String, String> getSubtypeAndAuthorizedEntityOfOnlyToken() {
         synchronized (sSubtypeInstancesLock) {
             if (sSubtypeInstances.size() != 1) {
-                throw new IllegalStateException("Expected exactly one InstanceID, but there are "
-                        + sSubtypeInstances.size());
+                throw new IllegalStateException(
+                        "Expected exactly one InstanceID, but there are "
+                                + sSubtypeInstances.size());
             }
             final String subType = sSubtypeInstances.values().iterator().next().getSubtype();
             return Pair.create(subType, getAuthorizedEntityForSubtype(subType));
@@ -118,7 +120,7 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
 
         if (mId == null) {
             mCreationTime = System.currentTimeMillis();
-            mId = randomBase64(11 /* length */);
+            mId = randomBase64(/* encodedLength= */ 11);
         }
         return mId;
     }
@@ -145,7 +147,7 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
         String token = mTokens.get(key);
         if (token == null) {
             getId();
-            token = mId + ':' + randomBase64(140 /* length */);
+            token = mId + ':' + randomBase64(/* encodedLength= */ 140);
             mTokens.put(key, token);
         }
         return token;

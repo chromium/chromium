@@ -47,6 +47,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     /** AddAccountActivityStub intent arguments to set account name and result */
     private static final String ADDED_ACCOUNT_NAME = "AddedAccountName";
+
     private static final String ADD_ACCOUNT_RESULT = "AddAccountResult";
 
     /** An {@link Activity} stub to test add account flow. */
@@ -71,6 +72,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @GuardedBy("mLock")
     private final Set<AccountHolder> mAccountHolders = new LinkedHashSet<>();
+
     private final List<AccountsChangeObserver> mObservers = new ArrayList<>();
 
     /** Can be used to block {@link #getCoreAccountInfos()} ()} result. */
@@ -78,9 +80,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     private @Nullable Intent mAddAccountIntent;
 
-    /**
-     * Creates an object of FakeAccountManagerFacade.
-     */
+    /** Creates an object of FakeAccountManagerFacade. */
     public FakeAccountManagerFacade() {}
 
     @MainThread
@@ -116,8 +116,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
             throws AuthException {
         synchronized (mLock) {
-            AccountHolder accountHolder = getAccountHolder(
-                    AccountUtils.createAccountFromName(coreAccountInfo.getEmail()));
+            AccountHolder accountHolder =
+                    getAccountHolder(
+                            AccountUtils.createAccountFromName(coreAccountInfo.getEmail()));
             if (accountHolder.getAuthToken(scope) == null) {
                 accountHolder.updateAuthToken(scope, UUID.randomUUID().toString());
             }
@@ -141,7 +142,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         if (account.name.startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
             listener.onStatusReady(true, account);
         } else {
-            listener.onStatusReady(false, /*childAccount=*/null);
+            listener.onStatusReady(false, /* childAccount= */ null);
         }
     }
 
@@ -170,9 +171,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         callback.onResult(new Bundle());
     }
 
-    /**
-     * Adds an account to the fake AccountManagerFacade.
-     */
+    /** Adds an account to the fake AccountManagerFacade. */
     public void addAccount(Account account) {
         AccountHolder accountHolder = AccountHolder.createFromAccount(account);
         // As this class is accessed both from UI thread and worker threads, we lock the access
@@ -183,9 +182,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         ThreadUtils.runOnUiThreadBlocking(this::fireOnAccountsChangedNotification);
     }
 
-    /**
-     * Removes an account from the fake AccountManagerFacade.
-     */
+    /** Removes an account from the fake AccountManagerFacade. */
     public void removeAccount(Account account) {
         AccountHolder accountHolder = AccountHolder.createFromAccount(account);
         synchronized (mLock) {
@@ -196,9 +193,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         ThreadUtils.runOnUiThreadBlocking(this::fireOnAccountsChangedNotification);
     }
 
-    /**
-     * Converts an email to a fake gaia Id.
-     */
+    /** Converts an email to a fake gaia Id. */
     public static String toGaiaId(String email) {
         return "gaia-id-" + email.replace("@", "_at_");
     }
@@ -274,7 +269,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         // will be caught by ProfileOAuth2TokenServiceDelegate and reported as a token request
         // failure (which matches the behavior of the production code in the situation when a token
         // is requested for an account that doesn't exist or has been removed).
-        throw new AuthException(/* isTransientError = */ false, "Cannot find account:" + account);
+        throw new AuthException(/* isTransientError= */ false, "Cannot find account:" + account);
     }
 
     @MainThread

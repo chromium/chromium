@@ -30,12 +30,20 @@ public class MessagesFactory {
      * @param windowAndroid The current window Android.
      * @return The constructed ManagedMessageDispatcher.
      */
-    public static ManagedMessageDispatcher createMessageDispatcher(MessageContainer container,
-            Supplier<Integer> messageTopOffset, Supplier<Integer> messageMaxTranslation,
+    public static ManagedMessageDispatcher createMessageDispatcher(
+            MessageContainer container,
+            Supplier<Integer> messageTopOffset,
+            Supplier<Integer> messageMaxTranslation,
             MessageAutodismissDurationProvider autodismissDurationMs,
-            Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid) {
-        return new MessageDispatcherImpl(container, messageTopOffset, messageMaxTranslation,
-                autodismissDurationMs, animatorStartCallback, windowAndroid);
+            Callback<Animator> animatorStartCallback,
+            WindowAndroid windowAndroid) {
+        return new MessageDispatcherImpl(
+                container,
+                messageTopOffset,
+                messageMaxTranslation,
+                autodismissDurationMs,
+                animatorStartCallback,
+                windowAndroid);
     }
 
     /**

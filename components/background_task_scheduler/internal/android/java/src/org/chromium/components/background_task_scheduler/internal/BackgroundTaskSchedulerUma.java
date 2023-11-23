@@ -19,9 +19,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Helper class to report UMA.
- */
+/** Helper class to report UMA. */
 public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalUma {
     static final String KEY_CACHED_UMA = "bts_cached_uma";
 
@@ -43,7 +41,9 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
             if (entry == null) return null;
 
             String[] entryParts = entry.split(SEPARATOR);
-            if (entryParts.length != 3 || entryParts[0].isEmpty() || entryParts[1].isEmpty()
+            if (entryParts.length != 3
+                    || entryParts[0].isEmpty()
+                    || entryParts[1].isEmpty()
                     || entryParts[2].isEmpty()) {
                 return null;
             }
@@ -112,27 +112,32 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     /** Reports metrics for task scheduling and whether it was successful. */
     public void reportTaskScheduled(int taskId, boolean success) {
         if (success) {
-            cacheEvent("Android.BackgroundTaskScheduler.TaskScheduled.Success",
+            cacheEvent(
+                    "Android.BackgroundTaskScheduler.TaskScheduled.Success",
                     toUmaEnumValueFromTaskId(taskId));
         } else {
-            cacheEvent("Android.BackgroundTaskScheduler.TaskScheduled.Failure",
+            cacheEvent(
+                    "Android.BackgroundTaskScheduler.TaskScheduled.Failure",
                     toUmaEnumValueFromTaskId(taskId));
         }
     }
 
     /** Reports metrics for creating an exact tasks. */
     public void reportExactTaskCreated(int taskId) {
-        cacheEvent("Android.BackgroundTaskScheduler.ExactTaskCreated",
+        cacheEvent(
+                "Android.BackgroundTaskScheduler.ExactTaskCreated",
                 toUmaEnumValueFromTaskId(taskId));
     }
 
     /** Reports metrics for task scheduling with the expiration feature activated. */
     public void reportTaskCreatedAndExpirationState(int taskId, boolean expires) {
         if (expires) {
-            cacheEvent("Android.BackgroundTaskScheduler.TaskCreated.WithExpiration",
+            cacheEvent(
+                    "Android.BackgroundTaskScheduler.TaskCreated.WithExpiration",
                     toUmaEnumValueFromTaskId(taskId));
         } else {
-            cacheEvent("Android.BackgroundTaskScheduler.TaskCreated.WithoutExpiration",
+            cacheEvent(
+                    "Android.BackgroundTaskScheduler.TaskCreated.WithoutExpiration",
                     toUmaEnumValueFromTaskId(taskId));
         }
     }
@@ -160,9 +165,13 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
 
     /** Reports metrics for finishing a task. */
     public void reportTaskFinished(int taskId, long taskDurationMs) {
-        RecordHistogram.recordCustomTimesHistogram("Android.BackgroundTaskScheduler.TaskFinished."
+        RecordHistogram.recordCustomTimesHistogram(
+                "Android.BackgroundTaskScheduler.TaskFinished."
                         + getHistogramPatternForTaskId(taskId),
-                taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
+                taskDurationMs,
+                1,
+                DateUtils.DAY_IN_MILLIS,
+                50);
     }
 
     /** Reports metrics for rescheduling a task. */
@@ -175,7 +184,10 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
         RecordHistogram.recordCustomTimesHistogram(
                 "Android.BackgroundTaskScheduler.SetNotification."
                         + getHistogramPatternForTaskId(taskId),
-                taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
+                taskDurationMs,
+                1,
+                DateUtils.DAY_IN_MILLIS,
+                50);
     }
 
     @Override
@@ -183,6 +195,7 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
         int umaEnumValue = toUmaEnumValueFromTaskId(taskId);
         cacheEvent("Android.BackgroundTaskScheduler.TaskLoadedNative", umaEnumValue);
     }
+
     @Override
     public void reportStartupMode(int startupMode) {
         // We don't record full browser's warm startup since most of the full browser warm startup

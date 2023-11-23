@@ -34,9 +34,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-/**
- * Android implementation of the authenticator.mojom interface.
- */
+/** Android implementation of the authenticator.mojom interface. */
 public final class AuthenticatorImpl implements Authenticator {
     /**
      * Interface for code that will show the user a confirmation before creating a credential.
@@ -166,9 +164,8 @@ public final class AuthenticatorImpl implements Authenticator {
 
         if (mCreateConfirmationUiDelegate != null) {
             if (!mCreateConfirmationUiDelegate.show(
-                        ()
-                                -> continueMakeCredential(options, callback),
-                        () -> onError(AuthenticatorStatus.NOT_ALLOWED_ERROR))) {
+                    () -> continueMakeCredential(options, callback),
+                    () -> onError(AuthenticatorStatus.NOT_ALLOWED_ERROR))) {
                 continueMakeCredential(options, callback);
             }
         } else {
@@ -179,10 +176,13 @@ public final class AuthenticatorImpl implements Authenticator {
     private void continueMakeCredential(
             PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
-        mPendingFido2CredentialRequest.handleMakeCredentialRequest(mContext, options,
-                mRenderFrameHost, /*maybeClientDataHash=*/null, mOrigin,
-                (status, response)
-                        -> onRegisterResponse(status, response),
+        mPendingFido2CredentialRequest.handleMakeCredentialRequest(
+                mContext,
+                options,
+                mRenderFrameHost,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                (status, response) -> onRegisterResponse(status, response),
                 status -> onError(status));
     }
 
@@ -203,20 +203,27 @@ public final class AuthenticatorImpl implements Authenticator {
         }
 
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
-        mPendingFido2CredentialRequest.handleGetAssertionRequest(mContext, options,
+        mPendingFido2CredentialRequest.handleGetAssertionRequest(
+                mContext,
+                options,
                 mRenderFrameHost,
-                /*maybeClientDataHash=*/null, mOrigin, mTopOrigin, mPayment,
-                (status, response) -> onSignResponse(status, response), status -> onError(status));
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mTopOrigin,
+                mPayment,
+                (status, response) -> onSignResponse(status, response),
+                status -> onError(status));
     }
 
     @Override
     public void isUserVerifyingPlatformAuthenticatorAvailable(
             final IsUserVerifyingPlatformAuthenticatorAvailable_Response callback) {
-        IsUserVerifyingPlatformAuthenticatorAvailable_Response decoratedCallback = (isUvpaa) -> {
-            RecordHistogram.recordBooleanHistogram(
-                    "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", isUvpaa);
-            callback.call(isUvpaa);
-        };
+        IsUserVerifyingPlatformAuthenticatorAvailable_Response decoratedCallback =
+                (isUvpaa) -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", isUvpaa);
+                    callback.call(isUvpaa);
+                };
 
         if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION) {
             decoratedCallback.call(false);
@@ -224,9 +231,11 @@ public final class AuthenticatorImpl implements Authenticator {
         }
 
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(decoratedCallback);
-        getFido2CredentialRequest().handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                mContext,
-                isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+        getFido2CredentialRequest()
+                .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
+                        mContext,
+                        isUvpaa ->
+                                onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
     }
 
     /**
@@ -247,16 +256,24 @@ public final class AuthenticatorImpl implements Authenticator {
      * idempotent at the Fido2 layer, it does not adhere to the 'one call at a time' logic used for
      * the create/get methods.
      */
-    public void getMatchingCredentialIds(String relyingPartyId, byte[][] credentialIds,
-            boolean requireThirdPartyPayment, GetMatchingCredentialIdsResponseCallback callback) {
+    public void getMatchingCredentialIds(
+            String relyingPartyId,
+            byte[][] credentialIds,
+            boolean requireThirdPartyPayment,
+            GetMatchingCredentialIdsResponseCallback callback) {
         if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS) {
             callback.onResponse(new ArrayList<byte[]>());
             return;
         }
 
-        getFido2CredentialRequest().handleGetMatchingCredentialIdsRequest(mRenderFrameHost,
-                relyingPartyId, credentialIds, requireThirdPartyPayment, callback,
-                status -> onError(status));
+        getFido2CredentialRequest()
+                .handleGetMatchingCredentialIdsRequest(
+                        mRenderFrameHost,
+                        relyingPartyId,
+                        credentialIds,
+                        requireThirdPartyPayment,
+                        callback,
+                        status -> onError(status));
     }
 
     @Override
@@ -272,9 +289,11 @@ public final class AuthenticatorImpl implements Authenticator {
         // return true but chrome will ignore conditional requests. Android surfaces only platform
         // credentials on conditional requests, use IsUVPAA as a proxy for availability.
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(callback);
-        getFido2CredentialRequest().handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                mContext,
-                isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+        getFido2CredentialRequest()
+                .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
+                        mContext,
+                        isUvpaa ->
+                                onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
     }
 
     @Override
@@ -290,9 +309,7 @@ public final class AuthenticatorImpl implements Authenticator {
         mPendingFido2CredentialRequest.cancelConditionalGetAssertion(mRenderFrameHost);
     }
 
-    /**
-     * Callbacks for receiving responses from the internal handlers.
-     */
+    /** Callbacks for receiving responses from the internal handlers. */
     public void onRegisterResponse(int status, MakeCredentialAuthenticatorResponse response) {
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
@@ -362,9 +379,10 @@ public final class AuthenticatorImpl implements Authenticator {
 
         @Override
         public boolean showIntent(PendingIntent intent, Callback<Pair<Integer, Intent>> callback) {
-            return mWindow != null && mWindow.getActivity().get() != null
+            return mWindow != null
+                    && mWindow.getActivity().get() != null
                     && mWindow.showCancelableIntent(intent, new CallbackWrapper(callback), null)
-                    != WindowAndroid.START_INTENT_FAILURE;
+                            != WindowAndroid.START_INTENT_FAILURE;
         }
 
         private static class CallbackWrapper implements WindowAndroid.IntentCallback {

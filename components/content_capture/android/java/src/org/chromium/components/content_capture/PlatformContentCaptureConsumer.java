@@ -43,8 +43,9 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
             View view, ViewStructure viewStructure, WebContents webContents) {
         mView = view;
         if (viewStructure != null) {
-            mPlatformSession = new PlatformSession(
-                    view.getContentCaptureSession(), viewStructure.getAutofillId());
+            mPlatformSession =
+                    new PlatformSession(
+                            view.getContentCaptureSession(), viewStructure.getAutofillId());
         }
     }
 

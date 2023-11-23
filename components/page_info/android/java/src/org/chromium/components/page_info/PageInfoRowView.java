@@ -23,9 +23,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
-/**
- * View showing an icon, title and subtitle for a page info row.
- */
+/** View showing an icon, title and subtitle for a page info row. */
 public class PageInfoRowView extends FrameLayout {
     /**  Parameters to configure the row view. */
     public static class ViewParams {
@@ -68,7 +66,8 @@ public class PageInfoRowView extends FrameLayout {
             mIcon.setPadding(p, p, p, p);
         }
 
-        ImageViewCompat.setImageTintList(mIcon,
+        ImageViewCompat.setImageTintList(
+                mIcon,
                 params.iconTint != 0
                         ? ColorStateList.valueOf(getResources().getColor(params.iconTint))
                         : AppCompatResources.getColorStateList(
@@ -88,8 +87,9 @@ public class PageInfoRowView extends FrameLayout {
             getChildAt(0).setOnClickListener((v) -> params.clickCallback.run());
         }
         if (params.rowTint != 0) {
-            setBackgroundColor(AppCompatResources.getColorStateList(getContext(), params.rowTint)
-                                       .getDefaultColor());
+            setBackgroundColor(
+                    AppCompatResources.getColorStateList(getContext(), params.rowTint)
+                            .getDefaultColor());
         }
     }
 

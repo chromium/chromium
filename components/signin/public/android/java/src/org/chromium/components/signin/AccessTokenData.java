@@ -9,9 +9,7 @@ package org.chromium.components.signin;
  * holder that contains the access token and its expiration time.
  */
 public class AccessTokenData {
-    /**
-     * The expiration time value when there's no known expiration time for the token.
-     */
+    /** The expiration time value when there's no known expiration time for the token. */
     public static final long NO_KNOWN_EXPIRATION_TIME = 0;
 
     private final String mToken;
@@ -37,9 +35,7 @@ public class AccessTokenData {
         this(token, NO_KNOWN_EXPIRATION_TIME);
     }
 
-    /**
-     * Returns the value of the access token.
-     */
+    /** Returns the value of the access token. */
     public String getToken() {
         return this.mToken;
     }

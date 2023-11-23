@@ -7,9 +7,7 @@ package org.chromium.components.webxr;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Helper class for interacting with Cardboard SDK from Java code.
- */
+/** Helper class for interacting with Cardboard SDK from Java code. */
 @JNINamespace("webxr")
 public class CardboardUtils {
     /**

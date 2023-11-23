@@ -17,9 +17,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A helper class providing utility methods that are intended to be used in tests using messages.
- */
+/** A helper class providing utility methods that are intended to be used in tests using messages. */
 @JNINamespace("messages")
 public class MessagesTestHelper {
     private TestMessageDispatcherWrapper mWrapper;
@@ -54,9 +52,7 @@ public class MessagesTestHelper {
         ResettersForTesting.register(this::resetMessageDispatcherForTesting);
     }
 
-    /**
-     * Remove the test-only dispatcher from the window and reset with the original dispatcher.
-     */
+    /** Remove the test-only dispatcher from the window and reset with the original dispatcher. */
     @CalledByNative
     private void resetMessageDispatcherForTesting() {
         if (mWrapper != null) {
@@ -72,8 +68,8 @@ public class MessagesTestHelper {
     private static MessageDispatcherImpl getDispatcherImplFromWindow(WindowAndroid windowAndroid) {
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(windowAndroid);
         if (dispatcher instanceof TestMessageDispatcherWrapper) {
-            return (MessageDispatcherImpl) ((TestMessageDispatcherWrapper) dispatcher)
-                    .getWrappedDispatcher();
+            return (MessageDispatcherImpl)
+                    ((TestMessageDispatcherWrapper) dispatcher).getWrappedDispatcher();
         }
         return (MessageDispatcherImpl) dispatcher;
     }
@@ -130,8 +126,8 @@ public class MessagesTestHelper {
         MessageDispatcherImpl messageDispatcherImpl;
         if (dispatcher instanceof TestMessageDispatcherWrapper) {
             messageDispatcherImpl =
-                    (MessageDispatcherImpl) ((TestMessageDispatcherWrapper) dispatcher)
-                            .getWrappedDispatcher();
+                    (MessageDispatcherImpl)
+                            ((TestMessageDispatcherWrapper) dispatcher).getWrappedDispatcher();
         } else {
             messageDispatcherImpl = (MessageDispatcherImpl) dispatcher;
         }

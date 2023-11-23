@@ -31,9 +31,7 @@ public class IdentityMutator {
         mNativeIdentityMutator = nativeIdentityMutator;
     }
 
-    /**
-     * Called by native IdentityManager upon KeyedService's shutdown
-     */
+    /** Called by native IdentityManager upon KeyedService's shutdown */
     @CalledByNative
     private void destroy() {
         mNativeIdentityMutator = 0;
@@ -47,10 +45,12 @@ public class IdentityMutator {
      *   - the account username is allowed by policy,
      *   - there is not already a primary account set.
      */
-    public @PrimaryAccountError int setPrimaryAccount(CoreAccountId accountId,
-            @ConsentLevel int consentLevel, @SigninAccessPoint int accessPoint) {
-        return IdentityMutatorJni.get().setPrimaryAccount(
-                mNativeIdentityMutator, accountId, consentLevel, accessPoint);
+    public @PrimaryAccountError int setPrimaryAccount(
+            CoreAccountId accountId,
+            @ConsentLevel int consentLevel,
+            @SigninAccessPoint int accessPoint) {
+        return IdentityMutatorJni.get()
+                .setPrimaryAccount(mNativeIdentityMutator, accountId, consentLevel, accessPoint);
     }
 
     /**
@@ -59,17 +59,15 @@ public class IdentityMutator {
      */
     public boolean clearPrimaryAccount(
             @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric) {
-        return IdentityMutatorJni.get().clearPrimaryAccount(
-                mNativeIdentityMutator, sourceMetric, deleteMetric);
+        return IdentityMutatorJni.get()
+                .clearPrimaryAccount(mNativeIdentityMutator, sourceMetric, deleteMetric);
     }
 
-    /**
-     * Revokes sync consent for the primary account.
-     */
+    /** Revokes sync consent for the primary account. */
     public void revokeSyncConsent(
             @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric) {
-        IdentityMutatorJni.get().revokeSyncConsent(
-                mNativeIdentityMutator, sourceMetric, deleteMetric);
+        IdentityMutatorJni.get()
+                .revokeSyncConsent(mNativeIdentityMutator, sourceMetric, deleteMetric);
     }
 
     /**
@@ -77,8 +75,8 @@ public class IdentityMutator {
      * ProfileOAuth2TokenServiceDelegate::ReloadAllAccountsFromSystemWithPrimaryAccount.
      */
     public void reloadAllAccountsFromSystemWithPrimaryAccount(@Nullable CoreAccountId accountId) {
-        IdentityMutatorJni.get().reloadAllAccountsFromSystemWithPrimaryAccount(
-                mNativeIdentityMutator, accountId);
+        IdentityMutatorJni.get()
+                .reloadAllAccountsFromSystemWithPrimaryAccount(mNativeIdentityMutator, accountId);
     }
 
     public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
@@ -92,15 +90,21 @@ public class IdentityMutator {
 
     @NativeMethods
     interface Natives {
-        public @PrimaryAccountError int setPrimaryAccount(long nativeJniIdentityMutator,
-                CoreAccountId accountId, @ConsentLevel int consentLevel,
+        public @PrimaryAccountError int setPrimaryAccount(
+                long nativeJniIdentityMutator,
+                CoreAccountId accountId,
+                @ConsentLevel int consentLevel,
                 @SigninAccessPoint int accessPoint);
 
-        public boolean clearPrimaryAccount(long nativeJniIdentityMutator,
-                @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric);
+        public boolean clearPrimaryAccount(
+                long nativeJniIdentityMutator,
+                @SignoutReason int sourceMetric,
+                @SignoutDelete int deleteMetric);
 
-        public void revokeSyncConsent(long nativeJniIdentityMutator,
-                @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric);
+        public void revokeSyncConsent(
+                long nativeJniIdentityMutator,
+                @SignoutReason int sourceMetric,
+                @SignoutDelete int deleteMetric);
 
         public void reloadAllAccountsFromSystemWithPrimaryAccount(
                 long nativeJniIdentityMutator, @Nullable CoreAccountId accountId);

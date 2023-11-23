@@ -20,16 +20,12 @@ public class GwpAsanFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private GwpAsanFeatureMap() {}
 
-    /**
-     * @return the singleton {@link GwpAsanFeatureMap}
-     */
+    /** @return the singleton {@link GwpAsanFeatureMap} */
     public static GwpAsanFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

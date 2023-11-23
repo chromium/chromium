@@ -10,9 +10,7 @@ import org.jni_zero.JNINamespace;
 import java.io.InputStream;
 import java.util.Map;
 
-/**
- * The response information that is to be returned for a particular resource fetch.
- */
+/** The response information that is to be returned for a particular resource fetch. */
 @JNINamespace("embedder_support")
 public class WebResourceResponseInfo {
     private String mMimeType;
@@ -30,8 +28,13 @@ public class WebResourceResponseInfo {
         mData = data;
     }
 
-    public WebResourceResponseInfo(String mimeType, String encoding, InputStream data,
-            int statusCode, String reasonPhrase, Map<String, String> responseHeaders) {
+    public WebResourceResponseInfo(
+            String mimeType,
+            String encoding,
+            InputStream data,
+            int statusCode,
+            String reasonPhrase,
+            Map<String, String> responseHeaders) {
         this(mimeType, encoding, data);
 
         mStatusCode = statusCode;

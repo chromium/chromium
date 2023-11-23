@@ -18,9 +18,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/**
- * A delegate for {@link ExternalNavigationHandler}.
- */
+/** A delegate for {@link ExternalNavigationHandler}. */
 public interface ExternalNavigationDelegate {
     /**
      * Returns the Context with which this delegate is associated, or null if there is no such
@@ -39,9 +37,7 @@ public interface ExternalNavigationDelegate {
      */
     boolean willAppHandleIntent(Intent intent);
 
-    /**
-     * Returns whether to disable forwarding URL requests to external intents for the passed-in URL.
-     */
+    /** Returns whether to disable forwarding URL requests to external intents for the passed-in URL. */
     boolean shouldDisableExternalIntentRequestsForUrl(GURL url);
 
     /** Adds a window id to the intent, if necessary. */
@@ -63,24 +59,16 @@ public interface ExternalNavigationDelegate {
      */
     void maybeSetPendingIncognitoUrl(Intent intent);
 
-    /**
-     * Determine if the application of the embedder is in the foreground.
-     */
+    /** Determine if the application of the embedder is in the foreground. */
     boolean isApplicationInForeground();
 
-    /**
-     * @return The WindowAndroid instance associated with this delegate instance.
-     */
+    /** @return The WindowAndroid instance associated with this delegate instance. */
     WindowAndroid getWindowAndroid();
 
-    /**
-     * @return The WebContents instance associated with this delegate instance.
-     */
+    /** @return The WebContents instance associated with this delegate instance. */
     WebContents getWebContents();
 
-    /**
-     * @return Whether this delegate has a valid tab available.
-     */
+    /** @return Whether this delegate has a valid tab available. */
     boolean hasValidTab();
 
     /**
@@ -92,9 +80,7 @@ public interface ExternalNavigationDelegate {
      */
     boolean canCloseTabOnIncognitoIntentLaunch();
 
-    /**
-     * @return whether it's possible to load a URL in the current tab.
-     */
+    /** @return whether it's possible to load a URL in the current tab. */
     boolean canLoadUrlInCurrentTab();
 
     /* Invoked when the tab associated with this delegate should be closed. */
@@ -122,14 +108,10 @@ public interface ExternalNavigationDelegate {
      */
     boolean isForTrustedCallingApp(Supplier<List<ResolveInfo>> resolveInfoSupplier);
 
-    /**
-     * Whether WebAPKs should be launched even on the initial Intent.
-     */
+    /** Whether WebAPKs should be launched even on the initial Intent. */
     boolean shouldLaunchWebApksOnInitialIntent();
 
-    /**
-     * Adds a target package to the Intent. Only called if isForTrustedCallingApp is true.
-     */
+    /** Adds a target package to the Intent. Only called if isForTrustedCallingApp is true. */
     void setPackageForTrustedCallingApp(Intent intent);
 
     /**

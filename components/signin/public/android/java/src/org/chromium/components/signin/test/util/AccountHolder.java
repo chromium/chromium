@@ -85,23 +85,17 @@ public class AccountHolder {
                 && mAccount.equals(((AccountHolder) that).getAccount());
     }
 
-    /**
-     * Creates an {@link AccountHolder} from email.
-     */
+    /** Creates an {@link AccountHolder} from email. */
     public static AccountHolder createFromEmail(String email) {
         return createFromAccount(AccountUtils.createAccountFromName(email));
     }
 
-    /**
-     * Creates an {@link AccountHolder} from {@link Account}.
-     */
+    /** Creates an {@link AccountHolder} from {@link Account}. */
     public static AccountHolder createFromAccount(Account account) {
         return new AccountHolder(account);
     }
 
-    /**
-     * Creates an {@link AccountHolder} from email and features.
-     */
+    /** Creates an {@link AccountHolder} from email and features. */
     public static AccountHolder createFromEmailAndFeatures(String email, String... features) {
         final AccountHolder accountHolder = createFromEmail(email);
         Collections.addAll(accountHolder.mFeatures, features);

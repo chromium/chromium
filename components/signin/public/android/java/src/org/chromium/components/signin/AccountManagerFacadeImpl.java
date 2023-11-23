@@ -38,16 +38,13 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-/**
- * AccountManagerFacade wraps our access of AccountManager in Android.
- */
+/** AccountManagerFacade wraps our access of AccountManager in Android. */
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
     /**
      * An account feature (corresponding to a Gaia service flag) that specifies whether the account
      * is a USM account.
      */
-    @VisibleForTesting
-    public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
+    @VisibleForTesting public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
 
     // Prefix used to define the capability name for querying Identity services. This
     // prefix is not required for Android queries to GmsCore.
@@ -67,9 +64,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private @Nullable AsyncTask<List<String>> mFetchGaiaIdsTask;
 
-    /**
-     * @param delegate the AccountManagerDelegate to use as a backend
-     */
+    /** @param delegate the AccountManagerDelegate to use as a backend */
     public AccountManagerFacadeImpl(AccountManagerDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
@@ -116,9 +111,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mCoreAccountInfosPromise;
     }
 
-    /**
-     * @return Whether or not there is an account authenticator for Google accounts.
-     */
+    /** @return Whether or not there is an account authenticator for Google accounts. */
     @Override
     public boolean hasGoogleAccountAuthenticator() {
         AuthenticatorDescription[] descs = mDelegate.getAuthenticatorTypes();
@@ -152,10 +145,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void invalidateAccessToken(String accessToken) {
         if (!TextUtils.isEmpty(accessToken)) {
-            ConnectionRetry.runAuthTask(() -> {
-                mDelegate.invalidateAuthToken(accessToken);
-                return true;
-            });
+            ConnectionRetry.runAuthTask(
+                    () -> {
+                        mDelegate.invalidateAuthToken(accessToken);
+                        return true;
+                    });
         }
     }
 
@@ -191,8 +185,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 for (String capabilityName :
                         AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
                     @CapabilityResponse
-                    int capability = mDelegate.hasCapability(
-                            account, getAndroidCapabilityName(capabilityName));
+                    int capability =
+                            mDelegate.hasCapability(
+                                    account, getAndroidCapabilityName(capabilityName));
                     capabilitiesResponse.put(capabilityName, capability);
                 }
                 return AccountCapabilities.parseFromCapabilitiesResponse(capabilitiesResponse);
@@ -261,50 +256,53 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         }
 
         List<String> emails = toAccountEmails(mAccounts);
-        mFetchGaiaIdsTask = new AsyncTask<List<String>>() {
-            @Override
-            public @Nullable List<String> doInBackground() {
-                final long seedingStartTime = SystemClock.elapsedRealtime();
-                List<String> gaiaIds = new ArrayList<>();
-                for (String email : emails) {
-                    if (isCancelled()) {
-                        return null;
+        mFetchGaiaIdsTask =
+                new AsyncTask<List<String>>() {
+                    @Override
+                    public @Nullable List<String> doInBackground() {
+                        final long seedingStartTime = SystemClock.elapsedRealtime();
+                        List<String> gaiaIds = new ArrayList<>();
+                        for (String email : emails) {
+                            if (isCancelled()) {
+                                return null;
+                            }
+                            final String gaiaId = getAccountGaiaId(email);
+                            if (gaiaId == null) {
+                                // TODO(crbug.com/1465339): Add metrics to check how often we get a
+                                // null gaiaId.
+                                return null;
+                            }
+                            gaiaIds.add(gaiaId);
+                        }
+                        RecordHistogram.recordTimesHistogram(
+                                "Signin.AndroidGetAccountIdsTime",
+                                SystemClock.elapsedRealtime() - seedingStartTime);
+                        return gaiaIds;
                     }
-                    final String gaiaId = getAccountGaiaId(email);
-                    if (gaiaId == null) {
-                        // TODO(crbug.com/1465339): Add metrics to check how often we get a null
-                        // gaiaId.
-                        return null;
-                    }
-                    gaiaIds.add(gaiaId);
-                }
-                RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountIdsTime",
-                        SystemClock.elapsedRealtime() - seedingStartTime);
-                return gaiaIds;
-            }
 
-            @Override
-            public void onPostExecute(@Nullable List<String> gaiaIds) {
-                mFetchGaiaIdsTask = null;
-                if (gaiaIds == null) {
-                    fetchGaiaIdsAndUpdateCoreAccountInfos();
-                    return;
-                }
-                List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
-                for (int index = 0; index < emails.size(); index++) {
-                    coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(
-                            emails.get(index), gaiaIds.get(index)));
-                }
-                if (mCoreAccountInfosPromise.isFulfilled()) {
-                    mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
-                } else {
-                    mCoreAccountInfosPromise.fulfill(coreAccountInfos);
-                }
-                for (AccountsChangeObserver observer : mObservers) {
-                    observer.onCoreAccountInfosChanged();
-                }
-            }
-        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+                    @Override
+                    public void onPostExecute(@Nullable List<String> gaiaIds) {
+                        mFetchGaiaIdsTask = null;
+                        if (gaiaIds == null) {
+                            fetchGaiaIdsAndUpdateCoreAccountInfos();
+                            return;
+                        }
+                        List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
+                        for (int index = 0; index < emails.size(); index++) {
+                            coreAccountInfos.add(
+                                    CoreAccountInfo.createFromEmailAndGaiaId(
+                                            emails.get(index), gaiaIds.get(index)));
+                        }
+                        if (mCoreAccountInfosPromise.isFulfilled()) {
+                            mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
+                        } else {
+                            mCoreAccountInfosPromise.fulfill(coreAccountInfos);
+                        }
+                        for (AccountsChangeObserver observer : mObservers) {
+                            observer.onCoreAccountInfosChanged();
+                        }
+                    }
+                }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     private void onAccountsUpdated() {

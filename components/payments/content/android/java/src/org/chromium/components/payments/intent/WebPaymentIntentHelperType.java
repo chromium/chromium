@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.List;
+
 /**
  * The types that corresponds to the types in org.chromium.payments.mojom. The fields of these types
  * are the subset of those in the mojom types. The subset is minimally selected based on the need of
@@ -30,15 +31,14 @@ import java.util.List;
 public final class WebPaymentIntentHelperType {
     private static final String EMPTY_JSON_DATA = "{}";
 
-    /**
-     * The class that corresponds to mojom.PaymentCurrencyAmount, with minimally required fields.
-     */
+    /** The class that corresponds to mojom.PaymentCurrencyAmount, with minimally required fields. */
     public static final class PaymentCurrencyAmount {
         public static String EXTRA_CURRENCY = "currency";
         public static String EXTRA_VALUE = "value";
 
         public final String currency;
         public final String value;
+
         public PaymentCurrencyAmount(String currency, String value) {
             this.currency = currency;
             this.value = value;
@@ -56,6 +56,7 @@ public final class WebPaymentIntentHelperType {
             json.endObject();
             // }}}
         }
+
         /**
          * Serializes this object
          * @return The serialized payment currency amount.
@@ -82,9 +83,11 @@ public final class WebPaymentIntentHelperType {
     /** The class that corresponds mojom.PaymentItem, with minimally required fields. */
     public static final class PaymentItem {
         public final PaymentCurrencyAmount amount;
+
         public PaymentItem(PaymentCurrencyAmount amount) {
             this.amount = amount;
         }
+
         /**
          * Serializes this object into the provided json writer after adding an empty string for the
          * redacted "label" field.
@@ -112,6 +115,7 @@ public final class WebPaymentIntentHelperType {
     public static final class PaymentDetailsModifier {
         public final PaymentItem total;
         public final PaymentMethodData methodData;
+
         public PaymentDetailsModifier(PaymentItem total, PaymentMethodData methodData) {
             this.total = total;
             this.methodData = methodData;
@@ -172,6 +176,7 @@ public final class WebPaymentIntentHelperType {
     public static final class PaymentMethodData {
         public final String supportedMethod;
         public final String stringifiedData;
+
         public PaymentMethodData(String supportedMethod, String stringifiedData) {
             this.supportedMethod = supportedMethod;
             this.stringifiedData = stringifiedData;
@@ -189,6 +194,7 @@ public final class WebPaymentIntentHelperType {
         public final String label;
         public final PaymentCurrencyAmount amount;
         public final boolean selected;
+
         public PaymentShippingOption(
                 String id, String label, PaymentCurrencyAmount amount, boolean selected) {
             this.id = id;
@@ -230,8 +236,12 @@ public final class WebPaymentIntentHelperType {
         public final boolean requestShipping;
         public final String shippingType;
 
-        public PaymentOptions(boolean requestPayerName, boolean requestPayerEmail,
-                boolean requestPayerPhone, boolean requestShipping, @Nullable String shippingType) {
+        public PaymentOptions(
+                boolean requestPayerName,
+                boolean requestPayerEmail,
+                boolean requestPayerPhone,
+                boolean requestShipping,
+                @Nullable String shippingType) {
             this.requestPayerName = requestPayerName;
             this.requestPayerEmail = requestPayerEmail;
             this.requestPayerPhone = requestPayerPhone;
@@ -239,6 +249,7 @@ public final class WebPaymentIntentHelperType {
             this.shippingType = shippingType;
         }
     }
+
     private static void checkNotNull(Object value, String name) {
         if (value == null) throw new IllegalArgumentException(name + " should not be null.");
     }
@@ -250,6 +261,7 @@ public final class WebPaymentIntentHelperType {
 
         public final String methodName;
         public final String stringifiedData;
+
         public PaymentHandlerMethodData(String methodName, String stringifiedData) {
             this.methodName = methodName;
             this.stringifiedData = stringifiedData;
@@ -272,19 +284,16 @@ public final class WebPaymentIntentHelperType {
                 "stringifiedPaymentMethodErrors";
         public static final String EXTRA_ADDRESS_ERRORS = "addressErrors";
 
-        @Nullable
-        public final PaymentCurrencyAmount total;
-        @Nullable
-        public final List<PaymentShippingOption> shippingOptions;
-        @Nullable
-        public final String error;
-        @Nullable
-        public final String stringifiedPaymentMethodErrors;
-        @Nullable
-        public final Bundle bundledShippingAddressErrors;
+        @Nullable public final PaymentCurrencyAmount total;
+        @Nullable public final List<PaymentShippingOption> shippingOptions;
+        @Nullable public final String error;
+        @Nullable public final String stringifiedPaymentMethodErrors;
+        @Nullable public final Bundle bundledShippingAddressErrors;
 
-        public PaymentRequestDetailsUpdate(@Nullable PaymentCurrencyAmount total,
-                @Nullable List<PaymentShippingOption> shippingOptions, @Nullable String error,
+        public PaymentRequestDetailsUpdate(
+                @Nullable PaymentCurrencyAmount total,
+                @Nullable List<PaymentShippingOption> shippingOptions,
+                @Nullable String error,
                 @Nullable String stringifiedPaymentMethodErrors,
                 @Nullable Bundle bundledShippingAddressErrors) {
             this.total = total;
@@ -305,7 +314,8 @@ public final class WebPaymentIntentHelperType {
                 bundle.putBundle(WebPaymentIntentHelper.EXTRA_TOTAL, total.asBundle());
             }
             if (shippingOptions != null && !shippingOptions.isEmpty()) {
-                bundle.putParcelableArray(EXTRA_SHIPPING_OPTIONS,
+                bundle.putParcelableArray(
+                        EXTRA_SHIPPING_OPTIONS,
                         PaymentShippingOption.buildPaymentShippingOptionList(shippingOptions));
             }
             if (!TextUtils.isEmpty(error)) bundle.putString(EXTRA_ERROR_MESSAGE, error);

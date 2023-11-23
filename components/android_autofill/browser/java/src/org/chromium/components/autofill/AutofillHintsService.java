@@ -13,24 +13,23 @@ import org.chromium.components.autofill_public.ViewType;
 
 import java.util.List;
 
-/**
- * This class is used to talk to autofill service about the view type.
- */
+/** This class is used to talk to autofill service about the view type. */
 public class AutofillHintsService {
     private static final String TAG = "AutofillHintsService";
 
     public AutofillHintsService() {
-        mBinder = new IAutofillHintsService.Stub() {
-            @Override
-            public void registerViewTypeCallback(IViewTypeCallback callback) {
-                mCallback = callback;
-                if (mUnsentViewTypes != null) {
-                    invokeOnViewTypeAvailable();
-                } else if (mQueryFailed != null) {
-                    invokeOnQueryFailed();
-                }
-            }
-        };
+        mBinder =
+                new IAutofillHintsService.Stub() {
+                    @Override
+                    public void registerViewTypeCallback(IViewTypeCallback callback) {
+                        mCallback = callback;
+                        if (mUnsentViewTypes != null) {
+                            invokeOnViewTypeAvailable();
+                        } else if (mQueryFailed != null) {
+                            invokeOnQueryFailed();
+                        }
+                    }
+                };
     }
 
     public IBinder getBinder() {

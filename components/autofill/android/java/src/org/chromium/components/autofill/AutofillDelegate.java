@@ -4,13 +4,9 @@
 
 package org.chromium.components.autofill;
 
-/**
- * An interface to handle the touch interaction with an autofill popup or keyboard accessory.
- */
+/** An interface to handle the touch interaction with an autofill popup or keyboard accessory. */
 public interface AutofillDelegate {
-    /**
-     * Informs the controller the AutofillPopup or AutofillKeyboardAccessory was hidden.
-     */
+    /** Informs the controller the AutofillPopup or AutofillKeyboardAccessory was hidden. */
     public void dismissed();
 
     /**

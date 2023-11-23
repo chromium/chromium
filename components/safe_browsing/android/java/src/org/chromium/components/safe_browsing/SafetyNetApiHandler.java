@@ -14,18 +14,22 @@ import java.lang.annotation.RetentionPolicy;
  * {@code SafeBrowsingApiBridge}.
  */
 public interface SafetyNetApiHandler {
-    /**
-     * Observer to be notified when the SafetyNetApiHandler determines the verdict for a url.
-     */
+    /** Observer to be notified when the SafetyNetApiHandler determines the verdict for a url. */
     interface Observer {
         // Note: |checkDelta| is the time the remote call took in microseconds.
-        void onUrlCheckDone(long callbackId, @SafeBrowsingResult int resultStatus, String metadata,
+        void onUrlCheckDone(
+                long callbackId,
+                @SafeBrowsingResult int resultStatus,
+                String metadata,
                 long checkDelta);
     }
 
     // Possible values for resultStatus. Native side has the same definitions.
-    @IntDef({SafeBrowsingResult.INTERNAL_ERROR, SafeBrowsingResult.SUCCESS,
-            SafeBrowsingResult.TIMEOUT})
+    @IntDef({
+        SafeBrowsingResult.INTERNAL_ERROR,
+        SafeBrowsingResult.SUCCESS,
+        SafeBrowsingResult.TIMEOUT
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface SafeBrowsingResult {
         int INTERNAL_ERROR = -1;

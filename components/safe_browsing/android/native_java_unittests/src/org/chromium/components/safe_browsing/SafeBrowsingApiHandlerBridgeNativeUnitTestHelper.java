@@ -123,22 +123,36 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             Assert.assertArrayEquals(threatTypes, expectedThreatTypes);
             Assert.assertEquals(protocol, presetValues.mExpectedProtocol);
 
-            mObserver.onUrlCheckDone(callbackId, presetValues.mReturnedLookupResult,
-                    presetValues.mReturnedThreatType, presetValues.mReturnedThreatAttributes,
-                    presetValues.mReturnedResponseStatus, DEFAULT_CHECK_DELTA_MICROSECONDS);
+            mObserver.onUrlCheckDone(
+                    callbackId,
+                    presetValues.mReturnedLookupResult,
+                    presetValues.mReturnedThreatType,
+                    presetValues.mReturnedThreatAttributes,
+                    presetValues.mReturnedResponseStatus,
+                    DEFAULT_CHECK_DELTA_MICROSECONDS);
         }
 
         public static void tearDown() {
             sPresetValuesMap.clear();
         }
 
-        public static void setUrlCheckDoneValues(String uri, int[] expectedThreatTypes,
-                int expectedProtocol, int returnedLookupResult, int returnedThreatType,
-                int[] returnedThreatAttributes, int returnedResponseStatus) {
+        public static void setUrlCheckDoneValues(
+                String uri,
+                int[] expectedThreatTypes,
+                int expectedProtocol,
+                int returnedLookupResult,
+                int returnedThreatType,
+                int[] returnedThreatAttributes,
+                int returnedResponseStatus) {
             Assert.assertFalse(sPresetValuesMap.containsKey(uri));
-            sPresetValuesMap.put(uri,
-                    new UrlCheckDoneValues(expectedThreatTypes, expectedProtocol,
-                            returnedLookupResult, returnedThreatType, returnedThreatAttributes,
+            sPresetValuesMap.put(
+                    uri,
+                    new UrlCheckDoneValues(
+                            expectedThreatTypes,
+                            expectedProtocol,
+                            returnedLookupResult,
+                            returnedThreatType,
+                            returnedThreatAttributes,
                             returnedResponseStatus));
         }
 
@@ -150,9 +164,13 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             public final int[] mReturnedThreatAttributes;
             public final int mReturnedResponseStatus;
 
-            private UrlCheckDoneValues(int[] expectedThreatTypes, int expectedProtocol,
-                    int returnedLookupResult, int returnedThreatType,
-                    int[] returnedThreatAttributes, int returnedResponseStatus) {
+            private UrlCheckDoneValues(
+                    int[] expectedThreatTypes,
+                    int expectedProtocol,
+                    int returnedLookupResult,
+                    int returnedThreatType,
+                    int[] returnedThreatAttributes,
+                    int returnedResponseStatus) {
                 mExpectedThreatTypes = expectedThreatTypes;
                 mExpectedProtocol = expectedProtocol;
                 mReturnedLookupResult = returnedLookupResult;
@@ -226,11 +244,21 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    static void setSafeBrowsingApiHandlerResponse(String uri, int[] expectedThreatTypes,
-            int expectedProtocol, int returnedLookupResult, int returnedThreatType,
-            int[] returnedThreatAttributes, int returnedResponseStatus) {
-        MockSafeBrowsingApiHandler.setUrlCheckDoneValues(uri, expectedThreatTypes, expectedProtocol,
-                returnedLookupResult, returnedThreatType, returnedThreatAttributes,
+    static void setSafeBrowsingApiHandlerResponse(
+            String uri,
+            int[] expectedThreatTypes,
+            int expectedProtocol,
+            int returnedLookupResult,
+            int returnedThreatType,
+            int[] returnedThreatAttributes,
+            int returnedResponseStatus) {
+        MockSafeBrowsingApiHandler.setUrlCheckDoneValues(
+                uri,
+                expectedThreatTypes,
+                expectedProtocol,
+                returnedLookupResult,
+                returnedThreatType,
+                returnedThreatAttributes,
                 returnedResponseStatus);
     }
 

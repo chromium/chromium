@@ -399,8 +399,8 @@ public class BluetoothChooserDialog
 
         switch (linkType) {
             case LinkType.EXPLAIN_BLUETOOTH:
-                // No need to close the dialog here because
-                // ShowBluetoothOverviewLink will close it.
+                // No need to close the dialog here because ShowBluetoothOverviewLink will close
+                // it.
                 jni.showBluetoothOverviewLink(mNativeBluetoothChooserDialogPtr);
                 break;
             case LinkType.ADAPTER_OFF:

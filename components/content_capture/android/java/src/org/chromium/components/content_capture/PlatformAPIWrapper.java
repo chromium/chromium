@@ -21,6 +21,7 @@ import org.chromium.base.ResettersForTesting;
 @RequiresApi(Build.VERSION_CODES.Q)
 public abstract class PlatformAPIWrapper {
     private static PlatformAPIWrapper sImpl;
+
     public static PlatformAPIWrapper getInstance() {
         if (sImpl == null) {
             sImpl = new PlatformAPIWrapperImpl();

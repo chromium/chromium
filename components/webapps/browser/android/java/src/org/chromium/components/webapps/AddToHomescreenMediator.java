@@ -48,7 +48,8 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     void setIcon(Bitmap icon, boolean isAdaptive) {
         Bitmap iconToShow = icon;
         if (isAdaptive) {
-            iconToShow = WebappsIconUtils.createHomeScreenIconFromWebIcon(icon, true /*maskable*/);
+            iconToShow =
+                    WebappsIconUtils.createHomeScreenIconFromWebIcon(icon, /* maskable= */ true);
         }
 
         mModel.set(AddToHomescreenProperties.ICON, new Pair<>(iconToShow, isAdaptive));

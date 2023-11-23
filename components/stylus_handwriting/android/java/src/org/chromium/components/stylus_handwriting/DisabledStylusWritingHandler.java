@@ -11,9 +11,7 @@ import android.content.Context;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * A {@link StylusWritingHandler} that represents the feature being disabled.
- */
+/** A {@link StylusWritingHandler} that represents the feature being disabled. */
 public class DisabledStylusWritingHandler implements StylusApiOption {
     @Override
     public void onWebContentsChanged(Context context, WebContents webContents) {

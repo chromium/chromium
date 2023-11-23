@@ -4,12 +4,11 @@
 
 package org.chromium.components.content_creation.notes.models;
 
-/**
- * Model class for note templates.
- */
+/** Model class for note templates. */
 public class NoteTemplate {
     /** Required. */
     public final int id;
+
     public final String localizedName;
     public final Background mainBackground;
     public final TextStyle textStyle;
@@ -19,8 +18,13 @@ public class NoteTemplate {
     public final Background contentBackground;
 
     /** Constructor. */
-    public NoteTemplate(int id, String localizedName, Background mainBackground,
-            Background contentBackground, TextStyle textStyle, FooterStyle footerStyle) {
+    public NoteTemplate(
+            int id,
+            String localizedName,
+            Background mainBackground,
+            Background contentBackground,
+            TextStyle textStyle,
+            FooterStyle footerStyle) {
         this.id = id;
         this.localizedName = localizedName;
         this.mainBackground = mainBackground;

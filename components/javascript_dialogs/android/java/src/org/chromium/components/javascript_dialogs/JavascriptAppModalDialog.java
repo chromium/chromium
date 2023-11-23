@@ -22,13 +22,20 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class JavascriptAppModalDialog extends JavascriptModalDialog {
     private long mNativeDialogPointer;
 
-    /**
-     * Constructor for initializing contents to be shown on the dialog.
-     */
-    private JavascriptAppModalDialog(String title, String message, String promptText,
-            boolean shouldShowSuppressCheckBox, int positiveButtonTextId,
+    /** Constructor for initializing contents to be shown on the dialog. */
+    private JavascriptAppModalDialog(
+            String title,
+            String message,
+            String promptText,
+            boolean shouldShowSuppressCheckBox,
+            int positiveButtonTextId,
             int negativeButtonTextId) {
-        super(title, message, promptText, shouldShowSuppressCheckBox, positiveButtonTextId,
+        super(
+                title,
+                message,
+                promptText,
+                shouldShowSuppressCheckBox,
+                positiveButtonTextId,
                 negativeButtonTextId);
     }
 
@@ -49,15 +56,28 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     @CalledByNative
     public static JavascriptAppModalDialog createBeforeUnloadDialog(
             String title, String message, boolean isReload, boolean shouldShowSuppressCheckBox) {
-        return new JavascriptAppModalDialog(title, message, null, shouldShowSuppressCheckBox,
-                isReload ? R.string.reload : R.string.leave, R.string.cancel);
+        return new JavascriptAppModalDialog(
+                title,
+                message,
+                null,
+                shouldShowSuppressCheckBox,
+                isReload ? R.string.reload : R.string.leave,
+                R.string.cancel);
     }
 
     @CalledByNative
-    public static JavascriptAppModalDialog createPromptDialog(String title, String message,
-            boolean shouldShowSuppressCheckBox, String defaultPromptText) {
-        return new JavascriptAppModalDialog(title, message, defaultPromptText,
-                shouldShowSuppressCheckBox, R.string.ok, R.string.cancel);
+    public static JavascriptAppModalDialog createPromptDialog(
+            String title,
+            String message,
+            boolean shouldShowSuppressCheckBox,
+            String defaultPromptText) {
+        return new JavascriptAppModalDialog(
+                title,
+                message,
+                defaultPromptText,
+                shouldShowSuppressCheckBox,
+                R.string.ok,
+                R.string.cancel);
     }
 
     @CalledByNative
@@ -66,8 +86,9 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
         Context context = window.getContext().get();
         // If the context has gone away, then just clean up the native pointer.
         if (context == null || window.getModalDialogManager() == null) {
-            JavascriptAppModalDialogJni.get().didCancelAppModalDialog(
-                    nativeDialogPointer, JavascriptAppModalDialog.this, false);
+            JavascriptAppModalDialogJni.get()
+                    .didCancelAppModalDialog(
+                            nativeDialogPointer, JavascriptAppModalDialog.this, false);
             return;
         }
 
@@ -85,32 +106,42 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     @Override
     protected void accept(String promptResult, boolean suppressDialogs) {
         if (mNativeDialogPointer != 0) {
-            JavascriptAppModalDialogJni.get().didAcceptAppModalDialog(mNativeDialogPointer,
-                    JavascriptAppModalDialog.this, promptResult, suppressDialogs);
+            JavascriptAppModalDialogJni.get()
+                    .didAcceptAppModalDialog(
+                            mNativeDialogPointer,
+                            JavascriptAppModalDialog.this,
+                            promptResult,
+                            suppressDialogs);
         }
     }
 
     @Override
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
         if (mNativeDialogPointer != 0) {
-            JavascriptAppModalDialogJni.get().didCancelAppModalDialog(
-                    mNativeDialogPointer, JavascriptAppModalDialog.this, suppressDialogs);
+            JavascriptAppModalDialogJni.get()
+                    .didCancelAppModalDialog(
+                            mNativeDialogPointer, JavascriptAppModalDialog.this, suppressDialogs);
         }
     }
 
-    /**
-     * Returns the currently showing dialog, null if none is showing.
-     */
+    /** Returns the currently showing dialog, null if none is showing. */
     public static JavascriptAppModalDialog getCurrentDialogForTest() {
         return JavascriptAppModalDialogJni.get().getCurrentModalDialog();
     }
 
     @NativeMethods
     interface Natives {
-        void didAcceptAppModalDialog(long nativeAppModalDialogViewAndroid,
-                JavascriptAppModalDialog caller, String prompt, boolean suppress);
-        void didCancelAppModalDialog(long nativeAppModalDialogViewAndroid,
-                JavascriptAppModalDialog caller, boolean suppress);
+        void didAcceptAppModalDialog(
+                long nativeAppModalDialogViewAndroid,
+                JavascriptAppModalDialog caller,
+                String prompt,
+                boolean suppress);
+
+        void didCancelAppModalDialog(
+                long nativeAppModalDialogViewAndroid,
+                JavascriptAppModalDialog caller,
+                boolean suppress);
+
         JavascriptAppModalDialog getCurrentModalDialog();
     }
 }

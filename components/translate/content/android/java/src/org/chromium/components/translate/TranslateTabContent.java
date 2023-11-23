@@ -12,16 +12,12 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-/**
- * The content of the tab shown in the TranslateTabLayout.
- */
+/** The content of the tab shown in the TranslateTabLayout. */
 public class TranslateTabContent extends FrameLayout {
     private TextView mTextView;
     private ProgressBar mProgressBar;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public TranslateTabContent(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

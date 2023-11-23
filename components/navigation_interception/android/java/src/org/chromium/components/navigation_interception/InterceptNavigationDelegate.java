@@ -25,8 +25,11 @@ public abstract class InterceptNavigationDelegate {
      * @return true if the navigation should be ignored.
      */
     @CalledByNative
-    public abstract boolean shouldIgnoreNavigation(NavigationHandle navigationHandle,
-            GURL escapedUrl, boolean hiddenCrossFrame, boolean isSandboxedFrame);
+    public abstract boolean shouldIgnoreNavigation(
+            NavigationHandle navigationHandle,
+            GURL escapedUrl,
+            boolean hiddenCrossFrame,
+            boolean isSandboxedFrame);
 
     /**
      * This method is called for navigations to external protocols in subframes, which on Android
@@ -44,8 +47,11 @@ public abstract class InterceptNavigationDelegate {
      *         subframe to, or null if no action is to be taken.
      */
     @CalledByNative
-    protected GURL handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
-            boolean hasUserGesture, Origin initiatorOrigin) {
+    protected GURL handleSubframeExternalProtocol(
+            GURL escapedUrl,
+            @PageTransition int transition,
+            boolean hasUserGesture,
+            Origin initiatorOrigin) {
         return null;
     }
 

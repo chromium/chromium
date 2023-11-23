@@ -22,9 +22,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class JavascriptTabModalDialog extends JavascriptModalDialog {
     private long mNativeDialogPointer;
 
-    /**
-     * Constructor for initializing contents to be shown on the dialog.
-     */
+    /** Constructor for initializing contents to be shown on the dialog. */
     private JavascriptTabModalDialog(
             String title, String message, String promptText, int negativeButtonTextId) {
         super(title, message, promptText, false, R.string.ok, negativeButtonTextId);
@@ -53,8 +51,8 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
         ModalDialogManager dialogManager = window.getModalDialogManager();
         // If the context has gone away, then just clean up the native pointer.
         if (context == null || dialogManager == null) {
-            JavascriptTabModalDialogJni.get().cancel(
-                    nativeDialogPointer, JavascriptTabModalDialog.this, false);
+            JavascriptTabModalDialogJni.get()
+                    .cancel(nativeDialogPointer, JavascriptTabModalDialog.this, false);
             return;
         }
 
@@ -81,25 +79,28 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
     @Override
     protected void accept(String promptResult, boolean suppressDialogs) {
         if (mNativeDialogPointer == 0) return;
-        JavascriptTabModalDialogJni.get().accept(
-                mNativeDialogPointer, JavascriptTabModalDialog.this, promptResult);
+        JavascriptTabModalDialogJni.get()
+                .accept(mNativeDialogPointer, JavascriptTabModalDialog.this, promptResult);
     }
 
-    /**
-     * Sends notification to native that the user cancels the dialog.
-     */
+    /** Sends notification to native that the user cancels the dialog. */
     @Override
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
         if (mNativeDialogPointer == 0) return;
-        JavascriptTabModalDialogJni.get().cancel(
-                mNativeDialogPointer, JavascriptTabModalDialog.this, buttonClicked);
+        JavascriptTabModalDialogJni.get()
+                .cancel(mNativeDialogPointer, JavascriptTabModalDialog.this, buttonClicked);
     }
 
     @NativeMethods
     interface Natives {
-        void accept(long nativeTabModalDialogViewAndroid, JavascriptTabModalDialog caller,
+        void accept(
+                long nativeTabModalDialogViewAndroid,
+                JavascriptTabModalDialog caller,
                 String prompt);
-        void cancel(long nativeTabModalDialogViewAndroid, JavascriptTabModalDialog caller,
+
+        void cancel(
+                long nativeTabModalDialogViewAndroid,
+                JavascriptTabModalDialog caller,
                 boolean buttonClicked);
     }
 }

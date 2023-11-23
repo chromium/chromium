@@ -60,8 +60,9 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
         MediaRouteSelector routeSelector = source == null ? null : source.buildRouteSelector();
 
         if (routeSelector == null) {
-            BrowserMediaRouterDialogControllerJni.get().onMediaSourceNotSupported(
-                    mNativeDialogController, BrowserMediaRouterDialogController.this);
+            BrowserMediaRouterDialogControllerJni.get()
+                    .onMediaSourceNotSupported(
+                            mNativeDialogController, BrowserMediaRouterDialogController.this);
             return;
         }
 
@@ -85,19 +86,19 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
         MediaRouteSelector routeSelector = source == null ? null : source.buildRouteSelector();
 
         if (routeSelector == null) {
-            BrowserMediaRouterDialogControllerJni.get().onMediaSourceNotSupported(
-                    mNativeDialogController, BrowserMediaRouterDialogController.this);
+            BrowserMediaRouterDialogControllerJni.get()
+                    .onMediaSourceNotSupported(
+                            mNativeDialogController, BrowserMediaRouterDialogController.this);
             return;
         }
 
-        mDialogManager = new MediaRouteControllerDialogManager(
-                source.getSourceId(), routeSelector, mediaRouteId, this);
+        mDialogManager =
+                new MediaRouteControllerDialogManager(
+                        source.getSourceId(), routeSelector, mediaRouteId, this);
         mDialogManager.openDialog(mWebContents);
     }
 
-    /**
-     * Closes the currently open dialog if it's open.
-     */
+    /** Closes the currently open dialog if it's open. */
     @CalledByNative
     public void closeDialog() {
         if (!isShowingDialog()) return;
@@ -106,9 +107,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
         mDialogManager = null;
     }
 
-    /**
-     * @return if any media route dialog is currently open.
-     */
+    /** @return if any media route dialog is currently open. */
     @CalledByNative
     public boolean isShowingDialog() {
         return mDialogManager != null && mDialogManager.isShowingDialog();
@@ -117,15 +116,22 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
     @Override
     public void onSinkSelected(String sourceUrn, MediaSink sink) {
         mDialogManager = null;
-        BrowserMediaRouterDialogControllerJni.get().onSinkSelected(mNativeDialogController,
-                BrowserMediaRouterDialogController.this, sourceUrn, sink.getId());
+        BrowserMediaRouterDialogControllerJni.get()
+                .onSinkSelected(
+                        mNativeDialogController,
+                        BrowserMediaRouterDialogController.this,
+                        sourceUrn,
+                        sink.getId());
     }
 
     @Override
     public void onRouteClosed(String mediaRouteId) {
         mDialogManager = null;
-        BrowserMediaRouterDialogControllerJni.get().onRouteClosed(
-                mNativeDialogController, BrowserMediaRouterDialogController.this, mediaRouteId);
+        BrowserMediaRouterDialogControllerJni.get()
+                .onRouteClosed(
+                        mNativeDialogController,
+                        BrowserMediaRouterDialogController.this,
+                        mediaRouteId);
     }
 
     @Override
@@ -137,8 +143,9 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
         if (mDialogManager == null) return;
 
         mDialogManager = null;
-        BrowserMediaRouterDialogControllerJni.get().onDialogCancelled(
-                mNativeDialogController, BrowserMediaRouterDialogController.this);
+        BrowserMediaRouterDialogControllerJni.get()
+                .onDialogCancelled(
+                        mNativeDialogController, BrowserMediaRouterDialogController.this);
     }
 
     private BrowserMediaRouterDialogController(
@@ -149,13 +156,23 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
     @NativeMethods
     interface Natives {
-        void onDialogCancelled(long nativeMediaRouterDialogControllerAndroid,
+        void onDialogCancelled(
+                long nativeMediaRouterDialogControllerAndroid,
                 BrowserMediaRouterDialogController caller);
-        void onSinkSelected(long nativeMediaRouterDialogControllerAndroid,
-                BrowserMediaRouterDialogController caller, String sourceUrn, String sinkId);
-        void onRouteClosed(long nativeMediaRouterDialogControllerAndroid,
-                BrowserMediaRouterDialogController caller, String routeId);
-        void onMediaSourceNotSupported(long nativeMediaRouterDialogControllerAndroid,
+
+        void onSinkSelected(
+                long nativeMediaRouterDialogControllerAndroid,
+                BrowserMediaRouterDialogController caller,
+                String sourceUrn,
+                String sinkId);
+
+        void onRouteClosed(
+                long nativeMediaRouterDialogControllerAndroid,
+                BrowserMediaRouterDialogController caller,
+                String routeId);
+
+        void onMediaSourceNotSupported(
+                long nativeMediaRouterDialogControllerAndroid,
                 BrowserMediaRouterDialogController caller);
     }
 }

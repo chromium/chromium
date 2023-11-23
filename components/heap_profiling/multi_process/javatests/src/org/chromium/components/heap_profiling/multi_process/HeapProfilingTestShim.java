@@ -21,10 +21,20 @@ public class HeapProfilingTestShim {
      *  When |pseudoStacks| is true, the stacks use trace-event based stacks
      *  rather than native stacks.
      */
-    public boolean runTestForMode(String mode, boolean dynamicallyStartProfiling, String stackMode,
-            boolean shouldSample, boolean sampleEverything) {
-        return HeapProfilingTestShimJni.get().runTestForMode(mNativeHeapProfilingTestShim, mode,
-                dynamicallyStartProfiling, stackMode, shouldSample, sampleEverything);
+    public boolean runTestForMode(
+            String mode,
+            boolean dynamicallyStartProfiling,
+            String stackMode,
+            boolean shouldSample,
+            boolean sampleEverything) {
+        return HeapProfilingTestShimJni.get()
+                .runTestForMode(
+                        mNativeHeapProfilingTestShim,
+                        mode,
+                        dynamicallyStartProfiling,
+                        stackMode,
+                        shouldSample,
+                        sampleEverything);
     }
 
     /**
@@ -43,9 +53,15 @@ public class HeapProfilingTestShim {
     @NativeMethods
     interface Natives {
         long init(HeapProfilingTestShim obj);
+
         void destroy(long nativeHeapProfilingTestShim);
-        boolean runTestForMode(long nativeHeapProfilingTestShim, String mode,
-                boolean dynamicallyStartProfiling, String stackMode, boolean shouldSample,
+
+        boolean runTestForMode(
+                long nativeHeapProfilingTestShim,
+                String mode,
+                boolean dynamicallyStartProfiling,
+                String stackMode,
+                boolean shouldSample,
                 boolean sampleEverything);
     }
 }

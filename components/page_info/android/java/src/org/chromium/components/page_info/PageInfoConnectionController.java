@@ -20,9 +20,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Class for controlling the page info connection section.
- */
+/** Class for controlling the page info connection section. */
 public class PageInfoConnectionController
         implements PageInfoSubpageController, ConnectionInfoView.ConnectionInfoDelegate {
     private PageInfoMainController mMainController;
@@ -35,8 +33,12 @@ public class PageInfoConnectionController
     private ConnectionInfoView mInfoView;
     private ViewGroup mContainer;
 
-    public PageInfoConnectionController(PageInfoMainController mainController, PageInfoRowView view,
-            WebContents webContents, PageInfoControllerDelegate delegate, String publisher,
+    public PageInfoConnectionController(
+            PageInfoMainController mainController,
+            PageInfoRowView view,
+            WebContents webContents,
+            PageInfoControllerDelegate delegate,
+            String publisher,
             boolean isInternalPage) {
         mMainController = mainController;
         mRowView = view;
@@ -85,14 +87,14 @@ public class PageInfoConnectionController
         }
     }
 
-    /**
-     * Whether to show a 'Details' link to the connection info popup.
-     */
+    /** Whether to show a 'Details' link to the connection info popup. */
     private boolean isConnectionDetailsLinkVisible() {
         // If Paint Preview is being shown, it completely obstructs the WebContents and users
         // cannot interact with it. Hence, showing connection details is not relevant.
-        return mContentPublisher == null && !mDelegate.isShowingOfflinePage()
-                && !mDelegate.isShowingPaintPreviewPage() && !mIsInternalPage;
+        return mContentPublisher == null
+                && !mDelegate.isShowingOfflinePage()
+                && !mDelegate.isShowingPaintPreviewPage()
+                && !mIsInternalPage;
     }
 
     /**
@@ -108,8 +110,9 @@ public class PageInfoConnectionController
 
         assert mRowView.getContext() != null;
         if (mContentPublisher != null) {
-            messageBuilder.append(mRowView.getContext().getString(
-                    R.string.page_info_domain_hidden, mContentPublisher));
+            messageBuilder.append(
+                    mRowView.getContext()
+                            .getString(R.string.page_info_domain_hidden, mContentPublisher));
         } else if (mDelegate.isShowingPaintPreviewPage()) {
             messageBuilder.append(mDelegate.getPaintPreviewPageConnectionMessage());
         } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
@@ -125,8 +128,9 @@ public class PageInfoConnectionController
             messageBuilder.append(" ");
             SpannableString detailsText =
                     new SpannableString(mRowView.getContext().getString(R.string.details_link));
-            final ForegroundColorSpan blueSpan = new ForegroundColorSpan(
-                    SemanticColorUtils.getDefaultTextColorLink(mRowView.getContext()));
+            final ForegroundColorSpan blueSpan =
+                    new ForegroundColorSpan(
+                            SemanticColorUtils.getDefaultTextColorLink(mRowView.getContext()));
             detailsText.setSpan(
                     blueSpan, 0, detailsText.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             messageBuilder.append(detailsText);
@@ -151,10 +155,12 @@ public class PageInfoConnectionController
         rowParams.visible = rowParams.title != null || rowParams.subtitle != null;
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
         // Page info should always show lock icon as the connection security indicator.
-        rowParams.iconResId = SecurityStatusIcon.getSecurityIconResource(securityLevel,
-                /*isSmallDevice=*/false,
-                /*skipIconForNeutralState=*/false,
-                /*useUpdatedConnectionSecurityIndicators=*/false);
+        rowParams.iconResId =
+                SecurityStatusIcon.getSecurityIconResource(
+                        securityLevel,
+                        /* isSmallDevice= */ false,
+                        /* skipIconForNeutralState= */ false,
+                        /* useUpdatedConnectionSecurityIndicators= */ false);
         rowParams.iconTint = getSecurityIconColor(securityLevel);
         if (hasClickCallback) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);

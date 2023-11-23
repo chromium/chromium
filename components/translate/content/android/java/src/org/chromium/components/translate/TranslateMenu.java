@@ -7,13 +7,9 @@ package org.chromium.components.translate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Translate menu config and its item entity definition.
- */
+/** Translate menu config and its item entity definition. */
 public final class TranslateMenu {
-    /**
-     * The menu item entity.
-     */
+    /** The menu item entity. */
     static final class MenuItem {
         public final int mType;
         public final int mId;
@@ -56,9 +52,7 @@ public final class TranslateMenu {
     public static final int ID_OVERFLOW_NEVER_LANGUAGE = 3;
     public static final int ID_OVERFLOW_NOT_THIS_LANGUAGE = 4;
 
-    /**
-     * Build overflow menu item list.
-     */
+    /** Build overflow menu item list. */
     static List<MenuItem> getOverflowMenu(boolean isIncognito, boolean isSourceLangUnknown) {
         List<MenuItem> menu = new ArrayList<MenuItem>();
         menu.add(new MenuItem(ITEM_CHECKBOX_OPTION, ID_OVERFLOW_MORE_LANGUAGE, true));

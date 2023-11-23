@@ -39,8 +39,11 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
 
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
 
-    WebsiteExceptionRowPreference(Context context, Website site,
-            TrackingProtectionDelegate delegate, WebsiteExceptionDeletedCallback callback) {
+    WebsiteExceptionRowPreference(
+            Context context,
+            Website site,
+            TrackingProtectionDelegate delegate,
+            WebsiteExceptionDeletedCallback callback) {
         super(context);
         mSite = site;
         mFaviconFetchInProgress = false;
@@ -53,12 +56,16 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
             var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
             if (exception != null && exception.hasExpiration()) {
                 var expirationInDays = exception.getExpirationInDays();
-                setSummary((expirationInDays == 0)
-                                ? getContext().getString(
-                                        R.string.tracking_protection_expires_today_label)
-                                : getContext().getResources().getQuantityString(
-                                        R.plurals.tracking_protection_expires_label,
-                                        expirationInDays, expirationInDays));
+                setSummary(
+                        (expirationInDays == 0)
+                                ? getContext()
+                                        .getString(R.string.tracking_protection_expires_today_label)
+                                : getContext()
+                                        .getResources()
+                                        .getQuantityString(
+                                                R.plurals.tracking_protection_expires_label,
+                                                expirationInDays,
+                                                expirationInDays));
             } else {
                 setSummary(
                         getContext().getString(R.string.tracking_protection_never_expires_label));
@@ -84,8 +91,9 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
 
         if (!mFaviconFetchInProgress && faviconUrl().isValid()) {
             // Start the favicon fetching. Will respond in onFaviconAvailable.
-            mDelegate.getSiteSettingsDelegate(mContext).getFaviconImageForURL(
-                    faviconUrl(), this::onFaviconAvailable);
+            mDelegate
+                    .getSiteSettingsDelegate(mContext)
+                    .getFaviconImageForURL(faviconUrl(), this::onFaviconAvailable);
             mFaviconFetchInProgress = true;
         }
     }
@@ -96,19 +104,21 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
         }
     }
 
-    /**
-     * Returns the url of the site to fetch a favicon for.
-     */
+    /** Returns the url of the site to fetch a favicon for. */
     private GURL faviconUrl() {
         String origin = mSite.getMainAddress().getOrigin();
-        GURL uri = new GURL(origin.contains(ANY_SUBDOMAIN_PATTERN)
-                        ? origin.replace(ANY_SUBDOMAIN_PATTERN, "")
-                        : origin);
+        GURL uri =
+                new GURL(
+                        origin.contains(ANY_SUBDOMAIN_PATTERN)
+                                ? origin.replace(ANY_SUBDOMAIN_PATTERN, "")
+                                : origin);
         return UrlUtilities.clearPort(uri);
     }
 
     private void deleteException() {
-        mSite.setContentSetting(mDelegate.getBrowserContext(), ContentSettingsType.COOKIES,
+        mSite.setContentSetting(
+                mDelegate.getBrowserContext(),
+                ContentSettingsType.COOKIES,
                 ContentSettingValues.DEFAULT);
         mCallback.refreshBlockingExceptions();
     }

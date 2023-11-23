@@ -14,11 +14,9 @@ import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment
 
 import java.util.List;
 
-/**
- * View showing showing details about ad personalization of a site.
- */
-public class PageInfoAdPersonalizationSettings
-        extends BaseSiteSettingsFragment implements Preference.OnPreferenceClickListener {
+/** View showing showing details about ad personalization of a site. */
+public class PageInfoAdPersonalizationSettings extends BaseSiteSettingsFragment
+        implements Preference.OnPreferenceClickListener {
     private static final String PERSONALIZATION_SUMMARY = "personalization_summary";
     private static final String MANAGE_INTEREST_PREFERENCE = "manage_interest_button";
     private static final String TOPIC_INFO_PREFERENCE = "topic_info";

@@ -75,7 +75,8 @@ public class PolicyServiceTestSupporter {
         mPolicyUpdated.set(index, false);
         Mockito.doAnswer(invocation -> mPolicyUpdated.set(index, true))
                 .when(mObservers.get(index))
-                .onPolicyUpdated(argThat(actualPrevious -> expectPrevious.isEqual(actualPrevious)),
+                .onPolicyUpdated(
+                        argThat(actualPrevious -> expectPrevious.isEqual(actualPrevious)),
                         argThat(actualCurrent -> expectCurrent.isEqual(actualCurrent)));
     }
 

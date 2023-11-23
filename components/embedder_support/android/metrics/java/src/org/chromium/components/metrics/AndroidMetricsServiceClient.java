@@ -14,9 +14,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 
-/**
- * Helps the native AndroidMetricsServiceClient call Android Java APIs over JNI.
- */
+/** Helps the native AndroidMetricsServiceClient call Android Java APIs over JNI. */
 @JNINamespace("metrics")
 public class AndroidMetricsServiceClient {
     private static final String PLAY_STORE_PACKAGE_NAME = "com.android.vending";

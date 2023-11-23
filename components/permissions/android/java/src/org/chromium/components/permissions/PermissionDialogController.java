@@ -42,8 +42,13 @@ import java.util.List;
  */
 public class PermissionDialogController
         implements AndroidPermissionRequester.RequestDelegate, ModalDialogProperties.Controller {
-    @IntDef({State.NOT_SHOWING, State.PROMPT_OPEN, State.PROMPT_ACCEPTED, State.PROMPT_DENIED,
-            State.REQUEST_ANDROID_PERMISSIONS})
+    @IntDef({
+        State.NOT_SHOWING,
+        State.PROMPT_OPEN,
+        State.PROMPT_ACCEPTED,
+        State.PROMPT_DENIED,
+        State.REQUEST_ANDROID_PERMISSIONS
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface State {
         int NOT_SHOWING = 0;
@@ -55,9 +60,7 @@ public class PermissionDialogController
         int REQUEST_ANDROID_PERMISSIONS = 5;
     }
 
-    /**
-     * Interface for a class that wants to receive updates from this controller.
-     */
+    /** Interface for a class that wants to receive updates from this controller. */
     public interface Observer {
         /**
          * Notifies the observer that the user has just completed a permissions prompt.
@@ -66,7 +69,9 @@ public class PermissionDialogController
          *         permissions.
          * @param result A ContentSettingValues type, indicating the last dialog result.
          */
-        void onDialogResult(WindowAndroid window, @ContentSettingsType int[] permissions,
+        void onDialogResult(
+                WindowAndroid window,
+                @ContentSettingsType int[] permissions,
                 @ContentSettingValues int result);
     }
 
@@ -117,16 +122,12 @@ public class PermissionDialogController
         PermissionDialogController.getInstance().queueDialog(delegate);
     }
 
-    /**
-     * @param observer An observer to be notified of changes.
-     */
+    /** @param observer An observer to be notified of changes. */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
 
-    /**
-     * @param observer The observer to remove.
-     */
+    /** @param observer The observer to remove. */
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
     }
@@ -178,9 +179,7 @@ public class PermissionDialogController
         scheduleDisplay();
     }
 
-    /**
-     * Shows the dialog asking the user for a web API permission.
-     */
+    /** Shows the dialog asking the user for a web API permission. */
     public void dequeueDialog() {
         assert mState == State.NOT_SHOWING;
 
@@ -237,26 +236,36 @@ public class PermissionDialogController
         if (mOverlayDetectedDialogModel != null) return;
 
         ModalDialogProperties.Controller overlayDetectedDialogController =
-                new SimpleModalDialogController(mModalDialogManager, (Integer dismissalCause) -> {
-                    if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                            && mDialogModel != null) {
-                        mModalDialogManager.dismissDialog(
-                                mDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
-                    }
-                    mOverlayDetectedDialogModel = null;
-                });
+                new SimpleModalDialogController(
+                        mModalDialogManager,
+                        (Integer dismissalCause) -> {
+                            if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                    && mDialogModel != null) {
+                                mModalDialogManager.dismissDialog(
+                                        mDialogModel,
+                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                            }
+                            mOverlayDetectedDialogModel = null;
+                        });
         mOverlayDetectedDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, overlayDetectedDialogController)
-                        .with(ModalDialogProperties.TITLE,
-                                context.getString(R.string.overlay_detected_dialog_title,
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                context.getString(
+                                        R.string.overlay_detected_dialog_title,
                                         BuildInfo.getInstance().hostPackageLabel))
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                context.getResources().getString(
-                                        R.string.overlay_detected_dialog_message))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, context.getResources(),
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                context.getResources()
+                                        .getString(R.string.overlay_detected_dialog_message))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getResources(),
                                 R.string.cancel)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getResources(),
                                 R.string.try_again)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
@@ -274,7 +283,8 @@ public class PermissionDialogController
                 mModalDialogManager.dismissDialog(
                         mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
             } else {
-                assert mState == State.REQUEST_ANDROID_PERMISSIONS || mState == State.PROMPT_DENIED
+                assert mState == State.REQUEST_ANDROID_PERMISSIONS
+                        || mState == State.PROMPT_DENIED
                         || mState == State.PROMPT_ACCEPTED;
             }
         } else {
@@ -328,9 +338,10 @@ public class PermissionDialogController
             // no system level permissions need to be requested, so just run the
             // accept callback.
             mState = State.REQUEST_ANDROID_PERMISSIONS;
-            if (!AndroidPermissionRequester.requestAndroidPermissions(mDialogDelegate.getWindow(),
-                        mDialogDelegate.getContentSettingsTypes(),
-                        PermissionDialogController.this)) {
+            if (!AndroidPermissionRequester.requestAndroidPermissions(
+                    mDialogDelegate.getWindow(),
+                    mDialogDelegate.getContentSettingsTypes(),
+                    PermissionDialogController.this)) {
                 onAndroidPermissionAccepted();
             }
         } else {

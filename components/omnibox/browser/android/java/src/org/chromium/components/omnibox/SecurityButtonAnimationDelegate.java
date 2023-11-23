@@ -72,7 +72,7 @@ public class SecurityButtonAnimationDelegate {
 
     /** {@see SecurityButtonAnimationDelegate#updateSecurityButton(int, boolean, boolean)} */
     public void updateSecurityButton(int securityIconResource, boolean animate) {
-        updateSecurityButton(securityIconResource, animate, /*isActualResourceChange*/ true);
+        updateSecurityButton(securityIconResource, animate, /* isActualResourceChange= */ true);
     }
 
     /**

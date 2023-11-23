@@ -51,72 +51,52 @@ public class ContextMenuParams {
         return mNativePtr;
     }
 
-    /**
-     * @return The URL associated with the main frame of the page that triggered the context menu.
-     */
+    /** @return The URL associated with the main frame of the page that triggered the context menu. */
     public GURL getPageUrl() {
         return mPageUrl;
     }
 
-    /**
-     * @return The link URL, if any.
-     */
+    /** @return The link URL, if any. */
     public GURL getLinkUrl() {
         return mLinkUrl;
     }
 
-    /**
-     * @return The link text, if any.
-     */
+    /** @return The link text, if any. */
     public String getLinkText() {
         return mLinkText;
     }
 
-    /**
-     * @return The title or alt attribute (if title is not available).
-     */
+    /** @return The title or alt attribute (if title is not available). */
     public String getTitleText() {
         return mTitleText;
     }
 
-    /**
-     * @return The unfiltered link URL, if any.
-     */
+    /** @return The unfiltered link URL, if any. */
     public GURL getUnfilteredLinkUrl() {
         return mUnfilteredLinkUrl;
     }
 
-    /**
-     * @return The source URL.
-     */
+    /** @return The source URL. */
     public GURL getSrcUrl() {
         return mSrcUrl;
     }
 
-    /**
-     * @return the referrer associated with the frame on which the menu is invoked
-     */
+    /** @return the referrer associated with the frame on which the menu is invoked */
     public Referrer getReferrer() {
         return mReferrer;
     }
 
-    /**
-     * @return Whether or not the context menu is being shown for an anchor.
-     */
+    /** @return Whether or not the context menu is being shown for an anchor. */
     public boolean isAnchor() {
         return mIsAnchor;
     }
 
-    /**
-     * @return Whether or not the context menu is being shown for an image.
-     */
+    /** @return Whether or not the context menu is being shown for an image. */
     public boolean isImage() {
         return mIsImage;
     }
 
-    /**
-     * @return Whether or not the context menu is being shown for a video.
-     */
+    /** @return Whether or not the context menu is being shown for a video. */
     public boolean isVideo() {
         return mIsVideo;
     }
@@ -149,9 +129,7 @@ public class ContextMenuParams {
         return mSourceType;
     }
 
-    /**
-     * @return Whether or not the context menu is been shown for a download item.
-     */
+    /** @return Whether or not the context menu is been shown for a download item. */
     public boolean isFile() {
         if (getSrcUrl().getScheme().equals(ContentUrlConstants.FILE_SCHEME)) {
             return true;
@@ -159,9 +137,7 @@ public class ContextMenuParams {
         return false;
     }
 
-    /**
-     * @return The valid url of a ContextMenuParams.
-     */
+    /** @return The valid url of a ContextMenuParams. */
     public GURL getUrl() {
         if (isAnchor() && !getLinkUrl().isEmpty()) {
             return getLinkUrl();
@@ -170,25 +146,32 @@ public class ContextMenuParams {
         }
     }
 
-    /**
-     * @return Whether or not the context menu was opened from highlight.
-     */
+    /** @return Whether or not the context menu was opened from highlight. */
     public boolean getOpenedFromHighlight() {
         return mOpenedFromHighlight;
     }
 
-    /**
-     * @return The additional navigation params associated with this Context Menu.
-     */
+    /** @return The additional navigation params associated with this Context Menu. */
     public AdditionalNavigationParams getAdditionalNavigationParams() {
         return mAdditionalNavigationParams;
     }
 
     @VisibleForTesting
-    public ContextMenuParams(long nativePtr, @ContextMenuDataMediaType int mediaType, GURL pageUrl,
-            GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl, String titleText,
-            Referrer referrer, boolean canSaveMedia, int triggeringTouchXDp, int triggeringTouchYDp,
-            @MenuSourceType int sourceType, boolean openedFromHighlight,
+    public ContextMenuParams(
+            long nativePtr,
+            @ContextMenuDataMediaType int mediaType,
+            GURL pageUrl,
+            GURL linkUrl,
+            String linkText,
+            GURL unfilteredLinkUrl,
+            GURL srcUrl,
+            String titleText,
+            Referrer referrer,
+            boolean canSaveMedia,
+            int triggeringTouchXDp,
+            int triggeringTouchYDp,
+            @MenuSourceType int sourceType,
+            boolean openedFromHighlight,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         mNativePtr = nativePtr;
         mPageUrl = pageUrl;
@@ -211,18 +194,43 @@ public class ContextMenuParams {
     }
 
     @CalledByNative
-    private static ContextMenuParams create(long nativePtr, @ContextMenuDataMediaType int mediaType,
-            GURL pageUrl, GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl,
-            String titleText, GURL sanitizedReferrer, int referrerPolicy, boolean canSaveMedia,
-            int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType,
+    private static ContextMenuParams create(
+            long nativePtr,
+            @ContextMenuDataMediaType int mediaType,
+            GURL pageUrl,
+            GURL linkUrl,
+            String linkText,
+            GURL unfilteredLinkUrl,
+            GURL srcUrl,
+            String titleText,
+            GURL sanitizedReferrer,
+            int referrerPolicy,
+            boolean canSaveMedia,
+            int triggeringTouchXDp,
+            int triggeringTouchYDp,
+            @MenuSourceType int sourceType,
             boolean openedFromHighlight,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
-        Referrer referrer = sanitizedReferrer.isEmpty()
-                ? null
-                : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
-        return new ContextMenuParams(nativePtr, mediaType, pageUrl, linkUrl, linkText,
-                unfilteredLinkUrl, srcUrl, titleText, referrer, canSaveMedia, triggeringTouchXDp,
-                triggeringTouchYDp, sourceType, openedFromHighlight, additionalNavigationParams);
+        Referrer referrer =
+                sanitizedReferrer.isEmpty()
+                        ? null
+                        : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
+        return new ContextMenuParams(
+                nativePtr,
+                mediaType,
+                pageUrl,
+                linkUrl,
+                linkText,
+                unfilteredLinkUrl,
+                srcUrl,
+                titleText,
+                referrer,
+                canSaveMedia,
+                triggeringTouchXDp,
+                triggeringTouchYDp,
+                sourceType,
+                openedFromHighlight,
+                additionalNavigationParams);
     }
 }

@@ -48,6 +48,7 @@ public class MessageDimens {
         }
         return ((MessageBannerView) mView).getTitleHeightForAnimation();
     }
+
     int getDescriptionHeight() {
         assert mView instanceof MessageBannerView;
         if (!mView.isLaidOut()) {
@@ -66,8 +67,10 @@ public class MessageDimens {
     }
 
     private void measure() {
-        int maxWidth = Math.min(mView.getRootView().getWidth(),
-                mView.getResources().getDimensionPixelSize(R.dimen.message_max_width));
+        int maxWidth =
+                Math.min(
+                        mView.getRootView().getWidth(),
+                        mView.getResources().getDimensionPixelSize(R.dimen.message_max_width));
         int wSpec = View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST);
         int hSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         mView.measure(wSpec, hSpec);

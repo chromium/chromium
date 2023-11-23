@@ -33,7 +33,9 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
     static final long DEADLINE_DELTA_MS = 1000;
 
     /** Clock to use so we can mock time in tests. */
-    public interface Clock { long currentTimeMillis(); }
+    public interface Clock {
+        long currentTimeMillis();
+    }
 
     private static Clock sClock = System::currentTimeMillis;
 
@@ -75,8 +77,10 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
             // value is considerably lower from the previous one, since the minimum value
             // allowed for the interval time is of 15 min:
             // https://android.googlesource.com/platform/frameworks/base/+/refs/heads/oreo-release/core/java/android/app/job/JobInfo.java.
-            long flexTimeMs = extras.getLong(BACKGROUND_TASK_FLEX_TIME_KEY, /*defaultValue=*/
-                    JobInfo.getMinFlexMillis());
+            long flexTimeMs =
+                    extras.getLong(
+                            BACKGROUND_TASK_FLEX_TIME_KEY,
+                            /* defaultValue= */ JobInfo.getMinFlexMillis());
 
             return TaskInfo.PeriodicInfo.getExpirationStatus(
                     scheduleTimeMs, intervalTimeMs, flexTimeMs, currentTimeMs);
@@ -113,13 +117,14 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
         jobExtras.putPersistableBundle(BACKGROUND_TASK_EXTRAS_KEY, persistableBundle);
 
         JobInfo.Builder builder =
-                new JobInfo
-                        .Builder(taskInfo.getTaskId(),
+                new JobInfo.Builder(
+                                taskInfo.getTaskId(),
                                 new ComponentName(context, BackgroundTaskJobService.class))
                         .setPersisted(taskInfo.isPersisted())
                         .setRequiresCharging(taskInfo.requiresCharging())
-                        .setRequiredNetworkType(getJobInfoNetworkTypeFromTaskNetworkType(
-                                taskInfo.getRequiredNetworkType()));
+                        .setRequiredNetworkType(
+                                getJobInfoNetworkTypeFromTaskNetworkType(
+                                        taskInfo.getRequiredNetworkType()));
 
         if (BuildCompat.isAtLeastU()) {
             builder.setUserInitiated(taskInfo.isUserInitiated());
@@ -152,7 +157,8 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
                 mJobExtras.putLong(
                         BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_SCHEDULE_TIME_KEY,
                         sClock.currentTimeMillis());
-                mJobExtras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY,
+                mJobExtras.putLong(
+                        BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY,
                         oneOffInfo.getWindowEndTimeMs());
             }
             mBuilder.setExtras(mJobExtras);

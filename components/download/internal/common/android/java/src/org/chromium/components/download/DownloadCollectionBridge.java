@@ -42,9 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Helper class for publishing download files to the public download collection.
- */
+/** Helper class for publishing download files to the public download collection. */
 @JNINamespace("download")
 public class DownloadCollectionBridge {
     private static final String TAG = "DownloadCollection";
@@ -58,9 +56,7 @@ public class DownloadCollectionBridge {
 
     private static DownloadDelegate sDownloadDelegate = new DownloadDelegate();
 
-    /**
-     *  Class representing the Uri and display name pair for downloads.
-     */
+    /**  Class representing the Uri and display name pair for downloads. */
     protected static class DisplayNameInfo {
         private final String mUri;
         private final String mDisplayName;
@@ -105,8 +101,11 @@ public class DownloadCollectionBridge {
      * @param referrer Referrer of the download.
      */
     @CalledByNative
-    public static String createIntermediateUriForPublish(final String fileName,
-            final String mimeType, final String originalUrl, final String referrer) {
+    public static String createIntermediateUriForPublish(
+            final String fileName,
+            final String mimeType,
+            final String originalUrl,
+            final String referrer) {
         Uri uri = createPendingSessionInternal(fileName, mimeType, originalUrl, referrer);
         if (uri != null) return uri.toString();
 
@@ -188,8 +187,13 @@ public class DownloadCollectionBridge {
         String mimeType = null;
         Cursor cursor = null;
         try {
-            cursor = resolver.query(Uri.parse(intermediateUri),
-                    new String[] {MediaColumns.MIME_TYPE}, null, null, null);
+            cursor =
+                    resolver.query(
+                            Uri.parse(intermediateUri),
+                            new String[] {MediaColumns.MIME_TYPE},
+                            null,
+                            null,
+                            null);
             if (cursor != null && cursor.getCount() != 0 && cursor.moveToNext()) {
                 mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.MIME_TYPE));
             }
@@ -226,8 +230,9 @@ public class DownloadCollectionBridge {
                     resolver.openFileDescriptor(Uri.parse(intermediateUri), "rw");
             ContentValues updateValues = new ContentValues();
             updateValues.put("date_expires", getNewExpirationTime());
-            ContextUtils.getApplicationContext().getContentResolver().update(
-                    Uri.parse(intermediateUri), updateValues, null, null);
+            ContextUtils.getApplicationContext()
+                    .getContentResolver()
+                    .update(Uri.parse(intermediateUri), updateValues, null, null);
             return pfd.detachFd();
         } catch (Exception e) {
             Log.e(TAG, "Cannot open intermediate Uri.", e);
@@ -256,8 +261,9 @@ public class DownloadCollectionBridge {
         final ContentValues updateValues = new ContentValues();
         Uri uri = Uri.parse(downloadUri);
         updateValues.put(MediaColumns.DISPLAY_NAME, displayName);
-        return ContextUtils.getApplicationContext().getContentResolver().update(
-                       uri, updateValues, null, null)
+        return ContextUtils.getApplicationContext()
+                        .getContentResolver()
+                        .update(uri, updateValues, null, null)
                 == 1;
     }
 
@@ -272,15 +278,21 @@ public class DownloadCollectionBridge {
         Cursor cursor = null;
         try {
             Uri uri = Downloads.EXTERNAL_CONTENT_URI;
-            cursor = resolver.query(ApiHelperForQ.setIncludePending(uri),
-                    new String[] {BaseColumns._ID, MediaColumns.DISPLAY_NAME}, null, null, null);
+            cursor =
+                    resolver.query(
+                            ApiHelperForQ.setIncludePending(uri),
+                            new String[] {BaseColumns._ID, MediaColumns.DISPLAY_NAME},
+                            null,
+                            null,
+                            null);
             if (cursor == null || cursor.getCount() == 0) return null;
             List<DisplayNameInfo> infos = new ArrayList<DisplayNameInfo>();
             while (cursor.moveToNext()) {
                 String displayName =
                         cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));
-                Uri downloadUri = ContentUris.withAppendedId(
-                        uri, cursor.getInt(cursor.getColumnIndexOrThrow(BaseColumns._ID)));
+                Uri downloadUri =
+                        ContentUris.withAppendedId(
+                                uri, cursor.getInt(cursor.getColumnIndexOrThrow(BaseColumns._ID)));
                 infos.add(new DisplayNameInfo(downloadUri.toString(), displayName));
             }
             return infos.toArray(new DisplayNameInfo[0]);
@@ -292,9 +304,7 @@ public class DownloadCollectionBridge {
         return null;
     }
 
-    /**
-     * @return whether download collection is supported.
-     */
+    /** @return whether download collection is supported. */
     public static boolean supportsDownloadCollection() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
@@ -309,9 +319,15 @@ public class DownloadCollectionBridge {
         Cursor cursor = null;
         try {
             Uri uri = Downloads.EXTERNAL_CONTENT_URI;
-            cursor = ContextUtils.getApplicationContext().getContentResolver().query(
-                    ApiHelperForQ.setIncludePending(uri), new String[] {BaseColumns._ID},
-                    "_display_name LIKE ?1", new String[] {fileName}, null);
+            cursor =
+                    ContextUtils.getApplicationContext()
+                            .getContentResolver()
+                            .query(
+                                    ApiHelperForQ.setIncludePending(uri),
+                                    new String[] {BaseColumns._ID},
+                                    "_display_name LIKE ?1",
+                                    new String[] {fileName},
+                                    null);
             if (cursor == null) return null;
             if (cursor.moveToNext()) {
                 return ContentUris.withAppendedId(
@@ -325,9 +341,7 @@ public class DownloadCollectionBridge {
         return null;
     }
 
-    /**
-     * @return number of days for an intermediate download to expire.
-     */
+    /** @return number of days for an intermediate download to expire. */
     public static int getExpirationDurationInDays() {
         return DownloadCollectionBridgeJni.get().getExpirationDurationInDays();
     }
@@ -340,8 +354,11 @@ public class DownloadCollectionBridge {
      * @param referrer Referrer of the download.
      * @return Uri created for the pending session, or null if failed.
      */
-    private static Uri createPendingSessionInternal(final String fileName, final String mimeType,
-            final String originalUrl, final String referrer) {
+    private static Uri createPendingSessionInternal(
+            final String fileName,
+            final String mimeType,
+            final String originalUrl,
+            final String referrer) {
         PendingParams pendingParams =
                 createPendingParams(fileName, mimeType, originalUrl, referrer);
         pendingParams.setExpirationTime(getNewExpirationTime());
@@ -362,8 +379,11 @@ public class DownloadCollectionBridge {
      * @return PendingParams needed for creating the PendingSession.
      */
     @RequiresApi(29)
-    private static PendingParams createPendingParams(final String fileName, final String mimeType,
-            final String originalUrl, final String referrer) {
+    private static PendingParams createPendingParams(
+            final String fileName,
+            final String mimeType,
+            final String originalUrl,
+            final String referrer) {
         Uri downloadsUri = Downloads.EXTERNAL_CONTENT_URI;
         String newMimeType =
                 sDownloadDelegate.remapGenericMimeType(mimeType, originalUrl, fileName);
@@ -410,8 +430,8 @@ public class DownloadCollectionBridge {
      */
     private static long getNewExpirationTime() {
         return (System.currentTimeMillis()
-                       + DownloadCollectionBridge.getExpirationDurationInDays()
-                               * DateUtils.DAY_IN_MILLIS)
+                        + DownloadCollectionBridge.getExpirationDurationInDays()
+                                * DateUtils.DAY_IN_MILLIS)
                 / 1000;
     }
 
@@ -425,8 +445,13 @@ public class DownloadCollectionBridge {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor = null;
         try {
-            cursor = resolver.query(Uri.parse(downloadUri),
-                    new String[] {MediaColumns.DISPLAY_NAME}, null, null, null);
+            cursor =
+                    resolver.query(
+                            Uri.parse(downloadUri),
+                            new String[] {MediaColumns.DISPLAY_NAME},
+                            null,
+                            null,
+                            null);
             if (cursor == null || cursor.getCount() == 0) return null;
             if (cursor.moveToNext()) {
                 return cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));

@@ -41,8 +41,7 @@ public class LazySubscriptionsManager {
 
     // The max number of most recent messages queued per lazy subscription until
     // Chrome is foregrounded.
-    @VisibleForTesting
-    public static final int MESSAGES_QUEUE_SIZE = 3;
+    @VisibleForTesting public static final int MESSAGES_QUEUE_SIZE = 3;
 
     // Private constructor because all methods in this class are static, and it
     // shouldn't be instantiated.
@@ -62,7 +61,8 @@ public class LazySubscriptionsManager {
             return;
         }
         Set<String> lazySubscriptionIds = getLazySubscriptionIds();
-        sharedPrefs.edit()
+        sharedPrefs
+                .edit()
                 .putStringSet(SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, lazySubscriptionIds)
                 .apply();
         sharedPrefs.edit().remove(LEGACY_HAS_PERSISTED_MESSAGES_KEY).apply();
@@ -84,8 +84,10 @@ public class LazySubscriptionsManager {
         // provide a cheap way that (most probably) doesn't require disk access
         // to read that flag.
         SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
-        Set<String> subscriptionsWithPersistedMessages = new HashSet<>(sharedPrefs.getStringSet(
-                SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, Collections.emptySet()));
+        Set<String> subscriptionsWithPersistedMessages =
+                new HashSet<>(
+                        sharedPrefs.getStringSet(
+                                SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, Collections.emptySet()));
         if (subscriptionsWithPersistedMessages.contains(subscriptionId) == hasPersistedMessages) {
             // Correct information are already stored, nothing to do.
             return;
@@ -95,8 +97,10 @@ public class LazySubscriptionsManager {
         } else {
             subscriptionsWithPersistedMessages.remove(subscriptionId);
         }
-        sharedPrefs.edit()
-                .putStringSet(SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY,
+        sharedPrefs
+                .edit()
+                .putStringSet(
+                        SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY,
                         subscriptionsWithPersistedMessages)
                 .apply();
     }
@@ -112,8 +116,10 @@ public class LazySubscriptionsManager {
     public static Set<String> getSubscriptionIdsWithPersistedMessages(
             final String subscriptionIdPrefix) {
         SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
-        Set<String> subscriptionsWithPersistedMessages = new HashSet<>(sharedPrefs.getStringSet(
-                SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, Collections.emptySet()));
+        Set<String> subscriptionsWithPersistedMessages =
+                new HashSet<>(
+                        sharedPrefs.getStringSet(
+                                SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, Collections.emptySet()));
         Set<String> subscriptionsWithPersistedMessagesWithPrefix = new HashSet<String>();
         for (String subscriptionWithPersistedMessages : subscriptionsWithPersistedMessages) {
             if (subscriptionWithPersistedMessages.startsWith(subscriptionIdPrefix)) {
@@ -138,9 +144,7 @@ public class LazySubscriptionsManager {
         }
     }
 
-    /**
-     * Stores the information about lazy subscriptions in SharedPreferences.
-     */
+    /** Stores the information about lazy subscriptions in SharedPreferences. */
     public static void storeLazinessInformation(final String subscriptionId, boolean isLazy) {
         boolean isAlreadyLazy = isSubscriptionLazy(subscriptionId);
         if (isAlreadyLazy == isLazy) {
@@ -154,8 +158,9 @@ public class LazySubscriptionsManager {
         Context context = ContextUtils.getApplicationContext();
         SharedPreferences sharedPrefs =
                 context.getSharedPreferences(PREF_PACKAGE, Context.MODE_PRIVATE);
-        Set<String> lazyIds = new HashSet<>(
-                sharedPrefs.getStringSet(FCM_LAZY_SUBSCRIPTIONS, Collections.emptySet()));
+        Set<String> lazyIds =
+                new HashSet<>(
+                        sharedPrefs.getStringSet(FCM_LAZY_SUBSCRIPTIONS, Collections.emptySet()));
         if (isAlreadyLazy) {
             lazyIds.remove(subscriptionId);
         } else { // Switching from unlazy to lazy.
@@ -164,16 +169,16 @@ public class LazySubscriptionsManager {
         sharedPrefs.edit().putStringSet(FCM_LAZY_SUBSCRIPTIONS, lazyIds).apply();
     }
 
-    /**
-     * Returns whether the subscription with the |appId| and |senderId| is lazy.
-     */
+    /** Returns whether the subscription with the |appId| and |senderId| is lazy. */
     public static boolean isSubscriptionLazy(final String subscriptionId) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             Context context = ContextUtils.getApplicationContext();
             SharedPreferences sharedPrefs =
                     context.getSharedPreferences(PREF_PACKAGE, Context.MODE_PRIVATE);
-            Set<String> lazyIds = new HashSet<>(
-                    sharedPrefs.getStringSet(FCM_LAZY_SUBSCRIPTIONS, Collections.emptySet()));
+            Set<String> lazyIds =
+                    new HashSet<>(
+                            sharedPrefs.getStringSet(
+                                    FCM_LAZY_SUBSCRIPTIONS, Collections.emptySet()));
             return lazyIds.contains(subscriptionId);
         }
     }
@@ -218,7 +223,8 @@ public class LazySubscriptionsManager {
 
             // If the queue is full remove the oldest message.
             if (queueJSON.length() == MESSAGES_QUEUE_SIZE) {
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Dropping GCM Message due queue size limit. Sender id:"
                                 + GCMMessage.peekSenderId(queueJSON.getJSONObject(0)));
                 JSONArray newQueue = new JSONArray();
@@ -231,11 +237,15 @@ public class LazySubscriptionsManager {
             // Add the new message to the end.
             queueJSON.put(message.toJSON());
             sharedPrefs.edit().putString(subscriptionId, queueJSON.toString()).apply();
-            storeHasPersistedMessagesForSubscription(subscriptionId, /*hasPersistedMessages=*/true);
+            storeHasPersistedMessagesForSubscription(
+                    subscriptionId, /* hasPersistedMessages= */ true);
         } catch (JSONException e) {
-            Log.e(TAG,
+            Log.e(
+                    TAG,
                     "Error when parsing the persisted message queue for subscriber:"
-                            + subscriptionId + ":" + e.getMessage());
+                            + subscriptionId
+                            + ":"
+                            + e.getMessage());
         }
     }
 
@@ -260,20 +270,23 @@ public class LazySubscriptionsManager {
                     GCMMessage persistedMessage =
                             GCMMessage.createFromJSON(queueJSON.getJSONObject(i));
                     if (persistedMessage == null) {
-                        Log.e(TAG,
+                        Log.e(
+                                TAG,
                                 "Persisted GCM Message is invalid. Sender id:"
                                         + GCMMessage.peekSenderId(queueJSON.getJSONObject(i)));
                         continue;
                     }
                     messages.add(persistedMessage);
                 } catch (JSONException e) {
-                    Log.e(TAG,
+                    Log.e(
+                            TAG,
                             "Error when creating a GCMMessage from a JSONObject:" + e.getMessage());
                 }
             }
             return messages.toArray(new GCMMessage[messages.size()]);
         } catch (JSONException e) {
-            Log.e(TAG,
+            Log.e(
+                    TAG,
                     "Error when parsing the persisted message queue for subscriber:"
                             + subscriptionId);
         }
@@ -290,7 +303,7 @@ public class LazySubscriptionsManager {
                 context.getSharedPreferences(PREF_PACKAGE, Context.MODE_PRIVATE);
         sharedPrefs.edit().remove(subscriptionId).apply();
         LazySubscriptionsManager.storeHasPersistedMessagesForSubscription(
-                subscriptionId, /*hasPersistedMessages=*/false);
+                subscriptionId, /* hasPersistedMessages= */ false);
     }
 
     /**
@@ -303,7 +316,8 @@ public class LazySubscriptionsManager {
         for (int i = 0; i < messages.length(); i++) {
             JSONObject message = messages.getJSONObject(i);
             if (GCMMessage.peekCollapseKey(message).equals(collapseKey)) {
-                Log.i(TAG,
+                Log.i(
+                        TAG,
                         "Dropping GCM Message due to collapse key collision. Sender id:"
                                 + GCMMessage.peekSenderId(message));
                 continue;

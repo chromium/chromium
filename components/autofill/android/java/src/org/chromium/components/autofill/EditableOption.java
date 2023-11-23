@@ -43,8 +43,12 @@ public class EditableOption implements Completable {
      * @param tertiarylabel The optional tertiary label.
      * @param icon          The drawable icon or null.
      */
-    public EditableOption(String id, @Nullable String label, @Nullable String sublabel,
-            @Nullable String tertiarylabel, @Nullable Drawable icon) {
+    public EditableOption(
+            String id,
+            @Nullable String label,
+            @Nullable String sublabel,
+            @Nullable String tertiarylabel,
+            @Nullable Drawable icon) {
         updateIdentifierLabelsAndIcon(id, label, sublabel, tertiarylabel, icon);
     }
 
@@ -84,25 +88,19 @@ public class EditableOption implements Completable {
         return mEditTitle;
     }
 
-    /**
-     * The primary label of this option. For example, “Visa***1234” or "2-day shipping".
-     */
+    /** The primary label of this option. For example, “Visa***1234” or "2-day shipping". */
     @Nullable
     public String getLabel() {
         return mLabels[0];
     }
 
-    /**
-     * The optional sublabel of this option. For example, “Expiration date: 12/2025”.
-     */
+    /** The optional sublabel of this option. For example, “Expiration date: 12/2025”. */
     @Nullable
     public String getSublabel() {
         return mLabels[1];
     }
 
-    /**
-     * The optional tertiary label of this option.  For example, "(555) 867-5309".
-     */
+    /** The optional tertiary label of this option.  For example, "(555) 867-5309". */
     @Nullable
     public String getTertiaryLabel() {
         return mLabels[2];
@@ -141,8 +139,12 @@ public class EditableOption implements Completable {
      * @param tertiarylabel The new tertiary label to use. Can be null.
      * @param icon          The drawable icon or null.
      */
-    protected void updateIdentifierLabelsAndIcon(String id, String label, @Nullable String sublabel,
-            @Nullable String tertiarylabel, @Nullable Drawable icon) {
+    protected void updateIdentifierLabelsAndIcon(
+            String id,
+            String label,
+            @Nullable String sublabel,
+            @Nullable String tertiarylabel,
+            @Nullable Drawable icon) {
         updateIdentifierAndLabels(id, label, sublabel, tertiarylabel);
         mIcon = icon;
     }

@@ -25,9 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * This class receives captured content from native and forwards to ContetnCaptureConsumer.
- */
+/** This class receives captured content from native and forwards to ContetnCaptureConsumer. */
 @JNINamespace("content_capture")
 public class OnscreenContentProvider {
     private static final String TAG = "ContentCapture";
@@ -95,8 +93,8 @@ public class OnscreenContentProvider {
     public void onWebContentsChanged(WebContents current) {
         mWebContents = new WeakReference<WebContents>(current);
         if (mNativeOnscreenContentProviderAndroid != 0) {
-            OnscreenContentProviderJni.get().onWebContentsChanged(
-                    mNativeOnscreenContentProviderAndroid, current);
+            OnscreenContentProviderJni.get()
+                    .onWebContentsChanged(mNativeOnscreenContentProviderAndroid, current);
         }
     }
 
@@ -223,8 +221,10 @@ public class OnscreenContentProvider {
     @NativeMethods
     interface Natives {
         long init(OnscreenContentProvider caller, WebContents webContents);
+
         void onWebContentsChanged(
                 long nativeOnscreenContentProviderAndroid, WebContents webContents);
+
         void destroy(long nativeOnscreenContentProviderAndroid);
     }
 }

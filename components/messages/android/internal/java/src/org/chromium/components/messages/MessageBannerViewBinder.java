@@ -43,9 +43,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * View binder of Message banner.
- */
+/** View binder of Message banner. */
 public class MessageBannerViewBinder {
     @SuppressLint("ClickableViewAccessibility")
     public static void bind(PropertyModel model, MessageBannerView view, PropertyKey propertyKey) {
@@ -82,8 +80,9 @@ public class MessageBannerViewBinder {
         } else if (propertyKey == SECONDARY_ICON) {
             view.setSecondaryIcon(model.get(SECONDARY_ICON));
         } else if (propertyKey == SECONDARY_ICON_RESOURCE_ID) {
-            view.setSecondaryIcon(AppCompatResources.getDrawable(
-                    view.getContext(), model.get(SECONDARY_ICON_RESOURCE_ID)));
+            view.setSecondaryIcon(
+                    AppCompatResources.getDrawable(
+                            view.getContext(), model.get(SECONDARY_ICON_RESOURCE_ID)));
         } else if (propertyKey == SECONDARY_BUTTON_MENU_TEXT) {
             view.setSecondaryButtonMenuText(model.get(SECONDARY_BUTTON_MENU_TEXT));
         } else if (propertyKey == SECONDARY_MENU_BUTTON_DELEGATE) {
@@ -100,10 +99,11 @@ public class MessageBannerViewBinder {
             if (runnable == null) {
                 view.setOnTouchListener(null);
             } else {
-                view.setOnTouchListener((e, v) -> {
-                    runnable.run();
-                    return false;
-                });
+                view.setOnTouchListener(
+                        (e, v) -> {
+                            runnable.run();
+                            return false;
+                        });
             }
         } else if (propertyKey == CONTENT_ALPHA) {
             for (int i = 0; i < view.getChildCount(); i++) {
@@ -116,15 +116,22 @@ public class MessageBannerViewBinder {
                 // reset to its default outline provider.
                 view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
             } else {
-                ViewOutlineProvider mViewOutlineProvider = new ViewOutlineProvider() {
-                    @Override
-                    public void getOutline(final View view, final Outline outline) {
-                        float cornerRadius = view.getResources().getDimensionPixelSize(
-                                R.dimen.message_banner_radius);
-                        outline.setRoundRect(
-                                0, 0, view.getWidth(), (int) (view.getHeight() * p), cornerRadius);
-                    }
-                };
+                ViewOutlineProvider mViewOutlineProvider =
+                        new ViewOutlineProvider() {
+                            @Override
+                            public void getOutline(final View view, final Outline outline) {
+                                float cornerRadius =
+                                        view.getResources()
+                                                .getDimensionPixelSize(
+                                                        R.dimen.message_banner_radius);
+                                outline.setRoundRect(
+                                        0,
+                                        0,
+                                        view.getWidth(),
+                                        (int) (view.getHeight() * p),
+                                        cornerRadius);
+                            }
+                        };
                 view.setOutlineProvider(mViewOutlineProvider);
                 view.setClipToOutline(true);
             }

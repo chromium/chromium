@@ -33,9 +33,7 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.AttrUtils;
 
-/**
- * View showing a toggle and a description for third-party cookie blocking for a site.
- */
+/** View showing a toggle and a description for third-party cookie blocking for a site. */
 public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
@@ -108,6 +106,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         }
     }
 
+    private String getQuantityString(int resId, int count) {
+        return getContext().getResources().getQuantityString(resId, count, count);
+    }
+
     public void setParams(PageInfoCookiesViewParams params) {
         mTrackingProtectionUI = params.showTrackingProtectionUI;
         mBlockAll3PC = params.blockAll3PC;
@@ -138,33 +140,40 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         // TODO(crbug.com/1077766): Set a ManagedPreferenceDelegate?
         mCookieSwitch.setVisible(params.thirdPartyCookieBlockingEnabled);
-        mCookieSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            boolean boolValue = (Boolean) newValue;
-            // Invert when the flag is on, since the switch is inverted.
-            if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-                boolValue = !boolValue;
-            }
-            params.onThirdPartyCookieToggleChanged.onResult(boolValue);
-            return true;
-        });
-        boolean areAllCookiesBlocked = !WebsitePreferenceBridge.isCategoryEnabled(
-                getSiteSettingsDelegate().getBrowserContextHandle(), ContentSettingsType.COOKIES);
+        mCookieSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    boolean boolValue = (Boolean) newValue;
+                    // Invert when the flag is on, since the switch is inverted.
+                    if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+                        boolValue = !boolValue;
+                    }
+                    params.onThirdPartyCookieToggleChanged.onResult(boolValue);
+                    return true;
+                });
+        boolean areAllCookiesBlocked =
+                !WebsitePreferenceBridge.isCategoryEnabled(
+                        getSiteSettingsDelegate().getBrowserContextHandle(),
+                        ContentSettingsType.COOKIES);
         if (areAllCookiesBlocked && !PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
             mCookieSwitch.setTitle(R.string.page_info_all_cookies_block);
         }
 
-        mCookieInUse.setIcon(SettingsUtils.getTintedIcon(getContext(),
-                PageInfoFeatures.USER_BYPASS_UI.isEnabled() ? R.drawable.gm_database_24
-                                                            : R.drawable.permission_cookie));
+        mCookieInUse.setIcon(
+                SettingsUtils.getTintedIcon(
+                        getContext(),
+                        PageInfoFeatures.USER_BYPASS_UI.isEnabled()
+                                ? R.drawable.gm_database_24
+                                : R.drawable.permission_cookie));
         mCookieInUse.setImageView(
                 R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
         // Disabling enables passthrough of clicks to the main preference.
         mCookieInUse.setImageViewEnabled(false);
         mDeleteDisabled = params.disableCookieDeletion;
-        mCookieInUse.setOnPreferenceClickListener(preference -> {
-            showClearCookiesConfirmation();
-            return true;
-        });
+        mCookieInUse.setOnPreferenceClickListener(
+                preference -> {
+                    showClearCookiesConfirmation();
+                    return true;
+                });
         updateCookieDeleteButton();
 
         mOnClearCallback = params.onClearCallback;
@@ -181,7 +190,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         .setMessage(R.string.page_info_cookies_clear_confirmation)
                         .setMessage(
                                 getString(R.string.page_info_cookies_clear_confirmation, mHostName))
-                        .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,
+                        .setPositiveButton(
+                                R.string.page_info_cookies_clear_confirmation_button,
                                 (dialog, which) -> mOnClearCallback.run())
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
@@ -191,7 +201,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     // Only used when UserBypassUI flag is off.
     public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {
         assert !PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-            : "This should only be invoked when UserBypassUI is off.";
+                : "This should only be invoked when UserBypassUI is off.";
 
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean enabled = status == CookieControlsStatus.ENABLED;
@@ -210,7 +220,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             @CookieControlsEnforcement int enforcement,
             long expiration) {
         assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-            : "This should only be invoked when UserBypassUI is enabled.";
+                : "This should only be invoked when UserBypassUI is enabled.";
 
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
@@ -253,82 +263,79 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         if (!visible) return;
 
-        mCookieSwitch.setIcon(SettingsUtils.getTintedIcon(getContext(),
-                blockingEnabled ? R.drawable.ic_visibility_off_black
+        mCookieSwitch.setIcon(
+                SettingsUtils.getTintedIcon(
+                        getContext(),
+                        blockingEnabled
+                                ? R.drawable.ic_visibility_off_black
                                 : R.drawable.ic_visibility_black));
         mCookieSwitch.setChecked(!blockingEnabled);
         mCookieSwitch.setEnabled(!isEnforced);
-        mCookieSwitch.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
-                getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return isEnforced;
-            }
-        });
+        mCookieSwitch.setManagedPreferenceDelegate(
+                new ForwardingManagedPreferenceDelegate(
+                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return isEnforced;
+                    }
+                });
 
         boolean permanentException = (expiration == 0);
 
-        NoUnderlineClickableSpan feedbackSpan = new NoUnderlineClickableSpan(
-                getContext(), (view) -> { mOnFeedbackClicked.onResult(this.getActivity()); });
+        NoUnderlineClickableSpan feedbackSpan =
+                new NoUnderlineClickableSpan(
+                        getContext(),
+                        (view) -> {
+                            mOnFeedbackClicked.onResult(this.getActivity());
+                        });
 
         if (blockingEnabled) {
             mThirdPartyCookiesTitle.setTitle(
-                    getContext().getString(R.string.page_info_cookies_site_not_working_title));
-            if (willCreatePermanentException()) {
-                mThirdPartyCookiesSummary.setSummary(
-                        getContext()
-                                .getString(
-                                        R.string
-                                                .page_info_cookies_site_not_working_description_permanent));
-            } else {
-                mThirdPartyCookiesSummary.setSummary(
-                        getContext()
-                                .getString(
-                                        mTrackingProtectionUI
-                                                ? R.string
-                                                        .page_info_cookies_site_not_working_description_tracking_protection
-                                                : R.string
-                                                        .page_info_cookies_site_not_working_description_temporary));
-            }
+                    getString(R.string.page_info_cookies_site_not_working_title));
+            int resId =
+                    willCreatePermanentException()
+                            ? R.string.page_info_cookies_site_not_working_description_permanent
+                            : mTrackingProtectionUI
+                                    ? R.string
+                                            .page_info_cookies_site_not_working_description_tracking_protection
+                                    : R.string
+                                            .page_info_cookies_site_not_working_description_temporary;
+            mThirdPartyCookiesSummary.setSummary(getString(resId));
         } else if (permanentException) {
             mThirdPartyCookiesTitle.setTitle(
-                    getContext().getString(R.string.page_info_cookies_permanent_allowed_title));
+                    getString(R.string.page_info_cookies_permanent_allowed_title));
+            int resId =
+                    mTrackingProtectionUI
+                            ? R.string.page_info_cookies_tracking_protection_description
+                            : R.string.page_info_cookies_send_feedback_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
-                            getContext()
-                                    .getString(
-                                            mTrackingProtectionUI
-                                                    ? R.string
-                                                            .page_info_cookies_tracking_protection_description
-                                                    : R.string
-                                                            .page_info_cookies_send_feedback_description),
+                            getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
             int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
             updateThirdPartyCookiesTitleTemporary(days);
+            int resId =
+                    mTrackingProtectionUI
+                            ? R.string.page_info_cookies_tracking_protection_description
+                            : R.string.page_info_cookies_send_feedback_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
-                            getContext()
-                                    .getString(
-                                            mTrackingProtectionUI
-                                                    ? R.string
-                                                            .page_info_cookies_tracking_protection_description
-                                                    : R.string
-                                                            .page_info_cookies_send_feedback_description),
+                            getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         }
-
         updateCookieSwitch();
         updateStorageSubtitle();
     }
 
     public void setCookiesCount(int allowedCookies, int blockedCookies) {
         mCookieSwitch.setSummary(
-                blockedCookies > 0 ? getContext().getResources().getQuantityString(
-                        R.plurals.cookie_controls_blocked_cookies, blockedCookies, blockedCookies)
-                                   : null);
-        mCookieInUse.setTitle(getContext().getResources().getQuantityString(
-                R.plurals.page_info_cookies_in_use, allowedCookies, allowedCookies));
+                blockedCookies > 0
+                        ? getQuantityString(
+                                R.plurals.cookie_controls_blocked_cookies, blockedCookies)
+                        : null);
+        mCookieInUse.setTitle(
+                getQuantityString(R.plurals.page_info_cookies_in_use, allowedCookies));
 
         mDataUsed |= allowedCookies != 0;
         updateCookieDeleteButton();
@@ -346,15 +353,17 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     public void setStorageUsage(long storageUsage) {
         if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            mCookieInUse.setTitle(String.format(
-                    getContext().getString(R.string.origin_settings_storage_usage_brief),
-                    Formatter.formatShortFileSize(getContext(), storageUsage)));
+            mCookieInUse.setTitle(
+                    String.format(
+                            getString(R.string.origin_settings_storage_usage_brief),
+                            Formatter.formatShortFileSize(getContext(), storageUsage)));
         } else {
             mCookieInUse.setSummary(
-                    storageUsage > 0 ? String.format(
-                            getContext().getString(R.string.origin_settings_storage_usage_brief),
-                            Formatter.formatShortFileSize(getContext(), storageUsage))
-                                     : null);
+                    storageUsage > 0
+                            ? String.format(
+                                    getString(R.string.origin_settings_storage_usage_brief),
+                                    Formatter.formatShortFileSize(getContext(), storageUsage))
+                            : null);
         }
 
         mDataUsed |= storageUsage != 0;
@@ -375,21 +384,23 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         }
 
         assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
-            : "First Party Sets UI and access should be enabled to show FPS info.";
+                        && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
+                : "First Party Sets UI and access should be enabled to show FPS info.";
 
         mFPSInUse.setVisible(true);
         mFPSInUse.setTitle(R.string.cookie_info_fps_title);
-        mFPSInUse.setSummary(String.format(
-                getContext().getString(R.string.cookie_info_fps_summary), fpsInfo.getOwner()));
+        mFPSInUse.setSummary(
+                String.format(getString(R.string.cookie_info_fps_summary), fpsInfo.getOwner()));
         mFPSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
-        mFPSInUse.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
-                getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return getSiteSettingsDelegate().isPartOfManagedFirstPartySet(currentOrigin);
-            }
-        });
+        mFPSInUse.setManagedPreferenceDelegate(
+                new ForwardingManagedPreferenceDelegate(
+                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return getSiteSettingsDelegate()
+                                .isPartOfManagedFirstPartySet(currentOrigin);
+                    }
+                });
 
         return true;
     }
@@ -407,7 +418,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     private void updateCookieDeleteButton() {
-        mCookieInUse.setImageColor(!mDeleteDisabled && mDataUsed
+        mCookieInUse.setImageColor(
+                !mDeleteDisabled && mDataUsed
                         ? R.color.default_icon_color_accent1_tint_list
                         : R.color.default_icon_color_disabled);
     }
@@ -415,36 +427,26 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     // Only invoked when UserBypassUI is on.
     private void updateCookieSwitch() {
         assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-            : "This should only be invoked when UserBypassUI is enabled.";
+                : "This should only be invoked when UserBypassUI is enabled.";
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
             if (mTrackingProtectionUI) {
-                mCookieSwitch.setSummary(getContext().getString(
+                int resId =
                         mBlockAll3PC
-                        ? R.string.page_info_tracking_protection_toggle_blocked
-                        : R.string.page_info_tracking_protection_toggle_limited));
+                                ? R.string.page_info_tracking_protection_toggle_blocked
+                                : R.string.page_info_tracking_protection_toggle_limited;
+                mCookieSwitch.setSummary(getString(resId));
             } else {
                 mCookieSwitch.setSummary(
-                        getContext()
-                                .getResources()
-                                .getQuantityString(
-                                        R.plurals.page_info_sites_blocked,
-                                        mBlockedSites,
-                                        mBlockedSites));
+                        getQuantityString(R.plurals.page_info_sites_blocked, mBlockedSites));
             }
         } else {
             if (mTrackingProtectionUI) {
                 mCookieSwitch.setSummary(
-                        getContext()
-                                .getString(R.string.page_info_tracking_protection_toggle_allowed));
+                        getString(R.string.page_info_tracking_protection_toggle_allowed));
             } else {
                 mCookieSwitch.setSummary(
-                        getContext()
-                                .getResources()
-                                .getQuantityString(
-                                        R.plurals.page_info_sites_allowed,
-                                        mAllowedSites,
-                                        mAllowedSites));
+                        getQuantityString(R.plurals.page_info_sites_allowed, mAllowedSites));
             }
         }
     }
@@ -455,20 +457,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         if (!mTrackingProtectionUI) return;
         if (!mCookieSwitch.isChecked()) {
             mCookieInUse.setSummary(
-                    getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.page_info_sites_blocked,
-                                    mBlockedSites,
-                                    mBlockedSites));
+                    getQuantityString(R.plurals.page_info_sites_blocked, mBlockedSites));
         } else {
             mCookieInUse.setSummary(
-                    getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.page_info_sites_allowed,
-                                    mAllowedSites,
-                                    mAllowedSites));
+                    getQuantityString(R.plurals.page_info_sites_allowed, mAllowedSites));
         }
     }
 
@@ -476,40 +468,23 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         if (mTrackingProtectionUI && (mBlockAll3PC || mIsIncognito)) {
             mThirdPartyCookiesTitle.setTitle(
                     days == 0
-                            ? getContext()
-                                    .getString(
-                                            R.string.page_info_cookies_blocking_restart_today_title)
-                            : getContext()
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals
-                                                    .page_info_cookies_blocking_restart_tracking_protection_title,
-                                            days,
-                                            days));
+                            ? getString(R.string.page_info_cookies_blocking_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals
+                                            .page_info_cookies_blocking_restart_tracking_protection_title,
+                                    days));
         } else if (mTrackingProtectionUI) {
             mThirdPartyCookiesTitle.setTitle(
                     days == 0
-                            ? getContext()
-                                    .getString(
-                                            R.string.page_info_cookies_limiting_restart_today_title)
-                            : getContext()
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals.page_info_cookies_limiting_restart_title,
-                                            days,
-                                            days));
+                            ? getString(R.string.page_info_cookies_limiting_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals.page_info_cookies_limiting_restart_title, days));
         } else {
             mThirdPartyCookiesTitle.setTitle(
                     days == 0
-                            ? getContext()
-                                    .getString(
-                                            R.string.page_info_cookies_blocking_restart_today_title)
-                            : getContext()
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals.page_info_cookies_blocking_restart_title,
-                                            days,
-                                            days));
+                            ? getString(R.string.page_info_cookies_blocking_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals.page_info_cookies_blocking_restart_title, days));
         }
     }
 

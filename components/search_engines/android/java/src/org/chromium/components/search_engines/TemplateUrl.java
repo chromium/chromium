@@ -25,9 +25,7 @@ public class TemplateUrl {
         mTemplateUrlPtr = templateUrlPtr;
     }
 
-    /**
-     * @return The name of the search engine.
-     */
+    /** @return The name of the search engine. */
     public String getShortName() {
         return TemplateUrlJni.get().getShortName(mTemplateUrlPtr);
     }
@@ -40,16 +38,12 @@ public class TemplateUrl {
         return TemplateUrlJni.get().getPrepopulatedId(mTemplateUrlPtr);
     }
 
-    /**
-     * @return Whether a search engine is prepopulated or created by policy.
-     */
+    /** @return Whether a search engine is prepopulated or created by policy. */
     public boolean getIsPrepopulated() {
         return TemplateUrlJni.get().isPrepopulatedOrCreatedByPolicy(mTemplateUrlPtr);
     }
 
-    /**
-     * @return The keyword of the search engine.
-     */
+    /** @return The keyword of the search engine. */
     public String getKeyword() {
         return TemplateUrlJni.get().getKeyword(mTemplateUrlPtr);
     }
@@ -91,20 +85,28 @@ public class TemplateUrl {
 
     @Override
     public String toString() {
-        return String.format(Locale.US,
-                "TemplateURL -- keyword: %s, short name: %s, "
-                        + "prepopulated: %b",
-                getKeyword(), getShortName(), getIsPrepopulated());
+        return String.format(
+                Locale.US,
+                "TemplateURL -- keyword: %s, short name: %s, " + "prepopulated: %b",
+                getKeyword(),
+                getShortName(),
+                getIsPrepopulated());
     }
 
     @NativeMethods
     public interface Natives {
         String getShortName(long templateUrlPtr);
+
         String getKeyword(long templateUrlPtr);
+
         boolean isPrepopulatedOrCreatedByPolicy(long templateUrlPtr);
+
         long getLastVisitedTime(long templateUrlPtr);
+
         int getPrepopulatedId(long templateUrlPtr);
+
         String getURL(long templateUrlPtr);
+
         String getNewTabURL(long templateUrlPtr);
     }
 }

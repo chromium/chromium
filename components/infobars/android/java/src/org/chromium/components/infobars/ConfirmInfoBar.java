@@ -29,8 +29,14 @@ public class ConfirmInfoBar extends InfoBar {
     /** Text shown on the link, e.g. "Learn more". */
     private final String mLinkText;
 
-    protected ConfirmInfoBar(int iconDrawableId, @ColorRes int iconTintId, Bitmap iconBitmap,
-            String message, String linkText, String primaryButtonText, String secondaryButtonText) {
+    protected ConfirmInfoBar(
+            int iconDrawableId,
+            @ColorRes int iconTintId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String primaryButtonText,
+            String secondaryButtonText) {
         super(iconDrawableId, iconTintId, message, iconBitmap);
         mPrimaryButtonText = primaryButtonText;
         mSecondaryButtonText = secondaryButtonText;
@@ -74,10 +80,16 @@ public class ConfirmInfoBar extends InfoBar {
      * @param buttonCancel String to display on the Cancel button.
      */
     @CalledByNative
-    private static ConfirmInfoBar create(int iconId, Bitmap iconBitmap, String message,
-            String linkText, String buttonOk, String buttonCancel) {
-        ConfirmInfoBar infoBar = new ConfirmInfoBar(
-                iconId, 0, iconBitmap, message, linkText, buttonOk, buttonCancel);
+    private static ConfirmInfoBar create(
+            int iconId,
+            Bitmap iconBitmap,
+            String message,
+            String linkText,
+            String buttonOk,
+            String buttonCancel) {
+        ConfirmInfoBar infoBar =
+                new ConfirmInfoBar(
+                        iconId, 0, iconBitmap, message, linkText, buttonOk, buttonCancel);
 
         return infoBar;
     }

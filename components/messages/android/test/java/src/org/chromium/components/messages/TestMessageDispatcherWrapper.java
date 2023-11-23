@@ -16,9 +16,7 @@ public class TestMessageDispatcherWrapper implements ManagedMessageDispatcher {
     private final ManagedMessageDispatcher mWrappedDispatcher;
     private final ObserverList<Observer> mMessageEnqueueObservers = new ObserverList<>();
 
-    /**
-     * Observer that's called when new message is enqueued.
-     */
+    /** Observer that's called when new message is enqueued. */
     interface Observer {
         void onMessageEnqueued();
     }
@@ -66,8 +64,11 @@ public class TestMessageDispatcherWrapper implements ManagedMessageDispatcher {
     }
 
     @Override
-    public void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
-            int scopeType, boolean highPriority) {
+    public void enqueueMessage(
+            PropertyModel messageProperties,
+            WebContents webContents,
+            int scopeType,
+            boolean highPriority) {
         mWrappedDispatcher.enqueueMessage(messageProperties, webContents, scopeType, highPriority);
         notifyObserversMessageEnqueued();
     }

@@ -15,9 +15,7 @@ import androidx.annotation.RequiresApi;
 
 import java.util.HashMap;
 
-/**
- * The class to manage the platform session.
- */
+/** The class to manage the platform session. */
 @RequiresApi(Build.VERSION_CODES.Q)
 class PlatformSession {
     /**
@@ -46,7 +44,12 @@ class PlatformSession {
         AutofillId autofillId = structure.getAutofillId();
         if (autofillId == null) return null;
         // Simulate the logical in View.onProvideStructure()
-        structure.setDimens(view.getLeft(), view.getTop(), 0, 0, view.getRight() - view.getLeft(),
+        structure.setDimens(
+                view.getLeft(),
+                view.getTop(),
+                0,
+                0,
+                view.getRight() - view.getLeft(),
                 view.getBottom() - view.getTop());
         structure.setVisibility(view.getVisibility());
         structure.setEnabled(view.isEnabled());

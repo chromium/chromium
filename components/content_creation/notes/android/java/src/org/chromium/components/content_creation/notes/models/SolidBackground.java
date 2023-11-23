@@ -9,9 +9,7 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
-/**
- * Model class for a template's solid-colored background.
- */
+/** Model class for a template's solid-colored background. */
 public final class SolidBackground implements Background {
     public final @ColorInt int color;
 

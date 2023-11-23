@@ -10,9 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * Interface for a page info subpage controller.
- */
+/** Interface for a page info subpage controller. */
 public interface PageInfoSubpageController {
     /** Returns a title string for the page info subpage. */
     @NonNull

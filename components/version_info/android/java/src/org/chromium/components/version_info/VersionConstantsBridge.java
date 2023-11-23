@@ -6,9 +6,7 @@ package org.chromium.components.version_info;
 
 import org.jni_zero.CalledByNative;
 
-/**
- * Bridge between native and VersionConstants.java.
- */
+/** Bridge between native and VersionConstants.java. */
 public class VersionConstantsBridge {
     @CalledByNative
     public static int getChannel() {

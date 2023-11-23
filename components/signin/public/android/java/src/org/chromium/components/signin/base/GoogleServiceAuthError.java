@@ -17,9 +17,16 @@ import java.lang.annotation.RetentionPolicy;
  * google_apis/gaia/google_service_auth_error.h.
  */
 public class GoogleServiceAuthError {
-    @IntDef({State.NONE, State.INVALID_GAIA_CREDENTIALS, State.USER_NOT_SIGNED_UP,
-            State.CONNECTION_FAILED, State.SERVICE_UNAVAILABLE, State.REQUEST_CANCELED,
-            State.UNEXPECTED_SERVICE_RESPONSE, State.SERVICE_ERROR})
+    @IntDef({
+        State.NONE,
+        State.INVALID_GAIA_CREDENTIALS,
+        State.USER_NOT_SIGNED_UP,
+        State.CONNECTION_FAILED,
+        State.SERVICE_UNAVAILABLE,
+        State.REQUEST_CANCELED,
+        State.UNEXPECTED_SERVICE_RESPONSE,
+        State.SERVICE_ERROR
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         // The user is authenticated.

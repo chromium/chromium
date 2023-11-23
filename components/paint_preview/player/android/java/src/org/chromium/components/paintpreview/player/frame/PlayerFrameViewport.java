@@ -22,29 +22,31 @@ public class PlayerFrameViewport {
 
     /** The size of the viewport. */
     private Size mViewportSize = new Size(0, 0);
+
     /** A 3x3 affine transformation matrix to track scale and translation. */
     private final Matrix mViewportTransform = new Matrix();
+
     /** The visible region of the viewport. */
     private final Rect mVisibleRegion = new Rect();
+
     /** The offset of the visible region of the viewport relative to the frame's origin. */
     private final Point mOffset = new Point();
+
     private boolean mTileSizeOverridden;
     private Size mTileSize = new Size(0, 0);
+
     /** Transient storage objects to avoid allocations. */
     private final Rect mViewportRect = new Rect();
+
     private final float[] mMatrixValues = new float[9];
     private final Rect mVisibleViewport = new Rect();
 
-    /**
-     * @return the width of the viewport.
-     */
+    /** @return the width of the viewport. */
     public int getWidth() {
         return mViewportSize.getWidth();
     }
 
-    /**
-     * @return the height of the viewport.
-     */
+    /** @return the height of the viewport. */
     public int getHeight() {
         return mViewportSize.getHeight();
     }
@@ -167,9 +169,7 @@ public class PlayerFrameViewport {
         return !mVisibleRegion.isEmpty();
     }
 
-    /**
-     * Offset of the visible portion of the viewport relative to the frame's origin.
-     */
+    /** Offset of the visible portion of the viewport relative to the frame's origin. */
     Point getOffset() {
         return mOffset;
     }
@@ -191,16 +191,12 @@ public class PlayerFrameViewport {
         return mVisibleViewport;
     }
 
-    /**
-     * @return bitmap tile size.
-     */
+    /** @return bitmap tile size. */
     Size getBitmapTileSize() {
         return mTileSize;
     }
 
-    /**
-     * Overrides the tile size.
-     */
+    /** Overrides the tile size. */
     void overrideTileSize(int width, int height) {
         setTileSize(width, height);
         mTileSizeOverridden = true;

@@ -4,7 +4,7 @@
 
 package org.chromium.components.module_installer.observer;
 
-/**
- * Listener for 'module installed' notifications.
- */
-public interface InstallerObserver { void onModuleInstalled(); }
+/** Listener for 'module installed' notifications. */
+public interface InstallerObserver {
+    void onModuleInstalled();
+}

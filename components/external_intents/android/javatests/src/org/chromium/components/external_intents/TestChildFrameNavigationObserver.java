@@ -13,9 +13,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Class for testing for failed child frame navigations for external intents.
- */
+/** Class for testing for failed child frame navigations for external intents. */
 @JNINamespace("external_intents")
 public class TestChildFrameNavigationObserver {
     private final CallbackHelper mFailCallback;
@@ -23,8 +21,11 @@ public class TestChildFrameNavigationObserver {
     private final CallbackHelper mLoadCallback;
     private final WebContents mWebContents;
 
-    public TestChildFrameNavigationObserver(WebContents webContents, CallbackHelper failCallback,
-            CallbackHelper finishCallback, CallbackHelper loadCallback) {
+    public TestChildFrameNavigationObserver(
+            WebContents webContents,
+            CallbackHelper failCallback,
+            CallbackHelper finishCallback,
+            CallbackHelper loadCallback) {
         mWebContents = webContents;
         mFailCallback = failCallback;
         mFinishCallback = finishCallback;
@@ -32,14 +33,17 @@ public class TestChildFrameNavigationObserver {
     }
 
     public static TestChildFrameNavigationObserver createAndAttachToNativeWebContents(
-            WebContents webContents, CallbackHelper failCallback, CallbackHelper finishCallback,
+            WebContents webContents,
+            CallbackHelper failCallback,
+            CallbackHelper finishCallback,
             CallbackHelper loadCallback) {
         ThreadUtils.assertOnUiThread();
 
-        TestChildFrameNavigationObserver newObserver = new TestChildFrameNavigationObserver(
-                webContents, failCallback, finishCallback, loadCallback);
-        TestChildFrameNavigationObserverJni.get().createAndAttachToNativeWebContents(
-                newObserver, webContents);
+        TestChildFrameNavigationObserver newObserver =
+                new TestChildFrameNavigationObserver(
+                        webContents, failCallback, finishCallback, loadCallback);
+        TestChildFrameNavigationObserverJni.get()
+                .createAndAttachToNativeWebContents(newObserver, webContents);
         return newObserver;
     }
 

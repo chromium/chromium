@@ -9,14 +9,11 @@ import org.jni_zero.NativeMethods;
 
 import java.util.HashMap;
 
-/**
- * Wrapper for variations.
- */
+/** Wrapper for variations. */
 @JNINamespace("variations::android")
 public final class VariationsAssociatedData {
 
-    private VariationsAssociatedData() {
-    }
+    private VariationsAssociatedData() {}
 
     /**
      * @param trialName The name of the trial to get the param value for.
@@ -49,7 +46,9 @@ public final class VariationsAssociatedData {
     @NativeMethods
     interface Natives {
         String getVariationParamValue(String trialName, String paramName);
+
         String getFeedbackVariations();
+
         String getGoogleAppVariations();
     }
 }

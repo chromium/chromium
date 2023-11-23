@@ -34,16 +34,12 @@ public class PrefService {
         mNativePrefServiceAndroid = nativePrefServiceAndroid;
     }
 
-    /**
-     * @param preference The name of the preference.
-     */
+    /** @param preference The name of the preference. */
     public void clearPref(@NonNull String preference) {
         PrefServiceJni.get().clearPref(mNativePrefServiceAndroid, preference);
     }
 
-    /**
-     * @param preference The name of the preference.
-     */
+    /** @param preference The name of the preference. */
     public boolean hasPrefPath(@NonNull String preference) {
         return PrefServiceJni.get().hasPrefPath(mNativePrefServiceAndroid, preference);
     }
@@ -133,10 +129,15 @@ public class PrefService {
     @NativeMethods
     interface Natives {
         void clearPref(long nativePrefServiceAndroid, String preference);
+
         boolean hasPrefPath(long nativePrefServiceAndroid, String preference);
+
         boolean getBoolean(long nativePrefServiceAndroid, String preference);
+
         void setBoolean(long nativePrefServiceAndroid, String preference, boolean value);
+
         int getInteger(long nativePrefServiceAndroid, String preference);
+
         void setInteger(long nativePrefServiceAndroid, String preference, int value);
 
         double getDouble(long nativePrefServiceAndroid, String preference);
@@ -144,8 +145,11 @@ public class PrefService {
         void setDouble(long nativePrefServiceAndroid, String preference, double value);
 
         String getString(long nativePrefServiceAndroid, String preference);
+
         void setString(long nativePrefServiceAndroid, String preference, String value);
+
         boolean isManagedPreference(long nativePrefServiceAndroid, String preference);
+
         boolean isDefaultValuePreference(long nativePrefServiceAndroid, String preference);
     }
 }

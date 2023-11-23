@@ -45,10 +45,18 @@ public class PaymentRequestSpec {
      * method specific data.
      * @param appLocale The current application locale.
      */
-    public PaymentRequestSpec(PaymentOptions options, PaymentDetails details,
-            Collection<PaymentMethodData> methodData, String appLocale) {
-        mNativePointer = PaymentRequestSpecJni.get().create(options.serialize(),
-                details.serialize(), MojoStructCollection.serialize(methodData), appLocale);
+    public PaymentRequestSpec(
+            PaymentOptions options,
+            PaymentDetails details,
+            Collection<PaymentMethodData> methodData,
+            String appLocale) {
+        mNativePointer =
+                PaymentRequestSpecJni.get()
+                        .create(
+                                options.serialize(),
+                                details.serialize(),
+                                MojoStructCollection.serialize(methodData),
+                                appLocale);
     }
 
     /** @return Whether destroy() has been called. */
@@ -115,7 +123,8 @@ public class PaymentRequestSpec {
      */
     public List<PaymentShippingOption> getRawShippingOptions() {
         PaymentDetails details = getPaymentDetails();
-        return Collections.unmodifiableList(details.shippingOptions != null
+        return Collections.unmodifiableList(
+                details.shippingOptions != null
                         ? Arrays.asList(details.shippingOptions)
                         : new ArrayList<>());
     }
@@ -126,7 +135,8 @@ public class PaymentRequestSpec {
      */
     public List<PaymentItem> getRawLineItems() {
         PaymentDetails details = getPaymentDetails();
-        return Collections.unmodifiableList(details.displayItems != null
+        return Collections.unmodifiableList(
+                details.displayItems != null
                         ? Arrays.asList(details.displayItems)
                         : new ArrayList<>());
     }
@@ -166,9 +176,7 @@ public class PaymentRequestSpec {
         PaymentRequestSpecJni.get().retry(mNativePointer, validationErrors.serialize());
     }
 
-    /**
-     * Recomputes spec based on details. This cannot be used after the instance is destroyed.
-     */
+    /** Recomputes spec based on details. This cannot be used after the instance is destroyed. */
     public void recomputeSpecForDetails() {
         PaymentRequestSpecJni.get().recomputeSpecForDetails(mNativePointer);
     }
@@ -201,16 +209,28 @@ public class PaymentRequestSpec {
 
     @NativeMethods
     /* package */ interface Natives {
-        long create(ByteBuffer optionsByteBuffer, ByteBuffer detailsByteBuffer,
-                ByteBuffer[] methodDataByteBuffers, String appLocale);
+        long create(
+                ByteBuffer optionsByteBuffer,
+                ByteBuffer detailsByteBuffer,
+                ByteBuffer[] methodDataByteBuffers,
+                String appLocale);
+
         void updateWith(long nativePaymentRequestSpec, ByteBuffer detailsByteBuffer);
+
         void retry(long nativePaymentRequestSpec, ByteBuffer validationErrorsByteBuffer);
+
         void recomputeSpecForDetails(long nativePaymentRequestSpec);
+
         String selectedShippingOptionError(long nativePaymentRequestSpec);
+
         void destroy(long nativePaymentRequestSpec);
+
         byte[] getPaymentDetails(long nativePaymentRequestSpec);
+
         byte[][] getMethodData(long nativePaymentRequestSpec);
+
         byte[] getPaymentOptions(long nativePaymentRequestSpec);
+
         boolean isSecurePaymentConfirmationRequested(long nativePaymentRequestSpec);
     }
 }

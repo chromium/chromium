@@ -21,8 +21,11 @@ public class MessageDispatcherBridge {
      * activity is being recreated or destroyed; otherwise, return true.
      */
     @CalledByNative
-    private static boolean enqueueMessage(MessageWrapper message, WebContents webContents,
-            @MessageScopeType int scopeType, boolean highPriority) {
+    private static boolean enqueueMessage(
+            MessageWrapper message,
+            WebContents webContents,
+            @MessageScopeType int scopeType,
+            boolean highPriority) {
         MessageDispatcher messageDispatcher =
                 MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
         if (messageDispatcher == null) return false;

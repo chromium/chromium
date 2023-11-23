@@ -24,24 +24,32 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * The crash keys will only be included in browser process crash reports.
  */
 public class CrashKeys {
-    private static final String[] KEYS = new String[] {"loaded_dynamic_module",
-            "active_dynamic_module", "application_status", "installed_modules", "emulated_modules",
-            "dynamic_module_dex_name", "partner_customization_config", "first_run"};
+    private static final String[] KEYS =
+            new String[] {
+                "loaded_dynamic_module",
+                "active_dynamic_module",
+                "application_status",
+                "installed_modules",
+                "emulated_modules",
+                "dynamic_module_dex_name",
+                "partner_customization_config",
+                "first_run"
+            };
 
     private final AtomicReferenceArray<String> mValues = new AtomicReferenceArray<>(KEYS.length);
 
     // Outside of assertions only accessed on the UI thread.
     private boolean mFlushed;
 
-    private static class Holder { static final CrashKeys INSTANCE = new CrashKeys(); }
+    private static class Holder {
+        static final CrashKeys INSTANCE = new CrashKeys();
+    }
 
     private CrashKeys() {
         assert CrashKeyIndex.NUM_ENTRIES == KEYS.length;
     }
 
-    /**
-     * @return The shared instance of this class.
-     */
+    /** @return The shared instance of this class. */
     @CalledByNative
     public static CrashKeys getInstance() {
         return Holder.INSTANCE;

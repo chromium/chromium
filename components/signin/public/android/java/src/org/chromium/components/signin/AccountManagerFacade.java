@@ -22,13 +22,9 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
 
-/**
- * Interface for {@link AccountManagerFacadeImpl}.
- */
+/** Interface for {@link AccountManagerFacadeImpl}. */
 public interface AccountManagerFacade {
-    /**
-     * Listener for whether the account is a child one.
-     */
+    /** Listener for whether the account is a child one. */
     interface ChildAccountStatusListener {
         /**
          * The method is called when the status of the account (whether it is a child one) is ready.
@@ -69,9 +65,7 @@ public interface AccountManagerFacade {
     @MainThread
     Promise<List<CoreAccountInfo>> getCoreAccountInfos();
 
-    /**
-     * @return Whether or not there is an account authenticator for Google accounts.
-     */
+    /** @return Whether or not there is an account authenticator for Google accounts. */
     @AnyThread
     boolean hasGoogleAccountAuthenticator();
 

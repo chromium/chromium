@@ -18,10 +18,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.payments.PrePurchaseQuery;
 
 /** A helper to query the payment app's IsReadyToPay service. */
-public class IsReadyToPayServiceHelper
-        extends IsReadyToPayServiceCallback.Stub implements ServiceConnection {
+public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
+        implements ServiceConnection {
     /** The maximum number of milliseconds to wait for a response from a READY_TO_PAY service. */
     private static final long READY_TO_PAY_TIMEOUT_MS = 400;
+
     /** The maximum number of milliseconds to wait for a connection to READY_TO_PAY service. */
     private static final long SERVICE_CONNECTION_TIMEOUT_MS = 1000;
 
@@ -77,8 +78,11 @@ public class IsReadyToPayServiceHelper
             // value is true, you should later call unbindService(ServiceConnection) to release
             // the connection."
             // https://developer.android.com/reference/android/content/Context.html#bindService(android.content.Intent,%20android.content.ServiceConnection,%20int)
-            mIsServiceBindingInitiated = mContext.bindService(
-                    mIsReadyToPayIntent, /*serviceConnection=*/this, Context.BIND_AUTO_CREATE);
+            mIsServiceBindingInitiated =
+                    mContext.bindService(
+                            mIsReadyToPayIntent,
+                            /* serviceConnection= */ this,
+                            Context.BIND_AUTO_CREATE);
         } catch (SecurityException e) {
             // Intentionally blank, so mIsServiceBindingInitiated is false.
         }
@@ -88,9 +92,11 @@ public class IsReadyToPayServiceHelper
             return;
         }
 
-        mHandler.postDelayed(() -> {
-            if (!mIsReadyToPayQueried) reportError();
-        }, SERVICE_CONNECTION_TIMEOUT_MS);
+        mHandler.postDelayed(
+                () -> {
+                    if (!mIsReadyToPayQueried) reportError();
+                },
+                SERVICE_CONNECTION_TIMEOUT_MS);
     }
 
     // ServiceConnection:
@@ -105,11 +111,13 @@ public class IsReadyToPayServiceHelper
             return;
         }
 
-        RecordHistogram.recordEnumeratedHistogram("PaymentRequest.PrePurchaseQuery",
-                PrePurchaseQuery.ANDROID_INTENT, PrePurchaseQuery.MAX_VALUE);
+        RecordHistogram.recordEnumeratedHistogram(
+                "PaymentRequest.PrePurchaseQuery",
+                PrePurchaseQuery.ANDROID_INTENT,
+                PrePurchaseQuery.MAX_VALUE);
         mIsReadyToPayQueried = true;
         try {
-            isReadyToPayService.isReadyToPay(/*callback=*/this);
+            isReadyToPayService.isReadyToPay(/* callback= */ this);
         } catch (Throwable e) {
             // Many undocumented exceptions are not caught in the remote Service but passed on
             // to the Service caller, see writeException in Parcel.java.
@@ -154,7 +162,7 @@ public class IsReadyToPayServiceHelper
         if (mIsServiceBindingInitiated) {
             // ServiceConnection "parameter must not be null."
             // https://developer.android.com/reference/android/content/Context.html#unbindService(android.content.ServiceConnection)
-            mContext.unbindService(/*serviceConnection=*/this);
+            mContext.unbindService(/* serviceConnection= */ this);
             mIsServiceBindingInitiated = false;
         }
         mHandler.removeCallbacksAndMessages(null);

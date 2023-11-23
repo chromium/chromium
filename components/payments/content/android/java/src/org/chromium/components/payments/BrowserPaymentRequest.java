@@ -75,8 +75,10 @@ public interface BrowserPaymentRequest {
      * @param paymentOptions The payment options specified for the request.
      * @return Whether this method has disconnected the mojo pipe.
      */
-    default boolean disconnectIfExtraValidationFails(WebContents webContents,
-            Map<String, PaymentMethodData> methodData, PaymentDetails details,
+    default boolean disconnectIfExtraValidationFails(
+            WebContents webContents,
+            Map<String, PaymentMethodData> methodData,
+            PaymentDetails details,
             PaymentOptions paymentOptions) {
         return false;
     }
@@ -103,7 +105,9 @@ public interface BrowserPaymentRequest {
      * @return The error of the showing if any; null if success.
      */
     @Nullable
-    String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+    String showOrSkipAppSelector(
+            boolean isShowWaitingForUpdatedDetails,
+            PaymentItem total,
             boolean shouldSkipAppSelector);
 
     /**
@@ -138,9 +142,7 @@ public interface BrowserPaymentRequest {
         return true;
     }
 
-    /**
-     * Called after retrieving payment details.
-     */
+    /** Called after retrieving payment details. */
     default void onInstrumentDetailsReady() {}
 
     /**

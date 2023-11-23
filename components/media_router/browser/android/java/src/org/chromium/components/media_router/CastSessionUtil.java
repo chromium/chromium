@@ -4,9 +4,7 @@
 
 package org.chromium.components.media_router;
 
-/**
- * Helper class that implements functions useful to all CastSession types.
- */
+/** Helper class that implements functions useful to all CastSession types. */
 public class CastSessionUtil {
     public static final String MEDIA_NAMESPACE = "urn:x-cast:com.google.cast.media";
 

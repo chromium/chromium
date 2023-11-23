@@ -60,8 +60,12 @@ public class TranslateOptions {
 
         @Override
         public String toString() {
-            return "mLanguageCode:" + mLanguageCode + " - mLanguageRepresentation "
-                    + mLanguageRepresentation + " - mLanguageUMAHashCode " + mLanguageUMAHashCode;
+            return "mLanguageCode:"
+                    + mLanguageCode
+                    + " - mLanguageRepresentation "
+                    + mLanguageRepresentation
+                    + " - mLanguageUMAHashCode "
+                    + mLanguageUMAHashCode;
         }
     }
 
@@ -81,11 +85,9 @@ public class TranslateOptions {
     private String mTargetLanguageCode;
 
     private final ArrayList<TranslateLanguageData> mAllLanguages;
-    @Nullable
-    private String[] mContentLanguagesCodes;
+    @Nullable private String[] mContentLanguagesCodes;
 
-    // Language code to UI display language name map
-    // Conceptually final
+    // Language code to UI display language name map Conceptually final
     private Map<String, String> mCodeToRepresentation;
 
     // Will reflect the state before the object was ever modified
@@ -97,10 +99,16 @@ public class TranslateOptions {
 
     private final boolean[] mOptions;
 
-    private TranslateOptions(String sourceLanguageCode, String targetLanguageCode,
-            ArrayList<TranslateLanguageData> allLanguages, String[] contentLanguages,
-            boolean neverLanguage, boolean neverDomain, boolean alwaysLanguage,
-            boolean triggeredFromMenu, boolean[] originalOptions) {
+    private TranslateOptions(
+            String sourceLanguageCode,
+            String targetLanguageCode,
+            ArrayList<TranslateLanguageData> allLanguages,
+            String[] contentLanguages,
+            boolean neverLanguage,
+            boolean neverDomain,
+            boolean alwaysLanguage,
+            boolean triggeredFromMenu,
+            boolean[] originalOptions) {
         assert Type.NUM_ENTRIES == 3;
         mOptions = new boolean[Type.NUM_ENTRIES];
         mOptions[Type.NEVER_LANGUAGE] = neverLanguage;
@@ -123,12 +131,17 @@ public class TranslateOptions {
         }
     }
 
-    /**
-     * Creates a TranslateOptions by the given data.
-     */
-    public static TranslateOptions create(String sourceLanguageCode, String targetLanguageCode,
-            String[] languages, String[] codes, boolean neverLanguage, boolean neverDomain,
-            boolean alwaysTranslate, boolean triggeredFromMenu, int[] hashCodes,
+    /** Creates a TranslateOptions by the given data. */
+    public static TranslateOptions create(
+            String sourceLanguageCode,
+            String targetLanguageCode,
+            String[] languages,
+            String[] codes,
+            boolean neverLanguage,
+            boolean neverDomain,
+            boolean alwaysTranslate,
+            boolean triggeredFromMenu,
+            int[] hashCodes,
             String[] contentLanguagesCodes) {
         assert languages.length == codes.length;
 
@@ -138,18 +151,30 @@ public class TranslateOptions {
             languageList.add(new TranslateLanguageData(codes[i], languages[i], hashCode));
         }
 
-        return new TranslateOptions(sourceLanguageCode, targetLanguageCode, languageList,
-                contentLanguagesCodes, neverLanguage, neverDomain, alwaysTranslate,
-                triggeredFromMenu, null);
+        return new TranslateOptions(
+                sourceLanguageCode,
+                targetLanguageCode,
+                languageList,
+                contentLanguagesCodes,
+                neverLanguage,
+                neverDomain,
+                alwaysTranslate,
+                triggeredFromMenu,
+                null);
     }
 
-    /**
-     * Returns a copy of the current instance.
-     */
+    /** Returns a copy of the current instance. */
     TranslateOptions copy() {
-        return new TranslateOptions(mSourceLanguageCode, mTargetLanguageCode, mAllLanguages,
-                mContentLanguagesCodes, mOptions[Type.NEVER_LANGUAGE], mOptions[Type.NEVER_DOMAIN],
-                mOptions[Type.ALWAYS_LANGUAGE], mTriggeredFromMenu, mOriginalOptions);
+        return new TranslateOptions(
+                mSourceLanguageCode,
+                mTargetLanguageCode,
+                mAllLanguages,
+                mContentLanguagesCodes,
+                mOptions[Type.NEVER_LANGUAGE],
+                mOptions[Type.NEVER_DOMAIN],
+                mOptions[Type.ALWAYS_LANGUAGE],
+                mTriggeredFromMenu,
+                mOriginalOptions);
     }
 
     /** Updates content languages. */

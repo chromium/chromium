@@ -47,6 +47,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
     private boolean mSessionValid;
     private DummyPlayer mPlayer;
     private MediaItem mCurrentItem;
+
     @SuppressLint("StaticFieldLeak")
     private static RemoteSessionManager sInstance;
 
@@ -75,17 +76,20 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
 
         // create new item with initial status PLAYBACK_STATE_PENDING
         mItemId++;
-        mCurrentItem = new MediaItem(
-                Integer.toString(mSessionId), Integer.toString(mItemId), uri, mime, receiver);
+        mCurrentItem =
+                new MediaItem(
+                        Integer.toString(mSessionId),
+                        Integer.toString(mItemId),
+                        uri,
+                        mime,
+                        receiver);
         mCurrentItem.setPosition(contentPosition);
 
         Log.v(TAG, "%s: add: new item id = %s", mName, mCurrentItem);
         return mCurrentItem;
     }
 
-    /**
-     * Disconnect from the local session
-     */
+    /** Disconnect from the local session */
     public void disconnect() {
         mLocalSessionManager = null;
     }
@@ -116,9 +120,10 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
      */
     public MediaSessionStatus getSessionStatus(String sid) {
         Log.v(TAG, "Getting session status for session %s", sid);
-        int sessionState = (sid != null && sid.equals(Integer.toString(mSessionId)))
-                ? MediaSessionStatus.SESSION_STATE_ACTIVE
-                : MediaSessionStatus.SESSION_STATE_INVALIDATED;
+        int sessionState =
+                (sid != null && sid.equals(Integer.toString(mSessionId)))
+                        ? MediaSessionStatus.SESSION_STATE_ACTIVE
+                        : MediaSessionStatus.SESSION_STATE_INVALIDATED;
 
         Log.v(TAG, "Session state is %s", sessionState);
 
@@ -151,9 +156,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         return mCurrentItem;
     }
 
-    /**
-     * @return whether the current video is paused
-     */
+    /** @return whether the current video is paused */
     public boolean isPaused() {
         return mSessionValid && mPaused;
     }
@@ -183,9 +186,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         onItemChanged();
     }
 
-    /**
-     * Pause the current video
-     */
+    /** Pause the current video */
     public void pause() {
         Log.v(TAG, "%s: pause", mName);
         if (!mSessionValid) {
@@ -196,9 +197,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         updatePlaybackState();
     }
 
-    /**
-     * Resume the current video
-     */
+    /** Resume the current video */
     public void resume() {
         Log.v(TAG, "%s: resume", mName);
         if (!mSessionValid) {
@@ -255,9 +254,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         return Integer.toString(mSessionId);
     }
 
-    /**
-     * Stop the current video
-     */
+    /** Stop the current video */
     public void stop() {
         Log.v(TAG, "%s: stop", mName);
         if (!mSessionValid) {
@@ -276,7 +273,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         checkPlayer();
 
         if (mCurrentItem != null) {
-            mPlayer.getStatus(mCurrentItem, true /* update */);
+            mPlayer.getStatus(mCurrentItem, /* update= */ true);
         }
     }
 
@@ -305,9 +302,11 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
 
     private void finishItem(boolean error) {
         if (mCurrentItem != null) {
-            removeItem(mCurrentItem.getItemId(),
-                    error ? MediaItemStatus.PLAYBACK_STATE_ERROR
-                          : MediaItemStatus.PLAYBACK_STATE_FINISHED);
+            removeItem(
+                    mCurrentItem.getItemId(),
+                    error
+                            ? MediaItemStatus.PLAYBACK_STATE_ERROR
+                            : MediaItemStatus.PLAYBACK_STATE_FINISHED);
             updateStatus();
         }
     }
@@ -335,8 +334,10 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
     private void updatePlaybackState() {
         if (mCurrentItem != null) {
             if (mCurrentItem.getState() == MediaItemStatus.PLAYBACK_STATE_PENDING) {
-                mCurrentItem.setState(mPaused ? MediaItemStatus.PLAYBACK_STATE_PAUSED
-                                              : MediaItemStatus.PLAYBACK_STATE_PLAYING);
+                mCurrentItem.setState(
+                        mPaused
+                                ? MediaItemStatus.PLAYBACK_STATE_PAUSED
+                                : MediaItemStatus.PLAYBACK_STATE_PLAYING);
                 mPlayer.play(mCurrentItem);
             } else if (mPaused
                     && mCurrentItem.getState() == MediaItemStatus.PLAYBACK_STATE_PLAYING) {

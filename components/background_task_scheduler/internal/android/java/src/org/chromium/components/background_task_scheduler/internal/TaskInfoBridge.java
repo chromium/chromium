@@ -10,9 +10,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
-/**
- * Converts native task info params to Java {@link TaskInfo}.
- */
+/** Converts native task info params to Java {@link TaskInfo}. */
 public class TaskInfoBridge {
     @CalledByNative
     private static TaskInfo.TimingInfo createPeriodicInfo(
@@ -37,18 +35,24 @@ public class TaskInfoBridge {
     }
 
     @CalledByNative
-    private static TaskInfo createTaskInfo(int taskId, TaskInfo.TimingInfo timingInfo,
-            String extras, int networkType, boolean requiresCharging, boolean isPersisted,
+    private static TaskInfo createTaskInfo(
+            int taskId,
+            TaskInfo.TimingInfo timingInfo,
+            String extras,
+            int networkType,
+            boolean requiresCharging,
+            boolean isPersisted,
             boolean updateCurrent) {
         PersistableBundle bundle = new PersistableBundle();
         bundle.putString(TaskInfo.SERIALIZED_TASK_EXTRAS, extras);
-        TaskInfo taskInfo = TaskInfo.createTask(taskId, timingInfo)
-                                    .setRequiredNetworkType(networkType)
-                                    .setRequiresCharging(requiresCharging)
-                                    .setUpdateCurrent(updateCurrent)
-                                    .setIsPersisted(isPersisted)
-                                    .setExtras(bundle)
-                                    .build();
+        TaskInfo taskInfo =
+                TaskInfo.createTask(taskId, timingInfo)
+                        .setRequiredNetworkType(networkType)
+                        .setRequiresCharging(requiresCharging)
+                        .setUpdateCurrent(updateCurrent)
+                        .setIsPersisted(isPersisted)
+                        .setExtras(bundle)
+                        .build();
         return taskInfo;
     }
 }

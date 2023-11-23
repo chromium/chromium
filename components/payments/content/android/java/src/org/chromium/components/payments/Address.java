@@ -20,8 +20,8 @@ public class Address {
      * https://w3c.github.io/payment-request/#internal-constructor
      */
     private static final String COUNTRY_CODE_PATTERN = "^[A-Z]{2}$";
-    @Nullable
-    private static Pattern sCountryCodePattern;
+
+    @Nullable private static Pattern sCountryCodePattern;
 
     public final String country;
     public final String[] addressLine;
@@ -63,9 +63,17 @@ public class Address {
      * @param recipient The name of the recipient or contact person at the address.
      * @param phone The phone number of the recipient or contact person at the address.
      */
-    public Address(String country, String[] addressLine, String region, String city,
-            String dependentLocality, String postalCode, String sortingCode, String organization,
-            String recipient, String phone) {
+    public Address(
+            String country,
+            String[] addressLine,
+            String region,
+            String city,
+            String dependentLocality,
+            String postalCode,
+            String sortingCode,
+            String organization,
+            String recipient,
+            String phone) {
         this.country = country;
         this.addressLine = addressLine;
         this.region = region;
@@ -97,7 +105,8 @@ public class Address {
     @Nullable
     public static Address createFromBundle(@Nullable Bundle address) {
         if (address == null) return null;
-        return new Address(getStringOrEmpty(address, EXTRA_ADDRESS_COUNTRY),
+        return new Address(
+                getStringOrEmpty(address, EXTRA_ADDRESS_COUNTRY),
                 address.getStringArray(EXTRA_ADDRESS_LINES),
                 getStringOrEmpty(address, EXTRA_ADDRESS_REGION),
                 getStringOrEmpty(address, EXTRA_ADDRESS_CITY),
@@ -110,7 +119,7 @@ public class Address {
     }
 
     private static String getStringOrEmpty(Bundle bundle, String key) {
-        return bundle.getString(key, /*defaultValue =*/"");
+        return bundle.getString(key, /* defaultValue= */ "");
     }
 
     public boolean isValid() {

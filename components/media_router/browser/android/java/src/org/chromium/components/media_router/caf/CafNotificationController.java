@@ -20,7 +20,8 @@ public class CafNotificationController extends BaseNotificationController {
     public Intent createContentIntent() {
         Intent contentIntent = createBringTabToFrontIntent();
         if (contentIntent != null) {
-            contentIntent.putExtra(MediaNotificationUma.INTENT_EXTRA_NAME,
+            contentIntent.putExtra(
+                    MediaNotificationUma.INTENT_EXTRA_NAME,
                     MediaNotificationUma.Source.PRESENTATION);
         }
         return contentIntent;

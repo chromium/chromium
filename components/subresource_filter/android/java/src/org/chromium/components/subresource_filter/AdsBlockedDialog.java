@@ -62,8 +62,11 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
      * @param dialogHandler The {@link Handler} used to post the call to show the dialog.
      */
     @VisibleForTesting
-    AdsBlockedDialog(long nativeDialog, @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager, Handler dialogHandler) {
+    AdsBlockedDialog(
+            long nativeDialog,
+            @NonNull Context context,
+            @NonNull ModalDialogManager modalDialogManager,
+            Handler dialogHandler) {
         mNativeDialog = nativeDialog;
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -81,17 +84,25 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     @CalledByNative
     void show(boolean shouldPostDialog) {
         Resources resources = mContext.getResources();
-        mClickableSpan = new NoUnderlineClickableSpan(
-                mContext, (view) -> AdsBlockedDialogJni.get().onLearnMoreClicked(mNativeDialog));
+        mClickableSpan =
+                new NoUnderlineClickableSpan(
+                        mContext,
+                        (view) -> AdsBlockedDialogJni.get().onLearnMoreClicked(mNativeDialog));
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, resources,
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                resources,
                                 R.string.blocked_ads_dialog_title)
                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, getFormattedMessageText())
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.blocked_ads_dialog_always_allow)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.cancel)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.FOCUS_DIALOG, true)
@@ -141,9 +152,11 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
         if (buttonType == ButtonType.POSITIVE) {
             AdsBlockedDialogJni.get().onAllowAdsClicked(mNativeDialog);
         }
-        mModalDialogManager.dismissDialog(model,
-                buttonType == ButtonType.POSITIVE ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                                  : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        mModalDialogManager.dismissDialog(
+                model,
+                buttonType == ButtonType.POSITIVE
+                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     @Override
@@ -156,7 +169,9 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     @NativeMethods
     interface Natives {
         void onAllowAdsClicked(long nativeAdsBlockedDialog);
+
         void onLearnMoreClicked(long nativeAdsBlockedDialog);
+
         void onDismissed(long nativeAdsBlockedDialog);
     }
 }

@@ -361,9 +361,7 @@ public class AutocompleteMatch {
         return mImageDominantColor;
     }
 
-    /**
-     * @return Whether the suggestion is a search suggestion.
-     */
+    /** @return Whether the suggestion is a search suggestion. */
     public boolean isSearchSuggestion() {
         return mIsSearchType;
     }
@@ -402,16 +400,12 @@ public class AutocompleteMatch {
         return mClipboardImageData;
     }
 
-    /**
-     * @return The relevance score of this suggestion.
-     */
+    /** @return The relevance score of this suggestion. */
     public int getRelevance() {
         return mRelevance;
     }
 
-    /**
-     * @return Set of suggestion subtypes.
-     */
+    /** @return Set of suggestion subtypes. */
     public @NonNull Set<Integer> getSubtypes() {
         return mSubtypes;
     }
@@ -464,9 +458,7 @@ public class AutocompleteMatch {
         return mGroupId;
     }
 
-    /**
-     * @return List of tiles for TILE_NAVSUGGEST suggestion.
-     */
+    /** @return List of tiles for TILE_NAVSUGGEST suggestion. */
     public @Nullable List<SuggestTile> getSuggestTiles() {
         return mSuggestTiles;
     }

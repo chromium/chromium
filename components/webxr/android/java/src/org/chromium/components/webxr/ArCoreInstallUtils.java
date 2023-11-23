@@ -19,9 +19,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Installs AR DFM and ArCore runtimes.
- */
+/** Installs AR DFM and ArCore runtimes. */
 @JNINamespace("webxr")
 public class ArCoreInstallUtils {
     /**
@@ -100,8 +98,9 @@ public class ArCoreInstallUtils {
 
         try {
             sArCoreInstance =
-                    (ArCoreShim) Class.forName("org.chromium.components.webxr.ArCoreShimImpl")
-                            .newInstance();
+                    (ArCoreShim)
+                            Class.forName("org.chromium.components.webxr.ArCoreShimImpl")
+                                    .newInstance();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (InstantiationException e) {
@@ -143,8 +142,7 @@ public class ArCoreInstallUtils {
 
     @CalledByNative
     private static boolean shouldRequestInstallSupportedArCore() {
-        @ArCoreAvailability
-        int availability = getArCoreInstallStatus();
+        @ArCoreAvailability int availability = getArCoreInstallStatus();
         // Skip ARCore installation if we are certain that it is already installed.
         // In all other cases, we might as well try to install it and handle installation failures.
         return availability != ArCoreAvailability.SUPPORTED_INSTALLED;
@@ -193,13 +191,11 @@ public class ArCoreInstallUtils {
         }
     }
 
-    /**
-     * Helper used to notify native code about the result of the request to install ARCore.
-     */
+    /** Helper used to notify native code about the result of the request to install ARCore. */
     private void maybeNotifyNativeOnRequestInstallSupportedArCoreResult(boolean success) {
         if (mNativeArCoreInstallUtils != 0) {
-            ArCoreInstallUtilsJni.get().onRequestInstallSupportedArCoreResult(
-                    mNativeArCoreInstallUtils, success);
+            ArCoreInstallUtilsJni.get()
+                    .onRequestInstallSupportedArCoreResult(mNativeArCoreInstallUtils, success);
         }
     }
 

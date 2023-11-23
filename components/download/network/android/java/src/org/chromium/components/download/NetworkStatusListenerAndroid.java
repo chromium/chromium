@@ -53,10 +53,12 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
             HandlerThread handlerThread = new HandlerThread(THREAD_NAME);
             handlerThread.start();
             mNetworkThreadHandler = new Handler(handlerThread.getLooper());
-            mNetworkThreadHandler.post(() -> {
-                ThreadUtils.assertOnBackgroundThread();
-                mBackgroundNetworkStatusListener = new BackgroundNetworkStatusListener(this);
-            });
+            mNetworkThreadHandler.post(
+                    () -> {
+                        ThreadUtils.assertOnBackgroundThread();
+                        mBackgroundNetworkStatusListener =
+                                new BackgroundNetworkStatusListener(this);
+                    });
         }
 
         void start(BackgroundNetworkStatusListener.Observer observer) {
@@ -67,7 +69,10 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
         }
 
         void stop(BackgroundNetworkStatusListener.Observer observer) {
-            mNetworkThreadHandler.post(() -> { mBackgroundNetworkStatusListener.unRegister(); });
+            mNetworkThreadHandler.post(
+                    () -> {
+                        mBackgroundNetworkStatusListener.unRegister();
+                    });
             mObservers.removeObserver(observer);
         }
 
@@ -144,8 +149,9 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
     public void onNetworkStatusReady(int connectionType) {
         ThreadUtils.assertOnUiThread();
         if (mNativePtr != 0) {
-            NetworkStatusListenerAndroidJni.get().onNetworkStatusReady(
-                    mNativePtr, NetworkStatusListenerAndroid.this, connectionType);
+            NetworkStatusListenerAndroidJni.get()
+                    .onNetworkStatusReady(
+                            mNativePtr, NetworkStatusListenerAndroid.this, connectionType);
         }
     }
 
@@ -153,16 +159,22 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
     public void onConnectionTypeChanged(int newConnectionType) {
         ThreadUtils.assertOnUiThread();
         if (mNativePtr != 0) {
-            NetworkStatusListenerAndroidJni.get().notifyNetworkChange(
-                    mNativePtr, NetworkStatusListenerAndroid.this, newConnectionType);
+            NetworkStatusListenerAndroidJni.get()
+                    .notifyNetworkChange(
+                            mNativePtr, NetworkStatusListenerAndroid.this, newConnectionType);
         }
     }
 
     @NativeMethods
     interface Natives {
-        void onNetworkStatusReady(long nativeNetworkStatusListenerAndroid,
-                NetworkStatusListenerAndroid caller, int connectionType);
-        void notifyNetworkChange(long nativeNetworkStatusListenerAndroid,
-                NetworkStatusListenerAndroid caller, int connectionType);
+        void onNetworkStatusReady(
+                long nativeNetworkStatusListenerAndroid,
+                NetworkStatusListenerAndroid caller,
+                int connectionType);
+
+        void notifyNetworkChange(
+                long nativeNetworkStatusListenerAndroid,
+                NetworkStatusListenerAndroid caller,
+                int connectionType);
     }
 }

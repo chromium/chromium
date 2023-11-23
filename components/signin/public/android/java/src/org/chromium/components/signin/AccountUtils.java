@@ -21,9 +21,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * AccountUtils groups some static util methods for account.
- */
+/** AccountUtils groups some static util methods for account. */
 public class AccountUtils {
     private static final Pattern AT_SYMBOL = Pattern.compile("@");
     private static final String GMAIL_COM = "gmail.com";
@@ -44,9 +42,7 @@ public class AccountUtils {
         return new Account(name, GOOGLE_ACCOUNT_TYPE);
     }
 
-    /**
-     * Converts a list of {@link CoreAccountInfo}s to a list of account emails.
-     */
+    /** Converts a list of {@link CoreAccountInfo}s to a list of account emails. */
     public static List<String> toAccountEmails(final List<CoreAccountInfo> coreAccountInfos) {
         return coreAccountInfos.stream()
                 .map(coreAccountInfo -> coreAccountInfo.getEmail())
@@ -160,7 +156,8 @@ public class AccountUtils {
      */
     @Deprecated
     public static void checkChildAccountStatusLegacy(
-            @NonNull AccountManagerFacade accountManagerFacade, @NonNull List<Account> accounts,
+            @NonNull AccountManagerFacade accountManagerFacade,
+            @NonNull List<Account> accounts,
             @NonNull ChildAccountStatusListener listener) {
         if (accounts.size() >= 1) {
             // If a child account is present then there can be only one, and it must be the first
@@ -187,7 +184,8 @@ public class AccountUtils {
      * @param listener The listener is called when the status of the account
      *                 (whether it is a child one) is ready.
      */
-    public static void checkChildAccountStatus(@NonNull AccountManagerFacade accountManagerFacade,
+    public static void checkChildAccountStatus(
+            @NonNull AccountManagerFacade accountManagerFacade,
             @NonNull List<CoreAccountInfo> coreAccountInfos,
             @NonNull ChildAccountStatusListener listener) {
         if (coreAccountInfos.size() >= 1) {
@@ -200,9 +198,7 @@ public class AccountUtils {
         }
     }
 
-    /**
-     * Canonicalizes the account email.
-     */
+    /** Canonicalizes the account email. */
     static String canonicalizeEmail(String email) {
         String[] parts = AT_SYMBOL.split(email);
         if (parts.length != 2) return email;

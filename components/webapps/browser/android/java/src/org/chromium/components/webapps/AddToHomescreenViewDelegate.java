@@ -19,8 +19,6 @@ public interface AddToHomescreenViewDelegate {
      */
     boolean onAppDetailsRequested();
 
-    /**
-     * Called when the user doesn't accept adding the item to home screen and the view is dismissed.
-     */
+    /** Called when the user doesn't accept adding the item to home screen and the view is dismissed. */
     void onViewDismissed();
 }

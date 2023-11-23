@@ -36,18 +36,27 @@ public class WebAuthnBrowserBridge {
      * @param hybridCallback The callback to be invoked if a user initiates a cross-device hybrid
      *     sign-in.
      */
-    public void onCredentialsDetailsListReceived(RenderFrameHost frameHost,
-            List<WebAuthnCredentialDetails> credentialList, boolean isConditionalRequest,
-            Callback<byte[]> getAssertionCallback, Runnable hybridCallback) {
+    public void onCredentialsDetailsListReceived(
+            RenderFrameHost frameHost,
+            List<WebAuthnCredentialDetails> credentialList,
+            boolean isConditionalRequest,
+            Callback<byte[]> getAssertionCallback,
+            Runnable hybridCallback) {
         assert credentialList != null;
         assert getAssertionCallback != null;
         prepareNativeBrowserBridgeIfRequired();
 
         WebAuthnCredentialDetails[] credentialArray =
                 credentialList.toArray(new WebAuthnCredentialDetails[credentialList.size()]);
-        WebAuthnBrowserBridgeJni.get().onCredentialsDetailsListReceived(
-                mNativeWebAuthnBrowserBridge, WebAuthnBrowserBridge.this, credentialArray,
-                frameHost, isConditionalRequest, getAssertionCallback, hybridCallback);
+        WebAuthnBrowserBridgeJni.get()
+                .onCredentialsDetailsListReceived(
+                        mNativeWebAuthnBrowserBridge,
+                        WebAuthnBrowserBridge.this,
+                        credentialArray,
+                        frameHost,
+                        isConditionalRequest,
+                        getAssertionCallback,
+                        hybridCallback);
     }
 
     /**
@@ -64,8 +73,9 @@ public class WebAuthnBrowserBridge {
             RenderFrameHost frameHost, boolean hasResults, Callback<Boolean> fullAssertion) {
         prepareNativeBrowserBridgeIfRequired();
 
-        WebAuthnBrowserBridgeJni.get().onCredManConditionalRequestPending(
-                mNativeWebAuthnBrowserBridge, frameHost, hasResults, fullAssertion);
+        WebAuthnBrowserBridgeJni.get()
+                .onCredManConditionalRequestPending(
+                        mNativeWebAuthnBrowserBridge, frameHost, hasResults, fullAssertion);
     }
 
     /**
@@ -77,16 +87,17 @@ public class WebAuthnBrowserBridge {
     public void onCredManUiClosed(RenderFrameHost frameHost, boolean success) {
         prepareNativeBrowserBridgeIfRequired();
 
-        WebAuthnBrowserBridgeJni.get().onCredManUiClosed(
-                mNativeWebAuthnBrowserBridge, frameHost, success);
+        WebAuthnBrowserBridgeJni.get()
+                .onCredManUiClosed(mNativeWebAuthnBrowserBridge, frameHost, success);
     }
 
     public void onPasswordCredentialReceived(
             RenderFrameHost frameHost, String username, String password) {
         prepareNativeBrowserBridgeIfRequired();
 
-        WebAuthnBrowserBridgeJni.get().onPasswordCredentialReceived(
-                mNativeWebAuthnBrowserBridge, frameHost, username, password);
+        WebAuthnBrowserBridgeJni.get()
+                .onPasswordCredentialReceived(
+                        mNativeWebAuthnBrowserBridge, frameHost, username, password);
     }
 
     /**
@@ -112,8 +123,8 @@ public class WebAuthnBrowserBridge {
         // This should never be called without a bridge already having been created.
         assert mNativeWebAuthnBrowserBridge != 0;
 
-        WebAuthnBrowserBridgeJni.get().cleanupCredManRequest(
-                mNativeWebAuthnBrowserBridge, frameHost);
+        WebAuthnBrowserBridgeJni.get()
+                .cleanupCredManRequest(mNativeWebAuthnBrowserBridge, frameHost);
     }
 
     public void destroy() {
@@ -146,8 +157,8 @@ public class WebAuthnBrowserBridge {
     private void prepareNativeBrowserBridgeIfRequired() {
         if (mNativeWebAuthnBrowserBridge == 0) {
             mNativeWebAuthnBrowserBridge =
-                    WebAuthnBrowserBridgeJni.get().createNativeWebAuthnBrowserBridge(
-                            WebAuthnBrowserBridge.this);
+                    WebAuthnBrowserBridgeJni.get()
+                            .createNativeWebAuthnBrowserBridge(WebAuthnBrowserBridge.this);
         }
     }
 
@@ -155,18 +166,35 @@ public class WebAuthnBrowserBridge {
     interface Natives {
         // Native methods are implemented in webauthn_browser_bridge.cc.
         long createNativeWebAuthnBrowserBridge(WebAuthnBrowserBridge caller);
-        void onCredentialsDetailsListReceived(long nativeWebAuthnBrowserBridge,
-                WebAuthnBrowserBridge caller, WebAuthnCredentialDetails[] credentialList,
-                RenderFrameHost frameHost, boolean isConditionalRequest,
-                Callback<byte[]> getAssertionCallback, Runnable hybridCallback);
-        void onCredManConditionalRequestPending(long nativeWebAuthnBrowserBridge,
-                RenderFrameHost frameHost, boolean hasResults, Callback<Boolean> fullAssertion);
+
+        void onCredentialsDetailsListReceived(
+                long nativeWebAuthnBrowserBridge,
+                WebAuthnBrowserBridge caller,
+                WebAuthnCredentialDetails[] credentialList,
+                RenderFrameHost frameHost,
+                boolean isConditionalRequest,
+                Callback<byte[]> getAssertionCallback,
+                Runnable hybridCallback);
+
+        void onCredManConditionalRequestPending(
+                long nativeWebAuthnBrowserBridge,
+                RenderFrameHost frameHost,
+                boolean hasResults,
+                Callback<Boolean> fullAssertion);
+
         void onCredManUiClosed(
                 long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost, boolean success);
-        void onPasswordCredentialReceived(long nativeWebAuthnBrowserBridge,
-                RenderFrameHost frameHost, String username, String password);
+
+        void onPasswordCredentialReceived(
+                long nativeWebAuthnBrowserBridge,
+                RenderFrameHost frameHost,
+                String username,
+                String password);
+
         void cleanupRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
+
         void cleanupCredManRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
+
         void destroy(long nativeWebAuthnBrowserBridge);
     }
 }

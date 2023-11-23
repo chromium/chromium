@@ -16,8 +16,10 @@ public class PlayerGestureListener {
     private LinkClickHandler mLinkClickHandler;
     private PlayerUserFrustrationDetector mUserFrustrationDetector;
 
-    public PlayerGestureListener(LinkClickHandler linkClickHandler,
-            Runnable userInteractionCallback, Runnable userFrustrationCallback) {
+    public PlayerGestureListener(
+            LinkClickHandler linkClickHandler,
+            Runnable userInteractionCallback,
+            Runnable userFrustrationCallback) {
         TraceEvent.begin("PlayerGestureListener");
         mLinkClickHandler = linkClickHandler;
         mUserInteractionCallback = userInteractionCallback;

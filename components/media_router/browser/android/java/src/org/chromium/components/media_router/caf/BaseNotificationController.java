@@ -154,8 +154,8 @@ public abstract class BaseNotificationController
     public void onMediaSessionSeekTo(long pos) {}
 
     protected Intent createBringTabToFrontIntent() {
-        return MediaRouterClient.getInstance().createBringTabToFrontIntent(
-                mSessionController.getRouteCreationInfo().tabId);
+        return MediaRouterClient.getInstance()
+                .createBringTabToFrontIntent(mSessionController.getRouteCreationInfo().tabId);
     }
 
     // Abstract methods to be implemented by children.

@@ -43,8 +43,13 @@ public class InternalAuthenticator {
             RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
-        mAuthenticator = new AuthenticatorImpl(context, intentSender,
-                /*createConfirmationUiDelegate=*/null, renderFrameHost, topOrigin);
+        mAuthenticator =
+                new AuthenticatorImpl(
+                        context,
+                        intentSender,
+                        /* createConfirmationUiDelegate= */ null,
+                        renderFrameHost,
+                        topOrigin);
     }
 
     public static InternalAuthenticator createForTesting(
@@ -62,8 +67,12 @@ public class InternalAuthenticator {
         final WindowAndroid window = webContents.getTopLevelNativeWindow();
         final Context context = window.getActivity().get();
         final Origin topOrigin = webContents.getMainFrame().getLastCommittedOrigin();
-        return new InternalAuthenticator(nativeInternalAuthenticatorAndroid, context,
-                new AuthenticatorImpl.WindowIntentSender(window), renderFrameHost, topOrigin);
+        return new InternalAuthenticator(
+                nativeInternalAuthenticatorAndroid,
+                context,
+                new AuthenticatorImpl.WindowIntentSender(window),
+                renderFrameHost,
+                topOrigin);
     }
 
     @CalledByNative
@@ -95,9 +104,11 @@ public class InternalAuthenticator {
                     assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
                             && domExceptionDetails == null;
                     if (mNativeInternalAuthenticatorAndroid != 0) {
-                        InternalAuthenticatorJni.get().invokeMakeCredentialResponse(
-                                mNativeInternalAuthenticatorAndroid, status.intValue(),
-                                response == null ? null : response.serialize());
+                        InternalAuthenticatorJni.get()
+                                .invokeMakeCredentialResponse(
+                                        mNativeInternalAuthenticatorAndroid,
+                                        status.intValue(),
+                                        response == null ? null : response.serialize());
                     }
                 });
     }
@@ -116,9 +127,11 @@ public class InternalAuthenticator {
                     assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
                             && domExceptionDetails == null;
                     if (mNativeInternalAuthenticatorAndroid != 0) {
-                        InternalAuthenticatorJni.get().invokeGetAssertionResponse(
-                                mNativeInternalAuthenticatorAndroid, status.intValue(),
-                                response == null ? null : response.serialize());
+                        InternalAuthenticatorJni.get()
+                                .invokeGetAssertionResponse(
+                                        mNativeInternalAuthenticatorAndroid,
+                                        status.intValue(),
+                                        response == null ? null : response.serialize());
                     }
                 });
     }
@@ -130,13 +143,14 @@ public class InternalAuthenticator {
      */
     @CalledByNative
     public void isUserVerifyingPlatformAuthenticatorAvailable() {
-        mAuthenticator.isUserVerifyingPlatformAuthenticatorAvailable((isUVPAA) -> {
-            if (mNativeInternalAuthenticatorAndroid != 0) {
-                InternalAuthenticatorJni.get()
-                        .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                                mNativeInternalAuthenticatorAndroid, isUVPAA);
-            }
-        });
+        mAuthenticator.isUserVerifyingPlatformAuthenticatorAvailable(
+                (isUVPAA) -> {
+                    if (mNativeInternalAuthenticatorAndroid != 0) {
+                        InternalAuthenticatorJni.get()
+                                .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
+                                        mNativeInternalAuthenticatorAndroid, isUVPAA);
+                    }
+                });
     }
 
     /**
@@ -156,12 +170,16 @@ public class InternalAuthenticator {
     @CalledByNative
     public void getMatchingCredentialIds(
             String relyingPartyId, byte[][] credentialIds, boolean requireThirdPartyPayment) {
-        mAuthenticator.getMatchingCredentialIds(relyingPartyId, credentialIds,
-                requireThirdPartyPayment, (matchingCredentialIds) -> {
+        mAuthenticator.getMatchingCredentialIds(
+                relyingPartyId,
+                credentialIds,
+                requireThirdPartyPayment,
+                (matchingCredentialIds) -> {
                     if (mNativeInternalAuthenticatorAndroid != 0) {
-                        InternalAuthenticatorJni.get().invokeGetMatchingCredentialIdsResponse(
-                                mNativeInternalAuthenticatorAndroid,
-                                matchingCredentialIds.toArray(new byte[0][]));
+                        InternalAuthenticatorJni.get()
+                                .invokeGetMatchingCredentialIdsResponse(
+                                        mNativeInternalAuthenticatorAndroid,
+                                        matchingCredentialIds.toArray(new byte[0][]));
                     }
                 });
     }
@@ -176,10 +194,13 @@ public class InternalAuthenticator {
     public interface Natives {
         void invokeMakeCredentialResponse(
                 long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer);
+
         void invokeGetAssertionResponse(
                 long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer);
+
         void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
                 long nativeInternalAuthenticatorAndroid, boolean isUVPAA);
+
         void invokeGetMatchingCredentialIdsResponse(
                 long nativeInternalAuthenticatorAndroid, byte[][] matchingCredentialIds);
     }

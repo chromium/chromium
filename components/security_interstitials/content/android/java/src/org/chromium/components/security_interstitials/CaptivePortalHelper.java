@@ -77,6 +77,7 @@ public class CaptivePortalHelper {
     @NativeMethods
     interface Natives {
         void setCaptivePortalCertificateForTesting(String spkiHash);
+
         void setOSReportsCaptivePortalForTesting(boolean osReportsCaptivePortal);
     }
 }

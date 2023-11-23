@@ -21,7 +21,10 @@ public class Relationship {
     public final List<String> signatureFingerprints;
 
     /** Creates a {@link Relationship} to hold relationship details. */
-    public Relationship(String packageName, List<String> signatureFingerprints, Origin origin,
+    public Relationship(
+            String packageName,
+            List<String> signatureFingerprints,
+            Origin origin,
             String relation) {
         this.packageName = packageName;
         this.signatureFingerprints = signatureFingerprints;

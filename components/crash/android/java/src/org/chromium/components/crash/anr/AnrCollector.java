@@ -93,12 +93,13 @@ public class AnrCollector {
 
         // Cause is required but doesn't do anything. It's supposed to be the message from Logcat
         // (ie. "Input dispatching timed out") but that doesn't appear in the ANR report we get.
-        AnrData anrData = AnrData.newBuilder()
-                                  .setCause("Chrome_ANR_Cause")
-                                  .setPreamble(preamble.toString())
-                                  .setMainThreadStackTrace(mainThreadStackTrace.toString())
-                                  .setStackTraces(stackTraces.toString())
-                                  .build();
+        AnrData anrData =
+                AnrData.newBuilder()
+                        .setCause("Chrome_ANR_Cause")
+                        .setPreamble(preamble.toString())
+                        .setMainThreadStackTrace(mainThreadStackTrace.toString())
+                        .setStackTraces(stackTraces.toString())
+                        .build();
         return anrData;
     }
 
@@ -115,8 +116,10 @@ public class AnrCollector {
             }
         } catch (IOException e) {
             Log.e(TAG, "Couldn't read ANR from system", e);
-            RecordHistogram.recordEnumeratedHistogram(ANR_SKIPPED_UMA,
-                    AnrSkippedReason.FILESYSTEM_READ_FAILURE, AnrSkippedReason.MAX_VALUE);
+            RecordHistogram.recordEnumeratedHistogram(
+                    ANR_SKIPPED_UMA,
+                    AnrSkippedReason.FILESYSTEM_READ_FAILURE,
+                    AnrSkippedReason.MAX_VALUE);
             return null;
         }
 
@@ -135,8 +138,9 @@ public class AnrCollector {
 
     private static List<Pair<AnrData, String>> collectAnrs() {
         ActivityManager am =
-                (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE);
+                (ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
         // getHistoricalProcessExitReasons has a ring buffer and will return the same ANR many times
         // in a row until the ring fills out. To prevent making duplicate ANR reports, we have to
         // remember what the last ANR we uploaded is, which we do with shared preferences.
@@ -178,8 +182,10 @@ public class AnrCollector {
                 RecordHistogram.recordEnumeratedHistogram(
                         ANR_SKIPPED_UMA, AnrSkippedReason.NOT_SKIPPED, AnrSkippedReason.MAX_VALUE);
             } else {
-                RecordHistogram.recordEnumeratedHistogram(ANR_SKIPPED_UMA,
-                        AnrSkippedReason.ONLY_MISSING_NATIVE, AnrSkippedReason.MAX_VALUE);
+                RecordHistogram.recordEnumeratedHistogram(
+                        ANR_SKIPPED_UMA,
+                        AnrSkippedReason.ONLY_MISSING_NATIVE,
+                        AnrSkippedReason.MAX_VALUE);
             }
             String anrFileName = writeAnr(anr, outDir);
             if (anrFileName != null) {
@@ -202,8 +208,10 @@ public class AnrCollector {
             return anrFile.getAbsolutePath();
         } catch (IOException e) {
             Log.e(TAG, "Couldn't write ANR proto", e);
-            RecordHistogram.recordEnumeratedHistogram(ANR_SKIPPED_UMA,
-                    AnrSkippedReason.FILESYSTEM_WRITE_FAILURE, AnrSkippedReason.MAX_VALUE);
+            RecordHistogram.recordEnumeratedHistogram(
+                    ANR_SKIPPED_UMA,
+                    AnrSkippedReason.FILESYSTEM_WRITE_FAILURE,
+                    AnrSkippedReason.MAX_VALUE);
             return null;
         }
     }

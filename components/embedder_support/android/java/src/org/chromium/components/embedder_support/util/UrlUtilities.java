@@ -39,20 +39,32 @@ public class UrlUtilities {
     private static final Pattern HOSTNAME_PREFIX_PATTERN =
             Pattern.compile("^(www[0-9]*|web|ftp|wap|home|mobile|amp)\\.");
 
-    private static final List<String> SUPPORTED_SCHEMES = new ArrayList<String>(
-            Arrays.asList(ContentUrlConstants.ABOUT_SCHEME, UrlConstants.DATA_SCHEME,
-                    UrlConstants.FILE_SCHEME, UrlConstants.HTTP_SCHEME, UrlConstants.HTTPS_SCHEME,
-                    UrlConstants.INLINE_SCHEME, UrlConstants.JAVASCRIPT_SCHEME));
+    private static final List<String> SUPPORTED_SCHEMES =
+            new ArrayList<String>(
+                    Arrays.asList(
+                            ContentUrlConstants.ABOUT_SCHEME,
+                            UrlConstants.DATA_SCHEME,
+                            UrlConstants.FILE_SCHEME,
+                            UrlConstants.HTTP_SCHEME,
+                            UrlConstants.HTTPS_SCHEME,
+                            UrlConstants.INLINE_SCHEME,
+                            UrlConstants.JAVASCRIPT_SCHEME));
 
-    private static final List<String> DOWNLOADABLE_SCHEMES = new ArrayList<String>(Arrays.asList(
-            UrlConstants.DATA_SCHEME, UrlConstants.BLOB_SCHEME, UrlConstants.FILE_SCHEME,
-            UrlConstants.FILESYSTEM_SCHEME, UrlConstants.HTTP_SCHEME, UrlConstants.HTTPS_SCHEME));
+    private static final List<String> DOWNLOADABLE_SCHEMES =
+            new ArrayList<String>(
+                    Arrays.asList(
+                            UrlConstants.DATA_SCHEME,
+                            UrlConstants.BLOB_SCHEME,
+                            UrlConstants.FILE_SCHEME,
+                            UrlConstants.FILESYSTEM_SCHEME,
+                            UrlConstants.HTTP_SCHEME,
+                            UrlConstants.HTTPS_SCHEME));
 
-    /**
-     * URI schemes that are internal to Chrome.
-     */
+    /** URI schemes that are internal to Chrome. */
     private static final HashSet<String> INTERNAL_SCHEMES =
-            CollectionUtil.newHashSet(UrlConstants.CHROME_SCHEME, UrlConstants.CHROME_NATIVE_SCHEME,
+            CollectionUtil.newHashSet(
+                    UrlConstants.CHROME_SCHEME,
+                    UrlConstants.CHROME_NATIVE_SCHEME,
                     ContentUrlConstants.ABOUT_SCHEME);
 
     private static final String TEL_SCHEME = "tel";
@@ -107,9 +119,7 @@ public class UrlUtilities {
         return INTERNAL_SCHEMES.contains(gurl.getScheme());
     }
 
-    /**
-     * Returns whether the scheme represented by the given string is for a internal chrome page.
-     */
+    /** Returns whether the scheme represented by the given string is for a internal chrome page. */
     public static boolean isInternalScheme(String scheme) {
         return INTERNAL_SCHEMES.contains(scheme);
     }
@@ -165,8 +175,8 @@ public class UrlUtilities {
      */
     public static boolean sameDomainOrHost(
             String primaryUrl, String secondaryUrl, boolean includePrivateRegistries) {
-        return UrlUtilitiesJni.get().sameDomainOrHost(
-                primaryUrl, secondaryUrl, includePrivateRegistries);
+        return UrlUtilitiesJni.get()
+                .sameDomainOrHost(primaryUrl, secondaryUrl, includePrivateRegistries);
     }
 
     /**
@@ -223,7 +233,9 @@ public class UrlUtilities {
         assert isHttpOrHttps(url);
         Uri parsed = Uri.parse(url);
 
-        return parsed.getScheme() + "://" + ((parsed.getHost() != null) ? parsed.getHost() : "")
+        return parsed.getScheme()
+                + "://"
+                + ((parsed.getHost() != null) ? parsed.getHost() : "")
                 + ((parsed.getPort() != -1) ? (":" + parsed.getPort()) : "");
     }
 
@@ -325,9 +337,7 @@ public class UrlUtilities {
         return UrlUtilitiesJni.get().getValueForKeyInQuery(url, key);
     }
 
-    /**
-     * @return true if |url|'s scheme is for an Android intent.
-     */
+    /** @return true if |url|'s scheme is for an Android intent. */
     public static boolean hasIntentScheme(GURL url) {
         return url.getScheme().equals(UrlConstants.APP_INTENT_SCHEME)
                 || url.getScheme().equals(UrlConstants.INTENT_SCHEME);
@@ -337,7 +347,9 @@ public class UrlUtilities {
     public interface Natives {
         boolean sameDomainOrHost(
                 String primaryUrl, String secondaryUrl, boolean includePrivateRegistries);
+
         String getDomainAndRegistry(String url, boolean includePrivateRegistries);
+
         /** Returns whether the given URL uses the Google.com domain. */
         boolean isGoogleDomainUrl(String url, boolean allowNonStandardPort);
 
@@ -351,10 +363,13 @@ public class UrlUtilities {
         boolean isGoogleHomePageUrl(String url);
 
         boolean isUrlWithinScope(String url, String scopeUrl);
+
         boolean urlsMatchIgnoringFragments(String url, String url2);
+
         boolean urlsFragmentsDiffer(String url, String url2);
 
         String escapeQueryParamValue(String url, boolean usePlus);
+
         String getValueForKeyInQuery(GURL url, String key);
 
         GURL clearPort(GURL url);

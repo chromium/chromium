@@ -63,7 +63,8 @@ public class CredManHelper {
     private static final String INCOGNITO_KEY = "com.android.chrome.INCOGNITO";
     private static final String CRED_MAN_PREFIX = "androidx.credentials.";
     private static final ComponentName GPM_COMPONENT_NAME =
-            ComponentName.createRelative("com.google.android.gms",
+            ComponentName.createRelative(
+                    "com.google.android.gms",
                     ".auth.api.credentials.credman.service.PasswordAndPasskeyService");
     private static final String PASSWORDS_ONLY_FOR_THE_CHANNEL =
             "com.android.chrome.PASSWORDS_ONLY_FOR_THE_CHANNEL";
@@ -96,24 +97,31 @@ public class CredManHelper {
         mPlayServicesAvailable = playServicesAvailable;
     }
 
-    /**
-     * Create a credential using the Android 14 CredMan API.
-     */
+    /** Create a credential using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public int startMakeRequest(Context context, RenderFrameHost frameHost,
-            PublicKeyCredentialCreationOptions options, String originString,
-            byte[] maybeClientDataHash, MakeCredentialResponseCallback makeCallback,
+    public int startMakeRequest(
+            Context context,
+            RenderFrameHost frameHost,
+            PublicKeyCredentialCreationOptions options,
+            String originString,
+            byte[] maybeClientDataHash,
+            MakeCredentialResponseCallback makeCallback,
             Callback<Integer> errorCallback) {
         mContext = context;
         mFrameHost = frameHost;
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize());
-        final byte[] clientDataHash = maybeClientDataHash != null
-                ? maybeClientDataHash
-                : buildClientDataJsonAndComputeHash(ClientDataRequestType.WEB_AUTHN_CREATE,
-                        originString, options.challenge,
-                        /*isCrossOrigin=*/false, /*paymentOptions=*/null, options.relyingParty.id,
-                        /*topOrigin=*/null);
+        final byte[] clientDataHash =
+                maybeClientDataHash != null
+                        ? maybeClientDataHash
+                        : buildClientDataJsonAndComputeHash(
+                                ClientDataRequestType.WEB_AUTHN_CREATE,
+                                originString,
+                                options.challenge,
+                                /* isCrossOrigin= */ false,
+                                /* paymentOptions= */ null,
+                                options.relyingParty.id,
+                                /* topOrigin= */ null);
         if (clientDataHash == null) {
             mMetricsHelper.recordCredManCreateRequestHistogram(
                     CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST);
@@ -121,16 +129,19 @@ public class CredManHelper {
         }
 
         final Bundle requestBundle = new Bundle();
-        requestBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
+        requestBundle.putString(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
                 CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_CREATE_PUBLIC_KEY_CREDENTIAL_REQUEST");
         requestBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
         requestBundle.putByteArray(CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
 
         final Bundle displayInfoBundle = new Bundle();
-        displayInfoBundle.putCharSequence(CRED_MAN_PREFIX + "BUNDLE_KEY_USER_ID",
+        displayInfoBundle.putCharSequence(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_USER_ID",
                 Base64.encodeToString(
                         options.user.id, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP));
-        displayInfoBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_DEFAULT_PROVIDER",
+        displayInfoBundle.putString(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_DEFAULT_PROVIDER",
                 GPM_COMPONENT_NAME.flattenToString());
 
         requestBundle.putBundle(
@@ -219,14 +230,19 @@ public class CredManHelper {
         return AuthenticatorStatus.SUCCESS;
     }
 
-    /**
-     * Queries credential availability using the Android 14 CredMan API.
-     */
+    /** Queries credential availability using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void startPrefetchRequest(Context context, RenderFrameHost frameHost,
-            PublicKeyCredentialRequestOptions options, String originString, boolean isCrossOrigin,
-            byte[] maybeClientDataHash, GetAssertionResponseCallback getCallback,
-            Callback<Integer> errorCallback, Barrier barrier, boolean ignoreGpm) {
+    public void startPrefetchRequest(
+            Context context,
+            RenderFrameHost frameHost,
+            PublicKeyCredentialRequestOptions options,
+            String originString,
+            boolean isCrossOrigin,
+            byte[] maybeClientDataHash,
+            GetAssertionResponseCallback getCallback,
+            Callback<Integer> errorCallback,
+            Barrier barrier,
+            boolean ignoreGpm) {
         long startTimeMs = SystemClock.elapsedRealtime();
         mContext = context;
         mFrameHost = frameHost;
@@ -337,14 +353,18 @@ public class CredManHelper {
         mNoCredentialsFallback = noCredentialsFallback;
     }
 
-    /**
-     * Gets the credential using the Android 14 CredMan API.
-     */
+    /** Gets the credential using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public int startGetRequest(Context context, RenderFrameHost frameHost,
-            PublicKeyCredentialRequestOptions options, String originString, boolean isCrossOrigin,
-            byte[] maybeClientDataHash, GetAssertionResponseCallback getCallback,
-            Callback<Integer> errorCallback, boolean ignoreGpm) {
+    public int startGetRequest(
+            Context context,
+            RenderFrameHost frameHost,
+            PublicKeyCredentialRequestOptions options,
+            String originString,
+            boolean isCrossOrigin,
+            byte[] maybeClientDataHash,
+            GetAssertionResponseCallback getCallback,
+            Callback<Integer> errorCallback,
+            boolean ignoreGpm) {
         mContext = context;
         mFrameHost = frameHost;
         mErrorCallback = errorCallback;
@@ -545,11 +565,22 @@ public class CredManHelper {
     }
 
     private byte[] buildClientDataJsonAndComputeHash(
-            @ClientDataRequestType int clientDataRequestType, String callerOrigin, byte[] challenge,
-            boolean isCrossOrigin, PaymentOptions paymentOptions, String relyingPartyId,
+            @ClientDataRequestType int clientDataRequestType,
+            String callerOrigin,
+            byte[] challenge,
+            boolean isCrossOrigin,
+            PaymentOptions paymentOptions,
+            String relyingPartyId,
             Origin topOrigin) {
-        String clientDataJson = ClientDataJson.buildClientDataJson(clientDataRequestType,
-                callerOrigin, challenge, isCrossOrigin, paymentOptions, relyingPartyId, topOrigin);
+        String clientDataJson =
+                ClientDataJson.buildClientDataJson(
+                        clientDataRequestType,
+                        callerOrigin,
+                        challenge,
+                        isCrossOrigin,
+                        paymentOptions,
+                        relyingPartyId,
+                        topOrigin);
         if (clientDataJson == null) {
             return null;
         }
@@ -591,11 +622,17 @@ public class CredManHelper {
             boolean ignoreGpm) {
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
-        final byte[] clientDataHash = maybeClientDataHash != null
-                ? maybeClientDataHash
-                : buildClientDataJsonAndComputeHash(ClientDataRequestType.WEB_AUTHN_GET,
-                        originString, options.challenge, mIsCrossOrigin,
-                        /*paymentOptions=*/null, options.relyingPartyId, /*topOrigin=*/null);
+        final byte[] clientDataHash =
+                maybeClientDataHash != null
+                        ? maybeClientDataHash
+                        : buildClientDataJsonAndComputeHash(
+                                ClientDataRequestType.WEB_AUTHN_GET,
+                                originString,
+                                options.challenge,
+                                mIsCrossOrigin,
+                                /* paymentOptions= */ null,
+                                options.relyingPartyId,
+                                /* topOrigin= */ null);
         if (clientDataHash == null) {
             Log.e(TAG, "ClientDataJson generation failed.");
             return null;
@@ -645,7 +682,8 @@ public class CredManHelper {
             boolean ignoreGpm,
             boolean allowAutoSelect) {
         final Bundle publicKeyCredentialOptionBundle = new Bundle();
-        publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
+        publicKeyCredentialOptionBundle.putString(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
                 CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
         publicKeyCredentialOptionBundle.putString(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
@@ -713,14 +751,14 @@ public class CredManHelper {
         Log.e(
                 TAG,
                 "Failed to parse Mojo object. If this is happening in a test, and"
-                    + " authenticator.mojom was updated, then you'll need to update the fake Mojo"
-                    + " structures in Fido2ApiTestHelper. Robolectric doesn't support JNI calls so"
-                    + " the JNI calls to translate from JSON -> serialized Mojo are mocked out and"
-                    + " the responses are hard-coded. If the Mojo structure is updated then the"
-                    + " responses also need to be updated. Flip `kUpdateRobolectricTests` in"
-                    + " `value_conversions_unittest.cc`, run `component_unittests"
-                    + " --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java"
-                    + " literals for `Fido2ApiTestHelper.java`.",
+                        + " authenticator.mojom was updated, then you'll need to update the fake Mojo"
+                        + " structures in Fido2ApiTestHelper. Robolectric doesn't support JNI calls so"
+                        + " the JNI calls to translate from JSON -> serialized Mojo are mocked out and"
+                        + " the responses are hard-coded. If the Mojo structure is updated then the"
+                        + " responses also need to be updated. Flip `kUpdateRobolectricTests` in"
+                        + " `value_conversions_unittest.cc`, run `component_unittests"
+                        + " --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java"
+                        + " literals for `Fido2ApiTestHelper.java`.",
                 e);
     }
 }

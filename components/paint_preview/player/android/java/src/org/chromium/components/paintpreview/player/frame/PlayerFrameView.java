@@ -46,7 +46,9 @@ public class PlayerFrameView extends FrameLayout {
      *                                gestures.
      * @param playerFrameViewDelegate The interface used for forwarding events.
      */
-    public PlayerFrameView(@NonNull Context context, boolean canDetectZoom,
+    public PlayerFrameView(
+            @NonNull Context context,
+            boolean canDetectZoom,
             PlayerFrameViewDelegate playerFrameViewDelegate,
             PlayerFrameGestureDetectorDelegate gestureDetectorDelegate,
             @Nullable Runnable firstPaintListener) {
@@ -58,9 +60,7 @@ public class PlayerFrameView extends FrameLayout {
                 new PlayerFrameGestureDetector(context, canDetectZoom, gestureDetectorDelegate);
     }
 
-    /**
-     * Sets the {@link WebContentsAccessibility} for this View.
-     */
+    /** Sets the {@link WebContentsAccessibility} for this View. */
     public void setWebContentsAccessibility(WebContentsAccessibility webContentsAccessibility) {
         mWebContentsAccessibility = webContentsAccessibility;
     }
@@ -168,9 +168,10 @@ public class PlayerFrameView extends FrameLayout {
 
     @Override
     public AccessibilityNodeProvider getAccessibilityNodeProvider() {
-        AccessibilityNodeProvider provider = (mWebContentsAccessibility != null)
-                ? mWebContentsAccessibility.getAccessibilityNodeProvider()
-                : null;
+        AccessibilityNodeProvider provider =
+                (mWebContentsAccessibility != null)
+                        ? mWebContentsAccessibility.getAccessibilityNodeProvider()
+                        : null;
         return (provider != null) ? provider : super.getAccessibilityNodeProvider();
     }
 

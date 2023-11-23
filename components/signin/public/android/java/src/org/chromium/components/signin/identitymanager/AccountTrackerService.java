@@ -36,9 +36,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * <p>TODO(crbug/1176136): Move this class to components/signin/internal
  */
 public class AccountTrackerService implements AccountsChangeObserver {
-    /**
-     * Observers the account seeding.
-     */
+    /** Observers the account seeding. */
     public interface Observer {
         /**
          * This method is invoked every time the accounts on device are seeded.
@@ -55,9 +53,9 @@ public class AccountTrackerService implements AccountsChangeObserver {
     private static final String TAG = "AccountService";
 
     @IntDef({
-            AccountsSeedingStatus.NOT_STARTED,
-            AccountsSeedingStatus.IN_PROGRESS,
-            AccountsSeedingStatus.DONE,
+        AccountsSeedingStatus.NOT_STARTED,
+        AccountsSeedingStatus.IN_PROGRESS,
+        AccountsSeedingStatus.DONE,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface AccountsSeedingStatus {
@@ -88,16 +86,12 @@ public class AccountTrackerService implements AccountsChangeObserver {
         mAccountManagerFacade.removeObserver(this);
     }
 
-    /**
-     * Adds an observer to observe the accounts seeding changes.
-     */
+    /** Adds an observer to observe the accounts seeding changes. */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
 
-    /**
-     * Removes an observer to observe the accounts seeding changes.
-     */
+    /** Removes an observer to observe the accounts seeding changes. */
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
     }
@@ -194,7 +188,8 @@ public class AccountTrackerService implements AccountsChangeObserver {
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
 
         for (@Nullable Runnable runnable = mRunnablesWaitingForAccountsSeeding.poll();
-                runnable != null; runnable = mRunnablesWaitingForAccountsSeeding.poll()) {
+                runnable != null;
+                runnable = mRunnablesWaitingForAccountsSeeding.poll()) {
             runnable.run();
         }
 

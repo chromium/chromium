@@ -13,9 +13,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.components.content_creation.notes.models.HighlightStyle;
 import org.chromium.components.content_creation.notes.models.TextAlignment;
 
-/**
- * Class used to draw colored highlight behind text.
- */
+/** Class used to draw colored highlight behind text. */
 public class TextHighlightSpan implements LineBackgroundSpan {
     private static final int RIGHT_PADDING = 10;
 
@@ -32,13 +30,24 @@ public class TextHighlightSpan implements LineBackgroundSpan {
         this.mStyle = style;
         this.mColor = color;
         this.mIsCentered = alignment == TextAlignment.CENTER;
-        this.mIsLeftAligned = (!isRtl && alignment == TextAlignment.START)
-                || (isRtl && alignment == TextAlignment.END);
+        this.mIsLeftAligned =
+                (!isRtl && alignment == TextAlignment.START)
+                        || (isRtl && alignment == TextAlignment.END);
     }
 
     @Override
-    public void drawBackground(Canvas canvas, Paint paint, int left, int right, int top,
-            int baseline, int bottom, CharSequence text, int start, int end, int lineNumber) {
+    public void drawBackground(
+            Canvas canvas,
+            Paint paint,
+            int left,
+            int right,
+            int top,
+            int baseline,
+            int bottom,
+            CharSequence text,
+            int start,
+            int end,
+            int lineNumber) {
         CharSequence lineText = text.subSequence(start, end);
         if (lineText.toString().trim().length() == 0) {
             // No need to draw a background for lines with no characters.

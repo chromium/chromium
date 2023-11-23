@@ -17,9 +17,7 @@ import org.chromium.base.ThreadUtils;
 public final class AccountInfoServiceProvider {
     private static @Nullable Promise<AccountInfoService> sInstancePromise;
 
-    /**
-     * Initializes the singleton {@link AccountInfoService} instance.
-     */
+    /** Initializes the singleton {@link AccountInfoService} instance. */
     @MainThread
     public static void init(
             IdentityManager identityManager, AccountTrackerService accountTrackerService) {

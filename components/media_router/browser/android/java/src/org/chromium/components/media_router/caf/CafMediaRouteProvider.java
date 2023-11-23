@@ -25,9 +25,7 @@ import org.chromium.components.media_router.MediaSource;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * A {@link MediaRouteProvider} implementation for Cast devices and applications, using Cast v3 API.
- */
+/** A {@link MediaRouteProvider} implementation for Cast devices and applications, using Cast v3 API. */
 public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     private static final String TAG = "CafMRP";
 
@@ -36,14 +34,12 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
 
     private CreateRouteRequestInfo mPendingCreateRouteRequestInfo;
 
-    @VisibleForTesting
-    ClientRecord mLastRemovedRouteRecord;
+    @VisibleForTesting ClientRecord mLastRemovedRouteRecord;
     // The records for clients, which must match mRoutes. This is used for the saving last record
     // for autojoin.
     private final Map<String, ClientRecord> mClientIdToRecords =
             new HashMap<String, ClientRecord>();
-    @VisibleForTesting
-    CafMessageHandler mMessageHandler;
+    @VisibleForTesting CafMessageHandler mMessageHandler;
     // The session controller which is always attached to the current CastSession.
     private final CastSessionController mSessionController;
 
@@ -156,8 +152,11 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
 
         for (ClientRecord clientRecord : mClientIdToRecords.values()) {
             // Should be exactly one instance of MediaRoute/ClientRecord at this moment.
-            mMessageHandler.sendReceiverActionToClient(clientRecord.routeId,
-                    sessionController().getSink(), clientRecord.clientId, "cast");
+            mMessageHandler.sendReceiverActionToClient(
+                    clientRecord.routeId,
+                    sessionController().getSink(),
+                    clientRecord.clientId,
+                    "cast");
         }
 
         mMessageHandler.onSessionStarted();
@@ -173,9 +172,15 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
 
         if (clientId == null || mClientIdToRecords.containsKey(clientId)) return;
 
-        mClientIdToRecords.put(clientId,
-                new ClientRecord(route.id, clientId, source.getApplicationId(),
-                        source.getAutoJoinPolicy(), origin, tabId));
+        mClientIdToRecords.put(
+                clientId,
+                new ClientRecord(
+                        route.id,
+                        clientId,
+                        source.getApplicationId(),
+                        source.getAutoJoinPolicy(),
+                        origin,
+                        tabId));
     }
 
     @Override

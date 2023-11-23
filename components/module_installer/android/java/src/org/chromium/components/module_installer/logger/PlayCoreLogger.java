@@ -7,21 +7,23 @@ package org.chromium.components.module_installer.logger;
 import com.google.android.play.core.splitinstall.model.SplitInstallErrorCode;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
-/**
- * Concrete Logger for SplitCompat Installers (proxy to specific loggers).
- */
+/** Concrete Logger for SplitCompat Installers (proxy to specific loggers). */
 public class PlayCoreLogger implements Logger {
     private final SplitInstallFailureLogger mFailureLogger;
     private final SplitInstallStatusLogger mStatusLogger;
     private final SplitAvailabilityLogger mAvailabilityLogger;
 
     public PlayCoreLogger() {
-        this(new SplitInstallFailureLogger(), new SplitInstallStatusLogger(),
+        this(
+                new SplitInstallFailureLogger(),
+                new SplitInstallStatusLogger(),
                 new SplitAvailabilityLogger());
     }
 
-    public PlayCoreLogger(SplitInstallFailureLogger failureLogger,
-            SplitInstallStatusLogger statusLogger, SplitAvailabilityLogger availabilityLogger) {
+    public PlayCoreLogger(
+            SplitInstallFailureLogger failureLogger,
+            SplitInstallStatusLogger statusLogger,
+            SplitAvailabilityLogger availabilityLogger) {
         mFailureLogger = failureLogger;
         mStatusLogger = statusLogger;
         mAvailabilityLogger = availabilityLogger;

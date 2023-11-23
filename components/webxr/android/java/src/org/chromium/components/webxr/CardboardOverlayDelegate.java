@@ -23,18 +23,19 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.LoadUrlParams;
 
-/**
- * Provides a fullscreen overlay for immersive Cardboard (VR) mode.
- */
+/** Provides a fullscreen overlay for immersive Cardboard (VR) mode. */
 public class CardboardOverlayDelegate
         implements XrImmersiveOverlay.Delegate, PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "CardboardOverlay";
     private static final String PRODUCT_SAFETY_URL = "google.com/get/cardboard/product-safety";
     private static final boolean DEBUG_LOGS = false;
-    static final int VR_SYSTEM_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+    static final int VR_SYSTEM_UI_FLAGS =
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     private Activity mActivity;
     private VrCompositorDelegate mCompositorDelegate;
@@ -56,21 +57,23 @@ public class CardboardOverlayDelegate
 
         // Close button.
         ImageButton closeButton = mCardboardView.findViewById(R.id.cardboard_ui_back_button);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                XrSessionCoordinator.endActiveSession();
-            }
-        });
+        closeButton.setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        XrSessionCoordinator.endActiveSession();
+                    }
+                });
 
         // Settings button.
         ImageButton settingsButton = mCardboardView.findViewById(R.id.cardboard_ui_settings_button);
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSettings(v);
-            }
-        });
+        settingsButton.setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showSettings(v);
+                    }
+                });
     }
 
     /**

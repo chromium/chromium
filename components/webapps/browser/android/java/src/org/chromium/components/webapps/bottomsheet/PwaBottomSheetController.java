@@ -264,9 +264,7 @@ public class PwaBottomSheetController
         return webContents.getVisibility() == Visibility.VISIBLE;
     }
 
-    /**
-     * @return Whether the Bottom Sheet Installer UI sheet is visible.
-     */
+    /** @return Whether the Bottom Sheet Installer UI sheet is visible. */
     public boolean isBottomSheetVisible() {
         return (mPwaBottomSheetContent != null
                 && mBottomSheetController.getCurrentSheetContent() == mPwaBottomSheetContent);

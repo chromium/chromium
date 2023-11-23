@@ -149,17 +149,13 @@ public class AutocompleteResult {
         mNativeAutocompleteResult = 0;
     }
 
-    /**
-     * @return List of Omnibox Suggestions.
-     */
+    /** @return List of Omnibox Suggestions. */
     @NonNull
     public List<AutocompleteMatch> getSuggestionsList() {
         return mSuggestions;
     }
 
-    /**
-     * @return GroupsInfo structure, describing everything that's known about Suggestion Groups.
-     */
+    /** @return GroupsInfo structure, describing everything that's known about Suggestion Groups. */
     @NonNull
     public GroupsInfo getGroupsInfo() {
         return mGroupsInfo;

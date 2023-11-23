@@ -23,9 +23,7 @@ import java.util.ArrayList;
  * the framework is valid.
  */
 public class AutofillRequest {
-    /**
-     * A simple class representing the field that is currently focused by the user.
-     */
+    /** A simple class representing the field that is currently focused by the user. */
     public static class FocusField {
         public final short fieldIndex;
         public final Rect absBound;
@@ -159,8 +157,12 @@ public class AutofillRequest {
         if (success) {
             ArrayList<ViewType> viewTypes = new ArrayList<ViewType>();
             for (FormFieldData field : mFormData.mFields) {
-                viewTypes.add(new ViewType(field.getAutofillId(), field.getServerType(),
-                        field.getComputedType(), field.getServerPredictions()));
+                viewTypes.add(
+                        new ViewType(
+                                field.getAutofillId(),
+                                field.getServerType(),
+                                field.getComputedType(),
+                                field.getServerPredictions()));
             }
             mAutofillHintsService.onViewTypeAvailable(viewTypes);
         } else {

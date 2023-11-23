@@ -9,9 +9,7 @@ import android.graphics.Rect;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The base class for ContentCaptureData and ContentCaptureFrame.
- */
+/** The base class for ContentCaptureData and ContentCaptureFrame. */
 public abstract class ContentCaptureDataBase {
     private final long mId;
     private Rect mBounds;
@@ -43,9 +41,7 @@ public abstract class ContentCaptureDataBase {
         mChildren.add(data);
     }
 
-    /**
-     * @return the text shall be set to ViewStructure.setText().
-     */
+    /** @return the text shall be set to ViewStructure.setText(). */
     public abstract String getText();
 
     @Override

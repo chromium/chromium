@@ -6,9 +6,7 @@ package org.chromium.components.find_in_page;
 
 import android.graphics.RectF;
 
-/**
- * Holds the result details of a RequestFindMatchRects reply.
- */
+/** Holds the result details of a RequestFindMatchRects reply. */
 public class FindMatchRectsDetails {
     /** Version of the the rects in this result. */
     public final int version;

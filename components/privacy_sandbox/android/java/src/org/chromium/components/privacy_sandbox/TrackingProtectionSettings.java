@@ -56,9 +56,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
      * TODO(crbug.com/1181700): Update when LaunchIntentDispatcher is (partially-)modularized.
      */
     public interface CustomTabIntentHelper {
-        /**
-         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
-         */
+        /** @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent */
         Intent createCustomTabActivityIntent(Context context, Intent intent);
     }
 
@@ -90,11 +88,17 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
         // Format the Learn More link in the second bullet point.
         TextMessagePreference bulletTwo = (TextMessagePreference) findPreference(PREF_BULLET_TWO);
-        bulletTwo.setSummary(SpanApplier.applySpans(
-                getResources().getString(
-                        R.string.privacy_sandbox_tracking_protection_bullet_two_description),
-                new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+        bulletTwo.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string
+                                                .privacy_sandbox_tracking_protection_bullet_two_description),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onLearnMoreClicked))));
 
         ChromeSwitchPreference blockAll3PCookiesSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
@@ -103,17 +107,19 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
         // Block all 3PCD switch.
         blockAll3PCookiesSwitch.setChecked(mDelegate.isBlockAll3PCDEnabled());
-        blockAll3PCookiesSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            mDelegate.setBlockAll3PCD((boolean) newValue);
-            return true;
-        });
+        blockAll3PCookiesSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    mDelegate.setBlockAll3PCD((boolean) newValue);
+                    return true;
+                });
 
         // Do not track switch.
         doNotTrackSwitch.setChecked(mDelegate.isDoNotTrackEnabled());
-        doNotTrackSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            mDelegate.setDoNotTrack((boolean) newValue);
-            return true;
-        });
+        doNotTrackSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    mDelegate.setDoNotTrack((boolean) newValue);
+                    return true;
+                });
 
         mAllowListExpanded = true;
         mAllowedSiteCount = 0;
@@ -123,13 +129,20 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
         refreshBlockingExceptions();
 
         // Add the exceptions button.
-        SiteSettingsCategory cookiesCategory = SiteSettingsCategory.createFromType(
-                mDelegate.getBrowserContext(), SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        getPreferenceScreen().addPreference(new AddExceptionPreference(getContext(),
-                ADD_EXCEPTION_KEY,
-                getString(
-                        R.string.website_settings_third_party_cookies_page_add_allow_exception_description),
-                cookiesCategory, this));
+        SiteSettingsCategory cookiesCategory =
+                SiteSettingsCategory.createFromType(
+                        mDelegate.getBrowserContext(),
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        getPreferenceScreen()
+                .addPreference(
+                        new AddExceptionPreference(
+                                getContext(),
+                                ADD_EXCEPTION_KEY,
+                                getString(
+                                        R.string
+                                                .website_settings_third_party_cookies_page_add_allow_exception_description),
+                                cookiesCategory,
+                                this));
     }
 
     @Override
@@ -151,15 +164,20 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     // AddExceptionPreference.SiteAddedCallback:
     @Override
     public void onAddSite(String primaryPattern, String secondaryPattern) {
-        WebsitePreferenceBridge.setContentSettingCustomScope(mDelegate.getBrowserContext(),
-                ContentSettingsType.COOKIES, primaryPattern, secondaryPattern,
+        WebsitePreferenceBridge.setContentSettingCustomScope(
+                mDelegate.getBrowserContext(),
+                ContentSettingsType.COOKIES,
+                primaryPattern,
+                secondaryPattern,
                 ContentSettingValues.ALLOW);
 
         String hostname = primaryPattern.equals(SITE_WILDCARD) ? secondaryPattern : primaryPattern;
-        Toast.makeText(getContext(),
-                     String.format(getContext().getString(R.string.website_settings_add_site_toast),
-                             hostname),
-                     Toast.LENGTH_SHORT)
+        Toast.makeText(
+                        getContext(),
+                        String.format(
+                                getContext().getString(R.string.website_settings_add_site_toast),
+                                hostname),
+                        Toast.LENGTH_SHORT)
                 .show();
 
         refreshBlockingExceptions();
@@ -170,8 +188,10 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     }
 
     private void refreshBlockingExceptions() {
-        SiteSettingsCategory cookiesCategory = SiteSettingsCategory.createFromType(
-                mDelegate.getBrowserContext(), SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        SiteSettingsCategory cookiesCategory =
+                SiteSettingsCategory.createFromType(
+                        mDelegate.getBrowserContext(),
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         new WebsitePermissionsFetcher(mDelegate.getBrowserContext())
                 .fetchPreferencesForCategory(cookiesCategory, this::onExceptionsFetched);
     }
@@ -179,8 +199,9 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     private void onExceptionsFetched(Collection<Website> sites) {
         List<WebsiteExceptionRowPreference> websites = new ArrayList<>();
         for (Website site : sites) {
-            WebsiteExceptionRowPreference preference = new WebsiteExceptionRowPreference(
-                    getContext(), site, mDelegate, this::refreshBlockingExceptions);
+            WebsiteExceptionRowPreference preference =
+                    new WebsiteExceptionRowPreference(
+                            getContext(), site, mDelegate, this::refreshBlockingExceptions);
             websites.add(preference);
         }
 
@@ -203,21 +224,29 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     private void updateExceptionsHeader() {
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
-        SpannableStringBuilder spannable = new SpannableStringBuilder(
-                getString(R.string.tracking_protection_allowed_group_title));
+        SpannableStringBuilder spannable =
+                new SpannableStringBuilder(
+                        getString(R.string.tracking_protection_allowed_group_title));
         String prefCount = String.format(Locale.getDefault(), " - %d", mAllowedSiteCount);
         spannable.append(prefCount);
 
         // Color the first part of the title blue.
-        ForegroundColorSpan blueSpan = new ForegroundColorSpan(
-                SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
-        spannable.setSpan(blueSpan, 0, spannable.length() - prefCount.length(),
+        ForegroundColorSpan blueSpan =
+                new ForegroundColorSpan(
+                        SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
+        spannable.setSpan(
+                blueSpan,
+                0,
+                spannable.length() - prefCount.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // Gray out the total count of items.
         final @ColorInt int gray = SemanticColorUtils.getDefaultTextColorSecondary(getContext());
-        spannable.setSpan(new ForegroundColorSpan(gray), spannable.length() - prefCount.length(),
-                spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(
+                new ForegroundColorSpan(gray),
+                spannable.length() - prefCount.length(),
+                spannable.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // Configure the preference group.
         allowedGroup.setTitle(spannable);

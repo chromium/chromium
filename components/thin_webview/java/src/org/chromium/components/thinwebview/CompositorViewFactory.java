@@ -9,9 +9,7 @@ import android.content.Context;
 import org.chromium.components.thinwebview.internal.CompositorViewImpl;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Factory for creating a {@link CompositorView}.
- */
+/** Factory for creating a {@link CompositorView}. */
 public class CompositorViewFactory {
     /**
      * Creates a {@link CompositorView} backed by a {@link Surface}. The surface is provided by

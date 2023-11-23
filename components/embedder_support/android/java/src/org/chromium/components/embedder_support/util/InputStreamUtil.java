@@ -12,9 +12,7 @@ import org.jni_zero.JNINamespace;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Utility methods for calling InputStream methods. These take care of exception handling.
- */
+/** Utility methods for calling InputStream methods. These take care of exception handling. */
 @JNINamespace("embedder_support")
 class InputStreamUtil {
     private static final String LOGTAG = "InputStreamUtil";
@@ -25,7 +23,9 @@ class InputStreamUtil {
     private static final int EXCEPTION_THROWN_STATUS = -2;
 
     private static String logMessage(String method) {
-        return "Got exception when calling " + method + "() on an InputStream returned from "
+        return "Got exception when calling "
+                + method
+                + "() on an InputStream returned from "
                 + "shouldInterceptRequest. This will cause the related request to fail.";
     }
 

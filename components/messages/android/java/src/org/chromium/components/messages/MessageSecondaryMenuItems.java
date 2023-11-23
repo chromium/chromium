@@ -15,12 +15,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A class used by {@link MessageWrapper} to manage the message secondary menu and menu items.
- */
+/** A class used by {@link MessageWrapper} to manage the message secondary menu and menu items. */
 public class MessageSecondaryMenuItems {
-    @VisibleForTesting
-    ModelList mMenuItems = new ModelList();
+    @VisibleForTesting ModelList mMenuItems = new ModelList();
 
     /**
      * Creates and returns a {@link ListMenu} populated by |mMenuItems|.
@@ -61,16 +58,12 @@ public class MessageSecondaryMenuItems {
         return item.model;
     }
 
-    /**
-     * Remove all items from the list menu.
-     */
+    /** Remove all items from the list menu. */
     void clearMenuItems() {
         mMenuItems.clear();
     }
 
-    /**
-     * Add a divider to the list menu.
-     */
+    /** Add a divider to the list menu. */
     void addMenuDivider() {
         mMenuItems.add(new ListItem(ListMenuItemType.DIVIDER, new PropertyModel()));
     }

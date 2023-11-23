@@ -16,9 +16,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A base class for creating, showing and dismissing a modal dialog for a JavaScript popup.
- */
+/** A base class for creating, showing and dismissing a modal dialog for a JavaScript popup. */
 public abstract class JavascriptModalDialog implements ModalDialogProperties.Controller {
     private static final String TAG = "JSModalDialog";
 
@@ -33,8 +31,12 @@ public abstract class JavascriptModalDialog implements ModalDialogProperties.Con
     private PropertyModel mDialogModel;
     protected JavascriptDialogCustomView mDialogCustomView;
 
-    protected JavascriptModalDialog(String title, String message, String promptText,
-            boolean shouldShowSuppressCheckBox, @StringRes int positiveButtonTextId,
+    protected JavascriptModalDialog(
+            String title,
+            String message,
+            String promptText,
+            boolean shouldShowSuppressCheckBox,
+            @StringRes int positiveButtonTextId,
             @StringRes int negativeButtonTextId) {
         mTitle = title;
         mMessage = message;
@@ -49,27 +51,35 @@ public abstract class JavascriptModalDialog implements ModalDialogProperties.Con
      * @param context The {@link Context} that this dialog is shown upon.
      * @param dialogType The {@link ModalDialogManager.ModalDialogType} of the dialog.
      */
-    protected void show(Context context, ModalDialogManager manager,
+    protected void show(
+            Context context,
+            ModalDialogManager manager,
             @ModalDialogManager.ModalDialogType int dialogType) {
         assert manager != null;
-        mDialogCustomView = (JavascriptDialogCustomView) LayoutInflaterUtils.inflate(
-                context, R.layout.js_modal_dialog, null);
+        mDialogCustomView =
+                (JavascriptDialogCustomView)
+                        LayoutInflaterUtils.inflate(context, R.layout.js_modal_dialog, null);
         mDialogCustomView.setPromptText(mDefaultPromptText);
         mDialogCustomView.setSuppressCheckBoxVisibility(mShouldShowSuppressCheckBox);
 
         Resources resources = context.getResources();
 
-        mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                               .with(ModalDialogProperties.CONTROLLER, this)
-                               .with(ModalDialogProperties.TITLE, mTitle)
-                               .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, mMessage)
-                               .with(ModalDialogProperties.CUSTOM_VIEW, mDialogCustomView)
-                               .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                       mPositiveButtonTextId)
-                               .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                       mNegativeButtonTextId)
-                               .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
-                               .build();
+        mDialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.TITLE, mTitle)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, mMessage)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogCustomView)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
+                                mPositiveButtonTextId)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
+                                mNegativeButtonTextId)
+                        .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
+                        .build();
 
         mModalDialogManager = manager;
         mModalDialogManager.showDialog(mDialogModel, dialogType);
@@ -106,7 +116,8 @@ public abstract class JavascriptModalDialog implements ModalDialogProperties.Con
         if (mDialogCustomView == null) return;
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
-                accept(mDialogCustomView.getPromptText(),
+                accept(
+                        mDialogCustomView.getPromptText(),
                         mDialogCustomView.isSuppressCheckBoxChecked());
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:

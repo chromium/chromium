@@ -140,13 +140,14 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
         }
 
         final BlockingQueue<Intent> responseResult = new LinkedBlockingQueue<Intent>();
-        Handler responseHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                Intent res = (Intent) msg.obj;
-                responseResult.add(res);
-            }
-        };
+        Handler responseHandler =
+                new Handler(Looper.getMainLooper()) {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        Intent res = (Intent) msg.obj;
+                        responseResult.add(res);
+                    }
+                };
         Messenger responseMessenger = new Messenger(responseHandler);
 
         Intent intent = new Intent(ACTION_C2DM_REGISTER);
@@ -186,8 +187,12 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
                 Intent target = new Intent();
                 // Fill in the package, to prevent the intent from being used.
                 target.setPackage("com.google.example.invalidpackage");
-                mAppPendingIntent = PendingIntent.getBroadcast(ContextUtils.getApplicationContext(),
-                        0, target, IntentUtils.getPendingIntentMutabilityFlag(false));
+                mAppPendingIntent =
+                        PendingIntent.getBroadcast(
+                                ContextUtils.getApplicationContext(),
+                                0,
+                                target,
+                                IntentUtils.getPendingIntentMutabilityFlag(false));
             }
         }
         intent.putExtra(INTENT_PARAM_APP, mAppPendingIntent);

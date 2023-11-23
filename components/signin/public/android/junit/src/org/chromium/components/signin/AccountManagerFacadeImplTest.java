@@ -55,9 +55,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Robolectric tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeTest}.
- */
+/** Robolectric tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         shadows = {

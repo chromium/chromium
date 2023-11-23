@@ -19,34 +19,29 @@ import androidx.annotation.RequiresApi;
  */
 @RequiresApi(Build.VERSION_CODES.O)
 public class ViewType implements Parcelable {
-    /**
-     * The AutofillId of the view that types are for.
-     */
+    /** The AutofillId of the view that types are for. */
     public final AutofillId mAutofillId;
 
-    /**
-     * The type from Chrome autofill server.
-     */
+    /** The type from Chrome autofill server. */
     public final String mServerType;
 
-    /**
-     * The type computed overall type. The valid types are the same as for mServerType.
-     */
+    /** The type computed overall type. The valid types are the same as for mServerType. */
     public final String mComputedType;
 
     private String[] mServerPredictions;
 
-    public static final Parcelable.Creator<ViewType> CREATOR = new Parcelable.Creator<ViewType>() {
-        @Override
-        public ViewType createFromParcel(Parcel in) {
-            return new ViewType(in);
-        }
+    public static final Parcelable.Creator<ViewType> CREATOR =
+            new Parcelable.Creator<ViewType>() {
+                @Override
+                public ViewType createFromParcel(Parcel in) {
+                    return new ViewType(in);
+                }
 
-        @Override
-        public ViewType[] newArray(int size) {
-            return new ViewType[size];
-        }
-    };
+                @Override
+                public ViewType[] newArray(int size) {
+                    return new ViewType[size];
+                }
+            };
 
     public ViewType(
             AutofillId id, String serverType, String computedType, String[] serverPredictions) {

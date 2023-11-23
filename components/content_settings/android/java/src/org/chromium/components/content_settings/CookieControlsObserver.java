@@ -4,9 +4,7 @@
 
 package org.chromium.components.content_settings;
 
-/**
- * Interface for a class that wants to receive cookie updates from CookieControlsBridge.
- */
+/** Interface for a class that wants to receive cookie updates from CookieControlsBridge. */
 public interface CookieControlsObserver {
     /* The following two methods are used when the UserBypassUI flag is disabled. */
 

@@ -9,9 +9,7 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
-/**
- * Model class for a template's background with a linear gradient.
- */
+/** Model class for a template's background with a linear gradient. */
 public final class LinearGradientBackground implements Background {
     public final @ColorInt int[] colors;
     public final LinearGradientDirection direction;
@@ -28,8 +26,9 @@ public final class LinearGradientBackground implements Background {
             return;
         }
 
-        GradientDrawable drawable = new GradientDrawable(
-                LinearGradientDirection.toOrientation(this.direction), this.colors);
+        GradientDrawable drawable =
+                new GradientDrawable(
+                        LinearGradientDirection.toOrientation(this.direction), this.colors);
         drawable.setCornerRadius(cornerRadius);
 
         view.setBackground(drawable);

@@ -16,9 +16,14 @@ import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiStat
 public class CredManMetricsHelper {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({CredManCreateRequestEnum.SENT_REQUEST, CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST,
-            CredManCreateRequestEnum.SUCCESS, CredManCreateRequestEnum.FAILURE,
-            CredManCreateRequestEnum.CANCELLED, CredManCreateRequestEnum.NUM_ENTRIES})
+    @IntDef({
+        CredManCreateRequestEnum.SENT_REQUEST,
+        CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST,
+        CredManCreateRequestEnum.SUCCESS,
+        CredManCreateRequestEnum.FAILURE,
+        CredManCreateRequestEnum.CANCELLED,
+        CredManCreateRequestEnum.NUM_ENTRIES
+    })
     public @interface CredManCreateRequestEnum {
         int SENT_REQUEST = 0;
         int COULD_NOT_SEND_REQUEST = 1;
@@ -31,11 +36,14 @@ public class CredManMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({CredManPrepareRequestEnum.SENT_REQUEST,
-            CredManPrepareRequestEnum.COULD_NOT_SEND_REQUEST,
-            CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS,
-            CredManPrepareRequestEnum.SUCCESS_NO_RESULTS, CredManPrepareRequestEnum.FAILURE,
-            CredManPrepareRequestEnum.NUM_ENTRIES})
+    @IntDef({
+        CredManPrepareRequestEnum.SENT_REQUEST,
+        CredManPrepareRequestEnum.COULD_NOT_SEND_REQUEST,
+        CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS,
+        CredManPrepareRequestEnum.SUCCESS_NO_RESULTS,
+        CredManPrepareRequestEnum.FAILURE,
+        CredManPrepareRequestEnum.NUM_ENTRIES
+    })
     public @interface CredManPrepareRequestEnum {
         int SENT_REQUEST = 0;
         int COULD_NOT_SEND_REQUEST = 1;
@@ -48,10 +56,15 @@ public class CredManMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({CredManGetRequestEnum.SENT_REQUEST, CredManGetRequestEnum.COULD_NOT_SEND_REQUEST,
-            CredManGetRequestEnum.SUCCESS_PASSKEY, CredManGetRequestEnum.SUCCESS_PASSWORD,
-            CredManGetRequestEnum.FAILURE, CredManGetRequestEnum.CANCELLED,
-            CredManGetRequestEnum.NUM_ENTRIES})
+    @IntDef({
+        CredManGetRequestEnum.SENT_REQUEST,
+        CredManGetRequestEnum.COULD_NOT_SEND_REQUEST,
+        CredManGetRequestEnum.SUCCESS_PASSKEY,
+        CredManGetRequestEnum.SUCCESS_PASSWORD,
+        CredManGetRequestEnum.FAILURE,
+        CredManGetRequestEnum.CANCELLED,
+        CredManGetRequestEnum.NUM_ENTRIES
+    })
     public @interface CredManGetRequestEnum {
         int SENT_REQUEST = 0;
         int COULD_NOT_SEND_REQUEST = 1;
@@ -64,13 +77,17 @@ public class CredManMetricsHelper {
     }
 
     public void recordCredManCreateRequestHistogram(@CredManCreateRequestEnum int value) {
-        RecordHistogram.recordEnumeratedHistogram("WebAuthentication.Android.CredManCreateRequest",
-                value, CredManCreateRequestEnum.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebAuthentication.Android.CredManCreateRequest",
+                value,
+                CredManCreateRequestEnum.NUM_ENTRIES);
     }
 
     public void recordCredmanPrepareRequestHistogram(@CredManPrepareRequestEnum int value) {
-        RecordHistogram.recordEnumeratedHistogram("WebAuthentication.Android.CredManPrepareRequest",
-                value, CredManPrepareRequestEnum.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebAuthentication.Android.CredManPrepareRequest",
+                value,
+                CredManPrepareRequestEnum.NUM_ENTRIES);
     }
 
     public void recordCredmanPrepareRequestDuration(long durationMs) {
@@ -81,16 +98,18 @@ public class CredManMetricsHelper {
     public void reportGetCredentialMetrics(
             @CredManGetRequestEnum int value, ConditionalUiState conditionalUiState) {
         assert !(conditionalUiState == ConditionalUiState.NONE)
-                || !(value == CredManGetRequestEnum.SUCCESS_PASSWORD)
-            : "Passwords cannot be received from modal requests!";
+                        || !(value == CredManGetRequestEnum.SUCCESS_PASSWORD)
+                : "Passwords cannot be received from modal requests!";
         if (conditionalUiState == ConditionalUiState.NONE) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "WebAuthentication.Android.CredManModalRequests", value,
+                    "WebAuthentication.Android.CredManModalRequests",
+                    value,
                     CredManGetRequestEnum.NUM_ENTRIES);
             return;
         }
         RecordHistogram.recordEnumeratedHistogram(
-                "WebAuthentication.Android.CredManConditionalRequest", value,
+                "WebAuthentication.Android.CredManConditionalRequest",
+                value,
                 CredManGetRequestEnum.NUM_ENTRIES);
     }
 }

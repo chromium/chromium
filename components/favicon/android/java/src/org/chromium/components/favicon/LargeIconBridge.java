@@ -36,7 +36,10 @@ public class LargeIconBridge {
         public boolean isFallbackColorDefault;
         public @IconType int iconType;
 
-        CachedFavicon(Bitmap newIcon, int newFallbackColor, boolean newIsFallbackColorDefault,
+        CachedFavicon(
+                Bitmap newIcon,
+                int newFallbackColor,
+                boolean newIsFallbackColorDefault,
                 @IconType int newIconType) {
             icon = newIcon;
             fallbackColor = newFallbackColor;
@@ -45,9 +48,7 @@ public class LargeIconBridge {
         }
     }
 
-    /**
-     * Callback for use with GetLargeIconForUrl().
-     */
+    /** Callback for use with GetLargeIconForUrl(). */
     public interface LargeIconCallback {
         /**
          * Called when the icon or fallback color is available.
@@ -59,8 +60,11 @@ public class LargeIconBridge {
          * IconType}.
          */
         @CalledByNative("LargeIconCallback")
-        void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor,
-                boolean isFallbackColorDefault, @IconType int iconType);
+        void onLargeIconAvailable(
+                @Nullable Bitmap icon,
+                int fallbackColor,
+                boolean isFallbackColorDefault,
+                @IconType int iconType);
     }
 
     /**
@@ -92,18 +96,17 @@ public class LargeIconBridge {
     public void createCache(int cacheSizeBytes) {
         assert cacheSizeBytes > 0;
 
-        mFaviconCache = new LruCache<GURL, CachedFavicon>(cacheSizeBytes) {
-            @Override
-            protected int sizeOf(GURL key, CachedFavicon favicon) {
-                int iconBitmapSize = favicon.icon == null ? 0 : favicon.icon.getByteCount();
-                return Math.max(CACHE_ENTRY_MIN_SIZE_BYTES, iconBitmapSize);
-            }
-        };
+        mFaviconCache =
+                new LruCache<GURL, CachedFavicon>(cacheSizeBytes) {
+                    @Override
+                    protected int sizeOf(GURL key, CachedFavicon favicon) {
+                        int iconBitmapSize = favicon.icon == null ? 0 : favicon.icon.getByteCount();
+                        return Math.max(CACHE_ENTRY_MIN_SIZE_BYTES, iconBitmapSize);
+                    }
+                };
     }
 
-    /**
-     * Deletes the C++ side of this class. This must be called when this object is no longer needed.
-     */
+    /** Deletes the C++ side of this class. This must be called when this object is no longer needed. */
     public void destroy() {
         if (mNativeLargeIconBridge != 0) {
             LargeIconBridgeJni.get().destroy(mNativeLargeIconBridge);
@@ -142,41 +145,62 @@ public class LargeIconBridge {
      *                 will not be called if this method returns false.
      * @return True if a callback should be expected.
      */
-    public boolean getLargeIconForUrl(final GURL pageUrl, int minSizePx, int desiredSizePx,
+    public boolean getLargeIconForUrl(
+            final GURL pageUrl,
+            int minSizePx,
+            int desiredSizePx,
             final LargeIconCallback callback) {
         assert mNativeLargeIconBridge != 0;
         assert callback != null;
 
         if (mFaviconCache == null) {
-            return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
-                    mBrowserContextHandle, pageUrl, minSizePx, desiredSizePx, callback);
+            return LargeIconBridgeJni.get()
+                    .getLargeIconForURL(
+                            mNativeLargeIconBridge,
+                            mBrowserContextHandle,
+                            pageUrl,
+                            minSizePx,
+                            desiredSizePx,
+                            callback);
         } else {
             CachedFavicon cached = mFaviconCache.get(pageUrl);
             if (cached != null) {
-                callback.onLargeIconAvailable(cached.icon, cached.fallbackColor,
-                        cached.isFallbackColorDefault, cached.iconType);
+                callback.onLargeIconAvailable(
+                        cached.icon,
+                        cached.fallbackColor,
+                        cached.isFallbackColorDefault,
+                        cached.iconType);
                 return true;
             }
 
-            LargeIconCallback callbackWrapper = new LargeIconCallback() {
-                @Override
-                public void onLargeIconAvailable(Bitmap icon, int fallbackColor,
-                        boolean isFallbackColorDefault, @IconType int iconType) {
-                    mFaviconCache.put(pageUrl,
-                            new CachedFavicon(
-                                    icon, fallbackColor, isFallbackColorDefault, iconType));
-                    callback.onLargeIconAvailable(
-                            icon, fallbackColor, isFallbackColorDefault, iconType);
-                }
-            };
-            return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
-                    mBrowserContextHandle, pageUrl, minSizePx, desiredSizePx, callbackWrapper);
+            LargeIconCallback callbackWrapper =
+                    new LargeIconCallback() {
+                        @Override
+                        public void onLargeIconAvailable(
+                                Bitmap icon,
+                                int fallbackColor,
+                                boolean isFallbackColorDefault,
+                                @IconType int iconType) {
+                            mFaviconCache.put(
+                                    pageUrl,
+                                    new CachedFavicon(
+                                            icon, fallbackColor, isFallbackColorDefault, iconType));
+                            callback.onLargeIconAvailable(
+                                    icon, fallbackColor, isFallbackColorDefault, iconType);
+                        }
+                    };
+            return LargeIconBridgeJni.get()
+                    .getLargeIconForURL(
+                            mNativeLargeIconBridge,
+                            mBrowserContextHandle,
+                            pageUrl,
+                            minSizePx,
+                            desiredSizePx,
+                            callbackWrapper);
         }
     }
 
-    /**
-     * Removes the favicon from the local cache for the given URL.
-     */
+    /** Removes the favicon from the local cache for the given URL. */
     public void clearFavicon(GURL url) {
         mFaviconCache.remove(url);
     }
@@ -184,9 +208,15 @@ public class LargeIconBridge {
     @NativeMethods
     public interface Natives {
         long init();
+
         void destroy(long nativeLargeIconBridge);
-        boolean getLargeIconForURL(long nativeLargeIconBridge,
-                BrowserContextHandle browserContextHandle, GURL pageUrl, int minSizePx,
-                int desiredSizePx, LargeIconCallback callback);
+
+        boolean getLargeIconForURL(
+                long nativeLargeIconBridge,
+                BrowserContextHandle browserContextHandle,
+                GURL pageUrl,
+                int minSizePx,
+                int desiredSizePx,
+                LargeIconCallback callback);
     }
 }

@@ -11,9 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 
-/**
- * Helper for opening date and time settings.
- */
+/** Helper for opening date and time settings. */
 @JNINamespace("security_interstitials")
 public abstract class DateAndTimeSettingsHelper {
     private DateAndTimeSettingsHelper() {}

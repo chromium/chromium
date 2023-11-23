@@ -68,9 +68,7 @@ class PackageHash {
         ResettersForTesting.register(() -> sGlobalSaltForTesting = null);
     }
 
-    /**
-     * Returns a SHA-256 hash of the package name, truncated to a 16-bit integer.
-     */
+    /** Returns a SHA-256 hash of the package name, truncated to a 16-bit integer. */
     static short hashForPackage(String packageName, BrowserContextHandle browserContext) {
         byte[] salt = getSaltBytes(browserContext);
         Mac hasher;

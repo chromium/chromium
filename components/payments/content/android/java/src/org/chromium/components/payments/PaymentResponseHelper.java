@@ -33,8 +33,11 @@ public class PaymentResponseHelper implements PaymentResponseHelperInterface {
     }
 
     @Override
-    public void generatePaymentResponse(String methodName, String stringifiedDetails,
-            PayerData payerData, PaymentResponseResultCallback resultCallback) {
+    public void generatePaymentResponse(
+            String methodName,
+            String stringifiedDetails,
+            PayerData payerData,
+            PaymentResponseResultCallback resultCallback) {
         mPaymentResponse.methodName = methodName;
         mPaymentResponse.stringifiedDetails = stringifiedDetails;
         // Set up the shipping section of the response when it comes from payment app.

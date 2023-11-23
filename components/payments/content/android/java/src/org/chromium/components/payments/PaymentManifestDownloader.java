@@ -67,8 +67,9 @@ public class PaymentManifestDownloader {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject == 0;
         mCSPCheckerBridge = new CSPCheckerBridge(cspChecker);
-        mNativeObject = PaymentManifestDownloaderJni.get().init(
-                webContents, mCSPCheckerBridge.getNativeCSPChecker());
+        mNativeObject =
+                PaymentManifestDownloaderJni.get()
+                        .init(webContents, mCSPCheckerBridge.getNativeCSPChecker());
     }
 
     /** @return Whether the native downloader is initialized. */
@@ -89,8 +90,13 @@ public class PaymentManifestDownloader {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject != 0;
         assert merchantOrigin != null;
-        PaymentManifestDownloaderJni.get().downloadPaymentMethodManifest(mNativeObject,
-                PaymentManifestDownloader.this, merchantOrigin, methodName, callback);
+        PaymentManifestDownloaderJni.get()
+                .downloadPaymentMethodManifest(
+                        mNativeObject,
+                        PaymentManifestDownloader.this,
+                        merchantOrigin,
+                        methodName,
+                        callback);
     }
 
     /**
@@ -101,14 +107,20 @@ public class PaymentManifestDownloader {
      * @param webAppManifestUrl           The web app manifest URL with HTTPS scheme.
      * @param callback                    The callback to invoke when finished downloading.
      */
-    public void downloadWebAppManifest(Origin paymentMethodManifestOrigin, GURL webAppManifestUrl,
+    public void downloadWebAppManifest(
+            Origin paymentMethodManifestOrigin,
+            GURL webAppManifestUrl,
             ManifestDownloadCallback callback) {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject != 0;
         assert paymentMethodManifestOrigin != null;
-        PaymentManifestDownloaderJni.get().downloadWebAppManifest(mNativeObject,
-                PaymentManifestDownloader.this, paymentMethodManifestOrigin, webAppManifestUrl,
-                callback);
+        PaymentManifestDownloaderJni.get()
+                .downloadWebAppManifest(
+                        mNativeObject,
+                        PaymentManifestDownloader.this,
+                        paymentMethodManifestOrigin,
+                        webAppManifestUrl,
+                        callback);
     }
 
     /** Destroys the native downloader. */
@@ -128,13 +140,23 @@ public class PaymentManifestDownloader {
     @NativeMethods
     interface Natives {
         long init(WebContents webContents, long nativeCSPCheckerAndroid);
-        void downloadPaymentMethodManifest(long nativePaymentManifestDownloaderAndroid,
-                PaymentManifestDownloader caller, Origin merchantOrigin, GURL methodName,
+
+        void downloadPaymentMethodManifest(
+                long nativePaymentManifestDownloaderAndroid,
+                PaymentManifestDownloader caller,
+                Origin merchantOrigin,
+                GURL methodName,
                 ManifestDownloadCallback callback);
-        void downloadWebAppManifest(long nativePaymentManifestDownloaderAndroid,
-                PaymentManifestDownloader caller, Origin paymentMethodManifestOrigin,
-                GURL webAppManifestUri, ManifestDownloadCallback callback);
+
+        void downloadWebAppManifest(
+                long nativePaymentManifestDownloaderAndroid,
+                PaymentManifestDownloader caller,
+                Origin paymentMethodManifestOrigin,
+                GURL webAppManifestUri,
+                ManifestDownloadCallback callback);
+
         void destroy(long nativePaymentManifestDownloaderAndroid, PaymentManifestDownloader caller);
+
         Origin createOpaqueOriginForTest();
     }
 }

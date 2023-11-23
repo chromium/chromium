@@ -16,9 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Class encapsulating data needed to render a query tile for the query sites section on the NTP.
- */
+/** Class encapsulating data needed to render a query tile for the query sites section on the NTP. */
 public class QueryTile extends ImageTile {
     /** The string to be used for building a query when this tile is clicked. */
     public final String queryText;
@@ -33,8 +31,14 @@ public class QueryTile extends ImageTile {
     public final List<String> searchParams;
 
     /** Constructor. */
-    public QueryTile(String id, String displayTitle, String accessibilityText, String queryText,
-            GURL[] urls, String[] searchParams, List<QueryTile> children) {
+    public QueryTile(
+            String id,
+            String displayTitle,
+            String accessibilityText,
+            String queryText,
+            GURL[] urls,
+            String[] searchParams,
+            List<QueryTile> children) {
         super(id, displayTitle, accessibilityText);
         this.queryText = queryText;
         this.urls = Arrays.asList(urls);

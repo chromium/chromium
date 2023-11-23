@@ -7,17 +7,11 @@ package org.chromium.components.signin.identitymanager;
 import org.chromium.base.Promise;
 import org.chromium.components.signin.base.AccountInfo;
 
-/**
- * This interface handles the {@link AccountInfo} fetch on Java side.
- */
+/** This interface handles the {@link AccountInfo} fetch on Java side. */
 public interface AccountInfoService {
-    /**
-     * Observes the changes of {@link AccountInfo}.
-     */
+    /** Observes the changes of {@link AccountInfo}. */
     interface Observer {
-        /**
-         * Notifies when an {@link AccountInfo} is updated.
-         */
+        /** Notifies when an {@link AccountInfo} is updated. */
         void onAccountInfoUpdated(AccountInfo accountInfo);
     }
 
@@ -27,18 +21,12 @@ public interface AccountInfoService {
      */
     Promise<AccountInfo> getAccountInfoByEmail(String email);
 
-    /**
-     * Adds an observer which will be invoked when an {@link AccountInfo} is updated.
-     */
+    /** Adds an observer which will be invoked when an {@link AccountInfo} is updated. */
     void addObserver(Observer observer);
 
-    /**
-     * Removes an observer which is invoked when an {@link AccountInfo} is updated.
-     */
+    /** Removes an observer which is invoked when an {@link AccountInfo} is updated. */
     void removeObserver(Observer observer);
 
-    /**
-     * Releases the resources used by {@link AccountInfoService}.
-     */
+    /** Releases the resources used by {@link AccountInfoService}. */
     void destroy();
 }

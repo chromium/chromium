@@ -57,7 +57,7 @@ public class CombinedPolicyProvider {
 
         if (mPolicyProviders.isEmpty()) {
             mPolicyCacheProvider = new PolicyCacheProvider();
-            mPolicyCacheProvider.setManagerAndSource(this, /* source = */ 0);
+            mPolicyCacheProvider.setManagerAndSource(this, /* source= */ 0);
         }
         refreshPolicies();
     }
@@ -76,10 +76,14 @@ public class CombinedPolicyProvider {
      * disambiguating updates.
      */
     public void registerProvider(PolicyProvider provider) {
-        Log.i(TAG,
-                "#registerProvider() provider:" + provider
-                        + " isPolicyCacheEnabled:" + isPolicyCacheEnabled()
-                        + " policyProvidersSize:" + mPolicyProviders.size());
+        Log.i(
+                TAG,
+                "#registerProvider() provider:"
+                        + provider
+                        + " isPolicyCacheEnabled:"
+                        + isPolicyCacheEnabled()
+                        + " policyProvidersSize:"
+                        + mPolicyProviders.size());
         if (isPolicyCacheEnabled()) {
             mPolicyCacheProvider = null;
         }
@@ -167,13 +171,10 @@ public class CombinedPolicyProvider {
     boolean isPolicyCacheEnabled() {
         return mPolicyCacheProvider != null;
     }
-    /**
-     * Interface to handle actions related with policy changes.
-     */
+
+    /** Interface to handle actions related with policy changes. */
     public interface PolicyChangeListener {
-        /**
-         * Call to notify the listener that incognito browsing is unavailable due to policy.
-         */
+        /** Call to notify the listener that incognito browsing is unavailable due to policy. */
         void terminateIncognitoSession();
     }
 

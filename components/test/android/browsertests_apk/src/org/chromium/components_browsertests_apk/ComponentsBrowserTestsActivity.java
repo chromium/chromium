@@ -11,9 +11,7 @@ import org.chromium.content_shell.browsertests.ContentShellBrowserTestActivity;
 
 import java.io.File;
 
-/**
- * Android activity for running components browser tests
- */
+/** Android activity for running components browser tests */
 public class ComponentsBrowserTestsActivity extends ContentShellBrowserTestActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,7 +24,8 @@ public class ComponentsBrowserTestsActivity extends ContentShellBrowserTestActiv
     protected File getPrivateDataDirectory() {
         // TODO(agrieve): We should not be touching the side-loaded test data directory.
         //     https://crbug.com/617734
-        return new File(UrlUtils.getIsolatedTestRoot(),
+        return new File(
+                UrlUtils.getIsolatedTestRoot(),
                 ComponentsBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
     }
 

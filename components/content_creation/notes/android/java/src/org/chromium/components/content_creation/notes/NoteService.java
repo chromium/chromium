@@ -14,8 +14,6 @@ import java.util.List;
  * responsible for fetching templates.
  */
 public interface NoteService {
-    /**
-     * Called to get the list of available Note templates.
-     */
+    /** Called to get the list of available Note templates. */
     void getTemplates(Callback<List<NoteTemplate>> callback);
 }

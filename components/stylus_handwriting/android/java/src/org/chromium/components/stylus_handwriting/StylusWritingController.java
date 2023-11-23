@@ -20,16 +20,12 @@ import org.chromium.content_public.browser.WebContents;
 public class StylusWritingController {
     private final Context mContext;
     private WebContents mCurrentWebContents;
-    @Nullable
-    private PointerIcon mHandwritingIcon;
+    @Nullable private PointerIcon mHandwritingIcon;
     private boolean mShouldOverrideStylusHoverIcon;
 
-    @Nullable
-    private AndroidStylusWritingHandler mAndroidHandler;
-    @Nullable
-    private DirectWritingTrigger mDirectWritingTrigger;
-    @Nullable
-    private DisabledStylusWritingHandler mDisabledStylusWritingHandler;
+    @Nullable private AndroidStylusWritingHandler mAndroidHandler;
+    @Nullable private DirectWritingTrigger mDirectWritingTrigger;
+    @Nullable private DisabledStylusWritingHandler mDisabledStylusWritingHandler;
 
     static StylusWritingController createControllerForTests(Context context, PointerIcon icon) {
         StylusWritingController controller = new StylusWritingController(context);
@@ -37,9 +33,7 @@ public class StylusWritingController {
         return controller;
     }
 
-    /**
-     * Creates a new instance of this class.
-     */
+    /** Creates a new instance of this class. */
     public StylusWritingController(Context context) {
         mContext = context;
         int iconType = getHandler().getStylusPointerIcon();
@@ -93,8 +87,9 @@ public class StylusWritingController {
         mCurrentWebContents = webContents;
         StylusApiOption handler = getHandler();
         handler.onWebContentsChanged(mContext, webContents);
-        webContents.getViewAndroidDelegate().setShouldShowStylusHoverIconCallback(
-                this::setShouldOverrideStylusHoverIcon);
+        webContents
+                .getViewAndroidDelegate()
+                .setShouldShowStylusHoverIconCallback(this::setShouldOverrideStylusHoverIcon);
     }
 
     /**
@@ -111,8 +106,9 @@ public class StylusWritingController {
         if (mCurrentWebContents == null) return;
         handler.onWebContentsChanged(mContext, mCurrentWebContents);
         if (mCurrentWebContents.getViewAndroidDelegate() == null) return;
-        mCurrentWebContents.getViewAndroidDelegate().setShouldShowStylusHoverIconCallback(
-                this::setShouldOverrideStylusHoverIcon);
+        mCurrentWebContents
+                .getViewAndroidDelegate()
+                .setShouldShowStylusHoverIconCallback(this::setShouldOverrideStylusHoverIcon);
     }
 
     @Nullable

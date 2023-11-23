@@ -31,9 +31,7 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
                 PaymentRequestWebContentsData::new;
     }
 
-    /**
-     * Set the instance directly for testing this class.
-     */
+    /** Set the instance directly for testing this class. */
     public static void setInstanceForTesting(PaymentRequestWebContentsData instance) {
         sInstanceForTesting = instance;
     }
@@ -48,21 +46,18 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
         return sInstanceForTesting != null
                 ? sInstanceForTesting
                 : ((WebContentsImpl) webContents)
-                          .getOrSetUserData(PaymentRequestWebContentsData.class,
-                                  UserDataFactoryLazyHolder.INSTANCE);
+                        .getOrSetUserData(
+                                PaymentRequestWebContentsData.class,
+                                UserDataFactoryLazyHolder.INSTANCE);
     }
 
-    /**
-     * Constructor used for creating a test instance.
-     */
+    /** Constructor used for creating a test instance. */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public PaymentRequestWebContentsData(WebContents webContents) {
         super(webContents);
     }
 
-    /**
-     * @return Whether there has been an activationless PaymentRequest.show() for this WebContents.
-     */
+    /** @return Whether there has been an activationless PaymentRequest.show() for this WebContents. */
     public boolean hadActivationlessShow() {
         return PaymentRequestWebContentsDataJni.get().hadActivationlessShow(mWebContents.get());
     }
@@ -79,6 +74,7 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
     @NativeMethods
     public interface Natives {
         boolean hadActivationlessShow(WebContents webContents);
+
         void recordActivationlessShow(WebContents webContents);
     }
 }

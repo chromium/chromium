@@ -25,23 +25,17 @@ public final class SubresourceFilterFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private SubresourceFilterFeatureMap() {}
 
-    /**
-     * @return the singleton SubresourceFilterFeatureMap.
-     */
+    /** @return the singleton SubresourceFilterFeatureMap. */
     public static SubresourceFilterFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }
 
-    /**
-     * @return whether SubresourceFilter is enabled.
-     */
+    /** @return whether SubresourceFilter is enabled. */
     public static boolean isSubresourceFilterEnabled() {
         return isEnabled(SUBRESOURCE_FILTER);
     }

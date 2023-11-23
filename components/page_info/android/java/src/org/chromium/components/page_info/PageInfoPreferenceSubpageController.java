@@ -10,9 +10,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 
-/**
- * Abstract class for controllers that use a BaseSiteSettingsFragment as subpage.
- */
+/** Abstract class for controllers that use a BaseSiteSettingsFragment as subpage. */
 public abstract class PageInfoPreferenceSubpageController implements PageInfoSubpageController {
     private final PageInfoControllerDelegate mDelegate;
     private BaseSiteSettingsFragment mSubPage;
@@ -42,9 +40,7 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
         return mSubPage.requireView();
     }
 
-    /**
-     * Removes the last added preference fragment.
-     */
+    /** Removes the last added preference fragment. */
     protected void removeSubpageFragment() {
         assert mSubPage != null;
         FragmentManager fragmentManager = mDelegate.getFragmentManager();
@@ -55,9 +51,7 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
         fragmentManager.beginTransaction().remove(subPage).commitNow();
     }
 
-    /**
-     * @return Whether it is possible to add preference fragments.
-     */
+    /** @return Whether it is possible to add preference fragments. */
     protected boolean canCreateSubpageFragment() {
         return !mDelegate.getFragmentManager().isStateSaved();
     }

@@ -66,41 +66,31 @@ public class MediaStatusBridge {
         return metadata.getString(MediaMetadata.KEY_TITLE);
     }
 
-    /**
-     * If this is true, the media can be played and paused.
-     */
+    /** If this is true, the media can be played and paused. */
     @CalledByNative
     public boolean canPlayPause() {
         return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_PAUSE);
     }
 
-    /**
-     * If this is true, the media can be muted and unmuted.
-     */
+    /** If this is true, the media can be muted and unmuted. */
     @CalledByNative
     public boolean canMute() {
         return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE);
     }
 
-    /**
-     * If this is true, the media's volume can be changed.
-     */
+    /** If this is true, the media's volume can be changed. */
     @CalledByNative
     public boolean canSetVolume() {
         return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_SET_VOLUME);
     }
 
-    /**
-     * If this is true, the media's current playback position can be chaxnged.
-     */
+    /** If this is true, the media's current playback position can be chaxnged. */
     @CalledByNative
     public boolean canSeek() {
         return mStatus.isMediaCommandSupported(MediaStatus.COMMAND_SEEK);
     }
 
-    /**
-     * Returns the stream's mute state.
-     */
+    /** Returns the stream's mute state. */
     @CalledByNative
     public boolean isMuted() {
         return mStatus.isMute();
@@ -128,9 +118,7 @@ public class MediaStatusBridge {
         return info.getStreamDuration();
     }
 
-    /**
-     * Current playback position, in ms. Must be less than or equal to |duration|.
-     */
+    /** Current playback position, in ms. Must be less than or equal to |duration|. */
     @CalledByNative
     public long currentTime() {
         return mStatus.getStreamPosition();

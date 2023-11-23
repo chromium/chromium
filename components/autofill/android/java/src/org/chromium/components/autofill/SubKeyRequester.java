@@ -13,14 +13,10 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 
-/**
- * A class used handle SubKey requests.
- */
+/** A class used handle SubKey requests. */
 @JNINamespace("autofill")
 public class SubKeyRequester {
-    /**
-     * Callback for subKeys request.
-     */
+    /** Callback for subKeys request. */
     public interface GetSubKeysRequestDelegate {
         /**
          * Called when the subkeys are received successfully.
@@ -63,8 +59,9 @@ public class SubKeyRequester {
      */
     public void getRegionSubKeys(String regionCode, GetSubKeysRequestDelegate delegate) {
         ThreadUtils.assertOnUiThread();
-        SubKeyRequesterJni.get().startRegionSubKeysRequest(
-                mNativePtr, regionCode, sRequestTimeoutSeconds, delegate);
+        SubKeyRequesterJni.get()
+                .startRegionSubKeysRequest(
+                        mNativePtr, regionCode, sRequestTimeoutSeconds, delegate);
     }
 
     /** Cancels the pending subkeys request. */
@@ -79,9 +76,7 @@ public class SubKeyRequester {
         ResettersForTesting.register(() -> sRequestTimeoutSeconds = oldValue);
     }
 
-    /**
-     * @return The sub-key request timeout in milliseconds.
-     */
+    /** @return The sub-key request timeout in milliseconds. */
     public static long getRequestTimeoutMS() {
         return DateUtils.SECOND_IN_MILLIS * sRequestTimeoutSeconds;
     }
@@ -89,8 +84,13 @@ public class SubKeyRequester {
     @NativeMethods
     interface Natives {
         void loadRulesForSubKeys(long nativeSubKeyRequester, String regionCode);
-        void startRegionSubKeysRequest(long nativeSubKeyRequester, String regionCode,
-                int timeoutSeconds, GetSubKeysRequestDelegate delegate);
+
+        void startRegionSubKeysRequest(
+                long nativeSubKeyRequester,
+                String regionCode,
+                int timeoutSeconds,
+                GetSubKeysRequestDelegate delegate);
+
         void cancelPendingGetSubKeys(long nativeSubKeyRequester);
     }
 }

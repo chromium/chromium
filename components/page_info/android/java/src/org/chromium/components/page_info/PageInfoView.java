@@ -14,9 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
- * Represents the view inside the page info popup.
- */
+/** Represents the view inside the page info popup. */
 public class PageInfoView extends FrameLayout implements OnClickListener {
     private static final int COOKIES_ROW_POSITION = 1;
 
@@ -90,7 +88,9 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private void initOpenOnline(Params params) {
         mOpenOnlineButton = findViewById(R.id.page_info_open_online_button);
         // The open online button should not fade in.
-        initializePageInfoViewChild(mOpenOnlineButton, params.openOnlineButtonShown,
+        initializePageInfoViewChild(
+                mOpenOnlineButton,
+                params.openOnlineButtonShown,
                 params.openOnlineButtonClickCallback);
     }
 

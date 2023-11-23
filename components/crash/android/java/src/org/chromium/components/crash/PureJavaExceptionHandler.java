@@ -47,8 +47,9 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
 
     public static void installHandler(JavaExceptionReporterFactory reporterFactory) {
         if (sIsEnabled) {
-            Thread.setDefaultUncaughtExceptionHandler(new PureJavaExceptionHandler(
-                    Thread.getDefaultUncaughtExceptionHandler(), reporterFactory));
+            Thread.setDefaultUncaughtExceptionHandler(
+                    new PureJavaExceptionHandler(
+                            Thread.getDefaultUncaughtExceptionHandler(), reporterFactory));
         }
     }
 

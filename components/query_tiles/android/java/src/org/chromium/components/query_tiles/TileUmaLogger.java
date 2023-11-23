@@ -10,9 +10,7 @@ import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.List;
 
-/**
- * Helper class to log metrics for various user actions associated with query tiles.
- */
+/** Helper class to log metrics for various user actions associated with query tiles. */
 public class TileUmaLogger {
     private final String mHistogramPrefix;
     private List<QueryTile> mTopLevelTiles;

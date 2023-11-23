@@ -16,9 +16,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 
-/**
- * Utility class for creating Direct Writing service Bundle for various service calls as needed.
- */
+/** Utility class for creating Direct Writing service Bundle for various service calls as needed. */
 class DirectWritingBundleUtil {
     private DirectWritingBundleUtil() {}
 

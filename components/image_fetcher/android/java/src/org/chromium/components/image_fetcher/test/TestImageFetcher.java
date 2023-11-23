@@ -8,11 +8,11 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.chromium.base.Callback;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
-
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 /** A {@link ImageFetcher} for tests that can fetch a test bitmap. */
 public class TestImageFetcher extends ImageFetcher.ImageFetcherForTesting {

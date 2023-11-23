@@ -19,17 +19,13 @@ public class UrlAllowlist {
     private HashSet<String> mAllowedUrls;
     private List<Pattern> mAllowedRe;
 
-    /**
-     * Nothing is allowed if both allowedUrls and allowedRes is null or empty.
-     */
+    /** Nothing is allowed if both allowedUrls and allowedRes is null or empty. */
     public UrlAllowlist(HashSet<String> allowedUrls, List<Pattern> allowedRe) {
         mAllowedUrls = allowedUrls;
         mAllowedRe = allowedRe;
     }
 
-    /**
-     * @return if any of the given urls's host allowed.
-     */
+    /** @return if any of the given urls's host allowed. */
     public boolean isAllowed(String[] urls) {
         if (mAllowedRe == null && mAllowedUrls == null) return false;
         for (String url : urls) {

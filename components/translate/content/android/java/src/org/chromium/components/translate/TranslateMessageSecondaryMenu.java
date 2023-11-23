@@ -31,8 +31,11 @@ class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
     private final ListView mListView;
     private final List<Runnable> mClickRunnables;
 
-    public TranslateMessageSecondaryMenu(Context context, Handler handler,
-            DataSetObserver dataSetObserver, MenuItem[] menuItems) {
+    public TranslateMessageSecondaryMenu(
+            Context context,
+            Handler handler,
+            DataSetObserver dataSetObserver,
+            MenuItem[] menuItems) {
         mHandler = handler;
         mAdapter = new TranslateMessageSecondaryMenuAdapter(context, menuItems);
         // The dataSetObserver *must* be registered on mAdapter before the call to
