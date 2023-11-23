@@ -6088,7 +6088,9 @@ bool Element::CanBeKeyboardFocusableScroller(
     disallow_scope.emplace(GetDocument().Lifecycle());
   } else {
     auto* box = GetLayoutObject();
-    if (box && box->NeedsLayout()) {
+    if (box && (box->SelfNeedsFullLayout() || box->NeedsSimplifiedLayout() ||
+                (!box->ChildLayoutBlockedByDisplayLock() &&
+                 box->ChildNeedsFullLayout()))) {
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
     }
   }
