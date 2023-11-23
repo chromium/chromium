@@ -584,6 +584,31 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="ChromeOSSamlApiError">
+  <summary>
+    Different errors that can occur while using Credentials Passing API in
+    ChromeOS.
+  </summary>
+  <int value="0" label="Not supported key type">
+    IdP sent unsupported key type
+  </int>
+  <int value="1" label="Not supported create account">
+    Gaia wanted to create an account while feature is not supported
+  </int>
+  <int value="2" label="Not valid create account">
+    Gaia wanted to create an account for a user that wasn't added.
+  </int>
+  <int value="3" label="Not valid confirm token">
+    IdP confirmed token that wasn't added
+  </int>
+  <int value="4" label="Not supported message">
+    IdP sent a message that isn't supported in SAML API.
+  </int>
+  <int value="5" label="Missing password confirmation">
+    IdP didn't send user's password confirmation
+  </int>
+</enum>
+
 <enum name="ChromeOSSamlApiUsed">
   <summary>
     ChromeOS login flow by Identity Provider. Can be either GAIA-based, SAML

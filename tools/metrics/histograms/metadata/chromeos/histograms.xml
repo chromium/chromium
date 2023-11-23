@@ -2102,6 +2102,13 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.SAML.APIError" enum="ChromeOSSamlApiError"
+    expires_after="2024-05-20">
+  <owner>mohammedabdon@chromium.org</owner>
+  <owner>ayag@google.com</owner>
+  <summary>Recorded when the Credentials Passing API call fails.</summary>
+</histogram>
+
 <histogram name="ChromeOS.SAML.APILogin" enum="ChromeOSSamlApiUsed"
     expires_after="2023-04-02">
   <owner>mslus@chromium.org</owner>

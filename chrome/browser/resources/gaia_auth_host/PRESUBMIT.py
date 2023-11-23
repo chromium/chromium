@@ -20,16 +20,16 @@ def _CountOccurences(matcher, contents):
     return sum(matcher.search(line) != None for line in contents)
 
 def _CheckSamlHandlerApiCallErrors(input_api, output_api):
-    """Checks that the number of "console.error('SamlHandler.onAPICall_"
+    """Checks that the number of "console.warn('SamlHandler.onAPICall_"
        statements stays the same.
     """
-    matcher = input_api.re.compile(r'console\.error\(\'SamlHandler\.onAPICall_')
+    matcher = input_api.re.compile(r'console\.warn\(\'SamlHandler\.onAPICall_')
     for f in input_api.AffectedFiles(_FilterFile):
         new_occurences = _CountOccurences(matcher, f.NewContents())
         old_occurences = _CountOccurences(matcher, f.OldContents())
         if new_occurences < old_occurences:
             return [output_api.PresubmitPromptWarning(
-                'Seems that you\'re modifiying an error log '
+                'Seems that you\'re modifiying a warn log '
                 '\'SamlHandler\.onAPICall_\' which is used as a signal for a '
                 'tast test. Please make sure the `login.ChromeGaiaAPI` test and'
                 ' this presubmit check stays functional') ]

@@ -1485,7 +1485,8 @@ export class Authenticator extends EventTarget {
     if (this.waitApiPasswordConfirm_) {
       // Log duplicates the log from the saml handler. The message is used by
       // the tast test to catch failures.
-      console.error('SamlHandler.onAPICall_: API password was not confirmed');
+      console.warn('SamlHandler.onAPICall_: API password was not confirmed');
+      this.samlHandler_.recordPasswordNotConfirmedError();
       this.waitApiPasswordConfirm_ = false;
     }
 
