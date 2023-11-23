@@ -1,0 +1,10 @@
+{
+  "name": "DocumentScan API Test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Browser tests for chrome.documentScan API",
+  "permissions": [
+    "documentScan",
+    "http://localhost/*"
+  ]
+}
