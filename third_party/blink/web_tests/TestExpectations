@@ -7118,3 +7118,4 @@ crbug.com/1501090 [ Linux ] external/wpt/preload/preload-strict-dynamic.sub.html
 
 # Gardener 2023-11-23
 crbug.com/1504651 [ Linux ] external/wpt/touch-events/single-touch.html [ Failure Pass ]
+crbug.com/1504244 [ Linux ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
