@@ -1677,12 +1677,6 @@ chromium-metrics-reviews@google.com.
   <summary>The result of FileSystemDirectoryDatabase initialization.</summary>
 </histogram>
 
-<histogram name="FileSystem.DirectoryDatabaseRepair"
-    enum="DirectoryDatabaseRepairResult" expires_after="M77">
-  <owner>tzik@chromium.org</owner>
-  <summary>The result of FileSystemDirectoryDatabase repair.</summary>
-</histogram>
-
 <histogram name="FileSystem.OriginDatabaseInit"
     enum="FileSystemDatabaseInitResult" expires_after="never">
 <!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->

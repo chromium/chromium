@@ -14916,11 +14916,6 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Coalesced"/>
 </enum>
 
-<enum name="DirectoryDatabaseRepairResult">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="Failed"/>
-</enum>
-
 <enum name="DirectSocketPermissionFailureType">
   <int value="0" label="PermissionsPolicy"/>
   <int value="1" label="TransientActivation"/>
