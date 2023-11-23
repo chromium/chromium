@@ -4,7 +4,7 @@
 
 import type {EntryLocation} from '../../externs/entry_location.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {EntryType, FileData} from '../../externs/ts/state.js';
+import {CurrentDirectory, EntryType, FileData} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {constants} from '../../foreground/js/constants.js';
@@ -139,7 +139,8 @@ export function isEntryInsideComputers(fileData: FileData): boolean {
 /**
  * Returns true if fileData's entry is inside any part of Drive.
  */
-export function isEntryInsideDrive(fileData: FileData): boolean {
+export function isEntryInsideDrive(fileData: FileData|
+                                   CurrentDirectory): boolean {
   const {rootType} = fileData;
   return !!rootType &&
       (rootType === VolumeManagerCommon.RootType.DRIVE ||

@@ -1134,3 +1134,43 @@ testcase.changingDirectoryClosesSearch = async () => {
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 };
+
+/**
+ * Check that if we are either at the top directory of Google Drive or in one of
+ * the nested directories, we show the correct location. As we always search the
+ * entire Google Drive, we should always show My Drive as the selected location.
+ */
+testcase.verifyDriveLocationOption = async () => {
+  // Open Files app on Downloads.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+    ENTRIES.hello,
+    ENTRIES.sharedDirectory,
+    ENTRIES.sharedDirectoryFile,
+  ]);
+
+  // Navigate to Google Drive; make sure we have the desired files.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My Drive');
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.sharedDirectory,
+    ENTRIES.hello,
+  ]));
+
+  // Search the Drive for all files with "b" in their name.
+  await remoteCall.typeSearchText(appId, 'hello');
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.hello,
+  ]));
+
+  // Check that the location shows My Drive.
+  chrome.test.assertEq(
+      'Google Drive', await getSelectedOptionText(appId, 'location'));
+
+  await directoryTree.navigateToPath('/My Drive/Shared');
+  await remoteCall.typeSearchText(appId, 'file');
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.sharedDirectoryFile,
+  ]));
+  chrome.test.assertEq(
+      'Google Drive', await getSelectedOptionText(appId, 'location'));
+};

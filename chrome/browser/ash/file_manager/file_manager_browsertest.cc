@@ -2050,7 +2050,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchFileSystemProvider"),
         TestCase("searchImageByContent").EnableLocalImageSearch(),
         TestCase("changingDirectoryClosesSearch"),
-        TestCase("searchQueryLaunchParam")));
+        TestCase("searchQueryLaunchParam"),
+        TestCase("verifyDriveLocationOption")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metrics, /* metrics.js */
