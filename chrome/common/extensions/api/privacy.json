@@ -135,6 +135,11 @@
             "value": ["protectedContentEnabled", {"type":"boolean"}],
             "description": "<strong>Available on Windows and ChromeOS only</strong>: If enabled, Chrome provides a unique ID to plugins in order to run protected content. The value of this preference is of type boolean, and the default value is <code>true</code>.",
             "platforms": ["win", "chromeos", "lacros"]
+          },
+          "relatedWebsiteSetsEnabled": {
+            "$ref": "types.ChromeSetting",
+            "value": ["relatedWebsiteSetsEnabled", {"type": "boolean"}],
+            "description": "If disabled, <a href='https://developer.chrome.com/docs/privacy-sandbox/related-website-sets/'>Related Website Sets</a> is deactivated. The value of this preference is of type boolean, and the default value is <code>true</code>. Extensions may only disable this API by setting the value to <code>false</code>. If you try setting this API to <code>true</code>, it will throw an error."
           }
         }
       }

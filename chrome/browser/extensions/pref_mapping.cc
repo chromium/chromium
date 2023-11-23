@@ -89,6 +89,9 @@ const PrefMappingEntry kMappings[] = {
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"webRTCUDPPortRange", prefs::kWebRTCUDPPortRange,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+    {"relatedWebsiteSetsEnabled",
+     prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, APIPermissionID::kPrivacy,
+     APIPermissionID::kPrivacy},
     // accessibilityFeatures.animationPolicy is available for
     // all platforms but the others from accessibilityFeatures
     // is only available for OS_CHROMEOS.
