@@ -1859,6 +1859,12 @@ GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
   return 0;
 }
 
+GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
+  NOTREACHED();
+  return 0;
+}
+
 void RasterImplementation::DeleteGpuRasterTexture(GLuint texture) {
   NOTREACHED();
 }
