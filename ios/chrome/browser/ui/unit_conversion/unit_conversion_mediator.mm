@@ -152,6 +152,9 @@
                            targetUnit:(NSUnit*)targetUnit {
   NSNumber* unitValueNumber = [self numberFromString:sourceUnitValueField];
   if (!unitValueNumber) {
+    // Update the target field with 0 as a default value when the source field's
+    // content is not valid (empty and non numerical values).
+    [self.consumer updateTargetUnitValue:0 reload:YES];
     return;
   }
   double unitValue = unitValueNumber.doubleValue;
@@ -178,6 +181,9 @@
                            targetUnit:(NSUnit*)targetUnit {
   NSNumber* unitValueNumber = [self numberFromString:targetUnitValueField];
   if (!unitValueNumber) {
+    // Update the source field with 0 as a default value when the target field's
+    // content is not valid (empty and non numerical values).
+    [self.consumer updateSourceUnitValue:0 reload:YES];
     return;
   }
   double unitValue = unitValueNumber.doubleValue;

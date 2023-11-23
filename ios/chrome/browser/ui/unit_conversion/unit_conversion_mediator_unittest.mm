@@ -19,6 +19,7 @@ namespace {
 const double kSourceUnitValue = 1;
 const double kExpectedSourceUnitValue = 1;
 const double kExpectedTargetUnitValue = 1000;
+const double kExpectedDefaultValue = 0;
 
 // Source and target units value fields in valid format.
 NSString* kValidSourceUnitValueField = @"1";
@@ -293,12 +294,15 @@ TEST_F(UnitConversionMediatorTest, TestValidSourceUnitValueFieldChange) {
 }
 
 // Tests that no update nor conversion is taking place when the source unit
-// field value is invalid.
+// field value is invalid and that the target unit field is updated with the
+// default value 0.
 TEST_F(UnitConversionMediatorTest, TestInvalidSourceUnitValueFieldChange) {
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
   NSUnitMass* source_unit = [NSUnitMass kilograms];
   NSUnitMass* target_unit = [NSUnitMass grams];
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedDefaultValue
+                                          reload:YES]);
   [mediator_ sourceUnitValueFieldDidChange:kInvalidUnitValueField
                                 sourceUnit:source_unit
                                 targetUnit:target_unit];
@@ -327,12 +331,15 @@ TEST_F(UnitConversionMediatorTest, TestValidTargetUnitValueFieldChange) {
 }
 
 // Tests that no update nor conversion is taking place when the target unit
-// field value is invalid.
+// field value is invalid and that the source unit field is updated with the
+// default value 0.
 TEST_F(UnitConversionMediatorTest, TestInvalidTargetUnitValueFieldChange) {
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
   NSUnitMass* source_unit = [NSUnitMass kilograms];
   NSUnitMass* target_unit = [NSUnitMass grams];
+  OCMExpect([consumer_mock updateSourceUnitValue:kExpectedDefaultValue
+                                          reload:YES]);
   [mediator_ targetUnitValueFieldDidChange:kInvalidUnitValueField
                                 sourceUnit:source_unit
                                 targetUnit:target_unit];
