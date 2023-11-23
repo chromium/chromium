@@ -27,11 +27,43 @@ SizesAttributeParser::SizesAttributeParser(
             CSSParserTokenOffsets(tokens, std::move(offsets), attribute));
 }
 
-float SizesAttributeParser::Size() {
-  if (is_valid_) {
-    return EffectiveSize();
+bool SizesAttributeParser::Parse(CSSParserTokenRange range,
+                                 const CSSParserTokenOffsets& offsets) {
+  // Split on a comma token and parse the result tokens as (media-condition,
+  // length) pairs
+  while (!range.AtEnd()) {
+    const CSSParserToken* media_condition_start = &range.Peek();
+    // The length is the last component value before the comma which isn't
+    // whitespace or a comment
+    const CSSParserToken* length_token_start = &range.Peek();
+    const CSSParserToken* length_token_end = &range.Peek();
+    while (!range.AtEnd() && range.Peek().GetType() != kCommaToken) {
+      length_token_start = &range.Peek();
+      range.ConsumeComponentValue();
+      length_token_end = &range.Peek();
+      range.ConsumeWhitespace();
+    }
+    range.Consume();
+
+    float length;
+    if (!CalculateLengthInPixels(
+            range.MakeSubRange(length_token_start, length_token_end), length)) {
+      continue;
+    }
+
+    MediaQuerySet* media_condition = MediaQueryParser::ParseMediaCondition(
+        range.MakeSubRange(media_condition_start, length_token_start), offsets,
+        execution_context_);
+    if (!media_condition || !MediaConditionMatches(*media_condition)) {
+      continue;
+    }
+
+    size_ = length;
+    size_was_set_ = true;
+    return true;
   }
-  return EffectiveSizeDefaultValue();
+
+  return false;
 }
 
 bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
@@ -70,46 +102,16 @@ bool SizesAttributeParser::MediaConditionMatches(
     const MediaQuerySet& media_condition) {
   // A Media Condition cannot have a media type other then screen.
   MediaQueryEvaluator media_query_evaluator(media_values_);
+
   return media_query_evaluator.Eval(media_condition);
 }
 
-bool SizesAttributeParser::Parse(CSSParserTokenRange range,
-                                 const CSSParserTokenOffsets& offsets) {
-  // Split on a comma token and parse the result tokens as (media-condition,
-  // length) pairs
-  while (!range.AtEnd()) {
-    const CSSParserToken* media_condition_start = &range.Peek();
-    // The length is the last component value before the comma which isn't
-    // whitespace or a comment
-    const CSSParserToken* length_token_start = &range.Peek();
-    const CSSParserToken* length_token_end = &range.Peek();
-    while (!range.AtEnd() && range.Peek().GetType() != kCommaToken) {
-      length_token_start = &range.Peek();
-      range.ConsumeComponentValue();
-      length_token_end = &range.Peek();
-      range.ConsumeWhitespace();
-    }
-    range.Consume();
-
-    float length;
-    if (!CalculateLengthInPixels(
-            range.MakeSubRange(length_token_start, length_token_end), length)) {
-      continue;
-    }
-
-    MediaQuerySet* media_condition = MediaQueryParser::ParseMediaCondition(
-        range.MakeSubRange(media_condition_start, length_token_start), offsets,
-        execution_context_);
-    if (!media_condition || !MediaConditionMatches(*media_condition)) {
-      continue;
-    }
-
-    size_ = length;
-    size_was_set_ = true;
-    return true;
+float SizesAttributeParser::Size() {
+  if (is_valid_) {
+    return EffectiveSize();
   }
 
-  return false;
+  return EffectiveSizeDefaultValue();
 }
 
 float SizesAttributeParser::EffectiveSize() {
