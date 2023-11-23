@@ -8142,32 +8142,34 @@
             ]
         }
     ],
-    "HeapProfilingGPUMac": [
+    "HeapProfilingAllProcesses": [
         {
             "platforms": [
                 "mac"
             ],
             "experiments": [
                 {
-                    "name": "EnabledInGPU_20230511",
+                    "name": "EnabledInGPUAndNetwork",
                     "params": {
-                        "gpu-process-params": "{\"is-supported\":true,\"nonstable-probability\":1,\"sampling-rate\":5000000,\"stable-probability\":1}"
+                        "gpu-process-params": "{\"is-supported\":true,\"nonstable-probability\":1,\"sampling-rate\":5000000,\"stable-probability\":1}",
+                        "network-process-params": "{\"is-supported\":true,\"nonstable-probability\":1,\"sampling-rate\":10000000,\"stable-probability\":1}"
                     },
                     "enable_features": [
                         "HeapProfilerReporting"
                     ]
                 }
             ]
-        }
-    ],
-    "HeapProfilingNetworkServiceLinux": [
+        },
         {
             "platforms": [
-                "linux"
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "windows"
             ],
             "experiments": [
                 {
-                    "name": "EnabledInNetworkService_20230602",
+                    "name": "EnabledInNetwork",
                     "params": {
                         "network-process-params": "{\"is-supported\":true,\"nonstable-probability\":1,\"sampling-rate\":10000000,\"stable-probability\":1}"
                     },
