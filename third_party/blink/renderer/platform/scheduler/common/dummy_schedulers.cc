@@ -349,7 +349,6 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   }
 
   v8::Isolate* Isolate() override {
-    DCHECK(isolate_);
     return isolate_;
   }
 
