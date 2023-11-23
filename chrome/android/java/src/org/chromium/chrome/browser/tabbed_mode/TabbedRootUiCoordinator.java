@@ -737,7 +737,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (!didTriggerPromo) {
-            didTriggerPromo = triggerPromo(intentWithEffect);
+            didTriggerPromo = triggerPromo(profile, intentWithEffect);
         }
 
         if (!didTriggerPromo) {
@@ -946,7 +946,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * Triggers the display of an appropriate promo, if any, returning true if a promo is actually
      * displayed.
      */
-    private boolean triggerPromo(boolean intentWithEffect) {
+    private boolean triggerPromo(Profile profile, boolean intentWithEffect) {
         try (TraceEvent e = TraceEvent.scoped("TabbedRootUiCoordinator.triggerPromo")) {
             if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_STARTUP_PROMOS)) {
                 return false;
@@ -966,7 +966,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (!isShowingPromo && !intentWithEffect && FirstRunStatus.getFirstRunFlowComplete()
                     && preferenceManager.readBoolean(
                             ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, false)) {
-                isShowingPromo = maybeShowPromo();
+                isShowingPromo = maybeShowPromo(profile);
             } else {
                 preferenceManager.writeBoolean(
                         ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, true);
@@ -985,7 +985,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaRestorePromoUtils.notifyFirstRunPromoTriggered();
     }
 
-    private boolean maybeShowPromo() {
+    private boolean maybeShowPromo(Profile profile) {
         // NOTE: Only one promo can be shown in one run to avoid nagging users too much.
 
         // The PWA Restore promotion runs when we've detected that a user has switched to a new
@@ -997,8 +997,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity, mWindowAndroid, R.drawable.ic_arrow_back_24dp)) {
             return true;
         }
-        if (FullScreenSyncPromoUtil.launchPromoIfNeeded(mActivity,
-                    SyncConsentActivityLauncherImpl.get(), VersionInfo.getProductMajorVersion())) {
+        if (FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                mActivity,
+                profile,
+                SyncConsentActivityLauncherImpl.get(),
+                VersionInfo.getProductMajorVersion())) {
             return true;
         }
         if (DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(

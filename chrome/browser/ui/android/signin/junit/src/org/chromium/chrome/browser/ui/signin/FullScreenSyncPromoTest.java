@@ -79,6 +79,8 @@ public class FullScreenSyncPromoTest {
 
     @Mock private SyncConsentActivityLauncher mLauncherMock;
 
+    @Mock private Profile mProfile;
+
     private final Context mContext = RuntimeEnvironment.systemContext;
     private final SigninPreferencesManager mPrefManager = SigninPreferencesManager.getInstance();
     private final AccountCapabilitiesBuilder mAccountCapabilitiesBuilder =
@@ -87,12 +89,10 @@ public class FullScreenSyncPromoTest {
     @Before
     public void setUp() {
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativeMock);
-        Profile.setLastUsedProfileForTesting(mock(Profile.class));
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        when(IdentityServicesProvider.get().getIdentityManager(Profile.getLastUsedRegularProfile()))
+        when(IdentityServicesProvider.get().getIdentityManager(mProfile))
                 .thenReturn(mIdentityManagerMock);
-        when(mUserPrefsNativeMock.get(Profile.getLastUsedRegularProfile()))
-                .thenReturn(mPrefServiceMock);
+        when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME)).thenReturn("");
     }
 
@@ -108,7 +108,7 @@ public class FullScreenSyncPromoTest {
         mFakeAccountManagerFacade.blockGetCoreAccountInfos();
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         Assert.assertEquals(38, mPrefManager.getSigninPromoLastShownVersion());
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
@@ -118,7 +118,7 @@ public class FullScreenSyncPromoTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         Assert.assertEquals(42, mPrefManager.getSigninPromoLastShownVersion());
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
     }
@@ -129,7 +129,7 @@ public class FullScreenSyncPromoTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
     }
 
@@ -142,7 +142,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
@@ -155,7 +155,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
@@ -166,7 +166,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(41);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
@@ -176,7 +176,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
@@ -193,7 +193,7 @@ public class FullScreenSyncPromoTest {
         // Old implementation hasn't been storing account list
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
@@ -207,7 +207,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(40);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mLauncherMock, never())
                 .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
     }
@@ -226,7 +226,7 @@ public class FullScreenSyncPromoTest {
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
@@ -240,7 +240,7 @@ public class FullScreenSyncPromoTest {
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
@@ -257,7 +257,7 @@ public class FullScreenSyncPromoTest {
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, "test2@gmail.com"));
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
@@ -274,7 +274,7 @@ public class FullScreenSyncPromoTest {
 
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
 
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
@@ -296,7 +296,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
-                        mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+                        mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));
 
         verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
     }

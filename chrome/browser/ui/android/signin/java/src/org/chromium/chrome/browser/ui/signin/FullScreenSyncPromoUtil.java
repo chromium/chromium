@@ -36,16 +36,20 @@ import java.util.Set;
 public final class FullScreenSyncPromoUtil {
     /**
      * Launches the {@link SyncConsentActivity} if it needs to be displayed.
+     *
      * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
+     * @param profile The active user profile.
      * @param syncConsentActivityLauncher launcher used to launch the {@link SyncConsentActivity}.
      * @param currentMajorVersion The current major version of Chrome.
      * @return Whether the signin promo is shown.
      */
-    public static boolean launchPromoIfNeeded(Context context,
+    public static boolean launchPromoIfNeeded(
+            Context context,
+            Profile profile,
             SyncConsentActivityLauncher syncConsentActivityLauncher,
             final int currentMajorVersion) {
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
-        if (shouldLaunchPromo(prefManager, currentMajorVersion)) {
+        if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
             syncConsentActivityLauncher.launchActivityIfAllowed(
                     context, SigninAccessPoint.SIGNIN_PROMO);
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
@@ -60,7 +64,7 @@ public final class FullScreenSyncPromoUtil {
     }
 
     private static boolean shouldLaunchPromo(
-            SigninPreferencesManager prefManager, final int currentMajorVersion) {
+            Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
             return true;
         }
@@ -75,7 +79,6 @@ public final class FullScreenSyncPromoUtil {
             return false;
         }
 
-        final Profile profile = Profile.getLastUsedRegularProfile();
         final IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
