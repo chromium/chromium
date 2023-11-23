@@ -2331,6 +2331,8 @@ static_library("ui") {
       "../ash/app_list/search/common/types_util.h",
       "../ash/app_list/search/desks_admin_template_provider.cc",
       "../ash/app_list/search/desks_admin_template_provider.h",
+      "../ash/app_list/search/essential_search/essential_search_manager.cc",
+      "../ash/app_list/search/essential_search/essential_search_manager.h",
       "../ash/app_list/search/federated_metrics_manager.cc",
       "../ash/app_list/search/federated_metrics_manager.h",
       "../ash/app_list/search/files/drive_search_provider.cc",

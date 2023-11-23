@@ -117,6 +117,11 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
              "DisableQuickAnswersV2Translation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Essential Search in Omnibox for both launcher and browser.
+BASE_FEATURE(kEssentialSearch,
+             "EssentialSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable experimental goldfish web app isolation.
 BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
              "ExperimentalWebAppStoragePartitionIsolation",
@@ -257,6 +262,10 @@ bool IsDeskProfilesEnabled() {
 #else
   return base::FeatureList::IsEnabled(kDeskProfiles);
 #endif
+}
+
+bool IsEssentialSearchEnabled() {
+  return base::FeatureList::IsEnabled(kEssentialSearch);
 }
 
 bool IsIWAForTelemetryExtensionAPIEnabled() {
