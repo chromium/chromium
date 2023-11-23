@@ -136,13 +136,6 @@ if (is_android || is_chromeos) {
     public_android_sdk = true
   }
 
-  if (android_sdk_release == "tprivacysandbox") {
-    default_android_sdk_root = public_android_sdk_root
-    default_android_sdk_version = "TiramisuPrivacySandbox"
-    default_android_sdk_build_tools_version = "33.0.0"
-    public_android_sdk = true
-  }
-
   # For use downstream when we are building with preview Android SDK
   if (!defined(final_android_sdk)) {
     final_android_sdk = public_android_sdk
