@@ -294,6 +294,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2224075387478458881">Qorunan məzmun görünəndə ekranın yazılmasına icazə verilmir</translation>
 <translation id="2227179592712503583">Təklifi silin</translation>
 <translation id="2248634276911611268">Linki yeni tabda açın və bu yeni taba dəyişin</translation>
+<translation id="2253808149208613283">Bu cihazı fərdiləşdirmək üçün tətbiqi quraşdırın</translation>
 <translation id="225680501294068881">Cihazlar axtarılır...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> faylını endirkən xəta baş verdi</translation>
 <translation id="2258734398699965611">Təklif edilən fayllar</translation>
@@ -650,6 +651,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3659667652322717492">Mikrofonun işləmə qaydasını dəyişə bilərsiniz.</translation>
 <translation id="3659814201068740063">Təqribən <ph name="TIME_LEFT" /> qalıb (<ph name="PERCENTAGE" />%).
 Cihazınızı enerji mənbəyinə qoşun.</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> üçün yüksək görünmə dərəcəsini aktiv/deaktiv edin</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> İdarə edilən istifadəçi</translation>
 <translation id="3666266999138159418">Üzən pəncərəni gizlətmək üçün sürüşdürün</translation>
 <translation id="367531336287639526">Ünvan panelinin solundakı birinci ikonanı seçin</translation>
@@ -980,6 +982,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Dəyişiklik edilib: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Masa 16</translation>
 <translation id="4989163558385430922">Hamısına baxın</translation>
 <translation id="5003993274120026347">Növbəti cümlə</translation>
@@ -1440,6 +1443,7 @@ Yeni quraşdırma</translation>
 <translation id="6827049576281411231">Tədbir panelini bağlayın</translation>
 <translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> düyməsinə keçin.</translation>
 <translation id="6836499262298959512">Təhlükəli fayl</translation>
+<translation id="6837621009301897464">Skrinşot çəkmək üçün basın</translation>
 <translation id="6852052252232534364">Aktiv etmək üçün klikləyin</translation>
 <translation id="6855029042976311970">İndicə redaktə edilib</translation>
 <translation id="6856708615407876657">Axtarış nəticəsi kateqoriyalarını aktiv/deaktiv edin</translation>

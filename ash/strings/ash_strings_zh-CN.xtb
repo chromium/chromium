@@ -294,6 +294,7 @@
 <translation id="2224075387478458881">禁止在屏幕显示受保护内容时录制屏幕</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2248634276911611268">在新标签页中打开链接，同时切换到该标签页</translation>
+<translation id="2253808149208613283">安装应用即可自定义此设备</translation>
 <translation id="225680501294068881">正在查找设备...</translation>
 <translation id="2257486738914982088">下载“<ph name="FILENAME" />”时出了点问题</translation>
 <translation id="2258734398699965611">建议的文件</translation>
@@ -650,6 +651,7 @@
 <translation id="3659667652322717492">您稍后可随时更改麦克风行为。</translation>
 <translation id="3659814201068740063">电量还剩大约 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 请为设备接通电源。</translation>
+<translation id="3660860940251915011">开启/关闭“<ph name="FEATURE_NAME" />”的高可见度模式</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">滑动即可隐藏浮动窗口</translation>
 <translation id="367531336287639526">选择地址栏左侧的第一个图标</translation>
@@ -979,6 +981,7 @@
         <ph name="NOTIFICATION_1" />；
         <ph name="NOTIFICATION_2" />；
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">修改日期：<ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="4989163558385430922">查看全部</translation>
 <translation id="5003993274120026347">下一句</translation>

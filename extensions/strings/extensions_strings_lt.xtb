@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš teikėjo „<ph name="VENDOR_ID" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nepavyko pakeisti CRX failo. Patikrinkite, ar failas naudojamas.</translation>
 <translation id="3163201441334626963">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš teikėjo „<ph name="VENDOR_ID" />“</translation>
-<translation id="3302709122321372472">Turinio scenarijui nepavyko įkelti „css“ failo „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="3369521687965833290">Nepavyksta išpakuoti plėtinio. Kad būtų galima saugiai išpakuoti plėtinį, turi būti nurodytas kelias į profilio katalogą, kuris turi prasidėti disko vardu ir kuriame negali būti sujungimo, įrengimo taško ar virtualiojo katalogo.</translation>
 <translation id="3393440416772303020">„<ph name="PRODUCT_NAME" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">„<ph name="PRODUCT_NAME" />“ iš teikėjo „<ph name="VENDOR_ID" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privačiojo rakto įvesties vertė turi būti galiojantis kelias.</translation>
 <translation id="388442998277590542">Nepavyko įkelti parinkčių puslapio „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Pasirašant plėtinį įvyko klaida.</translation>
-<translation id="39964277676607559">Turinio scenarijui nepavyko įkelti „javascript“ „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="4115165561519362854">Šio kompiuterio administratorius reikalauja, kad „<ph name="EXTENSION_NAME" />“ būtų bent <ph name="EXTENSION_VERSION" /> versijos. Negalėsite įgalinti plėtinio, kol neatnaujinsite jo į nurodytą (ar naujesnę) versiją.</translation>
 <translation id="4233778200880751280">Nepavyko įkelti informacijos puslapio „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Privačiojo rakto išvestis nepavyko.</translation>

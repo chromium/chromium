@@ -18,14 +18,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> বিক্রেতার থেকেঅজানা পণ্য <ph name="PRODUCT_ID" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ফাইলটি প্রতিস্থাপন করতে ব্যর্থ৷ ফাইলটি ব্যবহার হচ্ছে কিনা দেখে নিন৷</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> বিক্রেতার থেকে অজানা পণ্য <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">কন্টেন্ট স্ক্রিপ্টের জন্য css '<ph name="RELATIVE_PATH" />' লোড করা যায়নি৷</translation>
 <translation id="3369521687965833290">এক্সটেনশন আনপ্যাক করতে পারেনা৷ কোনও এক্সটেনশনকে সুরক্ষিতভাবে আনপ্যাক করতে, আপনার প্রোফাইল ডিরেক্টরিতে অবশ্যই এমন একটি পথ থাকবে যা চালক অক্ষর দিয়ে শুরু হবে এবং এতে কোন জাংশন, মাউন্ট পয়েন্ট বা সিমলিঙ্ক থাকবে না৷  আপনার প্রোফাইলে এই ধরনের কোনও পথ নেই৷</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> বিক্রেতার থেকে <ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীয়ের জন্য ইনপুট মান অবশ্যই একটি সঠিক পাথ হবে৷</translation>
 <translation id="388442998277590542">বিকল্প পৃষ্ঠা '<ph name="OPTIONS_PAGE" />' লোড করা যায়নি৷</translation>
 <translation id="3984413272403535372">এক্সটেনশন স্বাক্ষরের সময় সমস্যা৷</translation>
-<translation id="39964277676607559">কন্টেন্ট স্ক্রিপ্টের জন্য '<ph name="RELATIVE_PATH" />' লোড করা যায়নি৷</translation>
 <translation id="4115165561519362854"><ph name="EXTENSION_VERSION" />-এর কোনো সর্বনিম্ন ভার্সন রাখতে, এই মেশিনের প্রশাসকের জন্য <ph name="EXTENSION_NAME" /> প্রয়োজন৷ এটিকে যতক্ষণ না পর্যন্ত সেই ভার্সনে আপডেট করা হচ্ছে (বা আরও নতুন) এটি চালু হবে না৷</translation>
 <translation id="4233778200880751280"><ph name="ABOUT_PAGE" /> সম্পর্কিত পৃষ্ঠা লোড করা গেল না।</translation>
 <translation id="471800408830181311">ব্যক্তিগত কী আউটপুট করতে ব্যর্থ৷</translation>

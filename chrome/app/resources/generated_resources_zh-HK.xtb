@@ -469,6 +469,7 @@
 <translation id="1370384480654163477">查看和編輯上次瀏覽此網站時的檔案：</translation>
 <translation id="1372841398847029212">同步至您的帳戶</translation>
 <translation id="1373176046406139583">您可使用裝置分享設定來控制哪些人可在螢幕解鎖時與您分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1373600239834196313">大部分的側邊面板功能都可以透過 Chrome 選單開啟</translation>
 <translation id="1374844444528092021">網絡「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
 <translation id="1375557162880614858">要啟用 ChromeOS Flex 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
 <translation id="1375938286942050085">設定完成！下一步只需裝置即可玩遊戲</translation>
@@ -684,7 +685,7 @@
 <translation id="1536754031901697553">正在解除連結…</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
-<translation id="1539727654733007771">尚未設定行動網路。請下載新的<ph name="BEGIN_LINK" />設定檔<ph name="END_LINK" />。</translation>
+<translation id="1539727654733007771">未設定流動網絡。請下載新的<ph name="BEGIN_LINK" />設定檔。<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">ChromeOS 應用程式服務</translation>
 <translation id="1540605929960647700">啟用示範模式</translation>
 <translation id="1541346352678737112">找不到網絡</translation>
@@ -1023,6 +1024,7 @@
 <translation id="177989070088644880">應用程式 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">關閉群組</translation>
 <translation id="1780273119488802839">匯入緊書籤…</translation>
+<translation id="1780572199786401845">檢舉令人反感/感到不安全的內容。</translation>
 <translation id="178092663238929451">設定「咫尺共享」，即可與附近的使用者互相傳送檔案</translation>
 <translation id="1781291988450150470">目前的 PIN</translation>
 <translation id="1781502536226964113">開啟新分頁</translation>
@@ -1263,7 +1265,7 @@
 <translation id="1951012854035635156">助理</translation>
 <translation id="1954597385941141174">網站可要求連接 USB 裝置</translation>
 <translation id="1954813140452229842">連接共用裝置時發生錯誤。請檢查您的憑證，然後再試一次。</translation>
-<translation id="1955313993396968525">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋影片畫面</translation>
+<translation id="1955313993396968525">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋影片影格</translation>
 <translation id="1956050014111002555">檔案含有多個憑證，但全都無法匯入：</translation>
 <translation id="1956167375087861299">不允許使用識別碼來播放受保護的內容</translation>
 <translation id="1956390763342388273">此操作會上載「<ph name="FOLDER_PATH" />」中的所有檔案。請只在您信任該網站的情況下執行此操作。</translation>
@@ -1837,7 +1839,7 @@
 <translation id="237828693408258535">要翻譯此網頁嗎？</translation>
 <translation id="2378982052244864789">選取擴充功能目錄。</translation>
 <translation id="2379281330731083556">使用系統對話方塊列印…<ph name="SHORTCUT_KEY" /></translation>
-<translation id="2381461748765773292">這可能會導致你的行動網路中斷幾分鐘</translation>
+<translation id="2381461748765773292">這可能導致流動網絡中斷連線幾分鐘</translation>
 <translation id="2381499968174336913">共用分頁嘅預覽畫面</translation>
 <translation id="2382875860893882175">投放已暫停。您可以隨時繼續或停止投放。</translation>
 <translation id="2383825469508278924">變更鍵盤機碼對應、功能鍵等等</translation>
@@ -2872,6 +2874,7 @@
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3191625924275846436">{NUM_SITES,plural, =1{為保護你的資料，系統已移除你最近沒有瀏覽的網站權限}other{為保護你的資料，系統已移除你最近沒有瀏覽的網站權限}}</translation>
+<translation id="3192586965067888278">請詳細說明問題。你的意見將送交 Google 專人審查，並可能用於改善或開發 Google 產品和服務。</translation>
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3193695589337931419">系統訊號實用程式</translation>
 <translation id="3194786596445804250">顯示封鎖第三方 Cookie 嘅詳情</translation>
@@ -5177,6 +5180,7 @@
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
 <translation id="5033137252639132982">不允許使用動作感應器</translation>
 <translation id="5033266061063942743">幾何形狀</translation>
+<translation id="5033646801355533305">請明天再試。</translation>
 <translation id="5035846135112863536">選取下方的「更多詳情」即可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」取得更多資訊。</translation>
 <translation id="5037676449506322593">全部選取</translation>
 <translation id="5038818366306248416">您先前已選擇不允許 <ph name="ORIGIN" /> 上的所有擴充程式</translation>
@@ -5921,6 +5925,7 @@
 <translation id="5636012309446422">要從 <ph name="PRIMARY_EMAIL" /> 移除 <ph name="DEVICE" /> 嗎？</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，您必須先<ph name="LINK_START" />前往網絡的登入頁面<ph name="LINK_END" /> (該頁面將在數秒內自動開啟)；如果沒有，表示您無法使用該網絡。</translation>
 <translation id="5637476008227280525">啟用流動數據</translation>
+<translation id="563811590465749036">如要將 Google 密碼管理工具與 macOS 鑰匙圈搭配使用，請重新啟動 Chrome 並允許存取鑰匙圈。分頁會在重新啟動之後再次開啟</translation>
 <translation id="563821631542362636">允許網站儲存資料</translation>
 <translation id="5638309510554459422">在「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」中尋找擴充程式和主題背景</translation>
 <translation id="5639549361331209298">重新載入這個網頁 (按住即可查看更多選項)</translation>
@@ -6788,7 +6793,7 @@
 <translation id="6344576354370880196">已儲存的打印機</translation>
 <translation id="6344608411615208519">您的<ph name="BEGIN_LINK" />瀏覽器由家長管理<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">追蹤保護功能</translation>
-<translation id="6345203628032613660">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋影片畫面</translation>
+<translation id="6345203628032613660">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋影片影格</translation>
 <translation id="6345418402353744910">Proxy <ph name="PROXY" /> 要求您提供使用者名稱和密碼，以便管理員設定您的網絡</translation>
 <translation id="6345566021391290381">有多個與你分享的 <ph name="WEBSITE_NAME" /> 密碼，你可在登入表格使用。</translation>
 <translation id="6345878117466430440">標示為已閱讀</translation>
@@ -6973,6 +6978,7 @@
 <translation id="6504601948739128893">不允許使用裝置上安裝的字型</translation>
 <translation id="6504611359718185067">連接互聯網即可新增打印機</translation>
 <translation id="6506374932220792071">使用 SHA-256 的 X9.62 ECDSA 簽名</translation>
+<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」要求在這部裝置上安裝以下應用程式：}other{「<ph name="APP_NAME" />」要求在這部裝置上安裝以下多個應用程式：}}</translation>
 <translation id="6508248480704296122">同 <ph name="NAME_PH" /> 相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
@@ -7304,7 +7310,7 @@
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6777845730143344223">進一步了解 Passpoint 訂閱</translation>
 <translation id="6779092717724412415">如要建立其他突顯內容，請選取所需文字後按一下右鍵。</translation>
-<translation id="6779348349813025131">Google 密碼管理工具需要 macOS 鑰匙圈存取權</translation>
+<translation id="6779348349813025131">「Google 密碼管理工具」需要存取「MacOS 鑰匙圈」</translation>
 <translation id="6779447100905857289">您的購物車</translation>
 <translation id="677965093459947883">非常小</translation>
 <translation id="6781005693196527806">管理搜尋引擎…(&amp;M)</translation>
@@ -9334,6 +9340,7 @@
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="834785183489258869">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
 <translation id="8348430946834215779">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒</translation>
+<translation id="8348896480272971199">請檢查網際網路連線，然後再試一次。</translation>
 <translation id="8349325309815489209">已允許在此網站執行擴充程式</translation>
 <translation id="8349826889576450703">啟動器</translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
@@ -10022,6 +10029,7 @@
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="8884570509232205463">您的裝置會於<ph name="UNLOCK_TIME" />鎖上。</translation>
 <translation id="8888253246822647887">升級完成後，應用程式隨即啟動。升級過程可能需時幾分鐘。</translation>
+<translation id="8888459276890791557">你可以固定這個側邊面板，方便之後存取</translation>
 <translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可編輯以下檔案和資料夾</translation>
 <translation id="8890170499370378450">您可能需要支付流動數據費用</translation>

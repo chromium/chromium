@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3144135466825225871">crx ファイルを置き換えられませんでした。ファイルが使用されていないか確認してください。</translation>
 <translation id="3163201441334626963">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />）</translation>
-<translation id="3302709122321372472">コンテンツ スクリプトの CSS「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="3369521687965833290">拡張機能を解凍できません。拡張機能を安全に解凍するには、ドライブ文字で始まるプロフィール ディレクトリへのパスが必要です（ジャンクション、マウント ポイント、シンボリック リンクが含まれていないこと）。このようなパスがプロフィール内に存在しません。</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />（シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3561217442734750519">秘密鍵の入力値は有効なパスでなければなりません。</translation>
 <translation id="388442998277590542">オプション ページ「<ph name="OPTIONS_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="3984413272403535372">拡張機能の署名中にエラーが発生しました。</translation>
-<translation id="39964277676607559">コンテンツ スクリプトの JavaScript「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="4115165561519362854">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> バージョン <ph name="EXTENSION_VERSION" /> 以上が要件に指定されています。有効にするにはこのバージョン以上に更新する必要があります。</translation>
 <translation id="4233778200880751280">情報ページ「<ph name="ABOUT_PAGE" />」を読み込めませんでした。</translation>
 <translation id="471800408830181311">秘密鍵を出力できませんでした。</translation>

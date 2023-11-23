@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Okänd produkt (<ph name="PRODUCT_ID" />) från leverantören <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Det gick inte att ersätta CRX-filen. Kontrollera om filen används.</translation>
 <translation id="3163201441334626963">Okänd produkt (<ph name="PRODUCT_ID" />) från leverantören <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Det gick inte att läsa in CSS-filen <ph name="RELATIVE_PATH" /> för innehållsskriptet.</translation>
 <translation id="3369521687965833290">Det går inte att packa upp tillägget. Ett tillägg kan bara packas upp säkert om det finns en sökväg till din profilkatalog som börjar med en enhetsbokstav och inte innehåller en knutpunkt, mount point eller symbollänk.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> från leverantören <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Det angivna värdet för den privata nyckeln måste vara en giltig sökväg.</translation>
 <translation id="388442998277590542">Det gick inte att läsa in alternativsidan <ph name="OPTIONS_PAGE" />.</translation>
 <translation id="3984413272403535372">Ett fel uppstod när tillägget skulle signeras.</translation>
-<translation id="39964277676607559">Det gick inte att läsa in JavaScript-filen <ph name="RELATIVE_PATH" /> för innehållsskriptet.</translation>
 <translation id="4115165561519362854">Administratören för datorn måste ha den lägsta versionen <ph name="EXTENSION_VERSION" /> av <ph name="EXTENSION_NAME" />. Det kan inte aktiveras förrän det har uppdaterats till den versionen (eller senare).</translation>
 <translation id="4233778200880751280">Det gick inte att ladda informationssidan <ph name="ABOUT_PAGE" />.</translation>
 <translation id="471800408830181311">Det gick inte att visa den privata nyckeln.</translation>

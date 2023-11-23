@@ -294,6 +294,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2224075387478458881">Ekranda korunan içerik varken ekran kaydı almaya izin verilmez</translation>
 <translation id="2227179592712503583">Öneriyi kaldır</translation>
 <translation id="2248634276911611268">Bağlantıyı yeni sekmede açıp bu yeni sekmeye geç</translation>
+<translation id="2253808149208613283">Bu cihazı özelleştirmek için uygulamayı yükleyin</translation>
 <translation id="225680501294068881">Cihazlar taranıyor...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> indirilirken bir sorun oluştu</translation>
 <translation id="2258734398699965611">Önerilen dosyalar</translation>
@@ -1442,6 +1443,7 @@ Yeni yüklenmiş</translation>
 <translation id="6827049576281411231">Etkinlik panelini kapatın</translation>
 <translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> düğmesine gidin.</translation>
 <translation id="6836499262298959512">Tehlikeli dosya</translation>
+<translation id="6837621009301897464">Ekran görüntüsü almak için şuna basın:</translation>
 <translation id="6852052252232534364">Etkinleştirmek için tıklayın</translation>
 <translation id="6855029042976311970">Az önce düzenlendi</translation>
 <translation id="6856708615407876657">Arama sonucu kategorilerini açın/kapatın</translation>

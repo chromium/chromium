@@ -23,7 +23,7 @@
 <translation id="1415402041810619267">URL je odsječen</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
-<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web-lokacija}one{<ph name="SITE_COUNT" /> web-lokacija}few{<ph name="SITE_COUNT" /> web-lokacije}other{<ph name="SITE_COUNT" /> web-lokacija}}</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web lokacija}one{<ph name="SITE_COUNT" /> web lokacija}few{<ph name="SITE_COUNT" /> web lokacije}other{<ph name="SITE_COUNT" /> web lokacija}}</translation>
 <translation id="1510341833810331442">Web lokacijama nije dozvoljeno da pohranjuju podatke na uređaj</translation>
 <translation id="1547123415014299762">Kolačići treće strane su dozvoljeni</translation>
 <translation id="1568470248891039841">Web lokacije koje posjetite mogu ugraditi sadržaj s drugih web lokacija, npr. slike, oglase i tekst. Te druge web lokacije mogu tražiti odobrenje za korištenje informacija o vama koje su sačuvale dok ste pregledali web lokaciju. <ph name="BEGIN_LINK" />Saznajte više o ugrađenom sadržaju<ph name="END_LINK" /></translation>
@@ -272,7 +272,7 @@
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="5690795753582697420">Kamera je isključena u postavkama Androida</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> može upotrebljavati vaše podatke dok pregledavate</translation>
+<translation id="5691080386278724773">Web lokacija <ph name="SITE" /> može koristiti informacije o vama dok pregledate</translation>
 <translation id="5700761515355162635">Kolačići treće strane su dozvoljeni</translation>
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci web lokacije za <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolačići trećih strana su blokirani u anonimnom načinu rada</translation>
@@ -316,7 +316,7 @@
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>
 <translation id="6295158916970320988">Sve web lokacije</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> ne smije upotrebljavati vaše podatke na</translation>
+<translation id="6304434827459067558">Web lokacija <ph name="SITE" /> je blokirana i ne može koristiti informacije o vama na</translation>
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6344622098450209924">Zaštita od praćenja</translation>
 <translation id="6367753977865761591">Blokirajte prijavu trećih stana za određenu web lokaciju.</translation>

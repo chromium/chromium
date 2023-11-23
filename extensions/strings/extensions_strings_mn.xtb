@@ -18,14 +18,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_ID" /> тодорхойгүй бүтээгдэхүүн (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлыг солих боломжгүй байна.Файл нээлттэй байгаа эсэхийг шалгана уу.</translation>
 <translation id="3163201441334626963"><ph name="PRODUCT_ID" /> үйлдвэрлэгчийн <ph name="VENDOR_ID" /> тодорхойгүй бүтээгдэхүүн</translation>
-<translation id="3302709122321372472">Контентын бичвэрт css "<ph name="RELATIVE_PATH" />'-ыг ачаалж чадсангүй.</translation>
 <translation id="3369521687965833290">Өргөтгөлийг задалж чадахгүй байна. Өргөтгөлийг аюулгүй задлахын тулд таны профайл drive letter-р эхэлсэн байх шаардлагатай бөгөөд junction, mount point эсвэл symlink гэх мэт зүйлсийг агуулаагүй байх зайлшгүй шаардлагатай. Ийм төрлийн урсгал таны профайлд байхгүй болно.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> борлуулагчийн <ph name="VENDOR_ID" /> (сериалын дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Хувийн түлхүүрт оруулах оролтын утга нь хүчин төгөлдөр байх ёстой.</translation>
 <translation id="388442998277590542">Сонголтууд хуудсыг '<ph name="OPTIONS_PAGE" />' ачаалж чадсангүй.</translation>
 <translation id="3984413272403535372">Өргөтгөл рүү нэвтрэх үед алдаа гарлаа</translation>
-<translation id="39964277676607559">Контентын бичвэрт JavaScript '<ph name="RELATIVE_PATH" />'-ийг ачаалж чадсангүй.</translation>
 <translation id="4115165561519362854">Энэхүү төхөөрөмжийн администратор нь <ph name="EXTENSION_VERSION" /> -ны хамгийн бага хувилбарыг авах үүднээс <ph name="EXTENSION_NAME" /> авах хүсэлт гаргаж байна. Хувилбарыг шинэчлэх (дараах хувилбараар) хүртэл энэ үйлдлийг идэвхжүүлэх боломжгүй болно.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' Тухай хуудсыг ачаалж чадсангүй.</translation>
 <translation id="471800408830181311">Хувийн түлхүүрийг тооцоолох ажиллагаа бүтэлгүйтэв.</translation>

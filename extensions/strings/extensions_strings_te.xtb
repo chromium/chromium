@@ -18,14 +18,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> విక్రేత నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ఫైల్ భర్తీ విఫలమైంది. ఫైల్ వినియోగంలో ఉందా అని చెక్ చేయండి.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> నుండి <ph name="PRODUCT_ID" /> తెలియని ఉత్పత్తి</translation>
-<translation id="3302709122321372472">కంటెంట్ స్క్రిప్ట్‌కు css '<ph name="RELATIVE_PATH" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3369521687965833290">ఎక్స్‌టెన్షన్‌ను అన్‌ప్యాక్ చేయడం సాధ్యపడలేదు. ఒక ఎక్స్‌టెన్షన్‌‌ను సురక్షితంగా అన్‌ప్యాక్ చేయడానికి, మీ ప్రొఫైల్ డైరెక్టరీకి ఒక డ్రైవ్ అక్షరంతో ప్రారంభమయ్యే మరియు జంక్షన్, మౌంట్ పాయింట్ లేదా సింలింక్ ఉండని పాత్ తప్పనిసరిగా ఉండాలి. మీ ప్రొఫైల్‌కు అటువంటి పాత్ లేదు.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> విక్రేత నుండి <ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా చెల్లుబాటు అయ్యే పాథ్‌గా ఉండాలి.</translation>
 <translation id="388442998277590542">ఎంపికల పేజీ '<ph name="OPTIONS_PAGE" />'ను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="3984413272403535372">ఎక్స్‌టెన్షన్‌కు సంతకం చేసేటప్పుడు ఎర్రర్.</translation>
-<translation id="39964277676607559">కంటెంట్ స్క్రిప్ట్‌కు JavaScript '<ph name="RELATIVE_PATH" />' లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="4115165561519362854"><ph name="EXTENSION_NAME" /> యొక్క వెర్షన్ కనీసం <ph name="EXTENSION_VERSION" /> ఉండాలని ఈ మెషీన్ నిర్వాహకుడు నిర్బంధించారు. ఇది ఆ వెర్షన్‌కు (లేదా తర్వాతి వెర్షన్‌కు) అప్‌డేట్ చేసే వరకు దీనిని ప్రారంభించడం సాధ్యపడదు.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' పరిచయ పేజీని లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="471800408830181311">ప్రైవేట్ కీని అవుట్‌పుట్ చేయడంలో విఫలమైంది.</translation>

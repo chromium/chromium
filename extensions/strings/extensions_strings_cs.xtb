@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nepodařilo se nahradit soubor CRX. Zkontrolujte, zda je tento soubor používán.</translation>
 <translation id="3163201441334626963">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Pro skript obsahu nelze načíst soubor CSS „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="3369521687965833290">Rozšíření nelze rozbalit. Chcete-li rozšíření rozbalit bezpečně, musíte zadat cestu k adresáři profilu, která začíná písmenem diskové jednotky a neobsahuje spojení, přípojný bod ani symbolický odkaz symlink. Ve vašem profilu taková cesta neexistuje.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_ID" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vstupní hodnota pro soukromý klíč musí být platná cesta.</translation>
 <translation id="388442998277590542">Nelze načíst stránku možností „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Při podepisování rozšíření došlo k chybě.</translation>
-<translation id="39964277676607559">Pro skript obsahu nelze načíst soubor JavaScriptu „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="4115165561519362854">Správce tohoto zařízení vyžaduje, aby rozšíření <ph name="EXTENSION_NAME" /> mělo verzi alespoň <ph name="EXTENSION_VERSION" />. Dokud nebude aktualizováno na tuto (nebo vyšší) verzi, nelze jej povolit.</translation>
 <translation id="4233778200880751280">Načtení stránky s informacemi <ph name="ABOUT_PAGE" /> se nezdařilo.</translation>
 <translation id="471800408830181311">Vytvoření soukromého klíče se nezdařilo.</translation>

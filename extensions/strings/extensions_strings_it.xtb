@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Impossibile sostituire il file crx. Controlla se il file è in uso.</translation>
 <translation id="3163201441334626963">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Impossibile caricare css "<ph name="RELATIVE_PATH" />" per script contenuti.</translation>
 <translation id="3369521687965833290">Impossibile decomprimere l'estensione. Per decomprimere in modo sicuro un'estensione, deve essere fornito un percorso alla directory del profilo che inizi con una lettera di unità e non contenga un punto di giunzione, un punto di montaggio o un link simbolico. Non esiste un simile percorso per il tuo profilo.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Il valore di input per la chiave privata deve essere un percorso valido.</translation>
 <translation id="388442998277590542">Impossibile caricare la pagina delle opzioni "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Errore durante la firma dell'estensione.</translation>
-<translation id="39964277676607559">Impossibile caricare javascript "<ph name="RELATIVE_PATH" />" per script contenuti.</translation>
 <translation id="4115165561519362854">L'amministratore di questo computer richiede che <ph name="EXTENSION_NAME" /> abbia almeno la versione <ph name="EXTENSION_VERSION" />. L'attivazione potrà essere completata solo dopo che è stato eseguito l'aggiornamento a questa versione o a una versione successiva.</translation>
 <translation id="4233778200880751280">Impossibile caricare la pagina di informazioni "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Operazione di output della chiave privata non riuscita.</translation>

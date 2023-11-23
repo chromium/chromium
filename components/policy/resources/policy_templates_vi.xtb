@@ -36,6 +36,17 @@
 <translation id="1020006815010587263">Thùng rác bị tắt đối với người dùng.</translation>
 <translation id="1021462144002396313">Chính sách của <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">Các ID tiện ích mà bạn nên ngăn người dùng cài đặt (hoặc * cho tất cả)</translation>
+<translation id="1023465280109914543">Khi Bật chính sách này, bạn nên bật tính năng báo cáo ẩn danh về dữ liệu liên quan đến sự cố và mức sử dụng <ph name="PRODUCT_NAME" /> cho Google theo mặc định. Người dùng vẫn có thể thay đổi chế độ cài đặt này.
+
+Khi bạn Tắt chính sách này, tính năng báo cáo ẩn danh sẽ bị tắt nên dữ liệu về sự cố và mức sử dụng sẽ không được gửi cho Google. Người dùng sẽ không thể thay đổi chế độ cài đặt này.
+
+Khi bạn không đặt chính sách này, người dùng có thể chọn hành vi báo cáo ẩn danh khi cài đặt hoặc khi chạy lần đầu, cũng như có thể thay đổi chế độ cài đặt này sau đó.
+
+Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+(Để biết thông tin về <ph name="PRODUCT_OS_NAME" />, hãy xem <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)</translation>
 <translation id="102492767056134033">Đặt trạng thái mặc định của bàn phím ảo trên màn hình đăng nhập</translation>
 <translation id="1026335125982730097">Cho phép bạn thiết lập danh sách mẫu URL để chỉ định trang web được phép đặt cookie.
 

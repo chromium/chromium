@@ -650,6 +650,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3659667652322717492">Você pode mudar o comportamento do microfone a qualquer momento.</translation>
 <translation id="3659814201068740063">Tempo restante: cerca de <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Conecte o dispositivo a uma fonte de energia.</translation>
+<translation id="3660860940251915011">Ativar/desativar a alta visibilidade do recurso "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733">Usuário gerenciado <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Deslize para ocultar a janela flutuante</translation>
 <translation id="367531336287639526">Selecionar o primeiro ícone à esquerda da barra de endereço</translation>
@@ -980,6 +981,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Última modificação: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Espaço de trabalho 16</translation>
 <translation id="4989163558385430922">Ver tudo</translation>
 <translation id="5003993274120026347">Próxima frase</translation>

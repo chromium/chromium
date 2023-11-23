@@ -685,6 +685,7 @@
 <translation id="1536754031901697553">Се исклучува…</translation>
 <translation id="1537254971476575106">Лупа за цел екран</translation>
 <translation id="15373452373711364">Голем покажувач на глувчето</translation>
+<translation id="1539727654733007771">Не се поставени мобилни мрежи. Преземете нов <ph name="BEGIN_LINK" />профил.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">Услуга за апликации на ChromeOS</translation>
 <translation id="1540605929960647700">Демо-режим</translation>
 <translation id="1541346352678737112">Не е најдена мрежа</translation>
@@ -1263,6 +1264,7 @@
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1954597385941141174">Сајтовите може да прашуваат дали да се поврзат со USB-уредите</translation>
 <translation id="1954813140452229842">Грешка при монтирање на споделувањето. Проверете ги вашите акредитиви и обидете се повторно.</translation>
+<translation id="1955313993396968525">Пребарување слика во видео со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">Датотеката содржи повеќе сертификати, но не е увезен ниту еден:</translation>
 <translation id="1956167375087861299">Нема дозвола да користи идентификатори за да пушта заштитени содржини</translation>
 <translation id="1956390763342388273">Ќе се прикачат сите датотеки од „<ph name="FOLDER_PATH" />“. Направете го ова само ако му верувате на сајтот.</translation>
@@ -1836,6 +1838,7 @@
 <translation id="237828693408258535">Да се преведе страницава?</translation>
 <translation id="2378982052244864789">Изберете го директориумот за наставките.</translation>
 <translation id="2379281330731083556">Печатете со помош на системски дијалог... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Ова може да предизвика неколкуминутен прекин на вашата мобилна мрежа</translation>
 <translation id="2381499968174336913">Преглед на споделена картичка</translation>
 <translation id="2382875860893882175">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да го сопрете во секое време.</translation>
 <translation id="2383825469508278924">Променете го мапирањето на копчињата од тастатурата, функциските копчиња и друго</translation>
@@ -6792,6 +6795,7 @@
 <translation id="6344576354370880196">Зачувани печатачи</translation>
 <translation id="6344608411615208519">Твојот родител <ph name="BEGIN_LINK" />управува со прелистувачот<ph name="END_LINK" /></translation>
 <translation id="6344622098450209924">Заштита од следење</translation>
+<translation id="6345203628032613660">Пребарување слика во видео со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">Корисничкото име и лозинката се задолжителни за прокси-серверот <ph name="PROXY" /> за да може администраторот да ја конфигурира вашата мрежа</translation>
 <translation id="6345566021391290381">Има лозинки споделени со вас за <ph name="WEBSITE_NAME" />. Може да ги користите во формуларот за најавување.</translation>
 <translation id="6345878117466430440">Означи како прочитано</translation>
@@ -7309,6 +7313,7 @@
 <translation id="6777817260680419853">Пренасочувањето е блокирано</translation>
 <translation id="6777845730143344223">Дознајте повеќе за претплатите на Passpoint</translation>
 <translation id="6779092717724412415">За да нагласите текст слично на ова, изберете текст и кликнете со десното копче.</translation>
+<translation id="6779348349813025131">Google Password Manager бара пристап до macOS Keychain</translation>
 <translation id="6779447100905857289">вашите кошнички</translation>
 <translation id="677965093459947883">Многу мал</translation>
 <translation id="6781005693196527806">&amp;Управувајте со пребарувачите…</translation>

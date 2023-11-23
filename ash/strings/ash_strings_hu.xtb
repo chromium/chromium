@@ -294,6 +294,7 @@
 <translation id="2224075387478458881">Nem engedélyezett felvétel készítése a képernyőről, ha védett tartalom látható rajta</translation>
 <translation id="2227179592712503583">Javaslat eltávolítása</translation>
 <translation id="2248634276911611268">Link megnyitása új lapon, majd váltás erre az új lapra</translation>
+<translation id="2253808149208613283">Telepítse az alkalmazást az eszköz személyre szabásához</translation>
 <translation id="225680501294068881">Eszközök keresése...</translation>
 <translation id="2257486738914982088">Hiba történt a következő fájl letöltésekor: <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Javasolt fájlok</translation>
@@ -1443,6 +1444,7 @@ Frissen telepítve</translation>
 <translation id="6827049576281411231">Eseménypanel bezárása</translation>
 <translation id="6831561626108366035">Ugrás ide: <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> gomb.</translation>
 <translation id="6836499262298959512">Veszélyes fájl</translation>
+<translation id="6837621009301897464">Képernyőkép készítéséhez nyomja meg a következőt:</translation>
 <translation id="6852052252232534364">Aktiválás</translation>
 <translation id="6855029042976311970">Éppen most szerkesztette</translation>
 <translation id="6856708615407876657">Keresési találatok kategóriáinak be- és kikapcsolása</translation>

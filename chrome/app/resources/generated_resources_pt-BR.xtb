@@ -685,6 +685,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1536754031901697553">Desconectando…</translation>
 <translation id="1537254971476575106">Lupa de tela cheia</translation>
 <translation id="15373452373711364">Cursor grande do mouse</translation>
+<translation id="1539727654733007771">Nenhuma rede móvel configurada. Faça o download de um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Serviço de app ChromeOS</translation>
 <translation id="1540605929960647700">Ativar modo de demonstração</translation>
 <translation id="1541346352678737112">Nenhuma rede encontrada</translation>
@@ -1067,7 +1068,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
     <ph name="LINE_BREAKS2" />
     Isso não afetará apps ou conteúdo em outros dispositivos.</translation>
 <translation id="1809734401532861917">Adicionar meus favoritos, histórico, senhas e outras configurações a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Para usar as senhas salvas no smartphone, siga o código QR, faça o download do Chrome para iOS e faça login na sua Conta do Google.</translation>
+<translation id="1810070166657251157">Para usar as senhas salvas no smartphone, faça o download do Chrome para iOS usando o código QR e entre na sua Conta do Google.</translation>
 <translation id="1810366086647840386">Servidor da imagem</translation>
 <translation id="1811908311154949291">Frame isolado em modo de navegação anônima: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar usando o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1263,6 +1264,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954597385941141174">Os sites podem pedir permissão para se conectar a dispositivos USB</translation>
 <translation id="1954813140452229842">Erro ao ativar o compartilhamento. Verifique suas credenciais e tente novamente.</translation>
+<translation id="1955313993396968525">Pesquisar frame do vídeo com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1956050014111002555">O arquivo continha muitos certificados e nenhum deles foi importado:</translation>
 <translation id="1956167375087861299">Sem permissão para usar identificadores para abrir conteúdo protegido</translation>
 <translation id="1956390763342388273">Essa ação fará o upload de todos os arquivos de "<ph name="FOLDER_PATH" />". Faça isso apenas se você confiar no site.</translation>
@@ -1836,6 +1838,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="237828693408258535">Traduzir esta página?</translation>
 <translation id="2378982052244864789">Selecionar o diretório da extensão.</translation>
 <translation id="2379281330731083556">Imprimir utilizando caixa de diálogo de sistema... <ph name="SHORTCUT_KEY" /></translation>
+<translation id="2381461748765773292">Isso pode desconectar a rede móvel por alguns minutos</translation>
 <translation id="2381499968174336913">Prévia da guia compartilhada</translation>
 <translation id="2382875860893882175">A transmissão está pausada. É possível retomar ou interromper a transmissão a qualquer momento.</translation>
 <translation id="2383825469508278924">Mude o mapa de atalhos do teclado, as teclas de função e muito mais.</translation>
@@ -6673,7 +6676,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6242852299490624841">Focar esta guia</translation>
 <translation id="6243774244933267674">Servidor não disponível</translation>
 <translation id="6244245036423700521">Importar arquivo ONC</translation>
-<translation id="6245523954602476652">Você pode acessá-lo no Gerenciador de senhas do Google.</translation>
+<translation id="6245523954602476652">Você pode acessá-la no Gerenciador de senhas do Google.</translation>
 <translation id="6246790815526961700">Upload do dispositivo</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
 <translation id="6247620186971210352">Nenhum app encontrado</translation>
@@ -6793,6 +6796,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6344576354370880196">Impressoras salvas</translation>
 <translation id="6344608411615208519">O <ph name="BEGIN_LINK" />navegador é gerenciado<ph name="END_LINK" /> pelo seu familiar responsável</translation>
 <translation id="6344622098450209924">Proteção antirrastreamento</translation>
+<translation id="6345203628032613660">Pesquisar frame do vídeo com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6345418402353744910">É preciso inserir seu nome de usuário e sua senha para o proxy <ph name="PROXY" />. Assim, o administrador poderá configurar sua rede.</translation>
 <translation id="6345566021391290381">Senhas de <ph name="WEBSITE_NAME" /> foram compartilhadas com você. Você pode usá-las no formulário de login.</translation>
 <translation id="6345878117466430440">Marcar como lida</translation>
@@ -7310,6 +7314,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6777817260680419853">Redirecionamento bloqueado</translation>
 <translation id="6777845730143344223">Saiba mais sobre as assinaturas do Passpoint</translation>
 <translation id="6779092717724412415">Para criar um destaque como esse, selecione qualquer trecho do texto e clique nele com o botão direito do mouse.</translation>
+<translation id="6779348349813025131">O Gerenciador de senhas do Google precisa de permissão para abrir o Acesso às Chaves do MacOS</translation>
 <translation id="6779447100905857289">seus carrinhos</translation>
 <translation id="677965093459947883">Muito pequeno</translation>
 <translation id="6781005693196527806">&amp;Gerenciar mecanismos de pesquisa…</translation>

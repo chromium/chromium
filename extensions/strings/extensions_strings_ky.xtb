@@ -18,14 +18,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлы алмаштырылган жок. Файлдын колдонулуп жаткандыгын текшериңиз.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">Мазмун скриптинин '<ph name="RELATIVE_PATH" />' css жүктөлбөй койду.</translation>
 <translation id="3369521687965833290">Кеңейтүүнүн топтому чечилбей жатат. Аны коопсуз чечүү үчүн, профиль каталогуңузга алып барган диск тамгасы менен башталып, байламта, орнотуу түйүнү же символдук шилтеме камтылбаган жол болушу керек. Профилиңиздин андай жолу жок.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> дегенден <ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Купуя ачкычтын киргизүү мааниси жарактуу жол болушу керек.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' параметрлер бети ачылган жок.</translation>
 <translation id="3984413272403535372">Кеңейтүү киргизилип жатканда ката кетти.</translation>
-<translation id="39964277676607559">Мазмун скрипти үчүн javascript '<ph name="RELATIVE_PATH" />' жүктөлбөй койду.</translation>
 <translation id="4115165561519362854">Бул машинанын администратору <ph name="EXTENSION_NAME" /> кеңейтүүсү жок дегенде <ph name="EXTENSION_VERSION" /> версиясында болушу керек дейт. Ал ошол версияга (же жогорураагына) жаңыртылмайынча иштетилбейт.</translation>
 <translation id="4233778200880751280">Кандайдыр бир нерсе жөнүндө бет жүктөлгөн жок '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Жеке ачкычты чыгара албай койду.</translation>

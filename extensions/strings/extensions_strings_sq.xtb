@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zëvendësimi i skedarit crx dështoi. Kontrollo për të parë nëse skedari është në përdorim.</translation>
 <translation id="3163201441334626963">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Nuk mund të ngarkohej shtegu css "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes.</translation>
 <translation id="3369521687965833290">Nuk mund të shpaketojë shtesën. Për të shpaketuar në mënyrë të sigurt një shtesë, duhet të ketë një shteg drejt direktorisë tënde të profilit, që fillon me një shkronjë disku dhe nuk përmban nyje, pikë fiksimi ose lidhje simboli. Asnjë nga këto shtigje nuk ekziston për profilin tënd.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vlera hyrëse për çelësin privat duhet të jetë një shteg i vlefshëm.</translation>
 <translation id="388442998277590542">Faqja e opsioneve <ph name="OPTIONS_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="3984413272403535372">Gabim gjatë nënshkrimit të shtesës.</translation>
-<translation id="39964277676607559">Nuk mundi të ngarkonte JavaScript "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes.</translation>
 <translation id="4115165561519362854">Administratori i kësaj pajisjeje kërkon që <ph name="EXTENSION_NAME" /> të ketë një version minimal të <ph name="EXTENSION_VERSION" />. Nuk mund të aktivizohet derisa të jetë përditësuar në atë version (ose më të lartë).</translation>
 <translation id="4233778200880751280">Faqja informuese <ph name="ABOUT_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="471800408830181311">Dështoi të nxjerrë çelësin privat.</translation>

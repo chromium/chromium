@@ -410,7 +410,7 @@
 <translation id="3080525922482950719">您可儲存網頁，以便稍後或離線閱讀</translation>
 <translation id="3081338492074632642">請確保您儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3087734570205094154">下方</translation>
-<translation id="3090455602619185166">使用代管帳戶登入</translation>
+<translation id="3090455602619185166">使用受管帳戶登入</translation>
 <translation id="309710370695886264">你有 1 個重用密碼。請立即修正以確保安全。</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步處理的內容<ph name="END_LINK" /></translation>
@@ -575,7 +575,7 @@
 <translation id="4002066346123236978">標題</translation>
 <translation id="4004204301268239848">密碼會儲存在您的 Google 帳戶中，讓您在任何裝置上使用。</translation>
 <translation id="4018310736049373830">管理活動</translation>
-<translation id="4021931095789478915">將 ${url} 加入閱讀清單</translation>
+<translation id="4021931095789478915">將 ${url} 新增至閱讀清單</translation>
 <translation id="4038354071007134711">此裝置上沒有可開啟該檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中搜尋</translation>
 <translation id="40433179647657191">為頁面上突顯的內容建立直接連結並分享。</translation>
@@ -1286,6 +1286,7 @@
 <translation id="7744192722284567281">發生資料外洩事件</translation>
 <translation id="7744394900930577716">其他應用程式中的密碼</translation>
 <translation id="7749790401023484470">未選取任何文字。</translation>
+<translation id="7752405526771734448">智慧鏡頭影像搜尋</translation>
 <translation id="7756478488453921771">「選單」→「設定」→「付款方法」</translation>
 <translation id="7760127703945531263">無痕模式鎖定</translation>
 <translation id="7765158879357617694">移動</translation>
@@ -1447,7 +1448,7 @@
 <translation id="8556590991644167667">{count,plural, =1{您已關閉 {count} 個警告}other{您已關閉 {count} 個警告}}</translation>
 <translation id="8558480467877843976">您現在隨時可使用 Chrome 瀏覽或開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="8560253818350321773">優先顯示常用項目。</translation>
-<translation id="8569721750632860947">你想將哪個網址加入閱讀清單？</translation>
+<translation id="8569721750632860947">要將邊個網址加去閱讀清單？</translation>
 <translation id="8588404856427128947">閂</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8593565399399144771">你可在此開啟新分頁。</translation>

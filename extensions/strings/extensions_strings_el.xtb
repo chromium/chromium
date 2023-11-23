@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Άγνωστο προϊόν <ph name="PRODUCT_ID" /> από τον πάροχο υπηρεσιών <ph name="VENDOR_ID" /> (σειριακός αριθμός <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Αποτυχία αντικατάστασης αρχείου crx. Ελέγξτε αν το αρχείο χρησιμοποιείται.</translation>
 <translation id="3163201441334626963">Άγνωστο προϊόν <ph name="PRODUCT_ID" /> από τον πάροχο υπηρεσιών <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Δεν ήταν δυνατή η φόρτωση του css "<ph name="RELATIVE_PATH" />" για το σενάριο περιεχομένου.</translation>
 <translation id="3369521687965833290">Δεν είναι δυνατή η αποσυσκευασία επέκτασης.  Για την ασφαλή αποσυσκευασία μιας επέκτασης, πρέπει να υπάρχει στον κατάλογο προφίλ σας μια διαδρομή που να ξεκινάει με ένα γράμμα μονάδας δίσκου και να μην περιέχει κάποιο σύνδεσμο, σημείο μονταρίσματος ή symlink (συντόμευση).  Δεν υπάρχει τέτοια διαδρομή για το προφίλ σας.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (σειριακός ρυθμός <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> από τον πάροχο υπηρεσιών <ph name="VENDOR_ID" /> (σειριακός ρυθμός <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Η τιμή εισαγωγής για το ιδιωτικό κλειδί πρέπει να είναι έγκυρη διαδρομή.</translation>
 <translation id="388442998277590542">Δεν ήταν δυνατή η φόρτωση της σελίδας επιλογών "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Σφάλμα κατά την υπογραφή επέκτασης.</translation>
-<translation id="39964277676607559">Δεν ήταν δυνατή η φόρτωση του javascript "<ph name="RELATIVE_PATH" />" για το σενάριο περιεχομένου.</translation>
 <translation id="4115165561519362854">Ο διαχειριστής αυτού του μηχανήματος απαιτεί από το <ph name="EXTENSION_NAME" /> να διαθέτει τουλάχιστον την έκδοση <ph name="EXTENSION_VERSION" />. Δεν μπορεί να ενεργοποιηθεί έως ότου ενημερωθεί σε αυτή την έκδοση (ή σε μεταγενέστερη).</translation>
 <translation id="4233778200880751280">Δεν ήταν δυνατή η φόρτωση της σελίδας πληροφοριών "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Αποτυχία εξόδου ιδιωτικού κλειδιού.</translation>

@@ -58,6 +58,7 @@
 <translation id="2671426118752779020">您可在 iPhone 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
 <translation id="2689064829982324496">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
+<translation id="2702250627063295552">将阅读清单项添加到 Chrome</translation>
 <translation id="2736805085127235148">目前，在您的设备设置中，Chrome 通知功能处于关闭状态。</translation>
 <translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="2868822340714096138">清除 Chrome 中的浏览数据</translation>
@@ -83,6 +84,7 @@
 <translation id="3744018071945602754">在 Chrome 中管理密码</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
+<translation id="3863841106411295595">将所输入的网址添加到 Chrome 中的阅读清单。</translation>
 <translation id="3901001113120561395">最大限度利用 Chrome。</translation>
 <translation id="3967382818307165056">在 Chrome 中管理付款方式</translation>
 <translation id="3980220367029651214">您正要将同步账号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步账号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>

@@ -33,7 +33,7 @@ Hafðu í huga:
         Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="1682483655351012182">Samstilla gögnin þín í Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
-<translation id="1790080846677398234">Bætir innteknum vefslóðum við bókamerkin þín í Chrome.</translation>
+<translation id="1790080846677398234">Bæta innteknum vefslóðum við bókamerkin þín í Chrome.</translation>
 <translation id="1843217788865538014">Notaðu Chrome sjálfkrafa þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="1917964099031477364">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chrome og öðrum Google forritum á þessu tæki.</translation>
 <translation id="1987779152850321833">Ljúktu ráðlögðu aðgerðunum hér að neðan til að nýta Chrome sem best.</translation>
@@ -58,6 +58,7 @@ Hafðu í huga:
 <translation id="2671426118752779020">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun Google í öðrum forritum í iPhone.</translation>
 <translation id="2689064829982324496">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
+<translation id="2702250627063295552">Bæta leslistaatriði við Chrome</translation>
 <translation id="2736805085127235148">Slökkt er á Chrome-tilkynningum í stillingum tækisins.</translation>
 <translation id="2767464022270041271">Engin vistuð aðgangsorð. Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="2868822340714096138">Hreinsa vefskoðunargögn í Chrome</translation>
@@ -83,6 +84,7 @@ Hafðu í huga:
 <translation id="3744018071945602754">Stjórna aðgangsorðum í Chrome</translation>
 <translation id="3827545470516145620">Þú er með staðlaða öryggisvörn í þessu tæki</translation>
 <translation id="384394811301901750">Google Chrome getur ekki notað myndavélina að svo stöddu</translation>
+<translation id="3863841106411295595">Bætir innfærðum vefslóðum við leslistann þinn í Chrome.</translation>
 <translation id="3901001113120561395">Fáðu sem mest út úr Chrome.</translation>
 <translation id="3967382818307165056">Stjórna greiðslumátum í Chrome</translation>
 <translation id="3980220367029651214">Þú ert að breyta samstillingarreikningi þínum úr <ph name="USER_EMAIL1" /> í <ph name="USER_EMAIL2" />.Fyrirliggjandi Chrome gögnum þínum er stjórnað af <ph name="DOMAIN" />. Þetta eyðir gögnunum þínum af þessu tæki en þau verða áfram geymd á <ph name="USER_EMAIL1" />.</translation>

@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL e prerë</translation>
 <translation id="1426410128494586442">Po</translation>
 <translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}other{<ph name="SITE_COUNT" /> sajte}}</translation>
 <translation id="1510341833810331442">Sajtet nuk lejohen të ruajnë të dhëna në pajisjen tënde</translation>
 <translation id="1547123415014299762">Kukit e palëve të treta lejohen</translation>
 <translation id="1568470248891039841">Sajtet që viziton mund të integrojnë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Këto sajte të tjera mund të kërkojnë leje që të përdorin informacionet që kanë ruajtur në lidhje me ty kur ti shfleton në sajt. <ph name="BEGIN_LINK" />Mëso më shumë për përmbajtjet e integruara<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Të bllokuara</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
 <translation id="5690795753582697420">Kamera është çaktivizuar në cilësimet e Android</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> mund të përdorë informacionet e tua kur ti shfleton</translation>
 <translation id="5700761515355162635">Kukit e palëve të treta lejohen</translation>
 <translation id="5706552988683188916">Kjo fshin kukit dhe të dhënat e tjera të sajtit për <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kukit e palëve të treta janë bllokuar në modalitetin "i fshehtë"</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> të bllokuara</translation>
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> është bllokuar që të mos përdorë informacionet e tua në</translation>
 <translation id="6320088164292336938">Dridhja</translation>
 <translation id="6344622098450209924">Mbrojtja nga gjurmimi</translation>
 <translation id="6367753977865761591">Blloko identifikimin e palëve të treta për një sajt specifik.</translation>

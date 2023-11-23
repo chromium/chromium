@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1448064542941920355">Réduire le zoom</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="1547123415014299762">Les cookies tiers sont autorisés</translation>
 <translation id="1568470248891039841">Les sites que vous consultez peuvent intégrer des contenus provenant d'autres sites (par exemple, des images, des annonces et du texte). Ces autres sites peuvent demander l'autorisation d'utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous les parcourez. <ph name="BEGIN_LINK" />En savoir plus sur le contenu intégré<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Bloqué</translation>
 <translation id="5689516760719285838">Position</translation>
 <translation id="5690795753582697420">L'appareil photo est désactivé dans les paramètres Android</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> peut utiliser vos informations lorsque vous parcourez</translation>
 <translation id="5700761515355162635">Cookies tiers autorisés</translation>
 <translation id="5706552988683188916">Cette action supprimera les cookies et les autres données de site pour <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les cookies tiers sont bloqués lorsque vous utilisez le mode navigation privée</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358">Autorisations refusées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> ne peut pas utiliser vos informations sur</translation>
 <translation id="6320088164292336938">Vibreur</translation>
 <translation id="6344622098450209924">Protection contre le suivi</translation>
 <translation id="6367753977865761591">Bloquez la connexion tierce pour un site spécifique.</translation>

@@ -294,6 +294,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2224075387478458881">Ni chaniateir recordio'r sgrîn pan fydd cynnwys gwarchodedig yn weladwy</translation>
 <translation id="2227179592712503583">Tynnu'r awgrym</translation>
 <translation id="2248634276911611268">Agor y ddolen yn y tab newydd a newidiwch i'r tab newydd hwn</translation>
+<translation id="2253808149208613283">Gosodwch ap i addasu'r ddyfais hon</translation>
 <translation id="225680501294068881">Wrthi'n chwilio am ddyfeisiau…</translation>
 <translation id="2257486738914982088">Aeth rhywbeth o'i le wrth lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Ffeiliau a awgrymir</translation>
@@ -650,6 +651,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3659667652322717492">Gallwch newid ymddygiad meic unrhyw bryd yn ddiweddarach.</translation>
 <translation id="3659814201068740063">Tua <ph name="TIME_LEFT" /> ar ôl (<ph name="PERCENTAGE" />%).
 Cysylltwch eich dyfais â phŵer.</translation>
+<translation id="3660860940251915011">Toglo gwelededd uchel <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Defnyddiwr a Reolir</translation>
 <translation id="3666266999138159418">Sweipiwch i guddio eich ffenestr arnofio</translation>
 <translation id="367531336287639526">Dewis yr eicon cyntaf i'r chwith o'r bar cyfeiriad</translation>
@@ -980,6 +982,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Addaswyd <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Desg 16</translation>
 <translation id="4989163558385430922">Gweld popeth</translation>
 <translation id="5003993274120026347">Brawddeg nesaf</translation>
@@ -1440,6 +1443,7 @@ Gosodiad newydd</translation>
 <translation id="6827049576281411231">Cau'r panel digwyddiadau</translation>
 <translation id="6831561626108366035">Ewch i'r botwm <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Ffeil beryglus</translation>
+<translation id="6837621009301897464">I gymryd sgrinlun, pwyswch</translation>
 <translation id="6852052252232534364">Cliciwch i weithredu</translation>
 <translation id="6855029042976311970">Newydd ei golygu</translation>
 <translation id="6856708615407876657">Toglo categorïau canlyniadau chwilio</translation>

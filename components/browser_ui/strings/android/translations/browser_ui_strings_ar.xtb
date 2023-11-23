@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1448064542941920355">تصغير</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="SITE_COUNT" />)}zero{<ph name="SITE_COUNT" /> موقع إلكتروني}two{موقعَين إلكترونيَين (<ph name="SITE_COUNT" />)}few{<ph name="SITE_COUNT" /> مواقع إلكترونية}many{<ph name="SITE_COUNT" /> موقعًا إلكترونيًا}other{<ph name="SITE_COUNT" /> موقع إلكتروني}}</translation>
 <translation id="1510341833810331442">المواقع الإلكترونية غير مسموح لها بحفظ البيانات على جهازك.</translation>
 <translation id="1547123415014299762">السماح بملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="1568470248891039841">يمكن للمواقع الإلكترونية التي تنتقل إليها أن تتضمّن محتوى من مواقع إلكترونية أخرى، مثل الصور والإعلانات والنصوص. وقد تطلب هذه المواقع الإلكترونية الأخرى إذنًا لاستخدام المعلومات التي تم حفظها عنك أثناء تصفُّح الموقع الإلكتروني. <ph name="BEGIN_LINK" />مزيد من المعلومات حول المحتوى المضمَّن<ph name="END_LINK" /></translation>
@@ -272,6 +273,7 @@
 <translation id="5677928146339483299">محظور</translation>
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
 <translation id="5690795753582697420">‏تم إيقاف الكاميرا في إعدادات Android.</translation>
+<translation id="5691080386278724773">بإمكان "<ph name="SITE" />" استخدام معلوماتك أثناء التصفُّح.</translation>
 <translation id="5700761515355162635">ملفات تعريف الارتباط التابعة لجهات خارجية مسموح بها.</translation>
 <translation id="5706552988683188916">يؤدي هذا الإجراء إلى حذف ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لـ "<ph name="WEBSITE" />".</translation>
 <translation id="5723967018671998714">يتم حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي.</translation>
@@ -315,6 +317,7 @@
 <translation id="6262279340360821358">تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
+<translation id="6304434827459067558">يحظُر على "<ph name="SITE" />" استخدام معلوماتك في</translation>
 <translation id="6320088164292336938">اهتزاز</translation>
 <translation id="6344622098450209924">الحماية من التتبُّع</translation>
 <translation id="6367753977865761591">يمكنك حظر تسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>

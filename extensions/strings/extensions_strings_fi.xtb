@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_ID" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX-tiedoston korvaaminen epäonnistui. Tarkista, onko tiedosto käytössä.</translation>
 <translation id="3163201441334626963">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">css-tiedoston <ph name="RELATIVE_PATH" /> lataaminen sisältöohjelmalle epäonnistui.</translation>
 <translation id="3369521687965833290">Laajennuksen purkaminen epäonnistui. Voit purkaa laajennuksen määrittämällä polun profiilihakemistoon, joka alkaa kiintolevyn kirjaimella eikä sisällä liitos- tai liityntäkohtaa tai symlink-määritettä. Profiilissasi ei ole kyseistä polkua.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> toimittajalta <ph name="VENDOR_ID" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Yksityisen avaimen syötearvon täytyy olla kelvollinen polku.</translation>
 <translation id="388442998277590542">Asetussivun <ph name="OPTIONS_PAGE" /> lataaminen epäonnistui.</translation>
 <translation id="3984413272403535372">Virhe allekirjoittaessa varmennetta.</translation>
-<translation id="39964277676607559">JavaScript-tiedoston <ph name="RELATIVE_PATH" /> lataaminen sisältöohjelmalle epäonnistui.</translation>
 <translation id="4115165561519362854">Tämän laitteen järjestelmänvalvoja edellyttää laajennuksen <ph name="EXTENSION_NAME" /> version olevan vähintään <ph name="EXTENSION_VERSION" />. Laajennusta ei voida ottaa käyttöön ennen kuin se on päivitetty kyseiseen tai sitä uudempaan versioon.</translation>
 <translation id="4233778200880751280">Tietosivun <ph name="ABOUT_PAGE" /> lataus epäonnistui.</translation>
 <translation id="471800408830181311">Yksityisen avaimen tulostus ei onnistunut.</translation>

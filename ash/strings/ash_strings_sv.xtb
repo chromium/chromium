@@ -650,6 +650,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3659667652322717492">Du kan ändra mikrofonbeteendet när du vill.</translation>
 <translation id="3659814201068740063">Ungefär <ph name="TIME_LEFT" /> kvar (<ph name="PERCENTAGE" /> %).
 Anslut enheten till en strömkälla.</translation>
+<translation id="3660860940251915011">Aktivera och inaktivera hög synlighet för <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3666266999138159418">Svep för att dölja det flytande fönstret</translation>
 <translation id="367531336287639526">Välj den första ikonen till vänster om adressfältet</translation>
@@ -980,6 +981,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Ändrades <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Skrivbord 16</translation>
 <translation id="4989163558385430922">Visa alla</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
@@ -1468,7 +1470,7 @@ Nyligen installerad</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
 <translation id="696267987219125751">Kamerainramning är av.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6972754398087986839">Komma igång</translation>
+<translation id="6972754398087986839">Kom igång</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">Aktivera åtkomst</translation>

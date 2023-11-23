@@ -650,6 +650,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3659667652322717492">Jy kan mikrofoongedrag enige tyd later verander.</translation>
 <translation id="3659814201068740063">Ongeveer <ph name="TIME_LEFT" /> oor (<ph name="PERCENTAGE" />%).
 Koppel jou toestel aan krag.</translation>
+<translation id="3660860940251915011">Wissel hoë sigbaarheid van <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Bestuurde gebruiker</translation>
 <translation id="3666266999138159418">Swiep om jou swewende venster te versteek</translation>
 <translation id="367531336287639526">Kies die eerste ikoon aan die linkerkant van die adresbalk</translation>
@@ -981,6 +982,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Verander op <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Lessenaar 16</translation>
 <translation id="4989163558385430922">Sien alles</translation>
 <translation id="5003993274120026347">Volgende sin</translation>

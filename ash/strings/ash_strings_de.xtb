@@ -294,6 +294,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2224075387478458881">Die Bildschirmaufzeichnung ist blockiert, wenn geschützte Inhalte sichtbar sind</translation>
 <translation id="2227179592712503583">Vorschlag entfernen</translation>
 <translation id="2248634276911611268">Link auf neuem Tab öffnen und zu diesem wechseln</translation>
+<translation id="2253808149208613283">App installieren, um dieses Gerät zu personalisieren</translation>
 <translation id="225680501294068881">Nach Geräten wird gesucht...</translation>
 <translation id="2257486738914982088">Fehler beim Herunterladen von „<ph name="FILENAME" />“</translation>
 <translation id="2258734398699965611">Vorgeschlagene Dateien</translation>
@@ -650,6 +651,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3659667652322717492">Du kannst das Verhalten des Mikrofons später jederzeit ändern.</translation>
 <translation id="3659814201068740063">Ungefähr <ph name="TIME_LEFT" /> verbleibend (<ph name="PERCENTAGE" /> %).
 Schließe dein Gerät an eine Steckdose an.</translation>
+<translation id="3660860940251915011">Hohe Sichtbarkeit bei <ph name="FEATURE_NAME" /> aktivieren/deaktivieren</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Verwalteter Nutzer</translation>
 <translation id="3666266999138159418">Wischen, um unverankertes Fenster auszublenden</translation>
 <translation id="367531336287639526">Erstes Symbol links neben der Adressleiste auswählen</translation>
@@ -980,6 +982,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Geändert: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Desktop 16</translation>
 <translation id="4989163558385430922">Alle ansehen</translation>
 <translation id="5003993274120026347">Nächster Satz</translation>

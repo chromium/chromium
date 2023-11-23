@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">Може да го промените однесувањето на микрофонот кога било подоцна.</translation>
 <translation id="3659814201068740063">Простануваат уште околу <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Приклучете го уредот во струја.</translation>
+<translation id="3660860940251915011">Вклучување/Исклучување голема видливост на <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, управуван корисник</translation>
 <translation id="3666266999138159418">Повлечете за сокривање на лебдечкиот прозорец</translation>
 <translation id="367531336287639526">Изберете ја првата икона лево од лентата за адреси</translation>
@@ -981,6 +982,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Изменето: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Работна површина 16</translation>
 <translation id="4989163558385430922">Прикажи ги сите</translation>
 <translation id="5003993274120026347">Следна реченица</translation>

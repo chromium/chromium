@@ -294,6 +294,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2224075387478458881">Skjáupptaka er óheimil á meðan varið efni er sýnilegt</translation>
 <translation id="2227179592712503583">Fjarlægja tillögu</translation>
 <translation id="2248634276911611268">Opna tengil í nýjum flipa og skipta yfir á þennan nýja flipa</translation>
+<translation id="2253808149208613283">Setja upp forrit til að sérsníða þetta tæki</translation>
 <translation id="225680501294068881">Leitar að tækjum...</translation>
 <translation id="2257486738914982088">Eitthvað fór úrskeiðis við að sækja <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Skráatillögur</translation>
@@ -650,6 +651,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3659667652322717492">Þú getur breytt virkni hljóðnema hvenær sem er síðar.</translation>
 <translation id="3659814201068740063">Um <ph name="TIME_LEFT" /> eftir (<ph name="PERCENTAGE" />%).
 Tengdu tækið við rafmagn.</translation>
+<translation id="3660860940251915011">Kveikja/slökkva á miklum sýnileika <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Stýrður notandi</translation>
 <translation id="3666266999138159418">Strjúktu til að fela fljótandi gluggann</translation>
 <translation id="367531336287639526">Velja fyrsta tákn vinstra megin við veffangastiku</translation>
@@ -980,6 +982,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Breytt <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Skrifborð 16</translation>
 <translation id="4989163558385430922">Sjá allt</translation>
 <translation id="5003993274120026347">Næsta setning</translation>

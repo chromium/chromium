@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">Խոսափողի կարգավորումները կարող եք ցանկացած ժամանակ փոխել։</translation>
 <translation id="3659814201068740063">Մնացել է մոտ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)։
 Միացրեք սարքը հոսանքին։</translation>
+<translation id="3660860940251915011">Միացնել և անջատել «<ph name="FEATURE_NAME" />» գործառույթի բարձր տեսանելիությունը</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
 <translation id="3666266999138159418">Թերթեք՝ սահող պատուհանը թաքցնելու համար</translation>
 <translation id="367531336287639526">Ընտրել առաջին տարրը հասցեագոտու ձախ կողմում</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Փոփոխվել է <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Աշխատասեղան 16</translation>
 <translation id="4989163558385430922">Տեսնել բոլորը</translation>
 <translation id="5003993274120026347">Հաջորդ նախադասությունը</translation>

@@ -272,7 +272,7 @@
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> 可以在你瀏覽時使用你的資訊</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> 可在你瀏覽時使用你的資料</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
@@ -316,7 +316,7 @@
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6295158916970320988">所有網站</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> 無法在以下網站使用你的資訊：</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> 無法在以下位置使用你的資料：</translation>
 <translation id="6320088164292336938">震動</translation>
 <translation id="6344622098450209924">追蹤保護功能</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>

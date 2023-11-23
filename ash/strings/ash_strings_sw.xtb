@@ -294,6 +294,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2224075387478458881">Huruhusiwi kurekodi skrini wakati maudhui yanayolindwa yanaonekana</translation>
 <translation id="2227179592712503583">Ondoa pendekezo</translation>
 <translation id="2248634276911611268">Fungua kiungo katika kichupo kipya na uhamie kwenye kichupo hiki kipya</translation>
+<translation id="2253808149208613283">Sakinisha programu ili uweke mapendeleo kwenye kifaa hiki</translation>
 <translation id="225680501294068881">Inatambazaa vifaa...</translation>
 <translation id="2257486738914982088">Hitilafu fulani imetokea wakati wa kupakua <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Faili zinazopendekezwa</translation>
@@ -650,6 +651,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3659667652322717492">Unaweza kubadilisha hali ya maikrofoni wakati wowote baadaye.</translation>
 <translation id="3659814201068740063">Zimesalia takribani dakika <ph name="TIME_LEFT" /> asilimia(<ph name="PERCENTAGE" />%).
 Chomeka kifaa chako kwenye umeme.</translation>
+<translation id="3660860940251915011">Washa au uzime uonekanaji wa hali ya juu wa <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Mtumiaji anayesimamiwa</translation>
 <translation id="3666266999138159418">Telezesha kidole ili ufiche dirisha lako linaloelea</translation>
 <translation id="367531336287639526">Chagua aikoni ya kwanza kushoto mwa sehemu ya anwani</translation>
@@ -980,6 +982,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Ilibadilishwa <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Eneokazi la 16</translation>
 <translation id="4989163558385430922">Angalia vyote</translation>
 <translation id="5003993274120026347">Sentensi inayofuata</translation>

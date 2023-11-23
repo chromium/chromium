@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">وینڈر <ph name="VENDOR_ID" /> کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏crx فائل کو بدلنے میں ناکام۔ چیک کر کے دیکھیں کہ آیا فائل زیر استعمال ہے۔</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> وینڈر کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">‏مواد اسکرپٹ کیلئے css '<ph name="RELATIVE_PATH" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="3369521687965833290">ایکسٹینشن کو ان پیک نہیں کیا جا سکتا۔ اس ایکسٹینشن کو محفوظ طریقہ سے ان پیک کرنے کیلئے آپ کی پروفائل ڈائرکٹری میں ایک ایسا پاتھ ہونا چاہیے جو ڈرائیو لیٹر سے شروع ہوتا ہو اور جنکشن، ماؤنٹ پوائنٹ یا سملنک پر مشتمل نہ ہو۔  آپ کے پروفائل کیلئے ایسا کوئی پاتھ موجود نہیں ہے۔</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">وینڈر <ph name="VENDOR_ID" /> کی جانب سے <ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">نجی کلید کیلئے ان پٹ قدر ایک درست پاتھ ہونا ضروری ہے۔</translation>
 <translation id="388442998277590542">اختیارات صفحہ '<ph name="OPTIONS_PAGE" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="3984413272403535372">ایکسٹینشن پر سائن کرتے ہوئے خرابی۔</translation>
-<translation id="39964277676607559">‏مواد کی اسکرپٹ کیلئے ‎javascript '<ph name="RELATIVE_PATH" />'‎ لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="4115165561519362854">اس مشین کا منتظم <ph name="EXTENSION_VERSION" /> کے کم سے کم ورژن کیلئے <ph name="EXTENSION_NAME" /> کا تقاضہ کرتا ہے۔ اسے فعال نہیں کیا جا سکتا یہاں تک کہ اسے اس ورژن (یا اس سے بعد کے ورژن) میں اپ ڈيٹ کیا گیا ہو۔</translation>
 <translation id="4233778200880751280">تفصیل صفحہ '<ph name="ABOUT_PAGE" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="471800408830181311">نجی کلید کو آؤٹ پٹ کرنے میں ناکام۔</translation>

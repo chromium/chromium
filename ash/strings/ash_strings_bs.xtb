@@ -294,6 +294,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2224075387478458881">Snimanje ekrana nije dozvoljeno kada je prisutan zaštićeni sadržaj</translation>
 <translation id="2227179592712503583">Ukloni prijedlog</translation>
 <translation id="2248634276911611268">Otvaranje linka u novoj kartici i prelazak na tu novu karticu</translation>
+<translation id="2253808149208613283">Instalirajte aplikaciju da biste prilagodili uređaj</translation>
 <translation id="225680501294068881">Traženje uređaja...</translation>
 <translation id="2257486738914982088">Došlo je do problema prilikom preuzimanja fajla <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Predloženi fajlovi</translation>
@@ -650,7 +651,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3659667652322717492">U svakom trenutku možete promijeniti rad mikrofona.</translation>
 <translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Povežite uređaj na napajanje.</translation>
-<translation id="3660860940251915011">Promijenite visoku vidljivost za <ph name="FEATURE_NAME" /></translation>
+<translation id="3660860940251915011">Uključite/isključite veliku vidljivost u funkciji <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Korisnik kojim upravlja <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Prevucite da sakrijete plutajući prozor</translation>
 <translation id="367531336287639526">Odaberite prvu ikonu s lijeve strane trake za adresu</translation>
@@ -1442,7 +1443,7 @@ Nova instalacija</translation>
 <translation id="6827049576281411231">Zatvaranje ploče događaja</translation>
 <translation id="6831561626108366035">Odlazak na dugme <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Opasan fajl</translation>
-<translation id="6837621009301897464">Da biste izradili snimku zaslona, pritisnite</translation>
+<translation id="6837621009301897464">Da snimite snimak ekrana, pritisnite</translation>
 <translation id="6852052252232534364">Kliknite da aktivirate</translation>
 <translation id="6855029042976311970">Upravo uređeno</translation>
 <translation id="6856708615407876657">Aktivirajte/deaktivirajte kategorije rezultata pretraživanja</translation>

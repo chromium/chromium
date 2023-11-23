@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ nhà cung cấp <ph name="VENDOR_ID" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Không thể thay thế tệp crx. Kiểm tra để xem tệp có đang được sử dụng hay không.</translation>
 <translation id="3163201441334626963">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ nhà cung cấp <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Không thể tải css '<ph name="RELATIVE_PATH" />' cho tập lệnh nội dung.</translation>
 <translation id="3369521687965833290">Không thể giải nén tiện ích.  Để giải nén tiện ích một cách an toàn, phải có đường dẫn đến thư mục hồ sơ của bạn bắt đầu bằng ký tự ổ đĩa và không chứa ký tự liên kết, điểm lắp hoặc liên kết dạng biểu tượng.  Không có đường dẫn như vậy tồn tại cho hồ sơ của bạn.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> từ nhà cung cấp <ph name="VENDOR_ID" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Giá trị dữ liệu nhập cho khóa cá nhân phải là một đường dẫn hợp lệ.</translation>
 <translation id="388442998277590542">Không thể tải trang tùy chọn '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Lỗi khi ký tiện ích.</translation>
-<translation id="39964277676607559">Không thể tải javascript '<ph name="RELATIVE_PATH" />' cho tập lệnh nội dung.</translation>
 <translation id="4115165561519362854">Quản trị viên của máy này yêu cầu <ph name="EXTENSION_NAME" /> có phiên bản tối thiểu của <ph name="EXTENSION_VERSION" />. Không thể kích hoạt phiên bản cho đến khi máy cập nhật lên phiên bản đó (hoặc phiên bản cao hơn).</translation>
 <translation id="4233778200880751280">Không thể tải trang giới thiệu '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Không thể đăng nhập khóa cá nhân đầu ra.</translation>

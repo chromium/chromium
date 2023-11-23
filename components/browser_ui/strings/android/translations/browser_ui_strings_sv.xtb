@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1448064542941920355">Minska zoom</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webbplats}other{<ph name="SITE_COUNT" /> webbplatser}}</translation>
 <translation id="1510341833810331442">Webbplatser får inte spara data på enheten</translation>
 <translation id="1547123415014299762">Tredjepartscookies tillåts</translation>
 <translation id="1568470248891039841">Webbplatser du besöker kan bädda in innehåll från andra webbplatser, till exempel bilder, annonser och text. Dessa andra webbplatser kan begära tillstånd att använda uppgifter som de har sparat om dig när du surfar på webbplatsen. <ph name="BEGIN_LINK" />Läs mer om inbäddat innehåll<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Blockerat</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> kan använda dina uppgifter när du surfar</translation>
 <translation id="5700761515355162635">Cookies från tredje part har tillåtits</translation>
 <translation id="5706552988683188916">Cookies och annan webbplatsdata för <ph name="WEBSITE" /> raderas</translation>
 <translation id="5723967018671998714">Cookies från tredje part blockeras i inkognitoläge</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> blockeras</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> har blockerats från att använda dina uppgifter på</translation>
 <translation id="6320088164292336938">Vibration</translation>
 <translation id="6344622098450209924">Spårningsskydd</translation>
 <translation id="6367753977865761591">Blockera inloggning hos tredje part på en viss webbplats.</translation>

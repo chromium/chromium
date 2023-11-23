@@ -651,6 +651,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3659667652322717492">Pots canviar el comportament del micròfon en qualsevol moment.</translation>
 <translation id="3659814201068740063">Queden <ph name="TIME_LEFT" /> (un <ph name="PERCENTAGE" />%) aproximadament.
 Connecta el dispositiu a l'alimentació.</translation>
+<translation id="3660860940251915011">Commuta la visibilitat alta de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3666266999138159418">Llisca per amagar la finestra flotant</translation>
 <translation id="367531336287639526">Selecciona la primera icona a l'esquerra de la barra d'adreces</translation>
@@ -981,6 +982,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Darrera modificació: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Escriptori 16</translation>
 <translation id="4989163558385430922">Mostra-ho tot</translation>
 <translation id="5003993274120026347">Frase següent</translation>

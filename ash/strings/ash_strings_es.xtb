@@ -294,6 +294,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2224075387478458881">La grabación de pantalla no está permitida cuando se muestra contenido protegido</translation>
 <translation id="2227179592712503583">Eliminar sugerencia</translation>
 <translation id="2248634276911611268">Abrir enlace en una pestaña nueva y cambiar a esta pestaña</translation>
+<translation id="2253808149208613283">Instala la aplicación para personalizar este dispositivo</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2257486738914982088">No se ha podido descargar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Archivos sugeridos</translation>
@@ -650,6 +651,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3659667652322717492">Puedes cambiar el comportamiento del micrófono en cualquier momento.</translation>
 <translation id="3659814201068740063">Batería restante: alrededor de <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conecta tu dispositivo a la corriente.</translation>
+<translation id="3660860940251915011">Activar o desactivar alta visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3666266999138159418">Desliza para ocultar tu ventana flotante</translation>
 <translation id="367531336287639526">Seleccionar primer icono a la izquierda de la barra de direcciones</translation>
@@ -981,6 +983,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Última modificación: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Escritorio 16</translation>
 <translation id="4989163558385430922">Ver todo</translation>
 <translation id="5003993274120026347">Siguiente frase</translation>

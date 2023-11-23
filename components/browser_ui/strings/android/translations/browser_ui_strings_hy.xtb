@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL-ը կրճատվել է</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1448064542941920355">Փոքրացնել մասշտաբը</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> կայք}one{<ph name="SITE_COUNT" /> կայք}other{<ph name="SITE_COUNT" /> կայք}}</translation>
 <translation id="1510341833810331442">Կայքերին չի թույլատրվում տվյալներ պահել ձեր սարքում</translation>
 <translation id="1547123415014299762">Երրորդ կողմի քուքիները թույլատրված են</translation>
 <translation id="1568470248891039841">Կայքերը, որոնք այցելել եք, կարող են այլ կայքերից զետեղել բովանդակություն, օրինակ՝ պատկերներ, գովազդ և տեքստ։ Այս մյուս կայքերը կարող են խնդրել թույլտվություն՝ օգտագործելու ձեր մասին իրենց պահած տեղեկությունները, երբ դուք դիտարկելիս լինեք կայքը։ <ph name="BEGIN_LINK" />Իմանալ ավելին ներկառուցված բովանդակության մասին<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Արգելափակված է</translation>
 <translation id="5689516760719285838">Տեղորոշում</translation>
 <translation id="5690795753582697420">Տեսախցիկն անջատված է Android-ի կարգավորումներում</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> կայքը կարող է օգտագործել ձեր տեղեկությունները, երբ դիտարկելիս լինեք</translation>
 <translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
 <translation id="5706552988683188916">Քուքիները և <ph name="WEBSITE" /> կայքի այլ տվյալները կջնջվեն</translation>
 <translation id="5723967018671998714">Երրորդ կողմի քուքիներն արգելափակվում են ինկոգնիտո ռեժիմում</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358">Արգելափակված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> կայքին արգելվել է օգտագործել ձեր մասին տեղեկություններն այստեղ՝</translation>
 <translation id="6320088164292336938">Թրթռոց</translation>
 <translation id="6344622098450209924">Հետագծման արգելափակում</translation>
 <translation id="6367753977865761591">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է արգելափակվի։</translation>

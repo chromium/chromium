@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1448064542941920355">زوم آؤٹ کریں</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سائٹ}other{<ph name="SITE_COUNT" /> سائٹس}}</translation>
 <translation id="1510341833810331442">سائٹس کو آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
 <translation id="1547123415014299762">فریق ثالث کوکیز کی اجازت ہے</translation>
 <translation id="1568470248891039841">آپ کی ملاحظہ کی جانے والی سائٹس دوسری سائٹس سے مواد کو سرایت کر سکتی ہیں، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ یہ دوسری سائٹس سائٹ کو براؤز کرتے وقت آپ کے بارے میں محفوظ کردہ معلومات کو استعمال کرنے کی اجازت طلب کر سکتی ہیں۔ <ph name="BEGIN_LINK" />سرایت کردہ مواد کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">مسدود کردہ</translation>
 <translation id="5689516760719285838">مقام</translation>
 <translation id="5690795753582697420">‏Android کی ترتیبات میں کیمرا آف ہے</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> آپ کے براؤز کرتے وقت آپ کی معلومات استعمال کر سکتی ہے</translation>
 <translation id="5700761515355162635">فریق ثالث کوکیز کی اجازت ہے</translation>
 <translation id="5706552988683188916">اس سے <ph name="WEBSITE" /> کی کوکیز اور سائٹ کا دیگر ڈیٹا حذف ہو جاتا ہے</translation>
 <translation id="5723967018671998714">فریق ثالث کی کوکیز پوشیدگی وضع میں مسدود کی جاتی ہیں</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کو مسدود کیا گیا</translation>
 <translation id="6270391203985052864">سائٹس اطلاعات بھیجنے کے لیے کہہ سکتی ہیں</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> کو آپ کی معلومات اس پر استعمال کرنے سے مسدود کر دیا گیا ہے</translation>
 <translation id="6320088164292336938">وائبریٹ کریں</translation>
 <translation id="6344622098450209924">ٹریکنگ کے خلاف تحفظ</translation>
 <translation id="6367753977865761591">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کو مسدود کریں۔</translation>

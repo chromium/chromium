@@ -29,6 +29,7 @@
 <translation id="1175697296044146566">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Normal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
+<translation id="1191518099344003522">L'APN està activat.</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1195784767091936222">Activa el mode fosc automàtic</translation>
 <translation id="1196959502276349371">Versió <ph name="VERSION" /></translation>
@@ -81,6 +82,7 @@
 <translation id="1515129336378114413">pàgina d'inici del navegador</translation>
 <translation id="1526389707933164996">Animació de l'estalvi de pantalla</translation>
 <translation id="152892567002884378">Apuja el volum</translation>
+<translation id="1539242642795599947">L'APN és de tipus predeterminat i adjunt.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
 <translation id="1561927818299383735">color de la retroil·luminació</translation>
@@ -441,6 +443,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
 <translation id="4333390807948134856">S'ha premut la tecla <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">tecla</translation>
+<translation id="4361257691546579041">L'APN és de tipus predeterminat.</translation>
 <translation id="437294888293595148">Restableix totes les dreceres</translation>
 <translation id="4378373042927530923">No s'ha executat</translation>
 <translation id="4378551569595875038">Connectant...</translation>
@@ -661,6 +664,7 @@
 <translation id="5946538341867151940">Encara no t'has connectat. Si el teu operador de telefonia mòbil et recomana un APN personalitzat, introdueix la informació de l'APN seleccionant l'opció + APN nou.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
+<translation id="6001235009374883388">L'APN és de tipus adjunt.</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019566113895157499">Tecles de drecera</translation>
 <translation id="6034694447310538551">Activa el restabliment mensual automàtic</translation>
@@ -828,6 +832,7 @@
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7184043045742675738">Fes clic en qualsevol tecla per personalitzar el teu botó. Canvia la posició de la tecla amb el ratolí o les tecles de fletxa.</translation>
+<translation id="7212547870105584639">Gestiona la configuració de l'APN de la xarxa. Els APN estableixen una connexió entre una xarxa mòbil i Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualitzacions de microprogramari per a dispositius externs</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="725133483556299729">Selecciona una adreça electrònica</translation>

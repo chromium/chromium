@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL-адресу скорочено</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1448064542941920355">Зменшити масштаб</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайти}many{<ph name="SITE_COUNT" /> сайтів}other{<ph name="SITE_COUNT" /> сайту}}</translation>
 <translation id="1510341833810331442">Сайтам заборонено зберігати дані на вашому пристрої</translation>
 <translation id="1547123415014299762">Сторонні файли cookie дозволено</translation>
 <translation id="1568470248891039841">Сайти, які ви відвідуєте, можуть включати контент з інших сайтів, наприклад зображення, оголошення й текст. Ці інші сайти можуть запитувати дозвіл на використання збереженої про вас інформації, коли ви переглядаєте сайт. <ph name="BEGIN_LINK" />Докладніше про вбудований контент<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Заблоковано</translation>
 <translation id="5689516760719285838">Місцезнаходження</translation>
 <translation id="5690795753582697420">Камеру вимкнено в налаштуваннях Android</translation>
+<translation id="5691080386278724773">Веб-сайт <ph name="SITE" /> може використовувати ваші дані, коли ви переглядаєте</translation>
 <translation id="5700761515355162635">Сторонні файли cookie дозволено</translation>
 <translation id="5706552988683188916">Буде видалено файли cookie й інші дані сайту <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Сторонні файли cookie блокуються в режимі анонімного перегляду</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358">Заблоковано: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />"</translation>
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
+<translation id="6304434827459067558">Веб-сайту <ph name="SITE" /> заборонено використовувати ваші дані, коли ви переглядаєте</translation>
 <translation id="6320088164292336938">Вібросигнал</translation>
 <translation id="6344622098450209924">Захист від відстеження</translation>
 <translation id="6367753977865761591">Заблокувати вхід через сторонні сервіси для певного сайту.</translation>

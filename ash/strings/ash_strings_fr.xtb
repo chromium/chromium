@@ -650,6 +650,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3659667652322717492">Vous pouvez modifier le comportement du micro à tout moment.</translation>
 <translation id="3659814201068740063">Il reste environ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Branchez votre appareil sur une source d'alimentation.</translation>
+<translation id="3660860940251915011">Activer/Désactiver le mode haute visibilité de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Balayez l'écran pour masquer la fenêtre flottante</translation>
 <translation id="367531336287639526">Sélectionner la première icône à gauche de la barre d'adresse</translation>
@@ -980,6 +981,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Modifié le <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="4989163558385430922">Tout afficher</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>

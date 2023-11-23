@@ -58,6 +58,7 @@ Vær opmærksom på følgende:
 <translation id="2671426118752779020">Du kan bruge de adgangskoder, du har gemt i Google Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="2689064829982324496">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
+<translation id="2702250627063295552">Føj et element til læselisten i Chrome</translation>
 <translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2868822340714096138">Ryd browserdata i Chrome</translation>
@@ -83,6 +84,7 @@ Vær opmærksom på følgende:
 <translation id="3744018071945602754">Administrer adgangskoder i Chrome</translation>
 <translation id="3827545470516145620">Du får standardbeskyttelse på denne enhed</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
+<translation id="3863841106411295595">Føjer de angivne webadresser til din læseliste i Chrome.</translation>
 <translation id="3901001113120561395">Få mest muligt ud af Chrome.</translation>
 <translation id="3967382818307165056">Administrer betalingsmetoder i Chrome</translation>
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>

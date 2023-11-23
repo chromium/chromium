@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL tam deyil</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sayt}other{<ph name="SITE_COUNT" /> sayt}}</translation>
 <translation id="1510341833810331442">Saytlara cihazınızda data saxlamaq icazəsi verilmir</translation>
 <translation id="1547123415014299762">Üçüncü tərəf kukilərinə icazə verilir</translation>
 <translation id="1568470248891039841">Daxil olduğunuz saytlar digər saytlardan şəkil, reklam və mətn kimi kontent daxil edə bilər. Sayta baxdıqda digər saytlar haqqınızda yadda saxlanan məlumatdan istifadə üçün icazə istəyə bilər. <ph name="BEGIN_LINK" />Daxil edilmiş kontent haqqında ətraflı<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Bloklananlar</translation>
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="5690795753582697420">Kamera Android ayarlarında deaktiv edilib</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> siz baxarkən məlumatlarınızdan istifadə edə bilər</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
 <translation id="5706552988683188916">Bu, <ph name="WEBSITE" /> üçün kukiləri və digər sayt datasını silir</translation>
 <translation id="5723967018671998714">Üçüncü tərəf kukiləri Anonim rejimdə bloklanır</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> və <ph name="PERMISSION_2" /> bloklanıb</translation>
 <translation id="6270391203985052864">Saytlar bildiriş göndərilməsini tələb edə bilər</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> saytının məlumatlarınızdan istifadəsi bloklanıb</translation>
 <translation id="6320088164292336938">Vibrasiya</translation>
 <translation id="6344622098450209924">İzlənmədən qorunma</translation>
 <translation id="6367753977865761591">Müəyyən bir sayt üçün üçüncü tərəfin girişini bloklayın.</translation>

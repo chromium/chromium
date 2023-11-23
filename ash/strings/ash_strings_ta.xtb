@@ -294,6 +294,7 @@
 <translation id="2224075387478458881">பாதுகாக்கப்பட்ட உள்ளடக்கம் காட்டப்படும்போது ஸ்கிரீன் ரெக்கார்டிங் அனுமதிக்கப்படாது</translation>
 <translation id="2227179592712503583">பரிந்துரையை அகற்று</translation>
 <translation id="2248634276911611268">இணைப்பைப் புதிய பக்கத்தில் திறந்து அந்தப் புதிய பக்கத்திற்கு மாறும்</translation>
+<translation id="2253808149208613283">இந்தச் சாதனத்தைப் பிரத்தியேகமாக்க ஆப்ஸை நிறுவவும்</translation>
 <translation id="225680501294068881">சாதனங்களைக் கண்டறிகிறது...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்கும்போது ஏதோ தவறாகிவிட்டது</translation>
 <translation id="2258734398699965611">பரிந்துரைக்கப்படும் ஃபைல்கள்</translation>
@@ -650,6 +651,7 @@
 <translation id="3659667652322717492">பின்னர் நீங்கள் எப்போது வேண்டுமானாலும் மைக் செயல்பாட்டை மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="3659814201068740063">சுமார் <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%) சாதனத்தைப் பயன்படுத்தலாம்.
 சாதனத்தை சார்ஜ் செய்யவும்.</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> அம்சத்தின் அதிகத் தெரிவுநிலைப் பயன்முறையை இயக்கும் அல்லது முடக்கும்</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
 <translation id="3666266999138159418">மிதக்கும் சாளரத்தை மறைக்க ஸ்வைப் செய்யவும்</translation>
 <translation id="367531336287639526">முகவரிப் பட்டியின் இடப்புறத்தில் உள்ள முதல் ஐகானைத் தேர்ந்தெடு</translation>
@@ -980,6 +982,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">மாற்றியது: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">டெஸ்க் 16</translation>
 <translation id="4989163558385430922">எல்லாம் காட்டு</translation>
 <translation id="5003993274120026347">அடுத்த வாக்கியம்</translation>

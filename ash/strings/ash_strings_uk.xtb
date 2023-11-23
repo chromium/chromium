@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">Налаштування мікрофона можна змінити будь-коли.</translation>
 <translation id="3659814201068740063">Залишилося приблизно <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Підключіть пристрій до джерела живлення.</translation>
+<translation id="3660860940251915011">Перемикач режиму високої видимості для функції "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="3666266999138159418">Проведіть пальцем, щоб сховати плаваюче вікно</translation>
 <translation id="367531336287639526">Вибрати значок ліворуч від адресного рядка</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Змінено <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Робочий стіл 16</translation>
 <translation id="4989163558385430922">Показати все</translation>
 <translation id="5003993274120026347">Наступне речення</translation>

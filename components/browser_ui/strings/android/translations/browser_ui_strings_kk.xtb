@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL қысқартылды</translation>
 <translation id="1426410128494586442">Иә</translation>
 <translation id="1448064542941920355">Масштабты азайту</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
 <translation id="1510341833810331442">Сайттарға деректерді құрылғыда сақтауға рұқсат етілмейді.</translation>
 <translation id="1547123415014299762">Үшінші тарап cookie файлдары рұқсат етілген</translation>
 <translation id="1568470248891039841">Сіз кіретін сайттар басқа сайттардан алынған контентті (мысалы, суреттерді, жарнамаларды және мәтінді) ендіре алады. Осы басқа сайттар сіз сайтқа шолу жасаған кезде сіз туралы сақталған ақпаратты пайдалануға рұқсат сұрай алады. <ph name="BEGIN_LINK" />Ендірілген контент туралы толық ақпарат<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Тыйым салынған</translation>
 <translation id="5689516760719285838">Локация</translation>
 <translation id="5690795753582697420">Камера Android параметрлерінде өшірілген.</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> келесі сайттарды шолу кезінде ақпаратыңызды пайдалана алады:</translation>
 <translation id="5700761515355162635">Үшінші тарап cookie файлдары рұқсат етілген</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде блокталған.</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> және <ph name="PERMISSION_2" /> үшін тыйым салынған.</translation>
 <translation id="6270391203985052864">Сайттар хабарландырулар жіберу рұқсатын сұрай алады</translation>
 <translation id="6295158916970320988">Барлық сайттар</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> сайтына ақпаратыңызды келесі сайттарда пайдалануға тыйым салынған:</translation>
 <translation id="6320088164292336938">Діріл</translation>
 <translation id="6344622098450209924">Бақылаудан қорғау</translation>
 <translation id="6367753977865761591">Белгілі бір сайт үшін бөгде қызметтер арқылы кіруді бөгеу.</translation>

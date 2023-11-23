@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Vervangen van crx-bestand is mislukt. Controleer of het bestand wordt gebruikt.</translation>
 <translation id="3163201441334626963">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Kan CSS '<ph name="RELATIVE_PATH" />' niet laden voor het inhoudsscript.</translation>
 <translation id="3369521687965833290">Kan extensie niet uitpakken. Om een extensie beveiligd te kunnen uitpakken, moet er een pad naar je profieldirectory verwijzen dat begint met een schijfletter en geen koppeling, koppelpunt of symlink bevat. Een dergelijk pad bestaat niet voor je profiel.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde voor persoonlijke sleutel moet een geldig pad zijn.</translation>
 <translation id="388442998277590542">Kan optiepagina '<ph name="OPTIONS_PAGE" />' niet laden.</translation>
 <translation id="3984413272403535372">Fout bij ondertekenen van extensie.</translation>
-<translation id="39964277676607559">Kan JavaScript '<ph name="RELATIVE_PATH" />' niet laden voor het inhoudsscript.</translation>
 <translation id="4115165561519362854">De beheerder van dit apparaat vereist dat minimaal versie <ph name="EXTENSION_VERSION" /> van <ph name="EXTENSION_NAME" /> moet zijn geïnstalleerd. De extensie kan pas worden aangezet nadat deze is geüpdatet naar die versie (of hoger).</translation>
 <translation id="4233778200880751280">De informatiepagina '<ph name="ABOUT_PAGE" />' kan niet worden geladen.</translation>
 <translation id="471800408830181311">Uitvoer van persoonlijke sleutel is mislukt.</translation>

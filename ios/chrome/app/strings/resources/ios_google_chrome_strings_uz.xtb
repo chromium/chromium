@@ -59,6 +59,7 @@ Bularni hisobga olish kerak:
 <translation id="2671426118752779020">Google Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="2689064829982324496">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chrome brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
+<translation id="2702250627063295552">Saqlangan sahifalar bandini Chromeʼa qoʻshish</translation>
 <translation id="2736805085127235148">Chrome bildirishnomalari ayni vaqtda qurilma sozlamalarida yoniq emas</translation>
 <translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
 <translation id="2868822340714096138">Chrome brauzer maʼlumotlarini tozalash</translation>
@@ -84,6 +85,7 @@ Bularni hisobga olish kerak:
 <translation id="3744018071945602754">Chromeda parollarni boshqarish</translation>
 <translation id="3827545470516145620">Bu qurilmada standart xavfsizlik sozlamasi amal qiladi</translation>
 <translation id="384394811301901750">Google Chrome hozir kamerangizdan foydalana olmaydi.</translation>
+<translation id="3863841106411295595">Kiritilgan URL manzillarni Chrome Saqlangan sahifalariga qoʻshadi.</translation>
 <translation id="3901001113120561395">Chromedan unumli foydalaning</translation>
 <translation id="3967382818307165056">Chromeda toʻlov usullarini boshqarish</translation>
 <translation id="3980220367029651214">Siz <ph name="USER_EMAIL1" /> hisobi ma’lumotlarini <ph name="USER_EMAIL2" /> hisobiga ko‘chirish arafasizdasiz. Mavjud Chrome ma’lumotlaringiz <ph name="DOMAIN" /> domenida boshqariladi. Barcha Chrome ma’lumotlari ushbu qurilmadan o‘chiriladi, lekin <ph name="USER_EMAIL1" /> hisobida saqlanib qoladi.</translation>

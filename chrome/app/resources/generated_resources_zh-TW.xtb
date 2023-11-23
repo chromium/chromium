@@ -15,7 +15,7 @@
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
 <translation id="1008261151167010035"><ph name="BRAND" />會記住你的登入資訊，並在情況允許時自動登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
-<translation id="1008544602823861396">已遭封鎖，無法使用你的資訊 (位於</translation>
+<translation id="1008544602823861396">已遭封鎖，無法使用你在以下網站的資訊</translation>
 <translation id="1008557486741366299">現在不要</translation>
 <translation id="1009663062402466586">現已提供遊戲控制項</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{一個網頁無回應}other{多個網頁無回應}}</translation>
@@ -467,6 +467,7 @@
 <translation id="1370384480654163477">查看和編輯上次造訪這個網站時的檔案：</translation>
 <translation id="1372841398847029212">同步到你的帳戶</translation>
 <translation id="1373176046406139583">裝置分享設定可以控制當螢幕處於解鎖狀態時，哪些人能夠與你分享內容。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1373600239834196313">大部分的側邊面板功能都可以透過 Chrome 選單開啟</translation>
 <translation id="1374844444528092021">網路「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
 <translation id="1375557162880614858">是否要啟動 ChromeOS Flex 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="1375938286942050085">設定完成！備妥裝置以進行接下來的遊戲</translation>
@@ -1013,6 +1014,7 @@
 <translation id="177989070088644880">應用程式 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">關閉群組</translation>
 <translation id="1780273119488802839">正在匯入書籤...</translation>
+<translation id="1780572199786401845">檢舉令人反感/感到不安全的內容。</translation>
 <translation id="178092663238929451">設定鄰近分享功能，即可與附近的使用者互相傳送檔案</translation>
 <translation id="1781291988450150470">目前的 PIN 碼</translation>
 <translation id="1781502536226964113">開啟新分頁</translation>
@@ -1855,7 +1857,7 @@
 <translation id="2410298923485357543">在裝置連上網路時使用自然語音</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="241082044617551207">不明的外掛程式</translation>
-<translation id="2410940059315936967">你造訪的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 稱為第三方 Cookie。</translation>
+<translation id="2410940059315936967">你造訪的網站可能會嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 稱為第三方 Cookie。</translation>
 <translation id="2411666601450687801">這部裝置不允許使用任何虛擬機器</translation>
 <translation id="2412015533711271895">你必須取得家長或監護人允許，才能使用這個擴充功能</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
@@ -2857,6 +2859,7 @@
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3191625924275846436">{NUM_SITES,plural, =1{為保護你的資料，系統已將權限從你最近未曾造訪的網站中移除}other{為保護你的資料，系統已將權限從你最近未曾造訪的網站中移除}}</translation>
+<translation id="3192586965067888278">請詳細說明問題。你的意見將送交 Google 專人審查，並可能用於改善或開發 Google 產品和服務。</translation>
 <translation id="3192947282887913208">音訊檔</translation>
 <translation id="3193695589337931419">系統信號公用程式</translation>
 <translation id="3194786596445804250">顯示封鎖第三方 Cookie 的詳細資料</translation>
@@ -4795,7 +4798,7 @@
 <translation id="4728558894243024398">平台</translation>
 <translation id="4730492586225682674">在螢幕鎖定狀態下顯示以觸控筆記錄的最新筆記</translation>
 <translation id="4730888769809690665">你已允許 <ph name="SITE" /> 傳送通知</translation>
-<translation id="4731306954230393087">這個網站可使用與你相關的既有資訊</translation>
+<translation id="4731306954230393087">這些網站可使用與你相關的既有資訊</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左側)</translation>
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理。</translation>
@@ -5164,6 +5167,7 @@
 <translation id="5032430150487044192">無法建立 QR 圖碼</translation>
 <translation id="5033137252639132982">不得使用動作感應器</translation>
 <translation id="5033266061063942743">幾何形狀</translation>
+<translation id="5033646801355533305">請明天再試。</translation>
 <translation id="5035846135112863536">請選擇下方的「更多詳細資料」，即可洽詢「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」瞭解詳情。</translation>
 <translation id="5037676449506322593">全選</translation>
 <translation id="5038818366306248416">你先前已選擇不允許 <ph name="ORIGIN" /> 上的任何擴充功能</translation>
@@ -5908,6 +5912,7 @@
 <translation id="5636012309446422">要將「<ph name="DEVICE" />」從 <ph name="PRIMARY_EMAIL" /> 中移除嗎？</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，你必須先<ph name="LINK_START" />造訪網路的登入頁面<ph name="LINK_END" />，系統隨即會自動開啟登入頁面；如果沒有，你就無法使用這個網路。</translation>
 <translation id="5637476008227280525">啟用行動數據</translation>
+<translation id="563811590465749036">如要將 Google 密碼管理工具與 macOS 鑰匙圈搭配使用，請重新啟動 Chrome 並允許存取鑰匙圈。分頁會在重新啟動之後再次開啟</translation>
 <translation id="563821631542362636">允許網站儲存資料</translation>
 <translation id="5638309510554459422">歡迎前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找擴充功能和主題</translation>
 <translation id="5639549361331209298">重新載入這個網頁 (按住即可查看更多選項)</translation>
@@ -6210,7 +6215,7 @@
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889282057229379085">中繼 CA 數目上限：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用你的<ph name="BEGIN_LINK" />同步通關密語<ph name="END_LINK" />加密同步的資料。系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。</translation>
-<translation id="5891084409170578560">你造訪的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。這些其他網站可要求你授予權限，在你瀏覽網站時使用與你相關的既有資訊。</translation>
+<translation id="5891084409170578560">你造訪的網站可能會嵌入其他網站的內容，例如圖片、廣告和文字。這些其他網站可要求你授予權限，在你瀏覽網站時使用與你相關的既有資訊。</translation>
 <translation id="5891688036610113830">偏好的 Wi-Fi 網路</translation>
 <translation id="5894056653502215961">取消選取資料夾：<ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -6958,6 +6963,7 @@
 <translation id="6504601948739128893">不得使用裝置上安裝的字型</translation>
 <translation id="6504611359718185067">連上網際網路即可新增印表機</translation>
 <translation id="6506374932220792071">使用 SHA-256 的 X9.62 ECDSA 簽章</translation>
+<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」要求在這部裝置上安裝以下應用程式：}other{「<ph name="APP_NAME" />」要求在這部裝置上安裝以下多個應用程式：}}</translation>
 <translation id="6508248480704296122">與「<ph name="NAME_PH" />」相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
@@ -8353,7 +8359,7 @@
 <translation id="7617648809369507487">使用低擾式通知</translation>
 <translation id="7619937211696316184">維護作業已完成</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
-<translation id="7621480263311228380">這個網站不可使用與你相關的既有資訊</translation>
+<translation id="7621480263311228380">這些網站不可使用與你相關的既有資訊</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN 碼，就無法復原本機資料。</translation>
 <translation id="7622114377921274169">充電中。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供相關的購物功能 (例如更方便的結帳方式)</translation>
@@ -9320,6 +9326,7 @@
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="834785183489258869">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="8348430946834215779">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告</translation>
+<translation id="8348896480272971199">請檢查網際網路連線，然後再試一次。</translation>
 <translation id="8349325309815489209">已允許在這個網站執行擴充功能</translation>
 <translation id="8349826889576450703">啟動器</translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
@@ -10008,6 +10015,7 @@
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />你可以透過哪些方式管理資料：<ph name="END_BOLD" />為保護個人隱私，我們會自動將 4 週以前的網站從清單中刪除。你再次造訪的網站可能會重新加入清單中。假如你不想讓系統根據特定網站定義興趣喜好，也可以移除網站。</translation>
 <translation id="8884570509232205463">你的裝置會在 <ph name="UNLOCK_TIME" /> 遭到鎖定。</translation>
 <translation id="8888253246822647887">升級完成後，你的應用程式即會啟動。升級作業可能需要幾分鐘才能完成。</translation>
+<translation id="8888459276890791557">你可以固定這個側邊面板，方便之後存取</translation>
 <translation id="8889294078294184559">你隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資訊，確認你應該是真人</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可以編輯下列檔案與資料夾</translation>
 <translation id="8890170499370378450">可能需要支付行動數據傳輸費用</translation>

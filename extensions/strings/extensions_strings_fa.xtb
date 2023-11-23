@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">محصول نامشخص <ph name="PRODUCT_ID" /> از فروشنده <ph name="VENDOR_ID" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏فایل crx جایگزین نشد. بررسی کنید که آیا فایل در حال استفاده است یا نه.</translation>
 <translation id="3163201441334626963">محصول نامشخص <ph name="PRODUCT_ID" /> از فروشنده <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">‏بارگیری "<ph name="RELATIVE_PATH" />" css برای اسکریپت محتوا ممکن نیست.</translation>
 <translation id="3369521687965833290">بسته برنامهٔ افزودنی را نمی‌توان باز کرد.  برای باز کردن ایمن برنامهٔ افزودنی، باید یک مسیر در فهرست نمایهٔ شما وجود داشته باشد که با یک حرف درایو آغاز شود و فاقد یک خط اتصال، نقطه اتصال و پیوند نمادی باشد.  چنین مسیری برای نمایهٔ شما وجود ندارد.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> از فروشنده <ph name="VENDOR_ID" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">مقدار ورودی برای کلید خصوصی باید یک مسیر معتبر باشد.</translation>
 <translation id="388442998277590542">صفحه گزینه‌ها "<ph name="OPTIONS_PAGE" />" بارگیری نشد.</translation>
 <translation id="3984413272403535372">هنگام امضای برنامهٔ افزودنی خطا رخ داد.</translation>
-<translation id="39964277676607559">بارگیری جاوا اسکریپت "<ph name="RELATIVE_PATH" />" برای اسکریپت محتوا ممکن نیست.</translation>
 <translation id="4115165561519362854">طبق دستور سرپرست این دستگاه باید نسخه <ph name="EXTENSION_NAME" /> حداقل <ph name="EXTENSION_VERSION" /> باشد. تا زمانی که به آن نسخه (یا بالاتر) به‌روزرسانی نشود نمی‌توان آن را فعال کرد.</translation>
 <translation id="4233778200880751280">صفحه درباره «<ph name="ABOUT_PAGE" />» بارگیری نشد.</translation>
 <translation id="471800408830181311">ارسال کلید خصوصی ناموفق بود.</translation>

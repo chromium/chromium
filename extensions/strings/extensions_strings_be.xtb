@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не ўдалося замяніць файл "crx". Праверце, ці не выкарыстоўваецца гэты файл зараз.</translation>
 <translation id="3163201441334626963">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Не ўдалося загрузіць CSS-файл "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва.</translation>
 <translation id="3369521687965833290">Не ўдалося распакаваць пашырэнне.  Для бяспечнага распакоўвання пашырэння неабходны шлях да каталога вашага профілю. Шлях павінен пачынаецца з літары дыска і не змяшчаць злучэння, пункта падключэння або сімвальнай спасылкі.  Такі шлях для вашага профілю адсутнічае.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ад пастаўшчыка "<ph name="VENDOR_ID" />" (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Значэнне ўводу для персанальнага ключа павінна быць дапушчальным шляхам.</translation>
 <translation id="388442998277590542">Не ўдалося загрузіць старонку параметраў "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Памылка падчас подпісу пашырэння.</translation>
-<translation id="39964277676607559">Не ўдалося загрузіць javascript "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва.</translation>
 <translation id="4115165561519362854">Адміністратар гэтай прылады патрабуе, каб версія пашырэння <ph name="EXTENSION_NAME" /> была мінімум <ph name="EXTENSION_VERSION" />. Каб уключыць пашырэнне, яго трэба абнавіць да гэтай (або вышэйшай) версіі.</translation>
 <translation id="4233778200880751280">Не ўдалося загрузіць старонку "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Не ўдалося вывесці закрыты ключ.</translation>

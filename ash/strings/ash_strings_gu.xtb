@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">તમે પછી કોઈપણ સમયે માઇકના વર્તનને બદલી શકો છો.</translation>
 <translation id="3659814201068740063">લગભગ <ph name="TIME_LEFT" /> બાકી છે (<ph name="PERCENTAGE" />%)
 તમારા ડિવાઇસને પાવર સોર્સ સાથે કનેક્ટ કરો.</translation>
+<translation id="3660860940251915011">ઉચ્ચ દૃશ્યતા <ph name="FEATURE_NAME" /> ટૉગલ કરો</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> મેનેજ કરાયેલા વપરાશકર્તા</translation>
 <translation id="3666266999138159418">તમારી ફ્લોટિંગ વિન્ડો છુપાવવા માટે સ્વાઇપ કરો</translation>
 <translation id="367531336287639526">ઍડ્રેસ બારની ડાબી બાજુએ પહેલું આઇકન પસંદ કરો</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" />ના રોજ ફેરફાર કર્યો</translation>
 <translation id="4987738733603015246">ડેસ્ક 16</translation>
 <translation id="4989163558385430922">બધા જુઓ</translation>
 <translation id="5003993274120026347">આગલું વાક્ય</translation>

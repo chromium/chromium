@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Yehlulekile ukufaka esikhundleni sefayela le-crx. Hlola ukuze ubone uma ngabe ifayela lisetshenziswa.</translation>
 <translation id="3163201441334626963">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Ayikwazanga ukulayisha i-css ye'<ph name="RELATIVE_PATH" />' yesikripthi sokuqukethwe.</translation>
 <translation id="3369521687965833290">Ayikwazi ukukhipha isandiso. Ukuze ukhiphe ngokuvikelekile isandiso, kumele kube nendlela eya kumkhombandlela wephrofayela yakho oqala ngohlamvu lwedrayivu futhi ingafaki indawo, iphoyinti lokukhweza, noma i-symlink. Ayikho indlela enjalo ekhona kuphrofayela yakho.</translation>
 <translation id="3393440416772303020">I-<ph name="PRODUCT_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inani elingavumelekile lokhiye oyimfihlo kumele kube yindlela evumelekile.</translation>
 <translation id="388442998277590542">Ayikwazanga ukulayisha ikhasi lezinketho i-'<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Iphutha ngenkathi isayina isandiso.</translation>
-<translation id="39964277676607559">Ayikwazanga ukulayisha i-javascript '<ph name="RELATIVE_PATH" />' yesikripthi sokuqukethwe.</translation>
 <translation id="4115165561519362854">Umlawuli walo mshini udinga i-<ph name="EXTENSION_NAME" /> ibe nenguqulo yobuncane obungu-<ph name="EXTENSION_VERSION" />. Ayikwazi ukunikwa amandla ize ibuyekezelwe kuleyo nguqulo (noma ngaphezulu).</translation>
 <translation id="4233778200880751280">Ayikwazanga ukulayisha ikhasi elimayelana ne-'<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Yehlulekile ukukhipha ukhiye oyimfihlo.</translation>

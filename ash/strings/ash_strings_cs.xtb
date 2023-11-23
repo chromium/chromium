@@ -294,6 +294,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2224075387478458881">Když je viditelný chráněný obsah, nahrávání obrazovky je zakázáno</translation>
 <translation id="2227179592712503583">Odebrat návrh</translation>
 <translation id="2248634276911611268">Otevřít odkaz na nové kartě a přepnout na tuto novou kartu</translation>
+<translation id="2253808149208613283">Nainstalujte aplikaci k přizpůsobení tohoto zařízení</translation>
 <translation id="225680501294068881">Vyhledávání zařízení…</translation>
 <translation id="2257486738914982088">Při stahování souboru <ph name="FILENAME" /> se něco pokazilo</translation>
 <translation id="2258734398699965611">Navrhované soubory</translation>
@@ -650,6 +651,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3659667652322717492">Chování mikrofonu můžete kdykoli později změnit.</translation>
 <translation id="3659814201068740063">Zbývá asi: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Připojte zařízení k napájení.</translation>
+<translation id="3660860940251915011">Přepnout vysokou viditelnost pro <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
 <translation id="3666266999138159418">Plovoucí okno skryjete přejetím prstem</translation>
 <translation id="367531336287639526">Vybrat první ikonu vlevo od adresního řádku</translation>
@@ -980,6 +982,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Upraveno: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Plocha 16</translation>
 <translation id="4989163558385430922">Zobrazit vše</translation>
 <translation id="5003993274120026347">Další věta</translation>

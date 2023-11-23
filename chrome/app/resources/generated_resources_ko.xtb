@@ -469,6 +469,7 @@
 <translation id="1370384480654163477">이 사이트를 마지막으로 방문했을 때의 파일을 보고 수정합니다.</translation>
 <translation id="1372841398847029212">내 계정에 동기화</translation>
 <translation id="1373176046406139583">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="1373600239834196313">Chrome 메뉴를 통해 대부분의 측면 패널 기능을 열 수 있습니다.</translation>
 <translation id="1374844444528092021">네트워크 '<ph name="NETWORK_NAME" />'에 필요한 인증서가 설치되지 않았거나 더 이상 유효하지 않습니다. 새로운 인증서를 받아 다시 연결하세요.</translation>
 <translation id="1375557162880614858">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="1375938286942050085">설정이 완료되었습니다. 기기에서 게임을 즐길 준비를 하세요</translation>
@@ -1024,6 +1025,7 @@
 <translation id="177989070088644880">앱(<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">그룹 닫기</translation>
 <translation id="1780273119488802839">북마크 가져오기...</translation>
+<translation id="1780572199786401845">불쾌감을 주거나 안전하지 않은 콘텐츠를 신고합니다.</translation>
 <translation id="178092663238929451">주변의 사람과 파일을 주고받으려면 Nearby Share를 설정하세요.</translation>
 <translation id="1781291988450150470">현재 PIN</translation>
 <translation id="1781502536226964113">새 탭 페이지 열기</translation>
@@ -2874,6 +2876,7 @@
 <translation id="3189187154924005138">큰 커서</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
 <translation id="3191625924275846436">{NUM_SITES,plural, =1{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제되었습니다.}other{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제되었습니다.}}</translation>
+<translation id="3192586965067888278">문제를 자세히 설명해 주세요. 의견은 Google에 전송되어 검토자의 검토를 거치며 Google 제품 및 서비스의 개선이나 개발에 사용될 수 있습니다.</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3193695589337931419">시스템 신호 유틸리티</translation>
 <translation id="3194786596445804250">서드 파티 쿠키 차단에 관한 세부정보 표시</translation>
@@ -6979,6 +6982,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6504601948739128893">기기에 설치된 글꼴을 사용할 수 없음</translation>
 <translation id="6504611359718185067">프린터를 추가하려면 인터넷에 연결하세요.</translation>
 <translation id="6506374932220792071">SHA-256을 포함한 X9.62 ECDSA 서명</translation>
+<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"에서 기기에 다음 앱을 설치하려고 합니다.}other{"<ph name="APP_NAME" />"에서 기기에 다음 앱을 설치하려고 합니다.}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> 관련</translation>
 <translation id="6508261954199872201">애플리케이션:<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">미디어 라이선스</translation>
@@ -10029,6 +10033,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> 개인 정보를 보호하기 위해 Chromium에서는 방문한 지 4주 이상 된 사이트를 목록에서 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 사이트에서 관심분야를 정의하는 것을 원치 않으면 해당 사이트를 삭제하면 됩니다.</translation>
 <translation id="8884570509232205463">기기가 <ph name="UNLOCK_TIME" />에 잠깁니다.</translation>
 <translation id="8888253246822647887">업그레이드가 종료되면 앱이 열립니다. 업그레이드하는 데 몇 분 정도 걸릴 수 있습니다.</translation>
+<translation id="8888459276890791557">측면 패널을 고정하여 쉽게 액세스할 수 있습니다.</translation>
 <translation id="8889294078294184559">브라우징을 계속하면 사이트에서 Chrome을 통해 이를 확인하고 이전에 방문한 적이 있는 이전 사이트로 내가 실제 사람인지 확인할 수 있습니다.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" />에서 다음 파일과 폴더를 수정할 수 있습니다.</translation>
 <translation id="8890170499370378450">모바일 데이터 요금이 발생할 수 있음</translation>

@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No se ha podido reemplazar el archivo .crx. Comprueba si se está utilizando el archivo.</translation>
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
-<translation id="3302709122321372472">No se ha podido cargar el archivo CSS "<ph name="RELATIVE_PATH" />" para el script de contenido.</translation>
 <translation id="3369521687965833290">No se puede descomprimir la extensión. Para descomprimir de forma segura una extensión, debe existir una ruta al directorio de tu perfil que comience con una letra de unidad y que no incluya ninguna unión, ningún punto de montaje ni ningún enlace simbólico. No existe ninguna ruta de este tipo para tu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor de entrada de la clave privada debe ser una ruta válida.</translation>
 <translation id="388442998277590542">No se ha podido cargar la página de opciones "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Se ha producido un error al firmar la extensión.</translation>
-<translation id="39964277676607559">No se ha podido cargar la ruta "<ph name="RELATIVE_PATH" />" de JavaScript para el script de contenido.</translation>
 <translation id="4115165561519362854">El administrador de este equipo requiere que <ph name="EXTENSION_NAME" /> tenga como mínimo la versión <ph name="EXTENSION_VERSION" />. No se puede habilitar hasta que se haya actualizado a esa versión (o superior).</translation>
 <translation id="4233778200880751280">No se ha podido cargar la página de información (<ph name="ABOUT_PAGE" />).</translation>
 <translation id="471800408830181311">Se ha producido un error al generar la clave privada.</translation>

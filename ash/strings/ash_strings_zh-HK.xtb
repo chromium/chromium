@@ -294,6 +294,7 @@
 <translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2248634276911611268">在新分頁中開啟連結並切換至此新分頁</translation>
+<translation id="2253808149208613283">安裝可自訂這部裝置的應用程式</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2257486738914982088">下載「<ph name="FILENAME" />」時發生錯誤</translation>
 <translation id="2258734398699965611">建議檔案</translation>
@@ -650,7 +651,7 @@
 <translation id="3659667652322717492">您稍後可隨時變更麥克風行為。</translation>
 <translation id="3659814201068740063">約餘下 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 請將裝置接上電源。</translation>
-<translation id="3660860940251915011">將<ph name="FEATURE_NAME" />功能切換為向附近的所有裝置顯示</translation>
+<translation id="3660860940251915011">將「<ph name="FEATURE_NAME" />」功能切換為是否向附近的所有裝置顯示</translation>
 <translation id="366222428570480733">受管理嘅使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">滑動即可隱藏浮動視窗</translation>
 <translation id="367531336287639526">選取網址列左方的第一個圖示</translation>
@@ -980,7 +981,7 @@
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />：
         <ph name="NOTIFICATION_1" />；
         <ph name="NOTIFICATION_2" />；以及 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
-<translation id="4981175556418720939">修改時間：<ph name="DATE_AND_TIME" /></translation>
+<translation id="4981175556418720939">上次修改時間：<ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="4989163558385430922">查看全部</translation>
 <translation id="5003993274120026347">下一句</translation>
@@ -1440,6 +1441,7 @@
 <translation id="6827049576281411231">閂活動面板</translation>
 <translation id="6831561626108366035">去<ph name="ACTIVE_STATE" />嘅「<ph name="DESK_NAME" />」掣。</translation>
 <translation id="6836499262298959512">危險檔案</translation>
+<translation id="6837621009301897464">如要擷取螢幕截圖，請按下：</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
 <translation id="6855029042976311970">剛剛編輯過</translation>
 <translation id="6856708615407876657">切換搜尋結果類別</translation>

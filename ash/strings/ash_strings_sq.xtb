@@ -650,6 +650,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3659667652322717492">Mund ta ndryshosh sjelljen e mikrofonit në çdo kohë më vonë.</translation>
 <translation id="3659814201068740063">Të mbetura: rreth <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Lidhe pajisjen me një burim të energjisë elektrike.</translation>
+<translation id="3660860940251915011">Aktivizo/çaktivizo dukshmërinë e lartë për "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3666266999138159418">Rrëshqit shpejt për të fshehur dritaren pluskuese</translation>
 <translation id="367531336287639526">Zgjidh ikonën e parë në të majtë të shiritit të adresave</translation>
@@ -980,6 +981,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">Modifikuar: <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">Tavolina e punës 16</translation>
 <translation id="4989163558385430922">Shiko të gjitha</translation>
 <translation id="5003993274120026347">Fjalia tjetër</translation>

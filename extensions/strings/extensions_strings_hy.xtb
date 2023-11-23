@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Չհաջողվեց փոխարինել crx ֆայլը: Ստուգեք՝ արդյոք ֆայլը չի օգտագործվում այս պահին:</translation>
 <translation id="3163201441334626963">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից</translation>
-<translation id="3302709122321372472">Չհաջողվեց բեռնել css «<ph name="RELATIVE_PATH" />»-ը բովանդակության սկրիպտի համար:</translation>
 <translation id="3369521687965833290">Հնարավոր չէ փաթեթից դուրս բերել ընդլայնումը: Ընդլայնումն ապահով կերպով դուրս բերելու համար պետք է նշվի ձեր պրոֆիլի գրացուցակ տանող ուղին, որը սկսվում է հիշասարքի տառով և չի պարունակում փաթեթների միաձուլման հարաչափ, կապակցման կետ կամ նշանային հղում: Ձեր պրոֆիլի համար չկա այդպիսի ուղի:</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Մասնավոր բանալու համար ներածման արժեքը պետք է ճիշտ ուղի լինի:</translation>
 <translation id="388442998277590542">Չհաջողվեց բեռնել «<ph name="OPTIONS_PAGE" />» ընտրանքների էջը:</translation>
 <translation id="3984413272403535372">Ընդլայնումը ստորագրելիս սխալ առաջացավ:</translation>
-<translation id="39964277676607559">Չհաջողվեց բեռնել javascript-ի «<ph name="RELATIVE_PATH" />»-ը բովանդակության սկրիպտի համար:</translation>
 <translation id="4115165561519362854">Այս համակարգչի ադմինիստրատորը պահանջում է, որպեսզի <ph name="EXTENSION_NAME" />-ը լինի առնվազն <ph name="EXTENSION_VERSION" /> տարբերակով: Այն հնարավոր չէ միացնել մինչև չթարմացվի այդ տարբերակով (կամ ավելի բարձր տարբերակով):</translation>
 <translation id="4233778200880751280">Չհաջողվեց բեռնել տեղեկությունների էջը` «<ph name="ABOUT_PAGE" />»:</translation>
 <translation id="471800408830181311">Չհաջողվեց արտածել մասնավոր բանալին:</translation>

@@ -408,6 +408,7 @@
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3087734570205094154">底部</translation>
+<translation id="3090455602619185166">使用受管理的账号登录</translation>
 <translation id="309710370695886264">您有 1 个重复使用的密码。请立即修正它以确保安全。</translation>
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
@@ -572,6 +573,7 @@
 <translation id="4002066346123236978">标题</translation>
 <translation id="4004204301268239848">系统会将密码保存在您的 Google 账号中，以便您在任意设备上使用。</translation>
 <translation id="4018310736049373830">管理我的活动记录</translation>
+<translation id="4021931095789478915">将 ${url} 添加到阅读清单</translation>
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
 <translation id="4042870976416480368">在网页中查找</translation>
 <translation id="40433179647657191">为您突出显示的部分网页内容创建直接链接并分享。</translation>
@@ -1230,7 +1232,7 @@
 <translation id="7466693328838535498">在“搜索小组件”框中，输入“Chrome”</translation>
 <translation id="746684838091935575">3. 选择“Chrome”</translation>
 <translation id="7472734401283673885">公司名称</translation>
-<translation id="7473891865547856676">不，谢谢</translation>
+<translation id="7473891865547856676">不用了</translation>
 <translation id="7488874549363591659">已送达</translation>
 <translation id="7491131399623468277">前往“设置”…</translation>
 <translation id="7492574581995589075">贵组织已关闭在您的 Google 账号中保存 Chrome 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
@@ -1441,6 +1443,7 @@
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
+<translation id="8569721750632860947">您想向阅读清单中添加哪些网址？</translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="8593565399399144771">您可在此处打开新标签页。</translation>

@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Non se puido substituír o ficheiro crx. Comproba se se está utilizando o ficheiro.</translation>
 <translation id="3163201441334626963">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Non se puido cargar css "<ph name="RELATIVE_PATH" />" para o script de contido.</translation>
 <translation id="3369521687965833290">Non se pode descomprimir a extensión. Para descomprimir unha extensión de xeito seguro, debe haber unha ruta ao directorio do teu perfil que empece pola letra dunha unidade e non conteña unha unión, un punto de montaxe ou unha ligazón simbólica. Non existe ningunha ruta deste tipo para o teu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor de entrada da clave privada debe ser unha ruta válida.</translation>
 <translation id="388442998277590542">Non se puido cargar a páxina de opcións "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erro ao asinar a extensión.</translation>
-<translation id="39964277676607559">Non se puido cargar "<ph name="RELATIVE_PATH" />" de javascript para o script do contido.</translation>
 <translation id="4115165561519362854">O administrador deste dispositivo require que <ph name="EXTENSION_NAME" /> teña como mínimo a versión <ph name="EXTENSION_VERSION" />. Non se pode activar ata que se actualice a esa versión ou a unha superior.</translation>
 <translation id="4233778200880751280">Non se puido cargar a páxina de información <ph name="ABOUT_PAGE" />.</translation>
 <translation id="471800408830181311">Erro ao emitir a clave privada.</translation>

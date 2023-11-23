@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1510341833810331442">Os sites não podem salvar dados no seu dispositivo</translation>
 <translation id="1547123415014299762">Cookies de terceiros são permitidos</translation>
 <translation id="1568470248891039841">Os sites que você visita podem incorporar conteúdo de outros sites, como imagens, anúncios e texto. Esses outros sites podem pedir permissão para usar informações que salvaram sobre você durante a navegação. <ph name="BEGIN_LINK" />Saber mais sobre conteúdo incorporado<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Local</translation>
 <translation id="5690795753582697420">A câmera está desativada nas configurações do Android</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> pode usar suas informações enquanto você navega</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5706552988683188916">Essa ação vai excluir cookies e outros dados do site <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Os cookies de terceiros são bloqueados no modo de navegação anônima</translation>
@@ -314,6 +316,7 @@
 <translation id="6262279340360821358">Bloqueadas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> está impedido de usar suas informações em</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6344622098450209924">Proteção antirrastreamento</translation>
 <translation id="6367753977865761591">Bloqueie o login de terceiros em um site específico.</translation>

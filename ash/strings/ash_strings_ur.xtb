@@ -650,6 +650,7 @@
 <translation id="3659667652322717492">آپ بعد میں مائیک کے برتاؤ کو کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="3659814201068740063">تقریباً <ph name="TIME_LEFT" /> باقی ہے (%<ph name="PERCENTAGE" />)۔
 اپنے آلے کو پاور سے منسلک کریں۔</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> کی اعلی مرئیت کو ٹوگل کریں</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="3666266999138159418">فلوٹنگ ونڈو کو چھپانے کے لیے سوائپ کریں</translation>
 <translation id="367531336287639526">ایڈریس بار کے بائیں جانب موجود پہلے آئیکن کو منتخب کریں</translation>
@@ -980,6 +981,7 @@
         <ph name="NOTIFICATION_1" />،
         <ph name="NOTIFICATION_2" />،
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> کو ترمیم کیا گیا</translation>
 <translation id="4987738733603015246">ڈیسک 16</translation>
 <translation id="4989163558385430922">سبھی دیکھیں</translation>
 <translation id="5003993274120026347">اگلا جملہ</translation>
@@ -1439,6 +1441,7 @@
 <translation id="6827049576281411231">ایونٹ پینل بند کریں</translation>
 <translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> بٹن پر جائیں۔</translation>
 <translation id="6836499262298959512">خطرناک فائل</translation>
+<translation id="6837621009301897464">اسکرین شاٹ لینے کے لیے، دبائیں</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
 <translation id="6855029042976311970">ابھی ابھی ترمیم کی گئی ہے</translation>
 <translation id="6856708615407876657">تلاش کے نتیجے کے زمرے کو ٹوگل کریں</translation>

@@ -29,6 +29,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Wastani (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ondoa</translation>
+<translation id="1191518099344003522">APN imewashwa.</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
 <translation id="1195784767091936222">Washa hali nyeusi kiotomatiki</translation>
 <translation id="1196959502276349371">Toleo la <ph name="VERSION" /></translation>
@@ -81,6 +82,7 @@
 <translation id="1515129336378114413">ukurasa wa kwanza wa kivinjari</translation>
 <translation id="1526389707933164996">Uhuishaji wa taswira ya skrini</translation>
 <translation id="152892567002884378">Ongeza sauti</translation>
+<translation id="1539242642795599947">APN ni ya chaguomsingi na ya kuambatisha.</translation>
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">rangi ya mwangaza wa nyuma</translation>
@@ -441,6 +443,7 @@
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Kitufe cha <ph name="KEY_NAME" /> kimebonyezwa</translation>
 <translation id="4354430579665871434">bonyeza vitufe</translation>
+<translation id="4361257691546579041">APN ni ya chaguomsingi.</translation>
 <translation id="437294888293595148">Weka upya njia za mkato</translation>
 <translation id="4378373042927530923">Usitekeleze</translation>
 <translation id="4378551569595875038">Inaunganisha...</translation>
@@ -661,6 +664,7 @@
 <translation id="5946538341867151940">Bado hujaunganishwa. Ikiwa mtoa huduma za simu anapendekeza APN maalum, weka maelezo ya APN kwa kuchagua "+ APN Mpya"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Mandhari chaguomsingi</translation>
+<translation id="6001235009374883388">APN ni ya kuambatisha.</translation>
 <translation id="6017514345406065928">Kijani</translation>
 <translation id="6019566113895157499">Njia za Mikato za Kibodi</translation>
 <translation id="6034694447310538551">Washa uwekaji upya wa data kiotomatiki kila mwezi</translation>
@@ -828,6 +832,7 @@
 <translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7180865173735832675">Binafsisha</translation>
 <translation id="7184043045742675738">Bofya kitufe chochote ili kuweka mapendeleo katika kitufe chako. Badilisha nafasi ya kitufe ukitumia kipanya au vitufe vya vishale.</translation>
+<translation id="7212547870105584639">Dhibiti mipangilio ya APN ya mtandao. APN huanzisha muunganisho kati ya mtandao wa simu na intaneti. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Masasisho ya programu dhibiti kwa vifaa vya nje</translation>
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
 <translation id="725133483556299729">Chagua barua pepe</translation>

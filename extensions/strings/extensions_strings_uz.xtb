@@ -18,14 +18,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX-faylini almashtirib bo‘lmadi. U ish faoliyatida emasligini tekshirib ko‘ring.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">Kontent skripti uchun “<ph name="RELATIVE_PATH" />” css’ni yuklab bo‘lmadi.</translation>
 <translation id="3369521687965833290">Kengaytmani arxivdan chiqarib bo‘lmadi. Havfsiz chiqarib olish uchun profilingiz jildiga belgilarsiz yo‘l havolasini ko‘rsatish kerak. Profilingizda bunday havola mavjud emas.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> tomonidan ishlab chiqaruvchilgan <ph name="PRODUCT_NAME" /> mahsuloti (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Shaxsiy kalit uchun faqat yaroqli yo‘l ko‘rsatish mumkin.</translation>
 <translation id="388442998277590542"><ph name="OPTIONS_PAGE" /> parametrlar sahifasini yuklab bo‘lmadi.</translation>
 <translation id="3984413272403535372">Kengaytma imzolanishida xatolik yuz berdi.</translation>
-<translation id="39964277676607559">Kontent skripti uchun “<ph name="RELATIVE_PATH" />” javascriptni yuklab bo‘lmadi.</translation>
 <translation id="4115165561519362854">Administrator “<ph name="EXTENSION_NAME" />” ilovasini ishga tushirish uchun kamida <ph name="EXTENSION_VERSION" /> versiyasi o‘rnatilgan bo‘lishi kerakligini tayinlagan. Ilovani yangilang.</translation>
 <translation id="4233778200880751280"><ph name="ABOUT_PAGE" /> sahifasini yuklab bo‘lmadi.</translation>
 <translation id="471800408830181311">Xususiy kalitni chiqarib olib bo‘lmadi.</translation>

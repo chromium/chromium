@@ -18,14 +18,12 @@
 <translation id="3115238746683532089">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Échec lors du remplacement du fichier CRX. Vérifiez qu'il n'est pas en cours d'utilisation.</translation>
 <translation id="3163201441334626963">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Échec de chargement du fichier css « <ph name="RELATIVE_PATH" /> » pour le script de contenu.</translation>
 <translation id="3369521687965833290">Impossible de décompacter l'extension. Pour effectuer cette opération en toute sécurité, vous devez disposer d'un chemin d'accès à votre répertoire de profils commençant par une lettre de lecteur et ne contenant ni jonction, ni point de montage, ni lien symbolique. Aucun chemin de ce type n'existe pour votre profil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numéro de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vous devez indiquer un chemin valide comme valeur de clé privée.</translation>
 <translation id="388442998277590542">Échec de chargement de la page d'options « <ph name="OPTIONS_PAGE" /> ».</translation>
 <translation id="3984413272403535372">Une erreur s'est produite lors de la signature de l'extension.</translation>
-<translation id="39964277676607559">Impossible de charger le fichier JavaScript « <ph name="RELATIVE_PATH" /> » du script de contenu.</translation>
 <translation id="4115165561519362854">L’administrateur de cette machine nécessite la version <ph name="EXTENSION_VERSION" /> ou ultérieure de <ph name="EXTENSION_NAME" />. L'activation sera impossible tant que la mise à jour vers cette version (ou une version ultérieure) n'aura pas été effectuée.</translation>
 <translation id="4233778200880751280">Impossible de charger la page « <ph name="ABOUT_PAGE" /> ».</translation>
 <translation id="471800408830181311">Échec de création de la clé privée</translation>
