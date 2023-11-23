@@ -29,6 +29,7 @@ namespace ash {
 class KioskLaunchController;
 class LoginFeedback;
 class OobeMetricsHelper;
+class OobeCrosEventsMetrics;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI
 // implementation - the goal is to reduce code duplication between
@@ -168,6 +169,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   base::CallbackListSubscription app_terminating_subscription_;
 
   std::unique_ptr<OobeMetricsHelper> oobe_metrics_helper_;
+
+  std::unique_ptr<OobeCrosEventsMetrics> oobe_cros_events_metrics_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

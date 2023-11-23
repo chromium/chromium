@@ -261,7 +261,7 @@ void OobeMetricsHelper::RecordOnboadingComplete(
     base::Time oobe_start_time,
     base::Time onboarding_start_time) {
   for (auto& observer : observers_) {
-    observer.OnOnboadingCompleted();
+    observer.OnOnboardingCompleted();
   }
 
   if (!oobe_start_time.is_null()) {
@@ -288,6 +288,12 @@ void OobeMetricsHelper::RecordEnrollingUserType() {
       prefs::kOobeIsConsumerSegment);
   base::UmaHistogramBoolean("OOBE.Enrollment.IsUserEnrollingAConsumer",
                             is_consumer);
+}
+
+void OobeMetricsHelper::RecordDeviceRegistered() {
+  for (auto& observer : observers_) {
+    observer.OnDeviceRegistered();
+  }
 }
 
 void OobeMetricsHelper::RecordChromeVersion() {

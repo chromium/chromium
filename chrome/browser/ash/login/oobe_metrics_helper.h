@@ -57,7 +57,10 @@ class OobeMetricsHelper {
     virtual void OnOnboardingStarted() {}
 
     // Invoked when `onboarding complete` metrics are being reported.
-    virtual void OnOnboadingCompleted() {}
+    virtual void OnOnboardingCompleted() {}
+
+    // Invoked when `device registered` metrics are being reported.
+    virtual void OnDeviceRegistered() {}
   };
 
   OobeMetricsHelper();
@@ -92,6 +95,9 @@ class OobeMetricsHelper {
   // that the start time is not available.
   void RecordOnboadingComplete(base::Time oobe_start_time,
                                base::Time onboarding_start_time);
+
+  // Called when `StartupUtils::MarkDeviceRegistered()` is called.
+  void RecordDeviceRegistered();
 
   // Called when `ShowEnrollmentScreen()` is called.
   void RecordEnrollingUserType();

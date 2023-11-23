@@ -646,6 +646,200 @@
     </metric>
   </event>
 
+  <event name="OOBE.OobeStarted">
+    <summary>
+      Recorded at the first start of OOBE before the first OOBE screen is shown.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is in OOBE flow for ChromeOS Flex.
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PreLoginOobeCompleted">
+    <summary>
+      Recorded after the completion of the pre-login part of the flow.
+    </summary>
+    <metric name="CompletedFlowType" type="int">
+      <summary>
+        Enum representing the type of completed pre-login OOBE flow. This enum
+        should map to ash::OobeMetricsHelper::CompletedPreLoginOobeFlowType.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.DeviceRegistered">
+    <summary>
+      Recorded after the completion of the pre-login part of the flow.
+    </summary>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OobeCompleted">
+    <summary>
+      Recorded after the completion of the last screen in the onboarding flow and
+      before the start of the session for the first user.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OnboardingStarted">
+    <summary>
+      Recorded after a new user logs-in and before the first onboarding screen is
+      shown.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.OnboardingCompleted">
+    <summary>
+      Recorded after the completion of the last screen in the onboarding flow and
+      before the start of the session.
+    </summary>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
