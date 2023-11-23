@@ -789,8 +789,12 @@ void GaiaScreenHandler::CompleteAuthWithCookies(
 void GaiaScreenHandler::RecordCompleteAuthenticationMetrics(
     const ash::login::OnlineSigninArtifacts& signin_artifacts) {
   if (!signin_artifacts.using_saml) {
-    base::UmaHistogramEnumeration("OOBE.GaiaScreen.SuccessLoginRequests",
-                                  login_request_variant_);
+    if (LoginDisplayHost::default_host()) {
+      LoginDisplayHost::default_host()
+          ->GetOobeMetricsHelper()
+          ->RecordGaiaSignInCompleted(login_request_variant_);
+    }
+
     // Report whether the password has characters ignored by Gaia
     // (leading/trailing whitespaces).
     base::UmaHistogramBoolean(
@@ -1047,8 +1051,11 @@ void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
 }
 
 void GaiaScreenHandler::HandlePasswordEntered() {
-  base::UmaHistogramEnumeration("OOBE.GaiaScreen.LoginRequests",
-                                login_request_variant_);
+  if (LoginDisplayHost::default_host()) {
+    LoginDisplayHost::default_host()
+        ->GetOobeMetricsHelper()
+        ->RecordGaiaSignInRequested(login_request_variant_);
+  }
 }
 
 void GaiaScreenHandler::HandleShowLoadingTimeoutError() {

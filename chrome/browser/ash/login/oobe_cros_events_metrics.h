@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 
 namespace ash {
 
@@ -29,6 +30,8 @@ class OobeCrosEventsMetrics : public OobeMetricsHelper::Observer {
       OobeMetricsHelper::ScreenShownStatus status) override;
   void OnScreenExited(OobeScreenId screen,
                       const std::string& exit_reason) override;
+  void OnGaiaSignInRequested(GaiaView::GaiaLoginVariant variant) override;
+  void OnGaiaSignInCompleted(GaiaView::GaiaLoginVariant variant) override;
 };
 
 }  // namespace ash

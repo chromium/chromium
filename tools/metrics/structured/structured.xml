@@ -646,6 +646,100 @@
     </metric>
   </event>
 
+  <event name="OOBE.GaiaSigninRequested">
+    <summary>
+      Recorded after the password is entered for authentication in the GAIA Sign-
+      in screen. Note: this is not recorded for SAML flows.
+    </summary>
+    <metric name="IsReauthentication" type="int">
+      <summary>
+        Boolean for whether the sign-in is for the online reauthintication an
+        existing user.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.GaiaSigninCompleted">
+    <summary>
+      Recorded after a successful authentication in the GAIA Sign-in screen. Note:
+      this is not recorded for SAML flows.
+    </summary>
+    <metric name="IsReauthentication" type="int">
+      <summary>
+        Boolean for whether the sign-in is for the online reauthintication an
+        existing user.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
   <event name="OOBE.OobeStarted">
     <summary>
       Recorded at the first start of OOBE before the first OOBE screen is shown.

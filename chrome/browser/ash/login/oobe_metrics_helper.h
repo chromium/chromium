@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 
 namespace ash {
 
@@ -61,6 +62,12 @@ class OobeMetricsHelper {
 
     // Invoked when `device registered` metrics are being reported.
     virtual void OnDeviceRegistered() {}
+
+    // Invoked when `GAIA sign-in request` metrics are being reported.
+    virtual void OnGaiaSignInRequested(GaiaView::GaiaLoginVariant variant) {}
+
+    // Invoked when `GAIA sign-in complete` metrics are being reported.
+    virtual void OnGaiaSignInCompleted(GaiaView::GaiaLoginVariant variant) {}
   };
 
   OobeMetricsHelper();
@@ -98,6 +105,13 @@ class OobeMetricsHelper {
 
   // Called when `StartupUtils::MarkDeviceRegistered()` is called.
   void RecordDeviceRegistered();
+
+  // Called after the user enters the password in GAIA flow and continues to the
+  // authentication.
+  void RecordGaiaSignInRequested(GaiaView::GaiaLoginVariant variant);
+
+  // Called after GAIA authentication is completed successfully
+  void RecordGaiaSignInCompleted(GaiaView::GaiaLoginVariant variant);
 
   // Called when `ShowEnrollmentScreen()` is called.
   void RecordEnrollingUserType();

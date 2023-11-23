@@ -10,12 +10,14 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/metrics/structured/structured_events.h"
@@ -153,6 +155,44 @@ IN_PROC_BROWSER_TEST_F(OobeMetricsTest, PageSkipped) {
       .SetIsOwnerUser(true)
       .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
   ValidateEventRecorded(page_skipped_event);
+}
+
+IN_PROC_BROWSER_TEST_F(OobeMetricsTest, SignInEvents) {
+  // `login_manager_mixin_.LoginAsNewRegularUser()` can not be used in this test
+  // since a simulation of login steps are required to get Sign-in events
+  // recorded.
+  WizardController::default_controller()->AdvanceToScreen(GaiaView::kScreenId);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"gaia-signin", "signin-frame-dialog"})
+      ->Wait();
+  LoginDisplayHost::default_host()
+      ->GetOobeUI()
+      ->GetView<GaiaScreenHandler>()
+      ->ShowSigninScreenForTest(FakeGaiaMixin::kFakeUserEmail,
+                                FakeGaiaMixin::kFakeUserPassword,
+                                FakeGaiaMixin::kEmptyUserServices);
+  test::WaitForConsolidatedConsentScreen();
+
+  cros_events::OOBE_GaiaSigninRequested signin_requested_event;
+  signin_requested_event.SetIsReauthentication(false)
+      .SetIsFlexFlow(false)
+      .SetIsDemoModeFlow(false)
+      .SetIsEphemeralOrMGS(false)
+      .SetIsFirstOnboarding(false)
+      .SetIsOwnerUser(false)
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
+  ValidateEventRecorded(signin_requested_event);
+
+  cros_events::OOBE_GaiaSigninCompleted signin_completed_event;
+  signin_completed_event.SetIsReauthentication(false)
+      .SetIsFlexFlow(false)
+      .SetIsDemoModeFlow(false)
+      .SetIsEphemeralOrMGS(false)
+      .SetIsFirstOnboarding(false)
+      .SetIsOwnerUser(false)
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
+  ValidateEventRecorded(signin_completed_event);
 }
 
 class FirstUserOobeMetricsTest : public OobeMetricsTest {

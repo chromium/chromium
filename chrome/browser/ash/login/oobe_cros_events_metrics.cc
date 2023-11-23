@@ -163,4 +163,32 @@ void OobeCrosEventsMetrics::OnScreenExited(OobeScreenId screen,
       .Record();
 }
 
+void OobeCrosEventsMetrics::OnGaiaSignInRequested(
+    GaiaView::GaiaLoginVariant variant) {
+  cros_events::OOBE_GaiaSigninRequested()
+      .SetIsReauthentication(variant ==
+                             GaiaView::GaiaLoginVariant::kOnlineSignin)
+      .SetIsFlexFlow(IsFlexFlow())
+      .SetIsDemoModeFlow(IsDemoModeFlow())
+      .SetIsOwnerUser(IsOwnerUser())
+      .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+      .SetIsFirstOnboarding(IsFirstOnboarding())
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+      .Record();
+}
+
+void OobeCrosEventsMetrics::OnGaiaSignInCompleted(
+    GaiaView::GaiaLoginVariant variant) {
+  cros_events::OOBE_GaiaSigninCompleted()
+      .SetIsReauthentication(variant ==
+                             GaiaView::GaiaLoginVariant::kOnlineSignin)
+      .SetIsFlexFlow(IsFlexFlow())
+      .SetIsDemoModeFlow(IsDemoModeFlow())
+      .SetIsOwnerUser(IsOwnerUser())
+      .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+      .SetIsFirstOnboarding(IsFirstOnboarding())
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+      .Record();
+}
+
 }  // namespace ash

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -281,6 +282,25 @@ void OobeMetricsHelper::RecordOnboadingComplete(
                                   base::Milliseconds(1), base::Minutes(30),
                                   100);
   }
+}
+
+void OobeMetricsHelper::RecordGaiaSignInRequested(
+    GaiaView::GaiaLoginVariant variant) {
+  for (auto& observer : observers_) {
+    observer.OnGaiaSignInRequested(variant);
+  }
+
+  base::UmaHistogramEnumeration("OOBE.GaiaScreen.LoginRequests", variant);
+}
+
+void OobeMetricsHelper::RecordGaiaSignInCompleted(
+    GaiaView::GaiaLoginVariant variant) {
+  for (auto& observer : observers_) {
+    observer.OnGaiaSignInCompleted(variant);
+  }
+
+  base::UmaHistogramEnumeration("OOBE.GaiaScreen.SuccessLoginRequests",
+                                variant);
 }
 
 void OobeMetricsHelper::RecordEnrollingUserType() {
