@@ -1050,7 +1050,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
     <ph name="LINE_BREAKS2" />
     Isso não afetará apps ou conteúdo em outros dispositivos.</translation>
 <translation id="1809734401532861917">Adicionar meus favoritos, histórico, senhas e outras configurações a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Para usar as senhas salvas no smartphone, siga o código QR, faça o download do Chrome para iOS e faça login na sua Conta do Google.</translation>
+<translation id="1810070166657251157">Para usar as senhas salvas no smartphone, faça o download do Chrome para iOS usando o código QR e entre na sua Conta do Google.</translation>
 <translation id="1810366086647840386">Servidor da imagem</translation>
 <translation id="1811908311154949291">Frame isolado em modo de navegação anônima: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812284620455788548">Transmitindo <ph name="TAB_NAME" /></translation>
@@ -6547,7 +6547,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6242852299490624841">Focar esta guia</translation>
 <translation id="6243774244933267674">Servidor não disponível</translation>
 <translation id="6244245036423700521">Importar arquivo ONC</translation>
-<translation id="6245523954602476652">Você pode acessá-lo no Gerenciador de senhas do Google.</translation>
+<translation id="6245523954602476652">Você pode acessá-la no Gerenciador de senhas do Google.</translation>
 <translation id="6246790815526961700">Upload do dispositivo</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
 <translation id="6247620186971210352">Nenhum app encontrado</translation>
