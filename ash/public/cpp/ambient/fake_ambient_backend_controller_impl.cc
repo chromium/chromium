@@ -33,8 +33,8 @@ constexpr char kFakeUrl[] = "chrome://ambient";
 
 constexpr char kFakeDetails[] = "fake-photo-attribution";
 
-constexpr std::array<const char*, 2> kFakeBackupPhotoUrls = {kFakeUrl,
-                                                             kFakeUrl};
+constexpr std::array<const char*, 2> kFakeBackupPhotoUrls = {
+    "http://fake-backup-photo-1.com", "http://fake-backup-photo-2.com"};
 
 AmbientSettings CreateFakeSettings() {
   AmbientSettings settings;

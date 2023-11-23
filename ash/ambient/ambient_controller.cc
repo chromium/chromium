@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_animation_ui_launcher.h"
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
+#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_cache_settings.h"
 #include "ash/ambient/ambient_slideshow_ui_launcher.h"
 #include "ash/ambient/ambient_ui_launcher.h"
@@ -61,6 +62,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -271,6 +273,10 @@ AmbientController::AmbientController(
     mojo::PendingRemote<device::mojom::Fingerprint> fingerprint)
     : ambient_weather_controller_(std::make_unique<AmbientWeatherController>()),
       fingerprint_(std::move(fingerprint)) {
+  AmbientPhotoCache::SetFileTaskRunner(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
   ambient_backend_controller_ = CreateAmbientBackendController();
 
   // |SessionController| is initialized before |this| in Shell. Necessary to
@@ -1089,8 +1095,7 @@ void AmbientController::OnAmbientUiSettingsChanged() {
   // The UI may just not be optimal. Furthermore, the cache gradually gets
   // overwritten with topics reflecting the new theme anyways, so ambient mode
   // should not be stuck with a mismatched cache indefinitely.
-  CHECK(photo_cache_);
-  photo_cache_->Clear();
+  AmbientPhotoCache::Clear(AmbientPhotoCache::Store::kPrimary);
 
   // The |AmbientUiLauncher| implementation to use is largely dependent on
   // the current |AmbientUiSettings|, so this needs to be recreated.

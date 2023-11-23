@@ -426,8 +426,7 @@ void AmbientBackendControllerImpl::UpdateSettings(
   // changes. Do this synchronously and not in |OnUpdateSettings| to avoid
   // race condition with |AmbientPhotoCache| possibly being destructed if
   // |kAmbientModeEnabled| pref is toggled off.
-  CHECK(ambient_controller->ambient_photo_cache());
-  ambient_controller->ambient_photo_cache()->Clear();
+  AmbientPhotoCache::Clear(AmbientPhotoCache::Store::kPrimary);
 
   ambient_controller->RequestAccessToken(base::BindOnce(
       &AmbientBackendControllerImpl::StartToUpdateSettings,

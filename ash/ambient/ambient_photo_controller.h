@@ -37,6 +37,8 @@ class ImageSkia;
 
 namespace ash {
 
+class AmbientAccessTokenController;
+
 // Class to handle photos in ambient mode.
 //
 // Terminology:
@@ -239,6 +241,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
 
   const raw_ptr<AmbientPhotoCache> photo_cache_;
   const raw_ptr<AmbientPhotoCache> backup_photo_cache_;
+  const raw_ptr<AmbientAccessTokenController> access_token_controller_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
