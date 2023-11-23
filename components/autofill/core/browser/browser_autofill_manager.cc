@@ -2555,8 +2555,11 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // This will hold the fields (and autofill_fields) in the intersection of
   // safe_fields and newly_filled_fields_id.
-  std::vector<const FormFieldData*> safe_newly_filled_fields;
-  std::vector<const AutofillField*> safe_newly_filled_autofill_fields;
+  struct {
+    std::vector<const FormFieldData*> old_values;
+    std::vector<const FormFieldData*> new_values;
+    std::vector<const AutofillField*> cached;
+  } safe_newly_filled_fields;
 
   // Report the fields that were not filled due to the iframe security policy.
   for (FieldGlobalId newly_filled_field_id : newly_filled_field_ids) {
@@ -2564,9 +2567,11 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       // A safe field was filled. Both functions will not return a nullptr
       // because they passed the `FieldFillingSkipReason::kFormChanged`
       // condition.
-      safe_newly_filled_fields.push_back(
+      safe_newly_filled_fields.old_values.push_back(
           form.FindFieldByGlobalId(newly_filled_field_id));
-      safe_newly_filled_autofill_fields.push_back(
+      safe_newly_filled_fields.new_values.push_back(
+          result.FindFieldByGlobalId(newly_filled_field_id));
+      safe_newly_filled_fields.cached.push_back(
           form_structure->GetFieldById(newly_filled_field_id));
       continue;
     }
@@ -2584,8 +2589,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::ActionPersistence::kFill) {
-    form_autofill_history_.AddFormFillEntry(
-        safe_newly_filled_fields, safe_newly_filled_autofill_fields, is_refill);
+    form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields.old_values,
+                                            safe_newly_filled_fields.cached,
+                                            is_refill);
   }
 
   LOG_AF(buffer) << CTag{"table"};
@@ -2594,7 +2600,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                         << std::move(buffer);
 
   NotifyObservers(&Observer::OnFillOrPreviewDataModelForm, form.global_id(),
-                  action_persistence, safe_newly_filled_fields,
+                  action_persistence, safe_newly_filled_fields.new_values,
                   profile_or_credit_card);
 
   // Call OnDidFillSuggestion() to log the metrics.
