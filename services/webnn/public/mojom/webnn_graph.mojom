@@ -166,6 +166,15 @@ struct ElementWiseBinary  {
 // <output_operand> = <operation_kind>(<input_operand>);
 struct ElementWiseUnary  {
   enum Kind {
+    kAbs,
+    kCeil,
+    kCos,
+    kExp,
+    kFloor,
+    kLog,
+    kNeg,
+    kSin,
+    kTan,
     kLogicalNot,
     kIdentity,
     kSqrt,

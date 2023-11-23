@@ -65,6 +65,10 @@ static constexpr DataTypeConstraintSet kFloat = {Operand::DataType::kFloat32,
 static constexpr DataTypeConstraintSet kSignedInteger = {
     Operand::DataType::kInt32, Operand::DataType::kInt8};
 
+static constexpr DataTypeConstraintSet kSignedNumber = {
+    Operand::DataType::kFloat32, Operand::DataType::kFloat16,
+    Operand::DataType::kInt32, Operand::DataType::kInt8};
+
 }  // namespace DataTypeConstraint
 
 std::string DataTypeConstraintToString(

@@ -1411,6 +1411,247 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   }
 }
 
+struct ElementWiseUnaryTester {
+  mojom::ElementWiseUnary::Kind kind;
+  OperandInfo input;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildElementWiseUnary(kind, input_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
+  {
+    // Test building element-wise abs.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kAbs,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise ceil.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kCeil,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise cos.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kCos,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise exp.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kExp,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise floor.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kFloor,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise log.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kLog,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise neg.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kNeg,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise sin.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kSin,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building element-wise tan.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kTan,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4, 5}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise abs graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kAbs,
+                           .input = {.type = mojom::Operand::DataType::kUint32,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kUint32,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise neg graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kNeg,
+                           .input = {.type = mojom::Operand::DataType::kUint8,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kUint8,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise ceil graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kCeil,
+                           .input = {.type = mojom::Operand::DataType::kUint32,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kUint32,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise cos graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kCos,
+                           .input = {.type = mojom::Operand::DataType::kUint32,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kUint32,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise exp graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kExp,
+                           .input = {.type = mojom::Operand::DataType::kUint8,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kUint8,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise floor graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kFloor,
+                           .input = {.type = mojom::Operand::DataType::kInt8,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kInt8,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise log graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kLog,
+                           .input = {.type = mojom::Operand::DataType::kInt32,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kInt32,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise sin graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kSin,
+                           .input = {.type = mojom::Operand::DataType::kUint32,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kUint32,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid element-wise tan graph for the input with unsupported
+    // data type.
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kTan,
+                           .input = {.type = mojom::Operand::DataType::kUint32,
+                                     .dimensions = {1, 2, 3, 4}},
+                           .output = {.type = mojom::Operand::DataType::kUint32,
+                                      .dimensions = {1, 2, 3, 4}},
+                           .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input and output shapes don't match.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kAbs,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output type don't match.
+    ElementWiseUnaryTester{
+        .kind = mojom::ElementWiseUnary::Kind::kCeil,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+}
+
 struct EluTester {
   OperandInfo input;
   OperandInfo output;

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
@@ -526,33 +527,37 @@ bool ValidateElu(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+static constexpr auto kUnaryOperatorConstraints = base::MakeFixedFlatMap<
+    mojom::ElementWiseUnary::Kind,
+    webnn::DataTypeConstraintSet>({
+    {mojom::ElementWiseUnary::Kind::kAbs, DataTypeConstraint::kSignedNumber},
+    {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kCos, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kExp, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kFloor, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kLog, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kNeg, DataTypeConstraint::kSignedNumber},
+    {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kLogicalNot, {Operand::DataType::kUint8}},
+    {mojom::ElementWiseUnary::Kind::kIdentity, DataTypeConstraintSet::All()},
+    {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat},
+    {mojom::ElementWiseUnary::Kind::kReciprocal, DataTypeConstraint::kFloat},
+});
+
 bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
                               const mojom::ElementWiseUnaryPtr& operation) {
-  switch (operation->kind) {
-    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
-      // Only uint8 is supported
-      return ValidateUnaryOperation(id_to_operand_map, operation,
-                                    {Operand::DataType::kUint8});
-    }
-    case mojom::ElementWiseUnary::Kind::kIdentity: {
-      // All data types are supported
-      return ValidateUnaryOperation(id_to_operand_map, operation,
-                                    DataTypeConstraintSet::All());
-    }
-    case mojom::ElementWiseUnary::Kind::kSqrt:
-      [[fallthrough]];
-    case mojom::ElementWiseUnary::Kind::kErf:
-      [[fallthrough]];
-    case mojom::ElementWiseUnary::Kind::kReciprocal: {
-      // Only float data type is supported
-      return ValidateUnaryOperation(id_to_operand_map, operation,
-                                    DataTypeConstraint::kFloat);
-    }
-    case mojom::ElementWiseUnary::Kind::kCast: {
-      return ValidateCastOperation(id_to_operand_map, operation);
-    }
+  // List the validation of cast operator separately because its output data
+  // type is different from the input data type.
+  if (operation->kind == mojom::ElementWiseUnary::Kind::kCast) {
+    return ValidateCastOperation(id_to_operand_map, operation);
   }
-  return false;
+  const auto* constraints_iterator =
+      kUnaryOperatorConstraints.find(operation->kind);
+  CHECK_NE(constraints_iterator, kUnaryOperatorConstraints.end());
+  return ValidateUnaryOperation(id_to_operand_map, operation,
+                                constraints_iterator->second);
 }
 
 bool ValidateExpand(const IdToOperandMap& id_to_operand_map,

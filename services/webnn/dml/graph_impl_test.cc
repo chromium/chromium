@@ -1426,6 +1426,105 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
         .output = test_operand_info_uint8}
         .Test(BuildAndComputeExpectation::kCreateGraphFailure);
   }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {-1, 4, -2, 16, -64, 0}},
+        .kind = mojom::ElementWiseUnary::Kind::kAbs,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {1, 4, 2, 16, 64, 0}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 3},
+                  .values = {-1.1, 0, 1.1, -2.2, 0, 2.2}},
+        .kind = mojom::ElementWiseUnary::Kind::kCeil,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3},
+                   .values = {-1, 0, 2, -2, 0, 3}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1, -2, 3, -4}},
+        .kind = mojom::ElementWiseUnary::Kind::kCos,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2},
+                   .values = {cos(1.f), cos(-2.f), cos(3.f), cos(-4.f)}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1, -2, 3, -4}},
+        .kind = mojom::ElementWiseUnary::Kind::kExp,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2},
+                   .values = {exp(1.f), exp(-2.f), exp(3.f), exp(-4.f)}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = Float16FromFloat32({-1.1, 0, 1.1, -2.2, 0, 2.2})},
+        .kind = mojom::ElementWiseUnary::Kind::kFloor,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = Float16FromFloat32({-2, 0, 1, -3, 0, 2})}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3},
+                  .values = {0, 3, 10}},
+        .kind = mojom::ElementWiseUnary::Kind::kLog,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3},
+                   .values = {log(0.f), log(3.f), log(10.f)}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {-1, 0, 1.1, -2.2, 0, 2}},
+        .kind = mojom::ElementWiseUnary::Kind::kNeg,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {1, 0, -1.1, 2.2, 0, -2}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1, -2, 3, -4}},
+        .kind = mojom::ElementWiseUnary::Kind::kSin,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2},
+                   .values = {sin(1.f), sin(-2.f), sin(3.f), sin(-4.f)}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1, -2, 3, -4}},
+        .kind = mojom::ElementWiseUnary::Kind::kTan,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2},
+                   .values = {tan(1.f), tan(-2.f), tan(3.f), tan(-4.f)}}}
+        .Test();
+  }
 }
 
 template <typename T>

@@ -1110,12 +1110,101 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForUnary(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForNeg(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ElementWiseUnaryPtr& operation,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, operation->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const uint64_t output_id = operation->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  // Set the values of scale and bias terms supplied to identity operator. Scale
+  // and bias have the effect of applying the function g(x) = x * Scale + Bias.
+  // When we set Scale to -1 and Bias to 0, we can simulate identity as negate
+  // operator.
+  DML_SCALE_BIAS scale_bias{.Scale = -1.f, .Bias = 0.f};
+  DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC identity_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .ScaleBias = &scale_bias};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* identity_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_IDENTITY, &identity_operator_desc, inputs);
+  if (!identity_node) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create identity operator to implement "
+                          "WebNN neg operation."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      identity_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
     const IdToOperandMap& id_to_operand_map,
     const mojom::ElementWiseUnaryPtr& operation,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   switch (operation->kind) {
+    case mojom::ElementWiseUnary::Kind::kAbs: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ABS_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_ABS>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kCeil: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_CEIL_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_CEIL>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kCos: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_COS_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_COS>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kExp: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_EXP_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_EXP>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kFloor: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_FLOOR_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_FLOOR>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kLog: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_LOG_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_LOG>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    // TODO(crbug.com/1502731): Implement the negate operator directly by
+    // DML_ELEMENT_WISE_NEGATE_OPERATOR_DESC which is available in
+    // DML_FEATURE_LEVEL_5_0.
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_negate_operator_desc#availability
+    case mojom::ElementWiseUnary::Kind::kNeg: {
+      return CreateOperatorNodeForNeg(id_to_operand_map, operation,
+                                      graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kSin: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIN_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_SIN>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kTan: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_TAN_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_TAN>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
       return CreateOperatorNodeForUnary<
           DML_ELEMENT_WISE_LOGICAL_NOT_OPERATOR_DESC,

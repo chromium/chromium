@@ -101,6 +101,7 @@ namespace {
 
 using blink_mojom::ActivationPtr;
 using blink_mojom::ElementWiseBinary;
+using blink_mojom::ElementWiseUnary;
 using blink_mojom::Operation;
 using blink_mojom::OperationPtr;
 using blink_mojom::Size2d;
@@ -454,6 +455,65 @@ OperationPtr CreateElementWiseBinaryOperator(
       std::move(operator_mojo));
 }
 
+OperationPtr CreateElementWiseUnaryOperator(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* unary) {
+  auto operator_mojo = ElementWiseUnary::New();
+  operator_mojo->input_operand_id =
+      GetOperatorInputId(unary, operand_to_id_map);
+  operator_mojo->output_operand_id =
+      GetOperatorOutputId(unary, operand_to_id_map);
+
+  switch (unary->Kind()) {
+    case MLOperator::OperatorKind::kAbs:
+      operator_mojo->kind = ElementWiseUnary::Kind::kAbs;
+      break;
+    case MLOperator::OperatorKind::kCeil:
+      operator_mojo->kind = ElementWiseUnary::Kind::kCeil;
+      break;
+    case MLOperator::OperatorKind::kCos:
+      operator_mojo->kind = ElementWiseUnary::Kind::kCos;
+      break;
+    case MLOperator::OperatorKind::kExp:
+      operator_mojo->kind = ElementWiseUnary::Kind::kExp;
+      break;
+    case MLOperator::OperatorKind::kFloor:
+      operator_mojo->kind = ElementWiseUnary::Kind::kFloor;
+      break;
+    case MLOperator::OperatorKind::kLog:
+      operator_mojo->kind = ElementWiseUnary::Kind::kLog;
+      break;
+    case MLOperator::OperatorKind::kNeg:
+      operator_mojo->kind = ElementWiseUnary::Kind::kNeg;
+      break;
+    case MLOperator::OperatorKind::kSin:
+      operator_mojo->kind = ElementWiseUnary::Kind::kSin;
+      break;
+    case MLOperator::OperatorKind::kTan:
+      operator_mojo->kind = ElementWiseUnary::Kind::kTan;
+      break;
+    case MLOperator::OperatorKind::kLogicalNot:
+      operator_mojo->kind = ElementWiseUnary::Kind::kLogicalNot;
+      break;
+    case MLOperator::OperatorKind::kIdentity:
+      operator_mojo->kind = ElementWiseUnary::Kind::kIdentity;
+      break;
+    case MLOperator::OperatorKind::kSqrt:
+      operator_mojo->kind = ElementWiseUnary::Kind::kSqrt;
+      break;
+    case MLOperator::OperatorKind::kErf:
+      operator_mojo->kind = ElementWiseUnary::Kind::kErf;
+      break;
+    case MLOperator::OperatorKind::kReciprocal:
+      operator_mojo->kind = ElementWiseUnary::Kind::kReciprocal;
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  return webnn::mojom::blink::Operation::NewElementWiseUnary(
+      std::move(operator_mojo));
+}
+
 OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
                                  const MLOperator* gemm) {
   auto gemm_mojo = webnn::mojom::blink::Gemm::New();
@@ -795,6 +855,7 @@ OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
 
 }  // namespace
 
+// TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
 base::expected<OperationPtr, String> ConvertToMojoOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* op) {
@@ -823,6 +884,34 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       [[fallthrough]];
     case MLOperator::OperatorKind::kPow:
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kAbs:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kCeil:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kCos:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kExp:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kFloor:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kLog:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kNeg:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kSin:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kTan:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kLogicalNot:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kIdentity:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kSqrt:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kErf:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReciprocal:
+      return CreateElementWiseUnaryOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kElu:
       return blink_mojom::Operation::NewElu(
           CreateElu(operand_to_id_map, op, false));
