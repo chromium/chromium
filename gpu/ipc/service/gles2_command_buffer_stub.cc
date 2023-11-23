@@ -194,20 +194,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     // To use virtualized contexts we need on screen surface format match the
     // offscreen.
     auto surface_format = default_surface->GetFormat();
-
-    switch (init_params.attribs.color_space) {
-      case COLOR_SPACE_UNSPECIFIED:
-        surface_format.SetColorSpace(
-            gl::GLSurfaceFormat::COLOR_SPACE_UNSPECIFIED);
-        break;
-      case COLOR_SPACE_SRGB:
-        surface_format.SetColorSpace(gl::GLSurfaceFormat::COLOR_SPACE_SRGB);
-        break;
-      case COLOR_SPACE_DISPLAY_P3:
-        surface_format.SetColorSpace(
-            gl::GLSurfaceFormat::COLOR_SPACE_DISPLAY_P3);
-        break;
-    }
     surface_ = ImageTransportSurface::CreateNativeGLSurface(
         display, weak_ptr_factory_.GetWeakPtr(), init_params.surface_handle,
         surface_format);
@@ -219,10 +205,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     if (!features::UseGpuVsync()) {
       surface_->SetVSyncEnabled(false);
     }
-
-    if (init_params.attribs.enable_swap_timestamps_if_supported &&
-        surface_->SupportsSwapTimestamps())
-      surface_->SetEnableSwapTimestamps();
   } else
 #endif
   {

@@ -963,15 +963,6 @@ struct FuzzTraits<gl::GpuPreference> {
 };
 
 template <>
-struct FuzzTraits<gpu::ColorSpace> {
-  static bool Fuzz(gpu::ColorSpace* p, Fuzzer* fuzzer) {
-    int color_space = RandInRange(gpu::ColorSpace::COLOR_SPACE_LAST + 1);
-    *p = static_cast<gpu::ColorSpace>(color_space);
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<gpu::CommandBuffer::State> {
   static bool Fuzz(gpu::CommandBuffer::State* p, Fuzzer* fuzzer) {
     if (!FuzzParam(&p->get_offset, fuzzer))
@@ -1008,8 +999,6 @@ struct FuzzTraits<gpu::ContextCreationAttribs> {
     if (!FuzzParam(&p->gpu_preference, fuzzer))
       return false;
     if (!FuzzParam(&p->context_type, fuzzer))
-      return false;
-    if (!FuzzParam(&p->color_space, fuzzer))
       return false;
     return true;
   }

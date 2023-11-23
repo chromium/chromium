@@ -110,10 +110,8 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes(
     bool requires_alpha_channel) {
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
-  attributes.color_space = gpu::COLOR_SPACE_SRGB;
   attributes.need_alpha = requires_alpha_channel;
 
-  attributes.enable_swap_timestamps_if_supported = true;
   attributes.enable_raster_interface = true;
   attributes.enable_grcontext = true;
 
