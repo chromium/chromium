@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -62,8 +63,8 @@ struct StagingBuffer {
   // GpuMemoryBuffer.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
 
-  // Mailbox for the shared image bound to the GpuMemoryBuffer.
-  gpu::Mailbox mailbox;
+  // The shared image bound to the GpuMemoryBuffer.
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
 
   // Sync token for the last RasterInterface operations using the shared image.
   gpu::SyncToken sync_token;

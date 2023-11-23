@@ -360,20 +360,20 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
     auto* sii = worker_context_provider_->SharedImageInterface();
 
     // Allocate MappableSharedImage if necessary.
-    if (staging_buffer->mailbox.IsZero()) {
-      auto client_shared_image = sii->CreateSharedImage(
+    if (!staging_buffer->client_shared_image) {
+      staging_buffer->client_shared_image = sii->CreateSharedImage(
           format, staging_buffer->size, dst_color_space,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "OneCopyRasterStaging",
           gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
-      if (!client_shared_image) {
+      if (!staging_buffer->client_shared_image) {
         LOG(ERROR) << "Creation of MappableSharedImage failed.";
         return false;
       }
-      staging_buffer->mailbox = client_shared_image->mailbox();
     }
 
-    mapping = sii->MapSharedImage(staging_buffer->mailbox);
+    mapping =
+        sii->MapSharedImage(staging_buffer->client_shared_image->mailbox());
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage Failed.";
       return false;
@@ -450,7 +450,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   DCHECK(sii);
 
   if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForOneCopyRaster)) {
-    CHECK(!staging_buffer->mailbox.IsZero());
+    CHECK(staging_buffer->client_shared_image);
   } else {
     CHECK(staging_buffer->gpu_memory_buffer.get());
   }
@@ -473,16 +473,16 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   }
 
   // Create staging shared image.
-  if (staging_buffer->mailbox.IsZero()) {
+  if (!staging_buffer->client_shared_image) {
     const uint32_t usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
-    auto client_shared_image = sii->CreateSharedImage(
+    staging_buffer->client_shared_image = sii->CreateSharedImage(
         format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, "OneCopyRasterStaging",
         staging_buffer->gpu_memory_buffer.get()->CloneHandle());
-    CHECK(client_shared_image);
-    staging_buffer->mailbox = client_shared_image->mailbox();
+    CHECK(staging_buffer->client_shared_image);
   } else {
-    sii->UpdateSharedImage(staging_buffer->sync_token, staging_buffer->mailbox);
+    sii->UpdateSharedImage(staging_buffer->sync_token,
+                           staging_buffer->client_shared_image->mailbox());
   }
 
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
@@ -552,7 +552,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     DCHECK_GT(rows_to_copy, 0);
 
     ri->CopySharedImage(
-        staging_buffer->mailbox, shared_image->mailbox(),
+        staging_buffer->client_shared_image->mailbox(), shared_image->mailbox(),
         mailbox_texture_target, 0, y, 0, y, rect_to_copy.width(), rows_to_copy,
         false /* unpack_flip_y */, false /* unpack_premultiply_alpha */);
     y += rows_to_copy;
