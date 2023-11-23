@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -202,7 +203,6 @@ void AnnotationAgentImpl::Remove() {
       frame->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kFindInPage);
 
-      // TODO(bokan): Base marker type on `type_`.
       document->Markers().RemoveMarkersInRange(
           dom_range, DocumentMarker::MarkerTypes::TextFragment());
     }
@@ -363,10 +363,17 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     // TextFinder type is used only to determine whether a given text can be
     // found in the page, it should have no side-effects.
     if (type_ != mojom::blink::AnnotationType::kTextFinder) {
-      // TODO(bokan): Add new marker types based on `type_`.
       document->Markers().AddTextFragmentMarker(dom_range);
       document->Markers().MergeOverlappingMarkers(
           DocumentMarker::kTextFragment);
+    }
+
+    if (type_ != mojom::blink::AnnotationType::kUserNote) {
+      Node* anchor_node = attached_range_->StartPosition().AnchorNode();
+      CHECK(anchor_node);
+      if (anchor_node->IsInShadowTree()) {
+        UseCounter::Count(document, WebFeature::kTextDirectiveInShadowDOM);
+      }
     }
   } else {
     TRACE_EVENT_INSTANT("blink", "NotAttached");

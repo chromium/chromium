@@ -645,4 +645,39 @@ TEST_F(TextFragmentAnchorMetricsTest, TextFragmentLinkOpenSource_GoogleDomain) {
                                        1);
 }
 
+TEST_F(TextFragmentAnchorMetricsTest, ShadowDOMUseCounter) {
+  {
+    SimRequest request("https://example.com/test.html#:~:text=RegularDOM",
+                       "text/html");
+    LoadURL("https://example.com/test.html#:~:text=RegularDOM");
+    request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <p>This is RegularDOM</p>
+    )HTML");
+    RunUntilTextFragmentFinalization();
+
+    EXPECT_FALSE(
+        GetDocument().IsUseCounted(WebFeature::kTextDirectiveInShadowDOM));
+  }
+
+  {
+    SimRequest request("https://example.com/shadowtest.html#:~:text=ShadowDOM",
+                       "text/html");
+    LoadURL("https://example.com/shadowtest.html#:~:text=ShadowDOM");
+    request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <p>This is RegularDOM</p>
+      <p id="shadow-parent"></p>
+      <script>
+        let shadow = document.getElementById("shadow-parent").attachShadow({mode: 'open'});
+        shadow.innerHTML = '<p id="shadow">This is ShadowDOM</p>';
+      </script>
+    )HTML");
+    RunUntilTextFragmentFinalization();
+
+    EXPECT_TRUE(
+        GetDocument().IsUseCounted(WebFeature::kTextDirectiveInShadowDOM));
+  }
+}
+
 }  // namespace blink
