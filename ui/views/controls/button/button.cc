@@ -781,7 +781,7 @@ void Button::ReleaseAnchorHighlight() {
 // TOOD(crbug.com/147023): Implement ActionItemChangedImpl for
 // ButtonActionViewController.
 template <>
-void ActionViewController<Button, ActionViewController<View>>::
+void ActionViewControllerTemplate<Button, ActionViewControllerTemplate<View>>::
     ActionItemChangedImpl(Button* action_view,
                           actions::ActionItem* action_item) {}
 

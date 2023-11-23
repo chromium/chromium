@@ -5,6 +5,10 @@
 #ifndef UI_VIEWS_ACTION_VIEW_CONTROLLER_H_
 #define UI_VIEWS_ACTION_VIEW_CONTROLLER_H_
 
+#include <map>
+#include <memory>
+#include <utility>
+
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/actions/actions.h"
@@ -15,12 +19,14 @@ namespace views {
 
 class View;
 
-class VIEWS_EXPORT ActionController {
+// Base action view controller that provides the interface for a standard action
+// view controller.
+class VIEWS_EXPORT ActionViewControllerBase {
  public:
-  ActionController() = default;
-  ActionController(const ActionController&) = delete;
-  ActionController& operator=(const ActionController&) = delete;
-  virtual ~ActionController() = default;
+  ActionViewControllerBase() = default;
+  ActionViewControllerBase(const ActionViewControllerBase&) = delete;
+  ActionViewControllerBase& operator=(const ActionViewControllerBase&) = delete;
+  virtual ~ActionViewControllerBase() = default;
   void ActionItemChanged() {}
   void ActionItemChangedInterim(View* view, actions::ActionItem* action_item) {}
   void SetActionView(View* action_view) {}
@@ -29,24 +35,29 @@ class VIEWS_EXPORT ActionController {
 
 template <typename ViewT>
 struct VIEWS_EXPORT ActionViewControllerSuperClassT {
-  using SuperClass = ActionController;
+  using SuperClass = ActionViewControllerBase;
 };
 
+// ActionViewControllerTemplate is the templated core functionality that manages
+// the relationship between the action item and the view. The template allows
+// the action view controller to be generalized to any view class.
 template <typename ViewT,
           typename SuperClassViewControllerT =
               typename ActionViewControllerSuperClassT<ViewT>::SuperClass>
-class VIEWS_EXPORT ActionViewController : public SuperClassViewControllerT {
+class VIEWS_EXPORT ActionViewControllerTemplate
+    : public SuperClassViewControllerT {
  public:
-  ActionViewController() = default;
-  ActionViewController(ViewT* view,
-                       base::WeakPtr<actions::ActionItem> action_item) {
+  ActionViewControllerTemplate() = default;
+  ActionViewControllerTemplate(ViewT* view,
+                               base::WeakPtr<actions::ActionItem> action_item) {
     SetActionView(view);
     SetActionItem(action_item);
   }
-  explicit ActionViewController(ViewT* view) { SetActionView(view); }
-  ActionViewController(const ActionViewController&) = delete;
-  ActionViewController& operator=(const ActionViewController&) = delete;
-  ~ActionViewController() override = default;
+  explicit ActionViewControllerTemplate(ViewT* view) { SetActionView(view); }
+  ActionViewControllerTemplate(const ActionViewControllerTemplate&) = delete;
+  ActionViewControllerTemplate& operator=(const ActionViewControllerTemplate&) =
+      delete;
+  ~ActionViewControllerTemplate() override = default;
 
   void ActionItemChanged() {
     ViewT* action_view = GetActionView();
@@ -82,8 +93,8 @@ class VIEWS_EXPORT ActionViewController : public SuperClassViewControllerT {
     }
     action_changed_subscription_ =
         action_item->AddActionChangedCallback(base::BindRepeating(
-            &ActionViewController<ViewT,
-                                  SuperClassViewControllerT>::ActionItemChanged,
+            &ActionViewControllerTemplate<
+                ViewT, SuperClassViewControllerT>::ActionItemChanged,
             base::Unretained(this)));
     ActionItemChanged();
     action_view->InvalidateLayout();
@@ -125,6 +136,30 @@ class VIEWS_EXPORT ActionViewController : public SuperClassViewControllerT {
   views::ViewTracker action_view_tracker_;
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::CallbackListSubscription action_changed_subscription_;
+};
+
+// ActionViewController is the main view controller to be instantiated or
+// subclassed. Under the hood it creates the appropriate templated
+// ActionViewControllerTemplate for all classes of views.
+class VIEWS_EXPORT ActionViewController {
+ public:
+  ActionViewController();
+  ActionViewController(const ActionViewController&) = delete;
+  ActionViewController& operator=(const ActionViewController&) = delete;
+  virtual ~ActionViewController();
+
+  template <typename ViewT>
+  void CreateActionViewRelationship(
+      ViewT* view,
+      base::WeakPtr<actions::ActionItem> action_item) {
+    std::unique_ptr<ActionViewControllerTemplate<ViewT>> controller =
+        std::make_unique<ActionViewControllerTemplate<ViewT>>(view,
+                                                              action_item);
+    action_view_controller_templates_[view] = std::move(controller);
+  }
+
+  std::map<View*, std::unique_ptr<ActionViewControllerBase>>
+      action_view_controller_templates_;
 };
 
 }  // namespace views

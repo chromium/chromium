@@ -3699,9 +3699,8 @@ int View::DefaultFillLayout::GetPreferredHeightForWidth(const View* host,
 }
 
 template <>
-void ActionViewController<View, ActionController>::ActionItemChangedImpl(
-    View* action_view,
-    actions::ActionItem* action_item) {
+void ActionViewControllerTemplate<View, ActionViewControllerBase>::
+    ActionItemChangedImpl(View* action_view, actions::ActionItem* action_item) {
   action_view->SetEnabled(action_item->GetEnabled());
   action_view->SetVisible(action_item->GetVisible());
 }

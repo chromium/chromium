@@ -101,16 +101,18 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
 template <>
 struct VIEWS_EXPORT ActionViewControllerSuperClassT<MdTextButton> {
-  using SuperClass = ActionViewController<Button>;
+  using SuperClass = ActionViewControllerTemplate<Button>;
 };
 
 template <>
-void ActionViewController<MdTextButton, ActionViewController<Button>>::
+void ActionViewControllerTemplate<MdTextButton,
+                                  ActionViewControllerTemplate<Button>>::
     ActionItemChangedImpl(MdTextButton* action_view,
                           actions::ActionItem* action_item);
 
 template <>
-void ActionViewController<MdTextButton, ActionViewController<Button>>::
+void ActionViewControllerTemplate<MdTextButton,
+                                  ActionViewControllerTemplate<Button>>::
     SetActionViewImpl(MdTextButton* action_view);
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)

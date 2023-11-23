@@ -401,18 +401,16 @@ void ActionsExample::CreateExampleView(View* container) {
     return {row, combobox};
   };
 
-  auto add_combobox_and_button = [&add_combobox_row](
+  auto add_combobox_and_button = [&add_combobox_row, this](
                                      std::unique_ptr<ui::ComboboxModel> model,
-                                     ActionViewController<MdTextButton>*
-                                         action_button_view_controller,
                                      int label_text,
                                      actions::ActionId action_id) {
     auto pair = add_combobox_row(std::move(model), label_text);
     views::MdTextButton* action_button;
     pair.first->AddChildView(
         Builder<MdTextButton>().CopyAddressTo(&action_button).Build());
-    action_button_view_controller->SetActionView(action_button);
-    action_button_view_controller->SetActionItem(
+    action_view_controller_.CreateActionViewRelationship(
+        action_button,
         actions::ActionManager::Get().FindAction(action_id)->GetAsWeakPtr());
     return pair.second;
   };
@@ -459,16 +457,10 @@ void ActionsExample::CreateExampleView(View* container) {
     return textfield;
   };
 
-  auto available_controls_view_controller =
-      std::make_unique<ActionViewController<MdTextButton>>();
-
   available_controls_ =
       add_combobox_and_button(std::make_unique<ControlTypeComboboxModel>(),
-                              available_controls_view_controller.get(),
                               IDS_AVAILABLE_CONTROLS, kActionCreateControl);
 
-  action_view_controllers_.push_back(
-      std::move(available_controls_view_controller));
   control_panel_->AddChildView(
       Builder<Separator>().SetProperty(kMarginsKey, kSeparatorPadding).Build());
 
@@ -477,14 +469,9 @@ void ActionsExample::CreateExampleView(View* container) {
                   IDS_CONTROLS)
                   .second;
 
-  auto available_actions_view_controller =
-      std::make_unique<ActionViewController<MdTextButton>>();
   available_actions_ = add_combobox_and_button(
       std::make_unique<ActionItemComboboxModel>(example_actions_.get()),
-      available_actions_view_controller.get(), IDS_AVAILABLE_ACTIONS,
-      kActionAssignAction);
-  action_view_controllers_.push_back(
-      std::move(available_actions_view_controller));
+      IDS_AVAILABLE_ACTIONS, kActionAssignAction);
   subscriptions_.push_back(
       available_actions_->AddSelectedIndexChangedCallback(base::BindRepeating(
           &ActionsExample::ActionSelected, base::Unretained(this))));
@@ -599,9 +586,8 @@ void ActionsExample::AssignAction(actions::ActionItem* action,
   size_t index_val = index.value();
   View* view = model->GetViewItemAt(index_val);
   if (IsViewClass<MdTextButton>(view)) {
-    auto mdtextbutton_vc = std::make_unique<ActionViewController<MdTextButton>>(
+    action_view_controller_.CreateActionViewRelationship(
         static_cast<MdTextButton*>(view), GetSelectedAction()->GetAsWeakPtr());
-    action_view_controllers_.push_back(std::move(mdtextbutton_vc));
   } else if (IsViewClass<ActionCheckbox>(view)) {
     ActionCheckbox* checkbox = AsViewClass<ActionCheckbox>(view);
     checkbox->SetActionItem(GetSelectedAction());

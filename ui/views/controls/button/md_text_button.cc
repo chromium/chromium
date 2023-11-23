@@ -351,7 +351,8 @@ SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
 }
 
 template <>
-void ActionViewController<MdTextButton, ActionViewController<Button>>::
+void ActionViewControllerTemplate<MdTextButton,
+                                  ActionViewControllerTemplate<Button>>::
     ActionItemChangedImpl(MdTextButton* action_view,
                           actions::ActionItem* action_item) {
   action_view->SetText(action_item->GetText());
@@ -361,11 +362,12 @@ void ActionViewController<MdTextButton, ActionViewController<Button>>::
 }
 
 template <>
-void ActionViewController<MdTextButton, ActionViewController<Button>>::
+void ActionViewControllerTemplate<MdTextButton,
+                                  ActionViewControllerTemplate<Button>>::
     SetActionViewImpl(MdTextButton* action_view) {
   if (action_view) {
     action_view->SetCallback(base::BindRepeating(
-        &ActionViewController::TriggerAction, base::Unretained(this)));
+        &ActionViewControllerTemplate::TriggerAction, base::Unretained(this)));
   }
 }
 

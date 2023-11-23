@@ -387,11 +387,11 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
 template <>
 struct ActionViewControllerSuperClassT<Button> {
-  using SuperClass = ActionViewController<View>;
+  using SuperClass = ActionViewControllerTemplate<View>;
 };
 
 template <>
-void ActionViewController<Button, ActionViewController<View>>::
+void ActionViewControllerTemplate<Button, ActionViewControllerTemplate<View>>::
     ActionItemChangedImpl(Button* action_view,
                           actions::ActionItem* action_item);
 

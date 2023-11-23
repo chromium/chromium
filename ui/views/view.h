@@ -2432,13 +2432,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
 template <>
 struct ActionViewControllerSuperClassT<View> {
-  using SuperClass = ActionController;
+  using SuperClass = ActionViewControllerBase;
 };
 
 template <>
-void ActionViewController<View, ActionController>::ActionItemChangedImpl(
-    View* action_view,
-    actions::ActionItem* action_item);
+void ActionViewControllerTemplate<View, ActionViewControllerBase>::
+    ActionItemChangedImpl(View* action_view, actions::ActionItem* action_item);
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)
 template <typename LayoutManager>

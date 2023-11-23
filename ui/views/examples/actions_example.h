@@ -54,11 +54,7 @@ class VIEWS_EXAMPLES_EXPORT ActionsExample : public ExampleBase {
   void TooltipTextChanged();
   void VisibleChanged();
 
-  // TODO(crbug.com/1472023): Instead of client having this vector we should
-  // abstract it such that an ActionViewController actually can create an manage
-  // each of the individual objects.
-  std::vector<std::unique_ptr<ActionViewController<View>>>
-      action_view_controllers_;
+  ActionViewController action_view_controller_ = ActionViewController();
   std::vector<base::CallbackListSubscription> subscriptions_;
   raw_ptr<actions::ActionItem> example_actions_ = nullptr;
   raw_ptr<View> action_panel_ = nullptr;
