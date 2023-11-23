@@ -344,7 +344,6 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
-crbug.com/1287280 [ android android-pixel-6 no-passthrough android-chromium ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
@@ -388,7 +387,6 @@ crbug.com/1495176 [ chromeos lacros-chrome chromeos-board-octopus ] Pixel_WebGLS
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
-crbug.com/1456755 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLDisplayP3 [ Failure ]
 
 crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUToDataURL [ Failure ]
