@@ -493,7 +493,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLoginsForAccount) {
                         base::NullCallback(), base::DoNothing());
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  absl::optional<std::string> account = "mytestemail@gmail.com";
+  std::optional<std::string> account = "mytestemail@gmail.com";
   backend().GetAllLoginsForAccountAsync(account, mock_reply.Get());
 
   EXPECT_CALL(
@@ -696,7 +696,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // Simulate receiving INTERNAL_ERROR code.
   int kInternalErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
-  error.api_error_code = absl::optional<int>(kInternalErrorCode);
+  error.api_error_code = std::optional<int>(kInternalErrorCode);
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
 
@@ -740,7 +740,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // Simulate receiving AUTH_ERROR_RESOLVABLE code.
   int kAuthErrorResolvableCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorResolvable);
-  error.api_error_code = absl::optional<int>(kAuthErrorResolvableCode);
+  error.api_error_code = std::optional<int>(kAuthErrorResolvableCode);
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
 
@@ -783,7 +783,7 @@ TEST_F(
 
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving NETWORK_ERROR code.
-  error.api_error_code = absl::optional<int>(kNetworkErrorCode);
+  error.api_error_code = std::optional<int>(kNetworkErrorCode);
 
   // AddLogin operation is non-retriable, so the returned error should not be
   // indicated as retriable even if the error itself is retriable.
@@ -992,7 +992,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // Simulate receiving AUTH_ERROR_UNRESOLVABLE code.
   int kUnresolvableAuthErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
-  error.api_error_code = absl::optional<int>(kUnresolvableAuthErrorCode);
+  error.api_error_code = std::optional<int>(kUnresolvableAuthErrorCode);
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
 
@@ -1041,7 +1041,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // Simulate receiving PASSPHRASE_REQUIRED code.
   int kPassphraseRequiredErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired);
-  error.api_error_code = absl::optional<int>(kPassphraseRequiredErrorCode);
+  error.api_error_code = std::optional<int>(kPassphraseRequiredErrorCode);
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
 
@@ -1089,7 +1089,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // Simulate receiving INTERNAL_ERROR code.
   int kInternalErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
-  error.api_error_code = absl::optional<int>(kInternalErrorCode);
+  error.api_error_code = std::optional<int>(kInternalErrorCode);
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
 }
@@ -1116,7 +1116,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // Simulate receiving INTERNAL_ERROR code.
   int kInternalErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
-  error.api_error_code = absl::optional<int>(kInternalErrorCode);
+  error.api_error_code = std::optional<int>(kInternalErrorCode);
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
 }
@@ -1214,11 +1214,11 @@ TEST_F(PasswordStoreAndroidBackendTest, NotifyStoreOnForegroundSessionStart) {
   EXPECT_CALL(store_notification_trigger, Run(_)).Times(0);
   lifecycle_helper()->OnForegroundSessionStart();
 
-  EXPECT_CALL(store_notification_trigger, Run(Eq(absl::nullopt)));
+  EXPECT_CALL(store_notification_trigger, Run(Eq(std::nullopt)));
   task_environment_.FastForwardBy(base::Seconds(5));
 
   // Subsequent foregroundings should issue immediate notifications.
-  EXPECT_CALL(store_notification_trigger, Run(Eq(absl::nullopt)));
+  EXPECT_CALL(store_notification_trigger, Run(Eq(std::nullopt)));
   lifecycle_helper()->OnForegroundSessionStart();
 }
 
@@ -1268,7 +1268,7 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
 
   // Clear the task queue to verify that a late answer doesn't record again.
   // Can be delayed or never happen.
-  consumer().OnLoginsChanged(kJobId, absl::nullopt);
+  consumer().OnLoginsChanged(kJobId, std::nullopt);
   task_environment_.FastForwardUntilNoTasksRemain();  // For would-be response.
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 0);
@@ -1304,7 +1304,7 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordsRequestStartAndEndMetric) {
               ElementsAre(base::Bucket(/* Requested */ 0, 1)));
 
   task_environment_.FastForwardUntilNoTasksRemain();
-  consumer().OnLoginsChanged(kJobId, absl::nullopt);
+  consumer().OnLoginsChanged(kJobId, std::nullopt);
 
   // After execution, check that request is logged again.
   EXPECT_THAT(histogram_tester.GetAllSamples(kStartedMetric),
@@ -1615,7 +1615,7 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
   } else {
     AndroidBackendError error{kExternalErrorType};
     // Simulate receiving INTERNAL_ERROR code.
-    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    error.api_error_code = std::optional<int>(kInternalApiErrorCode);
     consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();
@@ -1657,11 +1657,11 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, AddLoginAsyncMetrics) {
   task_environment_.FastForwardBy(kTestLatencyDelta);
 
   if (ShouldSucceed()) {
-    consumer().OnLoginsChanged(kJobId, absl::nullopt);
+    consumer().OnLoginsChanged(kJobId, std::nullopt);
   } else {
     AndroidBackendError error{kExternalErrorType};
     // Simulate receiving INTERNAL_ERROR code.
-    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    error.api_error_code = std::optional<int>(kInternalApiErrorCode);
     consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();
@@ -1705,11 +1705,11 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, UpdateLoginAsyncMetrics) {
   task_environment_.FastForwardBy(kTestLatencyDelta);
 
   if (ShouldSucceed()) {
-    consumer().OnLoginsChanged(kJobId, absl::nullopt);
+    consumer().OnLoginsChanged(kJobId, std::nullopt);
   } else {
     AndroidBackendError error{kExternalErrorType};
     // Simulate receiving INTERNAL_ERROR code.
-    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    error.api_error_code = std::optional<int>(kInternalApiErrorCode);
     consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();
@@ -1753,11 +1753,11 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
   task_environment_.FastForwardBy(kTestLatencyDelta);
 
   if (ShouldSucceed()) {
-    consumer().OnLoginsChanged(kJobId, absl::nullopt);
+    consumer().OnLoginsChanged(kJobId, std::nullopt);
   } else {
     AndroidBackendError error{kExternalErrorType};
     // Simulate receiving INTERNAL_ERROR code.
-    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    error.api_error_code = std::optional<int>(kInternalApiErrorCode);
     consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();
@@ -1804,7 +1804,7 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics,
   } else {
     AndroidBackendError error{kExternalErrorType};
     // Simulate receiving INTERNAL_ERROR code.
-    error.api_error_code = absl::optional<int>(kInternalApiErrorCode);
+    error.api_error_code = std::optional<int>(kInternalApiErrorCode);
     consumer().OnError(kJobId, std::move(error));
   }
   RunUntilIdle();

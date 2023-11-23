@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -49,7 +50,6 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using autofill::AccessorySheetData;
@@ -150,23 +150,23 @@ void PasswordAccessoryControllerImpl::RegisterFillingSourceObserver(
   source_observer_ = std::move(observer);
 }
 
-absl::optional<AccessorySheetData>
+std::optional<AccessorySheetData>
 PasswordAccessoryControllerImpl::GetSheetData() const {
   // Prevent crashing by returning a nullopt if no field was focused yet or if
   // the frame was (possibly temporarily) unfocused. This signals to the caller
   // that no sheet is available right now.
   if (GetWebContents().GetFocusedFrame() == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!last_focused_field_info_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   url::Origin origin = GetFocusedFrameOrigin();
   // If the focused origin doesn't match the last known origin, it is not safe
   // to provide any suggestions (because e.g. information about field type isn't
   // reliable).
   if (!last_focused_field_info_->origin.IsSameOriginWith(origin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<PasskeySection> passkeys_to_add;
@@ -431,7 +431,7 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     bool is_manual_generation_available) {
   // Discard all frame data. This ensures that the data is never used for an
   // incorrect frame.
-  last_focused_field_info_ = absl::nullopt;
+  last_focused_field_info_ = std::nullopt;
   all_passwords_helper_.SetLastFocusedFieldType(focused_field_type);
 
   // Prevent crashing by not acting at all if frame became unfocused at any

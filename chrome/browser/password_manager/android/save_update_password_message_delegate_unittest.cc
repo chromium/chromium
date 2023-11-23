@@ -159,7 +159,7 @@ class SaveUpdatePasswordMessageDelegateTest
   void EnqueueMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
                       bool user_signed_in,
                       bool update_password,
-                      absl::optional<AccountInfo> account_info = {});
+                      std::optional<AccountInfo> account_info = {});
   void TriggerActionClick();
   void TriggerActionClick(messages::DismissReason dismiss_reason);
   void TriggerPasswordEditDialog(bool update_password);
@@ -331,7 +331,7 @@ void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool user_signed_in,
     bool update_password,
-    absl::optional<AccountInfo> account_info) {
+    std::optional<AccountInfo> account_info) {
   if (user_signed_in && !account_info) {
     account_info = AccountInfo();
     account_info.value().email = kAccountEmail;
@@ -1454,7 +1454,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   const bool is_signed_in = true;
   const bool is_update = false;
 
-  absl::optional<AccountInfo> account_info;
+  std::optional<AccountInfo> account_info;
   account_info = AccountInfo();
   account_info.value().email = kAccountEmail;
   account_info.value().full_name = kAccountFullName;
@@ -1499,7 +1499,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   const bool is_signed_in = true;
   const bool is_update = true;
 
-  absl::optional<AccountInfo> account_info;
+  std::optional<AccountInfo> account_info;
   account_info = AccountInfo();
   account_info.value().email = kAccountEmail;
   account_info.value().full_name = kAccountFullName;

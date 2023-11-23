@@ -101,12 +101,12 @@ bool ManagePasswordsView::Accept() {
   DCHECK(controller_.get_currently_selected_password().has_value());
   password_manager::PasswordForm updated_form =
       controller_.get_currently_selected_password().value();
-  absl::optional<std::u16string> updated_username =
+  std::optional<std::u16string> updated_username =
       password_details_view_->GetUserEnteredUsernameValue();
   if (updated_username.has_value()) {
     updated_form.username_value = updated_username.value();
   }
-  absl::optional<std::u16string> updated_note =
+  std::optional<std::u16string> updated_note =
       password_details_view_->GetUserEnteredPasswordNoteValue();
   if (updated_note.has_value()) {
     updated_form.SetNoteWithEmptyUniqueDisplayName(updated_note.value());
@@ -262,7 +262,7 @@ void ManagePasswordsView::SwitchToReadingMode() {
 void ManagePasswordsView::SwitchToListView() {
   auth_timer_.Stop();
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  controller_.set_currently_selected_password(absl::nullopt);
+  controller_.set_currently_selected_password(std::nullopt);
   RecreateLayout();
 }
 

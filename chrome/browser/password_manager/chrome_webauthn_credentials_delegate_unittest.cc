@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -123,7 +123,7 @@ class ChromeWebAuthnCredentialsDelegateTest
     selected_id_ = std::move(id);
   }
 
-  absl::optional<std::vector<uint8_t>> GetSelectedId() {
+  std::optional<std::vector<uint8_t>> GetSelectedId() {
     return std::move(selected_id_);
   }
 #endif
@@ -138,7 +138,7 @@ class ChromeWebAuthnCredentialsDelegateTest
       authenticator_request_delegate_;
 #else
   raw_ptr<WebAuthnRequestDelegateAndroid> delegate_;
-  absl::optional<std::vector<uint8_t>> selected_id_;
+  std::optional<std::vector<uint8_t>> selected_id_;
 #endif
 };
 
@@ -199,12 +199,12 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
                      device::fido_parsing_utils::Materialize(kCredId1),
                      device::PublicKeyCredentialUserEntity(
                          device::fido_parsing_utils::Materialize(kUserId),
-                         kUserName1, /*display_name=*/absl::nullopt));
+                         kUserName1, /*display_name=*/std::nullopt));
   users.emplace_back(device::AuthenticatorType::kOther, kRpId,
                      device::fido_parsing_utils::Materialize(kCredId2),
                      device::PublicKeyCredentialUserEntity(
                          device::fido_parsing_utils::Materialize(kUserId),
-                         kUserName2, /*display_name=*/absl::nullopt));
+                         kUserName2, /*display_name=*/std::nullopt));
 
   SetCredList(users);
 

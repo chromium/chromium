@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
   EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
             new_web_contents);
 
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(second_profile,
                                               GURL(kTestWebUIAppURL));
   ASSERT_TRUE(app_id);

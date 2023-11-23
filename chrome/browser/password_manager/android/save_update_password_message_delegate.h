@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_UPDATE_PASSWORD_MESSAGE_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -20,7 +21,6 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -108,7 +108,7 @@ class SaveUpdatePasswordMessageDelegate {
   void DisplaySaveUpdatePasswordPromptInternal(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      absl::optional<AccountInfo> account_info,
+      std::optional<AccountInfo> account_info,
       bool update_password,
       password_manager::PasswordManagerClient* password_manager_client);
   void CreateMessage(bool update_password);

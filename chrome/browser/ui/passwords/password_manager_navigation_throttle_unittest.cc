@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -13,7 +15,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -26,7 +27,7 @@ struct NavigationThrottleOptions {
   GURL url;
   raw_ptr<content::RenderFrameHost> rfh = nullptr;
   ui::PageTransition page_transition = ui::PAGE_TRANSITION_FROM_API;
-  absl::optional<url::Origin> initiator_origin;
+  std::optional<url::Origin> initiator_origin;
 };
 
 }  // namespace

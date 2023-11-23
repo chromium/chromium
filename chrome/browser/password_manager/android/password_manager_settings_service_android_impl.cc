@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -22,7 +24,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
@@ -181,7 +182,7 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
 
   pref_service_->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
                             false);
-  absl::optional<SyncingAccount> account = absl::nullopt;
+  std::optional<SyncingAccount> account = std::nullopt;
   // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (is_password_sync_enabled_) {
@@ -250,12 +251,12 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
   // is absent in GMSCore, the cached setting value is set to the default value,
   // which is true for both of the password-related settings: AutoSignIn and
   // OfferToSavePasswords.
-  WriteToTheCacheAndRegularPref(setting, absl::nullopt);
+  WriteToTheCacheAndRegularPref(setting, std::nullopt);
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::WriteToTheCacheAndRegularPref(
     PasswordManagerSetting setting,
-    absl::optional<bool> value) {
+    std::optional<bool> value) {
   const PrefService::Preference* android_pref =
       GetGMSPrefFromSetting(pref_service_, setting);
   if (value.has_value()) {
@@ -332,7 +333,7 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
   CHECK(bridge_helper_);
   // This code would not be executed for syncing users who are unenrolled.
   CHECK(!is_password_sync_enabled_ || !IsCurrentUserEvicted(pref_service_));
-  absl::optional<SyncingAccount> account = absl::nullopt;
+  std::optional<SyncingAccount> account = std::nullopt;
   bool is_final_fetch_for_local_user_without_upm =
       fetch_after_sync_status_change_in_progress_ &&
       !is_password_sync_enabled_ &&

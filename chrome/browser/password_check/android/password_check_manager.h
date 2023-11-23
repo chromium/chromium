@@ -23,7 +23,6 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PasswordCheckManager
     : public password_manager::SavedPasswordsPresenter::Observer,

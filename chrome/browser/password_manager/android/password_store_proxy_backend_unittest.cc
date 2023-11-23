@@ -220,11 +220,11 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   // With sync enabled, only the android backend calls the original callback.
   EnablePasswordSync();
   EXPECT_CALL(original_callback, Run);
-  android_remote_changes_callback.Run(absl::nullopt);
+  android_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   EXPECT_CALL(original_callback, Run).Times(0);
-  built_in_remote_changes_callback.Run(absl::nullopt);
+  built_in_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   // As soon as sync is disabled, only the built-in backend calls the original
@@ -232,11 +232,11 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   DisablePasswordSync();
 
   EXPECT_CALL(original_callback, Run).Times(0);
-  android_remote_changes_callback.Run(absl::nullopt);
+  android_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   EXPECT_CALL(original_callback, Run);
-  built_in_remote_changes_callback.Run(absl::nullopt);
+  built_in_remote_changes_callback.Run(std::nullopt);
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
@@ -259,11 +259,11 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   // With sync enabled, only the android backend calls the original callback.
   EnablePasswordSync();
   EXPECT_CALL(original_callback, Run);
-  android_remote_changes_callback.Run(absl::nullopt);
+  android_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   EXPECT_CALL(original_callback, Run).Times(0);
-  built_in_remote_changes_callback.Run(absl::nullopt);
+  built_in_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   // With sync disabled, the profile store still only services the local
@@ -271,11 +271,11 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   DisablePasswordSync();
 
   EXPECT_CALL(original_callback, Run);
-  android_remote_changes_callback.Run(absl::nullopt);
+  android_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   EXPECT_CALL(original_callback, Run).Times(0);
-  built_in_remote_changes_callback.Run(absl::nullopt);
+  built_in_remote_changes_callback.Run(std::nullopt);
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
@@ -309,11 +309,11 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   // Only the android backend should report that logins have changed to avoid
   // duplicate notifications.
   EXPECT_CALL(original_callback, Run);
-  android_remote_changes_callback.Run(absl::nullopt);
+  android_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   EXPECT_CALL(original_callback, Run).Times(0);
-  built_in_remote_changes_callback.Run(absl::nullopt);
+  built_in_remote_changes_callback.Run(std::nullopt);
   testing::Mock::VerifyAndClearExpectations(&original_callback);
 }
 

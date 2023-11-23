@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -105,7 +106,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -1424,7 +1424,7 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     return;
   }
 
-  absl::optional<autofill::RendererFormsWithServerPredictions>
+  std::optional<autofill::RendererFormsWithServerPredictions>
       forms_and_predictions =
           autofill::RendererFormsWithServerPredictions::FromBrowserForm(
               manager, form_id);
@@ -1540,7 +1540,7 @@ bool ChromePasswordManagerClient::ShouldAnnotateNavigationEntries(
 void ChromePasswordManagerClient::GenerationResultAvailable(
     PasswordGenerationType type,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
-    const absl::optional<
+    const std::optional<
         autofill::password_generation::PasswordGenerationUIData>& ui_data) {
   if (!ui_data || !driver)
     return;

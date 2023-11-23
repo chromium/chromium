@@ -149,7 +149,7 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  absl::optional<AccountInfo> account_info =
+  std::optional<AccountInfo> account_info =
       password_manager::GetAccountInfoForPasswordMessages(profile);
   DisplaySaveUpdatePasswordPromptInternal(
       web_contents, std::move(form_to_save), std::move(account_info),
@@ -174,7 +174,7 @@ void SaveUpdatePasswordMessageDelegate::DismissSaveUpdatePasswordMessage(
 void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-    absl::optional<AccountInfo> account_info,
+    std::optional<AccountInfo> account_info,
     bool update_password,
     password_manager::PasswordManagerClient* password_manager_client) {
   // Dismiss previous message if it is displayed.
@@ -561,7 +561,7 @@ void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
         ui_dismissal_reason);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        ui_dismissal_reason, /*user_state=*/absl::nullopt);
+        ui_dismissal_reason, /*user_state=*/std::nullopt);
   }
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);

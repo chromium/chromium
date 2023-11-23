@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -46,7 +47,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -155,7 +155,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   void TestNavigationThrottle(
       const GURL& navigate_url,
       const GURL& expected_url,
-      absl::optional<url::Origin> initiator_origin = absl::nullopt) {
+      std::optional<url::Origin> initiator_origin = std::nullopt) {
     AddHttpsCertificate();
 
     NavigateParams params(browser(), navigate_url, page_transition());

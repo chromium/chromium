@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,7 +26,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -168,9 +169,9 @@ void WebAppProfileSwitcher::LaunchAppWithId(
       ->scheduler()
       .LaunchApp(app_id, *base::CommandLine::ForCurrentProcess(),
                  /*current_directory=*/base::FilePath(),
-                 /*url_handler_launch_url=*/absl::nullopt,
-                 /*protocol_handler_launch_url=*/absl::nullopt,
-                 /*file_launch_url=*/absl::nullopt, /*launch_files=*/{},
+                 /*url_handler_launch_url=*/std::nullopt,
+                 /*protocol_handler_launch_url=*/std::nullopt,
+                 /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
                  base::IgnoreArgs<base::WeakPtr<Browser>,
                                   base::WeakPtr<content::WebContents>,
                                   apps::LaunchContainer>(base::BindOnce(

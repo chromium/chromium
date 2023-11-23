@@ -33,7 +33,7 @@ ManagePasswordsListView::ManagePasswordsListView(
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        credentials) {
-    absl::optional<ui::ImageModel> store_icon = absl::nullopt;
+    std::optional<ui::ImageModel> store_icon = std::nullopt;
     if (password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -96,7 +96,7 @@ ManagePasswordsListView::ManagePasswordsListView(
           ui::ImageModel::FromVectorIcon(
               vector_icons::kLaunchIcon, ui::kColorIconSecondary,
               GetLayoutConstant(PAGE_INFO_ICON_SIZE)),
-          /*state_icon=*/absl::nullopt));
+          /*state_icon=*/std::nullopt));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
 

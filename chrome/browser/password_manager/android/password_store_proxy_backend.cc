@@ -128,7 +128,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
-    absl::optional<std::string> account,
+    std::optional<std::string> account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }
@@ -336,7 +336,7 @@ PasswordStoreBackend* PasswordStoreProxyBackend::shadow_backend() {
 void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
     CallbackOriginatesFromAndroidBackend originates_from_android,
     RemoteChangesReceived remote_form_changes_received,
-    absl::optional<PasswordStoreChangeList> changes) {
+    std::optional<PasswordStoreChangeList> changes) {
   // `remote_form_changes_received` is used to inform observers about changes in
   // the backend. This check guarantees observers are informed only about
   // changes in the main backend.

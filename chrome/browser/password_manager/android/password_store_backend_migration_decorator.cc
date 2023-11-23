@@ -221,7 +221,7 @@ void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
-    absl::optional<std::string> account,
+    std::optional<std::string> account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }

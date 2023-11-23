@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -45,7 +46,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace {
@@ -122,7 +122,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   raw_ptr<base::RunLoop> run_loop_;
 
   // The state CustomManagePasswordsUIController is currently waiting for.
-  absl::optional<password_manager::ui::State> target_state_;
+  std::optional<password_manager::ui::State> target_state_;
 
   // True iff showing fallback is waited.
   bool wait_for_fallback_;

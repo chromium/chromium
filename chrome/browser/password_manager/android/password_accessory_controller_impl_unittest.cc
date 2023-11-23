@@ -96,8 +96,7 @@ constexpr char kExampleSignonRealm[] = "https://example.com/";
 constexpr char16_t kExampleDomain[] = u"example.com";
 constexpr char16_t kUsername[] = u"alice";
 constexpr char16_t kPassword[] = u"password123";
-const absl::optional<std::vector<PasskeyCredential>> kNoPasskeys =
-    absl::nullopt;
+const std::optional<std::vector<PasskeyCredential>> kNoPasskeys = std::nullopt;
 
 class MockPasswordGenerationController
     : public PasswordGenerationControllerImpl {
@@ -1225,7 +1224,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
       PasskeyCredential::CredentialId({21, 22, 23, 24}),
       PasskeyCredential::UserId({81, 28, 83, 84}),
       PasskeyCredential::Username("someone@example.com"));
-  const absl::optional<std::vector<PasskeyCredential>> kTestPasskeys(
+  const std::optional<std::vector<PasskeyCredential>> kTestPasskeys(
       {kTestPasskey});
   ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
       .WillByDefault(ReturnRef(kTestPasskeys));

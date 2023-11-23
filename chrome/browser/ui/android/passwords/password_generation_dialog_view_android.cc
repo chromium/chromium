@@ -53,7 +53,7 @@ void PasswordGenerationDialogViewAndroid::Show(
 
   Profile* profile = Profile::FromBrowserContext(
       controller_->web_contents()->GetBrowserContext());
-  absl::optional<AccountInfo> account_info =
+  std::optional<AccountInfo> account_info =
       password_manager::GetAccountInfoForPasswordMessages(profile);
 
   std::u16string explanation_text;

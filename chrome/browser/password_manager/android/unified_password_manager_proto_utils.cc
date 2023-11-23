@@ -68,14 +68,14 @@ std::string SerializeOpaqueLocalData(const PasswordForm& password_form) {
   return serialized_local_data;
 }
 
-absl::optional<FormData> DeserializeFormData(
+std::optional<FormData> DeserializeFormData(
     base::Value::Dict& serialized_data) {
   std::string* form_name = serialized_data.FindString(kNameKey);
   std::string* form_url = serialized_data.FindString(kUrlKey);
   std::string* form_action = serialized_data.FindString(kActionKey);
   base::Value::List* fields = serialized_data.FindList(kFieldsKey);
   if (!form_name || !form_url || !form_action || !fields) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   FormData form_data;
   form_data.name = base::UTF8ToUTF16(*form_name);
@@ -86,14 +86,14 @@ absl::optional<FormData> DeserializeFormData(
     base::Value::Dict* serialized_field_dictionary =
         serialized_field.GetIfDict();
     if (!serialized_field_dictionary) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     FormFieldData field;
     std::string* field_name = serialized_field_dictionary->FindString(kNameKey);
     std::string* field_type =
         serialized_field_dictionary->FindString(kFormControlTypeKey);
     if (!field_name || !field_type) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     field.name = base::UTF8ToUTF16(*field_name);
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
@@ -121,7 +121,7 @@ void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
   if (!skip_zero_click.has_value() || !serialized_form_data) {
     return;
   }
-  absl::optional<FormData> form_data =
+  std::optional<FormData> form_data =
       DeserializeFormData(*serialized_form_data);
   if (!form_data.has_value()) {
     return;

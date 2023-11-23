@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_PROXY_BACKEND_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -52,7 +52,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   void GetAllLoginsWithAffiliationAndBrandingAsync(
       LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
+  void GetAllLoginsForAccountAsync(std::optional<std::string> account,
                                    LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsOrErrorReply callback,
@@ -89,7 +89,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   void OnRemoteFormChangesReceived(
       CallbackOriginatesFromAndroidBackend originatesFromAndroid,
       RemoteChangesReceived remote_form_changes_received,
-      absl::optional<PasswordStoreChangeList> changes);
+      std::optional<PasswordStoreChangeList> changes);
 
   // Forwards sync status changes by the backend facilitating them.
   void OnSyncEnabledOrDisabled(

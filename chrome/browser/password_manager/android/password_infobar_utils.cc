@@ -33,7 +33,7 @@ AccountInfo GetAccountInfoForPasswordMessages(Profile* profile) {
 std::string GetDisplayableAccountName(content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  absl::optional<AccountInfo> account_info =
+  std::optional<AccountInfo> account_info =
       password_manager::GetAccountInfoForPasswordMessages(profile);
   if (!account_info.has_value()) {
     return "";

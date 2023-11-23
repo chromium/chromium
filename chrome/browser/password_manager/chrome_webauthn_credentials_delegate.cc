@@ -4,13 +4,14 @@
 
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -46,7 +47,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
     const std::string& backend_id) {
   // `backend_id` is the base64-encoded credential ID. See `PasskeyCredential`
   // for where these are encoded.
-  absl::optional<std::vector<uint8_t>> selected_credential_id =
+  std::optional<std::vector<uint8_t>> selected_credential_id =
       base::Base64Decode(backend_id);
   DCHECK(selected_credential_id);
 
@@ -68,7 +69,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-const absl::optional<std::vector<PasskeyCredential>>&
+const std::optional<std::vector<PasskeyCredential>>&
 ChromeWebAuthnCredentialsDelegate::GetPasskeys() const {
   return passkeys_;
 }
@@ -100,7 +101,7 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
 }
 
 void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
-  passkeys_ = absl::nullopt;
+  passkeys_ = std::nullopt;
   if (retrieve_passkeys_callback_) {
     std::move(retrieve_passkeys_callback_).Run();
   }

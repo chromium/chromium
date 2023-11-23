@@ -142,7 +142,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnLoginChanged(
   DCHECK(consumer_);
   // Notifying that a login changed without providing a changelist prompts the
   // caller to explicitly check the remaining logins.
-  consumer_->OnLoginsChanged(JobId(job_id), absl::nullopt);
+  consumer_->OnLoginsChanged(JobId(job_id), std::nullopt);
 }
 
 }  // namespace password_manager
