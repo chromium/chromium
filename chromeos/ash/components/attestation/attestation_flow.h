@@ -158,10 +158,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   // Reports success if enrollment is complete and otherwise starts the process.
   //
   // Parameters
+  //   certificate_profile - Specifies what kind of certificate should be
+  //                         requested from the CA.
   //   callback - Called with the success or failure of the enrollment.
   //   result - Result of `GetStatus()`, which contains `enrolled` field.
-  void OnEnrollmentCheckComplete(EnrollCallback callback,
-                                 const ::attestation::GetStatusReply& reply);
+  void OnEnrollmentCheckComplete(
+      AttestationCertificateProfile certificate_profile,
+      EnrollCallback callback,
+      const ::attestation::GetStatusReply& reply);
 
   // Asynchronously requests attestation features.
   //

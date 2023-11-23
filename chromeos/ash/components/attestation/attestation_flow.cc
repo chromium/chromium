@@ -113,14 +113,17 @@ void AttestationFlow::GetCertificate(
 
   // If this device has not enrolled with the Privacy CA, we need to do that
   // first.  Once enrolled we can proceed with the certificate request.
+  ::attestation::GetStatusRequest status_request;
+  status_request.set_extended_status(true);
   attestation_client_->GetStatus(
-      ::attestation::GetStatusRequest(),
+      status_request,
       base::BindOnce(&AttestationFlow::OnEnrollmentCheckComplete,
-                     weak_factory_.GetWeakPtr(),
+                     weak_factory_.GetWeakPtr(), certificate_profile,
                      std::move(start_certificate_request)));
 }
 
 void AttestationFlow::OnEnrollmentCheckComplete(
+    AttestationCertificateProfile certificate_profile,
     EnrollCallback callback,
     const ::attestation::GetStatusReply& reply) {
   if (reply.status() != ::attestation::STATUS_SUCCESS) {
@@ -132,6 +135,16 @@ void AttestationFlow::OnEnrollmentCheckComplete(
 
   if (reply.enrolled()) {
     std::move(callback).Run(EnrollState::kEnrolled);
+    return;
+  }
+
+  // The verified boot state is required for soft bind certificates.
+  if (certificate_profile ==
+          AttestationCertificateProfile::PROFILE_SOFT_BIND_CERTIFICATE &&
+      !reply.verified_boot()) {
+    LOG(ERROR) << "Attestation: Cannot create soft bind certificate without "
+                  "verified boot.";
+    std::move(callback).Run(EnrollState::kError);
     return;
   }
 
