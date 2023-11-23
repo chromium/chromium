@@ -764,7 +764,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> verwenden</translation>
 <translation id="1598233202702788831">Updates sind durch deinen Administrator deaktiviert.</translation>
 <translation id="1600541617401655593">Dabei helfen, die Funktionen und die Leistung von ChromeOS Flex zu verbessern. Die Daten werden aggregiert und bestmöglich geschützt.</translation>
-<translation id="1600857548979126453">Auf das Back-End für Seiten-Debugger zugreifen</translation>
+<translation id="1600857548979126453">Auf das Backend für Seiten-Debugger zugreifen</translation>
 <translation id="1601481906560916994">Website ausschließen</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
 <translation id="1602085790802918092">Virtuelle Maschine wird gestartet</translation>
@@ -3295,7 +3295,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3566325075220776093">Von diesem Gerät</translation>
 <translation id="3566721612727112615">Keine Websites hinzugefügt</translation>
 <translation id="3567284462585300767">Sichtbar werden, um Dateien mit Personen in der Nähe auszutauschen</translation>
-<translation id="356738834800832239">Dein Passwort wird gespeichert</translation>
+<translation id="356738834800832239">Dein Passwort wurde gespeichert</translation>
 <translation id="3569382839528428029">Soll <ph name="APP_NAME" /> deinen Bildschirm freigeben?</translation>
 <translation id="3569614820047645079">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> darf die folgenden Dateien und Ordner aufrufen</translation>
@@ -9943,7 +9943,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8861568709166518036">Mit Schaltflächen auf dem Bildschirm kannst du zum Startbildschirm, zur vorherigen Seite und zwischen Apps wechseln. Wird automatisch aktiviert, wenn ChromeVox oder automatische Klicks aktiviert sind.</translation>
 <translation id="8863753581171631212">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wird mit <ph name="APP_NAME" /> geteilt</translation>
-<translation id="8864104359314908853">Dein Passwort wird gespeichert</translation>
+<translation id="8864104359314908853">Dein Passwort wurde gespeichert</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> wurde von diesem Gerät entfernt</translation>
 <translation id="8865112428068029930">Du teilst dir einen Computer? Dann kannst du ganz einfach ein Inkognitofenster nutzen.</translation>
 <translation id="8867102760244540173">Auf Tabs suchen…</translation>

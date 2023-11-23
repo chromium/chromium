@@ -8143,7 +8143,7 @@
 <translation id="747114903913869239">错误：无法对扩展程序进行解码</translation>
 <translation id="7471520329163184433">减速</translation>
 <translation id="747312361841682912">删除显示的数据</translation>
-<translation id="7473891865547856676">不，谢谢</translation>
+<translation id="7473891865547856676">不用了</translation>
 <translation id="747459581954555080">全部恢复</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{必须立即退还此设备}other{请在 {NUM_DAYS} 天内退还 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="7475671414023905704">Netscape 忘了密码网址</translation>
