@@ -32,7 +32,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutofillDownloadManager;
 using autofill::AutofillField;

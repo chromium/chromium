@@ -6,12 +6,12 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_PARSING_FORM_DATA_PARSER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -139,7 +139,7 @@ class FormDataParser {
 
   void reset_predictions() { predictions_.reset(); }
 
-  const absl::optional<FormPredictions>& predictions() { return predictions_; }
+  const std::optional<FormPredictions>& predictions() { return predictions_; }
 
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
@@ -164,7 +164,7 @@ class FormDataParser {
  private:
   // Predictions are an optional source of server-side information about field
   // types.
-  absl::optional<FormPredictions> predictions_;
+  std::optional<FormPredictions> predictions_;
 
   // Records whether readonly password fields were seen during the last call to
   // Parse().

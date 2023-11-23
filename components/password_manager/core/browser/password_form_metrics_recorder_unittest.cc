@@ -214,7 +214,7 @@ TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
 
   static constexpr struct {
     // Stimuli:
-    absl::optional<metrics_util::SubmittedFormType> form_type;
+    std::optional<metrics_util::SubmittedFormType> form_type;
     bool was_form_submitted;
     // Expectations:
     bool should_record_metrics;
@@ -222,7 +222,7 @@ TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
       {metrics_util::SubmittedFormType::kLogin, true, true},
       {metrics_util::SubmittedFormType::kSignup, true, true},
       {metrics_util::SubmittedFormType::kLogin, false, false},
-      {absl::nullopt, true, false},
+      {std::nullopt, true, false},
   };
   for (const auto& test : kTests) {
     SCOPED_TRACE(testing::Message()
@@ -618,7 +618,7 @@ struct FillingAssistanceTestCase {
   std::vector<std::string> saved_passwords;
   std::vector<InteractionsStats> interactions_stats;
 
-  absl::optional<PasswordFormMetricsRecorder::FillingAssistance> expectation;
+  std::optional<PasswordFormMetricsRecorder::FillingAssistance> expectation;
 };
 
 FormData ConvertToFormData(const std::vector<TestCaseFieldInfo>& fields) {
@@ -1115,7 +1115,7 @@ struct FillingSourceTestCase {
   std::vector<std::string> saved_account_usernames;
   std::vector<std::string> saved_account_passwords;
 
-  absl::optional<PasswordFormMetricsRecorder::FillingSource> expectation;
+  std::optional<PasswordFormMetricsRecorder::FillingSource> expectation;
 };
 
 void CheckFillingSourceTestCase(const FillingSourceTestCase& test_case) {

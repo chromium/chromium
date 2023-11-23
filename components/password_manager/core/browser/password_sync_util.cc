@@ -94,17 +94,17 @@ bool IsSyncFeatureActiveIncludingPasswords(
          sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 
-absl::optional<std::string> GetAccountForSaving(
+std::optional<std::string> GetAccountForSaving(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
   if (!sync_service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (IsSyncFeatureEnabledIncludingPasswords(sync_service) ||
       features_util::IsOptedInForAccountStorage(pref_service, sync_service)) {
     return sync_service->GetAccountInfo().email;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 password_manager::SyncState GetPasswordSyncState(

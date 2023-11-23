@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HASH_PASSWORD_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HASH_PASSWORD_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -50,7 +50,7 @@ class HashPasswordManager {
 
   // Returns empty if no hash matching |username| and |is_gaia_password| is
   // available.
-  absl::optional<PasswordHashData> RetrievePasswordHash(
+  std::optional<PasswordHashData> RetrievePasswordHash(
       const std::string& username,
       bool is_gaia_password);
 

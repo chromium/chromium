@@ -39,7 +39,7 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
           reporter.RecordMetrics(SuccessStatus::kError,
                                  absl::get<PasswordStoreBackendError>(result));
         } else {
-          reporter.RecordMetrics(SuccessStatus::kSuccess, absl::nullopt);
+          reporter.RecordMetrics(SuccessStatus::kSuccess, std::nullopt);
         }
         return result;
       },
@@ -134,7 +134,7 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
-    absl::optional<std::string> account,
+    std::optional<std::string> account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }

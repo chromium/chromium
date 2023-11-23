@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_SHARING_RECIPIENTS_DOWNLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "components/sync/protocol/password_sharing_recipients.pb.h"
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -51,7 +51,7 @@ class PasswordSharingRecipientsDownloader {
 
   // Returns response if request successfully complete, nullopt otherwise. Must
   // be called at most once.
-  absl::optional<sync_pb::PasswordSharingRecipientsResponse> TakeResponse();
+  std::optional<sync_pb::PasswordSharingRecipientsResponse> TakeResponse();
 
   // Returns request failure. Must be called once the request is complete.
   int GetNetError() const;
@@ -86,7 +86,7 @@ class PasswordSharingRecipientsDownloader {
       ongoing_access_token_fetch_;
 
   // Contains a parsed response if the request succeeded.
-  absl::optional<sync_pb::PasswordSharingRecipientsResponse> response_;
+  std::optional<sync_pb::PasswordSharingRecipientsResponse> response_;
 
   // Contains request failure if the request is complete and there was an HTTP
   // error code or request timed out.

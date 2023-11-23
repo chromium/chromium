@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -43,10 +44,10 @@ bool IsSuffix(const std::u16string& str,
 
 // Helper function to returns matching PasswordHashData from a list that has
 // the longest password length.
-absl::optional<PasswordHashData> FindPasswordReuse(
+std::optional<PasswordHashData> FindPasswordReuse(
     const std::u16string& input,
     const std::vector<PasswordHashData>& password_hash_list) {
-  absl::optional<PasswordHashData> longest_match = absl::nullopt;
+  std::optional<PasswordHashData> longest_match = std::nullopt;
   size_t longest_match_size = 0;
   for (const PasswordHashData& hash_data : password_hash_list) {
     if (input.size() < hash_data.length)
@@ -143,18 +144,18 @@ void PasswordReuseDetector::CheckReuse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
   if (input.size() < GetMinPasswordLengthToCheck()) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
+    consumer->OnReuseCheckDone(false, 0, std::nullopt, {},
                                SavedPasswordsCount(), std::string(), 0);
     return;
   }
 
-  absl::optional<PasswordHashData> reused_gaia_password_hash =
+  std::optional<PasswordHashData> reused_gaia_password_hash =
       CheckGaiaPasswordReuse(input, domain);
   size_t gaia_reused_password_length = reused_gaia_password_hash.has_value()
                                            ? reused_gaia_password_hash->length
                                            : 0;
 
-  absl::optional<PasswordHashData> reused_enterprise_password_hash =
+  std::optional<PasswordHashData> reused_enterprise_password_hash =
       CheckNonGaiaEnterprisePasswordReuse(input, domain);
   size_t enterprise_reused_password_length =
       reused_enterprise_password_hash.has_value()
@@ -171,7 +172,7 @@ void PasswordReuseDetector::CheckReuse(
                 enterprise_reused_password_length});
 
   if (max_reused_password_length == 0) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
+    consumer->OnReuseCheckDone(false, 0, std::nullopt, {},
                                SavedPasswordsCount(), std::string(), 0);
     return;
   }
@@ -179,8 +180,7 @@ void PasswordReuseDetector::CheckReuse(
   uint64_t reused_password_hash =
       CalculatePasswordHash(saved_reused_password, std::string());
 
-  absl::optional<PasswordHashData> reused_protected_password_hash =
-      absl::nullopt;
+  std::optional<PasswordHashData> reused_protected_password_hash = std::nullopt;
   if (gaia_reused_password_length > enterprise_reused_password_length) {
     reused_password_hash = reused_gaia_password_hash->hash;
     reused_protected_password_hash = std::move(reused_gaia_password_hash);
@@ -195,30 +195,31 @@ void PasswordReuseDetector::CheckReuse(
                              domain, reused_password_hash);
 }
 
-absl::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
+std::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
     const std::u16string& input,
     const std::string& domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gaia_password_hash_data_list_.has_value() ||
       gaia_password_hash_data_list_->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Skips password reuse check if |domain| matches Gaia origin.
-  if (gaia::HasGaiaSchemeHostPort(GURL(domain)))
-    return absl::nullopt;
+  if (gaia::HasGaiaSchemeHostPort(GURL(domain))) {
+    return std::nullopt;
+  }
 
   return FindPasswordReuse(input, gaia_password_hash_data_list_.value());
 }
 
-absl::optional<PasswordHashData>
+std::optional<PasswordHashData>
 PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
     const std::u16string& input,
     const std::string& domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enterprise_password_hash_data_list_.has_value() ||
       enterprise_password_hash_data_list_->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Skips password reuse check if |domain| matches enterprise login URL or
@@ -227,7 +228,7 @@ PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
   if (enterprise_password_urls_.has_value() &&
       safe_browsing::MatchesURLList(page_url,
                                     enterprise_password_urls_.value())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return FindPasswordReuse(input, enterprise_password_hash_data_list_.value());
@@ -285,20 +286,20 @@ std::u16string PasswordReuseDetector::CheckSavedPasswordReuse(
 }
 
 void PasswordReuseDetector::UseGaiaPasswordHash(
-    absl::optional<std::vector<PasswordHashData>> password_hash_data_list) {
+    std::optional<std::vector<PasswordHashData>> password_hash_data_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gaia_password_hash_data_list_ = std::move(password_hash_data_list);
 }
 
 void PasswordReuseDetector::UseNonGaiaEnterprisePasswordHash(
-    absl::optional<std::vector<PasswordHashData>> password_hash_data_list) {
+    std::optional<std::vector<PasswordHashData>> password_hash_data_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enterprise_password_hash_data_list_ = std::move(password_hash_data_list);
 }
 
 void PasswordReuseDetector::UseEnterprisePasswordURLs(
-    absl::optional<std::vector<GURL>> enterprise_login_urls,
-    absl::optional<GURL> enterprise_change_password_url) {
+    std::optional<std::vector<GURL>> enterprise_login_urls,
+    std::optional<GURL> enterprise_change_password_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enterprise_password_urls_ = std::move(enterprise_login_urls);
   if (!enterprise_change_password_url.has_value() ||
@@ -306,8 +307,9 @@ void PasswordReuseDetector::UseEnterprisePasswordURLs(
     return;
   }
 
-  if (!enterprise_password_urls_)
-    enterprise_password_urls_ = absl::make_optional<std::vector<GURL>>();
+  if (!enterprise_password_urls_) {
+    enterprise_password_urls_ = std::make_optional<std::vector<GURL>>();
+  }
   enterprise_password_urls_->push_back(enterprise_change_password_url.value());
 }
 

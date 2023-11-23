@@ -285,13 +285,13 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
   return forms_iterator->second;
 }
 
-absl::optional<PasskeyCredential> PasswordsGrouper::GetPasskeyFor(
+std::optional<PasskeyCredential> PasswordsGrouper::GetPasskeyFor(
     const CredentialUIEntry& credential) {
   // Find the group id based on the sign on realm.
   auto group_id_iterator = map_signon_realm_to_group_id_.find(
       SignonRealm(credential.GetFirstSignonRealm()));
   if (group_id_iterator == map_signon_realm_to_group_id_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Find the passkey in the group.
   const std::vector<PasskeyCredential>& passkeys =
@@ -300,7 +300,7 @@ absl::optional<PasskeyCredential> PasswordsGrouper::GetPasskeyFor(
       base::ranges::find(passkeys, credential.passkey_credential_id,
                          &PasskeyCredential::credential_id);
   if (passkey_it == passkeys.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *passkey_it;
 }

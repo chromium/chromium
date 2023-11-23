@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -67,7 +68,6 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/cred_man_support.h"
@@ -267,7 +267,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   mutable FakeNetworkContext network_context_;
   testing::NiceMock<MockStoreResultFilter> filter_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
-  absl::optional<std::vector<PasskeyCredential>> passkeys_;
+  std::optional<std::vector<PasskeyCredential>> passkeys_;
 };
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -3273,8 +3273,8 @@ namespace {
 
 // A convenience helper for type conversions.
 template <typename T>
-absl::optional<int64_t> MetricValue(T value) {
-  return absl::optional<int64_t>(static_cast<int64_t>(value));
+std::optional<int64_t> MetricValue(T value) {
+  return std::optional<int64_t>(static_cast<int64_t>(value));
 }
 
 struct MissingFormManagerTestCase {
@@ -3289,8 +3289,8 @@ struct MissingFormManagerTestCase {
   // A list of forms to be processed for saving, one at a time.
   std::vector<FormData> processed_form_data;
   // The expected value of the PageWithPassword::kFormManagerAvailableName
-  // metric, or absl::nullopt if no value should be logged.
-  absl::optional<int64_t> expected_metric_value;
+  // metric, or std::nullopt if no value should be logged.
+  std::optional<int64_t> expected_metric_value;
 };
 
 }  // namespace
@@ -3359,7 +3359,7 @@ TEST_F(PasswordManagerTest, ReportMissingFormManager) {
           .save_signal = MissingFormManagerTestCase::Signal::None,
           .parsed_forms_data = {},
           .processed_form_data = {},
-          .expected_metric_value = absl::nullopt,
+          .expected_metric_value = std::nullopt,
       },
       {
           .description = "Not enabled, no report.",
@@ -3367,7 +3367,7 @@ TEST_F(PasswordManagerTest, ReportMissingFormManager) {
           .save_signal = MissingFormManagerTestCase::Signal::Automatic,
           .parsed_forms_data = {form_data},
           .processed_form_data = {form_data},
-          .expected_metric_value = absl::nullopt,
+          .expected_metric_value = std::nullopt,
       },
   };
 
@@ -5366,8 +5366,8 @@ class PasswordManagerWithOtpVariationsTest
     : public PasswordManagerTest,
       public testing::WithParamInterface<std::tuple<
           /*saved_form.username=*/std::u16string,
-          /*saved_form.password=*/absl::optional<std::u16string>,
-          /*another_saved_form.password_value=*/absl::optional<std::u16string>,
+          /*saved_form.password=*/std::optional<std::u16string>,
+          /*another_saved_form.password_value=*/std::optional<std::u16string>,
           /*one_time_code_form.username_value=*/std::u16string,
           PredictionSource>> {
  protected:
@@ -5388,8 +5388,8 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
-  absl::optional<PasswordForm> saved_form;
-  absl::optional<PasswordForm> another_saved_form;
+  std::optional<PasswordForm> saved_form;
+  std::optional<PasswordForm> another_saved_form;
   // No saved password means no saved credential.
   if (saved_form_password.has_value()) {
     saved_form = PasswordForm();
@@ -5410,7 +5410,7 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
           another_saved_form_password.value();
       store_->AddLogin(another_saved_form.value());
     } else {
-      another_saved_form = absl::nullopt;
+      another_saved_form = std::nullopt;
     }
   }
 
@@ -5541,8 +5541,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     PasswordManagerWithOtpVariationsTest,
     testing::Combine(testing::Values(u"", u"username"),
-                     testing::Values(u"password", absl::nullopt),
-                     testing::Values(u"another_password", absl::nullopt),
+                     testing::Values(u"password", std::nullopt),
+                     testing::Values(u"another_password", std::nullopt),
                      testing::Values(u"", u"username", u"+1 650 000 000"),
                      testing::Values(PredictionSource::ID_ATTRIBUTE,
                                      PredictionSource::NAME_ATTRIBUTE,

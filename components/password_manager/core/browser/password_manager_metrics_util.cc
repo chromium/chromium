@@ -110,7 +110,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason) {
 
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    absl::optional<
+    std::optional<
         password_manager::features_util::PasswordAccountStorageUserState>
         user_state) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,

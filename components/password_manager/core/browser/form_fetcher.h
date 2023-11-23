@@ -110,8 +110,8 @@ class FormFetcher {
 
   // Returns an error if it occurred during login retrieval from the
   // profile store.
-  virtual absl::optional<PasswordStoreBackendError>
-  GetProfileStoreBackendError() const = 0;
+  virtual std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+      const = 0;
 };
 
 }  // namespace password_manager

@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,8 +31,8 @@ namespace {
 using StringVector = std::vector<std::string>;
 
 // Constants to make the tests more readable.
-const absl::optional<PasswordHashData> NO_GAIA_OR_ENTERPRISE_REUSE =
-    absl::nullopt;
+const std::optional<PasswordHashData> NO_GAIA_OR_ENTERPRISE_REUSE =
+    std::nullopt;
 
 struct TestData {
   // Comma separated list of domains.
@@ -116,8 +117,8 @@ std::vector<PasswordHashData> PrepareEnterprisePasswordData(
 
 void ConfigureEnterprisePasswordProtection(
     PasswordReuseDetector* reuse_detector) {
-  absl::optional<std::vector<GURL>> login_urls =
-      absl::make_optional<std::vector<GURL>>();
+  std::optional<std::vector<GURL>> login_urls =
+      std::make_optional<std::vector<GURL>>();
   login_urls->push_back(GURL("https://login.example.com"));
   reuse_detector->UseEnterprisePasswordURLs(
       login_urls, GURL("https://changepassword.example.com/"));
@@ -439,7 +440,7 @@ TEST(PasswordReuseDetectorTest, GaiaPasswordReuseFound) {
 
   std::vector<PasswordHashData> gaia_password_hashes =
       PrepareGaiaPasswordData({"gaia_pw1", "gaia_pw2"});
-  absl::optional<PasswordHashData> expected_reused_password_hash(
+  std::optional<PasswordHashData> expected_reused_password_hash(
       gaia_password_hashes[0]);
   reuse_detector.UseGaiaPasswordHash(gaia_password_hashes);
 
@@ -460,7 +461,7 @@ TEST(PasswordReuseDetectorTest, EnterprisePasswordNoReuse) {
 
   std::vector<PasswordHashData> enterprise_password_hashes =
       PrepareEnterprisePasswordData({"enterprise_pw1", "enterprise_pw2"});
-  absl::optional<PasswordHashData> expected_reused_password_hash(
+  std::optional<PasswordHashData> expected_reused_password_hash(
       enterprise_password_hashes[1]);
   reuse_detector.UseNonGaiaEnterprisePasswordHash(enterprise_password_hashes);
 
@@ -488,7 +489,7 @@ TEST(PasswordReuseDetectorTest, EnterprisePasswordReuseFound) {
 
   std::vector<PasswordHashData> enterprise_password_hashes =
       PrepareEnterprisePasswordData({"enterprise_pw1", "enterprise_pw2"});
-  absl::optional<PasswordHashData> expected_reused_password_hash(
+  std::optional<PasswordHashData> expected_reused_password_hash(
       enterprise_password_hashes[1]);
   reuse_detector.UseNonGaiaEnterprisePasswordHash(enterprise_password_hashes);
 
@@ -512,7 +513,7 @@ TEST(PasswordReuseDetectorTest, MatchGaiaAndMultipleSavedPasswords) {
   std::vector<PasswordHashData> gaia_password_hashes =
       PrepareGaiaPasswordData({gaia_password});
   ASSERT_EQ(1u, gaia_password_hashes.size());
-  absl::optional<PasswordHashData> expected_reused_password_hash(
+  std::optional<PasswordHashData> expected_reused_password_hash(
       gaia_password_hashes[0]);
   reuse_detector.UseGaiaPasswordHash(gaia_password_hashes);
 
@@ -605,7 +606,7 @@ TEST(PasswordReuseDetectorTest, MatchEnterpriseAndMultipleSavedPasswords) {
   std::vector<PasswordHashData> enterprise_password_hashes =
       PrepareEnterprisePasswordData({enterprise_password});
   ASSERT_EQ(1u, enterprise_password_hashes.size());
-  absl::optional<PasswordHashData> expected_reused_password_hash(
+  std::optional<PasswordHashData> expected_reused_password_hash(
       enterprise_password_hashes[0]);
   reuse_detector.UseNonGaiaEnterprisePasswordHash(enterprise_password_hashes);
 
@@ -673,7 +674,7 @@ TEST(PasswordReuseDetectorTest, MatchGaiaEnterpriseAndSavedPassword) {
   std::vector<PasswordHashData> enterprise_password_hashes =
       PrepareEnterprisePasswordData({enterprise_password});
   ASSERT_EQ(1u, enterprise_password_hashes.size());
-  absl::optional<PasswordHashData> expected_reused_password_hash(
+  std::optional<PasswordHashData> expected_reused_password_hash(
       enterprise_password_hashes[0]);
   reuse_detector.UseNonGaiaEnterprisePasswordHash(enterprise_password_hashes);
 

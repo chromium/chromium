@@ -251,7 +251,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   return result;
 }
 
-absl::optional<PasswordStoreBackendError>
+std::optional<PasswordStoreBackendError>
 FormFetcherImpl::GetProfileStoreBackendError() const {
   return profile_store_backend_error_;
 }

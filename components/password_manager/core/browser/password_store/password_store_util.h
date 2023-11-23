@@ -9,7 +9,6 @@
 
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -23,8 +22,8 @@ PasswordChanges JoinPasswordStoreChanges(
 // holds an error.
 LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result);
 
-// Returns password changes if |result| holds them, or absl::nullopt if |result|
-// holds an absl::nullopt or error.
+// Returns password changes if |result| holds them, or std::nullopt if |result|
+// holds an std::nullopt or error.
 PasswordChanges GetPasswordChangesOrNulloptOnFailure(
     PasswordChangesOrError result);
 

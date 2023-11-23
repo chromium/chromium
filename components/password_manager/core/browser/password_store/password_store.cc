@@ -395,7 +395,7 @@ void PasswordStore::OnInitCompleted(bool success) {
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
     LoginsChangedTrigger logins_changed_trigger,
-    absl::optional<PasswordStoreChangeList> changes) {
+    std::optional<PasswordStoreChangeList> changes) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   // Don't propagate reference to this store after its shutdown. No caller

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_METRICS_RECORDER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_METRICS_RECORDER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
@@ -12,7 +13,6 @@
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
@@ -46,7 +46,7 @@ class PasswordStoreBackendMetricsRecorder {
   // Records metrics from `RecordErrorCode` if `error` is specified.
   void RecordMetrics(
       SuccessStatus success_status,
-      absl::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const;
+      std::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const;
 
   // Returns the delta between creating this recorder and calling this method.
   base::TimeDelta GetElapsedTimeSinceCreation() const;

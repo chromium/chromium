@@ -221,10 +221,9 @@ class PasswordStoreTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-absl::optional<PasswordHashData> GetPasswordFromPref(
-    const std::string& username,
-    bool is_gaia_password,
-    PrefService* prefs) {
+std::optional<PasswordHashData> GetPasswordFromPref(const std::string& username,
+                                                    bool is_gaia_password,
+                                                    PrefService* prefs) {
   HashPasswordManager hash_password_manager;
   hash_password_manager.set_prefs(prefs);
 
@@ -1382,7 +1381,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
   EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
       .WillOnce(
           WithArg<1>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(absl::nullopt);
+            std::move(reply).Run(std::nullopt);
           })));
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))
       .WillOnce(WithArg<0>(

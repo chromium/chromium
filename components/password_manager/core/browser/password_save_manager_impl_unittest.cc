@@ -81,9 +81,9 @@ void CheckPendingCredentials(const PasswordForm& expected,
 }
 
 struct ExpectedGenerationUKM {
-  absl::optional<int64_t> generation_popup_shown;
+  std::optional<int64_t> generation_popup_shown;
   int64_t has_generated_password;
-  absl::optional<int64_t> generated_password_modified;
+  std::optional<int64_t> generated_password_modified;
 };
 
 // Check that UKM |metric_name| in |entry| is equal to |expected|. |expected| ==

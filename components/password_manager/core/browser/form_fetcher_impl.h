@@ -59,7 +59,7 @@ class FormFetcherImpl : public FormFetcher,
   const std::vector<const PasswordForm*>& GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   std::unique_ptr<FormFetcher> Clone() override;
-  absl::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+  std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
       const override;
 
  protected:
@@ -147,7 +147,7 @@ class FormFetcherImpl : public FormFetcher,
 
   // Holds an error if it occurred during login retrieval from the
   // PasswordStore.
-  absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> profile_store_backend_error_;
 
   base::WeakPtrFactory<FormFetcherImpl> weak_ptr_factory_{this};
 };

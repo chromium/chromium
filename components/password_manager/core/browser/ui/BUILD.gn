@@ -18,7 +18,6 @@ source_set("credential_ui_entry") {
     "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/well_known_change_password",
     "//components/url_formatter",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 

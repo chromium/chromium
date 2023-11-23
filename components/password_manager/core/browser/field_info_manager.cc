@@ -61,7 +61,7 @@ FieldInfoManager::~FieldInfoManager() = default;
 
 void FieldInfoManager::AddFieldInfo(
     const FieldInfo& new_info,
-    const absl::optional<FormPredictions>& predictions) {
+    const std::optional<FormPredictions>& predictions) {
   if (!field_info_cache_.empty() &&
       IsSameField(field_info_cache_.back().field_info, new_info)) {
     // The method can be called on every keystroke while the user modifies

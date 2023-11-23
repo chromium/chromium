@@ -57,8 +57,8 @@ class PasswordsGrouper {
       const CredentialUIEntry& credential) const;
 
   // Returns the passkey corresponding to the given |credential| entry. If there
-  // is no corresponding entry, returns absl::nullopt.
-  absl::optional<PasskeyCredential> GetPasskeyFor(
+  // is no corresponding entry, returns std::nullopt.
+  std::optional<PasskeyCredential> GetPasskeyFor(
       const CredentialUIEntry& credential);
 
   void ClearCache();

@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_BULK_LEAK_CHECK_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -75,7 +75,7 @@ class BulkLeakCheckImpl : public BulkLeakCheck {
   // Called when the server replied with something.
   void OnLookupLeakResponse(CredentialHolder* weak_holder,
                             std::unique_ptr<SingleLookupResponse> response,
-                            absl::optional<LeakDetectionError> error);
+                            std::optional<LeakDetectionError> error);
 
   // Called when the response was analyzed on the background thread.
   void OnAnalyzedResponse(CredentialHolder* weak_holder,

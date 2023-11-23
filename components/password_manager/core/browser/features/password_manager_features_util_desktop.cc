@@ -78,7 +78,7 @@ class AccountStorageSettingsReader {
     if (!account_settings_) {
       return PasswordForm::Store::kNotSet;
     }
-    absl::optional<int> value =
+    std::optional<int> value =
         account_settings_->FindInt(kAccountStorageDefaultStoreKey);
     if (!value) {
       return PasswordForm::Store::kNotSet;

@@ -51,7 +51,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -112,7 +111,7 @@ bool IsCurrentUserEvicted(PasswordManagerClient* client) {
 }
 
 bool ShouldShowErrorMessage(
-    absl::optional<PasswordStoreBackendError> backend_error,
+    std::optional<PasswordStoreBackendError> backend_error,
     PasswordManagerClient* client) {
   if (!backend_error.has_value())
     return false;
@@ -715,7 +714,7 @@ void PasswordFormManager::OnFetchCompleted() {
   autofills_left_ = kMaxTimesAutofill;
 
 #if BUILDFLAG(IS_ANDROID)
-  absl::optional<PasswordStoreBackendError> backend_error =
+  std::optional<PasswordStoreBackendError> backend_error =
       form_fetcher_->GetProfileStoreBackendError();
   if (ShouldShowErrorMessage(backend_error, client_)) {
     // If there is no FormData, this is an http authentication form. We don't

@@ -74,7 +74,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
 }
 
 bool HasGeneratedPassword(
-    absl::optional<PasswordFormMetricsRecorder::GeneratedPasswordStatus>
+    std::optional<PasswordFormMetricsRecorder::GeneratedPasswordStatus>
         status) {
   return status.has_value() &&
          (status == PasswordFormMetricsRecorder::GeneratedPasswordStatus::

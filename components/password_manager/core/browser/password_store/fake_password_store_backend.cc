@@ -109,7 +109,7 @@ void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
 }
 
 void FakePasswordStoreBackend::GetAllLoginsForAccountAsync(
-    absl::optional<std::string> account,
+    std::optional<std::string> account,
     LoginsOrErrorReply callback) {
   GetAllLoginsAsync(std::move(callback));
 }

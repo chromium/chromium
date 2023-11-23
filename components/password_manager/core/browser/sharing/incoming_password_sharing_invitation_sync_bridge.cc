@@ -56,7 +56,7 @@ IncomingPasswordSharingInvitationSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 IncomingPasswordSharingInvitationSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
@@ -67,7 +67,7 @@ IncomingPasswordSharingInvitationSyncBridge::MergeFullSyncData(
                                      std::move(entity_data));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -95,7 +95,7 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   CommitSyncMetadata(std::move(batch));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::GetData(
@@ -149,7 +149,7 @@ void IncomingPasswordSharingInvitationSyncBridge::ApplyDisableSyncChanges(
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::OnModelTypeStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -165,7 +165,7 @@ void IncomingPasswordSharingInvitationSyncBridge::OnModelTypeStoreCreated(
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::OnReadAllMetadata(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -176,7 +176,7 @@ void IncomingPasswordSharingInvitationSyncBridge::OnReadAllMetadata(
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::OnCommitSyncMetadata(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

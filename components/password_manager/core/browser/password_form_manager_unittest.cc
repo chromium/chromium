@@ -62,7 +62,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/cred_man_support.h"
@@ -220,9 +219,9 @@ void CheckPendingCredentials(const PasswordForm& expected,
 }
 
 struct ExpectedGenerationUKM {
-  absl::optional<int64_t> generation_popup_shown;
+  std::optional<int64_t> generation_popup_shown;
   int64_t has_generated_password;
-  absl::optional<int64_t> generated_password_modified;
+  std::optional<int64_t> generated_password_modified;
 };
 
 // Check that UKM |metric_name| in |entry| is equal to |expected|. |expected| ==
@@ -504,7 +503,7 @@ class PasswordFormManagerTest : public testing::Test,
   NiceMock<MockWebAuthnCredentialsDelegate> webauthn_credentials_delegate_;
   std::unique_ptr<FieldInfoManager> field_info_manager_;
   scoped_refptr<TestMockTimeTaskRunner> task_runner_;
-  absl::optional<std::vector<PasskeyCredential>> passkeys_;
+  std::optional<std::vector<PasskeyCredential>> passkeys_;
 
   // Define |fetcher_| before |form_manager_|, because the former needs to
   // outlive the latter.
@@ -1763,9 +1762,9 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordEmptyStore) {
   // Check UKM metrics.
   form_manager_.reset();
   ExpectedGenerationUKM expected_metrics = {
-      absl::make_optional(1u) /* shown automatically */,
+      std::make_optional(1u) /* shown automatically */,
       1 /* password generated */,
-      absl::make_optional(1u) /* password modified */};
+      std::make_optional(1u) /* password modified */};
 
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);
 }
@@ -1809,9 +1808,9 @@ TEST_P(PasswordFormManagerTest, PresaveGenerated_ModifiedUsername) {
   // Check UKM metrics.
   form_manager_.reset();
   ExpectedGenerationUKM expected_metrics = {
-      absl::make_optional(1u) /* shown automatically */,
+      std::make_optional(1u) /* shown automatically */,
       1 /* password generated */,
-      absl::make_optional(0u) /* password modified */};
+      std::make_optional(0u) /* password modified */};
 
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);
 }
@@ -1899,7 +1898,7 @@ TEST_P(PasswordFormManagerTest, PasswordNoLongerGenerated) {
   // Check UKM metrics.
   form_manager_.reset();
   ExpectedGenerationUKM expected_metrics = {
-      absl::make_optional(2u) /* shown manually */,
+      std::make_optional(2u) /* shown manually */,
       0 /* password generated */,
       {} /* generated password is not modified */};
 
@@ -4078,7 +4077,7 @@ TEST_P(PasswordFormManagerTest,
 
 TEST_P(PasswordFormManagerTest,
        ClientShouldNotShowErrorMessageWhenThereIsNoError) {
-  fetcher_->SetProfileStoreBackendError(absl::nullopt);
+  fetcher_->SetProfileStoreBackendError(std::nullopt);
 
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
   fetcher_->NotifyFetchCompleted();
@@ -4502,7 +4501,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, PasswordNoLongerGenerated) {
   // Check UKM metrics.
   ResetFormManager();
   ExpectedGenerationUKM expected_metrics = {
-      absl::make_optional(2u) /* shown manually */,
+      std::make_optional(2u) /* shown manually */,
       0 /* password generated */,
       {} /* generated password is not modified */};
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);

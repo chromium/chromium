@@ -72,9 +72,9 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   // Temporarily holds the credentials stored in the profile and account stores
   // till the actual metric computation starts. They don't have a value until
   // the credentials are loaded from the storage.
-  absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+  std::optional<std::vector<std::unique_ptr<PasswordForm>>>
       profile_store_results_;
-  absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+  std::optional<std::vector<std::unique_ptr<PasswordForm>>>
       account_store_results_;
 
   base::OnceClosure done_callback_;

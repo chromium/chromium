@@ -724,7 +724,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 // user-state-specific histogram.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    absl::optional<features_util::PasswordAccountStorageUserState> user_state);
+    std::optional<features_util::PasswordAccountStorageUserState> user_state);
 
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);

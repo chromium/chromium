@@ -89,7 +89,7 @@ class AffiliatedMatchHelper {
 
   const raw_ptr<AffiliationService> affiliation_service_;
 
-  absl::optional<base::flat_set<std::string>> psl_extensions_;
+  std::optional<base::flat_set<std::string>> psl_extensions_;
 
   std::vector<PSLExtensionCallback> psl_extensions_callbacks_;
 

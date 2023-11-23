@@ -6,13 +6,14 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSKEY_CREDENTIAL_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -105,7 +106,7 @@ class PasskeyCredential {
 
   // An optional label for the authenticator. If this is not set, a generic
   // device name will be returned by GetAuthenticatorLabel().
-  absl::optional<std::u16string> authenticator_label_;
+  std::optional<std::u16string> authenticator_label_;
 };
 
 bool operator==(const PasskeyCredential& lhs, const PasskeyCredential& rhs);

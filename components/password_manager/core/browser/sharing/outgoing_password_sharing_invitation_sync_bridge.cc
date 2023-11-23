@@ -151,16 +151,16 @@ void OutgoingPasswordSharingInvitationSyncBridge::SendPasswordGroup(
       metadata_change_list.get());
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 OutgoingPasswordSharingInvitationSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_data.empty());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 OutgoingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -173,7 +173,7 @@ OutgoingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     outgoing_invitations_in_flight_.erase(
         GetClientTagHashFromStorageKey(change->storage_key()));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void OutgoingPasswordSharingInvitationSyncBridge::GetData(

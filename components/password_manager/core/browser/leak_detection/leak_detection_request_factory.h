@@ -6,10 +6,10 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_REQUEST_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace mojom {
@@ -28,7 +28,7 @@ class LeakDetectionRequestInterface {
  public:
   using LookupSingleLeakCallback =
       base::OnceCallback<void(std::unique_ptr<SingleLookupResponse>,
-                              absl::optional<LeakDetectionError>)>;
+                              std::optional<LeakDetectionError>)>;
 
   LeakDetectionRequestInterface() = default;
   virtual ~LeakDetectionRequestInterface() = default;
@@ -50,8 +50,8 @@ class LeakDetectionRequestInterface {
   // otherwise a SingleLookupResponse is returned.
   virtual void LookupSingleLeak(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      const absl::optional<std::string>& access_token,
-      const absl::optional<std::string>& api_key,
+      const std::optional<std::string>& access_token,
+      const std::optional<std::string>& api_key,
       LookupSingleLeakPayload payload,
       LookupSingleLeakCallback callback) = 0;
 };

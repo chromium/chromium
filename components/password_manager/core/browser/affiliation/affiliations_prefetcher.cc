@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/barrier_callback.h"
@@ -37,16 +38,16 @@ bool IsFacetValidForAffiliation(const FacetURI& facet) {
 #endif
 }
 
-absl::optional<FacetURI> FacetURIFromPasskey(
+std::optional<FacetURI> FacetURIFromPasskey(
     const sync_pb::WebauthnCredentialSpecifics& passkey) {
   std::string as_url = base::StrCat(
       {url::kHttpsScheme, url::kStandardSchemeSeparator, passkey.rp_id()});
   FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(as_url);
   if (!facet_uri.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!IsFacetValidForAffiliation(facet_uri)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return facet_uri;
 }
@@ -90,7 +91,7 @@ void AffiliationsPrefetcher::RegisterPasskeyModel(
   // info for all passkeys.
   if (is_ready_) {
     for (const auto& passkey : passkey_model->GetAllPasskeys()) {
-      absl::optional<FacetURI> facet = FacetURIFromPasskey(passkey);
+      std::optional<FacetURI> facet = FacetURIFromPasskey(passkey);
       if (facet) {
         affiliation_service_->Prefetch(std::move(*facet), base::Time::Max());
       }
@@ -171,7 +172,7 @@ void AffiliationsPrefetcher::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {
   std::vector<FacetURI> facet_uris_to_trim;
   for (const webauthn::PasskeyModelChange& change : changes) {
-    absl::optional<FacetURI> facet = FacetURIFromPasskey(change.passkey());
+    std::optional<FacetURI> facet = FacetURIFromPasskey(change.passkey());
     if (!facet) {
       continue;
     }
@@ -226,7 +227,7 @@ void AffiliationsPrefetcher::OnResultFromAllStoresReceived(
   if (passkey_model_observation_.IsObserving()) {
     for (const auto& passkey :
          passkey_model_observation_.GetSource()->GetAllPasskeys()) {
-      absl::optional<FacetURI> facet = FacetURIFromPasskey(passkey);
+      std::optional<FacetURI> facet = FacetURIFromPasskey(passkey);
       if (facet) {
         facets.push_back(std::move(*facet));
       }

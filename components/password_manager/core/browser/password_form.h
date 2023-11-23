@@ -221,7 +221,7 @@ struct PasswordForm {
   // forms parsed from the web, or manually added in settings don't have this
   // field set. Also credentials read from sources other than logins database
   // (e.g. credential manager on Android) don't have this field set.
-  absl::optional<FormPrimaryKey> primary_key;
+  std::optional<FormPrimaryKey> primary_key;
 
   Scheme scheme = Scheme::kHtml;
 
@@ -424,7 +424,7 @@ struct PasswordForm {
 
   // Only available when PasswordForm was requested though
   // PasswordStoreInterface::GetLogins(), empty otherwise.
-  absl::optional<MatchType> match_type;
+  std::optional<MatchType> match_type;
 
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is not persisted and filled
@@ -606,7 +606,7 @@ constexpr PasswordForm::MatchType operator|(PasswordForm::MatchType lhs,
                                               static_cast<int>(rhs));
 }
 
-constexpr void operator|=(absl::optional<PasswordForm::MatchType>& lhs,
+constexpr void operator|=(std::optional<PasswordForm::MatchType>& lhs,
                           PasswordForm::MatchType rhs) {
   lhs = lhs.has_value() ? (lhs.value() | rhs) : rhs;
 }

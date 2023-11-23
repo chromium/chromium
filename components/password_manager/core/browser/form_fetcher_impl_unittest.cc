@@ -1251,7 +1251,7 @@ TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
 }
 
 TEST_P(FormFetcherImplTest, BackendErrorResetsOnNewFetch) {
-  ASSERT_EQ(form_fetcher_->GetProfileStoreBackendError(), absl::nullopt);
+  ASSERT_EQ(form_fetcher_->GetProfileStoreBackendError(), std::nullopt);
 
   Fetch();
 
@@ -1276,7 +1276,7 @@ TEST_P(FormFetcherImplTest, BackendErrorResetsOnNewFetch) {
   DeliverPasswordStoreResults(/*profile_store_results=*/std::move(form_results),
                               /*account_store_results=*/{});
 
-  EXPECT_EQ(form_fetcher_->GetProfileStoreBackendError(), absl::nullopt);
+  EXPECT_EQ(form_fetcher_->GetProfileStoreBackendError(), std::nullopt);
 }
 
 }  // namespace password_manager

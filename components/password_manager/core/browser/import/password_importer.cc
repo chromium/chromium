@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/import/password_importer.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/sync/base/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::ImportEntry;
 namespace password_manager {
@@ -189,7 +189,7 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
   return password_manager::CredentialUIEntry(csv_password, store);
 }
 
-absl::optional<CredentialUIEntry> GetConflictingCredential(
+std::optional<CredentialUIEntry> GetConflictingCredential(
     const std::map<std::u16string, std::vector<CredentialUIEntry>>&
         credentials_by_username,
     const CredentialUIEntry& imported_credential) {
@@ -210,7 +210,7 @@ absl::optional<CredentialUIEntry> GetConflictingCredential(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<PasswordForm> GetMatchingPasswordForms(
@@ -387,7 +387,7 @@ void ProcessParsedCredential(
   // Check if there are local credentials with the same signon_realm and
   // username, but different password. Such credentials are considered
   // conflicts.
-  absl::optional<CredentialUIEntry> conflicting_credential =
+  std::optional<CredentialUIEntry> conflicting_credential =
       GetConflictingCredential(credentials_by_username, imported_credential);
   if (conflicting_credential.has_value()) {
     std::vector<PasswordForm> forms = GetMatchingPasswordForms(

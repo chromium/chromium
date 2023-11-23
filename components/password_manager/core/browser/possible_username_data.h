@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_POSSIBLE_USERNAME_DATA_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_POSSIBLE_USERNAME_DATA_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -87,7 +87,7 @@ struct PossibleUsernameData {
   bool is_likely_otp;
 
   // Predictions for the form which contains a field with |renderer_id|.
-  absl::optional<FormPredictions> form_predictions;
+  std::optional<FormPredictions> form_predictions;
 
   // Returns whether |possible_username| was last edited too far in the past and
   // should not be considered as a possible single username.

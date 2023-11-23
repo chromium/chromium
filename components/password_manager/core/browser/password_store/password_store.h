@@ -169,7 +169,7 @@ class PasswordStore : public PasswordStoreInterface {
   // requested and forwarded to `NotifyLoginsRetainedOnMainSequence`.
   void NotifyLoginsChangedOnMainSequence(
       LoginsChangedTrigger change_event,
-      absl::optional<PasswordStoreChangeList> changes);
+      std::optional<PasswordStoreChangeList> changes);
 
   // Notifies observers with all logins remaining after a modifying operation.
   void NotifyLoginsRetainedOnMainSequence(LoginsResultOrError result);

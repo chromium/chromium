@@ -44,8 +44,7 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (override));
   MOCK_METHOD(void,
               GetAllLoginsForAccountAsync,
-              (absl::optional<std::string> account,
-               LoginsOrErrorReply callback),
+              (std::optional<std::string> account, LoginsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               FillMatchingLoginsAsync,

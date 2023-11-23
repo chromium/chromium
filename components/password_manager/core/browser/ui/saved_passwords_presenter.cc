@@ -573,7 +573,7 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
     const CredentialUIEntry& updated_credential) {
   CHECK(!updated_credential.passkey_credential_id.empty());
   CHECK(passkey_store_);
-  absl::optional<PasskeyCredential> original_credential =
+  std::optional<PasskeyCredential> original_credential =
       passwords_grouper_->GetPasskeyFor(updated_credential);
   if (!original_credential) {
     return EditResult::kNotFound;

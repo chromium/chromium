@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_VOTES_UPLOADER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 class AutofillField;
@@ -376,7 +376,7 @@ class VotesUploader {
   // The matched credential is copied to |username_correction_vote_|, but
   // |username_correction_vote_.username_element| is set to the name of the
   // field where the matched username was found.
-  absl::optional<PasswordForm> username_correction_vote_;
+  std::optional<PasswordForm> username_correction_vote_;
 
   // Whether the password values have been shown to the user on the save prompt.
   bool has_passwords_revealed_vote_ = false;

@@ -71,7 +71,7 @@ class FieldInfoManagerTest : public testing::Test {
 TEST_F(FieldInfoManagerTest, InfoAddedRetrievedAndExpired) {
   FieldInfo info(kTestDriverId, kTestFieldId, kTestDomain, u"value",
                  /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info, /*predictions=*/std::nullopt);
   std::vector<FieldInfo> expected_info = {info};
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
   EXPECT_TRUE(manager_->GetFieldInfo(kAnotherDomain).empty());
@@ -88,10 +88,10 @@ TEST_F(FieldInfoManagerTest, InfoAddedRetrievedAndExpired) {
 TEST_F(FieldInfoManagerTest, InfoOverwrittenWithNewField) {
   FieldInfo info1(kTestDriverId, FieldRendererId(1), kTestDomain, u"value1",
                   /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info1, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info1, /*predictions=*/std::nullopt);
   FieldInfo info2(kTestDriverId, FieldRendererId(2), kTestDomain, u"value2",
                   /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info2, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info2, /*predictions=*/std::nullopt);
 
   std::vector<FieldInfo> expected_info = {info1, info2};
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
@@ -99,7 +99,7 @@ TEST_F(FieldInfoManagerTest, InfoOverwrittenWithNewField) {
   // The third info should dismiss the first one.
   FieldInfo info3(kTestDriverId, FieldRendererId(3), kTestDomain, u"value3",
                   /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info3, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info3, /*predictions=*/std::nullopt);
 
   expected_info = {info2, info3};
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
@@ -108,12 +108,12 @@ TEST_F(FieldInfoManagerTest, InfoOverwrittenWithNewField) {
 TEST_F(FieldInfoManagerTest, InfoUpdatedWithNewValue) {
   FieldInfo info1(kTestDriverId, kTestFieldId, kTestDomain, u"value",
                   /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info1, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info1, /*predictions=*/std::nullopt);
 
   // The value should not be stored twice for the same field.
   FieldInfo info2 = info1;
   info2.value = u"new_value";
-  manager_->AddFieldInfo(info2, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info2, /*predictions=*/std::nullopt);
 
   std::vector<FieldInfo> expected_info = {info2};
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
@@ -144,7 +144,7 @@ TEST_F(FieldInfoManagerTest, InfoAddedWithPredictions) {
 TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
   FieldInfo info(kTestDriverId, kTestFieldId, kTestDomain, u"value",
                  /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info, /*predictions=*/std::nullopt);
 
   // Create test predictions.
   std::map<autofill::FormSignature, FormPredictions> predictions;
@@ -179,7 +179,7 @@ TEST_F(FieldInfoManagerTest, InfoRetrievedForPSLMatchedDomain) {
   FieldInfo info(kTestDriverId, kTestFieldId, "https://main.domain.com",
                  u"value",
                  /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info, /*predictions=*/absl::nullopt);
+  manager_->AddFieldInfo(info, /*predictions=*/std::nullopt);
   std::vector<FieldInfo> expected_info = {info};
   EXPECT_EQ(manager_->GetFieldInfo("https://psl.domain.com"), expected_info);
 }

@@ -71,7 +71,7 @@ TEST_F(PasswordSharingRecipientsDownloaderTest, ShouldDownloadRecipients) {
   downloader->Start(run_loop.QuitClosure());
   run_loop.Run();
 
-  absl::optional<PasswordSharingRecipientsResponse> response =
+  std::optional<PasswordSharingRecipientsResponse> response =
       downloader->TakeResponse();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->result(), PasswordSharingRecipientsResponse::SUCCESS);

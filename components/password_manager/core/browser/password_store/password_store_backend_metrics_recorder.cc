@@ -54,7 +54,7 @@ PasswordStoreBackendMetricsRecorder::~PasswordStoreBackendMetricsRecorder() =
 
 void PasswordStoreBackendMetricsRecorder::RecordMetrics(
     SuccessStatus success_status,
-    absl::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const {
+    std::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const {
   RecordSuccess(success_status);
   if (HasRunToCompletion(success_status)) {
     RecordLatency();

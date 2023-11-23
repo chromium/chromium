@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -475,7 +475,7 @@ class PasswordFormMetricsRecorder
 
   // Contains the generated password's status, which resulted from a user
   // action.
-  absl::optional<GeneratedPasswordStatus> generated_password_status_;
+  std::optional<GeneratedPasswordStatus> generated_password_status_;
 
   // Tracks which bubble is currently being displayed to the user.
   CurrentBubbleOfInterest current_bubble_ = CurrentBubbleOfInterest::kNone;
@@ -500,7 +500,7 @@ class PasswordFormMetricsRecorder
   // Presumed form type of the form that the PasswordFormManager is managing.
   // Set after submission, as the form type can change depending on the
   // user-entered data.
-  absl::optional<metrics_util::SubmittedFormType> submitted_form_type_;
+  std::optional<metrics_util::SubmittedFormType> submitted_form_type_;
 
   // The UKM SourceId of the document the form belongs to.
   ukm::SourceId source_id_;
@@ -518,9 +518,9 @@ class PasswordFormMetricsRecorder
   // 1 = the fallback was shown.
   // 2 = the password was generated.
   // 4 = this was an update prompt.
-  absl::optional<uint32_t> showed_manual_fallback_for_saving_;
+  std::optional<uint32_t> showed_manual_fallback_for_saving_;
 
-  absl::optional<uint32_t> form_changes_bitmask_;
+  std::optional<uint32_t> form_changes_bitmask_;
 
   bool recorded_first_filling_result_ = false;
 
@@ -528,18 +528,18 @@ class PasswordFormMetricsRecorder
 
   bool recorded_preferred_matched_password_type = false;
 
-  absl::optional<FillingAssistance> filling_assistance_;
-  absl::optional<FillingSource> filling_source_;
-  absl::optional<features_util::PasswordAccountStorageUsageLevel>
+  std::optional<FillingAssistance> filling_assistance_;
+  std::optional<FillingSource> filling_source_;
+  std::optional<features_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
-  absl::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
+  std::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
 
   // Whether a single username candidate was populated in prompt.
   bool possible_username_used_ = false;
 
   bool username_updated_in_bubble_ = false;
 
-  absl::optional<JsOnlyInput> js_only_input_;
+  std::optional<JsOnlyInput> js_only_input_;
 
   bool is_mixed_content_form_ = false;
 

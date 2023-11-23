@@ -266,7 +266,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
   // Retrieve the identity of the page. In case the page might be malicous,
   // returns early.
-  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  std::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
   if (!pageURL) {
     return;
   }
@@ -538,7 +538,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                           metadata:rawSuggestion.metadata];
     [suggestions addObject:suggestion];
   }
-  absl::optional<PasswordDropdownState> suggestionState;
+  std::optional<PasswordDropdownState> suggestionState;
   if (suggestions.count) {
     suggestionState = PasswordDropdownState::kStandard;
   }
@@ -1004,7 +1004,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                     inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
 
-  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  std::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
   if (!pageURL || !frame || params.input_missing) {
     _lastFocusedFormIdentifier = FormRendererId();
     _lastFocusedFieldIdentifier = FieldRendererId();

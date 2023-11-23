@@ -201,9 +201,9 @@ void RespondCallback(bool* called) {
 
 void GetCredentialCallback(bool* called,
                            CredentialManagerError* out_error,
-                           absl::optional<CredentialInfo>* out_info,
+                           std::optional<CredentialInfo>* out_info,
                            CredentialManagerError error,
-                           const absl::optional<CredentialInfo>& info) {
+                           const std::optional<CredentialInfo>& info) {
   *called = true;
   *out_error = error;
   *out_info = info;
@@ -331,7 +331,7 @@ class CredentialManagerImplTest : public testing::Test,
                                     const std::vector<GURL>& federations) {
     bool called = false;
     CredentialManagerError error;
-    absl::optional<CredentialInfo> credential;
+    std::optional<CredentialInfo> credential;
     EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
     EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
     CallGet(
@@ -351,7 +351,7 @@ class CredentialManagerImplTest : public testing::Test,
                                     CredentialType type) {
     bool called = false;
     CredentialManagerError error;
-    absl::optional<CredentialInfo> credential;
+    std::optional<CredentialInfo> credential;
     EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
     EXPECT_CALL(*client_, NotifyUserAutoSigninPtr);
     CallGet(
@@ -371,7 +371,7 @@ class CredentialManagerImplTest : public testing::Test,
                             CredentialType type) {
     bool called = false;
     CredentialManagerError error;
-    absl::optional<CredentialInfo> credential;
+    std::optional<CredentialInfo> credential;
     CallGet(
         mediation, include_passwords, federations,
         base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
@@ -744,7 +744,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerGetOverwriteZeroClick) {
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -845,7 +845,7 @@ TEST_P(CredentialManagerImplTest,
   bool called = false;
   CredentialManagerError error;
   std::vector<GURL> federations;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
   RunAllPendingTasks();
@@ -1003,7 +1003,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   std::vector<GURL> federations;
   federations.emplace_back("https://google.com/");
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
@@ -1036,7 +1036,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1289,14 +1289,14 @@ TEST_P(CredentialManagerImplTest,
   // 1st request.
   bool called_1 = false;
   CredentialManagerError error_1;
-  absl::optional<CredentialInfo> credential_1;
+  std::optional<CredentialInfo> credential_1;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called_1, &error_1,
                          &credential_1));
   // 2nd request.
   bool called_2 = false;
   CredentialManagerError error_2;
-  absl::optional<CredentialInfo> credential_2;
+  std::optional<CredentialInfo> credential_2;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called_2, &error_2,
                          &credential_2));
@@ -1352,7 +1352,7 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInProfileStoreAfterPrompt) {
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1391,7 +1391,7 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInAccountStoreAfterPrompt) {
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, /*federations=*/{},
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1432,7 +1432,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, /*federations=*/{},
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1590,7 +1590,7 @@ TEST_P(CredentialManagerImplTest, MediationRequiredPreventsAutoSignIn) {
   std::vector<GURL> federations;
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
 
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
   EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
@@ -1737,7 +1737,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   std::vector<GURL> federations;
   federations.emplace_back("https://google.com/");
 

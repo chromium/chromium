@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -91,7 +91,7 @@ class PasswordGenerationManager {
   // The client for the password form.
   const raw_ptr<PasswordManagerClient> client_;
   // Stores the pre-saved credential.
-  absl::optional<PasswordForm> presaved_;
+  std::optional<PasswordForm> presaved_;
   // Stores the initially generated password, i.e. before any user edits.
   std::u16string initial_generated_password_;
   // Used to produce callbacks.

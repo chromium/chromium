@@ -13,11 +13,11 @@ PasswordChanges JoinPasswordStoreChanges(
   PasswordStoreChangeList joined_changes;
   for (const auto& changes_or_error : changes_to_join) {
     if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error))
-      return absl::nullopt;
+      return std::nullopt;
     const PasswordChanges& changes =
         absl::get<PasswordChanges>(changes_or_error);
     if (!changes.has_value())
-      return absl::nullopt;
+      return std::nullopt;
     base::ranges::copy(*changes, std::back_inserter(joined_changes));
   }
   return joined_changes;
@@ -33,7 +33,7 @@ LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
 PasswordChanges GetPasswordChangesOrNulloptOnFailure(
     PasswordChangesOrError result) {
   if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(absl::get<PasswordChanges>(result));
 }

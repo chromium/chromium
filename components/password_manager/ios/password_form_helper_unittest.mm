@@ -61,8 +61,8 @@ class FakeWebStateWithoutTrustedCommittedUrl : public web::FakeWebState {
   ~FakeWebStateWithoutTrustedCommittedUrl() override {}
 
   // WebState implementation.
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const override {
-    return absl::nullopt;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const override {
+    return std::nullopt;
   }
 };
 

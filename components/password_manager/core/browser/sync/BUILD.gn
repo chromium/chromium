@@ -30,7 +30,6 @@ source_set("sync") {
     "//components/sync/model",
     "//components/sync/protocol:util",
     "//components/sync/service",
-    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 }

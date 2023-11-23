@@ -54,7 +54,7 @@ class FakeFormFetcher : public FormFetcher {
   const PasswordForm* GetPreferredMatch() const override;
   // Returns a new FakeFormFetcher.
   std::unique_ptr<FormFetcher> Clone() override;
-  absl::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+  std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
       const override;
 
   void set_stats(const std::vector<InteractionsStats>& stats) {
@@ -81,7 +81,7 @@ class FakeFormFetcher : public FormFetcher {
   void NotifyFetchCompleted();
 
   void SetProfileStoreBackendError(
-      absl::optional<PasswordStoreBackendError> error);
+      std::optional<PasswordStoreBackendError> error);
 
  private:
   base::ObserverList<Consumer> consumers_;
@@ -94,7 +94,7 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<const PasswordForm*> best_matches_;
   std::vector<const PasswordForm*> insecure_credentials_;
   bool is_blocklisted_ = false;
-  absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> profile_store_backend_error_;
 };
 
 }  // namespace password_manager

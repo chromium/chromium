@@ -1332,11 +1332,11 @@ PasswordFormManager* PasswordManager::GetSubmittedManager() const {
   return nullptr;
 }
 
-absl::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() {
+std::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() {
   PasswordFormManager* submitted_manager = GetSubmittedManager();
   if (submitted_manager)
     return submitted_manager->GetPendingCredentials();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PasswordManager::ResetSubmittedManager() {
@@ -1397,7 +1397,7 @@ PasswordFormManager* PasswordManager::GetMatchedManager(
   return nullptr;
 }
 
-absl::optional<FormPredictions> PasswordManager::FindPredictionsForField(
+std::optional<FormPredictions> PasswordManager::FindPredictionsForField(
     FieldRendererId field_id,
     int driver_id) {
   for (const auto& form : predictions_) {
@@ -1410,7 +1410,7 @@ absl::optional<FormPredictions> PasswordManager::FindPredictionsForField(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PasswordManager::TryToFindPredictionsToPossibleUsernames() {

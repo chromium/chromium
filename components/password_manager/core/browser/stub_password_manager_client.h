@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 
+#include <optional>
+
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/sync/service/sync_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -92,7 +93,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   testing::NiceMock<MockPasswordFeatureManager> password_feature_manager_;
   autofill::StubLogManager log_manager_;
   ukm::SourceId ukm_source_id_;
-  absl::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
+  std::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
 };
 
 }  // namespace password_manager

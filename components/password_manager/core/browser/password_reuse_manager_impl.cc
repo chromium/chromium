@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -52,7 +52,7 @@ class CheckReuseRequest : public PasswordReuseDetectorConsumer {
   void OnReuseCheckDone(
       bool is_reuse_found,
       size_t password_length,
-      absl::optional<PasswordHashData> reused_protected_password_hash,
+      std::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
       int saved_passwords,
       const std::string& domain,
@@ -72,7 +72,7 @@ CheckReuseRequest::~CheckReuseRequest() = default;
 void CheckReuseRequest::OnReuseCheckDone(
     bool is_reuse_found,
     size_t password_length,
-    absl::optional<PasswordHashData> reused_protected_password_hash,
+    std::optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     int saved_passwords,
     const std::string& domain,
@@ -174,8 +174,7 @@ void PasswordReuseManagerImpl::CheckReuse(
     PasswordReuseDetectorConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!reuse_detector_) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, 0, std::string(),
-                               0);
+    consumer->OnReuseCheckDone(false, 0, std::nullopt, {}, 0, std::string(), 0);
     return;
   }
   ScheduleTask(base::BindOnce(
@@ -229,7 +228,7 @@ void PasswordReuseManagerImpl::SaveProtectedPasswordHash(
                                               is_sync_password_for_metrics);
     }
     // This method is not being called on startup so it shouldn't log metrics.
-    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/absl::nullopt);
+    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/std::nullopt);
   }
 }
 
@@ -240,7 +239,7 @@ void PasswordReuseManagerImpl::SaveSyncPasswordHash(
   if (hash_password_manager_.SavePasswordHash(sync_password_data)) {
     metrics_util::LogGaiaPasswordHashChange(event,
                                             /*is_sync_password=*/true);
-    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/absl::nullopt);
+    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/std::nullopt);
   }
 }
 
@@ -303,7 +302,7 @@ void PasswordReuseManagerImpl::SetPasswordStoreSigninNotifier(
 }
 
 void PasswordReuseManagerImpl::SchedulePasswordHashUpdate(
-    absl::optional<metrics_util::SignInState> sign_in_state_for_metrics) {
+    std::optional<metrics_util::SignInState> sign_in_state_for_metrics) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   if (!reuse_detector_) {

@@ -85,8 +85,8 @@ LeakDetectionRequest::~LeakDetectionRequest() = default;
 
 void LeakDetectionRequest::LookupSingleLeak(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const absl::optional<std::string>& access_token,
-    const absl::optional<std::string>& api_key,
+    const std::optional<std::string>& access_token,
+    const std::optional<std::string>& api_key,
     LookupSingleLeakPayload payload,
     LookupSingleLeakCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -219,7 +219,7 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
   base::UmaHistogramCounts100000(
       "PasswordManager.LeakDetection.SingleLeakResponsePrefixes",
       single_lookup_response->encrypted_leak_match_prefixes.size());
-  std::move(callback).Run(std::move(single_lookup_response), absl::nullopt);
+  std::move(callback).Run(std::move(single_lookup_response), std::nullopt);
 }
 
 }  // namespace password_manager

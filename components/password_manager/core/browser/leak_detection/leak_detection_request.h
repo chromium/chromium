@@ -49,8 +49,8 @@ class LeakDetectionRequest : public LeakDetectionRequestInterface {
   // beforehand. If the request failed, |callback| is invoked with |nullptr|,
   // otherwise a SingleLookupResponse is returned.
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
-                        const absl::optional<std::string>& access_token,
-                        const absl::optional<std::string>& api_key,
+                        const std::optional<std::string>& access_token,
+                        const std::optional<std::string>& api_key,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override;
 

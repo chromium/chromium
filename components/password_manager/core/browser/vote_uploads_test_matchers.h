@@ -161,7 +161,7 @@ inline auto PasswordsWereRevealed(bool passwords_were_revealed) {
 }
 
 MATCHER_P(HasPasswordAttributesVote, is_vote_expected, "") {
-  absl::optional<std::pair<autofill::PasswordAttribute, bool>> vote =
+  std::optional<std::pair<autofill::PasswordAttribute, bool>> vote =
       arg.get_password_attributes_vote();
   EXPECT_EQ(is_vote_expected, vote.has_value());
   return true;
