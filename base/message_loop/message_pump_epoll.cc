@@ -23,7 +23,7 @@
 namespace base {
 
 MessagePumpEpoll::MessagePumpEpoll() {
-  epoll_.reset(epoll_create(/*ignored_but_must_be_positive=*/1));
+  epoll_.reset(epoll_create1(/*flags=*/0));
   PCHECK(epoll_.is_valid());
 
   wake_event_.reset(eventfd(0, EFD_NONBLOCK));
