@@ -1003,8 +1003,8 @@
   },
   {
     "name": "canvas-oop-rasterization",
-    "owners": [ "junov@chromium.org", "vasilyt@chromium.org" ],
-    "expiry_milestone": 120
+    "owners": [ "fserb@chromium.org", "vasilyt@chromium.org" ],
+    "expiry_milestone": 140
   },
   {
     "name": "cast-mirroring-target-playout-delay",
