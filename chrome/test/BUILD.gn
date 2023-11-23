@@ -8308,6 +8308,8 @@ test("unit_tests") {
       "../browser/download/notification/download_item_notification_unittest.cc",
       "../browser/extensions/api/document_scan/document_scan_api_handler_unittest.cc",
       "../browser/extensions/api/document_scan/document_scan_api_unittest.cc",
+      "../browser/extensions/api/document_scan/fake_document_scan_ash.cc",
+      "../browser/extensions/api/document_scan/fake_document_scan_ash.h",
       "../browser/hid/hid_pinned_notification_unittest.cc",
       "../browser/media/platform_verification_chromeos_unittest.cc",
       "../browser/performance_manager/policies/oom_score_policy_chromeos_unittest.cc",

@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
+#include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -42,50 +43,6 @@ constexpr char kScanDataItem[] = "PrettyPicture";
 constexpr char kScanDataItemBase64[] =
     "data:image/png;base64,UHJldHR5UGljdHVyZQ==";
 
-class TestDocumentScan : public crosapi::mojom::DocumentScan {
- public:
-  TestDocumentScan() = default;
-  TestDocumentScan(const TestDocumentScan&) = delete;
-  TestDocumentScan& operator=(const TestDocumentScan&) = delete;
-  ~TestDocumentScan() override = default;
-
-  void SetGetScannerNamesResponse(std::vector<std::string> scanner_names) {
-    scanner_names_ = std::move(scanner_names);
-  }
-
-  void SetScanResponse(
-      const absl::optional<std::vector<std::string>>& scan_data) {
-    if (scan_data.has_value()) {
-      DCHECK(!scan_data.value().empty());
-    }
-    scan_data_ = scan_data;
-  }
-
-  // crosapi::mojom::DocumentScan:
-  void GetScannerNames(GetScannerNamesCallback callback) override {
-    std::move(callback).Run(scanner_names_);
-  }
-  void ScanFirstPage(const std::string& scanner_name,
-                     ScanFirstPageCallback callback) override {
-    if (scan_data_.has_value()) {
-      std::move(callback).Run(crosapi::mojom::ScanFailureMode::kNoFailure,
-                              scan_data_.value()[0]);
-    } else {
-      std::move(callback).Run(crosapi::mojom::ScanFailureMode::kDeviceBusy,
-                              absl::nullopt);
-    }
-  }
-  void GetScannerList(const std::string& client_id,
-                      crosapi::mojom::ScannerEnumFilterPtr filter,
-                      GetScannerListCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
- private:
-  std::vector<std::string> scanner_names_;
-  absl::optional<std::vector<std::string>> scan_data_;
-};
-
 class DocumentScanAPIHandlerTest : public testing::Test {
  public:
   DocumentScanAPIHandlerTest() = default;
@@ -111,7 +68,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }
 
-  TestDocumentScan& GetDocumentScan() { return document_scan_; }
+  FakeDocumentScanAsh& GetDocumentScan() { return document_scan_; }
 
  protected:
   std::unique_ptr<DocumentScanAPIHandler> document_scan_api_handler_;
@@ -119,7 +76,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingProfile> testing_profile_;
-  TestDocumentScan document_scan_;
+  FakeDocumentScanAsh document_scan_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
