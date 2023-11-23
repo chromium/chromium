@@ -70,6 +70,14 @@ mojom::AuthFactorConfig& GetAuthFactorConfig(
   return GetAuthFactorConfigImpl(delegate, local_state);
 }
 
+// Used to acquire a reference to the implementation of the
+// `mojom::AuthFactorConfig` for injecting callbacks in tests.
+AuthFactorConfig& GetAuthFactorConfigForTesting(  // IN-TEST
+    QuickUnlockStorageDelegate& delegate,
+    PrefService* local_state) {
+  return GetAuthFactorConfigImpl(delegate, local_state);
+}
+
 void BindToRecoveryFactorEditor(
     mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver,
     QuickUnlockStorageDelegate& delegate,

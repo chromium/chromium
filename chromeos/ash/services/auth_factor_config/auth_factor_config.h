@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_H_
 
 #include "base/containers/enum_set.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
@@ -22,6 +23,22 @@ namespace ash::auth {
 // The implementation of the AuthFactorConfig service.
 class AuthFactorConfig : public mojom::AuthFactorConfig {
  public:
+  class TestApi {
+   public:
+    explicit TestApi(AuthFactorConfig& auth_factor_config)
+        : auth_factor_config_(auth_factor_config) {}
+
+    // Injects a callback that gets invoked after knowledge factor
+    // is added.
+    void SetAddKnowledgeFactorCallback(base::OnceClosure callback) {
+      auth_factor_config_.SetAddKnowledgeFactorCallbackForTesting(
+          std::move(callback));
+    }
+
+   private:
+    AuthFactorConfig& auth_factor_config_;
+  };
+
   using AuthFactorSet = base::EnumSet<mojom::AuthFactor,
                                       mojom::AuthFactor::kMinValue,
                                       mojom::AuthFactor::kMaxValue>;
@@ -84,6 +101,8 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   void OnUserHasKnowledgeFactor(const UserContext& context);
 
  private:
+  friend class TestApi;
+
   void ObtainContext(
       const std::string& auth_token,
       base::OnceCallback<void(std::unique_ptr<UserContext>)> callback);
@@ -105,6 +124,7 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
+  void SetAddKnowledgeFactorCallbackForTesting(base::OnceClosure callback);
 
   raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
   // This instance is held by browser process (see in_process_instances)
@@ -115,6 +135,10 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   mojo::ReceiverSet<mojom::AuthFactorConfig> receivers_;
   mojo::RemoteSet<mojom::FactorObserver> observers_;
   AuthFactorEditor auth_factor_editor_;
+
+  // Used for testing, invoked when a knowledge factor is added.
+  base::OnceClosure add_knowledge_factor_callback_;
+
   base::WeakPtrFactory<AuthFactorConfig> weak_factory_{this};
 };
 
