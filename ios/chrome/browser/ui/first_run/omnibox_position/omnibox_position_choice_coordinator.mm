@@ -5,18 +5,22 @@
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_mediator.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_view_controller.h"
 
 @interface OmniboxPositionChoiceCoordinator () <
     PromoStyleViewControllerDelegate>
-
 @end
 
 @implementation OmniboxPositionChoiceCoordinator {
   /// View controller of the omnibox position choice screen.
   OmniboxPositionChoiceViewController* _viewController;
+  /// Mediator of the omnibox position choice screen.
+  OmniboxPositionChoiceMediator* _mediator;
   /// Whether the screen is being shown in the FRE.
   BOOL _firstRun;
   /// First run screen delegate.
@@ -52,9 +56,17 @@
   CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
   [super start];
 
+  _mediator = [[OmniboxPositionChoiceMediator alloc] init];
+  _mediator.originalPrefService = self.browser->GetBrowserState()
+                                      ->GetOriginalChromeBrowserState()
+                                      ->GetPrefs();
+
   _viewController = [[OmniboxPositionChoiceViewController alloc] init];
-  _viewController.delegate = self;
   _viewController.modalInPresentation = YES;
+  _viewController.delegate = self;
+  _viewController.mutator = _mediator;
+
+  _mediator.consumer = _viewController;
 
   if (_firstRun) {
     BOOL animated = self.baseNavigationController.topViewController != nil;
@@ -76,6 +88,7 @@
                            completion:nil];
   }
   _viewController = nil;
+  _mediator = nil;
   _baseNavigationController = nil;
   _first_run_delegate = nil;
   [super stop];
@@ -84,17 +97,18 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  // TODO(crbug.com/1503638): Implement primary action.
+  [_mediator saveSelectedPosition];
   [self dismissScreen];
 }
 
 - (void)didTapSecondaryActionButton {
-  // TODO(crbug.com/1503638): Implement secondary action.
+  [_mediator discardSelectedPosition];
   [self dismissScreen];
 }
 
 #pragma mark - Private
 
+/// Dismisses the omnibox position choice view controller.
 - (void)dismissScreen {
   if (_firstRun) {
     [_first_run_delegate screenWillFinishPresenting];

@@ -5,10 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_OMNIBOX_POSITION_OMNIBOX_POSITION_CHOICE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_OMNIBOX_POSITION_OMNIBOX_POSITION_CHOICE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+@protocol OmniboxPositionChoiceMutator;
+
 /// View controller of omnibox position choice screen.
-@interface OmniboxPositionChoiceViewController : PromoStyleViewController
+@interface OmniboxPositionChoiceViewController
+    : PromoStyleViewController <OmniboxPositionChoiceConsumer>
+
+/// Mutator of the omnibox position choice model.
+@property(nonatomic, weak) id<OmniboxPositionChoiceMutator> mutator;
 
 @end
 
