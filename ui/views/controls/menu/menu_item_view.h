@@ -665,17 +665,17 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool children_use_full_width_ = false;
 
   // Contains an image for the checkbox or radio icon.
-  raw_ptr<ImageView, DanglingUntriaged> radio_check_image_view_ = nullptr;
+  raw_ptr<ImageView> radio_check_image_view_ = nullptr;
 
   // The submenu indicator arrow icon in case the menu item has a Submenu.
-  raw_ptr<ImageView, DanglingUntriaged> submenu_arrow_image_view_ = nullptr;
+  raw_ptr<ImageView> submenu_arrow_image_view_ = nullptr;
 
   // The forced visual selection state of this item, if any.
   absl::optional<bool> forced_visual_selection_;
 
   // The vertical separator that separates the actionable and submenu regions of
   // an ACTIONABLE_SUBMENU.
-  raw_ptr<Separator, DanglingUntriaged> vertical_separator_ = nullptr;
+  raw_ptr<Separator> vertical_separator_ = nullptr;
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;
