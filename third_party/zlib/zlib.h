@@ -1,7 +1,7 @@
 /* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.13.1, October xxth, 2022
+  version 1.3, August 18th, 2023
 
-  Copyright (C) 1995-2022 Jean-loup Gailly and Mark Adler
+  Copyright (C) 1995-2023 Jean-loup Gailly and Mark Adler
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -37,12 +37,12 @@
 extern "C" {
 #endif
 
-#define ZLIB_VERSION "1.2.13.1-motley"
-#define ZLIB_VERNUM 0x12d1
+#define ZLIB_VERSION "1.3"
+#define ZLIB_VERNUM 0x1300
 #define ZLIB_VER_MAJOR 1
-#define ZLIB_VER_MINOR 2
-#define ZLIB_VER_REVISION 13
-#define ZLIB_VER_SUBREVISION 1
+#define ZLIB_VER_MINOR 3
+#define ZLIB_VER_REVISION 0
+#define ZLIB_VER_SUBREVISION 0
 
 /*
     The 'zlib' compression library provides in-memory compression and
