@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -54,7 +53,6 @@ public class MenuItem extends FrameLayout {
 
     /**
      * @param context Context.
-     * @param attrs Attribute set (could be from parent view).
      * @param parentMenu Menu to which this item belongs.
      * @param itemId Menu item's identifying number, to be used for handling clicks.
      * @param iconId Resource ID of an icon drawable. Pass 0 to show no icon.
@@ -63,14 +61,13 @@ public class MenuItem extends FrameLayout {
      */
     public MenuItem(
             Context context,
-            AttributeSet attrs,
             Menu parentMenu,
             int itemId,
             int iconId,
             String label,
             @Action int action,
             String contentDescription) {
-        super(context, attrs);
+        super(context);
         mMenu = parentMenu;
         mId = itemId;
         mActionType = action;

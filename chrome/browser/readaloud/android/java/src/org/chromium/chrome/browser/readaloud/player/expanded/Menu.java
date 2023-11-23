@@ -18,7 +18,6 @@ import java.util.Map;
 public class Menu extends LinearLayout {
     // Menu item constructor params.
     private final Context mContext;
-    private final AttributeSet mAttrs;
     private final Map<Integer, Integer> mItemIdToIndex;
     private LinearLayout mItemsContainer;
     private int mFirstItemIndex;
@@ -31,7 +30,6 @@ public class Menu extends LinearLayout {
     public Menu(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mAttrs = attrs;
         mItemIdToIndex = new HashMap<>();
         mFirstItemIndex = -1;
         mLastItemIndex = -1;
@@ -51,8 +49,7 @@ public class Menu extends LinearLayout {
             mItemsContainer = (LinearLayout) findViewById(R.id.items_container);
         }
         MenuItem item =
-                new MenuItem(
-                        mContext, mAttrs, this, itemId, iconId, label, action, contentDescription);
+                new MenuItem(mContext, this, itemId, iconId, label, action, contentDescription);
         mItemsContainer.addView(
                 item,
                 /* width= */ LayoutParams.MATCH_PARENT,
