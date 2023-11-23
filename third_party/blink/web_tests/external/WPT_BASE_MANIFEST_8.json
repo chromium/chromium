@@ -140814,6 +140814,19 @@
         {}
        ]
       ],
+      "standalone-axis-size-002.html": [
+       "0e02aa1b140e8dacaabcd3f55228685501ec5e04",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "subgrid-baseline-001.html": [
        "95469c0018e0a97786aff086c0cabaf081ced7b4",
        [
@@ -252614,6 +252627,19 @@
      ]
     },
     "cssom": {
+     "CSSStyleSheet-constructable-concat.html": [
+      "619522feae1b79d2f9173cbd02b72bfb3534aaea",
+      [
+       null,
+       [
+        [
+         "/css/cssom/CSSStyleSheet-constructable-concat-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "HTMLLinkElement-disabled-alternate.html": [
       "f1457c0dcf04d27a52a29fc860e94e81d432e5af",
       [
@@ -293115,12 +293141,8 @@
      }
     },
     "securitypolicyviolation": {
-     "blockeduri-eval-expected.txt": [
-      "3b849f93bdef88487b5469d10b915b99156798ee",
-      []
-     ],
      "blockeduri-inline-expected.txt": [
-      "21fa3c9fce6cfe5b3eb9865a26ce79f7482996f4",
+      "aa807f86845628109d511a9043222ddbbeb65ed2",
       []
      ],
      "blockeduri-ws-wss-scheme-expected.txt": [
@@ -293149,14 +293171,6 @@
      ],
      "securitypolicyviolation-block-image.sub-expected.txt": [
       "2d74ee6fc2596c549e157bde33981c1e2eb9ccbb",
-      []
-     ],
-     "source-file-blob-scheme-expected.txt": [
-      "e7cb72bba095d795662b87a2afdf9c6c21c830ea",
-      []
-     ],
-     "source-file-data-scheme-expected.txt": [
-      "a98f1b24ea451c993d2d3b81c84db87c2178cfe2",
       []
      ],
      "support": {
@@ -304919,6 +304933,10 @@
      ],
      "all-prop-unset-visited-ref.html": [
       "e67b97276818d50adb0e47105fbecab3c91e52c7",
+      []
+     ],
+     "at-scope-parsing-expected.txt": [
+      "2968b753ace74f1a548a1795070aa21223b947a0",
       []
      ],
      "important-prop-ref.html": [
@@ -368813,7 +368831,33 @@
         "throw2.js": [
          "2931eec500dee612d20b160961c7fa8e23b99a86",
          []
-        ]
+        ],
+        "top-level-await": {
+         "sibling-imports-not-blocked__microtask__check-get-sync.js": [
+          "063697310a0747ad4cc4f762cd7e89f9707cea5b",
+          []
+         ],
+         "sibling-imports-not-blocked__microtask__check-set-async.js": [
+          "98930fed0b7a55d9194d502db075362617359c1b",
+          []
+         ],
+         "sibling-imports-not-blocked__microtask__parent.js": [
+          "a28fcef9cb137c7bbc06ef0ca3bc22144c3a536e",
+          []
+         ],
+         "sibling-imports-not-blocked__task__check-get-sync.js": [
+          "833acdd7ecd97af56c67e58422320713cfae38d7",
+          []
+         ],
+         "sibling-imports-not-blocked__task__check-set-async.js": [
+          "0973b3c65a0bd56f7e0bc2a9ff4118d7382e46a6",
+          []
+         ],
+         "sibling-imports-not-blocked__task__parent.js": [
+          "56ee5134d7571bf615febd7f9651be94dda370ce",
+          []
+         ]
+        }
        },
        "moving-between-documents": {
         "README.md": [
@@ -391235,7 +391279,7 @@
      },
      "the-audiobuffer-interface": {
       "acquire-the-content-expected.txt": [
-       "33dc41e449823464ed2d79c705a4d04a5e76ce5c",
+       "70743773e457afaa62dfc19376f2b3291406280b",
        []
       ]
      },
@@ -430077,14 +430121,14 @@
     },
     "securitypolicyviolation": {
      "blockeduri-eval.html": [
-      "ddd5068df1f1ae65b603f6d7a290e316da735b28",
+      "c610195ae89481f99b4aa82231efe6f4cf352f5f",
       [
        null,
        {}
       ]
      ],
      "blockeduri-inline.html": [
-      "7cced9ef690360e37b4d5fd0cd784e1a612970ac",
+      "f416cf0683a142423add08f9e3883c97ddb94341",
       [
        null,
        {}
@@ -430172,42 +430216,42 @@
       ]
      ],
      "securitypolicyviolation-block-cross-origin-image-from-script.sub.html": [
-      "318fae463451077e80f4411fd9271b80a1c481cf",
+      "37499db4b5c2c603a60fabd139b56a4d6b8ad86c",
       [
        null,
        {}
       ]
      ],
      "securitypolicyviolation-block-cross-origin-image.sub.html": [
-      "44ca8d50e453a8b7d535959d2419a31ceb165600",
+      "f0152a9e82aeaae8a45da6daa4ce79cb24cc76ab",
       [
        null,
        {}
       ]
      ],
      "securitypolicyviolation-block-image-from-script.sub.html": [
-      "c09643c20eba1abf5c74104d99de049541567732",
+      "b75d3804a89d3490701d78c288baea842ea02baa",
       [
        null,
        {}
       ]
      ],
      "securitypolicyviolation-block-image.sub.html": [
-      "541c139533e8c8ee1cc2d8d246f070468c00e5d3",
+      "654a49e8bf1c041cd04da15374651a154c51eec7",
       [
        null,
        {}
       ]
      ],
      "source-file-blob-scheme.html": [
-      "ad3d9f36009a4992778114932bb64abe89e5b619",
+      "49bb6e2459f104737a4e406ea5bb8b22a5fdc803",
       [
        null,
        {}
       ]
      ],
      "source-file-data-scheme.html": [
-      "06511571d4a1c655f4fad50849849348b12a88fd",
+      "7e63f1f53ce4dd46e64724451a85a80dc06267e9",
       [
        null,
        {}
@@ -430235,7 +430279,7 @@
       ]
      ],
      "targeting.html": [
-      "b21273ca555cb24aab369a752192ab87355339d2",
+      "6894e58bb5c64aafe224ed935bc7bacfa720a009",
       [
        null,
        {}
@@ -438514,7 +438558,7 @@
       ]
      ],
      "at-scope-parsing.html": [
-      "ada1f5c4dc7ba0ec7d18f7bf96357f9cdeb71141",
+      "d85ff9ee6031813d5b7a857556b3907134833138",
       [
        null,
        {}
@@ -466870,13 +466914,6 @@
      ],
      "CSSStyleSheet-constructable-baseURL.tentative.html": [
       "8997a59e9c18238b661c5b3592bdfd86e266b754",
-      [
-       null,
-       {}
-      ]
-     ],
-     "CSSStyleSheet-constructable-concat.html": [
-      "3ba999284576143576ec8cb150f45163ac54a72c",
       [
        null,
        {}
@@ -556557,8 +556594,18 @@
         }
        ]
       ],
+      "disabled-event-dispatch-additional.tentative.html": [
+       "8ef4e5ccc7e6d32924877525584feb0ce2dfcd6a",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
       "disabled-event-dispatch.tentative.html": [
-       "0b2b967bfb4a290af0355fae8cafb3012d6df7f9",
+       "e2b8846fc3dbe982b614e81c83fdfa99280bb650",
        [
         null,
         {
@@ -568973,6 +569020,19 @@
           {}
          ]
         ],
+        "top-level-await": {
+         "sibling-imports-not-blocked.any.js": [
+          "820f995aaf6900ea097ef0f5068c7d482d7a095f",
+          [
+           "html/semantics/scripting-1/the-script-element/module/top-level-await/sibling-imports-not-blocked.any.html",
+           {}
+          ],
+          [
+           "html/semantics/scripting-1/the-script-element/module/top-level-await/sibling-imports-not-blocked.any.worker.html",
+           {}
+          ]
+         ]
+        },
         "type.html": [
          "5817ae4d435ed473b2f9cbcb798a48bc8318e12e",
          [
@@ -620985,7 +621045,7 @@
       ]
      ],
      "document-rules.https.html": [
-      "070037704ff9e63c0825714775092d3be02cae21",
+      "805f1cfbc36bfddaf84f5063d8f0d990a0ef78a1",
       [
        "speculation-rules/prefetch/document-rules.https.html?include=and",
        {}
@@ -645743,7 +645803,7 @@
      },
      "the-audiobuffer-interface": {
       "acquire-the-content.html": [
-       "659a69c866429acad5e0239ae021b92d690ff59a",
+       "70f5d8e32caa2eba5f090cb0deca6d27206b6401",
        [
         null,
         {}
@@ -645787,7 +645847,7 @@
      },
      "the-audiobuffersourcenode-interface": {
       "active-processing.https.html": [
-       "7b8c1295c6948c01ce018765b50b084d4200b144",
+       "25565b7686601b23c4c920c5095b42a2a606a195",
        [
         null,
         {}
