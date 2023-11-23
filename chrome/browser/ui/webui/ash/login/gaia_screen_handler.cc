@@ -841,7 +841,7 @@ void GaiaScreenHandler::CompleteAuthentication(
   if (login::IsFamilyLinkAllowed() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(account_id,
                                                            user_type)) {
-    ShowAllowlistCheckFailedError();
+    LoginDisplayHost::default_host()->ShowAllowlistCheckFailedError();
     return;
   }
 
@@ -879,7 +879,8 @@ void GaiaScreenHandler::CompleteAuthentication(
     auto scraped_saml_passwords =
         signin_artifacts.scraped_saml_passwords.value_or(::login::StringList{});
     CHECK_NE(scraped_saml_passwords.size(), 1u);
-    SAMLConfirmPassword(scraped_saml_passwords, std::move(user_context));
+    LoginDisplayHost::default_host()->GetSigninUI()->SAMLConfirmPassword(
+        std::move(scraped_saml_passwords), std::move(user_context));
   } else {
     LoginDisplayHost::default_host()->CompleteLogin(*user_context);
   }
@@ -1367,12 +1368,6 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
   }
 }
 
-void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
-  // TODO(b/292242156) - Replace with exit code flow.
-  Reset();
-  LoginDisplayHost::default_host()->ShowAllowlistCheckFailedError();
-}
-
 void GaiaScreenHandler::ReloadGaiaAuthenticator() {
   CallExternalAPI("doReload");
 }
@@ -1636,13 +1631,6 @@ bool GaiaScreenHandler::IsGaiaHiddenByError() {
          (error_screen_->GetParentScreen() == GaiaView::kScreenId);
 }
 
-void GaiaScreenHandler::SAMLConfirmPassword(
-    ::login::StringList scraped_saml_passwords,
-    std::unique_ptr<UserContext> user_context) {
-  LoginDisplayHost::default_host()->GetSigninUI()->SAMLConfirmPassword(
-      std::move(scraped_saml_passwords), std::move(user_context));
-}
-
 void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
   // We cannot tell a user type from the identifier, so we delay checking if
   // the account should be allowed.
@@ -1656,7 +1644,7 @@ void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
           known_user.GetAccountId(user_email, std::string() /* id */,
                                   AccountType::UNKNOWN),
           absl::nullopt)) {
-    ShowAllowlistCheckFailedError();
+    LoginDisplayHost::default_host()->ShowAllowlistCheckFailedError();
   }
 }
 

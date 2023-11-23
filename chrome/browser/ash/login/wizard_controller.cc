@@ -1402,6 +1402,7 @@ void WizardController::OnUserAllowlistCheckScreenExit(
   CHECK(result == UserAllowlistCheckScreen::Result::RETRY);
   OnScreenExit(UserAllowlistCheckScreenView::kScreenId,
                UserAllowlistCheckScreen::GetResultString(result));
+  GetScreen<GaiaScreen>()->Reset();
   AdvanceToScreen(GaiaView::kScreenId);
 }
 
