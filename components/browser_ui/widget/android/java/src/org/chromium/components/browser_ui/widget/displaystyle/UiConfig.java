@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Exposes general configuration info about the display style for a given reference View.
- */
+/** Exposes general configuration info about the display style for a given reference View. */
 public class UiConfig {
     public static final int NARROW_DISPLAY_STYLE_MAX_WIDTH_DP = 320;
     public static final int WIDE_DISPLAY_STYLE_MIN_WIDTH_DP = 600;
@@ -30,22 +28,21 @@ public class UiConfig {
     private final List<DisplayStyleObserver> mObservers = new ArrayList<>();
     private final Context mContext;
 
-    /**
-     * @param referenceView the View we observe to deduce the configuration from.
-     */
+    /** @param referenceView the View we observe to deduce the configuration from. */
     public UiConfig(View referenceView) {
         mContext = referenceView.getContext();
         mCurrentDisplayStyle = computeDisplayStyleForCurrentConfig();
 
-        referenceView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(View v) {
-                updateDisplayStyle();
-            }
+        referenceView.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        updateDisplayStyle();
+                    }
 
-            @Override
-            public void onViewDetachedFromWindow(View v) {}
-        });
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {}
+                });
     }
 
     /**
@@ -67,30 +64,22 @@ public class UiConfig {
         assert success;
     }
 
-    /**
-     * @return The context for the view associated with this UiConfig.
-     */
+    /** @return The context for the view associated with this UiConfig. */
     public Context getContext() {
         return mContext;
     }
 
-    /**
-     * Refresh the display style, notify observers of changes.
-     */
+    /** Refresh the display style, notify observers of changes. */
     public void updateDisplayStyle() {
         updateDisplayStyle(computeDisplayStyleForCurrentConfig());
     }
 
-    /**
-     * Returns the currently used display style.
-     */
+    /** Returns the currently used display style. */
     public DisplayStyle getCurrentDisplayStyle() {
         return mCurrentDisplayStyle;
     }
 
-    /**
-     * Sets the display style, notifying observers of changes. Should only be used in testing.
-     */
+    /** Sets the display style, notifying observers of changes. Should only be used in testing. */
     public void setDisplayStyleForTesting(DisplayStyle displayStyle) {
         updateDisplayStyle(displayStyle);
     }
@@ -106,8 +95,7 @@ public class UiConfig {
         int widthDp = mContext.getResources().getConfiguration().screenWidthDp;
         int heightDp = mContext.getResources().getConfiguration().screenHeightDp;
 
-        @HorizontalDisplayStyle
-        int newHorizontalDisplayStyle;
+        @HorizontalDisplayStyle int newHorizontalDisplayStyle;
         if (widthDp <= NARROW_DISPLAY_STYLE_MAX_WIDTH_DP) {
             newHorizontalDisplayStyle = HorizontalDisplayStyle.NARROW;
         } else if (widthDp >= WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) {
@@ -118,8 +106,9 @@ public class UiConfig {
 
         @VerticalDisplayStyle
         int newVerticalDisplayStyle =
-                heightDp <= FLAT_DISPLAY_STYLE_MAX_HEIGHT_DP ? VerticalDisplayStyle.FLAT
-                                                             : VerticalDisplayStyle.REGULAR;
+                heightDp <= FLAT_DISPLAY_STYLE_MAX_HEIGHT_DP
+                        ? VerticalDisplayStyle.FLAT
+                        : VerticalDisplayStyle.REGULAR;
 
         final DisplayStyle displayStyle =
                 new DisplayStyle(newHorizontalDisplayStyle, newVerticalDisplayStyle);
@@ -157,8 +146,14 @@ public class UiConfig {
                 throw new IllegalStateException();
         }
 
-        String debugString = String.format(Locale.US, "%s | %s (w=%ddp, h=%ddp)",
-                horizontalStyleName, verticalStyleName, widthDp, heightDp);
+        String debugString =
+                String.format(
+                        Locale.US,
+                        "%s | %s (w=%ddp, h=%ddp)",
+                        horizontalStyleName,
+                        verticalStyleName,
+                        widthDp,
+                        heightDp);
         Log.d(TAG, debugString);
         Toast.makeText(mContext, debugString, Toast.LENGTH_SHORT).show();
     }
@@ -170,10 +165,8 @@ public class UiConfig {
      * @see VerticalDisplayStyle
      */
     public static final class DisplayStyle {
-        @HorizontalDisplayStyle
-        public final int horizontal;
-        @VerticalDisplayStyle
-        public final int vertical;
+        @HorizontalDisplayStyle public final int horizontal;
+        @VerticalDisplayStyle public final int vertical;
 
         public DisplayStyle(
                 @HorizontalDisplayStyle int horizontal, @VerticalDisplayStyle int vertical) {
@@ -190,9 +183,7 @@ public class UiConfig {
                     || vertical == VerticalDisplayStyle.FLAT;
         }
 
-        /**
-         * @return whether the display is horizontally wide.
-         */
+        /** @return whether the display is horizontally wide. */
         public boolean isWide() {
             return horizontal == HorizontalDisplayStyle.WIDE;
         }

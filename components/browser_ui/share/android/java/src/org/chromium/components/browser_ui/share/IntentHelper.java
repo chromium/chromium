@@ -16,9 +16,7 @@ import org.chromium.base.ContextUtils;
 
 import java.io.File;
 
-/**
- * Helper for issuing intents to the android framework.
- */
+/** Helper for issuing intents to the android framework. */
 public abstract class IntentHelper {
     private IntentHelper() {}
 

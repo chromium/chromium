@@ -277,9 +277,7 @@ public class PickerCategoryView extends RelativeLayout
         }
     }
 
-    /**
-     * Severs the connection to the decoding utility process and cancels any outstanding requests.
-     */
+    /** Severs the connection to the decoding utility process and cancels any outstanding requests. */
     public void onDialogDismissed() {
         if (mWorkerTask != null) {
             mWorkerTask.cancel(true);

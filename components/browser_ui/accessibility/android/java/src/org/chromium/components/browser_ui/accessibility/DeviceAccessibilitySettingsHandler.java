@@ -35,7 +35,8 @@ public class DeviceAccessibilitySettingsHandler implements AccessibilityState.Li
 
     public void updateFontWeightAdjustment() {
         UserPrefs.get(mBrowserContextHandle)
-                .setInteger("settings.a11y.font_weight_adjustment",
+                .setInteger(
+                        "settings.a11y.font_weight_adjustment",
                         AccessibilityState.getFontWeightAdjustment());
     }
 }

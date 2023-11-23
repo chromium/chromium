@@ -181,8 +181,7 @@ public class AddExceptionPreference extends Preference
                         // The intent is to capture a url pattern and register it as an exception.
                         // But a pattern can be used to express things that are not supported, such
                         // as domains, schemes and ports. Therefore we need to filter out invalid
-                        // values
-                        // before passing them on to the validity checker for patterns.
+                        // values before passing them on to the validity checker for patterns.
                         String pattern = s.toString().trim();
                         boolean isValid = isPatternValid(pattern, mCategory.getType());
 

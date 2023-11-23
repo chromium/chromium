@@ -52,7 +52,10 @@ class WebsitePreference extends ChromeImageViewPreference {
         void onStorageAccessWebsiteDetailsRequested(WebsitePreference website);
     }
 
-    WebsitePreference(Context context, SiteSettingsDelegate siteSettingsClient, Website site,
+    WebsitePreference(
+            Context context,
+            SiteSettingsDelegate siteSettingsClient,
+            Website site,
             SiteSettingsCategory category) {
         super(context);
         mSiteSettingsDelegate = siteSettingsClient;
@@ -87,27 +90,23 @@ class WebsitePreference extends ChromeImageViewPreference {
         getExtras().putSerializable(key, mSite.getAddress());
     }
 
-    /**
-     * Return the Website this object is representing.
-     */
+    /** Return the Website this object is representing. */
     public Website site() {
         return mSite;
     }
 
-    /**
-     * Returns the url of the site to fetch a favicon for.
-     */
+    /** Returns the url of the site to fetch a favicon for. */
     private GURL faviconUrl() {
         String origin = mSite.getMainAddress().getOrigin();
-        GURL uri = new GURL(origin.contains(WebsiteAddress.ANY_SUBDOMAIN_PATTERN)
-                        ? origin.replace(WebsiteAddress.ANY_SUBDOMAIN_PATTERN, "")
-                        : origin);
+        GURL uri =
+                new GURL(
+                        origin.contains(WebsiteAddress.ANY_SUBDOMAIN_PATTERN)
+                                ? origin.replace(WebsiteAddress.ANY_SUBDOMAIN_PATTERN, "")
+                                : origin);
         return UrlUtilities.clearPort(uri);
     }
 
-    /**
-     * @return if a |mCategory| has a sub page to show the |mSite| permissions.
-     */
+    /** @return if a |mCategory| has a sub page to show the |mSite| permissions. */
     private boolean hasSubPage() {
         int type = mCategory.getContentSettingsType();
 
@@ -266,10 +265,14 @@ class WebsitePreference extends ChromeImageViewPreference {
             }
         }
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
-            long readableZoomLevel = Math.round(
-                    100 * PageZoomUtils.convertZoomFactorToZoomLevel(mSite.getZoomFactor()));
-            usageText.setText(String.format(
-                    getContext().getString(R.string.page_zoom_level), readableZoomLevel));
+            long readableZoomLevel =
+                    Math.round(
+                            100
+                                    * PageZoomUtils.convertZoomFactorToZoomLevel(
+                                            mSite.getZoomFactor()));
+            usageText.setText(
+                    String.format(
+                            getContext().getString(R.string.page_zoom_level), readableZoomLevel));
             usageText.setTextSize(TEXT_SIZE_SP);
             usageText.setVisibility(View.VISIBLE);
             setViewClickable(false);

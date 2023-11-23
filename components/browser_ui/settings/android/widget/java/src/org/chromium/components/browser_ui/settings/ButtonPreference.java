@@ -19,16 +19,16 @@ import androidx.preference.PreferenceViewHolder;
  * clicked.
  */
 public class ButtonPreference extends Preference {
-    /**
-     * Constructor for inflating from XML
-     */
+    /** Constructor for inflating from XML */
     public ButtonPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.button_preference_layout);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ButtonPreference);
-        setWidgetLayoutResource(a.getResourceId(
-                R.styleable.ButtonPreference_buttonLayout, R.layout.button_preference_button));
+        setWidgetLayoutResource(
+                a.getResourceId(
+                        R.styleable.ButtonPreference_buttonLayout,
+                        R.layout.button_preference_button));
         a.recycle();
 
         // Only the inner button element should be focusable.
@@ -40,10 +40,11 @@ public class ButtonPreference extends Preference {
         super.onBindViewHolder(holder);
         Button button = (Button) holder.findViewById(R.id.button_preference);
         button.setText(getTitle());
-        button.setOnClickListener(v -> {
-            if (getOnPreferenceClickListener() != null) {
-                getOnPreferenceClickListener().onPreferenceClick(ButtonPreference.this);
-            }
-        });
+        button.setOnClickListener(
+                v -> {
+                    if (getOnPreferenceClickListener() != null) {
+                        getOnPreferenceClickListener().onPreferenceClick(ButtonPreference.this);
+                    }
+                });
     }
 }

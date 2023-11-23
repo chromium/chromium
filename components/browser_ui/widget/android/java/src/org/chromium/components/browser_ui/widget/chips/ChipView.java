@@ -462,9 +462,7 @@ public class ChipView extends LinearLayout {
         mRippleBackgroundHelper.setBackgroundColor(color);
     }
 
-    /**
-     * @return The corner radius in pixels of this ChipView.
-     */
+    /** @return The corner radius in pixels of this ChipView. */
     public @Px int getCornerRadius() {
         return mCornerRadius;
     }

@@ -54,9 +54,7 @@ public class ContentSettingException implements Serializable {
         mIsEmbargoed = isEmbargoed;
     }
 
-    /**
-     * Construct a ContentSettingException. Same as above but defaults secondaryPattern to wildcard.
-     */
+    /** Construct a ContentSettingException. Same as above but defaults secondaryPattern to wildcard. */
     public ContentSettingException(
             @ContentSettingsType int type,
             String primaryPattern,

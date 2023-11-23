@@ -67,10 +67,14 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
 
         // For accessibility, read out the whole title and whether the group is collapsed/expanded.
         View view = holder.itemView;
-        String description = getTitle()
-                + getContext().getResources().getString(mExpanded
-                                ? R.string.accessibility_expanded_group
-                                : R.string.accessibility_collapsed_group);
+        String description =
+                getTitle()
+                        + getContext()
+                                .getResources()
+                                .getString(
+                                        mExpanded
+                                                ? R.string.accessibility_expanded_group
+                                                : R.string.accessibility_collapsed_group);
         view.setContentDescription(description);
         if (view.isAccessibilityFocused()) {
             view.sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
@@ -79,8 +83,9 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
 
     private static Drawable createDrawable(Context context) {
         StateListDrawableBuilder builder = new StateListDrawableBuilder(context);
-        StateListDrawableBuilder.State checked = builder.addState(
-                R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
+        StateListDrawableBuilder.State checked =
+                builder.addState(
+                        R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
         StateListDrawableBuilder.State unchecked =
                 builder.addState(R.drawable.ic_expand_more_black_24dp);
         builder.addTransition(
@@ -89,7 +94,8 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
                 unchecked, checked, R.drawable.transition_expand_more_expand_less_black_24dp);
 
         Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
-        DrawableCompat.setTintList(tintableDrawable,
+        DrawableCompat.setTintList(
+                tintableDrawable,
                 AppCompatResources.getColorStateList(
                         context, R.color.default_icon_color_tint_list));
         return tintableDrawable;

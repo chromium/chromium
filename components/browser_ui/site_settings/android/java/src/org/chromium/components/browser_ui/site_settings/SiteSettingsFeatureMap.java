@@ -9,9 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
-/**
- * Java accessor for base::Features listed in {@link SiteSettingsFeatureList}
- */
+/** Java accessor for base::Features listed in {@link SiteSettingsFeatureList} */
 @JNINamespace("browser_ui")
 public final class SiteSettingsFeatureMap extends FeatureMap {
     private static final SiteSettingsFeatureMap sInstance = new SiteSettingsFeatureMap();
@@ -19,16 +17,12 @@ public final class SiteSettingsFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private SiteSettingsFeatureMap() {}
 
-    /**
-     * @return the singleton SiteSettingsFeatureMap.
-     */
+    /** @return the singleton SiteSettingsFeatureMap. */
     public static SiteSettingsFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

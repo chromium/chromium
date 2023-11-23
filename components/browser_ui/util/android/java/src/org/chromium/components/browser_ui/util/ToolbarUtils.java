@@ -10,9 +10,7 @@ import android.widget.ImageView;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 
-/**
- * A helper class for Toolbars.
- */
+/** A helper class for Toolbars. */
 public class ToolbarUtils {
     /**
      * A helper that is used to set the visibility of the overflow menu view in a given activity.

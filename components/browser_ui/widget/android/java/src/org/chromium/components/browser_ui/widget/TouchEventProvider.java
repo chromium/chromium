@@ -9,9 +9,7 @@ package org.chromium.components.browser_ui.widget;
  * ordinary Android view events processing hierarchy cannot be easily applied.
  */
 public interface TouchEventProvider {
-    /**
-     * @param obs {@link TouchEventObserver} object to process.
-     */
+    /** @param obs {@link TouchEventObserver} object to process. */
     void addTouchEventObserver(TouchEventObserver obs);
 
     /**

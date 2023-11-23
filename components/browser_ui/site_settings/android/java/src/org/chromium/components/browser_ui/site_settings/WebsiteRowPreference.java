@@ -24,9 +24,7 @@ import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-/**
- * Used by {@link AllSiteSettings} to display a row for a group of sites or a single site.
- */
+/** Used by {@link AllSiteSettings} to display a row for a group of sites or a single site. */
 public class WebsiteRowPreference extends ChromeImageViewPreference {
     private final SiteSettingsDelegate mSiteSettingsDelegate;
     private final WebsiteEntry mSiteEntry;
@@ -42,8 +40,11 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
     private Runnable mOnDeleteCallback;
 
-    WebsiteRowPreference(Context context, SiteSettingsDelegate siteSettingsDelegate,
-            WebsiteEntry siteEntry, LayoutInflater layoutInflater) {
+    WebsiteRowPreference(
+            Context context,
+            SiteSettingsDelegate siteSettingsDelegate,
+            WebsiteEntry siteEntry,
+            LayoutInflater layoutInflater) {
         super(context);
         mSiteSettingsDelegate = siteSettingsDelegate;
         mSiteEntry = siteEntry;
@@ -58,8 +59,12 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         // favicon becomes available.
         setIcon(new ColorDrawable(Color.TRANSPARENT));
         setTitle(mSiteEntry.getTitleForPreferenceRow());
-        setImageView(R.drawable.ic_delete_white_24dp, R.string.webstorage_delete_data_dialog_title,
-                (View view) -> { displayResetDialog(); });
+        setImageView(
+                R.drawable.ic_delete_white_24dp,
+                R.string.webstorage_delete_data_dialog_title,
+                (View view) -> {
+                    displayResetDialog();
+                });
         updateSummary();
     }
 
@@ -70,15 +75,19 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
      */
     @SuppressWarnings("WrongConstant")
     public void handleClick(Bundle args, boolean fromGrouped) {
-        getExtras().putSerializable(mSiteEntry instanceof Website
-                        ? SingleWebsiteSettings.EXTRA_SITE
-                        : GroupedWebsitesSettings.EXTRA_GROUP,
-                mSiteEntry);
+        getExtras()
+                .putSerializable(
+                        mSiteEntry instanceof Website
+                                ? SingleWebsiteSettings.EXTRA_SITE
+                                : GroupedWebsitesSettings.EXTRA_GROUP,
+                        mSiteEntry);
         if (fromGrouped) {
             getExtras().putBoolean(SingleWebsiteSettings.EXTRA_FROM_GROUPED, true);
         }
-        setFragment(mSiteEntry instanceof Website ? SingleWebsiteSettings.class.getName()
-                                                  : GroupedWebsitesSettings.class.getName());
+        setFragment(
+                mSiteEntry instanceof Website
+                        ? SingleWebsiteSettings.class.getName()
+                        : GroupedWebsitesSettings.class.getName());
     }
 
     @Override
@@ -116,7 +125,10 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
                         .setView(dialogView)
                         .setTitle(R.string.website_reset_confirmation_title)
                         .setPositiveButton(
-                                R.string.website_reset, (dialog, which) -> { resetEntry(); })
+                                R.string.website_reset,
+                                (dialog, which) -> {
+                                    resetEntry();
+                                })
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
                         .show();
@@ -127,13 +139,17 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         if (mSiteEntry instanceof Website) {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (Website) mSiteEntry);
-            SiteDataCleaner.clearData(mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (Website) mSiteEntry, mOnDeleteCallback);
+            SiteDataCleaner.clearData(
+                    mSiteSettingsDelegate.getBrowserContextHandle(),
+                    (Website) mSiteEntry,
+                    mOnDeleteCallback);
         } else {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (WebsiteGroup) mSiteEntry);
-            SiteDataCleaner.clearData(mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (WebsiteGroup) mSiteEntry, mOnDeleteCallback);
+            SiteDataCleaner.clearData(
+                    mSiteSettingsDelegate.getBrowserContextHandle(),
+                    (WebsiteGroup) mSiteEntry,
+                    mOnDeleteCallback);
         }
     }
 
@@ -159,13 +175,18 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
         int cookies = mSiteEntry.getNumberOfCookies();
         if (cookies > 0) {
-            String cookie_str = getContext().getResources().getQuantityString(
-                    R.plurals.cookies_count, cookies, cookies);
+            String cookie_str =
+                    getContext()
+                            .getResources()
+                            .getQuantityString(R.plurals.cookies_count, cookies, cookies);
             if (summary.isEmpty()) {
                 summary = cookie_str;
             } else {
-                summary = String.format(getContext().getString(R.string.summary_with_one_bullet),
-                        cookie_str, summary);
+                summary =
+                        String.format(
+                                getContext().getString(R.string.summary_with_one_bullet),
+                                cookie_str,
+                                summary);
             }
         }
 
@@ -174,8 +195,11 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             if (summary.isEmpty()) {
                 summary = HTTP;
             } else {
-                summary = String.format(
-                        getContext().getString(R.string.summary_with_one_bullet), HTTP, summary);
+                summary =
+                        String.format(
+                                getContext().getString(R.string.summary_with_one_bullet),
+                                HTTP,
+                                summary);
             }
         }
 

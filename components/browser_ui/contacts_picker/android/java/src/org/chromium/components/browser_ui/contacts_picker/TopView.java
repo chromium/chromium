@@ -18,9 +18,7 @@ import org.chromium.ui.text.SpanApplier;
 
 import java.text.NumberFormat;
 
-/**
- * A container class for the Disclaimer and Select All functionality (and both associated labels).
- */
+/** A container class for the Disclaimer and Select All functionality (and both associated labels). */
 public class TopView extends RelativeLayout
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     /** An interface for communicating when the Select All checkbox is toggled. */

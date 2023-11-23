@@ -54,11 +54,18 @@ public class RoundedIconGenerator {
      * @param backgroundColor Color with which the rounded rectangle should be drawn.
      * @param textSizeDp Size at which the text should be drawn in dp.
      */
-    public RoundedIconGenerator(Resources res, int iconWidthDp, int iconHeightDp,
-            int cornerRadiusDp, int backgroundColor, int textSizeDp) {
-        this((int) (res.getDisplayMetrics().density * iconWidthDp),
+    public RoundedIconGenerator(
+            Resources res,
+            int iconWidthDp,
+            int iconHeightDp,
+            int cornerRadiusDp,
+            int backgroundColor,
+            int textSizeDp) {
+        this(
+                (int) (res.getDisplayMetrics().density * iconWidthDp),
                 (int) (res.getDisplayMetrics().density * iconHeightDp),
-                (int) (res.getDisplayMetrics().density * cornerRadiusDp), backgroundColor,
+                (int) (res.getDisplayMetrics().density * cornerRadiusDp),
+                backgroundColor,
                 res.getDisplayMetrics().density * textSizeDp);
     }
 
@@ -71,8 +78,12 @@ public class RoundedIconGenerator {
      * @param backgroundColor Color at which the rounded rectangle should be drawn.
      * @param textSizePx Size at which the text should be drawn in pixels.
      */
-    public RoundedIconGenerator(int iconWidthPx, int iconHeightPx, int cornerRadiusPx,
-            int backgroundColor, float textSizePx) {
+    public RoundedIconGenerator(
+            int iconWidthPx,
+            int iconHeightPx,
+            int cornerRadiusPx,
+            int backgroundColor,
+            float textSizePx) {
         mIconWidthPx = iconWidthPx;
         mIconHeightPx = iconHeightPx;
         mCornerRadiusPx = cornerRadiusPx;
@@ -97,9 +108,7 @@ public class RoundedIconGenerator {
         mTextBaselineY = textTop - textFontMetrics.top;
     }
 
-    /**
-     * Sets the background color to use when generating icons.
-     */
+    /** Sets the background color to use when generating icons. */
     public void setBackgroundColor(@ColorInt int color) {
         mBackgroundPaint.setColor(color);
     }

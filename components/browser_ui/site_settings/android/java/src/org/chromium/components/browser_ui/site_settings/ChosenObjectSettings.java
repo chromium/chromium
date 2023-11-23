@@ -33,8 +33,8 @@ import java.util.Locale;
  * Shows a particular chosen object (e.g. a USB device) and the list of sites that have been
  * granted access to it by the user.
  */
-public class ChosenObjectSettings
-        extends BaseSiteSettingsFragment implements CustomDividerFragment {
+public class ChosenObjectSettings extends BaseSiteSettingsFragment
+        implements CustomDividerFragment {
     public static final String EXTRA_OBJECT_INFOS = "org.chromium.chrome.preferences.object_infos";
     public static final String EXTRA_SITES = "org.chromium.chrome.preferences.site_set";
     public static final String EXTRA_CATEGORY =
@@ -62,8 +62,9 @@ public class ChosenObjectSettings
     @SuppressWarnings("unchecked")
     public void onActivityCreated(Bundle savedInstanceState) {
         int contentSettingsType = getArguments().getInt(EXTRA_CATEGORY);
-        mCategory = SiteSettingsCategory.createFromContentSettingsType(
-                getSiteSettingsDelegate().getBrowserContextHandle(), contentSettingsType);
+        mCategory =
+                SiteSettingsCategory.createFromContentSettingsType(
+                        getSiteSettingsDelegate().getBrowserContextHandle(), contentSettingsType);
         mObjectInfos =
                 (ArrayList<ChosenObjectInfo>) getArguments().getSerializable(EXTRA_OBJECT_INFOS);
         checkObjectConsistency();
@@ -105,31 +106,39 @@ public class ChosenObjectSettings
         MenuItem searchItem = menu.findItem(R.id.search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         mSearchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
-        SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return true;
-            }
+        SearchView.OnQueryTextListener queryTextListener =
+                new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return true;
+                    }
 
-            @Override
-            public boolean onQueryTextChange(String query) {
-                // Make search case-insensitive.
-                query = query.toLowerCase(Locale.getDefault());
+                    @Override
+                    public boolean onQueryTextChange(String query) {
+                        // Make search case-insensitive.
+                        query = query.toLowerCase(Locale.getDefault());
 
-                if (query.equals(mSearch)) return true;
+                        if (query.equals(mSearch)) return true;
 
-                mSearch = query;
-                getInfo();
-                return true;
-            }
-        };
+                        mSearch = query;
+                        getInfo();
+                        return true;
+                    }
+                };
         mSearchView.setOnQueryTextListener(queryTextListener);
 
         if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
-            MenuItem help = menu.add(
-                    Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
-            help.setIcon(TraceEventVectorDrawableCompat.create(
-                    getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
+            MenuItem help =
+                    menu.add(
+                            Menu.NONE,
+                            R.id.menu_id_site_settings_help,
+                            Menu.NONE,
+                            R.string.menu_help);
+            help.setIcon(
+                    TraceEventVectorDrawableCompat.create(
+                            getResources(),
+                            R.drawable.ic_help_and_feedback,
+                            getContext().getTheme()));
         }
     }
 
@@ -196,8 +205,8 @@ public class ChosenObjectSettings
                         mObjectInfos.add(info);
                         if (mSearch.isEmpty()
                                 || site.getTitle()
-                                           .toLowerCase(Locale.getDefault())
-                                           .contains(mSearch)) {
+                                        .toLowerCase(Locale.getDefault())
+                                        .contains(mSearch)) {
                             mSites.add(site);
                         }
                     }
@@ -238,18 +247,23 @@ public class ChosenObjectSettings
         ChromeImageViewPreference header = new ChromeImageViewPreference(getStyledContext());
         String titleText = mObjectInfos.get(0).getName();
         String dialogMsg =
-                String.format(getView().getContext().getString(
-                                      R.string.chosen_object_website_reset_confirmation_for),
+                String.format(
+                        getView()
+                                .getContext()
+                                .getString(R.string.chosen_object_website_reset_confirmation_for),
                         titleText);
 
         header.setTitle(titleText);
-        header.setImageView(R.drawable.ic_delete_white_24dp,
-                R.string.website_settings_revoke_all_permissions_for_device, (View view) -> {
-                    new AlertDialog
-                            .Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+        header.setImageView(
+                R.drawable.ic_delete_white_24dp,
+                R.string.website_settings_revoke_all_permissions_for_device,
+                (View view) -> {
+                    new AlertDialog.Builder(
+                                    getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                             .setTitle(R.string.reset)
                             .setMessage(dialogMsg)
-                            .setPositiveButton(R.string.reset,
+                            .setPositiveButton(
+                                    R.string.reset,
                                     (DialogInterface dialog, int which) -> {
                                         revokeObjectPermissions();
                                         getInfo();
@@ -281,29 +295,33 @@ public class ChosenObjectSettings
         for (int i = 0; i < mSites.size() && i < mObjectInfos.size(); ++i) {
             Website site = mSites.get(i);
             ChosenObjectInfo info = mObjectInfos.get(i);
-            WebsitePreference preference = new WebsitePreference(
-                    getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
+            WebsitePreference preference =
+                    new WebsitePreference(
+                            getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
 
             preference.getExtras().putSerializable(SingleWebsiteSettings.EXTRA_SITE, site);
             preference.setFragment(SingleWebsiteSettings.class.getCanonicalName());
-            preference.setImageView(R.drawable.ic_delete_white_24dp,
-                    R.string.website_settings_revoke_device_permission, (View view) -> {
+            preference.setImageView(
+                    R.drawable.ic_delete_white_24dp,
+                    R.string.website_settings_revoke_device_permission,
+                    (View view) -> {
                         info.revoke(getSiteSettingsDelegate().getBrowserContextHandle());
                         getInfo();
                     });
 
-            preference.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
-                    getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                @Override
-                public boolean isPreferenceControlledByPolicy(Preference preference) {
-                    return info.isManaged();
-                }
+            preference.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return info.isManaged();
+                        }
 
-                @Override
-                public boolean isPreferenceClickDisabled(Preference preference) {
-                    return false;
-                }
-            });
+                        @Override
+                        public boolean isPreferenceClickDisabled(Preference preference) {
+                            return false;
+                        }
+                    });
 
             preferenceScreen.addPreference(preference);
         }

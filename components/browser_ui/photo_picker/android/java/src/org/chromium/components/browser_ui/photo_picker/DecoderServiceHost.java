@@ -218,8 +218,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
 
                 // The two requests share the same file type, or are identical video requests (both
                 // requesting first frame or both requesting additional frames) so they can be
-                // considered
-                // equal. Go with first in first out.
+                // considered equal. Go with first in first out.
                 return r1.mRequestOrdinal - r2.mRequestOrdinal;
             };
 

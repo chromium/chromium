@@ -81,10 +81,16 @@ public class ChromeDialog extends ComponentDialog {
 
     @Override
     public void addContentView(View view, ViewGroup.LayoutParams params) {
-        if (BuildInfo.getInstance().isAutomotive && mIsFullScreen && params.width == MATCH_PARENT
+        if (BuildInfo.getInstance().isAutomotive
+                && mIsFullScreen
+                && params.width == MATCH_PARENT
                 && params.height == MATCH_PARENT) {
-            ViewGroup automotiveLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                    R.layout.automotive_layout_with_back_button_toolbar, null);
+            ViewGroup automotiveLayout =
+                    (ViewGroup)
+                            LayoutInflater.from(mContext)
+                                    .inflate(
+                                            R.layout.automotive_layout_with_back_button_toolbar,
+                                            null);
             super.addContentView(
                     automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
             setAutomotiveToolbarBackButtonAction();
@@ -98,7 +104,9 @@ public class ChromeDialog extends ComponentDialog {
         Toolbar backButtonToolbarForAutomotive = findViewById(R.id.back_button_toolbar);
         if (backButtonToolbarForAutomotive != null) {
             backButtonToolbarForAutomotive.setNavigationOnClickListener(
-                    backButtonClick -> { getOnBackPressedDispatcher().onBackPressed(); });
+                    backButtonClick -> {
+                        getOnBackPressedDispatcher().onBackPressed();
+                    });
         }
     }
 }

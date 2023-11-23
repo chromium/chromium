@@ -73,14 +73,18 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
     public AsyncImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        TypedArray types = attrs == null
-                ? null
-                : context.obtainStyledAttributes(attrs, R.styleable.AsyncImageView, 0, 0);
+        TypedArray types =
+                attrs == null
+                        ? null
+                        : context.obtainStyledAttributes(attrs, R.styleable.AsyncImageView, 0, 0);
 
-        mUnavailableDrawable = AutoAnimatorDrawable.wrap(
-                UiUtils.getDrawable(context, types, R.styleable.AsyncImageView_unavailableSrc));
-        mWaitingDrawable = AutoAnimatorDrawable.wrap(
-                UiUtils.getDrawable(context, types, R.styleable.AsyncImageView_waitingSrc));
+        mUnavailableDrawable =
+                AutoAnimatorDrawable.wrap(
+                        UiUtils.getDrawable(
+                                context, types, R.styleable.AsyncImageView_unavailableSrc));
+        mWaitingDrawable =
+                AutoAnimatorDrawable.wrap(
+                        UiUtils.getDrawable(context, types, R.styleable.AsyncImageView_waitingSrc));
 
         if (types != null) types.recycle();
     }
@@ -127,9 +131,7 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
         if (mWaitingForResponse) setForegroundDrawableCompat(mWaitingDrawable);
     }
 
-    /**
-     * @param resizer Sets a {@link ImageResizer} to use when drawing the image to the screen.
-     */
+    /** @param resizer Sets a {@link ImageResizer} to use when drawing the image to the screen. */
     public void setImageResizer(ImageResizer resizer) {
         mImageResizer = resizer;
     }
@@ -198,9 +200,11 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
         mWaitingForResponse = true;
 
         Object localIdentifier = mIdentifier;
-        mCancelable = mFactory.get(drawable
-                -> setAsyncImageDrawableResponse(drawable, localIdentifier),
-                getWidth(), getHeight());
+        mCancelable =
+                mFactory.get(
+                        drawable -> setAsyncImageDrawableResponse(drawable, localIdentifier),
+                        getWidth(),
+                        getHeight());
 
         // If setAsyncImageDrawableResponse is called synchronously, clear mCancelable.
         if (!mWaitingForResponse) mCancelable = null;

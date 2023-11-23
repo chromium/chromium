@@ -79,9 +79,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         updateToolbarUI();
     }
 
-    /**
-     * Update the UI elements of the toolbar, based on whether contacts & filter chips are selected.
-     */
+    /** Update the UI elements of the toolbar, based on whether contacts & filter chips are selected. */
     private void updateToolbarUI() {
         boolean contactsSelected = !mSelectionDelegate.getSelectedItems().isEmpty();
 

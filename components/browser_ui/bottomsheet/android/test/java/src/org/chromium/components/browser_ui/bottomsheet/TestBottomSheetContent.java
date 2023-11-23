@@ -62,30 +62,37 @@ public class TestBottomSheetContent implements BottomSheetContent {
      * @param hasCustomLifecycle Whether the content is browser specific.
      * @param contentView The view filling the sheet.
      */
-    public TestBottomSheetContent(Context context, @ContentPriority int priority,
-            boolean hasCustomLifecycle, View contentView) {
+    public TestBottomSheetContent(
+            Context context,
+            @ContentPriority int priority,
+            boolean hasCustomLifecycle,
+            View contentView) {
         mPeekHeight = BottomSheetContent.HeightMode.DEFAULT;
         mHalfHeight = BottomSheetContent.HeightMode.DEFAULT;
         mFullHeight = BottomSheetContent.HeightMode.DEFAULT;
         mPriority = priority;
         mHasCustomLifecycle = hasCustomLifecycle;
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mToolbarView = new View(context);
-            ViewGroup.LayoutParams params =
-                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, TOOLBAR_HEIGHT);
-            mToolbarView.setLayoutParams(params);
-            mToolbarView.setBackground(new ColorDrawable(Color.WHITE));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbarView = new View(context);
+                    ViewGroup.LayoutParams params =
+                            new ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, TOOLBAR_HEIGHT);
+                    mToolbarView.setLayoutParams(params);
+                    mToolbarView.setBackground(new ColorDrawable(Color.WHITE));
 
-            if (contentView == null) {
-                mContentView = new View(context);
-                params = new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                mContentView.setLayoutParams(params);
-            } else {
-                mContentView = contentView;
-            }
-            mToolbarView.setBackground(new ColorDrawable(Color.WHITE));
-        });
+                    if (contentView == null) {
+                        mContentView = new View(context);
+                        params =
+                                new ViewGroup.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.MATCH_PARENT);
+                        mContentView.setLayoutParams(params);
+                    } else {
+                        mContentView = contentView;
+                    }
+                    mToolbarView.setBackground(new ColorDrawable(Color.WHITE));
+                });
     }
 
     /**
@@ -98,9 +105,7 @@ public class TestBottomSheetContent implements BottomSheetContent {
         this(context, priority, hasCustomLifecycle, null);
     }
 
-    /**
-     * @param context A context to inflate views with.
-     */
+    /** @param context A context to inflate views with. */
     public TestBottomSheetContent(Context context) {
         this(/*TestBottomSheetContent(*/ context, ContentPriority.LOW, false);
     }

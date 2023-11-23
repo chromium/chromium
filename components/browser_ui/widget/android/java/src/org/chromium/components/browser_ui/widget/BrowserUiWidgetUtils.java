@@ -20,9 +20,7 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 /** Collection of utility methods related to the browser UI widgets. */
 public class BrowserUiWidgetUtils {
 
-    /**
-     * Convenience method for constructing a {@link BasicListMenu} with the preferred content view.
-     */
+    /** Convenience method for constructing a {@link BasicListMenu} with the preferred content view. */
     @NonNull
     public static BasicListMenu getBasicListMenu(
             @NonNull Context context,
@@ -31,9 +29,7 @@ public class BrowserUiWidgetUtils {
         return getBasicListMenu(context, data, delegate, 0);
     }
 
-    /**
-     * Convenience method for constructing a {@link BasicListMenu} with the preferred content view.
-     */
+    /** Convenience method for constructing a {@link BasicListMenu} with the preferred content view. */
     @NonNull
     public static BasicListMenu getBasicListMenu(
             @NonNull Context context,

@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Represents a group of Websites that either share the same eTLD+1 or are embedded on it.
- */
+/** Represents a group of Websites that either share the same eTLD+1 or are embedded on it. */
 public class WebsiteGroup implements WebsiteEntry {
     // The common eTLD+1.
     private final String mDomainAndRegistry;
@@ -52,7 +50,8 @@ public class WebsiteGroup implements WebsiteEntry {
         // Convert the mapping to a list of WebsiteGroup objects.
         List<WebsiteEntry> entries = new ArrayList<>();
         for (Map.Entry<String, List<Website>> etld : etldMap.entrySet()) {
-            entries.add((etld.getValue().size() == 1)
+            entries.add(
+                    (etld.getValue().size() == 1)
                             ? etld.getValue().get(0)
                             : new WebsiteGroup(etld.getKey(), etld.getValue()));
         }
@@ -89,9 +88,7 @@ public class WebsiteGroup implements WebsiteEntry {
         return mDomainAndRegistry;
     }
 
-    /**
-     * Returns the URL to use for fetching the favicon: https:// + eTLD+1 is returned.
-     */
+    /** Returns the URL to use for fetching the favicon: https:// + eTLD+1 is returned. */
     @Override
     public GURL getFaviconUrl() {
         return new GURL(UrlConstants.HTTPS_URL_PREFIX + mDomainAndRegistry);

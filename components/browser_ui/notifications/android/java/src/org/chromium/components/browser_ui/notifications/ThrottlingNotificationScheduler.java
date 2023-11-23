@@ -77,13 +77,18 @@ public class ThrottlingNotificationScheduler {
      * @param notificationWrapper Weapper containing the notification to be posted.
      */
     public void addPendingNotification(NotificationWrapper notificationWrapper) {
-        Pair<String, Integer> taskId = Pair.create(notificationWrapper.getMetadata().tag,
-                Integer.valueOf(notificationWrapper.getMetadata().id));
+        Pair<String, Integer> taskId =
+                Pair.create(
+                        notificationWrapper.getMetadata().tag,
+                        Integer.valueOf(notificationWrapper.getMetadata().id));
         PendingNotificationTask task =
-                new PendingNotificationTask(taskId, PendingNotificationTask.Priority.HIGH, () -> {
-                    new NotificationManagerProxyImpl(ContextUtils.getApplicationContext())
-                            .notify(notificationWrapper);
-                });
+                new PendingNotificationTask(
+                        taskId,
+                        PendingNotificationTask.Priority.HIGH,
+                        () -> {
+                            new NotificationManagerProxyImpl(ContextUtils.getApplicationContext())
+                                    .notify(notificationWrapper);
+                        });
     }
 
     /**
@@ -105,9 +110,7 @@ public class ThrottlingNotificationScheduler {
         new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()).cancel(tag, id);
     }
 
-    /**
-     * Clear the pending task queue.
-     */
+    /** Clear the pending task queue. */
     public void clear() {
         mPendingNotificationTasks.clear();
         mHandler.removeCallbacksAndMessages(null);
@@ -118,7 +121,6 @@ public class ThrottlingNotificationScheduler {
      * Removes a pending task from the task queue and return it.
      * @param taskId ID of the task.
      */
-
     private PendingNotificationTask removePendingNotificationTask(Object taskId) {
         Iterator<PendingNotificationTask> iter = mPendingNotificationTasks.iterator();
         while (iter.hasNext()) {
@@ -131,9 +133,7 @@ public class ThrottlingNotificationScheduler {
         return null;
     }
 
-    /**
-     * Get the next task from the queue, and schedule another task |UPDATE_DELAY_MILLIS| later.
-     */
+    /** Get the next task from the queue, and schedule another task |UPDATE_DELAY_MILLIS| later. */
     private void pumpQueue() {
         PendingNotificationTask task = mPendingNotificationTasks.poll();
         if (task != null) {

@@ -61,8 +61,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
     private static final long ANIMATION_DURATION_MS = 250;
 
     /** Detects when the user is dragging the WebContents. */
-    @Nullable
-    protected final GestureStateListener mGestureStateListener;
+    @Nullable protected final GestureStateListener mGestureStateListener;
 
     /** Listens for changes in the layout. */
     private final View.OnLayoutChangeListener mLayoutChangeListener;
@@ -118,9 +117,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
         setWillNotDraw(false);
     }
 
-    /**
-     * Set the given WebContents for scrolling changes.
-     */
+    /** Set the given WebContents for scrolling changes. */
     public void setWebContents(WebContents webContents) {
         if (mWebContents != null) {
             GestureListenerManager.fromWebContents(mWebContents)
@@ -181,7 +178,9 @@ public abstract class SwipableOverlayView extends FrameLayout {
      * @return LayoutParams for use when adding the View to its parent.
      */
     public ViewGroup.MarginLayoutParams createLayoutParams() {
-        return new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,
+        return new FrameLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT,
                 Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
     }
 
@@ -203,9 +202,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
         if (!isAllowedToAutoHide()) setTranslationY(0.0f);
     }
 
-    /**
-     * See {@link #android.view.ViewGroup.onLayout(boolean, int, int, int, int)}.
-     */
+    /** See {@link #android.view.ViewGroup.onLayout(boolean, int, int, int, int)}. */
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         // Update the viewport height when the parent View's height changes (e.g. after rotation).
@@ -270,8 +267,10 @@ public abstract class SwipableOverlayView extends FrameLayout {
 
                 boolean isVisibleInitially = mInitialTranslationY < mTotalHeight;
                 float percentageVisible = 1.0f - (getTranslationY() / mTotalHeight);
-                float visibilityThreshold = isVisibleInitially ? VERTICAL_FLING_HIDE_THRESHOLD
-                                                               : VERTICAL_FLING_SHOW_THRESHOLD;
+                float visibilityThreshold =
+                        isVisibleInitially
+                                ? VERTICAL_FLING_HIDE_THRESHOLD
+                                : VERTICAL_FLING_SHOW_THRESHOLD;
                 boolean isVisibleEnough = percentageVisible > visibilityThreshold;
                 boolean isNearTopOfPage = scrollOffsetY < (mTotalHeight * FULL_THRESHOLD);
 
@@ -309,7 +308,8 @@ public abstract class SwipableOverlayView extends FrameLayout {
                 }
 
                 // This function is called for both fling and scrolls.
-                if (mGestureState == Gesture.NONE || !cancelCurrentAnimation()
+                if (mGestureState == Gesture.NONE
+                        || !cancelCurrentAnimation()
                         || isIndependentlyAnimating()) {
                     return;
                 }
@@ -330,9 +330,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
                 setTranslationY(translation);
             }
 
-            /**
-             * Resets the internal values that a scroll or fling will base its calculations off of.
-             */
+            /** Resets the internal values that a scroll or fling will base its calculations off of. */
             private void resetInternalScrollState(int scrollOffsetY, int scrollExtentY) {
                 mInitialOffsetY = scrollOffsetY;
                 mInitialExtentY = scrollExtentY;
@@ -360,9 +358,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
         return isNearTopOfPage || isVisibleEnough;
     }
 
-    /**
-     * @return Whether or not the view is animating independent of the user's scroll position.
-     */
+    /** @return Whether or not the view is animating independent of the user's scroll position. */
     protected boolean isIndependentlyAnimating() {
         return false;
     }
@@ -374,8 +370,16 @@ public abstract class SwipableOverlayView extends FrameLayout {
     private View.OnLayoutChangeListener createLayoutChangeListener() {
         return new View.OnLayoutChangeListener() {
             @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            public void onLayoutChange(
+                    View v,
+                    int left,
+                    int top,
+                    int right,
+                    int bottom,
+                    int oldLeft,
+                    int oldTop,
+                    int oldRight,
+                    int oldBottom) {
                 removeOnLayoutChangeListener(mLayoutChangeListener);
 
                 // Animate the View coming in from the bottom of the screen.
@@ -412,14 +416,15 @@ public abstract class SwipableOverlayView extends FrameLayout {
     protected void runUpEventAnimation(boolean visible) {
         if (mCurrentAnimation != null) mCurrentAnimation.cancel();
         mCurrentAnimation = createVerticalSnapAnimation(visible);
-        mCurrentAnimation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mGestureState = Gesture.NONE;
-                mCurrentAnimation = null;
-                mIsBeingDisplayedForFirstTime = false;
-            }
-        });
+        mCurrentAnimation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mGestureState = Gesture.NONE;
+                        mCurrentAnimation = null;
+                        mIsBeingDisplayedForFirstTime = false;
+                    }
+                });
         mCurrentAnimation.start();
     }
 
@@ -433,9 +438,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
         return true;
     }
 
-    /**
-     * @return Whether the SwipableOverlayView is allowed to hide itself on scroll.
-     */
+    /** @return Whether the SwipableOverlayView is allowed to hide itself on scroll. */
     protected boolean isAllowedToAutoHide() {
         return true;
     }

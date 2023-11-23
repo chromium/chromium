@@ -25,14 +25,10 @@ public interface MenuOrKeyboardActionController {
         boolean handleMenuOrKeyboardAction(int id, boolean fromMenu);
     }
 
-    /**
-     * @param handler A new {@link MenuOrKeyboardActionHandler} to register.
-     */
+    /** @param handler A new {@link MenuOrKeyboardActionHandler} to register. */
     void registerMenuOrKeyboardActionHandler(MenuOrKeyboardActionHandler handler);
 
-    /**
-     * @param handler A {@link MenuOrKeyboardActionHandler} to unregister.
-     */
+    /** @param handler A {@link MenuOrKeyboardActionHandler} to unregister. */
     void unregisterMenuOrKeyboardActionHandler(MenuOrKeyboardActionHandler handler);
 
     /**

@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
-/**
- * Receives a blob over mojom and writes it to the stream.
- */
+/** Receives a blob over mojom and writes it to the stream. */
 public class BlobReceiver implements BlobReaderClient {
     private static final String TAG = "share";
     private static final int CHUNK_SIZE = 64 * 1024;
@@ -94,17 +92,20 @@ public class BlobReceiver implements BlobReaderClient {
         }
 
         Watcher watcher = CoreImpl.getInstance().getWatcher();
-        watcher.start(mConsumerHandle, Core.HandleSignals.READABLE, new Watcher.Callback() {
-            @Override
-            public void onResult(int result) {
-                if (mCallback == null) return;
-                if (result == MojoResult.OK) {
-                    read();
-                } else {
-                    reportError(result, "Watcher reported error.");
-                }
-            }
-        });
+        watcher.start(
+                mConsumerHandle,
+                Core.HandleSignals.READABLE,
+                new Watcher.Callback() {
+                    @Override
+                    public void onResult(int result) {
+                        if (mCallback == null) return;
+                        if (result == MojoResult.OK) {
+                            read();
+                        } else {
+                            reportError(result, "Watcher reported error.");
+                        }
+                    }
+                });
     }
 
     // BlobReaderClient

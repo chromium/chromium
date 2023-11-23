@@ -61,8 +61,9 @@ import java.util.Set;
  */
 @UsedByReflection("all_site_preferences.xml")
 public class AllSiteSettings extends BaseSiteSettingsFragment
-        implements PreferenceManager.OnPreferenceTreeClickListener, View.OnClickListener,
-                   CustomDividerFragment {
+        implements PreferenceManager.OnPreferenceTreeClickListener,
+                View.OnClickListener,
+                CustomDividerFragment {
     // The key to use to pass which category this preference should display,
     // should only be All Sites or Storage.
     public static final String EXTRA_CATEGORY = "category";
@@ -93,8 +94,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     private PropertyModel mDialogModel;
     private ModalDialogManager mDialogManager;
 
-    @Nullable
-    private Set<String> mSelectedDomains;
+    @Nullable private Set<String> mSelectedDomains;
 
     private class ResultsPopulator implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
         @Override
@@ -115,8 +115,9 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     }
 
     private void getInfoForOrigins() {
-        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(
-                getSiteSettingsDelegate().getBrowserContextHandle(), false);
+        WebsitePermissionsFetcher fetcher =
+                new WebsitePermissionsFetcher(
+                        getSiteSettingsDelegate().getBrowserContextHandle(), false);
         fetcher.fetchPreferencesForCategoryAndPopulateFpsInfo(
                 getSiteSettingsDelegate(), mCategory, new ResultsPopulator());
     }
@@ -128,20 +129,23 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         if (getArguments() != null) {
-            mCategory = SiteSettingsCategory.createFromPreferenceKey(
-                    browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
+            mCategory =
+                    SiteSettingsCategory.createFromPreferenceKey(
+                            browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
         }
         if (mCategory == null) {
-            mCategory = SiteSettingsCategory.createFromType(
-                    browserContextHandle, SiteSettingsCategory.Type.ALL_SITES);
+            mCategory =
+                    SiteSettingsCategory.createFromType(
+                            browserContextHandle, SiteSettingsCategory.Type.ALL_SITES);
         }
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
-            mCategory = SiteSettingsCategory.createFromType(
-                    browserContextHandle, SiteSettingsCategory.Type.ZOOM);
+            mCategory =
+                    SiteSettingsCategory.createFromType(
+                            browserContextHandle, SiteSettingsCategory.Type.ZOOM);
         }
         if (!(mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
-                    || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE
-                    || mCategory.getType() == SiteSettingsCategory.Type.ZOOM)) {
+                || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE
+                || mCategory.getType() == SiteSettingsCategory.Type.ZOOM)) {
             throw new IllegalArgumentException("Use SingleCategorySettings instead.");
         }
 
@@ -191,16 +195,17 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         numLeft[0] = mWebsites.size();
         for (int i = 0; i < mWebsites.size(); i++) {
             WebsitePreference preference = mWebsites.get(i);
-            preference.site().clearAllStoredData(
-                    getSiteSettingsDelegate().getBrowserContextHandle(), () -> {
-                        if (--numLeft[0] <= 0) getInfoForOrigins();
-                    });
+            preference
+                    .site()
+                    .clearAllStoredData(
+                            getSiteSettingsDelegate().getBrowserContextHandle(),
+                            () -> {
+                                if (--numLeft[0] <= 0) getInfoForOrigins();
+                            });
         }
     }
 
-    /**
-     * This resets the zooms for all websites to the default zoom set in Chrome Site Settings.
-     */
+    /** This resets the zooms for all websites to the default zoom set in Chrome Site Settings. */
     public void clearZooms() {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
@@ -208,8 +213,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                 PageZoomUtils.getDefaultZoomLevelAsZoomFactor(browserContextHandle);
         for (WebsitePreference preference : mWebsites) {
             // Propagate the change through HostZoomMap.
-            HostZoomMap.setZoomLevelForHost(browserContextHandle,
-                    preference.site().getAddress().getHost(), defaultZoomFactor);
+            HostZoomMap.setZoomLevelForHost(
+                    browserContextHandle,
+                    preference.site().getAddress().getHost(),
+                    defaultZoomFactor);
         }
         // Refresh this fragment to trigger UI change.
         getInfoForOrigins();
@@ -221,13 +228,20 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, makeController())
-                        .with(ModalDialogProperties.TITLE, resources,
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                resources,
                                 R.string.zoom_clear_all_zooms_dialog_title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                getContext().getString(
-                                        R.string.site_settings_clear_all_zoom_levels_warning))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                getContext()
+                                        .getString(
+                                                R.string
+                                                        .site_settings_clear_all_zoom_levels_warning))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.clear)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.cancel)
                         .build();
 
@@ -273,8 +287,9 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             for (WebsitePreference preference : mWebsites) {
                 totalUsage += preference.site().getTotalUsage();
                 if (!includesApps) {
-                    includesApps = originsWithInstalledApp.contains(
-                            preference.site().getAddress().getOrigin());
+                    includesApps =
+                            originsWithInstalledApp.contains(
+                                    preference.site().getAddress().getOrigin());
                 }
             }
         }
@@ -289,8 +304,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_all_message);
         offlineText.setText(R.string.webstorage_delete_data_dialog_offline_message);
         String dialogFormattedText =
-                getString(includesApps ? R.string.webstorage_delete_data_dialog_message_with_app
-                                       : R.string.webstorage_delete_data_dialog_message,
+                getString(
+                        includesApps
+                                ? R.string.webstorage_delete_data_dialog_message_with_app
+                                : R.string.webstorage_delete_data_dialog_message,
                         Formatter.formatShortFileSize(getContext(), totalUsage));
         message.setText(dialogFormattedText);
         builder.setView(dialogView);
@@ -320,9 +337,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         String title = getArguments().getString(EXTRA_TITLE);
         if (title != null) getActivity().setTitle(title);
 
-        mSelectedDomains = getArguments().containsKey(EXTRA_SELECTED_DOMAINS)
-                ? new HashSet<>(getArguments().getStringArrayList(EXTRA_SELECTED_DOMAINS))
-                : null;
+        mSelectedDomains =
+                getArguments().containsKey(EXTRA_SELECTED_DOMAINS)
+                        ? new HashSet<>(getArguments().getStringArrayList(EXTRA_SELECTED_DOMAINS))
+                        : null;
 
         setHasOptionsMenu(true);
 
@@ -335,18 +353,31 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         inflater.inflate(R.menu.website_preferences_menu, menu);
 
         mSearchItem = menu.findItem(R.id.search);
-        SearchUtils.initializeSearchView(mSearchItem, mSearch, getActivity(), (query) -> {
-            boolean queryHasChanged =
-                    mSearch == null ? query != null && !query.isEmpty() : !mSearch.equals(query);
-            mSearch = query;
-            if (queryHasChanged) getInfoForOrigins();
-        });
+        SearchUtils.initializeSearchView(
+                mSearchItem,
+                mSearch,
+                getActivity(),
+                (query) -> {
+                    boolean queryHasChanged =
+                            mSearch == null
+                                    ? query != null && !query.isEmpty()
+                                    : !mSearch.equals(query);
+                    mSearch = query;
+                    if (queryHasChanged) getInfoForOrigins();
+                });
 
         if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
-            MenuItem help = menu.add(
-                    Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
-            help.setIcon(TraceEventVectorDrawableCompat.create(
-                    getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
+            MenuItem help =
+                    menu.add(
+                            Menu.NONE,
+                            R.id.menu_id_site_settings_help,
+                            Menu.NONE,
+                            R.string.menu_help);
+            help.setIcon(
+                    TraceEventVectorDrawableCompat.create(
+                            getResources(),
+                            R.drawable.ic_help_and_feedback,
+                            getContext().getTheme()));
         }
     }
 
@@ -376,7 +407,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             // was populated with data for all permission types.
             website.putSiteIntoExtras(SingleWebsiteSettings.EXTRA_SITE);
         } else if (preference instanceof WebsiteRowPreference) {
-            ((WebsiteRowPreference) preference).handleClick(getArguments(), /*fromGrouped=*/false);
+            ((WebsiteRowPreference) preference)
+                    .handleClick(getArguments(), /* fromGrouped= */ false);
         }
 
         return super.onPreferenceTreeClick(preference);
@@ -394,9 +426,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         getInfoForOrigins();
     }
 
-    /**
-     * Reset the preference screen and initialize it again.
-     */
+    /** Reset the preference screen and initialize it again. */
     private void resetList() {
         // This will remove the combo box at the top and all the sites listed below it.
         getPreferenceScreen().removeAll();
@@ -412,16 +442,21 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                 getPreferenceScreen().removePreference(clearBrowsingDataLink);
                 return;
             }
-            SpannableString spannableString = new SpannableString(
-                    getResources().getString(R.string.clear_browsing_data_link));
-            spannableString.setSpan(new ForegroundColorSpan(getContext().getColor(
-                                            R.color.default_text_color_link_baseline)),
-                    0, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            SpannableString spannableString =
+                    new SpannableString(
+                            getResources().getString(R.string.clear_browsing_data_link));
+            spannableString.setSpan(
+                    new ForegroundColorSpan(
+                            getContext().getColor(R.color.default_text_color_link_baseline)),
+                    0,
+                    spannableString.length(),
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             clearBrowsingDataLink.setSummary(spannableString);
-            clearBrowsingDataLink.setOnPreferenceClickListener(pref -> {
-                getSiteSettingsDelegate().launchClearBrowsingDataDialog(getActivity());
-                return true;
-            });
+            clearBrowsingDataLink.setOnPreferenceClickListener(
+                    pref -> {
+                        getSiteSettingsDelegate().launchClearBrowsingDataDialog(getActivity());
+                        return true;
+                    });
         } else {
             SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences);
         }
@@ -435,9 +470,16 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             // Find entries matching the current search.
             for (WebsiteEntry entry : entries) {
                 if (mSearch == null || mSearch.isEmpty() || entry.matches(mSearch)) {
-                    WebsiteRowPreference preference = new WebsiteRowPreference(getStyledContext(),
-                            getSiteSettingsDelegate(), entry, getActivity().getLayoutInflater());
-                    preference.setOnDeleteCallback(() -> { getInfoForOrigins(); });
+                    WebsiteRowPreference preference =
+                            new WebsiteRowPreference(
+                                    getStyledContext(),
+                                    getSiteSettingsDelegate(),
+                                    entry,
+                                    getActivity().getLayoutInflater());
+                    preference.setOnDeleteCallback(
+                            () -> {
+                                getInfoForOrigins();
+                            });
                     preferences.add(preference);
                 }
             }
@@ -451,8 +493,9 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             // Find origins matching the current search.
             for (Website site : sites) {
                 if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
-                    WebsitePreference preference = new WebsitePreference(
-                            getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
+                    WebsitePreference preference =
+                            new WebsitePreference(
+                                    getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
                     preference.setRefreshZoomsListFunction(this::getInfoForOrigins);
                     websites.add(preference);
                 }
@@ -474,7 +517,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         if (mSelectedDomains == null) {
             return;
         }
-        for (Iterator<Website> it = websites.iterator(); it.hasNext();) {
+        for (Iterator<Website> it = websites.iterator(); it.hasNext(); ) {
             String domain =
                     UrlUtilities.getDomainAndRegistry(it.next().getAddress().getOrigin(), true);
             if (!mSelectedDomains.contains(domain)) {

@@ -77,9 +77,7 @@ public interface BackPressHandler {
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 
-    /**
-     * Result of back press handling.
-     */
+    /** Result of back press handling. */
     @IntDef({BackPressResult.SUCCESS, BackPressResult.FAILURE, BackPressResult.UNKNOWN})
     @Retention(RetentionPolicy.SOURCE)
     @interface BackPressResult {
@@ -138,8 +136,6 @@ public interface BackPressHandler {
      */
     default void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {}
 
-    /**
-     * API 34+ only. Triggered when a back press event is initialized.
-     */
+    /** API 34+ only. Triggered when a back press event is initialized. */
     default void handleOnBackStarted(@NonNull BackEventCompat backEvent) {}
 }

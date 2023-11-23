@@ -20,17 +20,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Initializes our notification channels.
- */
+/** Initializes our notification channels. */
 @RequiresApi(Build.VERSION_CODES.O)
 public class ChannelsInitializer {
     private final NotificationManagerProxy mNotificationManager;
     private ChannelDefinitions mChannelDefinitions;
     private Resources mResources;
 
-    public ChannelsInitializer(NotificationManagerProxy notificationManagerProxy,
-            ChannelDefinitions channelDefinitions, Resources resources) {
+    public ChannelsInitializer(
+            NotificationManagerProxy notificationManagerProxy,
+            ChannelDefinitions channelDefinitions,
+            Resources resources) {
         mChannelDefinitions = channelDefinitions;
         mNotificationManager = notificationManagerProxy;
         mResources = resources;
@@ -148,7 +148,8 @@ public class ChannelsInitializer {
                     getPredefinedChannel(channelId);
             if (predefinedChannel == null) continue;
             NotificationChannelGroup channelGroup =
-                    mChannelDefinitions.getChannelGroupForChannel(predefinedChannel)
+                    mChannelDefinitions
+                            .getChannelGroupForChannel(predefinedChannel)
                             .toNotificationChannelGroup(mResources);
             NotificationChannel channel = predefinedChannel.toNotificationChannel(mResources);
             if (!enabled) {

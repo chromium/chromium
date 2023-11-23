@@ -16,9 +16,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
-/**
- * Generic builder for promo dialogs.
- */
+/** Generic builder for promo dialogs. */
 public abstract class PromoDialog extends AlwaysDismissedDialog
         implements View.OnClickListener, DialogInterface.OnDismissListener {
     /** Parameters that can be used to create a new PromoDialog. */
@@ -97,12 +95,15 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
         mDialogLayout = (PromoDialogLayout) mScrimView.findViewById(R.id.promo_dialog_layout);
     }
 
-    /**
-     * Force the promo dialog to have a fully opaque background hiding any underlying content.
-     */
+    /** Force the promo dialog to have a fully opaque background hiding any underlying content. */
     protected void forceOpaqueBackground() {
-        LayerDrawable background = new LayerDrawable(new Drawable[] {new ColorDrawable(Color.WHITE),
-                new ColorDrawable(getContext().getColor(R.color.modal_dialog_scrim_color))});
+        LayerDrawable background =
+                new LayerDrawable(
+                        new Drawable[] {
+                            new ColorDrawable(Color.WHITE),
+                            new ColorDrawable(
+                                    getContext().getColor(R.color.modal_dialog_scrim_color))
+                        });
         mScrimView.setBackground(background);
     }
 

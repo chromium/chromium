@@ -30,9 +30,7 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
 
     /** An interface to use to communicate back the results to the client. */
     public interface CompressContactIconsCallback {
-        /**
-         * @param selectedContacts The list of selected contacts with their icons.
-         */
+        /** @param selectedContacts The list of selected contacts with their icons. */
         void iconsCompressed(List<ContactDetails> selectedContacts);
     }
 

@@ -174,8 +174,9 @@ public class ForegroundDrawableCompat
         if (mView != view || mDrawable == null) return;
 
         ViewParent parent = mView.getParent();
-        boolean parentVisible = parent != null
-                && (!(parent instanceof ViewGroup) || ((ViewGroup) parent).isShown());
+        boolean parentVisible =
+                parent != null
+                        && (!(parent instanceof ViewGroup) || ((ViewGroup) parent).isShown());
 
         if (parentVisible && mView.getWindowVisibility() == View.VISIBLE) {
             mDrawable.setVisible(visibility == View.VISIBLE, false);
@@ -212,8 +213,16 @@ public class ForegroundDrawableCompat
 
     // OnLayoutChangeListener implementation.
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         if (mDrawable == null) return;
 
         int width = right - left;
@@ -248,7 +257,8 @@ public class ForegroundDrawableCompat
             mDrawMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.END);
             mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
         } else if (mScaleType == ImageView.ScaleType.CENTER) {
-            mDrawMatrix.setTranslate(Math.round((viewWidth - drawableWidth) * 0.5f),
+            mDrawMatrix.setTranslate(
+                    Math.round((viewWidth - drawableWidth) * 0.5f),
                     Math.round((viewHeight - drawableHeight) * 0.5f));
             mDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
         } else {

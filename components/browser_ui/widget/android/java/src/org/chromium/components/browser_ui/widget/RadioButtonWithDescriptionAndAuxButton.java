@@ -81,10 +81,14 @@ public class RadioButtonWithDescriptionAndAuxButton extends RadioButtonWithDescr
         // Space between the radio container and the separator. The padding is added in the radio
         // container instead of the separator, because the padding needs to be highlighted when the
         // radio container is clicked.
-        final int radioContainerEndPadding = getResources().getDimensionPixelSize(
-                R.dimen.radio_button_with_description_and_aux_button_spacing);
-        radioContainer.setPaddingRelative(radioContainer.getPaddingStart(),
-                radioContainer.getPaddingTop(), radioContainerEndPadding,
+        final int radioContainerEndPadding =
+                getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.radio_button_with_description_and_aux_button_spacing);
+        radioContainer.setPaddingRelative(
+                radioContainer.getPaddingStart(),
+                radioContainer.getPaddingTop(),
+                radioContainerEndPadding,
                 radioContainer.getPaddingBottom());
     }
 
@@ -132,9 +136,7 @@ public class RadioButtonWithDescriptionAndAuxButton extends RadioButtonWithDescr
         mAuxButton.setOnClickListener(v -> mListener.onAuxButtonClicked(getId()));
     }
 
-    /**
-     * @return the aux button living inside this widget.
-     */
+    /** @return the aux button living inside this widget. */
     public ImageButton getAuxButtonForTests() {
         return mAuxButton;
     }

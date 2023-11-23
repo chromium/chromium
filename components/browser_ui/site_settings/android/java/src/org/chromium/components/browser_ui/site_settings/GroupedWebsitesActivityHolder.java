@@ -15,11 +15,12 @@ import java.lang.ref.WeakReference;
 // A singleton class that holds a WeakReference to the Activity object of GroupedWebsiteSettings.
 // Needed to be able to go to the 'All Sites' level when clearing data in SingleWebsiteSettings.
 class GroupedWebsitesActivityHolder {
-    @Nullable
-    private WeakReference<Activity> mActivity;
+    @Nullable private WeakReference<Activity> mActivity;
 
     private static GroupedWebsitesActivityHolder sInstance;
-    private GroupedWebsitesActivityHolder(){};
+
+    private GroupedWebsitesActivityHolder() {}
+    ;
 
     public static GroupedWebsitesActivityHolder getInstance() {
         ThreadUtils.assertOnUiThread();

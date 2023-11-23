@@ -312,12 +312,9 @@ public class PickerVideoPlayer extends FrameLayout
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         // Once we reach the completion point, show the overlay controls (without
-                        // fading
-                        // away) to indicate that playback has reached the end of the video (and
-                        // didn't
-                        // break before reaching the end). This also allows the user to restart
-                        // playback
-                        // from the start, by pressing Play.
+                        // fading away) to indicate that playback has reached the end of the video
+                        // (and didn't break before reaching the end). This also allows the user
+                        // to restart playback from the start, by pressing Play.
                         switchToPlayButton();
                         updateProgress();
                         showAndMaybeHideVideoControls(/* animateIn= */ false, FadeOut.NO_FADE_OUT);
@@ -613,9 +610,8 @@ public class PickerVideoPlayer extends FrameLayout
                             @Override
                             public void onAnimationStart(Animator animation) {
                                 // The Play button is always the first control to fade away, and any
-                                // click
-                                // after that point should be considered a request to cancel fading
-                                // away.
+                                // click after that point should be considered a request to cancel
+                                // fading away.
                                 // Therefore this is a good time to flip this to false.
                                 mOverlayControlsShowing = false;
 
@@ -688,8 +684,7 @@ public class PickerVideoPlayer extends FrameLayout
                                 public void onAnimationEnd(Animator animation) {
                                     enableClickableButtons(true);
                                     // After animating the controls into view, start a timer for
-                                    // fading them
-                                    // out again, if needed.
+                                    // fading them out again, if needed.
                                     fadeAwayVideoControls(fadeOutType);
 
                                     notifyTestOfAnimationEnd(mVideoControls);

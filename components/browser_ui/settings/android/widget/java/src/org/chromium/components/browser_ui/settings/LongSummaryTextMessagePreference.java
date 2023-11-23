@@ -10,17 +10,14 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
-/**
- * A custom version of a TextMessagePreference that allows for very long summary texts.
- */
+/** A custom version of a TextMessagePreference that allows for very long summary texts. */
 public class LongSummaryTextMessagePreference extends TextMessagePreference {
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public LongSummaryTextMessagePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.long_summary_text_message_preference);
     }
+
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);

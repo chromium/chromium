@@ -44,8 +44,11 @@ import java.lang.annotation.RetentionPolicy;
  */
 public final class DualControlLayout extends ViewGroup {
     // When changing these values, you need to update ui/android/java/res/values/attrs.xml
-    @IntDef({DualControlLayoutAlignment.START, DualControlLayoutAlignment.END,
-            DualControlLayoutAlignment.APART})
+    @IntDef({
+        DualControlLayoutAlignment.START,
+        DualControlLayoutAlignment.END,
+        DualControlLayoutAlignment.APART
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DualControlLayoutAlignment {
         int START = 0;
@@ -82,8 +85,7 @@ public final class DualControlLayout extends ViewGroup {
     private final int mHorizontalMarginBetweenViews;
 
     /** Define how the controls will be laid out. */
-    @DualControlLayoutAlignment
-    private int mAlignment = DualControlLayoutAlignment.START;
+    @DualControlLayoutAlignment private int mAlignment = DualControlLayoutAlignment.START;
 
     /** Margin between the controls when they're stacked.  By default, there is no margin. */
     private int mStackedMargin;
@@ -153,9 +155,10 @@ public final class DualControlLayout extends ViewGroup {
         int verticalPadding = getPaddingTop() + getPaddingBottom();
 
         // Measure the primary View, allowing it to be as wide as the Layout.
-        int maxWidth = MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED
-                ? Integer.MAX_VALUE
-                : (MeasureSpec.getSize(widthMeasureSpec) - sidePadding);
+        int maxWidth =
+                MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED
+                        ? Integer.MAX_VALUE
+                        : (MeasureSpec.getSize(widthMeasureSpec) - sidePadding);
         int unspecifiedSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         measureChild(mPrimaryView, unspecifiedSpec, unspecifiedSpec);
 
@@ -179,8 +182,10 @@ public final class DualControlLayout extends ViewGroup {
                 mSecondaryView.measure(widthSpec, unspecifiedSpec);
 
                 layoutWidth = maxWidth;
-                layoutHeight = mPrimaryView.getMeasuredHeight() + mStackedMargin
-                        + mSecondaryView.getMeasuredHeight();
+                layoutHeight =
+                        mPrimaryView.getMeasuredHeight()
+                                + mStackedMargin
+                                + mSecondaryView.getMeasuredHeight();
             } else {
                 // The Views fit side by side.  Check which is taller to find the layout height.
                 layoutWidth = combinedWidth;
@@ -190,7 +195,8 @@ public final class DualControlLayout extends ViewGroup {
         layoutWidth += sidePadding;
         layoutHeight += verticalPadding;
 
-        setMeasuredDimension(resolveSize(layoutWidth, widthMeasureSpec),
+        setMeasuredDimension(
+                resolveSize(layoutWidth, widthMeasureSpec),
                 resolveSize(layoutHeight, heightMeasureSpec));
     }
 
@@ -201,16 +207,19 @@ public final class DualControlLayout extends ViewGroup {
 
         int width = right - left;
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        boolean isPrimaryOnRight = (isRtl && mAlignment == DualControlLayoutAlignment.START)
-                || (!isRtl
-                        && (mAlignment == DualControlLayoutAlignment.APART
-                                || mAlignment == DualControlLayoutAlignment.END));
+        boolean isPrimaryOnRight =
+                (isRtl && mAlignment == DualControlLayoutAlignment.START)
+                        || (!isRtl
+                                && (mAlignment == DualControlLayoutAlignment.APART
+                                        || mAlignment == DualControlLayoutAlignment.END));
 
         // If primary view visibility is GONE, do not take into account the space it would occupy.
         int primaryViewMeasuredWidth =
                 mPrimaryView.getVisibility() != View.GONE ? mPrimaryView.getMeasuredWidth() : 0;
-        int primaryRight = isPrimaryOnRight ? (width - rightPadding)
-                                            : (primaryViewMeasuredWidth + leftPadding);
+        int primaryRight =
+                isPrimaryOnRight
+                        ? (width - rightPadding)
+                        : (primaryViewMeasuredWidth + leftPadding);
         int primaryLeft = primaryRight - primaryViewMeasuredWidth;
         int primaryTop = getPaddingTop();
         int primaryBottom = primaryTop + mPrimaryView.getMeasuredHeight();
@@ -220,8 +229,11 @@ public final class DualControlLayout extends ViewGroup {
             // Fill out the row.  onMeasure() should have already applied the correct width.
             int secondaryTop = primaryBottom + mStackedMargin;
             int secondaryBottom = secondaryTop + mSecondaryView.getMeasuredHeight();
-            mSecondaryView.layout(leftPadding, secondaryTop,
-                    leftPadding + mSecondaryView.getMeasuredWidth(), secondaryBottom);
+            mSecondaryView.layout(
+                    leftPadding,
+                    secondaryTop,
+                    leftPadding + mSecondaryView.getMeasuredWidth(),
+                    secondaryBottom);
         } else if (mSecondaryView != null) {
             // Center the secondary View vertically with the primary View.
             int secondaryHeight = mSecondaryView.getMeasuredHeight();
@@ -234,9 +246,10 @@ public final class DualControlLayout extends ViewGroup {
             int secondaryRight;
             if (mAlignment == DualControlLayoutAlignment.APART) {
                 // Put the second View on the other side of the Layout from the primary View.
-                secondaryLeft = isPrimaryOnRight
-                        ? leftPadding
-                        : width - rightPadding - mSecondaryView.getMeasuredWidth();
+                secondaryLeft =
+                        isPrimaryOnRight
+                                ? leftPadding
+                                : width - rightPadding - mSecondaryView.getMeasuredWidth();
                 secondaryRight = secondaryLeft + mSecondaryView.getMeasuredWidth();
             } else if (isPrimaryOnRight) {
                 // Sit to the left of the primary View.
@@ -288,8 +301,10 @@ public final class DualControlLayout extends ViewGroup {
 
         // Set the alignment.
         if (a.hasValue(R.styleable.DualControlLayout_buttonAlignment)) {
-            setAlignment(a.getInt(R.styleable.DualControlLayout_buttonAlignment,
-                    DualControlLayoutAlignment.START));
+            setAlignment(
+                    a.getInt(
+                            R.styleable.DualControlLayout_buttonAlignment,
+                            DualControlLayoutAlignment.START));
         }
 
         a.recycle();

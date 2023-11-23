@@ -17,16 +17,15 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreferenceCompat;
 
-/**
- * A Chrome switch preference that supports managed preferences.
- */
+/** A Chrome switch preference that supports managed preferences. */
 public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private ManagedPreferenceDelegate mManagedPrefDelegate;
+
     /** The View for this preference. */
     private View mView;
+
     /** The color resource ID for tinting of the view's background. */
-    @ColorRes
-    private Integer mBackgroundColorRes;
+    @ColorRes private Integer mBackgroundColorRes;
 
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
@@ -49,13 +48,14 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }
 
-    /**
-     * Sets the ManagedPreferenceDelegate which will determine whether this preference is managed.
-     */
+    /** Sets the ManagedPreferenceDelegate which will determine whether this preference is managed. */
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
-        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this,
-                /*allowManagedIcon=*/true, /*hasCustomLayout=*/mHasCustomLayout);
+        ManagedPreferencesUtils.initPreference(
+                mManagedPrefDelegate,
+                this,
+                /* allowManagedIcon= */ true,
+                /* hasCustomLayout= */ mHasCustomLayout);
     }
 
     @Override

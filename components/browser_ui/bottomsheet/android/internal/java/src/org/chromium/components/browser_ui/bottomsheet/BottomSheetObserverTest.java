@@ -99,9 +99,7 @@ public class BottomSheetObserverTest {
             }
         }
 
-        /**
-         * @return The last value passed in to {@link #onSheetOffsetChanged(float)}.
-         */
+        /** @return The last value passed in to {@link #onSheetOffsetChanged(float)}. */
         public float getLastOffsetChangedValue() {
             return mLastOffsetChangedValue;
         }

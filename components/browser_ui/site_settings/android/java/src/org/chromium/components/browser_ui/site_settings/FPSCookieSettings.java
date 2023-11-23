@@ -58,17 +58,21 @@ public class FPSCookieSettings extends BaseSiteSettingsFragment
                     R.string.website_settings_category_cookie_subpage_incognito_bullet_two);
             mAllowFPSPreference.setVisible(false);
         } else {
-            assert false : "Unexpected cookies subpage state: " + pageState + "."
-                           + "Cookies subpage state must be either "
-                           + CookieControlsMode.BLOCK_THIRD_PARTY
-                           + " or "
-                           + CookieControlsMode.INCOGNITO_ONLY;
+            assert false
+                    : "Unexpected cookies subpage state: "
+                            + pageState
+                            + "."
+                            + "Cookies subpage state must be either "
+                            + CookieControlsMode.BLOCK_THIRD_PARTY
+                            + " or "
+                            + CookieControlsMode.INCOGNITO_ONLY;
         }
     }
 
     private void setupAllowFPSPreference() {
-        var mManagedPreferenceDelegate = new FPSCookieSettingsManagedPreferenceDelegate(
-                getSiteSettingsDelegate().getManagedPreferenceDelegate());
+        var mManagedPreferenceDelegate =
+                new FPSCookieSettingsManagedPreferenceDelegate(
+                        getSiteSettingsDelegate().getManagedPreferenceDelegate());
         mAllowFPSPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
         mAllowFPSPreference.setChecked(
                 getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled());
@@ -82,8 +86,7 @@ public class FPSCookieSettings extends BaseSiteSettingsFragment
     private boolean isBlockThirdPartyCookieSelected() {
         BrowserContextHandle context = getSiteSettingsDelegate().getBrowserContextHandle();
         PrefService prefService = UserPrefs.get(context);
-            return prefService.getInteger(COOKIE_CONTROLS_MODE)
-                    == CookieControlsMode.BLOCK_THIRD_PARTY;
+        return prefService.getInteger(COOKIE_CONTROLS_MODE) == CookieControlsMode.BLOCK_THIRD_PARTY;
     }
 
     @Override

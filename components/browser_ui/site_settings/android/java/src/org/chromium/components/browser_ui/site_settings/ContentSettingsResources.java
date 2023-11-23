@@ -36,9 +36,7 @@ import org.chromium.device.DeviceFeatureMap;
 // suppress the lint warning for now.
 @SuppressLint("UseSparseArrays")
 public class ContentSettingsResources {
-    /**
-     * An inner class contains all the resources for a ContentSettingsType
-     */
+    /** An inner class contains all the resources for a ContentSettingsType */
     private static class ResourceItem {
         private final int mIcon;
         private final int mTitle;
@@ -82,13 +80,15 @@ public class ContentSettingsResources {
         }
 
         private int getEnabledSummary() {
-            return mEnabledSummary == 0 ? getCategorySummary(mDefaultEnabledValue)
-                                        : mEnabledSummary;
+            return mEnabledSummary == 0
+                    ? getCategorySummary(mDefaultEnabledValue)
+                    : mEnabledSummary;
         }
 
         private int getDisabledSummary() {
-            return mDisabledSummary == 0 ? getCategorySummary(mDefaultDisabledValue)
-                                         : mDisabledSummary;
+            return mDisabledSummary == 0
+                    ? getCategorySummary(mDefaultDisabledValue)
+                    : mDisabledSummary;
         }
 
         private int getSummaryOverrideForScreenReader() {
@@ -341,8 +341,8 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_popups_redirects_blocked,
                         R.string.website_settings_category_popups_redirects_a11y);
 
-            // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
-            // If 3-state becomes more common we should update localMaps to support it better.
+                // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
+                // If 3-state becomes more common we should update localMaps to support it better.
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
                 return new ResourceItem(
                         R.drawable.permission_protected_media,
@@ -441,9 +441,7 @@ public class ContentSettingsResources {
         return null;
     }
 
-    /**
-     * Returns the resource id of the 24dp icon for a content type.
-     */
+    /** Returns the resource id of the 24dp icon for a content type. */
     public static int getIcon(int contentType, SiteSettingsDelegate delegate) {
         return getResourceItem(contentType, delegate).getIcon();
     }
@@ -458,9 +456,11 @@ public class ContentSettingsResources {
      *         returned icon will have a strike through it.
      * @return A grey 24dp {@link Drawable} for this content setting.
      */
-    public static Drawable getContentSettingsIcon(Context context,
+    public static Drawable getContentSettingsIcon(
+            Context context,
             @ContentSettingsType int contentSettingsType,
-            @ContentSettingValues @Nullable Integer value, SiteSettingsDelegate delegate) {
+            @ContentSettingValues @Nullable Integer value,
+            SiteSettingsDelegate delegate) {
         Drawable icon =
                 SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType, delegate));
         if (value != null && value == ContentSettingValues.BLOCK) {
@@ -480,11 +480,15 @@ public class ContentSettingsResources {
      * @param isIncognito Whether this icon should use the incognito color scheme.
      * @return A blue 24dp {@link Drawable} for this content setting.
      */
-    public static Drawable getIconForOmnibox(Context context,
+    public static Drawable getIconForOmnibox(
+            Context context,
             @ContentSettingsType int contentSettingsType,
-            @ContentSettingValues @Nullable Integer value, boolean isIncognito) {
-        int color = isIncognito ? R.color.default_icon_color_blue_light
-                                : R.color.default_icon_color_accent1_tint_list;
+            @ContentSettingValues @Nullable Integer value,
+            boolean isIncognito) {
+        int color =
+                isIncognito
+                        ? R.color.default_icon_color_blue_light
+                        : R.color.default_icon_color_accent1_tint_list;
         Drawable icon =
                 SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType, null), color);
         if (value != null && value == ContentSettingValues.BLOCK) {
@@ -503,8 +507,11 @@ public class ContentSettingsResources {
         ColorFilter filter = icon.getColorFilter();
 
         // Create bitmap from drawable
-        Bitmap iconBitmap = Bitmap.createBitmap(
-                icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap iconBitmap =
+                Bitmap.createBitmap(
+                        icon.getIntrinsicWidth(),
+                        icon.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(iconBitmap);
         int side = canvas.getWidth();
         assert side == canvas.getHeight();
@@ -530,15 +537,23 @@ public class ContentSettingsResources {
         // due to rounding.
         float halfBias = 0.5f * bias;
         paint.setStrokeWidth(1.5f * thickness);
-        canvas.drawLine(padding + halfBias, padding - halfBias, side - padding + halfBias,
-                side - padding - halfBias, paint);
+        canvas.drawLine(
+                padding + halfBias,
+                padding - halfBias,
+                side - padding + halfBias,
+                side - padding - halfBias,
+                paint);
 
         // Draw a strikethrough directly below.
         paint.setColor(Color.BLACK);
         paint.setXfermode(null);
         paint.setStrokeWidth(thickness);
-        canvas.drawLine(padding - bias, padding + bias, side - padding - bias,
-                side - padding + bias, paint);
+        canvas.drawLine(
+                padding - bias,
+                padding + bias,
+                side - padding - bias,
+                side - padding + bias,
+                paint);
 
         Drawable blocked = new BitmapDrawable(resources, iconBitmap);
         // Re-apply color filter
@@ -607,8 +622,10 @@ public class ContentSettingsResources {
      * @param enabled Whether the content type is enabled.
      */
     public static int getCategorySummary(int contentType, boolean enabled) {
-        return getCategorySummary(enabled ? getDefaultEnabledValue(contentType)
-                                          : getDefaultDisabledValue(contentType));
+        return getCategorySummary(
+                enabled
+                        ? getDefaultEnabledValue(contentType)
+                        : getDefaultDisabledValue(contentType));
     }
 
     /**
@@ -617,7 +634,8 @@ public class ContentSettingsResources {
      * @param value The ContentSetting for which we want the resource.
      * @param contentSettingsType The ContentSettingsType for this string resource id.
      */
-    public static int getSiteSummary(@ContentSettingValues @Nullable Integer value,
+    public static int getSiteSummary(
+            @ContentSettingValues @Nullable Integer value,
             @ContentSettingsType int contentSettingsType) {
         switch (value) {
             case ContentSettingValues.ALLOW:
@@ -633,16 +651,12 @@ public class ContentSettingsResources {
         }
     }
 
-    /**
-     * Returns the summary (resource id) to show when the content type is enabled.
-     */
+    /** Returns the summary (resource id) to show when the content type is enabled. */
     public static int getEnabledSummary(int contentType, SiteSettingsDelegate delegate) {
         return getResourceItem(contentType, delegate).getEnabledSummary();
     }
 
-    /**
-     * Returns the summary (resource id) to show when the content type is disabled.
-     */
+    /** Returns the summary (resource id) to show when the content type is disabled. */
     public static int getDisabledSummary(int contentType, SiteSettingsDelegate delegate) {
         return getResourceItem(contentType, delegate).getDisabledSummary();
     }
@@ -658,9 +672,7 @@ public class ContentSettingsResources {
         return getResourceItem(contentType, delegate).getSummaryOverrideForScreenReader();
     }
 
-    /**
-     * Returns the summary for Geolocation content settings when it is set to 'Allow' (by policy).
-     */
+    /** Returns the summary for Geolocation content settings when it is set to 'Allow' (by policy). */
     public static int getGeolocationAllowedSummary() {
         return R.string.website_settings_category_allowed;
     }
@@ -702,8 +714,9 @@ public class ContentSettingsResources {
      * display in the site settings list only.
      */
     public static int getDesktopSiteListSummary(boolean enabled) {
-        return enabled ? R.string.website_settings_category_desktop_site_allowed_list
-                       : R.string.website_settings_category_desktop_site_blocked_list;
+        return enabled
+                ? R.string.website_settings_category_desktop_site_allowed_list
+                : R.string.website_settings_category_desktop_site_blocked_list;
     }
 
     /**
@@ -719,8 +732,9 @@ public class ContentSettingsResources {
      * site settings list only.
      */
     public static int getSiteDataListSummary(boolean enabled) {
-        return enabled ? R.string.site_settings_page_site_data_allowed_sub_label
-                       : R.string.site_settings_page_site_data_blocked_sub_label;
+        return enabled
+                ? R.string.site_settings_page_site_data_allowed_sub_label
+                : R.string.site_settings_page_site_data_blocked_sub_label;
     }
 
     /**
@@ -757,9 +771,10 @@ public class ContentSettingsResources {
     public static int[] getTriStateSettingDescriptionIDs(int contentType) {
         if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
             int[] descriptionIDs = {
-                    R.string.website_settings_category_protected_content_allowed_recommended,
-                    R.string.website_settings_category_protected_content_ask,
-                    R.string.website_settings_category_protected_content_blocked};
+                R.string.website_settings_category_protected_content_allowed_recommended,
+                R.string.website_settings_category_protected_content_ask,
+                R.string.website_settings_category_protected_content_blocked
+            };
             return descriptionIDs;
         }
 

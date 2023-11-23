@@ -17,9 +17,7 @@ public final class ContactsPickerFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private ContactsPickerFeatureMap() {}
 
-    /**
-     * @return the singleton ContactsPickerFeatureMap.
-     */
+    /** @return the singleton ContactsPickerFeatureMap. */
     public static ContactsPickerFeatureMap getInstance() {
         return sInstance;
     }

@@ -28,17 +28,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Collection of utility methods related to the browser UI list menus. */
 public class BrowserUiListMenuUtils {
 
-    /**
-     * @return The default icon tint color state list for list menu item icons.
-     */
+    /** @return The default icon tint color state list for list menu item icons. */
     @ColorRes
     public static int getDefaultIconTintColorStateListId() {
         return R.color.default_icon_color_secondary_tint_list;
     }
 
-    /**
-     * @return The default text appearance style for list menu item text.
-     */
+    /** @return The default text appearance style for list menu item text. */
     @StyleRes
     public static int getDefaultTextAppearanceStyle() {
         return R.style.TextAppearance_ListMenuItem;
@@ -114,7 +110,7 @@ public class BrowserUiListMenuUtils {
             @StringRes int titleId, @IdRes int menuId, @DrawableRes int startIconId) {
         return new ListItem(
                 ListMenuItemType.MENU_ITEM,
-                buildPropertyModel(titleId, menuId, startIconId, true /* enabled */));
+                buildPropertyModel(titleId, menuId, startIconId, /* enabled= */ true));
     }
 
     /**

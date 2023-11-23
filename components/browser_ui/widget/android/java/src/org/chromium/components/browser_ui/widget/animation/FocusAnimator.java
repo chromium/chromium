@@ -56,14 +56,23 @@ public class FocusAnimator {
 
         // Add a listener to know when Android has done another measurement pass.  The listener
         // automatically removes itself to prevent triggering the animation multiple times.
-        mLayout.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                mLayout.removeOnLayoutChangeListener(this);
-                startAnimator(callback);
-            }
-        });
+        mLayout.addOnLayoutChangeListener(
+                new OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        mLayout.removeOnLayoutChangeListener(this);
+                        startAnimator(callback);
+                    }
+                });
     }
 
     private void startAnimator(final Runnable callback) {
@@ -102,40 +111,44 @@ public class FocusAnimator {
 
             // Translate the child to its new place while changing where its bottom is drawn to
             // animate the child changing height without causing another layout.
-            childAnimator.addUpdateListener(new AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float progress = (Float) animation.getAnimatedValue();
-                    child.setTranslationY(translationDifference * (1f - progress));
+            childAnimator.addUpdateListener(
+                    new AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            float progress = (Float) animation.getAnimatedValue();
+                            child.setTranslationY(translationDifference * (1f - progress));
 
-                    if (oldHeight != newHeight) {
-                        float animatedHeight = oldHeight * (1f - progress) + newHeight * progress;
-                        child.setBottom(child.getTop() + (int) animatedHeight);
-                    }
-                }
-            });
+                            if (oldHeight != newHeight) {
+                                float animatedHeight =
+                                        oldHeight * (1f - progress) + newHeight * progress;
+                                child.setBottom(child.getTop() + (int) animatedHeight);
+                            }
+                        }
+                    });
 
             // Explicitly place the child in its final position in the end.
-            childAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    child.setTranslationY(0);
-                    child.setBottom(child.getTop() + newHeight);
-                }
-            });
+            childAnimator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            child.setTranslationY(0);
+                            child.setBottom(child.getTop() + newHeight);
+                        }
+                    });
         }
 
         // Animate the height of the container itself changing.
         int oldContainerHeight = mInitialTops.get(mInitialTops.size() - 1);
         int newContainerHeight = finalChildTops.get(finalChildTops.size() - 1);
         ValueAnimator layoutAnimator = ValueAnimator.ofInt(oldContainerHeight, newContainerHeight);
-        layoutAnimator.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mLayout.setBottom(((Integer) animation.getAnimatedValue()));
-                requestChildFocus();
-            }
-        });
+        layoutAnimator.addUpdateListener(
+                new AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        mLayout.setBottom(((Integer) animation.getAnimatedValue()));
+                        requestChildFocus();
+                    }
+                });
         animators.add(layoutAnimator);
 
         // Set up and kick off the animation.
@@ -143,16 +156,18 @@ public class FocusAnimator {
         animator.setDuration(ANIMATION_LENGTH_MS);
         animator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         animator.playTogether(animators);
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                finishAnimation(callback);
+        animator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        finishAnimation(callback);
 
-                // Request a layout to put everything in the right final place.
-                ViewUtils.requestLayout(mLayout,
-                        "FocusAnimator.startAnimator.AnimatorListenerAdapter.onAnimationEnd");
-            }
-        });
+                        // Request a layout to put everything in the right final place.
+                        ViewUtils.requestLayout(
+                                mLayout,
+                                "FocusAnimator.startAnimator.AnimatorListenerAdapter.onAnimationEnd");
+                    }
+                });
         animator.start();
     }
 

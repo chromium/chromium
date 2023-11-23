@@ -9,9 +9,7 @@ import android.content.Intent;
 
 import androidx.preference.PreferenceFragmentCompat;
 
-/**
- * Preference fragment for showing the Site Settings UI.
- */
+/** Preference fragment for showing the Site Settings UI. */
 public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat {
     private SiteSettingsDelegate mSiteSettingsDelegate;
     private CustomTabIntentHelper mCustomTabIntentHelper;
@@ -26,17 +24,13 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat 
         mSiteSettingsDelegate = client;
     }
 
-    /**
-     * @return the SiteSettingsDelegate instance to use when rendering the Site Settings UI.
-     */
+    /** @return the SiteSettingsDelegate instance to use when rendering the Site Settings UI. */
     public SiteSettingsDelegate getSiteSettingsDelegate() {
         assert mSiteSettingsDelegate != null : "SiteSettingsDelegate not set";
         return mSiteSettingsDelegate;
     }
 
-    /**
-     * @return Whether a SiteSettingsDelegate instance has been assigned to this Fragment.
-     */
+    /** @return Whether a SiteSettingsDelegate instance has been assigned to this Fragment. */
     public boolean hasSiteSettingsDelegate() {
         return mSiteSettingsDelegate != null;
     }
@@ -47,9 +41,7 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat 
      * TODO(crbug.com/1181700): Update when LaunchIntentDispatcher is (partially-)modularized.
      */
     public interface CustomTabIntentHelper {
-        /**
-         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
-         */
+        /** @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent */
         Intent createCustomTabActivityIntent(Context context, Intent intent);
     }
 
@@ -62,9 +54,7 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat 
         mCustomTabIntentHelper = customTabIntentHelper;
     }
 
-    /**
-     * @return the CustomTabIntentHelper instance to use.
-     */
+    /** @return the CustomTabIntentHelper instance to use. */
     public CustomTabIntentHelper getCustomTabIntentHelper() {
         return mCustomTabIntentHelper;
     }

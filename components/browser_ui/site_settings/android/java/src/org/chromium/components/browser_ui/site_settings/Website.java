@@ -22,21 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Website is a class for storing information about a website and its associated permissions.
- */
+/** Website is a class for storing information about a website and its associated permissions. */
 public final class Website implements WebsiteEntry {
     private final WebsiteAddress mOrigin;
     private final WebsiteAddress mEmbedder;
 
-    /**
-     * Indexed by ContentSettingsType.
-     */
+    /** Indexed by ContentSettingsType. */
     private Map<Integer, ContentSettingException> mContentSettingExceptions = new HashMap<>();
 
-    /**
-     * Indexed by ContentSettingsType.
-     */
+    /** Indexed by ContentSettingsType. */
     private Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
 
     /**
@@ -95,7 +89,8 @@ public final class Website implements WebsiteEntry {
     }
 
     public boolean representsThirdPartiesOnSite() {
-        return mOrigin.getTitle().equals(SITE_WILDCARD) && mEmbedder != null
+        return mOrigin.getTitle().equals(SITE_WILDCARD)
+                && mEmbedder != null
                 && !mEmbedder.getTitle().equals(SITE_WILDCARD);
     }
 
@@ -133,8 +128,8 @@ public final class Website implements WebsiteEntry {
             } else if (to.getAdditionalInformationAddress() == null) {
                 return 1;
             }
-            return getAdditionalInformationAddress().compareTo(
-                    to.getAdditionalInformationAddress());
+            return getAdditionalInformationAddress()
+                    .compareTo(to.getAdditionalInformationAddress());
         }
         return originComparison;
     }
@@ -148,9 +143,7 @@ public final class Website implements WebsiteEntry {
         return Long.compare(to.getTotalUsage(), getTotalUsage());
     }
 
-    /**
-     * @return Collection of PermissionInfos stored for the site
-     */
+    /** @return Collection of PermissionInfos stored for the site */
     public Collection<PermissionInfo> getPermissionInfos() {
         return mPermissionInfos.values();
     }
@@ -180,8 +173,9 @@ public final class Website implements WebsiteEntry {
                 || (info.getSecondaryPattern() != null
                         && !info.getSecondaryPattern().equals("*")
                         && !info.isEmbargoed());
-        var list = mEmbeddedPermissionInfos.computeIfAbsent(
-                info.getContentSettingType(), k -> new ArrayList<>());
+        var list =
+                mEmbeddedPermissionInfos.computeIfAbsent(
+                        info.getContentSettingType(), k -> new ArrayList<>());
         for (var existing_info : list) {
             if (existing_info.getContentSettingType() == info.getContentSettingType()
                     && existing_info.getPrimaryPattern().equals(info.getPrimaryPattern())
@@ -198,16 +192,12 @@ public final class Website implements WebsiteEntry {
         return mContentSettingExceptions.values();
     }
 
-    /**
-     * Returns the exception info for this Website for specified type.
-     */
+    /** Returns the exception info for this Website for specified type. */
     public ContentSettingException getContentSettingException(@ContentSettingsType int type) {
         return mContentSettingExceptions.get(type);
     }
 
-    /**
-     * Sets the exception info for this Website for specified type.
-     */
+    /** Sets the exception info for this Website for specified type. */
     public void setContentSettingException(
             @ContentSettingsType int type, ContentSettingException exception) {
         mContentSettingExceptions.put(type, exception);
@@ -264,11 +254,11 @@ public final class Website implements WebsiteEntry {
         return null;
     }
 
-    /**
-     * Sets the ContentSettingValue on the appropriate PermissionInfo or ContentSettingException
-     */
-    public void setContentSetting(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int type, @ContentSettingValues int value) {
+    /** Sets the ContentSettingValue on the appropriate PermissionInfo or ContentSettingException */
+    public void setContentSetting(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType int type,
+            @ContentSettingValues int value) {
         if (getPermissionInfo(type) != null) {
             getPermissionInfo(type).setContentSetting(browserContextHandle, value);
             return;
@@ -286,9 +276,13 @@ public final class Website implements WebsiteEntry {
             // default. In that case, just set an exception now to BLOCK to enable changing the
             // permission.
             if (exception == null) {
-                exception = new ContentSettingException(ContentSettingsType.ADS,
-                        getAddress().getOrigin(), ContentSettingValues.BLOCK, "",
-                        /*isEmbargoed=*/false);
+                exception =
+                        new ContentSettingException(
+                                ContentSettingsType.ADS,
+                                getAddress().getOrigin(),
+                                ContentSettingValues.BLOCK,
+                                "",
+                                /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
         } else if (type == ContentSettingsType.JAVASCRIPT) {
@@ -296,8 +290,13 @@ public final class Website implements WebsiteEntry {
             // because we show the javascript permission in Site Settings if javascript
             // is blocked by default.
             if (exception == null) {
-                exception = new ContentSettingException(ContentSettingsType.JAVASCRIPT,
-                        getAddress().getHost(), value, "", /*isEmbargoed=*/false);
+                exception =
+                        new ContentSettingException(
+                                ContentSettingsType.JAVASCRIPT,
+                                getAddress().getHost(),
+                                value,
+                                "",
+                                /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
             // It's possible for either action to be emitted. This code path is hit
@@ -311,8 +310,13 @@ public final class Website implements WebsiteEntry {
             // It is possible to set the permission without having an existing exception,
             // because we always show the sound permission in Site Settings.
             if (exception == null) {
-                exception = new ContentSettingException(ContentSettingsType.SOUND,
-                        getAddress().getHost(), value, "", /*isEmbargoed=*/false);
+                exception =
+                        new ContentSettingException(
+                                ContentSettingsType.SOUND,
+                                getAddress().getHost(),
+                                value,
+                                "",
+                                /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
             if (value == ContentSettingValues.BLOCK) {
@@ -417,9 +421,10 @@ public final class Website implements WebsiteEntry {
         // Wait for callbacks from each mStorageInfo and mSharedDictionaryInfo
         // and a callback from mLocalStorageInfo.
         int[] storageInfoCallbacksLeft = {mStorageInfo.size() + mSharedDictionaryInfo.size() + 1};
-        StorageInfoClearedCallback clearedCallback = () -> {
-            if (--storageInfoCallbacksLeft[0] == 0) callback.onStoredDataCleared();
-        };
+        StorageInfoClearedCallback clearedCallback =
+                () -> {
+                    if (--storageInfoCallbacksLeft[0] == 0) callback.onStoredDataCleared();
+                };
         if (mLocalStorageInfo != null) {
             mLocalStorageInfo.clear(browserContextHandle, clearedCallback);
             mLocalStorageInfo = null;
@@ -435,23 +440,17 @@ public final class Website implements WebsiteEntry {
         mSharedDictionaryInfo.clear();
     }
 
-    /**
-     * An interface to implement to get a callback when storage info has been cleared.
-     */
+    /** An interface to implement to get a callback when storage info has been cleared. */
     public interface StoredDataClearedCallback {
         public void onStoredDataCleared();
     }
 
-    /**
-     * Add information about an object the user has granted permission for this site to access.
-     */
+    /** Add information about an object the user has granted permission for this site to access. */
     public void addChosenObjectInfo(ChosenObjectInfo info) {
         mObjectInfo.add(info);
     }
 
-    /**
-     * Returns the set of objects this website has been granted permission to access.
-     */
+    /** Returns the set of objects this website has been granted permission to access. */
     public List<ChosenObjectInfo> getChosenObjectInfo() {
         return new ArrayList<ChosenObjectInfo>(mObjectInfo);
     }

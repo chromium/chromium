@@ -10,9 +10,7 @@ import android.util.AttributeSet;
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceViewHolder;
 
-/**
- * Dialog that prompts the user to clear website storage on the device.
- */
+/** Dialog that prompts the user to clear website storage on the device. */
 public class ClearWebsiteStorage extends DialogPreference {
     Context mContext;
 
@@ -47,13 +45,15 @@ public class ClearWebsiteStorage extends DialogPreference {
 
         int resourceId;
         if (!mIsGroup) {
-            resourceId = mClearingApps
-                    ? R.string.webstorage_delete_data_dialog_message_single_with_app
-                    : R.string.webstorage_delete_data_dialog_message_single;
+            resourceId =
+                    mClearingApps
+                            ? R.string.webstorage_delete_data_dialog_message_single_with_app
+                            : R.string.webstorage_delete_data_dialog_message_single;
         } else {
-            resourceId = mClearingApps
-                    ? R.string.webstorage_delete_data_dialog_message_group_with_app
-                    : R.string.webstorage_delete_data_dialog_message_group;
+            resourceId =
+                    mClearingApps
+                            ? R.string.webstorage_delete_data_dialog_message_group_with_app
+                            : R.string.webstorage_delete_data_dialog_message_group;
         }
 
         setDialogMessage(mContext.getString(resourceId, mHost));
@@ -76,13 +76,12 @@ public class ClearWebsiteStorage extends DialogPreference {
      * @param isGroup True if the dialog is related to a group of sites.
      */
     public static int getSignedOutText(boolean isGroup) {
-        return isGroup ? R.string.webstorage_clear_data_dialog_sign_out_group_message
-                       : R.string.webstorage_clear_data_dialog_sign_out_message;
+        return isGroup
+                ? R.string.webstorage_clear_data_dialog_sign_out_group_message
+                : R.string.webstorage_clear_data_dialog_sign_out_message;
     }
 
-    /**
-     * Returns the string resource id to use to explain what happens with offline files.
-     */
+    /** Returns the string resource id to use to explain what happens with offline files. */
     public static int getOfflineText() {
         return R.string.webstorage_delete_data_dialog_offline_message;
     }

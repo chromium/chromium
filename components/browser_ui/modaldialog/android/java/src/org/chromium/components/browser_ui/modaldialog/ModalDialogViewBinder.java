@@ -17,8 +17,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * {@link ModalDialogView}.
  */
 public class ModalDialogViewBinder
-        implements PropertyModelChangeProcessor
-                           .ViewBinder<PropertyModel, ModalDialogView, PropertyKey> {
+        implements PropertyModelChangeProcessor.ViewBinder<
+                PropertyModel, ModalDialogView, PropertyKey> {
     @Override
     public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
         if (ModalDialogProperties.TITLE == propertyKey) {
@@ -37,33 +37,40 @@ public class ModalDialogViewBinder
             view.setCustomButtonBar(model.get(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_TEXT == propertyKey) {
             assert checkFilterTouchConsistency(model);
-            view.setButtonText(ModalDialogProperties.ButtonType.POSITIVE,
+            view.setButtonText(
+                    ModalDialogProperties.ButtonType.POSITIVE,
                     model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            view.setButtonContentDescription(ModalDialogProperties.ButtonType.POSITIVE,
+            view.setButtonContentDescription(
+                    ModalDialogProperties.ButtonType.POSITIVE,
                     model.get(ModalDialogProperties.POSITIVE_BUTTON_CONTENT_DESCRIPTION));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_DISABLED == propertyKey) {
-            view.setButtonEnabled(ModalDialogProperties.ButtonType.POSITIVE,
+            view.setButtonEnabled(
+                    ModalDialogProperties.ButtonType.POSITIVE,
                     !model.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
         } else if (ModalDialogProperties.NEGATIVE_BUTTON_TEXT == propertyKey) {
             assert checkFilterTouchConsistency(model);
             assert checkFilledButtonConsistency(model);
-            view.setButtonText(ModalDialogProperties.ButtonType.NEGATIVE,
+            view.setButtonText(
+                    ModalDialogProperties.ButtonType.NEGATIVE,
                     model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
         } else if (ModalDialogProperties.NEGATIVE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            view.setButtonContentDescription(ModalDialogProperties.ButtonType.NEGATIVE,
+            view.setButtonContentDescription(
+                    ModalDialogProperties.ButtonType.NEGATIVE,
                     model.get(ModalDialogProperties.NEGATIVE_BUTTON_CONTENT_DESCRIPTION));
         } else if (ModalDialogProperties.NEGATIVE_BUTTON_DISABLED == propertyKey) {
-            view.setButtonEnabled(ModalDialogProperties.ButtonType.NEGATIVE,
+            view.setButtonEnabled(
+                    ModalDialogProperties.ButtonType.NEGATIVE,
                     !model.get(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED));
         } else if (ModalDialogProperties.FOOTER_MESSAGE == propertyKey) {
             view.setFooterMessage(model.get(ModalDialogProperties.FOOTER_MESSAGE));
         } else if (ModalDialogProperties.TITLE_SCROLLABLE == propertyKey) {
             view.setTitleScrollable(model.get(ModalDialogProperties.TITLE_SCROLLABLE));
         } else if (ModalDialogProperties.CONTROLLER == propertyKey) {
-            view.setOnButtonClickedCallback((buttonType) -> {
-                model.get(ModalDialogProperties.CONTROLLER).onClick(model, buttonType);
-            });
+            view.setOnButtonClickedCallback(
+                    (buttonType) -> {
+                        model.get(ModalDialogProperties.CONTROLLER).onClick(model, buttonType);
+                    });
         } else if (ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE == propertyKey) {
             // Intentionally left empty since this is a property for the dialog container.
         } else if (ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY == propertyKey) {
@@ -83,11 +90,13 @@ public class ModalDialogViewBinder
             int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
             boolean ignoreWidthConstraints =
                     dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG
-                    || dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG
-                    || dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE;
+                            || dialogStyle
+                                    == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG
+                            || dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE;
             boolean ignoreHeightConstraint =
                     dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG
-                    || dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG;
+                            || dialogStyle
+                                    == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG;
             view.setIgnoreConstraints(ignoreWidthConstraints, ignoreHeightConstraint);
         } else if (ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS == propertyKey) {
             view.setButtonTapProtectionDurationMs(

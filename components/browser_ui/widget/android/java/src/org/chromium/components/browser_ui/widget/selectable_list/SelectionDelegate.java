@@ -39,9 +39,7 @@ public class SelectionDelegate<E> {
     private Set<E> mSelectedItems = new LinkedHashSet<>();
     private ObserverList<SelectionObserver<E>> mObservers = new ObserverList<>();
 
-    /**
-     * Sets the mode of this SelectionDelegate to single-selection.
-     */
+    /** Sets the mode of this SelectionDelegate to single-selection. */
     public void setSingleSelectionMode() {
         mIsSingleSelection = true;
     }
@@ -93,32 +91,24 @@ public class SelectionDelegate<E> {
         return mSelectedItems.contains(item);
     }
 
-    /**
-     * @return Whether any items are selected.
-     */
+    /** @return Whether any items are selected. */
     public boolean isSelectionEnabled() {
         return !mSelectedItems.isEmpty() || mEnableSelectionForZeroItems;
     }
 
-    /**
-     * Clears all selected items.
-     */
+    /** Clears all selected items. */
     public void clearSelection() {
         mEnableSelectionForZeroItems = false;
         mSelectedItems.clear();
         notifyObservers();
     }
 
-    /**
-     * @return The set of selected items.
-     */
+    /** @return The set of selected items. */
     public Set<E> getSelectedItems() {
         return mSelectedItems;
     }
 
-    /**
-     * @return The list of selected items.
-     */
+    /** @return The list of selected items. */
     public List<E> getSelectedItemsAsList() {
         return new ArrayList<E>(mSelectedItems);
     }

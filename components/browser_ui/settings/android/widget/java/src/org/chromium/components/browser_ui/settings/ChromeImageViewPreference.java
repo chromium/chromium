@@ -34,51 +34,50 @@ import androidx.preference.PreferenceViewHolder;
  * with the image_view_widget ID.
  */
 public class ChromeImageViewPreference extends Preference {
-    @Nullable
-    private ManagedPreferenceDelegate mManagedPrefDelegate;
+    @Nullable private ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** The onClick listener to handle click events for the ImageView widget. */
-    @Nullable
-    private View.OnClickListener mListener;
+    @Nullable private View.OnClickListener mListener;
+
     /** The image resource ID to use for the ImageView widget source. */
-    @DrawableRes
-    private int mImageRes;
+    @DrawableRes private int mImageRes;
+
     /** The color resource ID for tinting of ImageView widget. */
-    @ColorRes
-    private int mColorRes;
+    @ColorRes private int mColorRes;
+
     /** The color resource ID for tinting of the view's background. */
-    @ColorRes
-    private Integer mBackgroundColorRes;
+    @ColorRes private Integer mBackgroundColorRes;
 
     /** The string to use for the ImageView widget content description. */
     private CharSequence mContentDescription;
 
     /** Whether the ImageView should be enabled. */
     private boolean mImageViewEnabled = true;
+
     /** The ImageView Button. */
     private ImageView mButton;
+
     /** The View for this preference. */
     private View mView;
+
     /** The ints to set the ImageView padding. */
     private int mImageViewLeftPadding;
+
     private int mImageViewTopPadding;
     private int mImageViewBottomPadding;
     private int mImageViewRightPadding;
+
     /** Whether the ImageView has any custom padding set. False by default. */
     private boolean mImageViewCustomPadding;
 
-    /**
-     * Constructor for use in Java.
-     */
+    /** Constructor for use in Java. */
     public ChromeImageViewPreference(Context context) {
         this(context, null);
         // Set custom padding to false until user calls setImagePadding().
         mImageViewCustomPadding = false;
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public ChromeImageViewPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -87,13 +86,14 @@ public class ChromeImageViewPreference extends Preference {
         setImageColor(R.color.default_icon_color_tint_list);
     }
 
-    /**
-     * Sets the ManagedPreferenceDelegate which will determine whether this preference is managed.
-     */
+    /** Sets the ManagedPreferenceDelegate which will determine whether this preference is managed. */
     public void setManagedPreferenceDelegate(@Nullable ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
         ManagedPreferencesUtils.initPreference(
-                mManagedPrefDelegate, this, /*allowManagedIcon=*/false, /*hasCustomLayout=*/true);
+                mManagedPrefDelegate,
+                this,
+                /* allowManagedIcon= */ false,
+                /* hasCustomLayout= */ true);
     }
 
     @Override
@@ -158,9 +158,7 @@ public class ChromeImageViewPreference extends Preference {
         configureImageView();
     }
 
-    /**
-     * Sets the the padding of the ImageView.
-     */
+    /** Sets the the padding of the ImageView. */
     public void setImagePadding(int left, int top, int right, int bottom) {
         mImageViewLeftPadding = left;
         mImageViewTopPadding = top;
@@ -179,9 +177,7 @@ public class ChromeImageViewPreference extends Preference {
         updateBackground();
     }
 
-    /**
-     * Enables/Disables the ImageView, allowing for clicks to pass through (when disabled).
-     */
+    /** Enables/Disables the ImageView, allowing for clicks to pass through (when disabled). */
     public void setImageViewEnabled(boolean enabled) {
         if (mImageViewEnabled == enabled) return;
 
@@ -227,7 +223,10 @@ public class ChromeImageViewPreference extends Preference {
         mButton.setImageDrawable(buttonImg);
         mButton.setEnabled(mImageViewEnabled);
         if (mImageViewCustomPadding) {
-            mButton.setPadding(mImageViewLeftPadding, mImageViewTopPadding, mImageViewRightPadding,
+            mButton.setPadding(
+                    mImageViewLeftPadding,
+                    mImageViewTopPadding,
+                    mImageViewRightPadding,
                     mImageViewBottomPadding);
         }
         if (mImageViewEnabled) mButton.setOnClickListener(mListener);

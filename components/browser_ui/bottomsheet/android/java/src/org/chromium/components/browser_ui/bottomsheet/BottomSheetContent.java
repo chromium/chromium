@@ -29,11 +29,13 @@ public interface BottomSheetContent {
          * exception that uses the feature's toolbar height.
          */
         int DEFAULT = 0;
+
         /**
          * The sheet will set its height so the content is completely visible. This mode cannot
          * be used for the peek state.
          */
         int WRAP_CONTENT = -1;
+
         /**
          * The state this mode is used for will be disabled. For example, disabling the peek state
          * would cause the sheet to automatically expand when triggered.
@@ -71,9 +73,7 @@ public interface BottomSheetContent {
     @Nullable
     View getToolbarView();
 
-    /**
-     * @return The vertical scroll offset of the content view.
-     */
+    /** @return The vertical scroll offset of the content view. */
     int getVerticalScrollOffset();
 
     /**
@@ -85,23 +85,18 @@ public interface BottomSheetContent {
      */
     void destroy();
 
-    /**
-     * @return The priority of this content.
-     */
+    /** @return The priority of this content. */
     @ContentPriority
     int getPriority();
 
-    /**
-     * @return Whether swiping the sheet down hard enough will cause the sheet to be dismissed.
-     */
+    /** @return Whether swiping the sheet down hard enough will cause the sheet to be dismissed. */
     boolean swipeToDismissEnabled();
 
-    /**
-     * @return Whether the sheet will always skip the half state once it was fully extended.
-     */
+    /** @return Whether the sheet will always skip the half state once it was fully extended. */
     default boolean skipHalfStateOnScrollingDown() {
         return true;
-    };
+    }
+    ;
 
     /**
      * @return Whether this content owns its lifecycle. If false, the content will be dismissed

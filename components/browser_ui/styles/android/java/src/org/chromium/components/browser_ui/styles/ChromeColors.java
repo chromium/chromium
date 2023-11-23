@@ -16,9 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
-/**
- * Provides common default colors for Chrome UI.
- */
+/** Provides common default colors for Chrome UI. */
 public class ChromeColors {
     private static final String TAG = "ChromeColors";
 
@@ -31,8 +29,9 @@ public class ChromeColors {
      * @return The default theme color.
      */
     public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.toolbar_background_primary_dark)
-                           : MaterialColors.getColor(context, R.attr.colorSurface, TAG);
+        return isIncognito
+                ? context.getColor(R.color.toolbar_background_primary_dark)
+                : MaterialColors.getColor(context, R.attr.colorSurface, TAG);
     }
 
     /**
@@ -45,8 +44,9 @@ public class ChromeColors {
      * @return The primary background color.
      */
     public static @ColorInt int getPrimaryBackgroundColor(Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.default_bg_color_dark)
-                           : SemanticColorUtils.getDefaultBgColor(context);
+        return isIncognito
+                ? context.getColor(R.color.default_bg_color_dark)
+                : SemanticColorUtils.getDefaultBgColor(context);
     }
 
     /**
@@ -57,8 +57,9 @@ public class ChromeColors {
      * @return The large text primary style.
      */
     public static int getLargeTextPrimaryStyle(boolean forceLightTextColor) {
-        return forceLightTextColor ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
-                                   : R.style.TextAppearance_TextLarge_Primary;
+        return forceLightTextColor
+                ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
+                : R.style.TextAppearance_TextLarge_Primary;
     }
 
     /**
@@ -69,8 +70,9 @@ public class ChromeColors {
      * @return The medium text secondary style.
      */
     public static int getTextMediumThickSecondaryStyle(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
-                           : R.style.TextAppearance_TextMediumThick_Secondary;
+        return isIncognito
+                ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
+                : R.style.TextAppearance_TextMediumThick_Secondary;
     }
 
     /**
@@ -81,8 +83,9 @@ public class ChromeColors {
      * @return The {@link ColorRes} for the icon tint.
      */
     public static @ColorRes int getPrimaryIconTintRes(boolean isIncognito) {
-        return isIncognito ? R.color.default_icon_color_light_tint_list
-                           : R.color.default_icon_color_tint_list;
+        return isIncognito
+                ? R.color.default_icon_color_light_tint_list
+                : R.color.default_icon_color_tint_list;
     }
 
     /**
@@ -106,8 +109,9 @@ public class ChromeColors {
      * @return The {@link ColorRes} for the icon tint.
      */
     public static @ColorRes int getSecondaryIconTintRes(boolean forceLightIconTint) {
-        return forceLightIconTint ? R.color.default_icon_color_secondary_light_tint_list
-                                  : R.color.default_icon_color_secondary_tint_list;
+        return forceLightIconTint
+                ? R.color.default_icon_color_secondary_light_tint_list
+                : R.color.default_icon_color_secondary_tint_list;
     }
 
     /**

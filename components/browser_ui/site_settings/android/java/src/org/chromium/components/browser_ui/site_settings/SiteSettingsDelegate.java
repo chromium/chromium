@@ -23,9 +23,7 @@ import java.util.Set;
  * embedder-specific logic.
  */
 public interface SiteSettingsDelegate {
-    /**
-     * @return The BrowserContextHandle that should be used to read and update settings.
-     */
+    /** @return The BrowserContextHandle that should be used to read and update settings. */
     BrowserContextHandle getBrowserContextHandle();
 
     /**
@@ -45,40 +43,26 @@ public interface SiteSettingsDelegate {
      */
     void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback);
 
-    /**
-     * @return true if the given category type should be shown in the SiteSettings Fragment.
-     */
+    /** @return true if the given category type should be shown in the SiteSettings Fragment. */
     boolean isCategoryVisible(@SiteSettingsCategory.Type int type);
 
-    /**
-     * @return true if Incognito mode is enabled.
-     */
+    /** @return true if Incognito mode is enabled. */
     boolean isIncognitoModeEnabled();
 
-    /**
-     * @return true if the QuietNotificationPrompts Feature is enabled.
-     */
+    /** @return true if the QuietNotificationPrompts Feature is enabled. */
     boolean isQuietNotificationPromptsFeatureEnabled();
 
-    /**
-     * @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled.
-     */
+    /** @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled. */
     boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
 
-    /**
-     * @return true if the UserBypassUI feature is enabled.
-     */
+    /** @return true if the UserBypassUI feature is enabled. */
     boolean isUserBypassUIEnabled();
 
-    /**
-     * @return The id of the notification channel associated with the given origin.
-     */
+    /** @return The id of the notification channel associated with the given origin. */
     // TODO(crbug.com/1069895): Remove this once WebLayer supports notifications.
     String getChannelIdForOrigin(String origin);
 
-    /**
-     * @return The name of the app the settings are associated with.
-     */
+    /** @return The name of the app the settings are associated with. */
     String getAppName();
 
     /**
@@ -95,9 +79,7 @@ public interface SiteSettingsDelegate {
     @Nullable
     String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type);
 
-    /**
-     * @return true if Help and Feedback links and menu items should be shown to the user.
-     */
+    /** @return true if Help and Feedback links and menu items should be shown to the user. */
     boolean isHelpAndFeedbackEnabled();
 
     /**
@@ -117,14 +99,10 @@ public interface SiteSettingsDelegate {
     /** Launches the Storage Access API help center link in a Chrome Custom Tab. */
     void launchStorageAccessHelpActivity(Activity currentActivity);
 
-    /**
-     * @return The set of all origins that have a WebAPK or TWA installed.
-     */
+    /** @return The set of all origins that have a WebAPK or TWA installed. */
     Set<String> getOriginsWithInstalledApp();
 
-    /**
-     * @return The set of all origins whose notification permissions are delegated to another app.
-     */
+    /** @return The set of all origins whose notification permissions are delegated to another app. */
     Set<String> getAllDelegatedNotificationOrigins();
 
     /**
@@ -133,9 +111,7 @@ public interface SiteSettingsDelegate {
      */
     void maybeDisplayPrivacySandboxSnackbar();
 
-    /**
-     * Dismisses the Privacy Sandbox snackbar, if active.
-     */
+    /** Dismisses the Privacy Sandbox snackbar, if active. */
     void dismissPrivacySandboxSnackbar();
 
     /***
@@ -182,23 +158,15 @@ public interface SiteSettingsDelegate {
      */
     boolean canLaunchClearBrowsingDataDialog();
 
-    /**
-     * Launches the Clear Browsing Data dialog in Settings, if that is possible.
-     */
+    /** Launches the Clear Browsing Data dialog in Settings, if that is possible. */
     void launchClearBrowsingDataDialog(Activity currentActivity);
 
-    /**
-     * Called when the desktop site settings page is opened.
-     */
+    /** Called when the desktop site settings page is opened. */
     void notifyRequestDesktopSiteSettingsPageOpened();
 
-    /**
-     * Called when the view this delegate is assigned to gets destroyed.
-     */
+    /** Called when the view this delegate is assigned to gets destroyed. */
     void onDestroyView();
 
-    /**
-     * @return whether the Tracking Protection offboarding notice should be shown in the Settings.
-     */
+    /** @return whether the Tracking Protection offboarding notice should be shown in the Settings. */
     boolean shouldShowSettingsOffboardingNotice();
 }

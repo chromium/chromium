@@ -100,7 +100,7 @@ public class WebsitePermissionsFetcher {
                 return WebsitePermissionsType.PERMISSION_INFO;
             case ContentSettingsType.STORAGE_ACCESS:
                 if (PermissionsAndroidFeatureMap.isEnabled(
-                            PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)) {
+                        PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)) {
                     return WebsitePermissionsType.EMBEDDED_PERMISSION;
                 }
                 return null;
@@ -148,9 +148,7 @@ public class WebsitePermissionsFetcher {
         this(browserContextHandle, false);
     }
 
-    /**
-     * @param fetchSiteImportantInfo if the fetcher should query whether each site is 'important'.
-     */
+    /** @param fetchSiteImportantInfo if the fetcher should query whether each site is 'important'. */
     public WebsitePermissionsFetcher(
             BrowserContextHandle browserContextHandle, boolean fetchSiteImportantInfo) {
         mBrowserContextHandle = browserContextHandle;
@@ -314,7 +312,7 @@ public class WebsitePermissionsFetcher {
             if (contentSettingsType == ContentSettingsType.BLUETOOTH_SCANNING) {
                 CommandLine commandLine = CommandLine.getInstance();
                 if (!commandLine.hasSwitch(
-                            ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES)) {
+                        ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES)) {
                     return;
                 }
             }
@@ -399,8 +397,9 @@ public class WebsitePermissionsFetcher {
         }
 
         private void setException(int contentSettingsType) {
-            boolean isEmbeddedPermission = getPermissionsType(contentSettingsType)
-                    == WebsitePermissionsType.EMBEDDED_PERMISSION;
+            boolean isEmbeddedPermission =
+                    getPermissionsType(contentSettingsType)
+                            == WebsitePermissionsType.EMBEDDED_PERMISSION;
             for (ContentSettingException exception :
                     mWebsitePreferenceBridge.getContentSettingsExceptions(
                             mBrowserContextHandle, contentSettingsType)) {
@@ -432,9 +431,10 @@ public class WebsitePermissionsFetcher {
                     continue;
                 }
                 // Convert the address to origin, if it's not one already (unless it's a wildcard).
-                String origin = containsPatternWildcards(address)
-                        ? address
-                        : WebsiteAddress.create(address).getOrigin();
+                String origin =
+                        containsPatternWildcards(address)
+                                ? address
+                                : WebsiteAddress.create(address).getOrigin();
                 Website site = findOrCreateSite(origin, embedder, contentSetting);
                 if (isEmbeddedPermission) {
                     site.addEmbeddedPermission(exception);
@@ -506,8 +506,9 @@ public class WebsitePermissionsFetcher {
             public void run() {
                 if (mChooserDataType == -1) return;
 
-                for (ChosenObjectInfo info : mWebsitePreferenceBridge.getChosenObjectInfo(
-                             mBrowserContextHandle, mChooserDataType)) {
+                for (ChosenObjectInfo info :
+                        mWebsitePreferenceBridge.getChosenObjectInfo(
+                                mBrowserContextHandle, mChooserDataType)) {
                     String origin = info.getOrigin();
                     if (origin == null) continue;
                     findOrCreateSite(origin, null).addChosenObjectInfo(info);
@@ -532,7 +533,8 @@ public class WebsitePermissionsFetcher {
             @Override
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchLocalStorageInfo(
-                        mBrowserContextHandle, new Callback<HashMap>() {
+                        mBrowserContextHandle,
+                        new Callback<HashMap>() {
                             @Override
                             public void onResult(HashMap result) {
                                 for (Object o : result.entrySet()) {
@@ -546,7 +548,8 @@ public class WebsitePermissionsFetcher {
                                 }
                                 queue.next();
                             }
-                        }, mFetchSiteImportantInfo);
+                        },
+                        mFetchSiteImportantInfo);
             }
         }
 
@@ -567,7 +570,8 @@ public class WebsitePermissionsFetcher {
             @Override
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchStorageInfo(
-                        mBrowserContextHandle, new Callback<ArrayList>() {
+                        mBrowserContextHandle,
+                        new Callback<ArrayList>() {
                             @Override
                             public void onResult(ArrayList result) {
                                 @SuppressWarnings("unchecked")
@@ -593,7 +597,8 @@ public class WebsitePermissionsFetcher {
             @Override
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchSharedDictionaryInfo(
-                        mBrowserContextHandle, new Callback<ArrayList>() {
+                        mBrowserContextHandle,
+                        new Callback<ArrayList>() {
                             @Override
                             public void onResult(ArrayList result) {
                                 @SuppressWarnings("unchecked")
@@ -614,7 +619,8 @@ public class WebsitePermissionsFetcher {
             @Override
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchCookiesInfo(
-                        mBrowserContextHandle, new Callback<Map<String, CookiesInfo>>() {
+                        mBrowserContextHandle,
+                        new Callback<Map<String, CookiesInfo>>() {
                             @Override
                             public void onResult(Map<String, CookiesInfo> result) {
                                 for (Map.Entry<String, CookiesInfo> entry : result.entrySet()) {
@@ -651,14 +657,16 @@ public class WebsitePermissionsFetcher {
                     // For each {@link Website} sets its FirstPartySet info: the FPS Owner and the
                     // number of members of that FPS.
                     for (Website site : mSites.values()) {
-                        String fpsOwnerHostname = mSiteSettingsDelegate.getFirstPartySetOwner(
-                                site.getAddress().getOrigin());
+                        String fpsOwnerHostname =
+                                mSiteSettingsDelegate.getFirstPartySetOwner(
+                                        site.getAddress().getOrigin());
                         if (fpsOwnerHostname == null) continue;
                         int fpsMembersCount = fpsOwnerToMembers.get(fpsOwnerHostname).size();
                         site.setFPSCookieInfo(new FPSCookieInfo(fpsOwnerHostname, fpsMembersCount));
                     }
                 }
             }
+
             /**
              * Builds a {@link Map<String,  Set <String>>} of FPS Owner - Set of FPS Members from
              * the fetched websites.
@@ -668,8 +676,9 @@ public class WebsitePermissionsFetcher {
                 Map<String, Set<String>> fpsOwnerToMember = new HashMap<>();
                 for (Website site : mSites.values()) {
                     String fpsMemberHostname = site.getAddress().getDomainAndRegistry();
-                    String fpsOwnerHostname = mSiteSettingsDelegate.getFirstPartySetOwner(
-                            site.getAddress().getOrigin());
+                    String fpsOwnerHostname =
+                            mSiteSettingsDelegate.getFirstPartySetOwner(
+                                    site.getAddress().getOrigin());
                     if (fpsOwnerHostname == null) continue;
                     Set<String> members = fpsOwnerToMember.get(fpsOwnerHostname);
                     if (members == null) {

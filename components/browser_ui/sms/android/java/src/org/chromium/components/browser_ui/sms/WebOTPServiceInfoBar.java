@@ -20,9 +20,7 @@ import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * An InfoBar that asks for the user's permission to share the SMS with the page.
- */
+/** An InfoBar that asks for the user's permission to share the SMS with the page. */
 public class WebOTPServiceInfoBar extends ConfirmInfoBar {
     private static final String TAG = "WebOTPServiceInfoBar";
     private static final boolean DEBUG = false;
@@ -32,17 +30,30 @@ public class WebOTPServiceInfoBar extends ConfirmInfoBar {
 
     @VisibleForTesting
     @CalledByNative
-    public static WebOTPServiceInfoBar create(WindowAndroid windowAndroid, int iconId, String title,
-            String message, String okButtonLabel) {
+    public static WebOTPServiceInfoBar create(
+            WindowAndroid windowAndroid,
+            int iconId,
+            String title,
+            String message,
+            String okButtonLabel) {
         if (DEBUG) Log.d(TAG, "WebOTPServiceInfoBar.create()");
         return new WebOTPServiceInfoBar(windowAndroid, iconId, title, message, okButtonLabel);
     }
 
-    private WebOTPServiceInfoBar(WindowAndroid windowAndroid, int iconId, String title,
-            String message, String okButtonLabel) {
-        super(iconId, R.color.infobar_icon_drawable_color,
-                /*iconBitmap=*/null, /*message=*/title, /*linkText=*/null, okButtonLabel,
-                /*secondaryButtonText=*/null);
+    private WebOTPServiceInfoBar(
+            WindowAndroid windowAndroid,
+            int iconId,
+            String title,
+            String message,
+            String okButtonLabel) {
+        super(
+                iconId,
+                R.color.infobar_icon_drawable_color,
+                /* iconBitmap= */ null,
+                /* message= */ title,
+                /* linkText= */ null,
+                okButtonLabel,
+                /* secondaryButtonText= */ null);
         mMessage = message;
         mWindowAndroid = windowAndroid;
     }

@@ -13,9 +13,7 @@ import org.chromium.base.task.TaskTraits;
 
 import java.lang.ref.WeakReference;
 
-/**
- * A utility for observing when a view gets drawn for the first time.
- */
+/** A utility for observing when a view gets drawn for the first time. */
 public class FirstDrawDetector {
     WeakReference<View> mView;
     Runnable mCallback;
@@ -32,7 +30,7 @@ public class FirstDrawDetector {
      * @param callback Callback to trigger on first draw. Will be called on the UI thread.
      */
     public static void waitForFirstDraw(View view, Runnable callback) {
-        new FirstDrawDetector(view, callback).startWaiting(/*strict=*/false);
+        new FirstDrawDetector(view, callback).startWaiting(/* strict= */ false);
     }
 
     /**
@@ -44,7 +42,7 @@ public class FirstDrawDetector {
      * @param callback Callback to trigger on first draw. Will be called on the UI thread.
      */
     public static void waitForFirstDrawStrict(View view, Runnable callback) {
-        new FirstDrawDetector(view, callback).startWaiting(/*strict=*/true);
+        new FirstDrawDetector(view, callback).startWaiting(/* strict= */ true);
     }
 
     /**
@@ -52,21 +50,24 @@ public class FirstDrawDetector {
      * @param strict Whether to wait for an |#onDraw| strictly. See |#waitForFirstDrawStrict()|.
      */
     private void startWaiting(boolean strict) {
-        ViewTreeObserver.OnDrawListener firstDrawListener = new ViewTreeObserver.OnDrawListener() {
-            @Override
-            public void onDraw() {
-                if (mHasRunBefore) return;
-                mHasRunBefore = true;
-                // This callback will be run in the normal case (e.g., screen is on).
-                onFirstDraw();
-                // The draw listener can't be removed from within the callback, so remove it
-                // asynchronously.
-                PostTask.postTask(TaskTraits.UI_BEST_EFFORT, () -> {
-                    if (mView.get() == null) return;
-                    mView.get().getViewTreeObserver().removeOnDrawListener(this);
-                });
-            }
-        };
+        ViewTreeObserver.OnDrawListener firstDrawListener =
+                new ViewTreeObserver.OnDrawListener() {
+                    @Override
+                    public void onDraw() {
+                        if (mHasRunBefore) return;
+                        mHasRunBefore = true;
+                        // This callback will be run in the normal case (e.g., screen is on).
+                        onFirstDraw();
+                        // The draw listener can't be removed from within the callback, so remove it
+                        // asynchronously.
+                        PostTask.postTask(
+                                TaskTraits.UI_BEST_EFFORT,
+                                () -> {
+                                    if (mView.get() == null) return;
+                                    mView.get().getViewTreeObserver().removeOnDrawListener(this);
+                                });
+                    }
+                };
         mView.get().getViewTreeObserver().addOnDrawListener(firstDrawListener);
         if (strict) return;
         // We use a draw listener to detect when a view is first drawn. However, if the view
@@ -84,8 +85,11 @@ public class FirstDrawDetector {
                         // The pre-draw listener will run both when the screen is on or off, but the
                         // view might not have been drawn yet at this point. Trigger the first paint
                         // at the next frame.
-                        Choreographer.getInstance().postFrameCallback(
-                                (long frameTimeNanos) -> { onFirstDraw(); });
+                        Choreographer.getInstance()
+                                .postFrameCallback(
+                                        (long frameTimeNanos) -> {
+                                            onFirstDraw();
+                                        });
                         if (mView.get() != null) {
                             mView.get().getViewTreeObserver().removeOnPreDrawListener(this);
                         }

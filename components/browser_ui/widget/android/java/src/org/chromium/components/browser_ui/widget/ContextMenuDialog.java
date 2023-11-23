@@ -92,10 +92,19 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *         coordinates are expected to be screen coordinates.
      */
-    public ContextMenuDialog(Activity ownerActivity, int theme, int topMarginPx, int bottomMarginPx,
-            View layout, View contentView, boolean isPopup, boolean shouldRemoveScrim,
-            @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth,
-            @Nullable View touchEventDelegateView, Rect rect) {
+    public ContextMenuDialog(
+            Activity ownerActivity,
+            int theme,
+            int topMarginPx,
+            int bottomMarginPx,
+            View layout,
+            View contentView,
+            boolean isPopup,
+            boolean shouldRemoveScrim,
+            @Nullable Integer popupMargin,
+            @Nullable Integer desiredPopupContentWidth,
+            @Nullable View touchEventDelegateView,
+            Rect rect) {
         super(ownerActivity, theme);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
@@ -125,12 +134,14 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             // reference in styles.xml.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 dialogWindow.setNavigationBarColor(mActivity.getWindow().getNavigationBarColor());
-                UiUtils.setNavigationBarIconColor(dialogWindow.getDecorView(),
+                UiUtils.setNavigationBarIconColor(
+                        dialogWindow.getDecorView(),
                         mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
             }
             // Apply the status bar color in case the website had override them.
             UiUtils.setStatusBarColor(dialogWindow, mActivity.getWindow().getStatusBarColor());
-            UiUtils.setStatusBarIconColor(dialogWindow.getDecorView().getRootView(),
+            UiUtils.setStatusBarIconColor(
+                    dialogWindow.getDecorView().getRootView(),
                     !ColorUtils.shouldUseLightForegroundOnBackground(
                             mActivity.getWindow().getStatusBarColor()));
         }
@@ -146,60 +157,79 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             layoutParams.topMargin = mTopMarginPx;
         }
 
-        mOnLayoutChangeListener = new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                // // If the layout size does not change (e.g. call due to #forceLayout), do nothing
-                // // because we don't want to dismiss the context menu.
-                if (left == oldLeft && right == oldRight && top == oldTop && bottom == oldBottom) {
-                    return;
-                }
+        mOnLayoutChangeListener =
+                new OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        // // If the layout size does not change (e.g. call due to #forceLayout), do
+                        // nothing // because we don't want to dismiss the context menu.
+                        if (left == oldLeft
+                                && right == oldRight
+                                && top == oldTop
+                                && bottom == oldBottom) {
+                            return;
+                        }
 
-                if (mIsPopup) {
-                    // If the menu is a popup, wait for the layout to be measured, then proceed with
-                    // showing the popup window.
-                    if (v.getMeasuredHeight() == 0) return;
+                        if (mIsPopup) {
+                            // If the menu is a popup, wait for the layout to be measured, then
+                            // proceed with showing the popup window.
+                            if (v.getMeasuredHeight() == 0) return;
 
-                    // If dialog is showing and the layout changes, we might lost the anchor point.
-                    // We'll dismiss the context menu and remove the listener.
-                    if (mPopupWindow != null && mPopupWindow.isShowing()) {
-                        dismiss();
-                        return;
-                    }
-                    mPopupWindow = new AnchoredPopupWindow(mActivity, mLayout,
-                            new ColorDrawable(Color.TRANSPARENT), mContentView,
-                            new RectProvider(mRect));
-                    if (mPopupMargin != null) {
-                        mPopupWindow.setMargin(mPopupMargin);
-                    }
-                    if (mDesiredPopupContentWidth != null) {
-                        mPopupWindow.setDesiredContentWidth(mDesiredPopupContentWidth);
-                    }
-                    mPopupWindow.setSmartAnchorWithMaxWidth(true);
-                    mPopupWindow.setVerticalOverlapAnchor(true);
-                    mPopupWindow.setOutsideTouchable(false);
-                    mPopupWindow.setAnimateFromAnchor(true);
-                    // Set popup focusable so the screen reader can announce the popup properly.
-                    if (AccessibilityState.isScreenReaderEnabled()) {
-                        mPopupWindow.setFocusable(true);
-                    }
-                    // If the popup is dismissed, dismiss this dialog as well. This is required when
-                    // the popup is dismissed through backpress / hardware accessiries where the
-                    // #dismiss is not triggered by #onTouchEvent.
-                    mPopupWindow.addOnDismissListener(ContextMenuDialog.this::dismiss);
-                    mPopupWindow.show();
-                } else {
-                    // Otherwise, the menu will already be in the hierarchy, and we need to make
-                    // sure the menu itself is measured before starting the animation.
-                    if (v.getMeasuredHeight() == 0) return;
+                            // If dialog is showing and the layout changes, we might lost the anchor
+                            // point.
+                            // We'll dismiss the context menu and remove the listener.
+                            if (mPopupWindow != null && mPopupWindow.isShowing()) {
+                                dismiss();
+                                return;
+                            }
+                            mPopupWindow =
+                                    new AnchoredPopupWindow(
+                                            mActivity,
+                                            mLayout,
+                                            new ColorDrawable(Color.TRANSPARENT),
+                                            mContentView,
+                                            new RectProvider(mRect));
+                            if (mPopupMargin != null) {
+                                mPopupWindow.setMargin(mPopupMargin);
+                            }
+                            if (mDesiredPopupContentWidth != null) {
+                                mPopupWindow.setDesiredContentWidth(mDesiredPopupContentWidth);
+                            }
+                            mPopupWindow.setSmartAnchorWithMaxWidth(true);
+                            mPopupWindow.setVerticalOverlapAnchor(true);
+                            mPopupWindow.setOutsideTouchable(false);
+                            mPopupWindow.setAnimateFromAnchor(true);
+                            // Set popup focusable so the screen reader can announce the popup
+                            // properly.
+                            if (AccessibilityState.isScreenReaderEnabled()) {
+                                mPopupWindow.setFocusable(true);
+                            }
+                            // If the popup is dismissed, dismiss this dialog as well. This is
+                            // required when the popup is dismissed through backpress / hardware
+                            // accessiries where the #dismiss is not triggered by #onTouchEvent.
+                            mPopupWindow.addOnDismissListener(ContextMenuDialog.this::dismiss);
+                            mPopupWindow.show();
+                        } else {
+                            // Otherwise, the menu will already be in the hierarchy, and we need to
+                            // make sure the menu itself is measured before starting the
+                            // animation.
+                            if (v.getMeasuredHeight() == 0) return;
 
-                    startEnterAnimation();
-                    v.removeOnLayoutChangeListener(this);
-                    mOnLayoutChangeListener = null;
-                }
-            }
-        };
+                            startEnterAnimation();
+                            v.removeOnLayoutChangeListener(this);
+                            mOnLayoutChangeListener = null;
+                        }
+                    }
+                };
         (mIsPopup ? mLayout : mContentView).addOnLayoutChangeListener(mOnLayoutChangeListener);
 
         // Forward the drag events to delegate view if it is an DragEventDispatchDestination.
@@ -267,23 +297,25 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mContentView.getLocationOnScreen(contextMenuFinalLocationPx);
         // Recalculate mContextMenuDestinationY because the context menu's final location may not be
         // the same as its first location if it changed in height.
-        float contextMenuDestinationYPx = mContextMenuSourceYPx
-                + (mContextMenuFirstLocationYPx - contextMenuFinalLocationPx[1]);
+        float contextMenuDestinationYPx =
+                mContextMenuSourceYPx
+                        + (mContextMenuFirstLocationYPx - contextMenuFinalLocationPx[1]);
 
         Animation exitAnimation =
                 getScaleAnimation(false, mContextMenuSourceXPx, contextMenuDestinationYPx);
-        exitAnimation.setAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
+        exitAnimation.setAnimationListener(
+                new AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                ContextMenuDialog.super.dismiss();
-            }
-        });
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        ContextMenuDialog.super.dismiss();
+                    }
+                });
         mContentView.startAnimation(exitAnimation);
     }
 
@@ -314,13 +346,23 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         float fromY = fromX;
         float toY = toX;
 
-        ScaleAnimation animation = new ScaleAnimation(
-                fromX, toX, fromY, toY, Animation.ABSOLUTE, pivotX, Animation.ABSOLUTE, pivotY);
+        ScaleAnimation animation =
+                new ScaleAnimation(
+                        fromX,
+                        toX,
+                        fromY,
+                        toY,
+                        Animation.ABSOLUTE,
+                        pivotX,
+                        Animation.ABSOLUTE,
+                        pivotY);
 
         long duration = isEnterAnimation ? ENTER_ANIMATION_DURATION_MS : EXIT_ANIMATION_DURATION_MS;
         float durationScale =
-                Settings.Global.getFloat(ContextUtils.getApplicationContext().getContentResolver(),
-                        Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
+                Settings.Global.getFloat(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        Settings.Global.ANIMATOR_DURATION_SCALE,
+                        1f);
 
         animation.setDuration((long) (duration * durationScale));
         animation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
