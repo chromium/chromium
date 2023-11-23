@@ -9815,14 +9815,11 @@ std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
       GetBrowserContext()->GetGuestManager();
   if (owner == GetPrimaryMainFrame() && guest_manager) {
     guest_manager->ForEachUnattachedGuest(
-        this, base::BindRepeating(
-                  [](std::vector<FrameTreeNode*>& unattached_owned_nodes,
-                     WebContents* guest_contents) {
-                    unattached_owned_nodes.push_back(
-                        static_cast<WebContentsImpl*>(guest_contents)
-                            ->primary_frame_tree_.root());
-                  },
-                  std::ref(unattached_owned_nodes)));
+        this, [&](WebContents* guest_contents) {
+          unattached_owned_nodes.push_back(
+              static_cast<WebContentsImpl*>(guest_contents)
+                  ->primary_frame_tree_.root());
+        });
   }
   return unattached_owned_nodes;
 }

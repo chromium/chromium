@@ -25,22 +25,17 @@ BrowserPluginEmbedder* BrowserPluginEmbedder::Create(
   return new BrowserPluginEmbedder(web_contents);
 }
 
-// static
-bool BrowserPluginEmbedder::CancelDialogs(WebContents* guest_web_contents) {
-  static_cast<WebContentsImpl*>(guest_web_contents)
-      ->CancelActiveAndPendingDialogs();
-
-  // Returns false to iterate over all guests.
-  return false;
-}
-
 void BrowserPluginEmbedder::CancelGuestDialogs() {
   if (!GetBrowserPluginGuestManager())
     return;
 
   GetBrowserPluginGuestManager()->ForEachGuest(
-      web_contents_,
-      base::BindRepeating(&BrowserPluginEmbedder::CancelDialogs));
+      web_contents_, [](WebContents* guest_web_contents) {
+        static_cast<WebContentsImpl*>(guest_web_contents)
+            ->CancelActiveAndPendingDialogs();
+        // Returns false to iterate over all guests.
+        return false;
+      });
 }
 
 BrowserPluginGuestManager*
@@ -55,13 +50,16 @@ bool BrowserPluginEmbedder::HandleKeyboardEvent(
     return false;
   }
 
-  bool event_consumed = false;
   GetBrowserPluginGuestManager()->ForEachGuest(
-      web_contents_, base::BindRepeating(
-                         &BrowserPluginEmbedder::UnlockMouseIfNecessaryCallback,
-                         &event_consumed));
+      web_contents_, [](WebContents* guest) {
+        guest->GotResponseToLockMouseRequest(
+            blink::mojom::PointerLockResult::kUserRejected);
 
-  return event_consumed;
+        // Returns false to iterate over all guests.
+        return false;
+      });
+
+  return false;
 }
 
 BrowserPluginGuest* BrowserPluginEmbedder::GetFullPageGuest() {
@@ -72,29 +70,12 @@ BrowserPluginGuest* BrowserPluginEmbedder::GetFullPageGuest() {
   return guest_contents->GetBrowserPluginGuest();
 }
 
-// static
-bool BrowserPluginEmbedder::GuestCurrentlyAudibleCallback(WebContents* guest) {
-  return guest->IsCurrentlyAudible();
-}
-
 bool BrowserPluginEmbedder::AreAnyGuestsCurrentlyAudible() {
   if (!GetBrowserPluginGuestManager())
     return false;
 
   return GetBrowserPluginGuestManager()->ForEachGuest(
-      web_contents_,
-      base::BindRepeating(
-          &BrowserPluginEmbedder::GuestCurrentlyAudibleCallback));
-}
-
-// static
-bool BrowserPluginEmbedder::UnlockMouseIfNecessaryCallback(bool* mouse_unlocked,
-                                                           WebContents* guest) {
-  guest->GotResponseToLockMouseRequest(
-      blink::mojom::PointerLockResult::kUserRejected);
-
-  // Returns false to iterate over all guests.
-  return false;
+      web_contents_, &WebContents::IsCurrentlyAudible);
 }
 
 }  // namespace content

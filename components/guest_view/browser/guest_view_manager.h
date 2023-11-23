@@ -125,9 +125,9 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // BrowserPluginGuestManager implementation.
   void ForEachUnattachedGuest(
       content::WebContents* owner_web_contents,
-      base::RepeatingCallback<void(content::WebContents*)> callback) override;
+      base::FunctionRef<void(content::WebContents*)> fn) override;
   bool ForEachGuest(content::WebContents* owner_web_contents,
-                    const GuestCallback& callback) override;
+                    base::FunctionRef<bool(content::WebContents*)> fn) override;
   content::WebContents* GetFullPageGuest(
       content::WebContents* embedder_web_contents) override;
 
@@ -208,9 +208,6 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // We disallow adding new guest with instance IDs that were previously removed
   // from this manager using RemoveGuest.
   bool CanUseGuestInstanceID(int guest_instance_id);
-
-  static bool GetFullPageGuestHelper(content::WebContents** result,
-                                     content::WebContents* guest_web_contents);
 
   // Contains guests, mapping from their instance ids.
   using GuestInstanceMap = std::map<int, GuestViewBase*>;

@@ -469,8 +469,9 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
     if (!guest_manager)
       return false;
     return guest_manager->ForEachGuest(
-        source, base::BindRepeating(&CoreTabHelper::GetStatusTextForWebContents,
-                                    status_text));
+        source, [&](content::WebContents* contents) {
+          return GetStatusTextForWebContents(status_text, contents);
+        });
 #else  // !BUILDFLAG(ENABLE_EXTENSIONS)
     return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -551,8 +552,9 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
     return false;
 
   return guest_manager->ForEachGuest(
-      source, base::BindRepeating(&CoreTabHelper::GetStatusTextForWebContents,
-                                  status_text));
+      source, [&](content::WebContents* contents) {
+        return GetStatusTextForWebContents(status_text, contents);
+      });
 #else  // !BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
