@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "quick_start_message.h"
+#include "chromeos/ash/components/quick_start/quick_start_message.h"
+
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -50,10 +51,15 @@ TEST_F(QuickStartMessageTest, ReadMessageSucceedsForNonBase64Message) {
 
   ASSERT_TRUE(result.has_value());
   ASSERT_NE(result.value(), nullptr);
-  ASSERT_EQ(*result.value()
-                 ->GetPayload()
-                 ->FindString("key"),
-            "value");
+
+  base::Value::Dict* bootstrap_configurations_ptr =
+      result.value()->GetPayload()->FindDict(
+          kBootstrapConfigurationsPayloadKey);
+  ASSERT_NE(bootstrap_configurations_ptr, nullptr);
+
+  std::string* value_ptr = bootstrap_configurations_ptr->FindString("key");
+  ASSERT_NE(value_ptr, nullptr);
+  ASSERT_EQ(*value_ptr, "value");
 }
 
 TEST_F(QuickStartMessageTest, ReadMessageFailsForUnexpectedMessageType) {

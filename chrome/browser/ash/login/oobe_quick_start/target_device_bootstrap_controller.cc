@@ -317,9 +317,10 @@ void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TargetDeviceBootstrapController::OnGoogleAccountInfoReceived() {
+void TargetDeviceBootstrapController::OnGoogleAccountInfoReceived(
+    std::string account_email) {
   UpdateStatus(/*step=*/Step::GOOGLE_ACCOUNT_INFO_RECEIVED,
-               /*payload=*/absl::monostate());
+               /*payload=*/account_email);
 }
 
 void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {

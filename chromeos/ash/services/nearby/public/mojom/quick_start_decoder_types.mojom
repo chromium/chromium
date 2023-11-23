@@ -7,6 +7,13 @@ module ash.quick_start.mojom;
 struct BootstrapConfigurations {
   // Instance ID can be empty even with a valid BootstrapConfigurations.
   string instance_id;
+
+  // Indicates whether the account in question is a supervised account
+  // (Unicorn, Geller, etc.).
+  bool is_supervised_account;
+
+  // Email address for the account in question.
+  string email;
 };
 
 enum WifiSecurityType {

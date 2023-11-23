@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "connection.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
+
+#include <string>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -148,18 +150,23 @@ class ConnectionTest : public testing::Test {
     return connection_->client_data_.get();
   }
 
-  bool SimulateBootstrapConfigurationsResponse(
-      absl::optional<std::string> instance_id) {
-    base::test::TestFuture<void> future;
-    if (instance_id.has_value()) {
-      connection_->OnBootstrapConfigurationsResponse(
-          future.GetCallback(),
-          mojom::QuickStartMessage::NewBootstrapConfigurations(
-              mojom::BootstrapConfigurations::New(instance_id.value())));
-    } else {
-      connection_->OnBootstrapConfigurationsResponse(future.GetCallback(),
-                                                     nullptr);
-    }
+  bool SimulateBootstrapConfigurationsResponse(std::string instance_id,
+                                               bool is_supervised_account) {
+    base::test::TestFuture<std::string> future;
+    connection_->OnBootstrapConfigurationsResponse(
+        future.GetCallback(),
+        mojom::QuickStartMessage::NewBootstrapConfigurations(
+            mojom::BootstrapConfigurations::New(instance_id,
+                                                is_supervised_account,
+                                                /*email=*/"")));
+
+    return future.Wait();
+  }
+
+  bool SimulateNullBootstrapConfigurationsResponse() {
+    base::test::TestFuture<std::string> future;
+    connection_->OnBootstrapConfigurationsResponse(future.GetCallback(),
+                                                   nullptr);
     return future.Wait();
   }
 
@@ -410,7 +417,7 @@ TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
 TEST_F(ConnectionTest, RequestAccountInfo) {
   MarkConnectionAuthenticated();
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<std::string> future;
   authenticated_connection_->RequestAccountInfo(future.GetCallback());
 
   std::vector<uint8_t> bootstrap_options_data =
@@ -430,11 +437,12 @@ TEST_F(ConnectionTest, RequestAccountInfo) {
   // Emulate a BootstrapConfigurations response.
   std::vector<uint8_t> instance_id = {0x01, 0x02, 0x03};
   std::string expected_instance_id(instance_id.begin(), instance_id.end());
+  std::string email = "fake_email_value";
   fake_quick_start_decoder_->SetBootstrapConfigurationsResponse(
-      expected_instance_id);
+      expected_instance_id, /*is_supervised_account=*/false, email);
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
-  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(future.Get(), email);
 
   TestMessageMetrics(/*should_succeed=*/true, /*message_type=*/
                      QuickStartMetrics::MessageType::kBootstrapConfigurations,
@@ -850,7 +858,7 @@ TEST_F(ConnectionTest, TestUserVerificationRequested_UnexpectedMessage) {
   std::vector<uint8_t> instance_id = {0x01, 0x02, 0x03};
   std::string expected_instance_id(instance_id.begin(), instance_id.end());
   fake_quick_start_decoder_->SetBootstrapConfigurationsResponse(
-      expected_instance_id);
+      expected_instance_id, /*is_supervised_account=*/false, /*email=*/"");
 
   MarkConnectionAuthenticated();
 
@@ -923,17 +931,22 @@ TEST_F(ConnectionTest, GetPhoneInstanceId) {
   std::vector<uint8_t> instance_id = {0x01, 0x02, 0x03};
   std::string expected_instance_id(instance_id.begin(), instance_id.end());
 
-  ASSERT_TRUE(SimulateBootstrapConfigurationsResponse(expected_instance_id));
+  bool is_supervised_account = true;
+
+  ASSERT_TRUE(SimulateBootstrapConfigurationsResponse(expected_instance_id,
+                                                      is_supervised_account));
 
   EXPECT_EQ(authenticated_connection_->get_phone_instance_id(),
             expected_instance_id);
+  EXPECT_EQ(authenticated_connection_->is_supervised_account(),
+            is_supervised_account);
 }
 
 TEST_F(ConnectionTest, ParseBootstrapConfigurationsHandlesNull) {
   MarkConnectionAuthenticated();
   ASSERT_TRUE(authenticated_connection_->get_phone_instance_id().empty());
 
-  ASSERT_TRUE(SimulateBootstrapConfigurationsResponse(absl::nullopt));
+  ASSERT_TRUE(SimulateNullBootstrapConfigurationsResponse());
 
   EXPECT_TRUE(authenticated_connection_->get_phone_instance_id().empty());
 }

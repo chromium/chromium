@@ -64,6 +64,8 @@ class TargetDeviceConnectionBroker {
         base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
     using AwaitUserVerificationCallback = base::OnceCallback<void(
         absl::optional<mojom::UserVerificationResponse>)>;
+    using RequestAccountInfoCallback =
+        base::OnceCallback<void(/*account_email=*/std::string)>;
 
     // Close the connection.
     virtual void Close(
@@ -80,7 +82,7 @@ class TargetDeviceConnectionBroker {
 
     // The first step in the account transfer process which involves retrieving
     // GAIA account info from the source device.
-    virtual void RequestAccountInfo(base::OnceClosure callback) = 0;
+    virtual void RequestAccountInfo(RequestAccountInfoCallback callback) = 0;
 
     // Begin the account transfer process and retrieve an Assertion from the
     // source device. The caller must provide a "challenge" nonce to be sent to
@@ -101,11 +103,16 @@ class TargetDeviceConnectionBroker {
     // response.
     std::string get_phone_instance_id() { return phone_instance_id_; }
 
+    // Retrieve boolean value indicating whether the account in question is a
+    // supervised account (e.g. Unicorn).
+    bool is_supervised_account() { return is_supervised_account_; }
+
    protected:
     AuthenticatedConnection() = default;
     virtual ~AuthenticatedConnection() = default;
 
     std::string phone_instance_id_;
+    bool is_supervised_account_;
   };
 
   // Clients of TargetDeviceConnectionBroker should implement this interface,

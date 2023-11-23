@@ -57,7 +57,7 @@ void FakeConnection::WaitForUserVerification(
   await_user_verification_callback_ = std::move(callback);
 }
 
-void FakeConnection::RequestAccountInfo(base::OnceClosure callback) {
+void FakeConnection::RequestAccountInfo(RequestAccountInfoCallback callback) {
   request_account_info_callback_ = std::move(callback);
 }
 
@@ -80,8 +80,8 @@ void FakeConnection::VerifyUser(
   std::move(await_user_verification_callback_).Run(response);
 }
 
-void FakeConnection::SendAccountInfo() {
-  std::move(request_account_info_callback_).Run();
+void FakeConnection::SendAccountInfo(std::string email) {
+  std::move(request_account_info_callback_).Run(email);
 }
 
 void FakeConnection::SendAccountTransferAssertionInfo(

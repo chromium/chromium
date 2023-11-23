@@ -180,7 +180,7 @@ class TargetDeviceBootstrapController
 
   void OnWifiCredentialsReceived(
       absl::optional<mojom::WifiCredentials> credentials);
-  void OnGoogleAccountInfoReceived();
+  void OnGoogleAccountInfoReceived(std::string account_email);
   void OnFidoAssertionReceived(absl::optional<FidoAssertionInfo> assertion);
 
   void OnChallengeBytesReceived(

@@ -120,7 +120,7 @@ class Connection
   // TargetDeviceConnectionBroker::AuthenticatedConnection:
   void RequestWifiCredentials(RequestWifiCredentialsCallback callback) override;
   void NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) override;
-  void RequestAccountInfo(base::OnceClosure callback) override;
+  void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void RequestAccountTransferAssertion(
       const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
@@ -154,7 +154,7 @@ class Connection
       mojom::QuickStartMessagePtr quick_start_message);
 
   void OnBootstrapConfigurationsResponse(
-      base::OnceClosure callback,
+      RequestAccountInfoCallback callback,
       mojom::QuickStartMessagePtr quick_start_message);
 
   void SendMessageAndDecodeResponse(

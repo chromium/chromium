@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "quick_start_message.h"
+#include "chromeos/ash/components/quick_start/quick_start_message.h"
+
 #include <memory>
+
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -94,13 +96,13 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
   base::Value::Dict* payload;
   std::string* encoded_json_payload;
 
-  if ((payload = message.FindDict(kBootstrapConfigurationsPayloadKey))) {
+  if (message.FindDict(kBootstrapConfigurationsPayloadKey)) {
     // BootstrapConfigurations needs to have a higher precedence than
     // QuickStartPayload since a BootstrapConfigurations message may also
     // contain a QuickStartPayload.
     return std::make_unique<QuickStartMessage>(
         ash::quick_start::QuickStartMessageType::kBootstrapConfigurations,
-        payload->Clone());
+        message.Clone());
   } else if ((encoded_json_payload =
                   message.FindString(kQuickStartPayloadKey))) {
     std::string json_payload;

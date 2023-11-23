@@ -45,7 +45,9 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   void SetNotifySourceOfUpdateResponse(
       mojom::NotifySourceOfUpdateResponsePtr notify_source_of_update_response);
 
-  void SetBootstrapConfigurationsResponse(const std::string& instance_id);
+  void SetBootstrapConfigurationsResponse(const std::string& instance_id,
+                                          const bool is_supervised_account,
+                                          const std::string& email);
 
   void SetQuickStartMessage(mojom::QuickStartMessagePtr quick_start_message);
 

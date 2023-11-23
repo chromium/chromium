@@ -531,12 +531,13 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
 
-  fake_target_device_connection_broker_->GetFakeConnection()->SendAccountInfo();
+  std::string email = "fake_test_email";
+  fake_target_device_connection_broker_->GetFakeConnection()->SendAccountInfo(
+      email);
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::GOOGLE_ACCOUNT_INFO_RECEIVED);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
-      fake_observer_->last_status.payload));
+  EXPECT_EQ(absl::get<std::string>(fake_observer_->last_status.payload), email);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,

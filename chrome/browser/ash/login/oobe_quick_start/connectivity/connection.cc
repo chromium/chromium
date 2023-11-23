@@ -164,7 +164,7 @@ void Connection::NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void Connection::RequestAccountInfo(base::OnceClosure callback) {
+void Connection::RequestAccountInfo(RequestAccountInfoCallback callback) {
   // During this roundtrip the source device may prompt the user to select an
   // account before responding, so we will provide a very generous timeout. (In
   // case, for example, the user has walked away after the verification step.)
@@ -265,16 +265,19 @@ void Connection::OnRequestAccountTransferAssertionResponse(
 }
 
 void Connection::OnBootstrapConfigurationsResponse(
-    base::OnceClosure callback,
+    RequestAccountInfoCallback callback,
     mojom::QuickStartMessagePtr quick_start_message) {
   if (!quick_start_message ||
       !quick_start_message->is_bootstrap_configurations()) {
-    std::move(callback).Run();
+    std::move(callback).Run("");
     return;
   }
   phone_instance_id_ =
       quick_start_message->get_bootstrap_configurations()->instance_id;
-  std::move(callback).Run();
+  is_supervised_account_ = quick_start_message->get_bootstrap_configurations()
+                               ->is_supervised_account;
+  std::move(callback).Run(
+      quick_start_message->get_bootstrap_configurations()->email);
 }
 
 void Connection::SendMessageAndDecodeResponse(
