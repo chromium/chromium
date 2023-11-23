@@ -1469,7 +1469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
-    units="microseconds" expires_after="2023-12-10">
+    units="microseconds" expires_after="2024-12-10">
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
