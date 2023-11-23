@@ -106,9 +106,9 @@ class EnumSet {
     Iterator() : enums_(nullptr), i_(kValueCount) {}
     ~Iterator() = default;
 
-    bool operator==(const Iterator& other) const { return i_ == other.i_; }
-
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
+    friend bool operator==(const Iterator& lhs, const Iterator& rhs) {
+      return lhs.i_ == rhs.i_;
+    }
 
     E operator*() const {
       DCHECK(Good());
@@ -305,11 +305,7 @@ class EnumSet {
   Iterator end() const { return Iterator(); }
 
   // Returns true iff our set and the given set contain exactly the same values.
-  bool operator==(const EnumSet& other) const { return enums_ == other.enums_; }
-
-  // Returns true iff our set and the given set do not contain exactly the same
-  // values.
-  bool operator!=(const EnumSet& other) const { return enums_ != other.enums_; }
+  friend bool operator==(const EnumSet&, const EnumSet&) = default;
 
  private:
   friend constexpr EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,

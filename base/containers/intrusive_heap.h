@@ -130,6 +130,7 @@
 // Most users should be using approach 2 or 3.
 
 #include <algorithm>
+#include <compare>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -177,24 +178,10 @@ class BASE_EXPORT HeapHandle {
   bool IsValid() const { return index_ != kInvalidIndex; }
 
   // Comparison operators.
-  friend bool operator==(const HeapHandle& lhs, const HeapHandle& rhs) {
-    return lhs.index_ == rhs.index_;
-  }
-  friend bool operator!=(const HeapHandle& lhs, const HeapHandle& rhs) {
-    return lhs.index_ != rhs.index_;
-  }
-  friend bool operator<(const HeapHandle& lhs, const HeapHandle& rhs) {
-    return lhs.index_ < rhs.index_;
-  }
-  friend bool operator>(const HeapHandle& lhs, const HeapHandle& rhs) {
-    return lhs.index_ > rhs.index_;
-  }
-  friend bool operator<=(const HeapHandle& lhs, const HeapHandle& rhs) {
-    return lhs.index_ <= rhs.index_;
-  }
-  friend bool operator>=(const HeapHandle& lhs, const HeapHandle& rhs) {
-    return lhs.index_ >= rhs.index_;
-  }
+  friend bool operator==(const HeapHandle& lhs,
+                         const HeapHandle& rhs) = default;
+  friend std::strong_ordering operator<=>(const HeapHandle& lhs,
+                                          const HeapHandle& rhs) = default;
 
  private:
   template <typename T, typename Compare, typename HeapHandleAccessor>
@@ -523,9 +510,6 @@ class IntrusiveHeap {
   friend bool operator==(const IntrusiveHeap& lhs, const IntrusiveHeap& rhs) {
     return lhs.impl_.heap_ == rhs.impl_.heap_;
   }
-  friend bool operator!=(const IntrusiveHeap& lhs, const IntrusiveHeap& rhs) {
-    return lhs.impl_.heap_ != rhs.impl_.heap_;
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Utility functions.
@@ -707,20 +691,9 @@ class WithHeapHandle : public InternalHeapHandleStorage {
   friend bool operator==(const WithHeapHandle& lhs, const WithHeapHandle& rhs) {
     return lhs.value_ == rhs.value_;
   }
-  friend bool operator!=(const WithHeapHandle& lhs, const WithHeapHandle& rhs) {
-    return lhs.value_ != rhs.value_;
-  }
-  friend bool operator<=(const WithHeapHandle& lhs, const WithHeapHandle& rhs) {
-    return lhs.value_ <= rhs.value_;
-  }
-  friend bool operator<(const WithHeapHandle& lhs, const WithHeapHandle& rhs) {
-    return lhs.value_ < rhs.value_;
-  }
-  friend bool operator>=(const WithHeapHandle& lhs, const WithHeapHandle& rhs) {
-    return lhs.value_ >= rhs.value_;
-  }
-  friend bool operator>(const WithHeapHandle& lhs, const WithHeapHandle& rhs) {
-    return lhs.value_ > rhs.value_;
+  friend auto operator<=>(const WithHeapHandle& lhs,
+                          const WithHeapHandle& rhs) {
+    return lhs.value_ <=> rhs.value_;
   }
 
  private:
