@@ -84,6 +84,7 @@ extern NSString* const kGreenColor;
 // Green palette.
 extern NSString* const kGreen50Color;
 extern NSString* const kGreen100Color;
+extern NSString* const kGreen300Color;
 extern NSString* const kGreen400Color;
 extern NSString* const kGreen500Color;
 extern NSString* const kGreen600Color;
@@ -95,7 +96,9 @@ extern NSString* const kGreen800Color;
 extern NSString* const kRedColor;
 
 // Red palette
+extern NSString* const kRed50Color;
 extern NSString* const kRed100Color;
+extern NSString* const kRed300Color;
 extern NSString* const kRed400Color;
 extern NSString* const kRed500Color;
 extern NSString* const kRed600Color;
