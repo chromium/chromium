@@ -146,9 +146,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, assign, getter=isDragSessionInProgress)
     BOOL dragSessionInProgress;
 
-// YES if it is possible to undo the close all conditions.
-@property(nonatomic, assign) BOOL undoCloseAllAvailable;
-
 // The timestamp of the user entering the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
 
@@ -438,7 +435,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)contentWillDisappearAnimated:(BOOL)animated {
   [self recordIdlePageStatus];
 
-  self.undoCloseAllAvailable = NO;
   if (self.tabGridMode != TabGridModeSearch || !animated) {
     // Updating the mode reset the items on the grid, in that case of search
     // mode the animation to show the tab will start from the tab cell after the
@@ -1159,8 +1155,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     } else {
       [self configureDoneButtonBasedOnPage:self.activePage];
     }
-    // Configure the "Close All" button on the recent tabs page.
-    [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
     return;
   }
 
@@ -1181,7 +1175,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self configureDoneButtonBasedOnPage:self.currentPage];
   [self configureNewTabButtonBasedOnContentPermissions];
-  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
 }
 
 // TODO(crbug.com/1457146): Remove this when incognito authentication is take
@@ -1243,36 +1236,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.topToolbar.pageControl.userInteractionEnabled = YES;
   [self.bottomToolbar setDoneButtonEnabled:NO];
   [self.topToolbar setDoneButtonEnabled:NO];
-}
-
-// TODO(crbug.com/1457146): Remove this function when mediators will match all
-// the toolbar update currently done by the UI.
-- (void)configureCloseAllButtonForCurrentPageAndUndoAvailability {
-  BOOL useUndo =
-      self.undoCloseAllAvailable && self.currentPage == TabGridPageRegularTabs;
-  [self.bottomToolbar useUndoCloseAll:useUndo];
-  [self.topToolbar useUndoCloseAll:useUndo];
-  if (useUndo)
-    return;
-
-  // Otherwise setup as a Close All button.
-  BaseGridViewController* gridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-
-  // "Close all" can be called if there is element in regular tab grid or in
-  // inactive tabs.
-  BOOL enabled =
-      gridViewController && (![gridViewController isGridEmpty] ||
-                             ![gridViewController isContainedGridEmpty]);
-  BOOL incognitoTabsNeedsAuth =
-      (self.currentPage == TabGridPageIncognitoTabs &&
-       self.incognitoTabsViewController.contentNeedsAuthentication);
-  enabled = enabled && !incognitoTabsNeedsAuth && !self.isDragSessionInProgress;
-
-  [self.topToolbar setCloseAllButtonEnabled:enabled];
-  [self.bottomToolbar setCloseAllButtonEnabled:enabled];
-  [self.bottomToolbar setEditButtonEnabled:enabled];
-  [self.topToolbar setEditButtonEnabled:enabled];
 }
 
 // Shows the two toolbars and the floating button. Suitable for use in
@@ -1425,11 +1388,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the views, buttons, toolbars as well as broadcasts incognito tabs
 // visibility after the tab count has changed.
 - (void)handleTabCountChangeWithTabCount:(NSUInteger)tabCount {
-  if (tabCount > 0) {
-    // Undo is only available when the tab grid is empty.
-    self.undoCloseAllAvailable = NO;
-  }
-
   [self configureButtonsForActiveAndCurrentPage];
   [self broadcastIncognitoContentVisibility];
 }
