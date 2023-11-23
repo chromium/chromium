@@ -218,8 +218,7 @@ void AvifInfoSegmentReaderSkip(void* void_stream, size_t num_bytes) {
   stream->num_read_bytes += num_bytes;
 }
 
-template <typename T>
-inline float FractionToFloat(T numerator, uint32_t denominator) {
+float FractionToFloat(auto numerator, uint32_t denominator) {
   // First cast to double and not float because uint32_t->float conversion can
   // cause precision loss.
   return static_cast<double>(numerator) / denominator;
@@ -1247,13 +1246,6 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
     const float alternate_headroom = std::exp2(FractionToFloat(
         metadata.alternateHdrHeadroomN, metadata.alternateHdrHeadroomD));
     const bool base_is_hdr = base_headroom > alternate_headroom;
-    if (base_is_hdr != metadata.backwardDirection) {
-      // TODO(crbug.com/1451889): support gain maps computed as the ratio of SDR
-      // over HDR. Currently, SkGainmapShader expects the gain map to always be
-      // computed as the ratio of HDR over SDR.
-      DVLOG(1) << "Unsupported gain map type";
-      return false;
-    }
     out_gainmap_info.fDisplayRatioSdr =
         base_is_hdr ? alternate_headroom : base_headroom;
     out_gainmap_info.fDisplayRatioHdr =
@@ -1268,12 +1260,23 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
         DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
         return false;
       }
-      // Using double and not float because uint32_t->float conversion can cause
-      // precision loss.
-      out_gainmap_info.fGainmapRatioMin[i] = std::exp2(
-          FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]));
-      out_gainmap_info.fGainmapRatioMax[i] = std::exp2(
-          FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]));
+
+      float min_log2 =
+          FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);
+      float max_log2 =
+          FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]);
+      if (base_is_hdr != metadata.backwardDirection) {
+        // When base_is_hdr != metadata.backwardDirection, it means that the
+        // gain map was computed as log2(HDR/SDR) instead of log2(SDR/HDR).
+        // But log2(1/x) = -log2(x) so we just need to negate the min/max values
+        // which are used to scale the gain map.
+        // Note that we no longer have min<max but Skia does not check this.
+        min_log2 *= -1.0f;
+        max_log2 *= -1.0f;
+      }
+      out_gainmap_info.fGainmapRatioMin[i] = std::exp2(min_log2);
+      out_gainmap_info.fGainmapRatioMax[i] = std::exp2(max_log2);
+
       // Numerator and denominator intentionally swapped to get 1.0/gamma.
       out_gainmap_info.fGainmapGamma[i] =
           FractionToFloat(metadata.gainMapGammaD[i], metadata.gainMapGammaN[i]);
