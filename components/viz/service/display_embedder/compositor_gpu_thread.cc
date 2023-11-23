@@ -31,6 +31,10 @@
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
+
 namespace viz {
 
 // static
@@ -174,6 +178,18 @@ CompositorGpuThread::GetSharedContextState() {
     return nullptr;
   }
 
+  const auto& workarounds = gpu_channel_manager_->gpu_driver_bug_workarounds();
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+  // TODO(1504543): Determine if we need to set up a DawnCachingInterfaceFactory
+  // and/or a cache blob callback.
+  dawn_context_provider_ =
+      gpu::DawnContextProvider::Create(gpu_preferences, workarounds);
+  if (!dawn_context_provider_) {
+    DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
+  }
+#endif
+
   // Create a SharedContextState.
   auto shared_context_state = base::MakeRefCounted<gpu::SharedContextState>(
       std::move(share_group), std::move(surface), std::move(context),
@@ -186,11 +202,14 @@ CompositorGpuThread::GetSharedContextState() {
       /*vulkan_context_provider=*/nullptr,
 #endif
       /*metal_context_provider=*/nullptr,
+#if BUILDFLAG(SKIA_USE_DAWN)
+      dawn_context_provider_.get(),
+#else
       /*dawn_context_provider=*/nullptr,
+#endif
       /*peak_memory_monitor=*/weak_ptr_factory_.GetWeakPtr(),
       /*created_on_compositor_gpu_thread=*/true);
 
-  const auto& workarounds = gpu_channel_manager_->gpu_driver_bug_workarounds();
   auto gles2_feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
       workarounds, gpu_feature_info);
 
