@@ -21,6 +21,9 @@ NSString* const kFirstRunSyncScreenAccessibilityIdentifier =
 NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
     @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
 
+NSString* const kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier =
+    @"firstRunOmniboxPositionChoiceScreenAccessibilityIdentifier";
+
 // URL for the terms of service text.
 NSString* const kTermsOfServiceURL = @"internal://terms-of-service";
 
