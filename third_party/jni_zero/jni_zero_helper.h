@@ -10,9 +10,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#if defined(USE_CHROMIUM_BASE)
+#include "base/logging.h"
+// Used for ARCH_CPU_X86 - embedder must define this correctly if they want
+// 16-byte stack alignment on x86.
 #include "build/build_config.h"
+#else
+#include "absl/log/log.h"  // nogncheck
+#endif                     // defined(USE_CHROMIUM_BASE)
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_int_wrapper.h"
 

@@ -8,6 +8,10 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
+config("use_chromium_base_define") {
+  defines = [ "USE_CHROMIUM_BASE" ]
+}
+
 source_set("jni_export") {
   sources = [ "jni_export.h" ]
 }
@@ -22,6 +26,8 @@ source_set("jni_zero") {
     ":jni_export",
     "//base",
   ]
+
+  public_configs = [ ":use_chromium_base_define" ]
 }
 
 if (enable_java_templates && is_android) {

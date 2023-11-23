@@ -208,8 +208,15 @@ template("generate_jni_registration") {
         rebase_path(_jni_header_output, root_build_dir),
       ]
 
-      # This gives targets depending on this registration access to our generated header.
-      public_configs = [ "//third_party/jni_zero:jni_include_dir" ]
+      public_configs = [
+        # This gives targets depending on this registration access to our generated header.
+        "//third_party/jni_zero:jni_include_dir",
+
+        # For now, we unconditionally use chromium's base. We could move this
+        # to depend on an invoker variable like we do with generate_jni_impl
+        # if we want this to be configurable.
+        "//third_party/jni_zero:use_chromium_base_define",
+      ]
     }
 
     if (defined(invoker.namespace)) {
@@ -225,6 +232,10 @@ template("generate_jni_registration") {
 # JNI target implementation. See generate_jni or generate_jar_jni for usage.
 template("generate_jni_impl") {
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+  public_configs = []
+  if (!defined(invoker.use_chromium_base) || invoker.use_chromium_base) {
+    public_configs += [ "//third_party/jni_zero:use_chromium_base_define" ]
+  }
   if (current_toolchain != default_toolchain && target_os == "android") {
     # Rather than regenerating .h files in secondary toolchains, re-use the
     # ones from the primary toolchain by depending on it and adding the
@@ -233,7 +244,7 @@ template("generate_jni_impl") {
     group(target_name) {
       not_needed(invoker, "*")
       public_deps = [ ":$target_name($default_toolchain)" ]
-      public_configs =
+      public_configs +=
           [ "//third_party/jni_zero:jni_include_dir($default_toolchain)" ]
     }
   } else {
@@ -270,7 +281,8 @@ template("generate_jni_impl") {
       }
       public_deps += _jni_generator_include_deps
 
-      public_configs = [ "//third_party/jni_zero:jni_include_dir" ]
+      public_configs += [ "//third_party/jni_zero:jni_include_dir" ]
+
       if (defined(visibility)) {
         # Allow dependency on ourselves from secondary toolchain.
         visibility += [ ":$target_name" ]
