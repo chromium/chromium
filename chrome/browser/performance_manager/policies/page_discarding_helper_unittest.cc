@@ -66,7 +66,7 @@ class PageDiscardingHelperTest
     page = page ? page : page_node();
     frame = frame ? frame : frame_node();
     page->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
-                                         page->navigation_id() + 1, url,
+                                         page->GetNavigationID() + 1, url,
                                          mime_type);
     frame->OnNavigationCommitted(url, false);
   }

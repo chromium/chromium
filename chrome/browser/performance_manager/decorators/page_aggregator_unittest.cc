@@ -36,25 +36,25 @@ TEST_F(PageAggregatorTest, WebLocksAggregation) {
       graph()->CreateFrameNodeAutoId(process.get(), page.get());
 
   // By default the page shouldn't hold any WebLock.
-  EXPECT_FALSE(page->is_holding_weblock());
+  EXPECT_FALSE(page->IsHoldingWebLock());
 
   // |frame_0| now holds a WebLock, the corresponding property should be set on
   // the page node.
   frame_0->SetIsHoldingWebLock(true);
-  EXPECT_TRUE(page->is_holding_weblock());
+  EXPECT_TRUE(page->IsHoldingWebLock());
 
   // |frame_1| also holding a WebLock shouldn't affect the page property.
   frame_1->SetIsHoldingWebLock(true);
-  EXPECT_TRUE(page->is_holding_weblock());
+  EXPECT_TRUE(page->IsHoldingWebLock());
 
   // |frame_1| still holds a WebLock after this.
   frame_0->SetIsHoldingWebLock(false);
-  EXPECT_TRUE(page->is_holding_weblock());
+  EXPECT_TRUE(page->IsHoldingWebLock());
 
   // Destroying |frame_1| without explicitly releasing the WebLock it's
   // holding should update the corresponding page property.
   frame_1.reset();
-  EXPECT_FALSE(page->is_holding_weblock());
+  EXPECT_FALSE(page->IsHoldingWebLock());
 }
 
 TEST_F(PageAggregatorTest, IndexedDBLocksAggregation) {
@@ -67,26 +67,26 @@ TEST_F(PageAggregatorTest, IndexedDBLocksAggregation) {
       graph()->CreateFrameNodeAutoId(process.get(), page.get());
 
   // By default the page shouldn't hold any IndexedDB lock.
-  EXPECT_FALSE(page->is_holding_indexeddb_lock());
+  EXPECT_FALSE(page->IsHoldingIndexedDBLock());
 
   // |frame_0| now holds an IndexedDB lock, the corresponding property should be
   // set on the page node.
   frame_0->SetIsHoldingIndexedDBLock(true);
-  EXPECT_TRUE(page->is_holding_indexeddb_lock());
+  EXPECT_TRUE(page->IsHoldingIndexedDBLock());
 
   // |frame_1| also holding an IndexedDB lock shouldn't affect the page
   // property.
   frame_1->SetIsHoldingIndexedDBLock(true);
-  EXPECT_TRUE(page->is_holding_indexeddb_lock());
+  EXPECT_TRUE(page->IsHoldingIndexedDBLock());
 
   // |frame_1| still holds an IndexedDB lock after this.
   frame_0->SetIsHoldingIndexedDBLock(false);
-  EXPECT_TRUE(page->is_holding_indexeddb_lock());
+  EXPECT_TRUE(page->IsHoldingIndexedDBLock());
 
   // Destroying |frame_1| without explicitly releasing the IndexedDB lock it's
   // holding should update the corresponding page property.
   frame_1.reset();
-  EXPECT_FALSE(page->is_holding_indexeddb_lock());
+  EXPECT_FALSE(page->IsHoldingIndexedDBLock());
 }
 
 }  // namespace performance_manager

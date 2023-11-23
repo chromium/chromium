@@ -158,7 +158,7 @@ void FrozenFrameAggregator::OnTakenFromGraph(Graph* graph) {
 
 void FrozenFrameAggregator::OnPageNodeAdded(const PageNode* page_node) {
   auto* page_impl = PageNodeImpl::FromNode(page_node);
-  DCHECK_EQ(LifecycleState::kRunning, page_impl->lifecycle_state());
+  DCHECK_EQ(LifecycleState::kRunning, page_impl->GetLifecycleState());
   FrozenDataImpl::GetOrCreate(page_impl);
 }
 

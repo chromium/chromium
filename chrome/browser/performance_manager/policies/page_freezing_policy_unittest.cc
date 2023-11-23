@@ -274,7 +274,7 @@ TEST_F(PageFreezingPolicyTest, PeriodicUnfreeze) {
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
   EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-            page_node()->lifecycle_state());
+            page_node()->GetLifecycleState());
 
   // Ensure that the page gets unfrozen periodically.
   for (int i = 0; i < 2; ++i) {
@@ -283,14 +283,14 @@ TEST_F(PageFreezingPolicyTest, PeriodicUnfreeze) {
         PageFreezingPolicy::GetUnfreezeIntervalForTesting());
     ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
     EXPECT_EQ(performance_manager::mojom::LifecycleState::kRunning,
-              page_node()->lifecycle_state());
+              page_node()->GetLifecycleState());
 
     EXPECT_CALL(*page_freezer_raw, MaybeFreezePageNodeImpl(page_node()));
     task_env().FastForwardBy(
         PageFreezingPolicy::GetUnfreezeDurationForTesting());
     ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
     EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-              page_node()->lifecycle_state());
+              page_node()->GetLifecycleState());
   }
 }
 
@@ -305,7 +305,7 @@ TEST_F(PageFreezingPolicyTest,
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
   EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-            page_node()->lifecycle_state());
+            page_node()->GetLifecycleState());
 
   task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() /
                            2);
@@ -314,7 +314,7 @@ TEST_F(PageFreezingPolicyTest,
   page_node()->set_freezing_vote(kCannotFreezeVote);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
   EXPECT_EQ(performance_manager::mojom::LifecycleState::kRunning,
-            page_node()->lifecycle_state());
+            page_node()->GetLifecycleState());
 
   task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() *
                            2);
@@ -333,7 +333,7 @@ TEST_F(PageFreezingPolicyTest,
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
   EXPECT_EQ(performance_manager::mojom::LifecycleState::kFrozen,
-            page_node()->lifecycle_state());
+            page_node()->GetLifecycleState());
 
   task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() /
                            2);
@@ -344,7 +344,7 @@ TEST_F(PageFreezingPolicyTest,
       performance_manager::mojom::LifecycleState::kRunning);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
   EXPECT_EQ(performance_manager::mojom::LifecycleState::kRunning,
-            page_node()->lifecycle_state());
+            page_node()->GetLifecycleState());
 
   task_env().FastForwardBy(PageFreezingPolicy::GetUnfreezeIntervalForTesting() *
                            2);
