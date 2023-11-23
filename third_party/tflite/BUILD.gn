@@ -715,4 +715,14 @@ tflite_static_library("tflite") {
   }
 
   public_configs = [ ":tflite_config" ]
+
+  # In some configs "neon_check.h" includes "NEON_2_SSE.h" with no path.
+  # "NEON_2_SSE.h" comes from neon_2_sse. The target neon_2_sse has a config
+  # that adds to the "include_dirs". This means any file including
+  # "neon_check.h" needs the config, so that neon_2_sse should be in
+  # public_deps. Unfortunately neon_2_sse also adds some compiler flags we do
+  # not want propagated. For the time being, allow this in the standalone
+  # target (which is assumed to be for third-party code that is OK to have
+  # these switches).
+  public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
 }
