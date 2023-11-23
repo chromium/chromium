@@ -7,17 +7,17 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 
-namespace gwp_asan::internal::lud {
+namespace gwp_asan::internal {
 
 namespace {
 void QuarantineHook(void* address, size_t size) {
-  PoisonMetadataRecorder::Get()->RecordAndZap(address, size);
+  PoisonMetadataRecorder::Get()->RecordDeallocation(address, size);
 }
 }  // namespace
 
-void InstallPartitionAllocHooks() {
+void PartitionAllocShimSupport::InstallLightweightDetectorHooks() {
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(
       &QuarantineHook);
 }
 
-}  // namespace gwp_asan::internal::lud
+}  // namespace gwp_asan::internal

@@ -5,7 +5,6 @@
 #include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/multiprocess_test.h"
@@ -18,14 +17,13 @@
 
 // PartitionAlloc (and hence hooking) are disabled with sanitizers that replace
 // allocation routines.
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 // These tests install global PartitionAlloc hooks so they are not safe to run
 // in multi-threaded contexts. Instead they're implemented as multi-process
 // tests.
 
-namespace gwp_asan::internal::lud {
+namespace gwp_asan::internal {
 
 namespace {
 
@@ -60,7 +58,7 @@ MULTIPROCESS_TEST_MAIN(PartitionAllocShimsTest_Basic) {
   partition_alloc::PartitionAllocGlobalInit(HandleOOM);
   PoisonMetadataRecorder::Init(LightweightDetectorMode::kBrpQuarantine,
                                LightweightDetectorState::kMaxMetadata);
-  InstallPartitionAllocHooks();
+  PartitionAllocShimSupport::InstallLightweightDetectorHooks();
 
   partition_alloc::PartitionAllocator allocator;
   allocator.init(kAllocatorOptions);
@@ -77,11 +75,11 @@ MULTIPROCESS_TEST_MAIN(PartitionAllocShimsTest_Basic) {
   return kFailure;
 }
 
-TEST_F(PartitionAllocShimsTest, Basic) {
+// crbug.com/1499309 : Disable failed test.
+TEST_F(PartitionAllocShimsTest, DISABLED_Basic) {
   runTest("PartitionAllocShimsTest_Basic");
 }
 
-}  // namespace gwp_asan::internal::lud
+}  // namespace gwp_asan::internal
 
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

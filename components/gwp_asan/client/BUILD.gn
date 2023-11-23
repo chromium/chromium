@@ -55,10 +55,6 @@ component("client") {
 
   if (use_allocator_shim) {
     sources += [
-      "lightweight_detector/malloc_shims.cc",
-      "lightweight_detector/malloc_shims.h",
-      "lightweight_detector/random_eviction_quarantine.cc",
-      "lightweight_detector/random_eviction_quarantine.h",
       "sampling_malloc_shims.cc",
       "sampling_malloc_shims.h",
     ]
@@ -99,11 +95,7 @@ source_set("unit_tests") {
   ]
 
   if (use_allocator_shim) {
-    sources += [
-      "lightweight_detector/malloc_shims_unittest.cc",
-      "lightweight_detector/random_eviction_quarantine_unittest.cc",
-      "sampling_malloc_shims_unittest.cc",
-    ]
+    sources += [ "sampling_malloc_shims_unittest.cc" ]
   }
 
   if (use_partition_alloc) {

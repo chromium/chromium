@@ -118,12 +118,11 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   gpa_annotation.Set(gpa->GetCrashKey());
 
   if (cmd_line->HasSwitch("enable-lightweight-detector")) {
-    lud::PoisonMetadataRecorder::Init(LightweightDetectorMode::kBrpQuarantine,
-                                      1);
+    PoisonMetadataRecorder::Init(LightweightDetectorMode::kBrpQuarantine, 1);
     static crashpad::StringAnnotation<24> lightweight_detector_annotation(
         kLightweightDetectorCrashKey);
     lightweight_detector_annotation.Set(
-        lud::PoisonMetadataRecorder::Get()->GetCrashKey());
+        PoisonMetadataRecorder::Get()->GetCrashKey());
   }
 
   base::FilePath metrics_dir(FILE_PATH_LITERAL(""));
@@ -137,7 +136,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     auto memory_ranges = gpa->GetInternalMemoryRegions();
     if (cmd_line->HasSwitch("enable-lightweight-detector")) {
       auto detector_memory_ranges =
-          lud::PoisonMetadataRecorder::Get()->GetInternalMemoryRegions();
+          PoisonMetadataRecorder::Get()->GetInternalMemoryRegions();
       memory_ranges.insert(memory_ranges.end(), detector_memory_ranges.begin(),
                            detector_memory_ranges.end());
     }
@@ -251,8 +250,8 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     *(uint8_t*)(ptrs[0]) = 0;
   } else if (test_name == "LightweightDetectorUseAfterFree") {
     uint8_t fake_alloc[kAllocationSize];
-    lud::PoisonMetadataRecorder::Get()->RecordAndZap(&fake_alloc,
-                                                     sizeof(fake_alloc));
+    PoisonMetadataRecorder::Get()->RecordDeallocation(&fake_alloc,
+                                                      sizeof(fake_alloc));
     **(int**)fake_alloc = 0;
   } else {
     LOG(ERROR) << "Unknown test name " << test_name;
