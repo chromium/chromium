@@ -299,14 +299,6 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
           base::BindRepeating(
               &PasswordsPrivateDelegateImpl::OnPasswordsExportProgress,
               base::Unretained(this)))),
-      password_account_storage_settings_watcher_(
-          std::make_unique<
-              password_manager::PasswordAccountStorageSettingsWatcher>(
-              profile_->GetPrefs(),
-              SyncServiceFactory::GetForProfile(profile_),
-              base::BindRepeating(&PasswordsPrivateDelegateImpl::
-                                      OnAccountStorageOptInStateChanged,
-                                  base::Unretained(this)))),
       password_check_delegate_(profile,
                                &saved_passwords_presenter_,
                                &credential_id_generator_),
@@ -317,6 +309,11 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
                           weak_ptr_factory_.GetWeakPtr()));
   saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
+
+  if (syncer::SyncService* service =
+          SyncServiceFactory::GetForProfile(profile_)) {
+    sync_service_observation_.Observe(service);
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS)
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
@@ -1050,7 +1047,8 @@ void PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult(
       base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
 }
 
-void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {
+void PasswordsPrivateDelegateImpl::OnStateChanged(
+    syncer::SyncService* sync_service) {
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {

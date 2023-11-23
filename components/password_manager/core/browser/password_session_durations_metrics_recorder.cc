@@ -29,12 +29,6 @@ PasswordSessionDurationsMetricsRecorder::
                                             syncer::SyncService* sync_service)
     : pref_service_(pref_service),
       sync_service_(sync_service),
-      settings_watcher_(
-          pref_service_,
-          sync_service_,
-          base::BindRepeating(
-              &PasswordSessionDurationsMetricsRecorder::CheckForUserStateChange,
-              base::Unretained(this))),
       user_state_(features_util::ComputePasswordAccountStorageUserState(
           pref_service_,
           sync_service_)) {

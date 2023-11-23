@@ -9,8 +9,6 @@ source_set("sync") {
   sources = [
     "credential_model_type_controller.cc",
     "credential_model_type_controller.h",
-    "password_account_storage_settings_watcher.cc",
-    "password_account_storage_settings_watcher.h",
     "password_proto_utils.cc",
     "password_proto_utils.h",
     "password_store_sync.cc",
@@ -37,7 +35,6 @@ source_set("sync") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "password_account_storage_settings_watcher_unittest.cc",
     "password_proto_utils_unittest.cc",
     "password_sync_bridge_unittest.cc",
   ]

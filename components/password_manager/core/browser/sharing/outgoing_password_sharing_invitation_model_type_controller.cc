@@ -37,15 +37,7 @@ OutgoingPasswordSharingInvitationModelTypeController::
           CreateDelegateFromPasswordSenderService(password_sender_service),
           /*delegate_for_transport_mode=*/
           CreateDelegateFromPasswordSenderService(password_sender_service)),
-      sync_service_(sync_service),
-      account_storage_settings_watcher_(
-          pref_service,
-          sync_service,
-          // base::Unretained() is safe because `this` outlives the watcher.
-          base::BindRepeating(
-              &OutgoingPasswordSharingInvitationModelTypeController::
-                  OnAccountStorageSettingsChanged,
-              base::Unretained(this))) {
+      sync_service_(sync_service) {
   password_sharing_enabled_policy_.Init(
       password_manager::prefs::kPasswordSharingEnabled, pref_service,
       base::BindRepeating(
@@ -71,12 +63,6 @@ OutgoingPasswordSharingInvitationModelTypeController::GetPreconditionState()
 
 void OutgoingPasswordSharingInvitationModelTypeController::
     OnPasswordSharingEnabledPolicyChanged() {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
-}
-
-void OutgoingPasswordSharingInvitationModelTypeController::
-    OnAccountStorageSettingsChanged() {
   DCHECK(CalledOnValidThread());
   sync_service_->DataTypePreconditionChanged(type());
 }

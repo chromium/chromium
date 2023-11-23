@@ -37,13 +37,7 @@ CredentialModelTypeController::CredentialModelTypeController(
                           std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
-      sync_service_(sync_service),
-      account_storage_settings_watcher_(
-          pref_service_,
-          sync_service_,
-          base::BindRepeating(
-              &CredentialModelTypeController::OnOptInStateMaybeChanged,
-              base::Unretained(this))) {
+      sync_service_(sync_service) {
   CHECK(model_type == syncer::PASSWORDS ||
         model_type == syncer::WEBAUTHN_CREDENTIAL);
   identity_manager_observation_.Observe(identity_manager_);
@@ -111,13 +105,6 @@ void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   features_util::KeepAccountStorageSettingsOnlyForUsers(pref_service_, {});
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
-void CredentialModelTypeController::OnOptInStateMaybeChanged() {
-  // Note: This method gets called in many other situations as well, not just
-  // when the opt-in state changes, but DataTypePreconditionChanged() is cheap
-  // if nothing actually changed, so some spurious calls don't hurt.
-  sync_service_->DataTypePreconditionChanged(type());
 }
 
 }  // namespace password_manager

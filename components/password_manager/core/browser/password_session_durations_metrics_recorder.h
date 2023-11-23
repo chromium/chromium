@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/sync/password_account_storage_settings_watcher.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -50,8 +49,6 @@ class PasswordSessionDurationsMetricsRecorder
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
-
-  PasswordAccountStorageSettingsWatcher settings_watcher_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
