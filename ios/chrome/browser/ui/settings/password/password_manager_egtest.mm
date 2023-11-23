@@ -557,6 +557,22 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Opens the instructions for enabling the Password Manager Widget.
+void OpenPasswordManagerWidgetPromoInstructions() {
+  OpenPasswordManager();
+
+  // The Password Manager widget promo should be visible.
+  CheckPasswordManagerWidgetPromoVisible();
+
+  // Tap the promo's more info button.
+  [[EarlGrey
+      selectElementWithMatcher:PasswordManagerWidgetPromoMoreInfoButton()]
+      performAction:grey_tap()];
+
+  // The Password Manager widget promo's instructions should be visible.
+  CheckPasswordManagerWidgetPromoInstructionScreenVisible();
+}
+
 }  // namespace
 
 // Various tests for the main Password Manager UI.
@@ -752,13 +768,15 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       [self isRunningTest:@selector
             (testDismissPasswordManagerWidgetPromoInstructionsScreen)] ||
       [self isRunningTest:@selector
-            (testPasswordManagerWidgetPromoInstructionsDeviceOrientation)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
-    config.additional_args.push_back(
-        base::StringPrintf("--enable-features=%s:chosen_feature/"
-                           "IPH_iOSPromoPasswordManagerWidget",
-                           feature_engagement::kIPHDemoMode.name));
+            (testPasswordManagerWidgetPromoInstructionsDeviceOrientation)] ||
+      [self
+          isRunningTest:@selector
+          (testOpeningPasswordManagerWidgetPromoInstructionsWithFailedAuth)]) {
+    config.additional_args.push_back(base::StringPrintf(
+        "--enable-features=%s:chosen_feature/"
+        "IPH_iOSPromoPasswordManagerWidget,%s",
+        feature_engagement::kIPHDemoMode.name,
+        password_manager::features::kIOSPasswordAuthOnEntryV2.name));
   }
 
   return config;
@@ -3536,18 +3554,33 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   // Add a saved password to not get the Password Manager's empty state.
   SavePasswordForm();
 
-  OpenPasswordManager();
+  OpenPasswordManagerWidgetPromoInstructions();
+}
 
-  // The Password Manager widget promo should be visible.
-  CheckPasswordManagerWidgetPromoVisible();
+// Tests the Password Manager UI is dismissed after a failed local
+// authentication while in the Widget Promo Instructions page.
+- (void)testOpeningPasswordManagerWidgetPromoInstructionsWithFailedAuth {
+  // Add a saved password to not get the Password Manager's empty state.
+  SavePasswordForm();
 
-  // Tap the promo's more info button.
+  OpenPasswordManagerWidgetPromoInstructions();
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+
+  // Settings UI should be covered by Password Manager UI.
   [[EarlGrey
-      selectElementWithMatcher:PasswordManagerWidgetPromoMoreInfoButton()]
-      performAction:grey_tap()];
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notVisible()];
 
-  // The Password Manager widget promo's instructions should be visible.
-  CheckPasswordManagerWidgetPromoInstructionScreenVisible();
+  // Trigger local authentication by backgrounding the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Failed auth should dismiss the whole Password Manager leaving the Settings
+  // UI visible.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the more info and close buttons of the Password Manager widget

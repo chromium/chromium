@@ -12,6 +12,9 @@ source_set("widget_promo_instructions") {
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/reauthentication",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/common/ui/confirmation_alert",
   ]
 }

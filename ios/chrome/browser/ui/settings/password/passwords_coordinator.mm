@@ -401,8 +401,6 @@ using password_manager::WarningType;
   // low.
   DUMP_WILL_BE_CHECK(!self.widgetPromoInstructionsCoordinator);
 
-  // TODO(crbug.com/1486873): Validate that reauth coordinator should be stopped
-  // here.
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
   self.widgetPromoInstructionsCoordinator =
