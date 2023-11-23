@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -249,7 +249,7 @@ void InstanceIDImpl::EnsureIDGenerated() {
       &id_);
   std::replace(id_.begin(), id_.end(), '+', '-');
   std::replace(id_.begin(), id_.end(), '/', '_');
-  base::Erase(id_, '=');
+  std::erase(id_, '=');
 
   creation_time_ = base::Time::Now();
 

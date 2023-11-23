@@ -25,7 +25,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
@@ -460,7 +459,7 @@ std::string GetUACState() {
 
 std::wstring GetServiceName(bool is_internal_service) {
   std::wstring service_name = GetServiceDisplayName(is_internal_service);
-  base::EraseIf(service_name, base::IsAsciiWhitespace<wchar_t>);
+  std::erase_if(service_name, base::IsAsciiWhitespace<wchar_t>);
   return service_name;
 }
 

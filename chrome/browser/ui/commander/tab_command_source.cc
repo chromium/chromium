@@ -7,7 +7,6 @@
 #include <numeric>
 #include <string>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -285,7 +284,7 @@ CommandSource::CommandResults MoveTabsToWindowCommandsForWindowsMatching(
   CommandSource::CommandResults results;
   // Add "New Window", if appropriate. It should score highest with no input.
   std::u16string new_window_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
-  base::Erase(new_window_title, '&');
+  std::erase(new_window_title, '&');
   std::unique_ptr<CommandItem> item;
   if (input.empty()) {
     item = std::make_unique<CommandItem>(new_window_title, .99,

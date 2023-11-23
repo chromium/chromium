@@ -6,10 +6,10 @@
 
 #include "net/base/data_url.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/ranges/algorithm.h"
@@ -153,7 +153,7 @@ bool DataURL::Parse(const GURL& url,
       if (!(mime_type_value.compare(0, 5, "text/") == 0 ||
             mime_type_value.find("xml") != std::string::npos)) {
         temp = std::string(raw_body);
-        base::EraseIf(temp, base::IsAsciiWhitespace<char>);
+        std::erase_if(temp, base::IsAsciiWhitespace<char>);
         raw_body = temp;
       }
 

@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -355,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessDumpDomSubResourceTimeoutCommandBrowserTest,
   capture_stdout.StopCapture();
 
   std::string captured_stdout_data = capture_stdout.TakeCapturedData();
-  base::EraseIf(captured_stdout_data, isspace);
+  std::erase_if(captured_stdout_data, isspace);
 
   if (delay_response()) {
     EXPECT_THAT(result(),

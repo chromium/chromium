@@ -74,43 +74,6 @@ struct HashByFirst {
 namespace base {
 namespace {
 
-TEST(Erase, String) {
-  const std::pair<std::string, std::string> test_data[] = {
-      {"", ""},
-      {"abc", "bc"},
-      {"abca", "bc"},
-  };
-
-  for (auto test_case : test_data) {
-    Erase(test_case.first, 'a');
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-
-  for (auto test_case : test_data) {
-    EraseIf(test_case.first, [](char elem) { return elem < 'b'; });
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
-TEST(Erase, String16) {
-  std::pair<std::u16string, std::u16string> test_data[] = {
-      {std::u16string(), std::u16string()},
-      {u"abc", u"bc"},
-      {u"abca", u"bc"},
-  };
-
-  const std::u16string letters = u"ab";
-  for (auto test_case : test_data) {
-    Erase(test_case.first, letters[0]);
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-
-  for (auto test_case : test_data) {
-    EraseIf(test_case.first, [&](short elem) { return elem < letters[1]; });
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
 TEST(Erase, Vector) {
   RunEraseTest<std::vector<int>>();
   RunEraseIfTest<std::vector<std::pair<int, int>>>();

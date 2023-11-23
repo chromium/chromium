@@ -3082,7 +3082,10 @@ if (!is_android) {
           sources += [
             "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc",
           ]
-          deps += [ "//components/printing/browser" ]
+          deps += [
+            "//components/printing/browser",
+            "//pdf",
+          ]
         }
       }
     }

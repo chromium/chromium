@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/webui_util.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <string>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -82,7 +83,7 @@ void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id) {
   std::u16string str = l10n_util::GetStringUTF16(id);
-  base::Erase(str, '&');
+  std::erase(str, '&');
   source->AddString(message, str);
 }
 

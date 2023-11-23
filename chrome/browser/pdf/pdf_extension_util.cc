@@ -4,7 +4,8 @@
 
 #include "chrome/browser/pdf/pdf_extension_util.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -171,7 +172,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
-  base::Erase(edit_string, '&');
+  std::erase(edit_string, '&');
   dict->Set("editButton", edit_string);
 #endif
 

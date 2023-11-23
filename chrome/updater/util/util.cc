@@ -19,7 +19,6 @@
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -302,7 +301,7 @@ GURL AppendQueryParameter(const GURL& url,
 
 std::wstring GetTaskNamePrefix(UpdaterScope scope) {
   std::wstring task_name = GetTaskDisplayName(scope);
-  base::EraseIf(task_name, base::IsAsciiWhitespace<wchar_t>);
+  std::erase_if(task_name, base::IsAsciiWhitespace<wchar_t>);
   return task_name;
 }
 
