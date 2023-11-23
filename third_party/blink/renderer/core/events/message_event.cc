@@ -152,6 +152,11 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       source_(source),
       ports_(ports),
       user_activation_(user_activation) {
+  recordreplay::Assert(
+    "[RUN-2037-2901] MessageEvent::MessageEvent A %d %zu %s",
+    source->RecordReplayId(),
+    data->DataLengthInBytes(),
+    last_event_id.Utf8().c_str());
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
 }
@@ -174,6 +179,11 @@ MessageEvent::MessageEvent(
       channels_(std::move(channels)),
       user_activation_(user_activation),
       delegated_capability_(delegated_capability) {
+  recordreplay::Assert(
+    "[RUN-2037-2901] MessageEvent::MessageEvent B %d %zu %s",
+    source->RecordReplayId(),
+    data->DataLengthInBytes(),
+    last_event_id.Utf8().c_str());
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
 }
@@ -265,6 +275,14 @@ void MessageEvent::initMessageEvent(
     MessagePortArray* ports,
     UserActivation* user_activation,
     mojom::blink::DelegatedCapability delegated_capability) {
+
+  recordreplay::Assert("[RUN-2037-2901] MessageEvent::initMessageEvent %d %d %zu %s %s",
+    source ? source->RecordReplayId() : -1,
+    (int)eventPhase(),
+    data->DataLengthInBytes(),
+    last_event_id.Utf8().c_str(),
+    type.Utf8().c_str());
+
   if (IsBeingDispatched())
     return;
 
