@@ -48,7 +48,7 @@ class LocationArbitrator : public LocationProvider {
   // If the |custom_location_provider_getter| callback returns nullptr, then
   // LocationArbitrator uses the default system location provider.
   LocationArbitrator(
-      const CustomLocationProviderCallback& custom_location_provider_getter,
+      CustomLocationProviderCallback custom_location_provider_getter,
       GeolocationManager* geolocation_manager,
       const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
