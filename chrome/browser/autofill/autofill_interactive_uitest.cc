@@ -114,9 +114,15 @@
 using base::ASCIIToUTF16;
 using content::URLLoaderInterceptor;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::StartsWith;
+using ::testing::UnorderedElementsAreArray;
 
 namespace autofill {
 
@@ -328,20 +334,32 @@ const std::vector<FieldValue> kDefaultAddress{
   return fields;
 }
 
+// A generic "map" function, intended to lift values `args...` to a matcher
+// `fun(args)...`. For example, `ElementsAreArray(Map({x, y, z}, fun))` is
+// `ElementsAreArray({fun(x), fun(y), fun(z)})`.
+template <typename Arg, typename Fun>
+[[nodiscard]] auto Map(const std::vector<Arg>& args, Fun fun) {
+  std::vector<decltype(std::invoke(fun, args[0]))> matchers;
+  for (const Arg& arg : args) {
+    matchers.push_back(std::invoke(fun, arg));
+  }
+  return matchers;
+}
+
 // Matches a container of FieldValues if the `i`th actual FieldValue::value
 // matches the `i`th `expected` FieldValue::value.
 // As a sanity check, also requires that the `i`th actual FieldValue::id
 // starts with the `i`th `expected` FieldValue::id.
 [[nodiscard]] auto ValuesAre(const std::vector<FieldValue>& expected) {
-  auto FieldEq = [](const FieldValue& expected) {
-    return ::testing::AllOf(
-        ::testing::Field(&FieldValue::id, ::testing::StartsWith(expected.id)),
-        ::testing::Field(&FieldValue::value, ::testing::Eq(expected.value)));
-  };
-  std::vector<decltype(FieldEq(expected[0]))> matchers;
-  for (const FieldValue& field : expected)
-    matchers.push_back(FieldEq(field));
-  return ::testing::UnorderedElementsAreArray(matchers);
+  return UnorderedElementsAreArray(
+      Map(expected, [](const FieldValue& expected) {
+        return AllOf(Field(&FieldValue::id, StartsWith(expected.id)),
+                     Field(&FieldValue::value, Eq(expected.value)));
+      }));
+}
+
+[[nodiscard]] auto FieldsAre(auto matcher) {
+  return Field(&FormData::fields, ElementsAreArray(matcher));
 }
 
 // An object that waits for an observed form-control element to change its value
@@ -513,26 +531,6 @@ class ValueWaiter {
   content::EvalJsResult r = content::EvalJs(execution_target, kFunction + call);
   int waiterId = r.ExtractInt();
   return ValueWaiter(waiterId, execution_target);
-}
-
-// Matcher for a FormData which checks that the submitted fields correspond
-// to the name/value pairs in `expected`.
-auto SubmittedValuesAre(
-    const std::vector<std::u16string FormFieldData::*>& property_accessors,
-    const std::vector<std::vector<std::u16string>>& expected) {
-  auto get_submitted_values = [property_accessors](const FormData& form) {
-    std::vector<std::vector<std::u16string>> result;
-    for (const auto& field : form.fields) {
-      std::vector<std::u16string> field_properties;
-      for (std::u16string FormFieldData::*field_member : property_accessors) {
-        field_properties.push_back(field.*field_member);
-      }
-      result.push_back(field_properties);
-    }
-    return result;
-  };
-  return ResultOf("get_submitted_values", get_submitted_values,
-                  ::testing::ContainerEq(expected));
 }
 
 }  // namespace
@@ -1743,7 +1741,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
           .ExtractString(),
   };
 
-  EXPECT_THAT(input_element_events, testing::ElementsAre("input", "change"));
+  EXPECT_THAT(input_element_events, ElementsAre("input", "change"));
 
   EXPECT_EQ(2,
             content::EvalJs(GetWebContents(), "selectElementEvents.length;"));
@@ -1755,7 +1753,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
           .ExtractString(),
   };
 
-  EXPECT_THAT(select_element_events, testing::ElementsAre("input", "change"));
+  EXPECT_THAT(select_element_events, ElementsAre("input", "change"));
 }
 
 // Test that we can autofill forms distinguished only by their |id| attribute.
@@ -3855,14 +3853,33 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
     ASSERT_TRUE(waiter.Wait(num_modified_textfields));
   }
 
-  std::vector<std::vector<std::u16string>> GetExpectedValues() {
-    // name, value
-    return std::vector<std::vector<std::u16string>>{
-        {u"name", u"Sarah"},
-        {u"address", u"123 Main Road"},
-        {u"city", u""},
-        {u"zip", u""},
-        {u"state", u"WA"}};
+  [[nodiscard]] static auto HasExpectedValues() {
+    struct NameValue {
+      std::u16string name;
+      std::u16string value;
+    };
+    std::vector<NameValue> expected = {{u"name", u"Sarah"},
+                                       {u"address", u"123 Main Road"},
+                                       {u"city", u""},
+                                       {u"zip", u""},
+                                       {u"state", u"WA"}};
+    return FieldsAre(Map(expected, [](const NameValue& nv) {
+      return AllOf(Field("name", &FormFieldData::name, nv.name),
+                   Field("value", &FormFieldData::value, nv.value));
+    }));
+  }
+
+  struct NameValueUserInput {
+    std::u16string name;
+    std::u16string value;
+    std::u16string user_input;
+  };
+  [[nodiscard]] static auto HasNameValueUserInput(
+      const NameValueUserInput& nvu) {
+    return AllOf(
+        Field("name", &FormFieldData::name, nvu.name),
+        Field("value", &FormFieldData::value, nvu.value),
+        Field("user_input", &FormFieldData::user_input, nvu.user_input));
   }
 
   void ExecuteScript(const std::string& script) {
@@ -3882,12 +3899,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   base::RunLoop run_loop;
   // Ensure that only expected form submissions are recorded.
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
-  EXPECT_CALL(
-      *autofill_manager(),
-      OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value},
-                             GetExpectedValues()),
-          /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(HasExpectedValues(),
+                                  /*known_success=*/false,
+                                  mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
@@ -3905,11 +3920,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(
       *autofill_manager(),
-      OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value},
-                             GetExpectedValues()),
-          /*known_success=*/false,
-          mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
+      OnFormSubmittedImpl(HasExpectedValues(),
+                          /*known_success=*/false,
+                          mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
   // Add a delay before navigating away to avoid race conditions. This is
@@ -3929,11 +3942,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(
       *autofill_manager(),
-      OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value},
-                             GetExpectedValues()),
-          /*known_success=*/true,
-          mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION))
+      OnFormSubmittedImpl(HasExpectedValues(),
+                          /*known_success=*/true,
+                          mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
 
@@ -3961,12 +3972,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
   // Ensure that only expected form submissions are recorded.
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
-  EXPECT_CALL(
-      *autofill_manager(),
-      OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value},
-                             GetExpectedValues()),
-          /*known_success=*/true, mojom::SubmissionSource::XHR_SUCCEEDED))
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(HasExpectedValues(),
+                                  /*known_success=*/true,
+                                  mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
 
@@ -3994,12 +4003,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
   // Ensure that only expected form submissions are recorded.
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
-  EXPECT_CALL(
-      *autofill_manager(),
-      OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value},
-                             GetExpectedValues()),
-          /*known_success=*/true, mojom::SubmissionSource::XHR_SUCCEEDED))
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(HasExpectedValues(),
+                                  /*known_success=*/true,
+                                  mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
 
@@ -4029,11 +4036,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(
       *autofill_manager(),
-      OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value},
-                             GetExpectedValues()),
-          /*known_success=*/true,
-          mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR))
+      OnFormSubmittedImpl(HasExpectedValues(),
+                          /*known_success=*/true,
+                          mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
 
@@ -4061,17 +4066,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 // page replaces the <input> value with '***'.
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
                        RememberUserInput) {
-  EnterValues();
-
-  // name, value, user_input
-  const std::vector<std::vector<std::u16string>> kExpectedSubmittedValues{
+  const std::vector<NameValueUserInput> kExpectedSubmittedValues{
       {u"name", u"JS Modified Name", u"Sarah"},
       {u"address", u"JS Modified Address", u"123 Main Road"},
       {u"city", u"", u""},
       {u"zip", u"", u""},
-      // user_input is not set for <select>
-      {u"state", u"WA", u""}};
+      {u"state", u"WA", u""}};  // user_input is not set for <select>.
 
+  EnterValues();
   ExecuteScript("document.getElementById('name').value = 'JS Modified Name';");
   ExecuteScript(
       "document.getElementById('address').value = 'JS Modified Address';");
@@ -4082,9 +4084,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value,
-                              &FormFieldData::user_input},
-                             kExpectedSubmittedValues),
+          FieldsAre(Map(kExpectedSubmittedValues, HasNameValueUserInput)),
           /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
@@ -4117,23 +4117,18 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
       {"state", kDefaultAddressValues.state_short}};
   EXPECT_THAT(GetFormValues(), ValuesAre(kExpectedAddress));
 
-  std::vector<std::vector<std::u16string>> expected_submitted_values;
-  for (const FieldValue& field_value : kExpectedAddress) {
-    expected_submitted_values.push_back(
-        {/*name=*/base::UTF8ToUTF16(field_value.id),
-         /*value=*/base::UTF8ToUTF16(field_value.value),
-         /*user_input=*/u""});
-  }
-
   base::RunLoop run_loop;
   // Ensure that only expected form submissions are recorded.
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value,
-                              &FormFieldData::user_input},
-                             expected_submitted_values),
+          FieldsAre(Map(kExpectedAddress,
+                        [](const FieldValue& fv) {
+                          return HasNameValueUserInput(
+                              {base::UTF8ToUTF16(fv.id),
+                               base::UTF8ToUTF16(fv.value), u""});
+                        })),
           /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
@@ -4190,13 +4185,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionClearFormTest,
                                                 {"state", "CA"}};
   EXPECT_THAT(GetFormValues(), ValuesAre(kClearedAddress));
 
-  // name, value, user_input
-  std::vector<std::vector<std::u16string>> kSubmittedValues = {
-      {u"name", u"", u""},
-      {u"address", u"", u""},
-      {u"city", u"", u""},
-      {u"zip", u"", u""},
-      {u"state", u"CA", u""}};
+  std::vector<NameValueUserInput> kSubmittedValues = {{u"name", u"", u""},
+                                                      {u"address", u"", u""},
+                                                      {u"city", u"", u""},
+                                                      {u"zip", u"", u""},
+                                                      {u"state", u"CA", u""}};
 
   base::RunLoop run_loop;
   // Ensure that only expected form submissions are recorded.
@@ -4204,9 +4197,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionClearFormTest,
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(
-          SubmittedValuesAre({&FormFieldData::name, &FormFieldData::value,
-                              &FormFieldData::user_input},
-                             kSubmittedValues),
+          FieldsAre(Map(kSubmittedValues, HasNameValueUserInput)),
           /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
