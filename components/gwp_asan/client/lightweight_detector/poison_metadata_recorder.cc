@@ -16,7 +16,7 @@
 #include "components/crash/core/app/crashpad.h"  // nogncheck
 #endif
 
-namespace gwp_asan::internal {
+namespace gwp_asan::internal::lud {
 
 PoisonMetadataRecorder::PoisonMetadataRecorder(LightweightDetectorMode mode,
                                                size_t num_metadata) {
@@ -43,7 +43,7 @@ PoisonMetadataRecorder::PoisonMetadataRecorder(LightweightDetectorMode mode,
 
 PoisonMetadataRecorder::~PoisonMetadataRecorder() = default;
 
-void PoisonMetadataRecorder::RecordDeallocation(void* ptr, size_t size) {
+void PoisonMetadataRecorder::RecordAndZap(void* ptr, size_t size) {
   DCHECK(metadata_);
   DCHECK_GT(state_.num_metadata, 0u);
 
@@ -121,4 +121,4 @@ bool PoisonMetadataRecorder::HasAllocationForTesting(uintptr_t address) {
 template class EXPORT_TEMPLATE_DEFINE(GWP_ASAN_EXPORT)
     SharedStateHolder<PoisonMetadataRecorder>;
 
-}  // namespace gwp_asan::internal
+}  // namespace gwp_asan::internal::lud

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_GWP_ASAN_COMMON_LIGHTWEIGHT_DETECTOR_STATE_H_
 #define COMPONENTS_GWP_ASAN_COMMON_LIGHTWEIGHT_DETECTOR_STATE_H_
 
+#include <stdint.h>
+
 #include "components/gwp_asan/common/allocation_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -12,9 +14,10 @@ namespace gwp_asan::internal {
 
 // This enum is used during GWP-ASan initialization to control the
 // Lightweight UAF Detector.
-enum class LightweightDetectorMode : bool {
+enum class LightweightDetectorMode : uint8_t {
   kOff,
   kBrpQuarantine,
+  kRandom,
 };
 
 // Encapsulates Lightweight UAF Detector's state shared with with the crash
