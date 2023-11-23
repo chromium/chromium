@@ -305,13 +305,13 @@ TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  EXPECT_FALSE(frame_node->is_holding_weblock());
+  EXPECT_FALSE(frame_node->IsHoldingWebLock());
   EXPECT_CALL(obs, OnFrameIsHoldingWebLockChanged(frame_node.get()));
   frame_node->SetIsHoldingWebLock(true);
-  EXPECT_TRUE(frame_node->is_holding_weblock());
+  EXPECT_TRUE(frame_node->IsHoldingWebLock());
   EXPECT_CALL(obs, OnFrameIsHoldingWebLockChanged(frame_node.get()));
   frame_node->SetIsHoldingWebLock(false);
-  EXPECT_FALSE(frame_node->is_holding_weblock());
+  EXPECT_FALSE(frame_node->IsHoldingWebLock());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -326,10 +326,10 @@ TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
 
   EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
   frame_node->SetIsHoldingIndexedDBLock(true);
-  EXPECT_TRUE(frame_node->is_holding_indexeddb_lock());
+  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock());
   EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
   frame_node->SetIsHoldingIndexedDBLock(false);
-  EXPECT_FALSE(frame_node->is_holding_indexeddb_lock());
+  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -403,7 +403,7 @@ TEST_F(FrameNodeImplTest, FormInteractions) {
 
   EXPECT_CALL(obs, OnHadFormInteractionChanged(frame_node.get()));
   frame_node->SetHadFormInteraction();
-  EXPECT_TRUE(frame_node->had_form_interaction());
+  EXPECT_TRUE(frame_node->HadFormInteraction());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -418,7 +418,7 @@ TEST_F(FrameNodeImplTest, UserEdits) {
 
   EXPECT_CALL(obs, OnHadUserEditsChanged(frame_node.get()));
   frame_node->SetHadUserEdits();
-  EXPECT_TRUE(frame_node->had_user_edits());
+  EXPECT_TRUE(frame_node->HadUserEdits());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -427,14 +427,14 @@ TEST_F(FrameNodeImplTest, IsAudible) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  EXPECT_FALSE(frame_node->is_audible());
+  EXPECT_FALSE(frame_node->IsAudible());
 
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
   EXPECT_CALL(obs, OnIsAudibleChanged(frame_node.get()));
   frame_node->SetIsAudible(true);
-  EXPECT_TRUE(frame_node->is_audible());
+  EXPECT_TRUE(frame_node->IsAudible());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -443,14 +443,14 @@ TEST_F(FrameNodeImplTest, IsCapturingMediaStream) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  EXPECT_FALSE(frame_node->is_capturing_media_stream());
+  EXPECT_FALSE(frame_node->IsCapturingMediaStream());
 
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
   EXPECT_CALL(obs, OnIsCapturingMediaStreamChanged(frame_node.get()));
   frame_node->SetIsCapturingMediaStream(true);
-  EXPECT_TRUE(frame_node->is_capturing_media_stream());
+  EXPECT_TRUE(frame_node->IsCapturingMediaStream());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -468,15 +468,15 @@ TEST_F(FrameNodeImplTest, IntersectsViewport) {
   graph()->AddFrameNodeObserver(&obs);
 
   // Initially unknown.
-  EXPECT_FALSE(child_frame_node->intersects_viewport().has_value());
+  EXPECT_FALSE(child_frame_node->IntersectsViewport().has_value());
 
   EXPECT_CALL(obs, OnIntersectsViewportChanged(child_frame_node.get()));
   child_frame_node->SetIntersectsViewport(true);
-  EXPECT_TRUE(child_frame_node->intersects_viewport().value());
+  EXPECT_TRUE(child_frame_node->IntersectsViewport().value());
 
   EXPECT_CALL(obs, OnIntersectsViewportChanged(child_frame_node.get()));
   child_frame_node->SetIntersectsViewport(false);
-  EXPECT_FALSE(child_frame_node->intersects_viewport().value());
+  EXPECT_FALSE(child_frame_node->IntersectsViewport().value());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -485,7 +485,7 @@ TEST_F(FrameNodeImplTest, Visibility) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kUnknown);
+  EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kUnknown);
 
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
@@ -494,7 +494,7 @@ TEST_F(FrameNodeImplTest, Visibility) {
                                             FrameNode::Visibility::kUnknown));
 
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
-  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
+  EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -521,7 +521,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
   auto child_frame_node =
       CreateFrameNodeAutoId(process.get(), page.get(), frame_node.get());
   const FrameNode* public_frame_node = frame_node.get();
-  const FrameNode* public_child_frame_node = child_frame_node.get();
 
   // Simply test that the public interface impls yield the same result as their
   // private counterpart.
@@ -537,19 +536,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
   for (auto* child : frame_node->child_frame_nodes())
     EXPECT_TRUE(base::Contains(child_frame_nodes, child));
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
-
-  EXPECT_EQ(frame_node->is_holding_weblock(),
-            public_frame_node->IsHoldingWebLock());
-  EXPECT_EQ(frame_node->is_holding_indexeddb_lock(),
-            public_frame_node->IsHoldingIndexedDBLock());
-  EXPECT_EQ(frame_node->had_form_interaction(),
-            public_frame_node->HadFormInteraction());
-  EXPECT_EQ(frame_node->had_user_edits(), public_frame_node->HadUserEdits());
-  // Use the child frame node to test the intersection with the viewport because
-  // this property is not tracked for a main frame.
-  EXPECT_EQ(child_frame_node->intersects_viewport(),
-            public_child_frame_node->IntersectsViewport());
-  EXPECT_EQ(frame_node->visibility(), public_frame_node->GetVisibility());
 }
 
 TEST_F(FrameNodeImplTest, VisitChildFrameNodes) {

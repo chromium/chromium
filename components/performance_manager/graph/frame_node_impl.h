@@ -115,15 +115,7 @@ class FrameNodeImpl
   const base::flat_set<FrameNodeImpl*>& child_frame_nodes() const;
   const base::flat_set<PageNodeImpl*>& opened_page_nodes() const;
   const base::flat_set<PageNodeImpl*>& embedded_page_nodes() const;
-  bool is_holding_weblock() const;
-  bool is_holding_indexeddb_lock() const;
   const base::flat_set<WorkerNodeImpl*>& child_worker_nodes() const;
-  bool had_form_interaction() const;
-  bool had_user_edits() const;
-  bool is_audible() const;
-  bool is_capturing_media_stream() const;
-  absl::optional<bool> intersects_viewport() const;
-  Visibility visibility() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);

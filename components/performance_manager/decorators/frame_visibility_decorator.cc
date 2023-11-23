@@ -38,12 +38,12 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
 
   // Too early in the frame's lifecycle, don't know yet if it intersects with
   // the viewport. Can't determine the visibility.
-  if (!frame_node->intersects_viewport().has_value()) {
+  if (!frame_node->IntersectsViewport().has_value()) {
     return FrameNode::Visibility::kUnknown;
   }
 
   // The frame intersects with the viewport and is thus visible.
-  if (frame_node->intersects_viewport().value()) {
+  if (frame_node->IntersectsViewport().value()) {
     return FrameNode::Visibility::kVisible;
   }
 
@@ -151,7 +151,7 @@ void FrameVisibilityDecorator::OnFramePropertyChanged(
   FrameNode::Visibility new_visibility = GetFrameNodeVisibility(
       frame_node_impl, IsPageUserVisible(frame_node_impl->page_node()));
 
-  if (new_visibility == frame_node_impl->visibility()) {
+  if (new_visibility == frame_node_impl->GetVisibility()) {
     // No visibility change.
     return;
   }
