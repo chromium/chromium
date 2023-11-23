@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/ASan Debug (32-bit x86 with V8-ARM)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

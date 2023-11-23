@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "enable_nacl": false,
+    "is_asan": true,
+    "is_component_build": true,
+    "is_debug": true,
+    "symbol_level": 1,
+    "target_cpu": "x86",
+    "use_remoteexec": true,
+    "v8_enable_verify_heap": true,
+    "v8_target_cpu": "arm"
+  }
+}

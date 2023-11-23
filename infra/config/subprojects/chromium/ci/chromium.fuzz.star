@@ -9,6 +9,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -85,6 +86,14 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -116,6 +125,15 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "v8-infra@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "v8_heap",
+            "debug_builder",
+            "reclient",
+            "v8_hybrid",
+        ],
+    ),
 )
 
 ci.builder(
@@ -145,6 +163,16 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -176,6 +204,16 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "v8-infra@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+            "v8_hybrid",
+        ],
+    ),
 )
 
 ci.builder(
@@ -204,6 +242,16 @@ ci.builder(
         category = "linux asan",
         short_name = "med",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "v8_heap",
+            "chromeos_codecs",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -219,6 +267,20 @@ ci.builder(
         short_name = "centipede",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "centipede",
+            "asan",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "shared",
+            "release",
+            "reclient",
+            "disable_seed_corpus",
+        ],
+    ),
 )
 
 ci.builder(
@@ -249,6 +311,17 @@ ci.builder(
         short_name = "med",
     ),
     contact_team_email = "v8-infra@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "chromeos_codecs",
+            "release_builder",
+            "reclient",
+            "v8_hybrid",
+        ],
+    ),
 )
 
 ci.builder(
@@ -281,6 +354,17 @@ ci.builder(
         category = "cros asan",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos",
+            "asan",
+            "lsan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -313,6 +397,13 @@ ci.builder(
         short_name = "org",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -345,6 +436,13 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "msan_no_origins",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -378,6 +476,16 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "disable_nacl",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     health_spec = health_spec.modified_default(
         pending_time = struct(
             p50_mins = None,  # exception added because this builder has a pool of 1 machine and 2 concurrent invocations
@@ -414,6 +522,17 @@ ci.builder(
         category = "mac asan",
         short_name = "med",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "disable_nacl",
+            "fuzzer",
+            "v8_heap",
+            "chrome_with_codecs",
+            "release_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -444,6 +563,14 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "disable_nacl",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -475,6 +602,14 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "tsan",
+            "disable_nacl",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -502,6 +637,13 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -530,6 +672,14 @@ ci.builder(
         short_name = "vpt",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "ubsan_vptr",
+            "ubsan_vptr_no_recover_hack",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = 250,
 )
 
@@ -562,6 +712,16 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "clang",
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -594,6 +754,17 @@ ci.builder(
         short_name = "med",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "clang",
+            "asan",
+            "fuzzer",
+            "v8_heap",
+            "chrome_with_codecs",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -609,6 +780,20 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_with_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -623,6 +808,20 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "debug_static_builder",
+            "reclient",
+            "ios",
+            "ios_catalyst",
+            "x64",
+            "asan",
+            "libfuzzer",
+            "no_dsyms",
+            "no_remoting",
+        ],
+    ),
     xcode = xcode.x14main,
 )
 
@@ -638,6 +837,20 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "mojo_fuzzer",
+            "shared",
+            "release",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -654,6 +867,20 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "debug_builder",
+            "reclient",
+            "shared",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -669,6 +896,20 @@ ci.builder(
         short_name = "linux-msan",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "msan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -686,6 +927,20 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 5 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "ubsan_security_non_vptr",
+            "release_builder",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+            "shared",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -700,6 +955,21 @@ ci.builder(
         short_name = "arm64",
     ),
     contact_team_email = "v8-infra@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm64",
+            "disable_seed_corpus",
+        ],
+    ),
 )
 
 ci.builder(
@@ -713,6 +983,21 @@ ci.builder(
         short_name = "arm64-dbg",
     ),
     contact_team_email = "v8-infra@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "debug_builder",
+            "reclient",
+            "shared",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm64",
+            "disable_seed_corpus",
+        ],
+    ),
 )
 
 ci.builder(
@@ -726,6 +1011,21 @@ ci.builder(
         short_name = "linux32",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "x86",
+            "disable_seed_corpus",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -740,6 +1040,21 @@ ci.builder(
         short_name = "arm",
     ),
     contact_team_email = "v8-infra@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm",
+            "disable_seed_corpus",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -754,6 +1069,21 @@ ci.builder(
         short_name = "arm-dbg",
     ),
     contact_team_email = "v8-infra@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "debug_builder",
+            "reclient",
+            "shared",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "v8_simulate_arm",
+            "disable_seed_corpus",
+        ],
+    ),
 )
 
 ci.builder(
@@ -767,6 +1097,19 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "chrome_with_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+        ],
+    ),
 )
 
 ci.builder(
@@ -785,5 +1128,21 @@ ci.builder(
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 6 * time.hour,
+    # Note that because of optimize_for_fuzzing, Windows cannot share a config
+    # with other libFuzzer builds. optimize_for_fuzzing is used by the other
+    # libFuzzer build configs but it does not work on Windows.
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "release_builder",
+            "reclient",
+            "chrome_with_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "minimal_symbols",
+            "mojo_fuzzer",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

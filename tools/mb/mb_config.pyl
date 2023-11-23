@@ -173,44 +173,6 @@
       'fuchsia-x64-workstation': 'release_bot_fuchsia_chrome_reclient',
     },
 
-    'chromium.fuzz': {
-      'ASAN Debug': 'asan_lsan_debug_bot_reclient',
-      'ASAN Release': 'asan_lsan_fuzzer_v8_heap_release_bot_reclient',
-      'ASAN Release Media': 'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot_reclient',
-      'ASan Debug (32-bit x86 with V8-ARM)': 'asan_v8_heap_debug_bot_hybrid_reclient',
-      'ASan Release (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_release_bot_hybrid_reclient',
-      'ASan Release Media (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient',
-      'Centipede Upload Linux ASan': 'centipede_asan_shared_release_bot_reclient',
-      'ChromiumOS ASAN Release': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
-      'Libfuzzer Local Chrome OS ASan': 'libfuzzer_chromeos_asan_local',
-      'Libfuzzer Local Linux ASan': 'libfuzzer_asan_local',
-      'Libfuzzer Local Mac ASan': 'libfuzzer_mac_asan_local',
-      'Libfuzzer Local Windows ASan': 'libfuzzer_windows_asan_local',
-      'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot_reclient',
-      'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot_reclient',
-      'Libfuzzer Upload Linux ASan Debug': 'libfuzzer_asan_debug_bot_reclient',
-      'Libfuzzer Upload Linux MSan': 'libfuzzer_msan_release_bot_reclient',
-      'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot_reclient',
-      'Libfuzzer Upload Linux V8-ARM64 ASan': 'libfuzzer_asan_release_bot_v8_arm64_reclient',
-      'Libfuzzer Upload Linux V8-ARM64 ASan Debug': 'libfuzzer_asan_debug_bot_v8_arm64_reclient',
-      'Libfuzzer Upload Linux32 ASan': 'libfuzzer_asan_release_bot_x86_reclient',
-      'Libfuzzer Upload Linux32 V8-ARM ASan': 'libfuzzer_asan_release_bot_x86_v8_arm_reclient',
-      'Libfuzzer Upload Linux32 V8-ARM ASan Debug': 'libfuzzer_asan_debug_bot_x86_v8_arm_reclient',
-      'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot_reclient',
-      'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot_reclient',
-      'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
-      'MSAN Release (chained origins)': 'msan_release_bot_reclient',
-      'MSAN Release (no origins)': 'msan_no_origins_release_bot_reclient',
-      'Mac ASAN Release': 'asan_disable_nacl_fuzzer_v8_heap_release_bot_reclient',
-      'Mac ASAN Release Media': 'asan_disable_nacl_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
-      'TSAN Debug': 'tsan_disable_nacl_debug_bot_reclient',
-      'TSAN Release': 'tsan_disable_nacl_release_bot_reclient',
-      'UBSan Release': 'ubsan_release_bot_reclient',
-      'UBSan vptr Release': 'ubsan_vptr_release_bot_reclient',
-      'Win ASan Release': 'asan_fuzzer_v8_heap_release_bot_reclient',
-      'Win ASan Release Media': 'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
-    },
-
     'chromium.fyi': {
       'Comparison Android (reclient)': {
         'build1': 'android_webview_google_debug_static_bot_arm64_reclient',
@@ -810,27 +772,6 @@
       'fuchsia-x64-workstation': 'release_trybot_fuchsia_chrome',
     },
 
-    'tryserver.chromium.fuzz': {
-      'linux-asan-dbg': 'asan_lsan_debug_bot_reclient',
-      'linux-asan-media-rel': 'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot_reclient',
-      'linux-asan-media-v8-arm-rel': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient',
-      'linux-asan-rel': 'asan_lsan_fuzzer_v8_heap_release_bot_reclient',
-      'linux-asan-v8-arm-dbg': 'asan_v8_heap_debug_bot_hybrid_reclient',
-      'linux-asan-v8-arm-rel': 'asan_fuzzer_v8_heap_release_bot_hybrid_reclient',
-      'linux-chromeos-asan-rel': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
-      'linux-msan-chained-origins-rel': 'msan_release_bot_reclient',
-      'linux-msan-no-origins-rel': 'msan_no_origins_release_bot_reclient',
-      'linux-tsan-dbg': 'tsan_disable_nacl_debug_bot_reclient',
-      'linux-tsan-rel': 'tsan_disable_nacl_release_bot_reclient',
-      'linux-ubsan-rel': 'ubsan_release_bot_reclient',
-      'linux-ubsan-vptr-rel': 'ubsan_vptr_release_bot_reclient',
-      'mac-asan-media-rel': 'asan_disable_nacl_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
-      'mac-asan-rel': 'asan_disable_nacl_fuzzer_v8_heap_release_bot_reclient',
-      'win-asan-media-rel': 'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
-      'win-asan-rel': 'asan_fuzzer_v8_heap_release_bot_reclient',
-
-    },
-
     'tryserver.chromium.linux': {
       'cast-binary-size': 'cast_binary_size',
       'chromeos-js-code-coverage': 'chromeos_js_coverage_reclient',
@@ -1243,30 +1184,6 @@
       'asan', 'dcheck_always_on', 'disable_nacl', 'release_bot_reclient',
     ],
 
-    'asan_disable_nacl_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient': [
-      'asan', 'disable_nacl', 'fuzzer', 'v8_heap', 'chrome_with_codecs', 'release_bot_reclient',
-    ],
-
-    'asan_disable_nacl_fuzzer_v8_heap_release_bot_reclient': [
-      'asan', 'disable_nacl', 'fuzzer', 'v8_heap', 'release_bot_reclient',
-    ],
-
-    'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient': [
-      'clang', 'asan', 'fuzzer', 'v8_heap', 'chrome_with_codecs', 'release_bot_reclient',
-    ],
-
-    'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient': [
-      'asan', 'fuzzer', 'v8_heap', 'chromeos_codecs', 'release_bot_reclient', 'hybrid',
-    ],
-
-    'asan_fuzzer_v8_heap_release_bot_hybrid_reclient': [
-      'asan', 'fuzzer', 'v8_heap', 'release_bot_reclient', 'hybrid',
-    ],
-
-    'asan_fuzzer_v8_heap_release_bot_reclient': [
-      'clang', 'asan', 'fuzzer', 'v8_heap', 'release_bot_reclient',
-    ],
-
     'asan_lsan_bot_fuchsia_reclient': [
       'asan', 'lsan', 'release_bot_reclient', 'fuchsia',
     ],
@@ -1279,20 +1196,8 @@
       'asan', 'lsan', 'dcheck_always_on', 'disable_nacl', 'release_bot_reclient',
     ],
 
-    'asan_lsan_debug_bot_reclient': [
-      'asan', 'lsan', 'debug_bot_reclient',
-    ],
-
     'asan_lsan_failsan_release_trybot_reclient': [
       'asan', 'lsan', 'fail_on_san_warnings', 'release_trybot_minimal_symbols_reclient',
-    ],
-
-    'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot_reclient': [
-      'asan', 'lsan', 'v8_heap', 'chromeos_codecs', 'release_bot_reclient',
-    ],
-
-    'asan_lsan_fuzzer_v8_heap_release_bot_reclient': [
-      'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot_reclient',
     ],
 
     'asan_lsan_lacros_release_bot_dcheck_always_on_reclient': [
@@ -1315,10 +1220,6 @@
       'asan', 'minimal_symbols', 'disable_nacl', 'release_bot_reclient', 'dcheck_always_on',
     ],
 
-    'asan_v8_heap_debug_bot_hybrid_reclient': [
-      'asan', 'v8_heap', 'debug_bot_reclient', 'hybrid',
-    ],
-
     'cast_binary_size': [
       'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot',
     ],
@@ -1328,11 +1229,6 @@
 
     'centipede_asan_release_trybot_reclient': [
       'centipede', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
-    ],
-
-    'centipede_asan_shared_release_bot_reclient': [
-      'centipede', 'asan', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl',
-      'optimize_for_fuzzing', 'shared_release_bot_reclient', 'disable_seed_corpus',
     ],
 
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient': [
@@ -1454,10 +1350,6 @@
 
     'chromeos_arm64-generic_lacros_rel_skylab_reclient': [
       'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release','is_skylab',
-    ],
-
-    'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient': [
-      'chromeos', 'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot_reclient',
     ],
 
     'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients': [
@@ -1956,10 +1848,6 @@
       'headless_shell', 'release', 'static', 'reclient', 'use_dummy_lastchange',
     ],
 
-    'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient': [
-        'compile_only', 'debug_static_bot_reclient', 'ios', 'ios_catalyst', 'ios_cpu_x64',  'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
-    ],
-
     'ios_device_release_compile_only': [
       'ios_device_release_compile_only',
     ],
@@ -2033,79 +1921,8 @@
       'lacros_on_linux_release_trybot_reclient',
     ],
 
-    'libfuzzer_asan_debug_bot_reclient': [
-      'libfuzzer', 'asan', 'debug_bot_reclient', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
-    ],
-
-    'libfuzzer_asan_debug_bot_v8_arm64_reclient': [
-      'libfuzzer', 'asan', 'debug_bot_reclient', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'v8_simulate_arm64', 'disable_seed_corpus',
-    ],
-
-    'libfuzzer_asan_debug_bot_x86_v8_arm_reclient': [
-      'libfuzzer', 'asan', 'debug_bot_reclient', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'v8_simulate_arm',  'disable_seed_corpus',
-    ],
-
-    # Meant for local development of fuzzers where no reclient/goma is needed.
-    'libfuzzer_asan_local': [
-      'libfuzzer', 'asan', 'release', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'no_reclient',
-    ],
-
-    'libfuzzer_asan_release_bot_reclient': [
-      'libfuzzer', 'asan', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'shared_release_bot_reclient',
-    ],
-
-    'libfuzzer_asan_release_bot_v8_arm64_reclient': [
-      'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'v8_simulate_arm64', 'disable_seed_corpus',
-    ],
-
-    'libfuzzer_asan_release_bot_x86_reclient': [
-      'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'x86', 'disable_seed_corpus',
-    ],
-
-    'libfuzzer_asan_release_bot_x86_v8_arm_reclient': [
-      'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'v8_simulate_arm', 'disable_seed_corpus',
-    ],
-
     'libfuzzer_asan_release_trybot_reclient': [
       'libfuzzer', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
-    ],
-
-    # Meant for local development of fuzzers where no reclient/goma is needed.
-    'libfuzzer_chromeos_asan_local': [
-      'libfuzzer', 'asan', 'no_reclient', 'release', 'chromeos_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
-    ],
-
-    'libfuzzer_chromeos_asan_release_bot_reclient': [
-      'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chromeos_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
-    ],
-
-    # Meant for local development of fuzzers where no reclient/goma is needed.
-    'libfuzzer_mac_asan_local': [
-      'libfuzzer', 'asan', 'no_reclient', 'release', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing',
-    ],
-
-    'libfuzzer_mac_asan_shared_release_bot_reclient': [
-      'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing',
-    ],
-
-    'libfuzzer_msan_release_bot_reclient': [
-      'libfuzzer', 'msan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
-    ],
-
-    'libfuzzer_ubsan_release_bot_reclient': [
-      'libfuzzer', 'ubsan_security_non_vptr', 'release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus', 'shared',
-    ],
-
-    # Meant for local development of fuzzers where no reclient/goma is needed.
-    'libfuzzer_windows_asan_local': [
-      'libfuzzer', 'asan', 'no_reclient', 'release', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols', 'mojo_fuzzer',
-    ],
-
-    # Note that because of optimize_for_fuzzing, Windows cannot share a config
-    # with other libFuzzer builds. optimize_for_fuzzing is used by the other
-    # libFuzzer build configs but it does not work on Windows.
-    'libfuzzer_windows_asan_release_bot_reclient': [
-      'libfuzzer', 'asan', 'release_bot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols', 'mojo_fuzzer',
     ],
 
     'libfuzzer_windows_asan_release_trybot_reclient': [
@@ -2140,10 +1957,6 @@
 
     'msan_failsan_release_bot_reclient': [
       'msan', 'fail_on_san_warnings', 'release_bot_reclient',
-    ],
-
-    'msan_no_origins_release_bot_reclient': [
-      'msan_no_origins', 'release_bot_reclient',
     ],
 
     'msan_release_bot_blink': [
@@ -2627,10 +2440,6 @@
       'release_trybot_reclient', 'x86',
     ],
 
-    'tsan_disable_nacl_debug_bot_reclient': [
-      'tsan', 'disable_nacl', 'debug_bot_reclient',
-    ],
-
     'tsan_disable_nacl_failsan_release_bot_reclient': [
       'tsan', 'disable_nacl', 'fail_on_san_warnings', 'release_bot_reclient',
     ],
@@ -2645,10 +2454,6 @@
 
     'ubsan_no_recover_release_bot_reclient': [
       'ubsan_no_recover', 'release_bot_reclient',
-    ],
-
-    'ubsan_release_bot_reclient': [
-      'ubsan', 'release_bot_reclient',
     ],
 
     'ubsan_vptr_release_bot_reclient': [
@@ -3054,10 +2859,6 @@
       'gn_args': 'enable_nacl=false',
     },
 
-    'disable_seed_corpus': {
-      'gn_args': 'archive_seed_corpus=false',
-    },
-
     'disable_widevine_signing': {
       'gn_args': 'enable_widevine_cdm_host_verification = false'
     },
@@ -3182,21 +2983,12 @@
       'mixins': ['headless', 'no_codecs'],
     },
 
-    'hybrid': {
-      'gn_args': 'v8_target_cpu="arm" target_cpu="x86"',
-      'mixins': ['disable_nacl'],
-    },
-
     'include_unwind_tables': {
       'gn_args': 'exclude_unwind_tables=false',
     },
 
     'ios': {
       'gn_args': 'target_os="ios"',
-    },
-
-    'ios_catalyst': {
-      'gn_args': 'target_environment="catalyst"',
     },
 
     'ios_cpu_arm64': {
@@ -3290,10 +3082,6 @@
       'gn_args': 'is_msan=true msan_track_origins=2',
     },
 
-    'msan_no_origins': {
-      'gn_args': 'is_msan=true msan_track_origins=0',
-    },
-
     'no_codecs': {
       'gn_args': ('media_use_libvpx=false '
                   'media_use_ffmpeg=false '
@@ -3307,10 +3095,6 @@
 
     'no_default_afdo': {
       'gn_args': 'clang_use_default_sample_profile=false',
-    },
-
-    'no_dsyms': {
-      'gn_args': 'enable_dsyms=false',
     },
 
     'no_gnome_keyring': {
@@ -3327,10 +3111,6 @@
 
     'no_reclient': {
       'gn_args': 'use_remoteexec=false',
-    },
-
-    'no_remoting': {
-      'gn_args': 'enable_remoting=false',
     },
 
     'no_resource_allowlisting': {
@@ -3578,9 +3358,6 @@
       'mixins': ['ubsan'],
       'gn_args': 'is_ubsan_no_recover=true',
     },
-    'ubsan_security_non_vptr': {
-      'gn_args': 'is_ubsan_security=true is_ubsan_vptr=false'
-    },
 
     'ubsan_vptr': {
       'gn_args': 'is_ubsan_vptr=true',
@@ -3649,14 +3426,6 @@
     'v8_release_branch': {
       # V8 flag that disables v8_enable_runtime_call_stats on release branches.
       'gn_args': 'v8_is_on_release_branch=true',
-    },
-
-    'v8_simulate_arm': {
-      'gn_args': 'target_cpu="x86" v8_target_cpu="arm"',
-    },
-
-    'v8_simulate_arm64': {
-      'gn_args': 'target_cpu="x64" v8_target_cpu="arm64"',
     },
 
     'volteer': {

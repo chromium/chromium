@@ -186,6 +186,18 @@ gn_args.config(
 )
 
 gn_args.config(
+    "cast_receiver_size_optimized",
+    args_file = "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
+)
+
+gn_args.config(
+    "centipede",
+    args = {
+        "use_centipede": True,
+    },
+)
+
+gn_args.config(
     "cfi",
     args = {
         "is_cfi": True,
@@ -417,6 +429,13 @@ gn_args.config(
     },
 )
 
+gn_args.config(
+    "disable_seed_corpus",
+    args = {
+        "archive_seed_corpus": False,
+    },
+)
+
 # Enables backup ref ptr by changing the default value of the feature flag.
 # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
 # enabled-processes = non-renderer:
@@ -637,6 +656,14 @@ gn_args.config(
     args = {
         "is_msan": True,
         "msan_track_origins": 2,
+    },
+)
+
+gn_args.config(
+    "msan_no_origins",
+    args = {
+        "is_msan": True,
+        "msan_track_origins": 0,
     },
 )
 
@@ -890,6 +917,21 @@ gn_args.config(
 )
 
 gn_args.config(
+    "ubsan",
+    args = {
+        "is_ubsan": True,
+    },
+)
+
+gn_args.config(
+    "ubsan_security_non_vptr",
+    args = {
+        "is_ubsan_security": True,
+        "is_ubsan_vptr": False,
+    },
+)
+
+gn_args.config(
     "ubsan_vptr",
     args = {
         "is_ubsan_vptr": True,
@@ -967,12 +1009,43 @@ gn_args.config(
     },
 )
 
+gn_args.config(
+    "v8_hybrid",
+    args = {
+        "v8_target_cpu": "arm",
+    },
+    configs = [
+        "x86",
+        "disable_nacl",
+    ],
+)
+
 # V8 flag that disables v8_enable_runtime_call_stats on release branches.
 gn_args.config(
     "v8_release_branch",
     args = {
         "is_on_release_branch": True,
     },
+)
+
+gn_args.config(
+    "v8_simulate_arm",
+    args = {
+        "v8_target_cpu": "arm",
+    },
+    configs = [
+        "x86",
+    ],
+)
+
+gn_args.config(
+    "v8_simulate_arm64",
+    args = {
+        "v8_target_cpu": "arm64",
+    },
+    configs = [
+        "x64",
+    ],
 )
 
 gn_args.config(

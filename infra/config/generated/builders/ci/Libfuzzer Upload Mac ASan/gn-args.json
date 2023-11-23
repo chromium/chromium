@@ -1,0 +1,15 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "enable_nacl": false,
+    "ffmpeg_branding": "Chrome",
+    "is_asan": true,
+    "is_component_build": true,
+    "is_debug": false,
+    "optimize_for_fuzzing": true,
+    "pdf_enable_xfa": true,
+    "proprietary_codecs": true,
+    "use_libfuzzer": true,
+    "use_remoteexec": true
+  }
+}

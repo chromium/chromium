@@ -1,0 +1,14 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "enable_ipc_fuzzer": true,
+    "enable_nacl": false,
+    "ffmpeg_branding": "Chrome",
+    "is_asan": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "proprietary_codecs": true,
+    "use_remoteexec": true,
+    "v8_enable_verify_heap": true
+  }
+}
