@@ -455,9 +455,8 @@ class SystemAccessProcessPrintBrowserTestBase
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   // Only of interest for content analysis tests. This will enable/disable the
-  // kEnableLocalScanAfterPreview and kEnableCloudScanAfterPreview features so
-  // that content analysis is done after the printing settings are picked from a
-  // dialog.
+  // kEnableCloudScanAfterPreview features so that content analysis is done
+  // after the printing settings are picked from a dialog.
   virtual bool EnableContentAnalysisAfterDialog() = 0;
 #endif
 
@@ -466,10 +465,8 @@ class SystemAccessProcessPrintBrowserTestBase
     std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
     if (EnableContentAnalysisAfterDialog()) {
-      enabled_features.push_back({features::kEnableLocalScanAfterPreview, {}});
       enabled_features.push_back({features::kEnableCloudScanAfterPreview, {}});
     } else {
-      disabled_features.push_back(features::kEnableLocalScanAfterPreview);
       disabled_features.push_back(features::kEnableCloudScanAfterPreview);
     }
 #endif
@@ -4127,14 +4124,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ContentAnalysisBeforePrintPreviewBrowserTest,
     testing::Combine(
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-        /*policy_value=*/testing::Values(kCloudAnalysisBlockingPolicy,
-                                         kCloudAnalysisNonBlockingPolicy,
-                                         kLocalAnalysisPolicy),
-#else
         /*policy_value=*/testing::Values(kCloudAnalysisBlockingPolicy,
                                          kCloudAnalysisNonBlockingPolicy),
-#endif
         /*content_analysis_allows_print=*/testing::Bool(),
         /*oop_enabled=*/testing::Bool()));
 
@@ -4158,14 +4149,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ContentAnalysisScriptedPreviewlessPrintBeforeDialogBrowserTest,
     testing::Combine(
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-        /*policy_value=*/testing::Values(kCloudAnalysisBlockingPolicy,
-                                         kCloudAnalysisNonBlockingPolicy,
-                                         kLocalAnalysisPolicy),
-#else
         /*policy_value=*/testing::Values(kCloudAnalysisBlockingPolicy,
                                          kCloudAnalysisNonBlockingPolicy),
-#endif
         /*content_analysis_allows_print=*/testing::Bool(),
         /*oop_enabled=*/testing::Bool()));
 

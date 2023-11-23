@@ -172,11 +172,9 @@ bool ContentAnalysisAfterDialog(
       scanning_data.settings.cloud_or_local_settings.is_cloud_analysis() &&
       base::FeatureList::IsEnabled(
           printing::features::kEnableCloudScanAfterPreview);
-  bool local_analysis_after_dialog =
-      scanning_data.settings.cloud_or_local_settings.is_local_analysis() &&
-      base::FeatureList::IsEnabled(
-          printing::features::kEnableLocalScanAfterPreview);
-  return cloud_analysis_after_dialog || local_analysis_after_dialog;
+  // Local content analysis is always after the dialog.
+  return cloud_analysis_after_dialog ||
+         scanning_data.settings.cloud_or_local_settings.is_local_analysis();
 }
 #endif
 

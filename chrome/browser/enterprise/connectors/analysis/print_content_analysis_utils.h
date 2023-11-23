@@ -19,8 +19,8 @@ namespace enterprise_connectors {
 
 // Represents context for the kind of print workflow that needs to check if
 // scanning should happen. This is used in conjunction with the
-// `kEnableCloudScanAfterPreview` and `kEnableLocalScanAfterPreview` to control
-// the timing at which scanning occurs.
+// `kEnableCloudScanAfterPreview` to control the timing at which scanning
+// occurs.
 //
 //                 +-------------#3-------------+
 //                 |                            V

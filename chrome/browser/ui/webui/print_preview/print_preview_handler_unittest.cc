@@ -1605,10 +1605,6 @@ class ContentAnalysisPrintPreviewHandlerTest
     : public PrintPreviewHandlerTest,
       public testing::WithParamInterface<bool> {
  public:
-  ContentAnalysisPrintPreviewHandlerTest() {
-    feature_list_.InitAndEnableFeature(features::kEnableLocalScanAfterPreview);
-  }
-
   void SetUp() override {
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
@@ -1668,7 +1664,6 @@ class ContentAnalysisPrintPreviewHandlerTest
   void WaitForScan() { run_loop_.Run(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::RunLoop run_loop_;
 
   // This installs a fake SDK manager that creates fake SDK clients when

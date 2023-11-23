@@ -77,15 +77,13 @@ bool ShouldDoScan(bool post_dialog_feature_enabled,
 
 bool ShouldScan(PrintScanningContext context,
                 const ContentAnalysisDelegate::Data& scanning_data) {
-  return scanning_data.settings.cloud_or_local_settings.is_local_analysis()
-             ? ShouldDoScan(
-                   base::FeatureList::IsEnabled(
-                       printing::features::kEnableLocalScanAfterPreview),
-                   context)
-             : ShouldDoScan(
-                   base::FeatureList::IsEnabled(
-                       printing::features::kEnableCloudScanAfterPreview),
-                   context);
+  return ShouldDoScan(
+      /*post_dialog_feature_enabled=*/
+      scanning_data.settings.cloud_or_local_settings.is_local_analysis()
+          ? true
+          : base::FeatureList::IsEnabled(
+                printing::features::kEnableCloudScanAfterPreview),
+      context);
 }
 
 void RecordPrintType(PrintScanningContext context,

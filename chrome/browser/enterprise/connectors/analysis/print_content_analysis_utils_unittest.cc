@@ -142,37 +142,22 @@ class PrintTestContentAnalysisDelegate : public ContentAnalysisDelegate {
 
 class PrintContentAnalysisUtilsTest
     : public PrintPreviewTest,
-      public testing::WithParamInterface<
-          testing::tuple<const char*, bool, bool>> {
+      public testing::WithParamInterface<testing::tuple<const char*, bool>> {
  public:
   PrintContentAnalysisUtilsTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (local_scan_after_preview_feature_enabled()) {
-      enabled_features.push_back(
-          {printing::features::kEnableLocalScanAfterPreview, {}});
-    } else {
-      disabled_features.push_back(
-          printing::features::kEnableLocalScanAfterPreview);
-    }
     if (cloud_scan_after_preview_feature_enabled()) {
-      enabled_features.push_back(
-          {printing::features::kEnableCloudScanAfterPreview, {}});
+      scoped_feature_list_.InitAndEnableFeature(
+          printing::features::kEnableCloudScanAfterPreview);
     } else {
-      disabled_features.push_back(
+      scoped_feature_list_.InitAndDisableFeature(
           printing::features::kEnableCloudScanAfterPreview);
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
     ContentAnalysisDelegate::DisableUIForTesting();
   }
 
   const char* policy_value() const { return std::get<0>(GetParam()); }
-  bool local_scan_after_preview_feature_enabled() const {
-    return std::get<1>(GetParam());
-  }
   bool cloud_scan_after_preview_feature_enabled() const {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
 
   void SetUp() override {
@@ -227,8 +212,7 @@ class PrintContentAnalysisUtilsTest
   // Helper that returns true when the policy/feature values should return in
   // pre-dialog content analysis.
   bool ExpectPostDialogAnalysis() {
-    return (policy_value() == kLocalPolicy &&
-            local_scan_after_preview_feature_enabled()) ||
+    return policy_value() == kLocalPolicy ||
            (policy_value() == kCloudPolicy &&
             cloud_scan_after_preview_feature_enabled());
   }
@@ -842,7 +826,6 @@ INSTANTIATE_TEST_SUITE_P(
     PrintContentAnalysisUtilsTest,
     testing::Combine(
         /*policy_value=*/testing::Values(kLocalPolicy, kCloudPolicy),
-        /*local_scan_after_preview_feature_enabled=*/testing::Bool(),
         /*cloud_scan_after_preview_feature_enabled=*/testing::Bool()));
 
 }  // namespace enterprise_connectors
