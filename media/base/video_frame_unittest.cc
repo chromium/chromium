@@ -375,6 +375,7 @@ TEST(VideoFrame, WrapVideoFrame) {
                                        visible_rect, natural_size);
     base_frame->AddDestructionObserver(base::BindOnce(
         &FrameNoLongerNeededCallback, &base_frame_done_callback_was_run));
+    ASSERT_TRUE(frame);
     EXPECT_EQ(base_frame->coded_size(), frame->coded_size());
     EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
               frame->data(VideoFrame::kYPlane));
@@ -398,6 +399,7 @@ TEST(VideoFrame, WrapVideoFrame) {
     natural_size = visible_rect.size();
     frame2 = VideoFrame::WrapVideoFrame(frame, frame->format(), visible_rect,
                                         natural_size);
+    ASSERT_TRUE(frame2);
     EXPECT_EQ(base_frame->coded_size(), frame2->coded_size());
     EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
               frame2->data(VideoFrame::kYPlane));
@@ -405,6 +407,38 @@ TEST(VideoFrame, WrapVideoFrame) {
     EXPECT_EQ(visible_rect, frame2->visible_rect());
     EXPECT_NE(base_frame->natural_size(), frame2->natural_size());
     EXPECT_EQ(natural_size, frame2->natural_size());
+  }
+
+  {
+    auto base_frame = VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight));
+    ASSERT_TRUE(base_frame);
+    // WrapVideoFrame is successful with the visible_rect that is not contained
+    // by |base_frame|'s visible rectangle, but contained by |base_frame|'s
+    // coded size area.
+    const gfx::Rect larger_visible_rect(0, 0, 3, 3);
+    auto frame3 = VideoFrame::WrapVideoFrame(base_frame, base_frame->format(),
+                                             larger_visible_rect,
+                                             larger_visible_rect.size());
+    ASSERT_TRUE(frame3);
+    EXPECT_EQ(base_frame->coded_size(), frame3->coded_size());
+    EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
+              frame3->data(VideoFrame::kYPlane));
+    EXPECT_NE(base_frame->visible_rect(), frame3->visible_rect());
+    EXPECT_EQ(larger_visible_rect, frame3->visible_rect());
+    EXPECT_NE(base_frame->natural_size(), frame3->natural_size());
+    EXPECT_EQ(larger_visible_rect.size(), frame3->natural_size());
+    // WrapVideoFrame() fails if the new visible rect is larger than
+    // |base_frame|'s coded size area.
+    const gfx::Rect too_large_visible_rect(0, 0, 5, 5);
+    EXPECT_FALSE(VideoFrame::WrapVideoFrame(base_frame, base_frame->format(),
+                                            too_large_visible_rect,
+                                            too_large_visible_rect.size()));
+    // WrapVideoFrame() fails if the new visible rect is not contained by
+    // |base_frame|'s coded size area.
+    const gfx::Rect non_contained_visible_rect(3, 3, 2, 2);
+    EXPECT_FALSE(VideoFrame::WrapVideoFrame(base_frame, base_frame->format(),
+                                            non_contained_visible_rect,
+                                            non_contained_visible_rect.size()));
   }
 
   // At this point |base_frame| is held by |frame|, |frame2|.

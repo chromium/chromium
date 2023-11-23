@@ -848,8 +848,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
     VideoPixelFormat format,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size) {
-  DCHECK(frame->visible_rect().Contains(visible_rect));
-
   if (!AreValidPixelFormatsForWrap(frame->format(), format)) {
     DLOG(ERROR) << __func__ << " Invalid format conversion."
                 << VideoPixelFormatToString(frame->format()) << " to "
