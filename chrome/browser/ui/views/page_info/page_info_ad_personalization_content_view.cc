@@ -54,12 +54,7 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
             view->presenter_->RecordPageInfoAction(
                 PageInfo::PageInfoAction::
                     PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-            if (base::FeatureList::IsEnabled(
-                    privacy_sandbox::kPrivacySandboxSettings4)) {
-              view->ui_delegate_->ShowPrivacySandboxSettings();
-            } else {
-              view->ui_delegate_->ShowPrivacySandboxAdPersonalization();
-            }
+            view->ui_delegate_->ShowPrivacySandboxSettings();
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),

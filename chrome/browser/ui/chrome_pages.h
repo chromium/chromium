@@ -216,8 +216,6 @@ void ShowSearchEngineSettings(Browser* browser);
 void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value);
 void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
-void ShowPrivacySandboxAdPersonalization(Browser* browser);
-void ShowPrivacySandboxLearnMore(Browser* browser);
 void ShowAddresses(Browser* browser);
 void ShowPaymentMethods(Browser* browser);
 void ShowAllSitesSettingsFilteredByFpsOwner(

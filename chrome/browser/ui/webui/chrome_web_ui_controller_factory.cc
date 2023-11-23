@@ -1045,10 +1045,6 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 
   // Android doesn't use the Options/Settings pages.
   if (page_url.host_piece() == chrome::kChromeUISettingsHost) {
-    if (page_url.path() == chrome::kPrivacySandboxSubPagePath) {
-      return settings_utils::GetPrivacySandboxFaviconResourceBytes(
-          scale_factor);
-    }
     return settings_utils::GetFaviconResourceBytes(scale_factor);
   }
 

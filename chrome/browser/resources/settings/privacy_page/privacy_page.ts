@@ -487,18 +487,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.interactedWithPage_();
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromSettingsParent');
-
-    if (this.isPrivacySandboxSettings4_) {
-      Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
-      return;
-    }
-
-    // Create a MouseEvent directly to avoid Polymer failing to synthesise a
-    // click event if this function was called in response to a touch event.
-    // See crbug.com/1253883 for details.
-    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
-    this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
-        .dispatchEvent(new MouseEvent('click'));
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
   }
 
   private async updateLocationAndNotificationState_() {

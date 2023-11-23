@@ -635,15 +635,9 @@ const char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
 const char kManageProfileSubPage[] = "manageProfile";
 const char kPeopleSubPage[] = "people";
-const char kPrivacySandboxAdPersonalizationSubPage[] =
-    "privacySandbox?view=adPersonalizationDialog";
-const char kPrivacySandboxLearnMoreSubPage[] =
-    "privacySandbox?view=learnMoreDialog";
-const char kPrivacySandboxSubPage[] = "privacySandbox";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kAdPrivacySubPagePath[] = "/adPrivacy";
-const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
 const char kPerformanceSubPagePath[] = "/performance";
 const char kPreloadingSubPagePath[] = "/preloading";
 const char kTrackingProtectionSubPagePath[] = "/trackingProtection";

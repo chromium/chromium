@@ -521,11 +521,7 @@ void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value) {
 
 void ShowPrivacySandboxSettings(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    ShowSettingsSubPage(browser, kAdPrivacySubPage);
-  } else {
-    ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
-  }
+  ShowSettingsSubPage(browser, kAdPrivacySubPage);
 }
 
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser) {
@@ -533,16 +529,6 @@ void ShowPrivacySandboxAdMeasurementSettings(Browser* browser) {
   CHECK(
       base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4));
   ShowSettingsSubPage(browser, kPrivacySandboxMeasurementSubpage);
-}
-
-void ShowPrivacySandboxAdPersonalization(Browser* browser) {
-  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  ShowSettingsSubPage(browser, kPrivacySandboxAdPersonalizationSubPage);
-}
-
-void ShowPrivacySandboxLearnMore(Browser* browser) {
-  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  ShowSettingsSubPage(browser, kPrivacySandboxLearnMoreSubPage);
 }
 
 void ShowAddresses(Browser* browser) {

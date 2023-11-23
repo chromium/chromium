@@ -58,15 +58,12 @@ build_webui("build") {
     "images/privacy_guide/waa_graphic.svg",
     "images/privacy_guide/welcome_banner_dark.svg",
     "images/privacy_guide/welcome_banner.svg",
-    "images/privacy_sandbox_banner_v3_dark.svg",
-    "images/privacy_sandbox_banner_v3.svg",
     "images/safe_browsing_banner_dark.svg",
     "images/safe_browsing_banner.svg",
     "images/sync_banner_dark.svg",
     "images/sync_banner.svg",
     "images/tracking_protection_banner_dark.svg",
     "images/tracking_protection_banner.svg",
-    "privacy_sandbox/privacy_sandbox.html",
     "settings.html",
   ]
 
@@ -149,8 +146,6 @@ build_webui("build") {
     "privacy_page/security_keys_phones_list.ts",
     "privacy_page/security_keys_phones_dialog.ts",
     "privacy_page/security_page.ts",
-    "privacy_sandbox/app.ts",
-    "privacy_sandbox/interest_item.ts",
     "privacy_sandbox/privacy_sandbox_ad_measurement_subpage.ts",
     "privacy_sandbox/privacy_sandbox_fledge_subpage.ts",
     "privacy_sandbox/privacy_sandbox_interest_item.ts",
@@ -304,7 +299,6 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
     "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "privacy_page/security_keys_browser_proxy.ts",
-    "privacy_sandbox/icons.html.ts",
     "relaunch_mixin.ts",
     "reset_page/reset_browser_proxy.ts",
     "route.ts",
@@ -426,11 +420,6 @@ build_webui("build") {
     # the SplitSettings effort makes progress (unclear status as of this
     # writing, unfortunately).
     ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
-  }
-
-  if (optimize_webui) {
-    extra_grdp_deps = [ "privacy_sandbox:build_grdp" ]
-    extra_grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
   }
 
   optimize = optimize_webui

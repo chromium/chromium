@@ -271,10 +271,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PreloadingPage) {
   RunTest("settings/preloading_page_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacySandbox) {
-  RunTest("settings/privacy_sandbox_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, ProtocolHandlers) {
   RunTest("settings/protocol_handlers_test.js", "mocha.run()");
 }

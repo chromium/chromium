@@ -38,9 +38,6 @@ bool FixupAndValidateStartupPage(const std::string& url_string,
 base::RefCountedMemory* GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor);
 
-base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
-    ui::ResourceScaleFactor scale_factor);
-
 #if BUILDFLAG(IS_MAC)
 void ValidateSavedFonts(PrefService* prefs);
 #endif

@@ -491,10 +491,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           is_privacy_sandbox_settings_4);
   html_source->AddBoolean("isPrivacySandboxRestrictedNoticeEnabled",
                           is_restricted_notice_enabled);
-  if (!is_privacy_sandbox_restricted && !is_privacy_sandbox_settings_4) {
-    html_source->AddResourcePath(
-        "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
-  }
 
   html_source->AddBoolean(
       "privateStateTokensEnabled",

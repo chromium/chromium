@@ -615,37 +615,6 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(ChromeContentBrowserClientTest, RedirectPrivacySandboxURL) {
-  base::test::ScopedFeatureList feature_list(
-      privacy_sandbox::kPrivacySandboxSettings4);
-
-  TestChromeContentBrowserClient test_content_browser_client;
-  base::HistogramTester histogram_tester;
-  const std::string histogram_name =
-      "Settings.PrivacySandbox.DeprecatedRedirect";
-
-  GURL settings_url = GURL(chrome::kChromeUISettingsURL);
-  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
-
-  GURL::Replacements replacements;
-  replacements.SetPathStr(chrome::kPrivacySandboxSubPagePath);
-  GURL old_settings_url = settings_url.ReplaceComponents(replacements);
-
-  replacements.SetPathStr(chrome::kAdPrivacySubPagePath);
-  GURL new_settings_url = settings_url.ReplaceComponents(replacements);
-
-  test_content_browser_client.HandleWebUI(&old_settings_url, &profile_);
-  EXPECT_EQ(new_settings_url, old_settings_url);
-  histogram_tester.ExpectUniqueSample(histogram_name, true, 1);
-
-  test_content_browser_client.HandleWebUI(&new_settings_url, &profile_);
-  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
-  histogram_tester.ExpectTotalCount(histogram_name, 2);
-}
-
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
   TestChromeContentBrowserClient test_content_browser_client;
   mojo::Remote<video_capture::mojom::VideoEffectsManager> video_effects_manager;

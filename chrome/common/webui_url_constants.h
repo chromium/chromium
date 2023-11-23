@@ -556,15 +556,9 @@ extern const char kSignOutSubPage[];
 extern const char kSyncSetupPageContentSubPage[];
 extern const char kSyncSetupSubPage[];
 extern const char kTriggeredResetProfileSettingsSubPage[];
-// TODO(crbug.com/1378703): Remove these constants after the feature is
-// launched.
-extern const char kPrivacySandboxAdPersonalizationSubPage[];
-extern const char kPrivacySandboxLearnMoreSubPage[];
-extern const char kPrivacySandboxSubPage[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kAdPrivacySubPagePath[];
-extern const char kPrivacySandboxSubPagePath[];
 extern const char kPerformanceSubPagePath[];
 extern const char kPreloadingSubPagePath[];
 extern const char kTrackingProtectionSubPagePath[];
