@@ -62,12 +62,6 @@ BASE_FEATURE(kUseLessHighResTimers,
              "UseLessHighResTimers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 std::atomic_bool g_use_less_high_res_timers = true;
-
-// If enabled, high resolution timer will be used all the time on Windows. This
-// is for test only.
-BASE_FEATURE(kAlwaysUseHighResTimers,
-             "AlwaysUseHighResTimers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 std::atomic_bool g_run_tasks_by_batches = false;
@@ -92,9 +86,6 @@ void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
 #if BUILDFLAG(IS_WIN)
   g_use_less_high_res_timers.store(
       FeatureList::IsEnabled(kUseLessHighResTimers), std::memory_order_relaxed);
-  if (FeatureList::IsEnabled(kAlwaysUseHighResTimers)) {
-    Time::ActivateHighResolutionTimer(true);
-  }
 #endif
 }
 
