@@ -23,6 +23,11 @@ class LayoutView;
 class NGPhysicalBoxFragment;
 struct PaintInfo;
 
+struct SnappedAndUnsnappedBorderOutsets {
+  PhysicalBoxStrut snapped;
+  PhysicalBoxStrut unsnapped;
+};
+
 class BackgroundImageGeometry {
   STACK_ALLOCATED();
 
@@ -164,6 +169,14 @@ class BackgroundImageGeometry {
   void CalculateFillTileSize(const FillLayer&,
                              const PhysicalSize&,
                              const PhysicalSize&);
+
+  PhysicalBoxStrut VisualOverflowOutsets() const;
+  PhysicalBoxStrut InnerBorderOutsets(
+      const PhysicalRect& dest_rect,
+      const PhysicalRect& positioning_area) const;
+  SnappedAndUnsnappedBorderOutsets ObscuredBorderOutsets(
+      const PhysicalRect& dest_rect,
+      const PhysicalRect& positioning_area) const;
 
   // The offset of the background image within the background positioning area.
   PhysicalOffset OffsetInBackground(const FillLayer&) const;

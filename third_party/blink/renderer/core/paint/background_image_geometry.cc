@@ -375,6 +375,73 @@ BackgroundImageGeometry::BackgroundImageGeometry(
   DCHECK(positioning_box);
 }
 
+PhysicalBoxStrut BackgroundImageGeometry::VisualOverflowOutsets() const {
+  PhysicalRect border_box;
+  if (positioning_box_->IsBox()) {
+    border_box = To<LayoutBox>(positioning_box_)->PhysicalBorderBoxRect();
+  } else {
+    border_box = To<LayoutInline>(positioning_box_)->PhysicalLinesBoundingBox();
+  }
+  PhysicalRect visual_overflow =
+      positioning_box_->Layer()
+          ->LocalBoundingBoxIncludingSelfPaintingDescendants();
+  return PhysicalBoxStrut(visual_overflow.Y() - border_box.Y(),
+                          border_box.Right() - visual_overflow.Right(),
+                          border_box.Bottom() - visual_overflow.Bottom(),
+                          visual_overflow.X() - border_box.X());
+}
+
+PhysicalBoxStrut BackgroundImageGeometry::InnerBorderOutsets(
+    const PhysicalRect& dest_rect,
+    const PhysicalRect& positioning_area) const {
+  gfx::RectF inner_border_rect =
+      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+          positioning_box_->StyleRef(), positioning_area)
+          .Rect();
+  PhysicalBoxStrut outset;
+  // TODO(rendering-core) The LayoutUnit(float) constructor always rounds
+  // down. We should FromFloatFloor or FromFloatCeil to move toward the border.
+  outset.left = LayoutUnit(inner_border_rect.x()) - dest_rect.X();
+  outset.top = LayoutUnit(inner_border_rect.y()) - dest_rect.Y();
+  outset.right = dest_rect.Right() - LayoutUnit(inner_border_rect.right());
+  outset.bottom = dest_rect.Bottom() - LayoutUnit(inner_border_rect.bottom());
+  return outset;
+}
+
+SnappedAndUnsnappedBorderOutsets BackgroundImageGeometry::ObscuredBorderOutsets(
+    const PhysicalRect& dest_rect,
+    const PhysicalRect& positioning_area) const {
+  const ComputedStyle& style = positioning_box_->StyleRef();
+  gfx::RectF inner_border_rect =
+      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(style,
+                                                            positioning_area)
+          .Rect();
+
+  BorderEdge edges[4];
+  style.GetBorderEdgeInfo(edges);
+  const PhysicalBoxStrut box_outsets = positioning_box_->BorderOutsets();
+  SnappedAndUnsnappedBorderOutsets adjust;
+  if (edges[static_cast<unsigned>(BoxSide::kTop)].ObscuresBackground()) {
+    adjust.snapped.top = LayoutUnit(inner_border_rect.y()) - dest_rect.Y();
+    adjust.unsnapped.top = box_outsets.top;
+  }
+  if (edges[static_cast<unsigned>(BoxSide::kRight)].ObscuresBackground()) {
+    adjust.snapped.right =
+        dest_rect.Right() - LayoutUnit(inner_border_rect.right());
+    adjust.unsnapped.right = box_outsets.right;
+  }
+  if (edges[static_cast<unsigned>(BoxSide::kBottom)].ObscuresBackground()) {
+    adjust.snapped.bottom =
+        dest_rect.Bottom() - LayoutUnit(inner_border_rect.bottom());
+    adjust.unsnapped.bottom = box_outsets.bottom;
+  }
+  if (edges[static_cast<unsigned>(BoxSide::kLeft)].ObscuresBackground()) {
+    adjust.snapped.left = LayoutUnit(inner_border_rect.x()) - dest_rect.X();
+    adjust.unsnapped.left = box_outsets.left;
+  }
+  return adjust;
+}
+
 bool BackgroundImageGeometry::HasBackgroundFixedToViewport(
     const LayoutBoxModelObject& object) {
   if (!object.IsBackgroundAttachmentFixedObject()) {
@@ -406,25 +473,10 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
     PhysicalBoxStrut& unsnapped_dest_adjust,
     PhysicalBoxStrut& snapped_dest_adjust) const {
   switch (fill_layer.Clip()) {
-    case EFillBox::kNoClip: {
-      PhysicalRect border_box;
-      if (positioning_box_->IsBox()) {
-        border_box = To<LayoutBox>(positioning_box_)->PhysicalBorderBoxRect();
-      } else {
-        border_box =
-            To<LayoutInline>(positioning_box_)->PhysicalLinesBoundingBox();
-      }
-      PhysicalRect visual_overflow =
-          positioning_box_->Layer()
-              ->LocalBoundingBoxIncludingSelfPaintingDescendants();
-      unsnapped_dest_adjust =
-          PhysicalBoxStrut(visual_overflow.Y() - border_box.Y(),
-                           border_box.Right() - visual_overflow.Right(),
-                           border_box.Bottom() - visual_overflow.Bottom(),
-                           visual_overflow.X() - border_box.X());
+    case EFillBox::kNoClip:
+      unsnapped_dest_adjust = VisualOverflowOutsets();
       snapped_dest_adjust = unsnapped_dest_adjust;
       return;
-    }
     case EFillBox::kFillBox:
     // Spec: For elements with associated CSS layout box, the used values for
     // fill-box compute to content-box.
@@ -449,21 +501,8 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       } else {
         // Force the snapped dest rect to match the inner border to
         // avoid gaps between the background and border.
-        // TODO(rendering-core) The LayoutUnit(float) constructor always
-        // rounds down. We should FromFloatFloor or FromFloatCeil to
-        // move toward the border.
-        gfx::RectF inner_border_rect =
-            RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
-                positioning_box_->StyleRef(), unsnapped_positioning_area)
-                .Rect();
-        snapped_dest_adjust.left =
-            LayoutUnit(inner_border_rect.x()) - unsnapped_dest_rect_.X();
-        snapped_dest_adjust.top =
-            LayoutUnit(inner_border_rect.y()) - unsnapped_dest_rect_.Y();
-        snapped_dest_adjust.right = unsnapped_dest_rect_.Right() -
-                                    LayoutUnit(inner_border_rect.right());
-        snapped_dest_adjust.bottom = unsnapped_dest_rect_.Bottom() -
-                                     LayoutUnit(inner_border_rect.bottom());
+        snapped_dest_adjust = InnerBorderOutsets(unsnapped_dest_rect_,
+                                                 unsnapped_positioning_area);
       }
       return;
     case EFillBox::kStrokeBox:
@@ -489,33 +528,10 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       // the size and position of the borders, sometimes adjusting the inner
       // border by more than a pixel when done (particularly under magnifying
       // zoom).
-      BorderEdge edges[4];
-      positioning_box_->StyleRef().GetBorderEdgeInfo(edges);
-      gfx::RectF inner_border_rect =
-          RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
-              positioning_box_->StyleRef(), unsnapped_positioning_area)
-              .Rect();
-      PhysicalBoxStrut box_outsets = positioning_box_->BorderOutsets();
-      if (edges[static_cast<unsigned>(BoxSide::kTop)].ObscuresBackground()) {
-        snapped_dest_adjust.top =
-            LayoutUnit(inner_border_rect.y()) - unsnapped_dest_rect_.Y();
-        unsnapped_dest_adjust.top = box_outsets.top;
-      }
-      if (edges[static_cast<unsigned>(BoxSide::kRight)].ObscuresBackground()) {
-        snapped_dest_adjust.right = unsnapped_dest_rect_.Right() -
-                                    LayoutUnit(inner_border_rect.right());
-        unsnapped_dest_adjust.right = box_outsets.right;
-      }
-      if (edges[static_cast<unsigned>(BoxSide::kBottom)].ObscuresBackground()) {
-        snapped_dest_adjust.bottom = unsnapped_dest_rect_.Bottom() -
-                                     LayoutUnit(inner_border_rect.bottom());
-        unsnapped_dest_adjust.bottom = box_outsets.bottom;
-      }
-      if (edges[static_cast<unsigned>(BoxSide::kLeft)].ObscuresBackground()) {
-        snapped_dest_adjust.left =
-            LayoutUnit(inner_border_rect.x()) - unsnapped_dest_rect_.X();
-        unsnapped_dest_adjust.left = box_outsets.left;
-      }
+      SnappedAndUnsnappedBorderOutsets outsets = ObscuredBorderOutsets(
+          unsnapped_dest_rect_, unsnapped_positioning_area);
+      snapped_dest_adjust = outsets.snapped;
+      unsnapped_dest_adjust = outsets.unsnapped;
     }
       return;
     case EFillBox::kText:
@@ -557,18 +573,8 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
         // the size and position of the borders, sometimes adjusting the inner
         // border by more than a pixel when done (particularly under magnifying
         // zoom).
-        gfx::RectF inner_border_rect =
-            RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
-                positioning_box_->StyleRef(), unsnapped_positioning_area)
-                .Rect();
-        snapped_box_outset.left =
-            LayoutUnit(inner_border_rect.x()) - unsnapped_positioning_area.X();
-        snapped_box_outset.top =
-            LayoutUnit(inner_border_rect.y()) - unsnapped_positioning_area.Y();
-        snapped_box_outset.right = unsnapped_positioning_area.Right() -
-                                   LayoutUnit(inner_border_rect.right());
-        snapped_box_outset.bottom = unsnapped_positioning_area.Bottom() -
-                                    LayoutUnit(inner_border_rect.bottom());
+        snapped_box_outset = InnerBorderOutsets(unsnapped_positioning_area,
+                                                unsnapped_positioning_area);
       }
       return;
     case EFillBox::kStrokeBox:
