@@ -170,18 +170,25 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessorFactory::PickFormatCB out_format_picker,
     ImageProcessor::ErrorCB error_cb) {
-  if (input_candidates.size() != 1)
+  if (input_candidates.empty())
     return nullptr;
 
-  if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21) &&
-      input_candidates[0].fourcc != Fourcc(Fourcc::MT2T) &&
-      input_candidates[0].fourcc != Fourcc(Fourcc::NV12)) {
+  auto iter = base::ranges::find_if(
+    input_candidates,
+    [](const PixelLayoutCandidate& candidate) {
+      return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
+          candidate.fourcc).empty();
+    });
+
+  if (iter == input_candidates.end())
     return nullptr;
-  }
+
+  const auto matched_candidate = *iter;
 
   std::vector<Fourcc> supported_output_formats =
       LibYUVImageProcessorBackend::GetSupportedOutputFormats(
-          input_candidates[0].fourcc);
+          matched_candidate.fourcc);
+
   auto output_format =
       out_format_picker.Run(supported_output_formats, absl::nullopt);
 
@@ -189,7 +196,7 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
     return nullptr;
 
   ImageProcessor::PortConfig input_config(
-      input_candidates[0].fourcc, input_candidates[0].size, /*planes=*/{},
+      matched_candidate.fourcc, matched_candidate.size, /*planes=*/{},
       input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
   ImageProcessor::PortConfig output_config(
       *output_format, output_size, /*planes=*/{}, gfx::Rect(output_size),
