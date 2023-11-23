@@ -460,7 +460,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kHyphens:
       return a.GetHyphens() == b.GetHyphens();
     case CSSPropertyID::kImageOrientation:
-      return a.RespectImageOrientation() == b.RespectImageOrientation();
+      return a.ImageOrientation() == b.ImageOrientation();
     case CSSPropertyID::kImageRendering:
       return a.ImageRendering() == b.ImageRendering();
     case CSSPropertyID::kInitialLetter:

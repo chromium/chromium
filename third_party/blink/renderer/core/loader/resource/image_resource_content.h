@@ -36,7 +36,7 @@ class ResourceError;
 class ResourceFetcher;
 class ResourceResponse;
 class UseCounter;
-enum RespectImageOrientationEnum;
+enum RespectImageOrientationEnum : uint8_t;
 struct ResourcePriority;
 
 // ImageResourceContent is a container that holds fetch result of

@@ -4187,23 +4187,18 @@ const CSSValue* ImageOrientation::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  if (range.Peek().Id() == CSSValueID::kFromImage) {
-    return css_parsing_utils::ConsumeIdent(range);
-  }
-  if (range.Peek().Id() == CSSValueID::kNone) {
-    return css_parsing_utils::ConsumeIdent(range);
-  }
-  return nullptr;
+  return css_parsing_utils::ConsumeIdent<CSSValueID::kFromImage,
+                                         CSSValueID::kNone>(range);
 }
 
 const CSSValue* ImageOrientation::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.RespectImageOrientation() == kRespectImageOrientation) {
-    return CSSIdentifierValue::Create(CSSValueID::kFromImage);
-  }
-  return CSSIdentifierValue::Create(CSSValueID::kNone);
+  const CSSValueID value = style.ImageOrientation() == kRespectImageOrientation
+                               ? CSSValueID::kFromImage
+                               : CSSValueID::kNone;
+  return CSSIdentifierValue::Create(value);
 }
 
 const CSSValue* ImageRendering::CSSValueFromComputedStyleInternal(

@@ -83,11 +83,12 @@ void LayoutImage::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutReplaced::StyleDidChange(diff, old_style);
 
-  bool old_orientation =
-      old_style ? old_style->RespectImageOrientation()
-                : ComputedStyleInitialValues::InitialRespectImageOrientation();
-  if (Style() && StyleRef().RespectImageOrientation() != old_orientation)
+  RespectImageOrientationEnum old_orientation =
+      old_style ? old_style->ImageOrientation()
+                : ComputedStyleInitialValues::InitialImageOrientation();
+  if (StyleRef().ImageOrientation() != old_orientation) {
     IntrinsicSizeChanged();
+  }
 }
 
 void LayoutImage::SetImageResource(LayoutImageResource* image_resource) {

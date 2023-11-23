@@ -2898,6 +2898,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
   }
 
+  // Get the 'image-orientation' value for a (potentially null) LayoutObject.
+  //
+  // Returns the initial value ('from-image') if passed a nullptr, else the
+  // value of the 'image-orientation' property.
   static RespectImageOrientationEnum ShouldRespectImageOrientation(
       const LayoutObject*);
 

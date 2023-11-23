@@ -2542,9 +2542,8 @@ scoped_refptr<ScaleTransformOperation> StyleBuilderConverter::ConvertScale(
 RespectImageOrientationEnum StyleBuilderConverter::ConvertImageOrientation(
     StyleResolverState& state,
     const CSSValue& value) {
-  // The default is kFromImage, so branch on the only other valid value, kNone
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  return identifier_value && identifier_value->GetValueID() == CSSValueID::kNone
+  // The default is kFromImage, so branch on the only other valid value, kNone.
+  return To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone
              ? kDoNotRespectImageOrientation
              : kRespectImageOrientation;
 }
