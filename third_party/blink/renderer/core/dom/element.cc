@@ -3252,7 +3252,7 @@ bool Element::SkipStyleRecalcForContainer(
 
   // We are both a size container and trying to compute position-fallback styles
   // from layout. Our children should be the first opportunity to skip recalc.
-  if (style_recalc_context.position_fallback) {
+  if (style_recalc_context.is_position_fallback) {
     return false;
   }
 
@@ -3367,7 +3367,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
-  child_recalc_context.position_fallback = nullptr;
+  child_recalc_context.is_position_fallback = false;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {
@@ -6730,6 +6730,15 @@ StyleScopeData& Element::EnsureStyleScopeData() {
 
 StyleScopeData* Element::GetStyleScopeData() const {
   return HasRareData() ? GetElementRareData()->GetStyleScopeData() : nullptr;
+}
+
+PositionFallbackData& Element::EnsurePositionFallbackData() {
+  return EnsureElementRareData().EnsurePositionFallbackData();
+}
+
+PositionFallbackData* Element::GetPositionFallbackData() const {
+  return HasRareData() ? GetElementRareData()->GetPositionFallbackData()
+                       : nullptr;
 }
 
 bool Element::SkippedContainerStyleRecalc() const {

@@ -608,12 +608,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // recalcs when we found out the container is eligible for size containment
   // after all.
   void UpdateStyleForNonEligibleContainer(Element& container);
+  // Updates the style of `element`, and descendants if needed.
+  // The provided `try_set` represents the declaration block from a @try rule.
   void UpdateStyleForPositionFallback(Element& element,
-                                      const ScopedCSSName* position_fallback,
-                                      unsigned position_fallback_index);
-  bool HasTryRule(Element& element,
-                  const ScopedCSSName* position_fallback,
-                  unsigned position_fallback_index);
+                                      const CSSPropertyValueSet* try_set);
+  StyleRulePositionFallback* GetPositionFallbackRule(const ScopedCSSName&);
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);

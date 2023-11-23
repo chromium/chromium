@@ -223,17 +223,37 @@ class OOFCandidateStyleIterator {
   }
 
   void Initialize() {
-    position_fallback_ = style_->PositionFallback();
-    if (UNLIKELY(position_fallback_)) {
-      CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
-      if (element_) {
+    position_fallback_rule_ =
+        GetPositionFallbackRule(style_->PositionFallback());
+    if (element_) {
+      if (UNLIKELY(position_fallback_rule_)) {
+        CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
         if (HasTryRule(0)) {
           position_fallback_index_ = 0;
-          style_ = UpdateStyle(0);
+          style_ = UpdateStyle(0u);
         }
+      } else {
+        // We may have previously resolved a style using some try set,
+        // and may have speculated that the same try set still applied.
+        // Calling UpdateStyle with an explicit nullptr clears the set,
+        // and re-resolves the ComputedStyle.
+        //
+        // Note that UpdateStyle returns early without any update
+        // if the incoming try_set matches the set on PositionFallbackData
+        // (including the case where both are unllptr).
+        style_ = UpdateStyle(/* try_set */ nullptr);
       }
     }
     SetUpAutoAnchorFallbackData();
+  }
+
+  const StyleRulePositionFallback* GetPositionFallbackRule(
+      const ScopedCSSName* scoped_name) {
+    if (!scoped_name || !element_) {
+      return nullptr;
+    }
+    return element_->GetDocument().GetStyleEngine().GetPositionFallbackRule(
+        *scoped_name);
   }
 
   void SetUpAutoAnchorFallbackData() {
@@ -281,21 +301,27 @@ class OOFCandidateStyleIterator {
   }
 
   bool HasTryRule(wtf_size_t index) const {
-    DCHECK(position_fallback_);
-    StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
-    return style_engine.HasTryRule(*element_, position_fallback_, index);
+    return position_fallback_rule_ &&
+           position_fallback_rule_->HasTryRule(index);
   }
 
   const ComputedStyle* UpdateStyle(wtf_size_t index) {
-    DCHECK(position_fallback_);
+    CHECK(element_);
+    DCHECK(position_fallback_rule_);
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
-      StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
-      style_engine.UpdateStyleForPositionFallback(*element_, position_fallback_,
-                                                  index);
-      return element_->GetComputedStyle();
+      return UpdateStyle(position_fallback_rule_->TryPropertyValueSetAt(index));
     } else {
       return element_->StyleForPositionFallback(index);
     }
+  }
+
+  const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set) {
+    CHECK(element_);
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
+      StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
+      style_engine.UpdateStyleForPositionFallback(*element_, try_set);
+    }
+    return element_->GetComputedStyle();
   }
 
   Element* element_ = nullptr;
@@ -304,7 +330,9 @@ class OOFCandidateStyleIterator {
   // Otherwise, the base style for generating auto anchor fallbacks.
   const ComputedStyle* style_ = nullptr;
 
-  const ScopedCSSName* position_fallback_ = nullptr;
+  // If the current style is created from an `@try` rule, this holds
+  // the parent rule. Otherwise nullptr.
+  const StyleRulePositionFallback* position_fallback_rule_ = nullptr;
 
   // If the current style is created from an `@try` rule, index of the rule;
   // Otherwise nullopt.

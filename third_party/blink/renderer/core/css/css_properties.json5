@@ -4131,6 +4131,10 @@
       computed_style_custom_functions: ["getter"],
       // See comment on display.
       supports_incremental_style: false,
+      // @try-styling rely on this being high-priority, so that declarations
+      // from @try blocks can be applied conditionally based on whether or not
+      // we're out-of-flow positioned.
+      priority: "High",
     },
     {
       name: "position-fallback",

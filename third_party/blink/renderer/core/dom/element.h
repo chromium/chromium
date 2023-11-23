@@ -104,6 +104,7 @@ class MutableCSSPropertyValueSet;
 class NamedNodeMap;
 class PointerLockOptions;
 class PopoverData;
+class PositionFallbackData;
 class PseudoElement;
 class ResizeObservation;
 class ResizeObserver;
@@ -1157,6 +1158,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   StyleScopeData& EnsureStyleScopeData();
   StyleScopeData* GetStyleScopeData() const;
+
+  PositionFallbackData& EnsurePositionFallbackData();
+  PositionFallbackData* GetPositionFallbackData() const;
 
   // See PostStyleUpdateScope::PseudoData::AddPendingBackdrop
   void ApplyPendingBackdropPseudoElementUpdate();

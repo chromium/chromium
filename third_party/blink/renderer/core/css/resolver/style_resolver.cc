@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
+#include "third_party/blink/renderer/core/css/position_fallback_data.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -151,7 +152,7 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // explicitly inherits insets or other valid @try properties from the element
   // with position-fallback.
   return (style_recalc_context.container ||
-          style_recalc_context.position_fallback ||
+          style_recalc_context.is_position_fallback ||
           (RuntimeEnabledFeatures::
                CSSAnchorPositioningCascadeFallbackEnabled() &&
            state.StyleBuilder().PositionFallback())) &&
@@ -825,29 +826,23 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
 // Declarations within @try rules match when ResolveStyle is invoked
 // with that rule explicitly specified to match
 // (see StyleRecalcContext.position_fallback/index).
-void StyleResolver::MatchTryRules(ElementRuleCollector& collector) {
-  const ScopedCSSName* position_fallback = collector.PositionFallback();
-  if (!position_fallback) {
-    return;
+void StyleResolver::MatchTryRules(const Element& element,
+                                  ElementRuleCollector& collector) {
+  // If StyleEngine::UpdateStyleForPositionFallback was called with
+  // a PseudoElement, the CSSPropertyValueSet we need is stored on the
+  // PositionFallbackData of that pseudo element. However, when resolving
+  // the style of that pseudo element, `element` is the _originating element_,
+  // not the pseudo element itself.
+  PseudoId pseudo_id = collector.GetPseudoId();
+  const Element* try_element =
+      pseudo_id == kPseudoIdNone
+          ? &element
+          : element.GetPseudoElement(pseudo_id, collector.GetPseudoArgument());
+  if (try_element) {
+    if (PositionFallbackData* data = try_element->GetPositionFallbackData()) {
+      collector.AddTryStyleProperties(data->GetTryPropertyValueSet());
+    }
   }
-  unsigned index = collector.PositionFallbackIndex();
-  const TreeScope* tree_scope = position_fallback->GetTreeScope();
-  if (!tree_scope) {
-    tree_scope = &GetDocument();
-  }
-  StyleRulePositionFallback* position_fallback_rule =
-      ResolvePositionFallbackRule(tree_scope, position_fallback->GetName());
-
-  if (!position_fallback_rule ||
-      index >= position_fallback_rule->ChildRules().size()) {
-    return;
-  }
-
-  StyleRuleTry* try_rule =
-      To<StyleRuleTry>(position_fallback_rule->ChildRules()[index].Get());
-  const CSSPropertyValueSet& properties = try_rule->Properties();
-
-  collector.AddTryStyleProperties(&properties);
 }
 
 void StyleResolver::MatchAuthorRules(const Element& element,
@@ -856,7 +851,7 @@ void StyleResolver::MatchAuthorRules(const Element& element,
   MatchSlottedRules(element, collector, tracker_);
   MatchElementScopeRules(element, collector, tracker_);
   MatchPseudoPartRules(element, collector);
-  MatchTryRules(collector);
+  MatchTryRules(element, collector);
 }
 
 void StyleResolver::MatchUserRules(ElementRuleCollector& collector) {

@@ -5,14 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_POSITION_FALLBACK_RULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_POSITION_FALLBACK_RULE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 namespace blink {
 
 class CascadeLayer;
+class CSSPropertyValueSet;
 
-class StyleRulePositionFallback final : public StyleRuleGroup {
+class CORE_EXPORT StyleRulePositionFallback final : public StyleRuleGroup {
  public:
   StyleRulePositionFallback(const AtomicString&,
                             HeapVector<Member<StyleRuleBase>> rules);
@@ -27,6 +29,9 @@ class StyleRulePositionFallback final : public StyleRuleGroup {
 
   void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
   const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
+
+  bool HasTryRule(wtf_size_t index) const;
+  const CSSPropertyValueSet* TryPropertyValueSetAt(wtf_size_t index) const;
 
   void TraceAfterDispatch(Visitor*) const;
 

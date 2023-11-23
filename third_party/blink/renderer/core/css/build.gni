@@ -565,6 +565,8 @@ blink_core_sources_css = [
   "part_names.h",
   "pending_sheet_type.cc",
   "pending_sheet_type.h",
+  "position_fallback_data.cc",
+  "position_fallback_data.h",
   "post_style_update_scope.cc",
   "post_style_update_scope.h",
   "properties/computed_style_utils.cc",

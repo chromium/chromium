@@ -417,6 +417,17 @@ class CORE_EXPORT StyleCascade {
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);
 
+  // Declarations originating from @try rules are treated as revert-layer
+  // if we're not out-of-flow positioned. Since such declarations exist
+  // in a separate layer, this has the effect of @try-originating rules
+  // applying *conditionally* based on the positioning.
+  //
+  // This behavior is needed because we speculatively add the the try set
+  // to the cascade, and rely on out-of-flow layout to correct us later.
+  // However, if we *stop* being out-of-flow positioned, that correction
+  // never happens.
+  bool TreatAsRevertLayer(CascadePriority) const;
+
   const Document& GetDocument() const;
   const CSSProperty& ResolveSurrogate(const CSSProperty& surrogate);
 

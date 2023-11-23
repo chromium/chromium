@@ -195,12 +195,8 @@ class CORE_EXPORT ElementRuleCollector {
   // Return the pseudo id if the style request is for rules associated with a
   // pseudo element, or kPseudoNone if not.
   PseudoId GetPseudoId() const { return pseudo_style_request_.pseudo_id; }
-
-  const ScopedCSSName* PositionFallback() const {
-    return style_recalc_context_.position_fallback;
-  }
-  unsigned PositionFallbackIndex() const {
-    return style_recalc_context_.position_fallback_index;
+  const AtomicString& GetPseudoArgument() const {
+    return pseudo_style_request_.pseudo_argument;
   }
 
   void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;

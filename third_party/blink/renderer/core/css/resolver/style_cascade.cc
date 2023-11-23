@@ -897,7 +897,7 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
   if (result->IsRevertValue()) {
     return ResolveRevert(property, *result, origin, resolver);
   }
-  if (result->IsRevertLayerValue()) {
+  if (result->IsRevertLayerValue() || TreatAsRevertLayer(priority)) {
     return ResolveRevertLayer(property, *result, priority, origin, resolver);
   }
 
@@ -1388,6 +1388,11 @@ void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
     state_.StyleBuilder().SetHasVariableReferenceFromNonInheritedProperty();
   }
   state_.StyleBuilder().SetHasVariableReference();
+}
+
+bool StyleCascade::TreatAsRevertLayer(CascadePriority priority) const {
+  return priority.IsFallbackStyle() && !ComputedStyle::HasOutOfFlowPosition(
+                                           state_.StyleBuilder().GetPosition());
 }
 
 const Document& StyleCascade::GetDocument() const {

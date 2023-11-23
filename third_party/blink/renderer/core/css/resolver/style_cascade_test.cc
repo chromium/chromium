@@ -3813,6 +3813,7 @@ TEST_F(StyleCascadeTest, InlineStyleLostCascade) {
 
 TEST_F(StyleCascadeTest, FallbackStyle) {
   TestCascade cascade(GetDocument());
+  cascade.Add("position:absolute");
   cascade.Add("top:1px");
   cascade.Add("top:2px", {.is_inline_style = true});
   cascade.Add("top:3px", {.is_fallback_style = true});

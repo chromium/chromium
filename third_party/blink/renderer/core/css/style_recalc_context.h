@@ -13,7 +13,6 @@ namespace blink {
 class ComputedStyle;
 class Element;
 class HTMLSlotElement;
-class ScopedCSSName;
 class StyleScopeFrame;
 
 // StyleRecalcContext is an object that is passed on the stack during
@@ -98,11 +97,11 @@ class CORE_EXPORT StyleRecalcContext {
   // not have a style.
   bool is_outside_flat_tree = false;
 
-  // If non-nullptr, causes declarations from the specified @try rule
-  // (by index) within the named @position-fallback rule to be added
-  // to the cascade.
-  const ScopedCSSName* position_fallback = nullptr;
-  unsigned position_fallback_index = 0;
+  // True if we're computing the position fallback style of an element
+  // triggered by layout. Note however that try styles may still be included
+  // when this flag is false (see PositionFallbackData,
+  // "speculative @try styling").
+  bool is_position_fallback = false;
 };
 
 }  // namespace blink

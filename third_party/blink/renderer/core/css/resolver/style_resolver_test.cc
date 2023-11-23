@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
+#include "third_party/blink/renderer/core/css/position_fallback_data.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -106,6 +107,18 @@ class StyleResolverTest : public PageTestBase {
   }
   const Length& GetMaxHeight(const ComputedStyle& style) const {
     return style.MaxHeight();
+  }
+
+  void UpdateStyleForPositionFallback(Element& element,
+                                      ScopedCSSName* name,
+                                      wtf_size_t index) {
+    DCHECK(name);
+    StyleRulePositionFallback* rule =
+        GetStyleEngine().GetPositionFallbackRule(*name);
+    if (rule) {
+      const CSSPropertyValueSet* set = rule->TryPropertyValueSetAt(index);
+      GetStyleEngine().UpdateStyleForPositionFallback(element, set);
+    }
   }
 };
 
@@ -2757,20 +2770,20 @@ TEST_F(StyleResolverTest, PositionFallbackStylesBasic_Cascade) {
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
   EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForPositionFallback(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
   EXPECT_EQ(Length::Fixed(100), GetLeft(*try1));
 
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  UpdateStyleForPositionFallback(*target, fallback_name, 2);
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(100), GetTop(*try2));
   EXPECT_EQ(Length::Auto(), GetLeft(*try2));
 
   // Shorthand should also work
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  UpdateStyleForPositionFallback(*target, fallback_name, 3);
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -2779,7 +2792,7 @@ TEST_F(StyleResolverTest, PositionFallbackStylesBasic_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetRight(*try3));
 
   // Style without fallback when index is out of bounds.
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 4);
+  UpdateStyleForPositionFallback(*target, fallback_name, 4);
   const ComputedStyle* try4 = target->GetComputedStyle();
   EXPECT_EQ(Length::Auto(), GetTop(*try4));
   EXPECT_EQ(Length::Auto(), GetLeft(*try4));
@@ -2821,7 +2834,7 @@ TEST_F(StyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
   // 'inset-inline-start' should resolve to 'bottom'
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForPositionFallback(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
@@ -2830,7 +2843,7 @@ TEST_F(StyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
   // 'inset-block' with two parameters should set 'right' and then 'left'
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  UpdateStyleForPositionFallback(*target, fallback_name, 2);
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
@@ -2839,7 +2852,7 @@ TEST_F(StyleResolverTest,
   EXPECT_EQ(Length::Fixed(100), GetRight(*try2));
 
   // @try index out of bounds
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  UpdateStyleForPositionFallback(*target, fallback_name, 3);
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -2878,7 +2891,7 @@ TEST_F(StyleResolverTest,
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // '2em' should resolve to '40px'
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForPositionFallback(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(40), GetTop(*try1));
@@ -2917,7 +2930,7 @@ TEST_F(StyleResolverTest, PositionFallbackStylesInBeforePseudoElement_Cascade) {
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // 'position-fallback' applies to ::before pseudo-element.
-  GetStyleEngine().UpdateStyleForPositionFallback(*before, fallback_name, 1);
+  UpdateStyleForPositionFallback(*before, fallback_name, 1);
   const ComputedStyle* try1 = before->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
@@ -2963,7 +2976,7 @@ TEST_F(StyleResolverTest, PositionFallbackStylesCSSWideKeywords_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForPositionFallback(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
@@ -2971,7 +2984,7 @@ TEST_F(StyleResolverTest, PositionFallbackStylesCSSWideKeywords_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try1));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  UpdateStyleForPositionFallback(*target, fallback_name, 2);
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
@@ -2979,7 +2992,7 @@ TEST_F(StyleResolverTest, PositionFallbackStylesCSSWideKeywords_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try2));
 
-  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  UpdateStyleForPositionFallback(*target, fallback_name, 3);
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -3024,7 +3037,7 @@ TEST_F(StyleResolverTest, PositionFallbackPropertyValueChange_Cascade) {
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    GetStyleEngine().UpdateStyleForPositionFallback(*target, foo_name, 1);
+    UpdateStyleForPositionFallback(*target, foo_name, 1);
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     EXPECT_EQ(Length::Fixed(100), GetTop(*fallback));
@@ -3040,13 +3053,261 @@ TEST_F(StyleResolverTest, PositionFallbackPropertyValueChange_Cascade) {
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    GetStyleEngine().UpdateStyleForPositionFallback(*target, bar_name, 1);
+    UpdateStyleForPositionFallback(*target, bar_name, 1);
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     ASSERT_TRUE(fallback);
     EXPECT_EQ(Length::Auto(), GetTop(*fallback));
     EXPECT_EQ(Length::Fixed(100), GetLeft(*fallback));
   }
+}
+
+TEST_F(StyleResolverTest, PositionFallback_PersistentTrySet) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --fallback {
+        @try { left: 100px; }
+        @try { top: 100px; }
+      }
+      #target {
+        position: absolute;
+        position-fallback: --fallback;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  const ComputedStyle* style = target->GetComputedStyle();
+  ASSERT_TRUE(style);
+  EXPECT_EQ(Length::Fixed(100), GetLeft(*style));
+  EXPECT_EQ(Length::Auto(), GetTop(*style));
+  EXPECT_TRUE(target->GetPositionFallbackData() &&
+              target->GetPositionFallbackData()->GetTryPropertyValueSet());
+
+  // The set should be cleared when 'position-fallback' is cleared.
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->GetPositionFallbackData() &&
+               target->GetPositionFallbackData()->GetTryPropertyValueSet());
+
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback,
+                                 "--fallback");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->GetPositionFallbackData() &&
+              target->GetPositionFallbackData()->GetTryPropertyValueSet());
+
+  // The set should also be cleared when referencing a non-existent fallback.
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "--unknown");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->GetPositionFallbackData() &&
+               target->GetPositionFallbackData()->GetTryPropertyValueSet());
+}
+
+TEST_F(StyleResolverTest, PositionFallback_PaintInvalidation) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --fallback {
+        @try { left: 1111111px; }
+        @try { left: 2222222px; }
+        @try { left: 3333333px; }
+        @try { top: 100px; }
+      }
+      #target {
+        position: absolute;
+        position-fallback: --fallback;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  const ComputedStyle* style = target->GetComputedStyle();
+  ASSERT_TRUE(style);
+  EXPECT_EQ(Length::Fixed(100), GetTop(*style));
+  EXPECT_EQ(Length::Auto(), GetLeft(*style));
+
+  EXPECT_FALSE(target->GetLayoutObject()->NeedsLayout());
+
+  // Invalidate paint (but not layout).
+  target->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "green");
+  target->GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+
+  EXPECT_FALSE(target->GetLayoutObject()->NeedsLayout());
+  EXPECT_TRUE(target->GetLayoutObject()->ShouldCheckForPaintInvalidation());
+}
+
+TEST_F(StyleResolverTest, TrySet_Basic) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        position: absolute;
+        left: 10px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div = GetElementById("div");
+  ASSERT_TRUE(div);
+  EXPECT_EQ("10px", ComputedValue("left", div->ComputedStyleRef()));
+  EXPECT_EQ("auto", ComputedValue("right", div->ComputedStyleRef()));
+
+  // Resolving a style with some try set stored on Element,
+  // should cause that set to be added to the cascade.
+
+  const CSSPropertyValueSet* try_set =
+      css_test_helpers::ParseDeclarationBlock(R"CSS(
+      left: 20px;
+      right: 30px;
+  )CSS");
+  ASSERT_TRUE(try_set);
+
+  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  const ComputedStyle* try_style = StyleForId("div");
+  ASSERT_TRUE(try_style);
+  EXPECT_EQ("20px", ComputedValue("left", *try_style));
+  EXPECT_EQ("30px", ComputedValue("right", *try_style));
+}
+
+TEST_F(StyleResolverTest, TrySet_RevertLayer) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        position: absolute;
+        left: 10px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div = GetElementById("div");
+  ASSERT_TRUE(div);
+
+  // Declarations from the try set should appear in a separate layer.
+
+  const CSSPropertyValueSet* try_set =
+      css_test_helpers::ParseDeclarationBlock(R"CSS(
+      left: revert-layer;
+      right: 30px;
+  )CSS");
+  ASSERT_TRUE(try_set);
+
+  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  const ComputedStyle* try_style = StyleForId("div");
+  ASSERT_TRUE(try_style);
+  EXPECT_EQ("10px", ComputedValue("left", *try_style));
+  EXPECT_EQ("30px", ComputedValue("right", *try_style));
+}
+
+TEST_F(StyleResolverTest, TrySet_Revert) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        position: absolute;
+        left: 10px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div = GetElementById("div");
+  ASSERT_TRUE(div);
+
+  // Declarations from the try set should appear in the author origin.
+
+  const CSSPropertyValueSet* try_set =
+      css_test_helpers::ParseDeclarationBlock(R"CSS(
+      left: revert;
+      right: 30px;
+  )CSS");
+  ASSERT_TRUE(try_set);
+
+  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  const ComputedStyle* try_style = StyleForId("div");
+  ASSERT_TRUE(try_style);
+  EXPECT_EQ("auto", ComputedValue("left", *try_style));
+  EXPECT_EQ("30px", ComputedValue("right", *try_style));
+}
+
+TEST_F(StyleResolverTest, TrySet_NonAbsPos) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        position: static;
+        left: 10px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div = GetElementById("div");
+  ASSERT_TRUE(div);
+
+  // Declarations from the try set should only apply when absolutely positioned.
+  // If not absolutely positioned, they should behave as 'revert-layer'.
+
+  const CSSPropertyValueSet* try_set =
+      css_test_helpers::ParseDeclarationBlock(R"CSS(
+      left: 20px;
+      right: 30px;
+  )CSS");
+  ASSERT_TRUE(try_set);
+
+  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  const ComputedStyle* try_style = StyleForId("div");
+  ASSERT_TRUE(try_style);
+  EXPECT_EQ("10px", ComputedValue("left", *try_style));
+  EXPECT_EQ("auto", ComputedValue("right", *try_style));
+}
+
+TEST_F(StyleResolverTest, TrySet_NonAbsPosDynamic) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        position: absolute;
+        left: 10px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div = GetElementById("div");
+  ASSERT_TRUE(div);
+  EXPECT_EQ("10px", ComputedValue("left", div->ComputedStyleRef()));
+  EXPECT_EQ("auto", ComputedValue("right", div->ComputedStyleRef()));
+
+  // Declarations from the try set should only apply when absolutely positioned,
+  // including the cases where 'position' changes in the same style resolve.
+
+  const CSSPropertyValueSet* try_set =
+      css_test_helpers::ParseDeclarationBlock(R"CSS(
+      left: 20px;
+      right: 30px;
+  )CSS");
+  ASSERT_TRUE(try_set);
+
+  div->SetInlineStyleProperty(CSSPropertyID::kPosition, "static");
+  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  const ComputedStyle* try_style = StyleForId("div");
+  ASSERT_TRUE(try_style);
+  EXPECT_EQ("10px", ComputedValue("left", *try_style));
+  EXPECT_EQ("auto", ComputedValue("right", *try_style));
 }
 
 TEST_F(StyleResolverTest,
