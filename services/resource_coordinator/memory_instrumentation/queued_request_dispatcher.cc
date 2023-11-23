@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -90,7 +91,7 @@ memory_instrumentation::mojom::OSMemDumpPtr CreatePublicOSDump(
 
 void NodeAsValueIntoRecursively(const GlobalNodeGraph::Node& node,
                                 TracedValue* value,
-                                std::vector<base::StringPiece>* path) {
+                                std::vector<std::string_view>* path) {
   // Don't dump the root node.
   if (!path->empty()) {
     std::string name = base::JoinString(*path, "/");

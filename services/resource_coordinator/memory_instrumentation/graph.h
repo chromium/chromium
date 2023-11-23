@@ -10,12 +10,12 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 
 namespace memory_instrumentation {
@@ -44,12 +44,12 @@ class GlobalDumpGraph {
     // given |guid|, |path| and |weak|ness and returns it.
     GlobalDumpGraph::Node* CreateNode(
         base::trace_event::MemoryAllocatorDumpGuid guid,
-        base::StringPiece path,
+        std::string_view path,
         bool weak);
 
     // Returns the node in the graph at the given |path| or nullptr
     // if no such node exists in the provided |graph|.
-    GlobalDumpGraph::Node* FindNode(base::StringPiece path);
+    GlobalDumpGraph::Node* FindNode(std::string_view path);
 
     base::ProcessId pid() const { return pid_; }
     GlobalDumpGraph* global_graph() const { return global_graph_; }
@@ -102,14 +102,14 @@ class GlobalDumpGraph {
     ~Node();
 
     // Gets the direct child of a node for the given |subpath|.
-    Node* GetChild(base::StringPiece name);
+    Node* GetChild(std::string_view name);
 
     // Inserts the given |node| as a child of the current node
     // with the given |subpath| as the key.
-    void InsertChild(base::StringPiece name, Node* node);
+    void InsertChild(std::string_view name, Node* node);
 
     // Creates a child for this node with the given |name| as the key.
-    Node* CreateChild(base::StringPiece name);
+    Node* CreateChild(std::string_view name);
 
     // Checks if the current node is a descendent (i.e. exists as a child,
     // child of a child, etc.) of the given node |possible_parent|.
