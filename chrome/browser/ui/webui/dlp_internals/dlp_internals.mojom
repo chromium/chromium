@@ -139,6 +139,14 @@ struct DlpEvent {
   string? triggered_rule_id;
 };
 
+// Represents the database entry of a single file.
+struct FileDatabaseEntry {
+  uint64? inode;
+  uint64? crtime;
+  string? source_url;
+  string? referrer_url;
+};
+
 // Observer interface to receive updates about DLP reporting events.
 // This interface is implement in Javascript in chrome://dlp-internals WebUI.
 interface ReportingObserver {
@@ -157,4 +165,7 @@ interface PageHandler {
 
   // Allows the caller to observe reporting events.
   ObserveReporting(pending_remote<ReportingObserver> observer);
+
+  // Returns files' database entries.
+  GetFilesDatabaseEntries() => (array<FileDatabaseEntry> db_entries);
 };

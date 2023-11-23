@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals.mojom.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/rule.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -267,6 +268,17 @@ void DlpInternalsPageHandler::ObserveReporting(
   reporting_observers_.Add(std::move(observer));
 }
 
+void DlpInternalsPageHandler::GetFilesDatabaseEntries(
+    GetFilesDatabaseEntriesCallback callback) {
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(callback).Run({});
+    return;
+  }
+  chromeos::DlpClient::Get()->GetDatabaseEntries(
+      base::BindOnce(&DlpInternalsPageHandler::ProcessDatabaseEntries,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void DlpInternalsPageHandler::OnReportEvent(DlpPolicyEvent event) {
   dlp_internals::mojom::DlpEventPtr event_mojo =
       dlp_internals::mojom::DlpEvent::New();
@@ -309,6 +321,18 @@ void DlpInternalsPageHandler::OnReportEvent(DlpPolicyEvent event) {
   for (auto& observer : reporting_observers_) {
     observer->OnReportEvent(event_mojo.Clone());
   }
+}
+
+void DlpInternalsPageHandler::ProcessDatabaseEntries(
+    GetFilesDatabaseEntriesCallback callback,
+    ::dlp::GetDatabaseEntriesResponse response_proto) {
+  std::vector<dlp_internals::mojom::FileDatabaseEntryPtr> database_entries;
+  for (const auto& file_entry : response_proto.files_entries()) {
+    database_entries.push_back(dlp_internals::mojom::FileDatabaseEntry::New(
+        file_entry.inode(), file_entry.crtime(), file_entry.source_url(),
+        file_entry.referrer_url()));
+  }
+  std::move(callback).Run(std::move(database_entries));
 }
 
 }  // namespace policy
