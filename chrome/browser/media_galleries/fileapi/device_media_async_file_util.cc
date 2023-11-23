@@ -357,14 +357,12 @@ void DeviceMediaAsyncFileUtil::CreateDirectory(
   }
 
   // Only one of the success or error callbacks will be called here.
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  auto [on_success, on_error] = base::SplitOnceCallback(std::move(callback));
   delegate->CreateDirectory(
       url.path(), exclusive, recursive,
-      base::BindRepeating(&DeviceMediaAsyncFileUtil::OnDidCreateDirectory,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          base::Passed(&split_callback.first)),
-      base::BindOnce(&OnCreateDirectoryError,
-                     std::move(split_callback.second)));
+      base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidCreateDirectory,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_success)),
+      base::BindOnce(&OnCreateDirectoryError, std::move(on_error)));
 }
 
 void DeviceMediaAsyncFileUtil::GetFileInfo(
