@@ -7,6 +7,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_consumer.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_util.h"
 
 @interface OmniboxPositionChoiceMediator ()
 
@@ -20,7 +21,7 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _selectedPosition = ToolbarType::kPrimary;
+    _selectedPosition = DefaultSelectedOmniboxPosition();
   }
   return self;
 }

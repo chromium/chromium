@@ -108,16 +108,38 @@ void SkipScreensBeforeOmniboxPositionChoice() {
                                    test_switches::kSignInAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
-  config.features_enabled.push_back(kBottomOmniboxPromoFRE);
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
+
+  if ([self isRunningTest:@selector(testSelectTopWithTopDefault)] ||
+      [self isRunningTest:@selector(testSelectBottomWithTopDefault)]) {
+    std::string top_option_by_default =
+        std::string(kBottomOmniboxPromoDefaultPosition.name) + ":" +
+        kBottomOmniboxPromoDefaultPositionParam + "/" +
+        kBottomOmniboxPromoDefaultPositionParamTop;
+
+    config.additional_args.push_back(
+        "--enable-features=" + top_option_by_default + "," +
+        kBottomOmniboxPromoFRE.name);
+  } else if ([self
+                 isRunningTest:@selector(testSelectBottomWithBottomDefault)] ||
+             [self isRunningTest:@selector(testSelectTopWithBottomDefault)]) {
+    std::string bottom_option_by_default =
+        std::string(kBottomOmniboxPromoDefaultPosition.name) + ":" +
+        kBottomOmniboxPromoDefaultPositionParam + "/" +
+        kBottomOmniboxPromoDefaultPositionParamBottom;
+
+    config.additional_args.push_back(
+        "--enable-features=" + bottom_option_by_default + "," +
+        kBottomOmniboxPromoFRE.name);
+  }
   return config;
 }
 
 #pragma mark - First run tests
 
 // Tests selecting top omnibox in FRE when top is selected by default.
-- (void)testSelectTopOmniboxByDefault {
+- (void)testSelectTopWithTopDefault {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPad (no choice for omnibox position on tablet)");
@@ -138,7 +160,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
 }
 
 // Tests selecting bottom omnibox in FRE when top is selected by default.
-- (void)testSelectBottomOmnibox {
+- (void)testSelectBottomWithTopDefault {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPad (no choice for omnibox position on tablet)");
@@ -164,6 +186,56 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   // Verify that the preferred omnibox position is bottom.
   GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
                  @"Failed to set preferred omnibox position to bottom");
+}
+
+// Tests selecting bottom omnibox in FRE when bottom is selected by default.
+- (void)testSelectBottomWithBottomDefault {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPad (no choice for omnibox position on tablet)");
+  }
+
+  SkipScreensBeforeOmniboxPositionChoice();
+
+  // The bottom address bar option should be selected.
+  [[EarlGrey selectElementWithMatcher:BottomAddressBarOptionSelected()]
+      assertWithMatcher:grey_notNil()];
+
+  // Confirm selection.
+  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+
+  // Verify that the preferred omnibox position is bottom.
+  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+                 @"Failed to set preferred omnibox position to bottom");
+}
+
+// Tests selecting top omnibox in FRE when bottom is selected by default.
+- (void)testSelectTopWithBottomDefault {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPad (no choice for omnibox position on tablet)");
+  }
+
+  SkipScreensBeforeOmniboxPositionChoice();
+
+  // The bottom address bar option should be selected.
+  [[EarlGrey selectElementWithMatcher:BottomAddressBarOptionSelected()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap on the top address bar option.
+  [[EarlGrey selectElementWithMatcher:TopAddressBarOption()]
+      performAction:grey_tap()];
+
+  // The top address bar option should be selected.
+  [[EarlGrey selectElementWithMatcher:TopAddressBarOptionSelected()]
+      assertWithMatcher:grey_notNil()];
+
+  // Confirm selection.
+  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+
+  // Verify that the preferred omnibox position is top.
+  GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+                  @"Failed to set preferred omnibox position to top");
 }
 
 @end

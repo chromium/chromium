@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_mutator.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_util.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_option_item_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -56,8 +57,13 @@
                         action:@selector(didTapBottomAddressBarView)
               forControlEvents:UIControlEventTouchUpInside];
 
-  UIStackView* addressBarView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _topAddressBar, _bottomAddressBar ]];
+  NSArray* addressBarOptions = @[ _topAddressBar, _bottomAddressBar ];
+  if (DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary) {
+    addressBarOptions = @[ _bottomAddressBar, _topAddressBar ];
+  }
+
+  UIStackView* addressBarView =
+      [[UIStackView alloc] initWithArrangedSubviews:addressBarOptions];
   addressBarView.translatesAutoresizingMaskIntoConstraints = NO;
   addressBarView.distribution = UIStackViewDistributionFillEqually;
   [self.specificContentView addSubview:addressBarView];
