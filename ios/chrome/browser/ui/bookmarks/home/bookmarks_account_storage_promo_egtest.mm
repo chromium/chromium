@@ -239,14 +239,16 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGreyUI openBookmarks];
 
   // Verify both local and account sections show for a signed-in account.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Sign-out.
   [SigninEarlGrey signOut];
@@ -260,11 +262,12 @@ using chrome_test_util::SecondarySignInButton;
       selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Verify that the acocunt model is not shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE))]
-      assertWithMatcher:grey_notVisible()];
+  // Verify that the account model is not shown.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
