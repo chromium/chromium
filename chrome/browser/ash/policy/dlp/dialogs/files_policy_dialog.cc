@@ -64,11 +64,14 @@ FilesPolicyDialog::Info FilesPolicyDialog::Info::Warn(
   // TODO(b/300705572): we probably want to have a default message for every
   // block reason.
   int message_id = IDS_POLICY_DLP_FILES_WARN_MESSAGE;
-  settings.learn_more_url_ = GURL(dlp::kDlpLearnMoreUrl);
   settings.message_ = base::ReplaceStringPlaceholders(
       l10n_util::GetPluralStringFUTF16(message_id, paths.size()),
       base::NumberToString16(paths.size()),
       /*offset=*/nullptr);
+  // Only DLP has a default learn more URL.
+  if (reason == FilesPolicyDialog::BlockReason::kDlp) {
+    settings.learn_more_url_ = GURL(dlp::kDlpLearnMoreUrl);
+  }
 
   return settings;
 }
