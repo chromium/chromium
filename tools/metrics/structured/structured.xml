@@ -840,6 +840,147 @@
     </metric>
   </event>
 
+  <event name="OOBE.PageEntered">
+    <summary>
+      Recorded after a screen is shown to the user.
+    </summary>
+    <metric name="PageId" type="raw-string">
+      <summary>
+        The ID of the screen exited. PageId is the screen ID defined in the screen
+        handlers. For example, the ID of the Welcome screen is "connect".
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PageSkippedBySystem">
+    <summary>
+      Recorded after a screen was skipped by the system.
+    </summary>
+    <metric name="PageId" type="raw-string">
+      <summary>
+        The ID of the screen skipped.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="OOBE.PageLeft">
+    <summary>
+      Recorded after a screeen was exited.
+    </summary>
+    <metric name="PageId" type="raw-string">
+      <summary>
+        The ID of the screen exited.
+      </summary>
+    </metric>
+    <metric name="ExitReason" type="raw-string">
+      <summary>
+        The ID of the reason for exiting the screen.
+      </summary>
+    </metric>
+    <metric name="IsFlexFlow" type="int">
+      <summary>
+        Boolean for whether the device is a ChromeOS Flex device.
+      </summary>
+    </metric>
+    <metric name="IsDemoModeFlow" type="int">
+      <summary>
+        Boolean for whether the event is reported during the demo mode setup flow.
+      </summary>
+    </metric>
+    <metric name="IsOwnerUser" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is the owner
+        of the device.
+      </summary>
+    </metric>
+    <metric name="IsEphemeralOrMGS" type="int">
+      <summary>
+        Boolean for whether the event is reported while the active user is an
+        ephemeral user or a managed guest session.
+      </summary>
+    </metric>
+    <metric name="IsFirstOnboarding" type="int">
+      <summary>
+        Boolean for whether the event is reported during the first onboarding flow
+        and before entering the session for the first time (without crashing into
+        session).
+      </summary>
+    </metric>
+    <metric name="ChromeMilestone" type="int">
+      <summary>
+        The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.

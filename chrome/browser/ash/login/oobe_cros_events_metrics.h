@@ -24,6 +24,11 @@ class OobeCrosEventsMetrics : public OobeMetricsHelper::Observer {
   void OnOnboardingStarted() override;
   void OnOnboardingCompleted() override;
   void OnDeviceRegistered() override;
+  void OnScreenShownStatusChanged(
+      OobeScreenId screen,
+      OobeMetricsHelper::ScreenShownStatus status) override;
+  void OnScreenExited(OobeScreenId screen,
+                      const std::string& exit_reason) override;
 };
 
 }  // namespace ash

@@ -123,4 +123,44 @@ void OobeCrosEventsMetrics::OnDeviceRegistered() {
       .Record();
 }
 
+void OobeCrosEventsMetrics::OnScreenShownStatusChanged(
+    OobeScreenId screen,
+    OobeMetricsHelper::ScreenShownStatus status) {
+  if (status == OobeMetricsHelper::ScreenShownStatus::kShown) {
+    cros_events::OOBE_PageEntered()
+        .SetPageId(screen.name)
+        .SetIsFlexFlow(IsFlexFlow())
+        .SetIsDemoModeFlow(IsDemoModeFlow())
+        .SetIsOwnerUser(IsOwnerUser())
+        .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+        .SetIsFirstOnboarding(IsFirstOnboarding())
+        .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+        .Record();
+  } else {
+    cros_events::OOBE_PageSkippedBySystem()
+        .SetPageId(screen.name)
+        .SetIsFlexFlow(IsFlexFlow())
+        .SetIsDemoModeFlow(IsDemoModeFlow())
+        .SetIsOwnerUser(IsOwnerUser())
+        .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+        .SetIsFirstOnboarding(IsFirstOnboarding())
+        .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+        .Record();
+  }
+}
+
+void OobeCrosEventsMetrics::OnScreenExited(OobeScreenId screen,
+                                           const std::string& exit_reason) {
+  cros_events::OOBE_PageLeft()
+      .SetPageId(screen.name)
+      .SetExitReason(exit_reason)
+      .SetIsFlexFlow(IsFlexFlow())
+      .SetIsDemoModeFlow(IsDemoModeFlow())
+      .SetIsOwnerUser(IsOwnerUser())
+      .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+      .SetIsFirstOnboarding(IsFirstOnboarding())
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+      .Record();
+}
+
 }  // namespace ash

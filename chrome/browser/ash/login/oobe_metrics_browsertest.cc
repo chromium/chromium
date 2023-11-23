@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/metrics/structured/structured_events.h"
@@ -25,7 +27,7 @@ namespace ash {
 namespace {
 
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
-
+constexpr const char kConsolidatedConsnetAcceptedRegular[] = "AcceptedRegular";
 }  // namespace
 
 // TODO(b/305929689): Introduce tests for the different values of
@@ -100,6 +102,57 @@ IN_PROC_BROWSER_TEST_F(OobeMetricsTest, OnboardingBoundaryMilestonesMetrics) {
       .SetIsOwnerUser(true)
       .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
   ValidateEventRecorded(onboarding_completed_event);
+}
+
+IN_PROC_BROWSER_TEST_F(OobeMetricsTest, PageEnteredPageLeftEvents) {
+  login_manager_mixin_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+  test::WaitForConsolidatedConsentScreen();
+
+  cros_events::OOBE_PageEntered page_entered_event;
+  page_entered_event.SetPageId(ConsolidatedConsentScreenView::kScreenId.name)
+      .SetIsFlexFlow(false)
+      .SetIsDemoModeFlow(false)
+      .SetIsEphemeralOrMGS(false)
+      .SetIsFirstOnboarding(false)
+      .SetIsOwnerUser(true)
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
+  ValidateEventRecorded(page_entered_event);
+
+  test::TapConsolidatedConsentAccept();
+  OobeScreenExitWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+
+  cros_events::OOBE_PageLeft page_left_event;
+  page_left_event.SetPageId(ConsolidatedConsentScreenView::kScreenId.name)
+      .SetExitReason(kConsolidatedConsnetAcceptedRegular)
+      .SetIsFlexFlow(false)
+      .SetIsDemoModeFlow(false)
+      .SetIsEphemeralOrMGS(false)
+      .SetIsFirstOnboarding(false)
+      .SetIsOwnerUser(true)
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
+  ValidateEventRecorded(page_left_event);
+}
+
+IN_PROC_BROWSER_TEST_F(OobeMetricsTest, PageSkipped) {
+  // Set `is_branded_build` to `false` to get the consolidated consent screen
+  // skipped.
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+      false;
+
+  login_manager_mixin_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+  OobeScreenExitWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+
+  cros_events::OOBE_PageSkippedBySystem page_skipped_event;
+  page_skipped_event.SetPageId(ConsolidatedConsentScreenView::kScreenId.name)
+      .SetIsFlexFlow(false)
+      .SetIsDemoModeFlow(false)
+      .SetIsEphemeralOrMGS(false)
+      .SetIsFirstOnboarding(false)
+      .SetIsOwnerUser(true)
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
+  ValidateEventRecorded(page_skipped_event);
 }
 
 class FirstUserOobeMetricsTest : public OobeMetricsTest {
