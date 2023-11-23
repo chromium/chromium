@@ -428,7 +428,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kAutofillOptions:
       // User selected 'Autofill Options'.
       autofill_metrics::LogAutofillSelectedManageEntry(popup_type_);
-      manager_->ShowAutofillSettings(popup_type_);
+      manager_->client().ShowAutofillSettings(popup_type_);
       break;
     case PopupItemId::kEditAddressProfile: {
       ShowEditAddressProfileDialog(

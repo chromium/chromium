@@ -637,10 +637,6 @@ CreditCardAccessManager* BrowserAutofillManager::GetCreditCardAccessManager() {
   return credit_card_access_manager_.get();
 }
 
-void BrowserAutofillManager::ShowAutofillSettings(PopupType popup_type) {
-  client().ShowAutofillSettings(popup_type);
-}
-
 bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormData& form,
     const FormFieldData& field) {

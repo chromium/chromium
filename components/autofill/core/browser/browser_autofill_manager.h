@@ -113,8 +113,6 @@ class BrowserAutofillManager
 
   ~BrowserAutofillManager() override;
 
-  void ShowAutofillSettings(PopupType popup_type);
-
   // Whether the |field| should show an entry to scan a credit card.
   virtual bool ShouldShowScanCreditCard(const FormData& form,
                                         const FormFieldData& field);
