@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +82,7 @@ class AutofillCreditCardTableViewControllerTest
 
   // Deletes the item at (section, row) and waits util condition returns true or
   // timeout.
-  bool deleteItemAndWait(int section, int row, ConditionBlock condition) {
+  bool DeleteItemAndWait(int section, int row, ConditionBlock condition) {
     AutofillCreditCardTableViewController* view_controller =
         base::apple::ObjCCastStrict<AutofillCreditCardTableViewController>(
             controller());
@@ -89,6 +90,13 @@ class AutofillCreditCardTableViewControllerTest
                                                        inSection:section] ]];
     return base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForUIElementTimeout, condition);
+  }
+
+  // Checks whether device reauth is supported.
+  bool CheckCanAttemptReauth() {
+    ReauthenticationModule* reauthModule =
+        [[ReauthenticationModule alloc] init];
+    return [reauthModule canAttemptReauth];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -133,17 +141,22 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(1));
 
   // Delete the credit card item and check that the section is removed.
-  EXPECT_TRUE(deleteItemAndWait(1, 0, ^{
+  EXPECT_TRUE(DeleteItemAndWait(1, 0, ^{
     return NumberOfSections() == 1;
   }));
 }
 
 // Tests that when the MandatoryReauth feature is enabled a switch
-// appears
+// appears.
 TEST_F(AutofillCreditCardTableViewControllerTest,
        TestMandatoryReauthSwitchExists) {
   base::test::ScopedFeatureList feature_list_{
       autofill::features::kAutofillEnablePaymentsMandatoryReauth};
+  autofill::PersonalDataManager* personal_data_manager =
+      autofill::PersonalDataManagerFactory::GetForBrowserState(
+          chrome_browser_state_.get());
+  EXPECT_TRUE(personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled());
+
   CreateController();
   CheckController();
 
@@ -154,9 +167,10 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   // subtitle.
   EXPECT_EQ(1, NumberOfItemsInSection(1));
 
-  // Confirm the text to the side of the switch.
+  // Confirm the text to the side of the switch. Whether the switch is turned on
+  // depends on whether the device supports device reauth.
   CheckSwitchCellStateAndText(
-      true,
+      CheckCanAttemptReauth(),
       l10n_util::GetNSString(
           IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL),
       1, 0);
@@ -167,4 +181,5 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
           IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL),
       1);
 }
+
 }  // namespace

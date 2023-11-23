@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/settings/autofill/cells",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/common/ui/reauthentication:reauthentication",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
