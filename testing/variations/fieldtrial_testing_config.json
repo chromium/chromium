@@ -10954,21 +10954,6 @@
             ]
         }
     ],
-    "NumberOfCoresWithCpuSecurityMitigation": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NumberOfCoresWithCpuSecurityMitigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxActionsUISimplification": [
         {
             "platforms": [
