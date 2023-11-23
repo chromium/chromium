@@ -12,7 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/login/osauth/auth_policy_enforcer.h"
+#include "chrome/browser/ash/login/osauth/auth_factor_updater.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -164,11 +164,10 @@ void ChromeLoginPerformer::OnEarlyPrefsRead(
   AuthParts::Get()->RegisterEarlyLoginAuthPolicyConnector(
       std::make_unique<EarlyLoginAuthPolicyConnector>(
           context->GetAccountId(), std::move(early_prefs_reader_)));
-  auth_policy_enforcer_ = std::make_unique<AuthPolicyEnforcer>(
+  auth_factor_updater_ = std::make_unique<AuthFactorUpdater>(
       AuthParts::Get()->GetAuthPolicyConnector(), UserDataAuthClient::Get(),
       g_browser_process->local_state());
-  auth_policy_enforcer_->CheckAndEnforcePolicies(std::move(context),
-                                                 std::move(callback));
+  auth_factor_updater_->Run(std::move(context), std::move(callback));
 }
 
 scoped_refptr<Authenticator> ChromeLoginPerformer::CreateAuthenticator() {

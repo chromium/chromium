@@ -13,6 +13,7 @@ class GURL;
 
 namespace ash {
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 std::string GetRecoveryHsmPublicKey();
 
 std::string GetRecoveryLedgerName();
