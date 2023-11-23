@@ -95,7 +95,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.NonChrome.{Timing}"
-    units="%" expires_after="2024-01-01">
+    units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -110,7 +110,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.System.{Timing}"
-    units="%" expires_after="2024-01-01">
+    units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -123,7 +123,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.SystemCPUError.{Timing}"
-    units="BooleanError" expires_after="2024-01-01">
+    units="BooleanError" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
