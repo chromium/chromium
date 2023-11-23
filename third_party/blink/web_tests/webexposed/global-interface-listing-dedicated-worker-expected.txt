@@ -1237,6 +1237,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface MLOperand
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker]     method dataType
 [Worker]     method shape
 [Worker] interface MediaCapabilities
 [Worker]     attribute @@toStringTag

@@ -197,6 +197,10 @@ Vector<uint32_t> MLOperand::shape() const {
   return dimensions_;
 }
 
+V8MLOperandDataType MLOperand::dataType() const {
+  return V8MLOperandDataType(data_type_);
+}
+
 void MLOperand::Trace(Visitor* visitor) const {
   visitor->Trace(builder_);
   visitor->Trace(array_buffer_view_);

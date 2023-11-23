@@ -8,6 +8,6 @@
   RuntimeEnabled=MachineLearningNeuralNetwork,
   Exposed=(Window, DedicatedWorker)
 ] interface MLOperand {
-  // Shape retrieval.
+  MLOperandDataType dataType();
   sequence<unsigned long> shape();
 };

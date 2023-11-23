@@ -79,6 +79,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   size_t ByteLength() const;
 
   // IDL interface:
+  V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
 
  private:
