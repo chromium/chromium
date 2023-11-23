@@ -83,7 +83,11 @@ struct GlobalFirstPartySets {
   // The mapping from site alias to canonical site from public sets.
   map<SchemefulSite, SchemefulSite> aliases;
 
-  // The config induced by the manually-supplied set.
+  // The config induced by the manually-supplied set. This config contains all
+  // relevant ccTLD aliases.
   FirstPartySetsContextConfig manual_config;
+
+  // The aliases contained in the manually-supplied set.
+  map<SchemefulSite, SchemefulSite> manual_aliases;
 };
 

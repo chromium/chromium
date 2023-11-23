@@ -147,7 +147,8 @@ class NET_EXPORT GlobalFirstPartySets {
       base::Version public_sets_version,
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases,
-      FirstPartySetsContextConfig manual_config);
+      FirstPartySetsContextConfig manual_config,
+      base::flat_map<SchemefulSite, SchemefulSite> manual_aliases);
 
   // Same as the public version of FindEntry, but is allowed to omit the
   // `config` argument (i.e. pass nullptr instead of a reference).
@@ -171,6 +172,12 @@ class NET_EXPORT GlobalFirstPartySets {
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
+  // Iterates over the mappings in `manual_aliases_` and `aliases_` (skipping
+  // entries of `aliases_` that are shadowed), invoking `f` for each `alias,
+  // canonical` pair.
+  void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
+                                           const SchemefulSite&)> f) const;
+
   // The version associated with the component_updater-provided public sets.
   // This may be invalid if the "First-Party Sets" component has not been
   // installed yet, or has been corrupted. Entries and aliases from invalid
@@ -188,6 +195,10 @@ class NET_EXPORT GlobalFirstPartySets {
   // Stores the customizations induced by the manually-specified set. May be
   // empty if no switch was provided.
   FirstPartySetsContextConfig manual_config_;
+
+  // Stores the aliases contained in the manually-specified set. (Note that the
+  // aliases are *also* stored in `manual_config_`.)
+  base::flat_map<SchemefulSite, SchemefulSite> manual_aliases_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

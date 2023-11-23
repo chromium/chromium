@@ -48,10 +48,17 @@ class NET_EXPORT LocalSetDeclaration {
     return entries_;
   }
 
+  const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
+    return aliases_;
+  }
+
  private:
-  // Stores the set of entries and ccTLD aliases. This may be empty if no set
-  // was locally defined.
+  // Stores the set of entries, without ccTLD aliases. This may be empty if no
+  // set was locally defined.
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;
+
+  // Stores the ccTLD aliases. May be empty.
+  base::flat_map<SchemefulSite, SchemefulSite> aliases_;
 };
 
 }  // namespace net

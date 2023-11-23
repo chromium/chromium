@@ -798,12 +798,6 @@ TEST_F(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
                                   absl::nullopt)),
-          // TODO(https://crbug.com/1503736): the kAssociated1Cctld2 entry
-          // should not be present, since it's an alias introduced by the manual
-          // config which points to an entry from the manual set that has been
-          // shadowed by an entry from the enterprise set.
-          Pair(kAssociated1Cctld2,
-               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)),
           Pair(kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
           Pair(kPrimary2, FirstPartySetEntry(kPrimary2, SiteType::kPrimary,

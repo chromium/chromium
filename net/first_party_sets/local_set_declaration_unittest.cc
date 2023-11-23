@@ -53,19 +53,20 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
   base::flat_map<SchemefulSite, SchemefulSite> aliases(
       {{primary_cctld, primary}, {associated_cctld, associated}});
 
-  // TODO(https://crbug.com/1503736): Store aliases separately from regular
-  // entries.
-  EXPECT_THAT(
-      LocalSetDeclaration(entries, aliases).entries(),
-      UnorderedElementsAre(
-          Pair(primary,
-               FirstPartySetEntry(primary, SiteType::kPrimary, absl::nullopt)),
-          Pair(associated,
-               FirstPartySetEntry(primary, SiteType::kAssociated, 0)),
-          Pair(primary_cctld,
-               FirstPartySetEntry(primary, SiteType::kPrimary, absl::nullopt)),
-          Pair(associated_cctld,
-               FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
+  LocalSetDeclaration local_set(entries, aliases);
+
+  // LocalSetDeclaration should allow these to pass through, after passing
+  // validation.
+  EXPECT_THAT(local_set.entries(),
+              UnorderedElementsAre(
+                  Pair(primary, FirstPartySetEntry(primary, SiteType::kPrimary,
+                                                   absl::nullopt)),
+                  Pair(associated,
+                       FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
+
+  EXPECT_THAT(local_set.aliases(),
+              UnorderedElementsAre(Pair(associated_cctld, associated),
+                                   Pair(primary_cctld, primary)));
 }
 
 }  // namespace net

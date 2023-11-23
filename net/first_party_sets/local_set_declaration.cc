@@ -15,14 +15,14 @@ LocalSetDeclaration::LocalSetDeclaration() = default;
 LocalSetDeclaration::LocalSetDeclaration(
     base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases)
-    : entries_(std::move(set_entries)) {
+    : entries_(std::move(set_entries)), aliases_(std::move(aliases)) {
   // Every alias must map to some canonical site in `entries_`.
   CHECK(base::ranges::all_of(
-      aliases, [&](const auto& p) { return entries_.contains(p.second); }));
+      aliases_, [&](const auto& p) { return entries_.contains(p.second); }));
 
   if (!entries_.empty()) {
     // Must not be a singleton set (i.e. must have more than one entry).
-    CHECK_GT(entries_.size() + aliases.size(), 1u);
+    CHECK_GT(entries_.size() + aliases_.size(), 1u);
 
     // All provided entries must have the same primary site. I.e., there must
     // only be one set.
@@ -32,12 +32,6 @@ LocalSetDeclaration::LocalSetDeclaration(
         [&](const std::pair<SchemefulSite, FirstPartySetEntry>& pair) {
           return pair.second.primary() == primary;
         }));
-  }
-
-  // TODO(https://crbug.com/1503736): Store aliases separately from regular
-  // entries.
-  for (const auto& [alias, canonical] : aliases) {
-    entries_.emplace(alias, entries_.find(canonical)->second);
   }
 }
 

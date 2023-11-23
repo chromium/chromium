@@ -13,6 +13,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/local_set_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1647,7 +1648,7 @@ TEST(FirstPartySetParser,
   net::SchemefulSite associated2_cctld(GURL("https://associated2.cctld"));
   net::SchemefulSite service(GURL("https://service.test"));
 
-  EXPECT_THAT(
+  net::LocalSetDeclaration local_set =
       FirstPartySetParser::ParseFromCommandLine(
           R"({"primary": "https://primary.test",)"
           R"("associatedSites":)"
@@ -1656,8 +1657,10 @@ TEST(FirstPartySetParser,
           R"("ccTLDs": {)"
           R"(  "https://associated2.test": ["https://associated2.cctld"])"
           R"(})"
-          R"(})")
-          .entries(),
+          R"(})");
+
+  EXPECT_THAT(
+      local_set.entries(),
       UnorderedElementsAre(
           Pair(primary, net::FirstPartySetEntry(
                             primary, net::SiteType::kPrimary, absl::nullopt)),
@@ -1666,10 +1669,10 @@ TEST(FirstPartySetParser,
           Pair(associated2,
                net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)),
           Pair(service, net::FirstPartySetEntry(
-                            primary, net::SiteType::kService, absl::nullopt)),
-          Pair(associated2_cctld,
-               net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
-                                       1))));
+                            primary, net::SiteType::kService, absl::nullopt))));
+
+  EXPECT_THAT(local_set.aliases(),
+              UnorderedElementsAre(Pair(associated2_cctld, associated2)));
 }
 
 }  // namespace content
