@@ -14800,6 +14800,8 @@
     "RunTasksByBatches": [
         {
             "platforms": [
+                "android",
+                "android_webview",
                 "windows"
             ],
             "experiments": [
