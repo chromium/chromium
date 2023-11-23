@@ -22,8 +22,11 @@ public class AdditionalNavigationParams {
     private final @Nullable UnguessableToken mAttributionSrcToken;
     private final long mAttributionRuntimeFeatures;
 
-    public AdditionalNavigationParams(UnguessableToken initiatorFrameToken, int initiatorProcessId,
-            @Nullable UnguessableToken attributionSrcToken, long attributionRuntimeFeatures) {
+    public AdditionalNavigationParams(
+            UnguessableToken initiatorFrameToken,
+            int initiatorProcessId,
+            @Nullable UnguessableToken attributionSrcToken,
+            long attributionRuntimeFeatures) {
         mInitiatorFrameToken = initiatorFrameToken;
         mInitiatorProcessId = initiatorProcessId;
         mAttributionSrcToken = attributionSrcToken;

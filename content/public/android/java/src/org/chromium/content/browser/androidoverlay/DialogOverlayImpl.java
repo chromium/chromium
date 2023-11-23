@@ -73,8 +73,11 @@ public class DialogOverlayImpl
      * @param provider the overlay provider that owns us.
      * @param asPanel the overlay should be a panel, above the compositor.  This is for testing.
      */
-    public DialogOverlayImpl(AndroidOverlayClient client, final AndroidOverlayConfig config,
-            Runnable releasedRunnable, final boolean asPanel) {
+    public DialogOverlayImpl(
+            AndroidOverlayClient client,
+            final AndroidOverlayConfig config,
+            Runnable releasedRunnable,
+            final boolean asPanel) {
         ThreadUtils.assertOnUiThread();
 
         mClient = client;
@@ -85,8 +88,13 @@ public class DialogOverlayImpl
 
         // Register to get token updates.  Note that this may not call us back directly, since
         // |mDialogCore| hasn't been initialized yet.
-        mNativeHandle = DialogOverlayImplJni.get().init(DialogOverlayImpl.this,
-                config.routingToken.high, config.routingToken.low, config.powerEfficient);
+        mNativeHandle =
+                DialogOverlayImplJni.get()
+                        .init(
+                                DialogOverlayImpl.this,
+                                config.routingToken.high,
+                                config.routingToken.low,
+                                config.powerEfficient);
 
         if (mNativeHandle == 0) {
             notifyDestroyed();
@@ -94,8 +102,8 @@ public class DialogOverlayImpl
             return;
         }
 
-        DialogOverlayImplJni.get().getCompositorOffset(
-                mNativeHandle, DialogOverlayImpl.this, config.rect);
+        DialogOverlayImplJni.get()
+                .getCompositorOffset(mNativeHandle, DialogOverlayImpl.this, config.rect);
         DialogOverlayImplJni.get().completeInit(mNativeHandle, DialogOverlayImpl.this);
     }
 
@@ -194,9 +202,7 @@ public class DialogOverlayImpl
         return true;
     }
 
-    /**
-     * Callback from native that the window has changed.
-     */
+    /** Callback from native that the window has changed. */
     @CalledByNative
     public void onWindowAndroid(final WindowAndroid window) {
         ThreadUtils.assertOnUiThread();
@@ -228,9 +234,7 @@ public class DialogOverlayImpl
         }
     }
 
-    /**
-     * Callback from native that we will be getting no additional tokens.
-     */
+    /** Callback from native that we will be getting no additional tokens. */
     @CalledByNative
     public void onDismissed() {
         ThreadUtils.assertOnUiThread();
@@ -244,9 +248,7 @@ public class DialogOverlayImpl
         cleanup();
     }
 
-    /**
-     * Callback from native to tell us that the power-efficient state has changed.
-     */
+    /** Callback from native to tell us that the power-efficient state has changed. */
     @CalledByNative
     private void onPowerEfficientState(boolean isPowerEfficient) {
         ThreadUtils.assertOnUiThread();
@@ -345,9 +347,7 @@ public class DialogOverlayImpl
         DialogOverlayImplJni.get().notifyDestroyedSynchronously(nativeHandle);
     }
 
-    /**
-     * Creates a copy of |rect| and returns it.
-     */
+    /** Creates a copy of |rect| and returns it. */
     private static Rect copyRect(Rect rect) {
         Rect copy = new Rect();
         copy.x = rect.x;
@@ -367,9 +367,8 @@ public class DialogOverlayImpl
         long init(DialogOverlayImpl caller, long high, long low, boolean isPowerEfficient);
 
         void completeInit(long nativeDialogOverlayImpl, DialogOverlayImpl caller);
-        /**
-         * Stops native side and deallocates |handle|.
-         */
+
+        /** Stops native side and deallocates |handle|. */
         void destroy(long nativeDialogOverlayImpl, DialogOverlayImpl caller);
 
         /**

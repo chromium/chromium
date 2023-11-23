@@ -9,5 +9,4 @@ package org.chromium.content.browser.webid;
  *
  * TODO(crbug.com/1475970) upstream the private version of this.
  */
-public class IdentityCredentialsDelegateImpl implements IdentityCredentialsDelegate {
-}
+public class IdentityCredentialsDelegateImpl implements IdentityCredentialsDelegate {}

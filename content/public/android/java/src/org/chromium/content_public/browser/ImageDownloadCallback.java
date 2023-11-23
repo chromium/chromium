@@ -11,9 +11,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/**
- * Java counterpart of native ImageDownloadCallback.
- */
+/** Java counterpart of native ImageDownloadCallback. */
 public interface ImageDownloadCallback {
     /**
      * Called when image downloading is completed.
@@ -26,6 +24,10 @@ public interface ImageDownloadCallback {
      *                 WebContente.DownloadImage}.
      * @param originalImageSizes The original sizes of {@link bitmaps} prior to the resizing.
      */
-    void onFinishDownloadImage(int id, int httpStatusCode, GURL imageUrl, List<Bitmap> bitmaps,
+    void onFinishDownloadImage(
+            int id,
+            int httpStatusCode,
+            GURL imageUrl,
+            List<Bitmap> bitmaps,
             List<Rect> originalImageSizes);
 }

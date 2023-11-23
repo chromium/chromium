@@ -21,13 +21,10 @@ import org.chromium.ui.widget.UiWidgetFactory;
 
 import java.util.List;
 
-/**
- * Handles the popup dialog for the <select> HTML tag support.
- */
+/** Handles the popup dialog for the <select> HTML tag support. */
 public class SelectPopupDialog implements SelectPopup.Ui {
     private static final int[] SELECT_DIALOG_ATTRS = {
-        R.attr.select_dialog_multichoice,
-        R.attr.select_dialog_singlechoice
+        R.attr.select_dialog_multichoice, R.attr.select_dialog_singlechoice
     };
 
     // The dialog hosting the popup list view.
@@ -36,8 +33,12 @@ public class SelectPopupDialog implements SelectPopup.Ui {
 
     private boolean mSelectionNotified;
 
-    public SelectPopupDialog(Context windowContext, Callback<int[]> selectionChangedCallback,
-            List<SelectPopupItem> items, boolean multiple, int[] selected) {
+    public SelectPopupDialog(
+            Context windowContext,
+            Callback<int[]> selectionChangedCallback,
+            List<SelectPopupItem> items,
+            boolean multiple,
+            int[] selected) {
         mSelectionChangedCallback = selectionChangedCallback;
 
         final ListView listView = new ListView(windowContext);
@@ -51,7 +52,8 @@ public class SelectPopupDialog implements SelectPopup.Ui {
         setInverseBackgroundForced(mListBoxPopup);
 
         if (multiple) {
-            mListBoxPopup.setButton(DialogInterface.BUTTON_POSITIVE,
+            mListBoxPopup.setButton(
+                    DialogInterface.BUTTON_POSITIVE,
                     mListBoxPopup.getContext().getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         @Override
@@ -59,7 +61,8 @@ public class SelectPopupDialog implements SelectPopup.Ui {
                             notifySelection(getSelectedIndices(listView));
                         }
                     });
-            mListBoxPopup.setButton(DialogInterface.BUTTON_NEGATIVE,
+            mListBoxPopup.setButton(
+                    DialogInterface.BUTTON_NEGATIVE,
                     mListBoxPopup.getContext().getString(android.R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         @Override
@@ -68,8 +71,9 @@ public class SelectPopupDialog implements SelectPopup.Ui {
                         }
                     });
         }
-        final SelectPopupAdapter adapter = new SelectPopupAdapter(
-                mListBoxPopup.getContext(), getSelectDialogLayout(multiple), items);
+        final SelectPopupAdapter adapter =
+                new SelectPopupAdapter(
+                        mListBoxPopup.getContext(), getSelectDialogLayout(multiple), items);
         listView.setAdapter(adapter);
         listView.setFocusableInTouchMode(true);
 
@@ -80,25 +84,27 @@ public class SelectPopupDialog implements SelectPopup.Ui {
             }
         } else {
             listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            listView.setOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View v,
-                        int position, long id) {
-                    notifySelection(getSelectedIndices(listView));
-                    mListBoxPopup.dismiss();
-                }
-            });
+            listView.setOnItemClickListener(
+                    new OnItemClickListener() {
+                        @Override
+                        public void onItemClick(
+                                AdapterView<?> parent, View v, int position, long id) {
+                            notifySelection(getSelectedIndices(listView));
+                            mListBoxPopup.dismiss();
+                        }
+                    });
             if (selected.length > 0) {
                 listView.setSelection(selected[0]);
                 listView.setItemChecked(selected[0], true);
             }
         }
-        mListBoxPopup.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                notifySelection(null);
-            }
-        });
+        mListBoxPopup.setOnCancelListener(
+                new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        notifySelection(null);
+                    }
+                });
     }
 
     @SuppressWarnings("deprecation")
@@ -111,8 +117,10 @@ public class SelectPopupDialog implements SelectPopup.Ui {
 
     private int getSelectDialogLayout(boolean isMultiChoice) {
         int resourceId;
-        TypedArray styledAttributes = mListBoxPopup.getContext().obtainStyledAttributes(
-                R.style.SelectPopupDialog, SELECT_DIALOG_ATTRS);
+        TypedArray styledAttributes =
+                mListBoxPopup
+                        .getContext()
+                        .obtainStyledAttributes(R.style.SelectPopupDialog, SELECT_DIALOG_ATTRS);
         resourceId = styledAttributes.getResourceId(isMultiChoice ? 0 : 1, 0);
         styledAttributes.recycle();
         return resourceId;

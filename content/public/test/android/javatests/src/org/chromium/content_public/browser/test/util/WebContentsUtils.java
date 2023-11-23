@@ -26,9 +26,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Collection of test-only WebContents utilities.
- */
+/** Collection of test-only WebContents utilities. */
 @JNINamespace("content")
 public class WebContentsUtils {
     /**
@@ -38,9 +36,10 @@ public class WebContentsUtils {
      * @param enabled Whether to report all frame submissions.
      */
     public static void reportAllFrameSubmissions(final WebContents webContents, boolean enabled) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebContentsUtilsJni.get().reportAllFrameSubmissions(webContents, enabled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsUtilsJni.get().reportAllFrameSubmissions(webContents, enabled);
+                });
     }
 
     /**
@@ -75,7 +74,8 @@ public class WebContentsUtils {
      */
     public static ImeAdapter getImeAdapter(WebContents webContents) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> ImeAdapter.fromWebContents(webContents));
+            return TestThreadUtils.runOnUiThreadBlocking(
+                    () -> ImeAdapter.fromWebContents(webContents));
         } catch (ExecutionException e) {
             return null;
         }
@@ -117,9 +117,9 @@ public class WebContentsUtils {
             WebContents webContents, String script, @Nullable JavaScriptCallback callback) {
         if (script == null) return;
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> WebContentsUtilsJni.get().evaluateJavaScriptWithUserGesture(
-                                webContents, script, callback));
+                () ->
+                        WebContentsUtilsJni.get()
+                                .evaluateJavaScriptWithUserGesture(webContents, script, callback));
     }
 
     /**
@@ -140,26 +140,31 @@ public class WebContentsUtils {
      */
     public static boolean isActionModeSupported(WebContents webContents) {
         SelectionPopupControllerImpl controller =
-                ((SelectionPopupControllerImpl) SelectionPopupController.fromWebContents(
-                        webContents));
+                ((SelectionPopupControllerImpl)
+                        SelectionPopupController.fromWebContents(webContents));
         return controller.isActionModeSupported();
     }
 
     /** Cause the renderer process for the given WebContents to crash. */
     public static void crashTabAndWait(WebContents webContents) throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        WebContentsObserver observer = new WebContentsObserver() {
-            @Override
-            public void renderProcessGone() {
-                callbackHelper.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            webContents.addObserver(observer);
-            WebContentsUtilsJni.get().crashTab(webContents);
-        });
+        WebContentsObserver observer =
+                new WebContentsObserver() {
+                    @Override
+                    public void renderProcessGone() {
+                        callbackHelper.notifyCalled();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.addObserver(observer);
+                    WebContentsUtilsJni.get().crashTab(webContents);
+                });
         callbackHelper.waitForFirst();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.removeObserver(observer); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.removeObserver(observer);
+                });
     }
 
     @CalledByNative
@@ -170,9 +175,12 @@ public class WebContentsUtils {
     @NativeMethods
     interface Natives {
         void reportAllFrameSubmissions(WebContents webContents, boolean enabled);
+
         RenderFrameHost getFocusedFrame(WebContents webContents);
+
         void evaluateJavaScriptWithUserGesture(
                 WebContents webContents, String script, @Nullable JavaScriptCallback callback);
+
         void crashTab(WebContents webContents);
     }
 }

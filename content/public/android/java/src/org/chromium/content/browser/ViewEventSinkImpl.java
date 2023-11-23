@@ -16,9 +16,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 
-/**
- * Implementation of the interface {@link ViewEventSink}.
- */
+/** Implementation of the interface {@link ViewEventSink}. */
 public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObserver, UserData {
     private final WebContentsImpl mWebContents;
 
@@ -67,8 +65,9 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
         if (mWebContents.getStylusWritingHandler() != null) {
             ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
             if (viewAndroidDelegate != null) {
-                mWebContents.getStylusWritingHandler().onDetachedFromWindow(
-                        viewAndroidDelegate.getContainerView().getContext());
+                mWebContents
+                        .getStylusWritingHandler()
+                        .onDetachedFromWindow(viewAndroidDelegate.getContainerView().getContext());
             }
         }
     }

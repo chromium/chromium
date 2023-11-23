@@ -11,5 +11,6 @@ package org.chromium.content.browser.framehost;
 public interface RenderFrameHostDelegate {
     // Mirrors callbacks for native RenderFrameHostDelegate.
     void renderFrameCreated(RenderFrameHostImpl host);
+
     void renderFrameDeleted(RenderFrameHostImpl host);
 }

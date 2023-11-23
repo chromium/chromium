@@ -102,14 +102,14 @@ public class MediaSessionImpl extends MediaSession {
 
     @Override
     public void didReceiveAction(int action) {
-        MediaSessionImplJni.get().didReceiveAction(
-                mNativeMediaSessionAndroid, MediaSessionImpl.this, action);
+        MediaSessionImplJni.get()
+                .didReceiveAction(mNativeMediaSessionAndroid, MediaSessionImpl.this, action);
     }
 
     @Override
     public void requestSystemAudioFocus() {
-        MediaSessionImplJni.get().requestSystemAudioFocus(
-                mNativeMediaSessionAndroid, MediaSessionImpl.this);
+        MediaSessionImplJni.get()
+                .requestSystemAudioFocus(mNativeMediaSessionAndroid, MediaSessionImpl.this);
     }
 
     @Override
@@ -124,10 +124,10 @@ public class MediaSessionImpl extends MediaSession {
 
     @CalledByNative
     private void mediaSessionDestroyed() {
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionDestroyed();
         }
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().stopObserving();
         }
         mObservers.clear();
@@ -139,7 +139,7 @@ public class MediaSessionImpl extends MediaSession {
         mIsControllable = isControllable;
         mIsSuspended = isSuspended;
 
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionStateChanged(isControllable, isSuspended);
         }
     }
@@ -147,7 +147,7 @@ public class MediaSessionImpl extends MediaSession {
     @CalledByNative
     private void mediaSessionMetadataChanged(MediaMetadata metadata) {
         mMetadata = metadata;
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionMetadataChanged(metadata);
         }
     }
@@ -158,7 +158,7 @@ public class MediaSessionImpl extends MediaSession {
         for (int action : actions) actionSet.add(action);
         mActionSet = actionSet;
 
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionActionsChanged(actionSet);
         }
     }
@@ -167,7 +167,7 @@ public class MediaSessionImpl extends MediaSession {
     private void mediaSessionArtworkChanged(MediaImage[] images) {
         mImagesList = Arrays.asList(images);
 
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionArtworkChanged(mImagesList);
         }
     }
@@ -175,7 +175,7 @@ public class MediaSessionImpl extends MediaSession {
     @CalledByNative
     private void mediaSessionPositionChanged(@Nullable MediaPosition position) {
         mPosition = position;
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionPositionChanged(position);
         }
     }
@@ -194,12 +194,19 @@ public class MediaSessionImpl extends MediaSession {
     @NativeMethods
     interface Natives {
         void resume(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+
         void suspend(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+
         void stop(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+
         void seek(long nativeMediaSessionAndroid, MediaSessionImpl caller, long millis);
+
         void seekTo(long nativeMediaSessionAndroid, MediaSessionImpl caller, long millis);
+
         void didReceiveAction(long nativeMediaSessionAndroid, MediaSessionImpl caller, int action);
+
         void requestSystemAudioFocus(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+
         MediaSessionImpl getMediaSessionFromWebContents(WebContents contents);
     }
 }

@@ -39,9 +39,15 @@ public final class TextTrackSettings {
      * @param textTrackTextShadow the text shadow
      * @param textTrackTextSize the text size
      */
-    public TextTrackSettings(boolean textTracksEnabled, String textTrackBackgroundColor,
-            String textTrackFontFamily, String textTrackFontStyle, String textTrackFontVariant,
-            String textTrackTextColor, String textTrackTextShadow, String textTrackTextSize) {
+    public TextTrackSettings(
+            boolean textTracksEnabled,
+            String textTrackBackgroundColor,
+            String textTrackFontFamily,
+            String textTrackFontStyle,
+            String textTrackFontVariant,
+            String textTrackTextColor,
+            String textTrackTextShadow,
+            String textTrackTextSize) {
         mTextTracksEnabled = textTracksEnabled;
         mTextTrackBackgroundColor = textTrackBackgroundColor;
         mTextTrackFontFamily = textTrackFontFamily;

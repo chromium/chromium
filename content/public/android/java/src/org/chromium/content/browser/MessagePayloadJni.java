@@ -13,9 +13,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePayloadType;
 
-/**
- * Helper class to call MessagePayload methods from native.
- */
+/** Helper class to call MessagePayload methods from native. */
 @JNINamespace("content")
 final class MessagePayloadJni {
     private MessagePayloadJni() {}

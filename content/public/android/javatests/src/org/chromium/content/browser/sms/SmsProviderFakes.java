@@ -71,7 +71,8 @@ class SmsProviderFakes {
             try {
                 receiver.onConsentResult(Activity.RESULT_OK, intent);
             } catch (ClassCastException e) {
-                Log.v(TAG,
+                Log.v(
+                        TAG,
                         "FakeSmsUserConsentRetrieverClient.triggerUserConsentSms failed: "
                                 + "receiver must be an instance of SmsUserConsentReceiver");
             }
@@ -118,7 +119,8 @@ class SmsProviderFakes {
         private void triggerUserGrantsPermission(boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
-                Log.v(TAG,
+                Log.v(
+                        TAG,
                         "FakeSmsRetrieverClient.triggerUserGrantsPermission failed: "
                                 + "no context was set");
                 return;
@@ -147,9 +149,11 @@ class SmsProviderFakes {
             } else if (type.equals("USER_PERMISSION_REQUIRED")) {
                 code = SmsRetrieverStatusCodes.USER_PERMISSION_REQUIRED;
             } else {
-                Log.v(TAG,
+                Log.v(
+                        TAG,
                         "FakeSmsRetrieverClient.triggerFailure failed:"
-                                + "invalid failure type " + type);
+                                + "invalid failure type "
+                                + type);
                 return;
             }
 

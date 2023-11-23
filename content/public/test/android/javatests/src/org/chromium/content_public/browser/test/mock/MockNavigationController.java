@@ -9,9 +9,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 
-/**
- * Mock NavigationController implementation for Test.
- */
+/** Mock NavigationController implementation for Test. */
 public class MockNavigationController implements NavigationController {
     @Override
     public boolean canGoBack() {

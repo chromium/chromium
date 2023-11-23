@@ -22,9 +22,7 @@ import java.util.Set;
 public abstract class MediaSessionObserver {
     private MediaSessionImpl mMediaSession;
 
-    /**
-     * Construct a MediaSessionObserver and start observing |mediaSession|.
-     */
+    /** Construct a MediaSessionObserver and start observing |mediaSession|. */
     protected MediaSessionObserver(MediaSession mediaSession) {
         // In tests, the MediaSession might be a mocked object which is not instance of
         // MediaSessionImpl.

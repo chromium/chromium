@@ -99,14 +99,10 @@ public interface RenderFrameHost {
      */
     void terminateRendererDueToBadMessage(int reason);
 
-    /**
-     * Notifies the native RenderFrameHost about a user activation from the browser side.
-     */
+    /** Notifies the native RenderFrameHost about a user activation from the browser side. */
     void notifyUserActivation();
 
-    /**
-     * Notifies the native RenderFrameHost about a successful WebAuthn assertion request.
-     */
+    /** Notifies the native RenderFrameHost about a successful WebAuthn assertion request. */
     void notifyWebAuthnAssertionRequestSucceeded();
 
     /**

@@ -74,11 +74,12 @@ public class AccessibilityEventDispatcher {
         boolean dispatchEvent(int virtualViewId, int eventType);
     }
 
-    /**
-     *  Create an AccessibilityEventDispatcher and define the delays for event types.
-     */
-    public AccessibilityEventDispatcher(Client mClient, Map<Integer, Integer> eventThrottleDelays,
-            Set<Integer> viewIndependentEventsToThrottle, Set<Integer> relevantEventTypes) {
+    /** Create an AccessibilityEventDispatcher and define the delays for event types. */
+    public AccessibilityEventDispatcher(
+            Client mClient,
+            Map<Integer, Integer> eventThrottleDelays,
+            Set<Integer> viewIndependentEventsToThrottle,
+            Set<Integer> relevantEventTypes) {
         this.mClient = mClient;
         this.mEventThrottleDelays = eventThrottleDelays;
         this.mViewIndependentEventsToThrottle = viewIndependentEventsToThrottle;
@@ -131,8 +132,7 @@ public class AccessibilityEventDispatcher {
             Runnable myRunnable =
                     () -> {
                         // We have delayed firing this event, so accessibility may not be enabled or
-                        // the
-                        // node may be invalid, in which case dispatch will return false.
+                        // the node may be invalid, in which case dispatch will return false.
                         if (mClient.dispatchEvent(virtualViewId, eventType)) {
                             // After sending event, record time it was sent
                             mEventLastFiredTimes.put(uuid, SystemClock.elapsedRealtime());
@@ -143,7 +143,8 @@ public class AccessibilityEventDispatcher {
                         mPendingEvents.remove(uuid);
                     };
 
-            mClient.postRunnable(myRunnable,
+            mClient.postRunnable(
+                    myRunnable,
                     (mEventLastFiredTimes.get(uuid) + mEventThrottleDelays.get(eventType)) - now);
             mPendingEvents.put(uuid, myRunnable);
         }

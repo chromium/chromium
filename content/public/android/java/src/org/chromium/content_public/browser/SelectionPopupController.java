@@ -61,23 +61,17 @@ public interface SelectionPopupController {
         SelectionPopupControllerImpl.setShouldGetReadbackViewFromWindowAndroid();
     }
 
-    /**
-     * Set allow using magnifer built using surface control instead of the system-proivded one.
-     */
+    /** Set allow using magnifer built using surface control instead of the system-proivded one. */
     static void setAllowSurfaceControlMagnifier() {
         SelectionPopupControllerImpl.setAllowSurfaceControlMagnifier();
     }
 
-    /**
-     * Check if need to disable SurfaceControl during selection.
-     */
+    /** Check if need to disable SurfaceControl during selection. */
     static boolean needsSurfaceViewDuringSelection() {
         return !SelectionPopupControllerImpl.isMagnifierWithSurfaceControlSupported();
     }
 
-    /**
-     * Set {@link ActionModeCallback} used by {@link SelectionPopupController}.
-     */
+    /** Set {@link ActionModeCallback} used by {@link SelectionPopupController}. */
     void setActionModeCallback(ActionModeCallback callback);
 
     /**
@@ -107,9 +101,7 @@ public interface SelectionPopupController {
      */
     boolean hasSelection();
 
-    /**
-     * Hide action mode and put into destroyed state.
-     */
+    /** Hide action mode and put into destroyed state. */
     void destroySelectActionMode();
 
     boolean isSelectActionBarShowing();
@@ -142,9 +134,7 @@ public interface SelectionPopupController {
     /** Sets the given {@link SelectionClient} in the selection popup controller. */
     void setSelectionClient(SelectionClient selectionClient);
 
-    /**
-     * Sets TextClassifier for Smart Text selection.
-     */
+    /** Sets TextClassifier for Smart Text selection. */
     void setTextClassifier(TextClassifier textClassifier);
 
     /**
@@ -154,9 +144,7 @@ public interface SelectionPopupController {
      */
     TextClassifier getTextClassifier();
 
-    /**
-     * Returns the TextClassifier which has been set with setTextClassifier(), or null.
-     */
+    /** Returns the TextClassifier which has been set with setTextClassifier(), or null. */
     TextClassifier getCustomTextClassifier();
 
     /**
@@ -175,8 +163,6 @@ public interface SelectionPopupController {
      */
     void updateTextSelectionUI(boolean focused);
 
-    /**
-     * Set the dropdown menu delegate that handles showing a dropdown style text selection menu.
-     */
+    /** Set the dropdown menu delegate that handles showing a dropdown style text selection menu. */
     void setDropdownMenuDelegate(@NonNull SelectionDropdownMenuDelegate dropdownMenuDelegate);
 }

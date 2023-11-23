@@ -20,9 +20,7 @@ public interface RenderWidgetHostView {
      */
     boolean isReady();
 
-    /**
-     * Get the Background color from underlying RenderWidgetHost for this WebContent.
-     */
+    /** Get the Background color from underlying RenderWidgetHost for this WebContent. */
     int getBackgroundColor();
 
     /**
@@ -37,8 +35,6 @@ public interface RenderWidgetHostView {
     void writeContentBitmapToDiskAsync(
             int width, int height, String path, Callback<String> callback);
 
-    /**
-     * Notifies that the Visual Viewport inset has changed its bottom value.
-     */
+    /** Notifies that the Visual Viewport inset has changed its bottom value. */
     void onViewportInsetBottomChanged();
 }

@@ -4,9 +4,7 @@
 
 package org.chromium.content_public.common;
 
-/**
- * URL constants used by both Chrome, WebLayer and WebView.
- */
+/** URL constants used by both Chrome, WebLayer and WebView. */
 public final class ContentUrlConstants {
     public static final String ABOUT_SCHEME = "about";
 

@@ -9,9 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
-/**
- * Java accessor for base::Features listed in content/browser/android/content_feature_map.cc.
- */
+/** Java accessor for base::Features listed in content/browser/android/content_feature_map.cc. */
 @JNINamespace("content::android")
 public class ContentFeatureMap extends FeatureMap {
     private static final ContentFeatureMap sInstance = new ContentFeatureMap();
@@ -26,9 +24,7 @@ public class ContentFeatureMap extends FeatureMap {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

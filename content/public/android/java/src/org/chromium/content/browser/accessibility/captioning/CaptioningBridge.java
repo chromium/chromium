@@ -11,11 +11,9 @@ import org.chromium.base.ContextUtils;
 
 import java.util.Locale;
 
-/**
- * Implementation of SystemCaptioningBridge that uses CaptioningManager.
- */
-public class CaptioningBridge
-        extends CaptioningManager.CaptioningChangeListener implements SystemCaptioningBridge {
+/** Implementation of SystemCaptioningBridge that uses CaptioningManager. */
+public class CaptioningBridge extends CaptioningManager.CaptioningChangeListener
+        implements SystemCaptioningBridge {
     private final CaptioningChangeDelegate mCaptioningChangeDelegate;
     private final CaptioningManager mCaptioningManager;
     private static CaptioningBridge sInstance;
@@ -30,8 +28,9 @@ public class CaptioningBridge
     private CaptioningBridge() {
         mCaptioningChangeDelegate = new CaptioningChangeDelegate();
         mCaptioningManager =
-                (CaptioningManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CAPTIONING_SERVICE);
+                (CaptioningManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.CAPTIONING_SERVICE);
     }
 
     @Override
@@ -55,9 +54,7 @@ public class CaptioningBridge
         mCaptioningChangeDelegate.onUserStyleChanged(captioningStyle);
     }
 
-    /**
-     * Force-sync the current closed caption settings to the delegate
-     */
+    /** Force-sync the current closed caption settings to the delegate */
     private void syncToDelegate() {
         mCaptioningChangeDelegate.onEnabledChanged(mCaptioningManager.isEnabled());
         mCaptioningChangeDelegate.onFontScaleChanged(mCaptioningManager.getFontScale());

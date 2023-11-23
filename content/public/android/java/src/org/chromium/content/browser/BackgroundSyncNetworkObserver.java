@@ -68,8 +68,11 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     }
 
     private static boolean canCreateObserver() {
-        return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                       Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(), Process.myUid())
+        return ApiCompatibilityUtils.checkPermission(
+                        ContextUtils.getApplicationContext(),
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Process.myPid(),
+                        Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -98,16 +101,19 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
 
         // Create the NetworkChangeNotifierAutoDetect if it does not exist already.
         if (mNotifier == null) {
-            mNotifier = new NetworkChangeNotifierAutoDetect(
-                    this, new RegistrationPolicyAlwaysRegister());
+            mNotifier =
+                    new NetworkChangeNotifierAutoDetect(
+                            this, new RegistrationPolicyAlwaysRegister());
             RecordHistogram.recordBooleanHistogram(
                     "BackgroundSync.NetworkObserver.HasPermission", true);
         }
         mNativePtrs.add(nativePtr);
 
-        BackgroundSyncNetworkObserverJni.get().notifyConnectionTypeChanged(nativePtr,
-                BackgroundSyncNetworkObserver.this,
-                mNotifier.getCurrentNetworkState().getConnectionType());
+        BackgroundSyncNetworkObserverJni.get()
+                .notifyConnectionTypeChanged(
+                        nativePtr,
+                        BackgroundSyncNetworkObserver.this,
+                        mNotifier.getCurrentNetworkState().getConnectionType());
     }
 
     @CalledByNative
@@ -129,8 +135,9 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
         mHasBroadcastConnectionType = true;
         mLastBroadcastConnectionType = newConnectionType;
         for (Long nativePtr : mNativePtrs) {
-            BackgroundSyncNetworkObserverJni.get().notifyConnectionTypeChanged(
-                    nativePtr, BackgroundSyncNetworkObserver.this, newConnectionType);
+            BackgroundSyncNetworkObserverJni.get()
+                    .notifyConnectionTypeChanged(
+                            nativePtr, BackgroundSyncNetworkObserver.this, newConnectionType);
         }
     }
 

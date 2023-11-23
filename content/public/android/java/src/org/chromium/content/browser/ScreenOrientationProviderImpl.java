@@ -30,9 +30,7 @@ import org.chromium.ui.display.DisplayAndroid;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/**
- * This is the implementation of the C++ counterpart ScreenOrientationProvider.
- */
+/** This is the implementation of the C++ counterpart ScreenOrientationProvider. */
 @JNINamespace("content")
 public class ScreenOrientationProviderImpl
         implements ActivityStateListener, ScreenOrientationProvider {
@@ -73,8 +71,10 @@ public class ScreenOrientationProviderImpl
         private final byte mWebScreenOrientation;
         private boolean mObserverRemoved;
 
-        public PendingRequest(ScreenOrientationProviderImpl provider,
-                WindowEventObserverManager windowEventManager, boolean lockOrUnlock,
+        public PendingRequest(
+                ScreenOrientationProviderImpl provider,
+                WindowEventObserverManager windowEventManager,
+                boolean lockOrUnlock,
                 byte webScreenOrientation) {
             mProvider = provider;
             mWindowEventManager = windowEventManager;
@@ -110,8 +110,8 @@ public class ScreenOrientationProviderImpl
         return Holder.sInstance;
     }
 
-    private static int getOrientationFromWebScreenOrientations(byte orientation,
-            @Nullable WindowAndroid window, Context context) {
+    private static int getOrientationFromWebScreenOrientations(
+            byte orientation, @Nullable WindowAndroid window, Context context) {
         switch (orientation) {
             case ScreenOrientationLockType.DEFAULT:
                 return ActivityInfo.SCREEN_ORIENTATION_USER;
@@ -132,8 +132,10 @@ public class ScreenOrientationProviderImpl
             case ScreenOrientationLockType.NATURAL:
                 // If the tab is being reparented, we don't have a display strongly associated with
                 // it, so we get the default display.
-                DisplayAndroid displayAndroid = (window != null) ? window.getDisplay()
-                        : DisplayAndroid.getNonMultiDisplay(context);
+                DisplayAndroid displayAndroid =
+                        (window != null)
+                                ? window.getDisplay()
+                                : DisplayAndroid.getNonMultiDisplay(context);
                 int rotation = displayAndroid.getRotation();
                 if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
                     if (displayAndroid.getDisplayHeight() >= displayAndroid.getDisplayWidth()) {
@@ -165,7 +167,8 @@ public class ScreenOrientationProviderImpl
                 WindowEventObserverManager.from(webContents);
         PendingRequest existingRequest = mPendingRequests.get(webContents);
         if (existingRequest != null) existingRequest.cancel();
-        mPendingRequests.put(webContents,
+        mPendingRequests.put(
+                webContents,
                 new PendingRequest(this, windowEventManager, lockOrUnlock, webScreenOrientation));
     }
 
@@ -190,13 +193,13 @@ public class ScreenOrientationProviderImpl
         // unlockOrientation unlocks a different activity to the one that was locked.
         if (activity == null) return;
 
-        int orientation = getOrientationFromWebScreenOrientations(webScreenOrientation, window,
-                activity);
+        int orientation =
+                getOrientationFromWebScreenOrientations(webScreenOrientation, window, activity);
         if (orientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             return;
         }
 
-        setMaybeDelayedRequestedOrientation(activity, true /* lock */, orientation);
+        setMaybeDelayedRequestedOrientation(activity, /* lock= */ true, orientation);
     }
 
     @CalledByNative
@@ -229,14 +232,16 @@ public class ScreenOrientationProviderImpl
 
         try {
             if (defaultOrientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
-                ActivityInfo info = activity.getPackageManager().getActivityInfo(
-                        activity.getComponentName(), PackageManager.GET_META_DATA);
+                ActivityInfo info =
+                        activity.getPackageManager()
+                                .getActivityInfo(
+                                        activity.getComponentName(), PackageManager.GET_META_DATA);
                 defaultOrientation = info.screenOrientation;
             }
         } catch (PackageManager.NameNotFoundException e) {
             // Do nothing, defaultOrientation should be SCREEN_ORIENTATION_UNSPECIFIED.
         } finally {
-            setMaybeDelayedRequestedOrientation(activity, false /* lock */, defaultOrientation);
+            setMaybeDelayedRequestedOrientation(activity, /* lock= */ false, defaultOrientation);
         }
     }
 

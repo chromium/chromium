@@ -115,9 +115,9 @@ public class AssistViewStructureTest {
         TestViewStructure testViewStructure = getViewStructureFromHtml("<p>Hello World</p>");
         Assert.assertEquals(
                 "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
-                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"p\"]\n"
-                    + "++++TextView text:\"Hello World\" textSize:16.00 style:0"
-                    + " bundle:[display=\"\", htmlTag=\"\"]",
+                        + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"p\"]\n"
+                        + "++++TextView text:\"Hello World\" textSize:16.00 style:0"
+                        + " bundle:[display=\"\", htmlTag=\"\"]",
                 testViewStructure.toString());
     }
 
@@ -134,26 +134,26 @@ public class AssistViewStructureTest {
                                 + "</ol>");
         Assert.assertEquals(
                 "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
-                    + "++ListView textSize:16.00 style:0 bundle:[display=\"block\","
-                    + " htmlTag=\"ol\"]\n"
-                    + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
-                    + " htmlTag=\"li\"]\n"
-                    + "++++++View text:\"1. \" textSize:16.00 style:0"
-                    + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
-                    + "++++++TextView text:\"Kirk\" textSize:16.00 style:0 bundle:[display=\"\","
-                    + " htmlTag=\"\"]\n"
-                    + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
-                    + " htmlTag=\"li\"]\n"
-                    + "++++++View text:\"2. \" textSize:16.00 style:0"
-                    + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
-                    + "++++++TextView text:\"Picard\" textSize:16.00 style:0 bundle:[display=\"\","
-                    + " htmlTag=\"\"]\n"
-                    + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
-                    + " htmlTag=\"li\"]\n"
-                    + "++++++View text:\"3. \" textSize:16.00 style:0"
-                    + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
-                    + "++++++TextView text:\"Janeway\" textSize:16.00 style:0 bundle:[display=\"\","
-                    + " htmlTag=\"\"]",
+                        + "++ListView textSize:16.00 style:0 bundle:[display=\"block\","
+                        + " htmlTag=\"ol\"]\n"
+                        + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
+                        + " htmlTag=\"li\"]\n"
+                        + "++++++View text:\"1. \" textSize:16.00 style:0"
+                        + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
+                        + "++++++TextView text:\"Kirk\" textSize:16.00 style:0 bundle:[display=\"\","
+                        + " htmlTag=\"\"]\n"
+                        + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
+                        + " htmlTag=\"li\"]\n"
+                        + "++++++View text:\"2. \" textSize:16.00 style:0"
+                        + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
+                        + "++++++TextView text:\"Picard\" textSize:16.00 style:0 bundle:[display=\"\","
+                        + " htmlTag=\"\"]\n"
+                        + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
+                        + " htmlTag=\"li\"]\n"
+                        + "++++++View text:\"3. \" textSize:16.00 style:0"
+                        + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
+                        + "++++++TextView text:\"Janeway\" textSize:16.00 style:0 bundle:[display=\"\","
+                        + " htmlTag=\"\"]",
                 testViewStructure.toString());
     }
 
@@ -196,25 +196,25 @@ public class AssistViewStructureTest {
                                 + "<button aria-label='AriaLabel'>Button</button>");
         Assert.assertEquals(
                 "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
-                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"body\"]\n"
-                    + "++++View textSize:16.00 style:4 fgColor:-16776978"
-                    + " bundle:[display=\"inline\", href=\"#\", htmlTag=\"a\"]\n"
-                    + "++++++TextView text:\"Link\" textSize:16.00 style:4 fgColor:-16776978"
-                    + " bundle:[display=\"\", htmlTag=\"\"]\n"
-                    + "++++View text:\"AriaLabel\" textSize:16.00 style:4 fgColor:-16776978"
-                    + " bundle:[aria-label=\"AriaLabel\", display=\"inline\", href=\"#\","
-                    + " htmlTag=\"a\"]\n"
-                    + "++++++TextView text:\"Link\" textSize:16.00 style:4 fgColor:-16776978"
-                    + " bundle:[display=\"\", htmlTag=\"\"]\n"
-                    + "++++Button textSize:13.33 style:0 bgColor:-1052689"
-                    + " bundle:[display=\"inline-block\", htmlTag=\"button\"]\n"
-                    + "++++++TextView text:\"Button\" textSize:13.33 style:0 bgColor:-1052689"
-                    + " bundle:[display=\"\", htmlTag=\"\"]\n"
-                    + "++++Button text:\"AriaLabel\" textSize:13.33 style:0 bgColor:-1052689"
-                    + " bundle:[aria-label=\"AriaLabel\", display=\"inline-block\","
-                    + " htmlTag=\"button\"]\n"
-                    + "++++++TextView text:\"Button\" textSize:13.33 style:0 bgColor:-1052689"
-                    + " bundle:[display=\"\", htmlTag=\"\"]",
+                        + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"body\"]\n"
+                        + "++++View textSize:16.00 style:4 fgColor:-16776978"
+                        + " bundle:[display=\"inline\", href=\"#\", htmlTag=\"a\"]\n"
+                        + "++++++TextView text:\"Link\" textSize:16.00 style:4 fgColor:-16776978"
+                        + " bundle:[display=\"\", htmlTag=\"\"]\n"
+                        + "++++View text:\"AriaLabel\" textSize:16.00 style:4 fgColor:-16776978"
+                        + " bundle:[aria-label=\"AriaLabel\", display=\"inline\", href=\"#\","
+                        + " htmlTag=\"a\"]\n"
+                        + "++++++TextView text:\"Link\" textSize:16.00 style:4 fgColor:-16776978"
+                        + " bundle:[display=\"\", htmlTag=\"\"]\n"
+                        + "++++Button textSize:13.33 style:0 bgColor:-1052689"
+                        + " bundle:[display=\"inline-block\", htmlTag=\"button\"]\n"
+                        + "++++++TextView text:\"Button\" textSize:13.33 style:0 bgColor:-1052689"
+                        + " bundle:[display=\"\", htmlTag=\"\"]\n"
+                        + "++++Button text:\"AriaLabel\" textSize:13.33 style:0 bgColor:-1052689"
+                        + " bundle:[aria-label=\"AriaLabel\", display=\"inline-block\","
+                        + " htmlTag=\"button\"]\n"
+                        + "++++++TextView text:\"Button\" textSize:13.33 style:0 bgColor:-1052689"
+                        + " bundle:[display=\"\", htmlTag=\"\"]",
                 testViewStructure.toString());
     }
 
@@ -227,17 +227,17 @@ public class AssistViewStructureTest {
                         "<h1>Heading</h1>" + "  <p>Paragraph</p>" + "  <div><input></div>");
         Assert.assertEquals(
                 "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
-                    + "++View textSize:32.00 style:1 bundle:[display=\"block\", htmlTag=\"h1\"]\n"
-                    + "++++TextView text:\"Heading\" textSize:32.00 style:1 bundle:[display=\"\","
-                    + " htmlTag=\"\"]\n"
-                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"p\"]\n"
-                    + "++++TextView text:\"Paragraph\" textSize:16.00 style:0 bundle:[display=\"\","
-                    + " htmlTag=\"\"]\n"
-                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"div\"]\n"
-                    + "++++EditText textSize:13.33 style:0 bundle:[display=\"inline-block\","
-                    + " htmlTag=\"input\"]\n"
-                    + "++++++View textSize:13.33 style:0 bundle:[display=\"flow-root\","
-                    + " htmlTag=\"div\"]",
+                        + "++View textSize:32.00 style:1 bundle:[display=\"block\", htmlTag=\"h1\"]\n"
+                        + "++++TextView text:\"Heading\" textSize:32.00 style:1 bundle:[display=\"\","
+                        + " htmlTag=\"\"]\n"
+                        + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"p\"]\n"
+                        + "++++TextView text:\"Paragraph\" textSize:16.00 style:0 bundle:[display=\"\","
+                        + " htmlTag=\"\"]\n"
+                        + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"div\"]\n"
+                        + "++++EditText textSize:13.33 style:0 bundle:[display=\"inline-block\","
+                        + " htmlTag=\"input\"]\n"
+                        + "++++++View textSize:13.33 style:0 bundle:[display=\"flow-root\","
+                        + " htmlTag=\"div\"]",
                 testViewStructure.toString());
     }
 

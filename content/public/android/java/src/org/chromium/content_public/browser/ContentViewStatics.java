@@ -6,9 +6,7 @@ package org.chromium.content_public.browser;
 
 import org.chromium.content.browser.ContentViewStaticsImpl;
 
-/**
- * Implementations of various static methods.
- */
+/** Implementations of various static methods. */
 public class ContentViewStatics {
     /**
      * Suspends Webkit timers in all renderers.

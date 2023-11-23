@@ -9,9 +9,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 
-/**
- * A utility class that has helper methods for device configuration.
- */
+/** A utility class that has helper methods for device configuration. */
 public class DeviceUtilsImpl {
     private DeviceUtilsImpl() {}
 

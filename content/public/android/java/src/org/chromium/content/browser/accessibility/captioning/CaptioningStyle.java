@@ -33,8 +33,13 @@ public class CaptioningStyle {
      * @param windowColor window color of the CaptioningStyle
      * @param typeFace Typeface of the CaptioningStyle
      */
-    public CaptioningStyle(Integer backgroundColor, Integer edgeColor, Integer edgeType,
-            Integer foregroundColor, Integer windowColor, Typeface typeface) {
+    public CaptioningStyle(
+            Integer backgroundColor,
+            Integer edgeColor,
+            Integer edgeType,
+            Integer foregroundColor,
+            Integer windowColor,
+            Typeface typeface) {
         mBackgroundColor = backgroundColor;
         mEdgeColor = edgeColor;
         mEdgeType = edgeType;
@@ -127,7 +132,12 @@ public class CaptioningStyle {
             windowColor = Integer.valueOf(captionStyle.windowColor);
         }
 
-        return new CaptioningStyle(backgroundColor, edgeColor, edgeType, foregroundColor,
-                windowColor, captionStyle.getTypeface());
+        return new CaptioningStyle(
+                backgroundColor,
+                edgeColor,
+                edgeType,
+                foregroundColor,
+                windowColor,
+                captionStyle.getTypeface());
     }
 }

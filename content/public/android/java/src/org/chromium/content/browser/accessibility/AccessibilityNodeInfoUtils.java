@@ -54,9 +54,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Utility class for common actions involving AccessibilityNodeInfo objects.
- */
+/** Utility class for common actions involving AccessibilityNodeInfo objects. */
 public class AccessibilityNodeInfoUtils {
     /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
@@ -244,14 +242,19 @@ public class AccessibilityNodeInfoUtils {
                 continue;
             }
             // Scroll actions are dependent on screen size, so ignore them to reduce flakiness
-            if (action.equals(ACTION_SCROLL_FORWARD) || action.equals(ACTION_SCROLL_BACKWARD)
-                    || action.equals(ACTION_SCROLL_DOWN) || action.equals(ACTION_SCROLL_UP)
-                    || action.equals(ACTION_SCROLL_RIGHT) || action.equals(ACTION_SCROLL_LEFT)) {
+            if (action.equals(ACTION_SCROLL_FORWARD)
+                    || action.equals(ACTION_SCROLL_BACKWARD)
+                    || action.equals(ACTION_SCROLL_DOWN)
+                    || action.equals(ACTION_SCROLL_UP)
+                    || action.equals(ACTION_SCROLL_RIGHT)
+                    || action.equals(ACTION_SCROLL_LEFT)) {
                 continue;
             }
             // Page actions are dependent on screen size, so ignore them to reduce flakiness.
-            if (action.equals(ACTION_PAGE_UP) || action.equals(ACTION_PAGE_DOWN)
-                    || action.equals(ACTION_PAGE_LEFT) || action.equals(ACTION_PAGE_RIGHT)) {
+            if (action.equals(ACTION_PAGE_UP)
+                    || action.equals(ACTION_PAGE_DOWN)
+                    || action.equals(ACTION_PAGE_LEFT)
+                    || action.equals(ACTION_PAGE_RIGHT)) {
                 continue;
             }
 
@@ -374,8 +377,11 @@ public class AccessibilityNodeInfoUtils {
             }
 
             // Simplify the key String before printing to make test outputs easier to read.
-            bundleStrings.add(key.replace("AccessibilityNodeInfo.", "") + "=\""
-                    + extras.get(key).toString() + "\"");
+            bundleStrings.add(
+                    key.replace("AccessibilityNodeInfo.", "")
+                            + "=\""
+                            + extras.get(key).toString()
+                            + "\"");
         }
         builder.append(TextUtils.join(", ", bundleStrings)).append("]");
 

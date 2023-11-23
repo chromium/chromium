@@ -39,9 +39,9 @@ public class ContentViewScrollingTest {
     private static final String LARGE_PAGE =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\" content=\"width=device-width,"
-                        + " initial-scale=2.0, maximum-scale=2.0\" /><style>body { width: 5000px;"
-                        + " height: 5000px; }</style></head><body>Lorem ipsum dolor sit amet,"
-                        + " consectetur adipiscing elit.</body></html>");
+                            + " initial-scale=2.0, maximum-scale=2.0\" /><style>body { width: 5000px;"
+                            + " height: 5000px; }</style></head><body>Lorem ipsum dolor sit amet,"
+                            + " consectetur adipiscing elit.</body></html>");
 
     /**
      * InternalAccessDelegate to ensure AccessibilityEvent notifications (Eg:TYPE_VIEW_SCROLLED)

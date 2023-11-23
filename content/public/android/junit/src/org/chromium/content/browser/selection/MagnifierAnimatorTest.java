@@ -23,9 +23,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Unit tests for MagnifierAnimator.
- */
+/** Unit tests for MagnifierAnimator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MagnifierAnimatorTest {

@@ -36,23 +36,21 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     @Override
     public boolean isReady() {
         checkNotDestroyed();
-        return RenderWidgetHostViewImplJni.get().isReady(
-                getNativePtr(), RenderWidgetHostViewImpl.this);
+        return RenderWidgetHostViewImplJni.get()
+                .isReady(getNativePtr(), RenderWidgetHostViewImpl.this);
     }
 
     @Override
     public int getBackgroundColor() {
-        return RenderWidgetHostViewImplJni.get().getBackgroundColor(
-                getNativePtr(), RenderWidgetHostViewImpl.this);
+        return RenderWidgetHostViewImplJni.get()
+                .getBackgroundColor(getNativePtr(), RenderWidgetHostViewImpl.this);
     }
 
-    /**
-     * Removes handles used in text selection.
-     */
+    /** Removes handles used in text selection. */
     public void dismissTextHandles() {
         if (isDestroyed()) return;
-        RenderWidgetHostViewImplJni.get().dismissTextHandles(
-                getNativePtr(), RenderWidgetHostViewImpl.this);
+        RenderWidgetHostViewImplJni.get()
+                .dismissTextHandles(getNativePtr(), RenderWidgetHostViewImpl.this);
     }
 
     /**
@@ -62,28 +60,34 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
      */
     public void showContextMenuAtTouchHandle(int x, int y) {
         checkNotDestroyed();
-        RenderWidgetHostViewImplJni.get().showContextMenuAtTouchHandle(
-                getNativePtr(), RenderWidgetHostViewImpl.this, x, y);
+        RenderWidgetHostViewImplJni.get()
+                .showContextMenuAtTouchHandle(getNativePtr(), RenderWidgetHostViewImpl.this, x, y);
     }
 
     @Override
     public void onViewportInsetBottomChanged() {
         checkNotDestroyed();
-        RenderWidgetHostViewImplJni.get().onViewportInsetBottomChanged(
-                getNativePtr(), RenderWidgetHostViewImpl.this);
+        RenderWidgetHostViewImplJni.get()
+                .onViewportInsetBottomChanged(getNativePtr(), RenderWidgetHostViewImpl.this);
     }
 
     @Override
     public void writeContentBitmapToDiskAsync(
             int width, int height, String path, Callback<String> callback) {
         if (isDestroyed()) callback.onResult("RWHVA already destroyed!");
-        RenderWidgetHostViewImplJni.get().writeContentBitmapToDiskAsync(
-                getNativePtr(), RenderWidgetHostViewImpl.this, width, height, path, callback);
+        RenderWidgetHostViewImplJni.get()
+                .writeContentBitmapToDiskAsync(
+                        getNativePtr(),
+                        RenderWidgetHostViewImpl.this,
+                        width,
+                        height,
+                        path,
+                        callback);
     }
 
-    //====================
+    // ====================
     // Support for native.
-    //====================
+    // ====================
 
     public boolean isDestroyed() {
         return getNativePtr() == 0;
@@ -108,16 +112,28 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     @NativeMethods
     interface Natives {
         boolean isReady(long nativeRenderWidgetHostViewAndroid, RenderWidgetHostViewImpl caller);
+
         int getBackgroundColor(
                 long nativeRenderWidgetHostViewAndroid, RenderWidgetHostViewImpl caller);
+
         void dismissTextHandles(
                 long nativeRenderWidgetHostViewAndroid, RenderWidgetHostViewImpl caller);
-        void showContextMenuAtTouchHandle(long nativeRenderWidgetHostViewAndroid,
-                RenderWidgetHostViewImpl caller, int x, int y);
+
+        void showContextMenuAtTouchHandle(
+                long nativeRenderWidgetHostViewAndroid,
+                RenderWidgetHostViewImpl caller,
+                int x,
+                int y);
+
         void onViewportInsetBottomChanged(
                 long nativeRenderWidgetHostViewAndroid, RenderWidgetHostViewImpl caller);
-        void writeContentBitmapToDiskAsync(long nativeRenderWidgetHostViewAndroid,
-                RenderWidgetHostViewImpl caller, int width, int height, String path,
+
+        void writeContentBitmapToDiskAsync(
+                long nativeRenderWidgetHostViewAndroid,
+                RenderWidgetHostViewImpl caller,
+                int width,
+                int height,
+                String path,
                 Callback<String> callback);
     }
 }

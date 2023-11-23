@@ -11,9 +11,7 @@ import android.graphics.RectF;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 
-/**
- * Helper class containing helper methods and constants to be used in stylus gesture tests.
- */
+/** Helper class containing helper methods and constants to be used in stylus gesture tests. */
 class StylusTestHelper {
     static final String FALLBACK_TEXT = "this gesture failed";
 

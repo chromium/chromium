@@ -4,9 +4,7 @@
 
 package org.chromium.content_public.browser;
 
-/**
- * Convenience static methods to access {@link ContentFeatureMap}.
- */
+/** Convenience static methods to access {@link ContentFeatureMap}. */
 public class ContentFeatureList {
     private ContentFeatureList() {}
 

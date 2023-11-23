@@ -47,8 +47,12 @@ public class SelectActionMenuHelper {
     private static final String TAG = "SelectActionMenu"; // 20 char limit.
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({GroupItemOrder.ASSIST_ITEMS, GroupItemOrder.DEFAULT_ITEMS,
-            GroupItemOrder.SECONDARY_ASSIST_ITEMS, GroupItemOrder.TEXT_PROCESSING_ITEMS})
+    @IntDef({
+        GroupItemOrder.ASSIST_ITEMS,
+        GroupItemOrder.DEFAULT_ITEMS,
+        GroupItemOrder.SECONDARY_ASSIST_ITEMS,
+        GroupItemOrder.TEXT_PROCESSING_ITEMS
+    })
     public @interface GroupItemOrder {
         int ASSIST_ITEMS = 1;
         int DEFAULT_ITEMS = 2;
@@ -77,8 +81,12 @@ public class SelectActionMenuHelper {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ItemKeyShortcuts.CUT, ItemKeyShortcuts.COPY, ItemKeyShortcuts.PASTE,
-            ItemKeyShortcuts.SELECT_ALL})
+    @IntDef({
+        ItemKeyShortcuts.CUT,
+        ItemKeyShortcuts.COPY,
+        ItemKeyShortcuts.PASTE,
+        ItemKeyShortcuts.SELECT_ALL
+    })
     public @interface ItemKeyShortcuts {
         char CUT = 'x';
         char COPY = 'c';
@@ -86,22 +94,24 @@ public class SelectActionMenuHelper {
         char SELECT_ALL = 'a';
     }
 
-    /**
-     * Delegate for the select action menu.
-     */
+    /** Delegate for the select action menu. */
     public interface SelectActionMenuDelegate {
         boolean canCut();
+
         boolean canCopy();
+
         boolean canPaste();
+
         boolean canShare();
+
         boolean canSelectAll();
+
         boolean canWebSearch();
+
         boolean canPasteAsPlainText();
     }
 
-    /**
-     * For the text processing menu items.
-     */
+    /** For the text processing menu items. */
     public interface TextProcessingIntentHandler {
         void handleIntent(Intent textProcessingIntent);
     }
@@ -171,8 +181,12 @@ public class SelectActionMenuHelper {
                 itemGroups.add(secondaryAssistItems);
             }
         }
-        SelectionMenuGroup textProcessingItems = getTextProcessingItems(
-                context, isSelectionPassword, isSelectionReadOnly, textProcessingIntentHandler);
+        SelectionMenuGroup textProcessingItems =
+                getTextProcessingItems(
+                        context,
+                        isSelectionPassword,
+                        isSelectionReadOnly,
+                        textProcessingIntentHandler);
         if (textProcessingItems != null) {
             itemGroups.add(textProcessingItems);
         }
@@ -186,8 +200,9 @@ public class SelectActionMenuHelper {
         if (classificationResult == null || !classificationResult.hasNamedAction()) {
             return null;
         }
-        SelectionMenuGroup primaryAssistGroup = new SelectionMenuGroup(
-                R.id.select_action_menu_assist_items, GroupItemOrder.ASSIST_ITEMS);
+        SelectionMenuGroup primaryAssistGroup =
+                new SelectionMenuGroup(
+                        R.id.select_action_menu_assist_items, GroupItemOrder.ASSIST_ITEMS);
         View.OnClickListener clickListener = null;
         if (classificationResult.onClickListener != null) {
             clickListener = classificationResult.onClickListener;
@@ -205,8 +220,9 @@ public class SelectActionMenuHelper {
     }
 
     private static SelectionMenuGroup getDefaultItems(SelectActionMenuDelegate delegate) {
-        SelectionMenuGroup defaultGroup = new SelectionMenuGroup(
-                R.id.select_action_menu_default_items, GroupItemOrder.DEFAULT_ITEMS);
+        SelectionMenuGroup defaultGroup =
+                new SelectionMenuGroup(
+                        R.id.select_action_menu_default_items, GroupItemOrder.DEFAULT_ITEMS);
         defaultGroup.addItem(cut(delegate.canCut()));
         defaultGroup.addItem(copy(delegate.canCopy()));
         defaultGroup.addItem(paste(delegate.canPaste()));
@@ -241,15 +257,14 @@ public class SelectActionMenuHelper {
             return null;
         }
         List<Drawable> icons = classificationResult.additionalIcons;
-        assert icons == null
-                || icons.size()
-                        == count
-            : "icons list should be either null or have the same length with actions.";
+        assert icons == null || icons.size() == count
+                : "icons list should be either null or have the same length with actions.";
 
         // We have to use android.R.id.textAssist as group id to make framework show icons for
         // these menu items.
-        SelectionMenuGroup secondaryAssistItems = new SelectionMenuGroup(
-                android.R.id.textAssist, GroupItemOrder.SECONDARY_ASSIST_ITEMS);
+        SelectionMenuGroup secondaryAssistItems =
+                new SelectionMenuGroup(
+                        android.R.id.textAssist, GroupItemOrder.SECONDARY_ASSIST_ITEMS);
 
         // First action is reserved for primary action so start at index 1.
         final int startIndex = 1;
@@ -258,14 +273,15 @@ public class SelectActionMenuHelper {
             final View.OnClickListener listener = getActionClickListener(action);
             if (listener == null) continue;
 
-            SelectionMenuItem item = new SelectionMenuItem.Builder(action.getTitle())
-                                             .setId(Menu.NONE)
-                                             .setIcon(icons == null ? null : icons.get(i))
-                                             .setOrderInCategory(i - startIndex)
-                                             .setContentDescription(action.getContentDescription())
-                                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                                             .setClickListener(listener)
-                                             .build();
+            SelectionMenuItem item =
+                    new SelectionMenuItem.Builder(action.getTitle())
+                            .setId(Menu.NONE)
+                            .setIcon(icons == null ? null : icons.get(i))
+                            .setOrderInCategory(i - startIndex)
+                            .setContentDescription(action.getContentDescription())
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                            .setClickListener(listener)
+                            .build();
             secondaryAssistItems.addItem(item);
         }
         return secondaryAssistItems;
@@ -273,8 +289,10 @@ public class SelectActionMenuHelper {
 
     @Nullable
     @VisibleForTesting
-    /* package */ static SelectionMenuGroup getTextProcessingItems(Context context,
-            boolean isSelectionPassword, boolean isSelectionReadOnly,
+    /* package */ static SelectionMenuGroup getTextProcessingItems(
+            Context context,
+            boolean isSelectionPassword,
+            boolean isSelectionReadOnly,
             @Nullable TextProcessingIntentHandler intentHandler) {
         if (isSelectionPassword || intentHandler == null) {
             return null;
@@ -285,7 +303,8 @@ public class SelectActionMenuHelper {
             return null;
         }
         SelectionMenuGroup textProcessingItems =
-                new SelectionMenuGroup(R.id.select_action_menu_text_processing_items,
+                new SelectionMenuGroup(
+                        R.id.select_action_menu_text_processing_items,
                         GroupItemOrder.TEXT_PROCESSING_ITEMS);
         final PackageManager packageManager = context.getPackageManager();
         for (int i = 0; i < supportedActivities.size(); i++) {

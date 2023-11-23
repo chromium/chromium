@@ -10,9 +10,7 @@ package org.chromium.content_public.common;
  */
 public class ScreenOrientationConstants {
     // Intent's bundle's key for the default orientation field.
-    public static final String EXTRA_ORIENTATION =
-            "org.chromium.content_public.common.orientation";
+    public static final String EXTRA_ORIENTATION = "org.chromium.content_public.common.orientation";
 
-    private ScreenOrientationConstants() {
-    }
+    private ScreenOrientationConstants() {}
 }

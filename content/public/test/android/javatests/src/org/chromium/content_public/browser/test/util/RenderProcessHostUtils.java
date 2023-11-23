@@ -7,16 +7,16 @@ package org.chromium.content_public.browser.test.util;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Collection of test-only WebContents utilities.
- */
+/** Collection of test-only WebContents utilities. */
 @JNINamespace("content")
 public class RenderProcessHostUtils {
     private RenderProcessHostUtils() {}
 
     public static int getCurrentRenderProcessCount() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return RenderProcessHostUtilsJni.get().getCurrentRenderProcessCount(); });
+                () -> {
+                    return RenderProcessHostUtilsJni.get().getCurrentRenderProcessCount();
+                });
     }
 
     @NativeMethods

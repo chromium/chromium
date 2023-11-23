@@ -15,9 +15,7 @@ import org.chromium.content.R;
 
 import java.util.List;
 
-/**
- * Date/time suggestion adapter for the suggestion dialog.
- */
+/** Date/time suggestion adapter for the suggestion dialog. */
 class DateTimeSuggestionListAdapter extends ArrayAdapter<DateTimeSuggestion> {
     private final Context mContext;
 

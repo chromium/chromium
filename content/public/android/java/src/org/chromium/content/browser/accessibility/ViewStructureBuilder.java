@@ -39,9 +39,20 @@ public class ViewStructureBuilder {
     }
 
     @CalledByNative
-    private void populateViewStructureNode(ViewStructure node, String text, boolean hasSelection,
-            int selStart, int selEnd, int color, int bgcolor, float size, boolean bold,
-            boolean italic, boolean underline, boolean lineThrough, String className,
+    private void populateViewStructureNode(
+            ViewStructure node,
+            String text,
+            boolean hasSelection,
+            int selStart,
+            int selEnd,
+            int color,
+            int bgcolor,
+            float size,
+            boolean bold,
+            boolean italic,
+            boolean underline,
+            boolean lineThrough,
+            String className,
             int childCount) {
         node.setClassName(className);
         node.setChildCount(childCount);
@@ -54,18 +65,27 @@ public class ViewStructureBuilder {
 
         // if size is smaller than 0, then style information does not exist.
         if (size >= 0.0) {
-            int style = (bold ? ViewNode.TEXT_STYLE_BOLD : 0)
-                    | (italic ? ViewNode.TEXT_STYLE_ITALIC : 0)
-                    | (underline ? ViewNode.TEXT_STYLE_UNDERLINE : 0)
-                    | (lineThrough ? ViewNode.TEXT_STYLE_STRIKE_THRU : 0);
+            int style =
+                    (bold ? ViewNode.TEXT_STYLE_BOLD : 0)
+                            | (italic ? ViewNode.TEXT_STYLE_ITALIC : 0)
+                            | (underline ? ViewNode.TEXT_STYLE_UNDERLINE : 0)
+                            | (lineThrough ? ViewNode.TEXT_STYLE_STRIKE_THRU : 0);
             node.setTextStyle(size, color, bgcolor, style);
         }
     }
 
     @CalledByNative
-    private void setViewStructureNodeBounds(ViewStructure node, boolean isRootNode,
-            int parentRelativeLeft, int parentRelativeTop, int width, int height, int unclippedLeft,
-            int unclippedTop, int unclippedWidth, int unclippedHeight) {
+    private void setViewStructureNodeBounds(
+            ViewStructure node,
+            boolean isRootNode,
+            int parentRelativeLeft,
+            int parentRelativeTop,
+            int width,
+            int height,
+            int unclippedLeft,
+            int unclippedTop,
+            int unclippedWidth,
+            int unclippedHeight) {
         Rect boundsInParent =
                 new Rect(
                         parentRelativeLeft,

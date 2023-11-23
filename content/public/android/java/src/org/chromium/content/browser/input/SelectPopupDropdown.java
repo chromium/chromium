@@ -18,34 +18,40 @@ import org.chromium.ui.DropdownPopupWindow;
 
 import java.util.List;
 
-/**
- * Handles the dropdown popup for the <select> HTML tag support.
- */
+/** Handles the dropdown popup for the <select> HTML tag support. */
 public class SelectPopupDropdown implements SelectPopup.Ui {
     private final Callback<int[]> mSelectionChangedCallback;
     private final DropdownPopupWindow mDropdownPopupWindow;
 
     private boolean mSelectionNotified;
 
-    public SelectPopupDropdown(Context context, Callback<int[]> selectionChangedCallback,
-            View anchorView, List<SelectPopupItem> items, int[] selected, boolean rightAligned,
+    public SelectPopupDropdown(
+            Context context,
+            Callback<int[]> selectionChangedCallback,
+            View anchorView,
+            List<SelectPopupItem> items,
+            int[] selected,
+            boolean rightAligned,
             WebContents webContents) {
         mSelectionChangedCallback = selectionChangedCallback;
         mDropdownPopupWindow = new DropdownPopupWindow(context, anchorView);
-        mDropdownPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                notifySelection(new int[] {position});
-                hide(false);
-            }
-        });
+        mDropdownPopupWindow.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        notifySelection(new int[] {position});
+                        hide(false);
+                    }
+                });
 
         int initialSelection = -1;
         if (selected.length > 0) {
             initialSelection = selected[0];
         }
         mDropdownPopupWindow.setInitialSelection(initialSelection);
-        mDropdownPopupWindow.setAdapter(new DropdownAdapter(context, items, null /* separators */));
+        mDropdownPopupWindow.setAdapter(
+                new DropdownAdapter(context, items, /* separators= */ null));
         mDropdownPopupWindow.setRtl(rightAligned);
         mDropdownPopupWindow.setOnDismissListener(
                 new PopupWindow.OnDismissListener() {
@@ -54,13 +60,15 @@ public class SelectPopupDropdown implements SelectPopup.Ui {
                         notifySelection(null);
                     }
                 });
-        GestureListenerManager.fromWebContents(webContents).addListener(new GestureStateListener() {
-            @Override
-            public void onScrollStarted(
-                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
-                hide(true);
-            }
-        });
+        GestureListenerManager.fromWebContents(webContents)
+                .addListener(
+                        new GestureStateListener() {
+                            @Override
+                            public void onScrollStarted(
+                                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
+                                hide(true);
+                            }
+                        });
     }
 
     private void notifySelection(int[] indicies) {

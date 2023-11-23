@@ -10,16 +10,17 @@ import org.chromium.content.browser.HostZoomMapImpl;
 
 import java.util.Map;
 
-/**
- * Implementations of various static methods related to page zoom.
- */
+/** Implementations of various static methods related to page zoom. */
 public class HostZoomMap {
     // Preset zoom factors that the +/- buttons can "snap" the zoom level to if user chooses to
     // not use the slider. These zoom factors correspond to the zoom levels that are used on
     // desktop, i.e. {0.50, 0.67, ... 3.00}, excluding the smallest/largest two, since they are
     // of little value on a mobile device.
-    public static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-3.80, -2.20, -1.58, -1.22,
-            -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03};
+    public static final double[] AVAILABLE_ZOOM_FACTORS =
+            new double[] {
+                -3.80, -2.20, -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03,
+                6.03
+            };
 
     // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
     public static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;
@@ -51,14 +52,16 @@ public class HostZoomMap {
         // then really that choice is 195% * 1.1 = 214.5%. If the user then switches to default
         // |fontScale| or switches to a mobile site, we would still want the value to be 150% shown
         // to the user, and not the 214.5%.
-        HostZoomMapImpl.setZoomLevel(webContents, newZoomLevel,
-                HostZoomMapImpl.adjustZoomLevel(newZoomLevel, sSystemFontScale,
+        HostZoomMapImpl.setZoomLevel(
+                webContents,
+                newZoomLevel,
+                HostZoomMapImpl.adjustZoomLevel(
+                        newZoomLevel,
+                        sSystemFontScale,
                         HostZoomMapImpl.getDesktopSiteZoomScale(webContents)));
     }
 
-    /**
-     * Get the current system font scale
-     */
+    /** Get the current system font scale */
     public static float getSystemFontScale() {
         return sSystemFontScale;
     }
@@ -83,7 +86,8 @@ public class HostZoomMap {
         // system level setting and the desktop site zoom scale. Here we need to do the reverse
         // operation of the above, effectively divide rather than multiply, so we will pass the
         // reciprocal of |sSystemFontScale| and |DESKTOP_SITE_ZOOM_SCALE| respectively.
-        return HostZoomMapImpl.adjustZoomLevel(HostZoomMapImpl.getZoomLevel(webContents),
+        return HostZoomMapImpl.adjustZoomLevel(
+                HostZoomMapImpl.getZoomLevel(webContents),
                 (float) 1 / sSystemFontScale,
                 (float) 1 / HostZoomMapImpl.getDesktopSiteZoomScale(webContents));
     }

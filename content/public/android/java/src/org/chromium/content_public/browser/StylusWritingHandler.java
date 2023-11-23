@@ -50,8 +50,12 @@ public interface StylusWritingHandler {
      * @param currentView the {@link View} in which the focused node changed.
      */
     @Nullable
-    default EditorBoundsInfo onFocusedNodeChanged(Rect editableBoundsOnScreenDip,
-            boolean isEditable, View currentView, float scaleFactor, int contentOffsetY) {
+    default EditorBoundsInfo onFocusedNodeChanged(
+            Rect editableBoundsOnScreenDip,
+            boolean isEditable,
+            View currentView,
+            float scaleFactor,
+            int contentOffsetY) {
         return null;
     }
 

@@ -32,8 +32,7 @@ public class SelectPopupAdapter extends ArrayAdapter<SelectPopupItem> {
      * @param layoutResource Layout resource used for the alert dialog list.
      * @param items          SelectPopupItem array list.
      */
-    public SelectPopupAdapter(Context context, int layoutResource,
-            List<SelectPopupItem> items) {
+    public SelectPopupAdapter(Context context, int layoutResource, List<SelectPopupItem> items) {
         super(context, layoutResource, items);
         mItems = new ArrayList<SelectPopupItem>(items);
 

@@ -25,19 +25,16 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * ActivityTestRule with common functionality for testing the Java Bridge.
- */
+/** ActivityTestRule with common functionality for testing the Java Bridge. */
 public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
     /** Shared name for batched JavaBridge tests. */
     public static final String BATCH = "JavaBridgeActivityTestRule";
 
-    /**
-     * {@link ParameterProvider} used for parameterized test that provides the Mojo usage state.
-     */
+    /** {@link ParameterProvider} used for parameterized test that provides the Mojo usage state. */
     public static class MojoTestParams implements ParameterProvider {
         private static List<ParameterSet> sMojoTestParams =
-                Arrays.asList(new ParameterSet().value(false).name("MojoUnused"),
+                Arrays.asList(
+                        new ParameterSet().value(false).name("MojoUnused"),
                         new ParameterSet().value(true).name("MojoUsed"));
 
         @Override
@@ -46,9 +43,7 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
         }
     }
 
-    /**
-     * {@link ParameterProvider} used for parameterized test that keeps the legacy tests.
-     */
+    /** {@link ParameterProvider} used for parameterized test that keeps the legacy tests. */
     public static class LegacyTestParams implements ParameterProvider {
         private static List<ParameterSet> sLegacyTestParams =
                 Arrays.asList(new ParameterSet().value(false));
@@ -91,23 +86,24 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
         return mTestCallbackHelperContainer;
     }
 
-    /**
-     * Sets up the ContentView. Intended to be called from setUp().
-     */
+    /** Sets up the ContentView. Intended to be called from setUp(). */
     public void setUpContentView() {
         // This starts the activity, so must be called on the test thread.
-        final ContentShellActivity activity = launchContentShellWithUrl(
-                UrlUtils.encodeHtmlDataUri("<html><head></head><body>test</body></html>"));
+        final ContentShellActivity activity =
+                launchContentShellWithUrl(
+                        UrlUtils.encodeHtmlDataUri("<html><head></head><body>test</body></html>"));
         waitForActiveShellToBeDoneLoading();
 
         try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mTestCallbackHelperContainer =
-                            new TestCallbackHelperContainer(activity.getActiveWebContents());
-                }
-            });
+            runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mTestCallbackHelperContainer =
+                                    new TestCallbackHelperContainer(
+                                            activity.getActiveWebContents());
+                        }
+                    });
         } catch (Throwable e) {
             throw new RuntimeException(
                     "Failed to set up ContentView: " + Log.getStackTraceString(e));
@@ -115,18 +111,22 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     public void executeJavaScript(String script) throws Throwable {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // When a JavaScript URL is executed, if the value of the last
-                // expression evaluated is not 'undefined', this value is
-                // converted to a string and used as the new document for the
-                // frame. We don't want this behaviour, so wrap the script in
-                // an anonymous function.
-                getWebContents().getNavigationController().loadUrl(
-                        new LoadUrlParams("javascript:(function() { " + script + " })()"));
-            }
-        });
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // When a JavaScript URL is executed, if the value of the last
+                        // expression evaluated is not 'undefined', this value is
+                        // converted to a string and used as the new document for the
+                        // frame. We don't want this behaviour, so wrap the script in
+                        // an anonymous function.
+                        getWebContents()
+                                .getNavigationController()
+                                .loadUrl(
+                                        new LoadUrlParams(
+                                                "javascript:(function() { " + script + " })()"));
+                    }
+                });
     }
 
     public void injectObjectAndReload(Object object, String name) {
@@ -139,32 +139,38 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
         injectObjectsAndReload(object, name, null, null, requiredAnnotation);
     }
 
-    public void injectObjectsAndReload(final Object object1, final String name1,
-            final Object object2, final String name2,
+    public void injectObjectsAndReload(
+            final Object object1,
+            final String name1,
+            final Object object2,
+            final String name2,
             final Class<? extends Annotation> requiredAnnotation) {
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mTestCallbackHelperContainer.getOnPageFinishedHelper();
         int currentCallCount = onPageFinishedHelper.getCallCount();
         try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WebContents webContents = getWebContents();
-                    JavascriptInjector injector =
-                            JavascriptInjector.fromWebContents(webContents, mUseMojo);
-                    injector.addPossiblyUnsafeInterface(object1, name1, requiredAnnotation);
-                    if (object2 != null && name2 != null) {
-                        injector.addPossiblyUnsafeInterface(object2, name2, requiredAnnotation);
-                    }
-                    webContents.getNavigationController().reload(true);
-                }
-            });
+            runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            WebContents webContents = getWebContents();
+                            JavascriptInjector injector =
+                                    JavascriptInjector.fromWebContents(webContents, mUseMojo);
+                            injector.addPossiblyUnsafeInterface(object1, name1, requiredAnnotation);
+                            if (object2 != null && name2 != null) {
+                                injector.addPossiblyUnsafeInterface(
+                                        object2, name2, requiredAnnotation);
+                            }
+                            webContents.getNavigationController().reload(true);
+                        }
+                    });
             onPageFinishedHelper.waitForCallback(currentCallCount);
         } catch (Throwable e) {
             throw new RuntimeException(
                     "Failed to injectObjectsAndReload: " + Log.getStackTraceString(e));
         }
     }
+
     public void setupMojoTest(boolean useMojo) {
         mUseMojo = useMojo;
     }
@@ -173,23 +179,26 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mTestCallbackHelperContainer.getOnPageFinishedHelper();
         int currentCallCount = onPageFinishedHelper.getCallCount();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                getWebContents().getNavigationController().reload(true);
-            }
-        });
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        getWebContents().getNavigationController().reload(true);
+                    }
+                });
         onPageFinishedHelper.waitForCallback(currentCallCount);
     }
 
     @Override
     public Statement apply(Statement base, Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                setUpContentView();
-                base.evaluate();
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        setUpContentView();
+                        base.evaluate();
+                    }
+                },
+                desc);
     }
 }

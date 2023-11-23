@@ -24,6 +24,9 @@ public abstract class ActionModeCallback extends ActionMode.Callback2 {
      * @return true if this callback handled the event, false if the standard handling should
      *         continue.
      */
-    public abstract boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+    public abstract boolean onDropdownItemClicked(
+            int groupId,
+            int id,
+            @Nullable Intent intent,
             @Nullable View.OnClickListener clickListener);
 }

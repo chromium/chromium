@@ -25,13 +25,14 @@ public final class ChildProcessLauncherTestUtils {
             return;
         }
         final Semaphore done = new Semaphore(0);
-        LauncherThread.post(new Runnable() {
-            @Override
-            public void run() {
-                runnable.run();
-                done.release();
-            }
-        });
+        LauncherThread.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        runnable.run();
+                        done.release();
+                    }
+                });
         done.acquireUninterruptibly();
     }
 
@@ -52,39 +53,48 @@ public final class ChildProcessLauncherTestUtils {
         }
     }
 
-    public static ChildProcessLauncherHelperImpl startForTesting(final boolean sandboxed,
-            final String[] commandLine, final FileDescriptorInfo[] filesToBeMapped,
+    public static ChildProcessLauncherHelperImpl startForTesting(
+            final boolean sandboxed,
+            final String[] commandLine,
+            final FileDescriptorInfo[] filesToBeMapped,
             final boolean doSetupConnection) {
-        return runOnLauncherAndGetResult(new Callable<ChildProcessLauncherHelperImpl>() {
-            @Override
-            public ChildProcessLauncherHelperImpl call() {
-                return ChildProcessLauncherHelperImpl.createAndStartForTesting(commandLine,
-                        filesToBeMapped, sandboxed, false /* reducePriorityOnBackground */,
-                        true /* canUseWarmUpConnection */, null /* binderCallback */,
-                        doSetupConnection);
-            }
-        });
+        return runOnLauncherAndGetResult(
+                new Callable<ChildProcessLauncherHelperImpl>() {
+                    @Override
+                    public ChildProcessLauncherHelperImpl call() {
+                        return ChildProcessLauncherHelperImpl.createAndStartForTesting(
+                                commandLine,
+                                filesToBeMapped,
+                                sandboxed,
+                                /* reducePriorityOnBackground= */ false,
+                                /* canUseWarmUpConnection= */ true,
+                                /* binderCallback= */ null,
+                                doSetupConnection);
+                    }
+                });
     }
 
     public static ChildProcessConnection getConnection(
             final ChildProcessLauncherHelperImpl childProcessLauncher) {
-        return runOnLauncherAndGetResult(new Callable<ChildProcessConnection>() {
-            @Override
-            public ChildProcessConnection call() {
-                return ((ChildProcessLauncherHelperImpl) childProcessLauncher)
-                        .getChildProcessConnection();
-            }
-        });
+        return runOnLauncherAndGetResult(
+                new Callable<ChildProcessConnection>() {
+                    @Override
+                    public ChildProcessConnection call() {
+                        return ((ChildProcessLauncherHelperImpl) childProcessLauncher)
+                                .getChildProcessConnection();
+                    }
+                });
     }
 
     // Retrieves the PID of the passed in connection on the launcher thread as to not assert.
     public static int getConnectionPid(final ChildProcessConnection connection) {
-        return runOnLauncherAndGetResult(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return connection.getPid();
-            }
-        });
+        return runOnLauncherAndGetResult(
+                new Callable<Integer>() {
+                    @Override
+                    public Integer call() {
+                        return connection.getPid();
+                    }
+                });
     }
 
     // Retrieves the service number of the passed in connection from its service name, or -1 if the
@@ -110,22 +120,24 @@ public final class ChildProcessLauncherTestUtils {
     // Retrieves the service number of the passed in connection on the launcher thread as to not
     // assert.
     public static String getConnectionServiceName(final ChildProcessConnection connection) {
-        return runOnLauncherAndGetResult(new Callable<String>() {
-            @Override
-            public String call() {
-                return connection.getServiceName().getClassName();
-            }
-        });
+        return runOnLauncherAndGetResult(
+                new Callable<String>() {
+                    @Override
+                    public String call() {
+                        return connection.getServiceName().getClassName();
+                    }
+                });
     }
 
     // Retrieves the service of the passed in connection on the launcher thread as to not assert.
     public static IChildProcessService getConnectionService(
             final ChildProcessConnection connection) {
-        return runOnLauncherAndGetResult(new Callable<IChildProcessService>() {
-            @Override
-            public IChildProcessService call() {
-                return connection.getService();
-            }
-        });
+        return runOnLauncherAndGetResult(
+                new Callable<IChildProcessService>() {
+                    @Override
+                    public IChildProcessService call() {
+                        return connection.getService();
+                    }
+                });
     }
 }

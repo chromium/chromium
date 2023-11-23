@@ -20,9 +20,7 @@ import org.chromium.url.Origin;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Mock class for {@link RenderFrameHost}.
- */
+/** Mock class for {@link RenderFrameHost}. */
 public class MockRenderFrameHost implements RenderFrameHost {
     @Override
     public GURL getLastCommittedURL() {

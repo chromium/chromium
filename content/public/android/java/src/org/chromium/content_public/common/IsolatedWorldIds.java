@@ -16,8 +16,11 @@ import java.lang.annotation.RetentionPolicy;
  * Both files must be kept in sync.
  */
 // LINT.IfChange
-@IntDef({IsolatedWorldIds.ISOLATED_WORLD_ID_GLOBAL, IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END,
-        IsolatedWorldIds.ISOLATED_WORLD_ID_MAX})
+@IntDef({
+    IsolatedWorldIds.ISOLATED_WORLD_ID_GLOBAL,
+    IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END,
+    IsolatedWorldIds.ISOLATED_WORLD_ID_MAX
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface IsolatedWorldIds {
     int ISOLATED_WORLD_ID_GLOBAL = 0;

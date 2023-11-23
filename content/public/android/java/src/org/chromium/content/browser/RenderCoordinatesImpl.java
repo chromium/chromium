@@ -114,9 +114,14 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
         mDeviceScaleFactor = dipScale;
     }
 
-    public void updateFrameInfo(float contentWidthCss, float contentHeightCss,
-            float viewportWidthCss, float viewportHeightCss, float minPageScaleFactor,
-            float maxPageScaleFactor, float contentOffsetYPix) {
+    public void updateFrameInfo(
+            float contentWidthCss,
+            float contentHeightCss,
+            float viewportWidthCss,
+            float viewportHeightCss,
+            float minPageScaleFactor,
+            float maxPageScaleFactor,
+            float contentOffsetYPix) {
         mMinPageScaleFactor = minPageScaleFactor;
         mMaxPageScaleFactor = maxPageScaleFactor;
         mTopContentOffsetYPix = contentOffsetYPix;

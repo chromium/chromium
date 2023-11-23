@@ -7,9 +7,7 @@ package org.chromium.content_public.browser.test.util;
 import org.chromium.content.browser.BackgroundSyncNetworkObserver;
 import org.chromium.net.ConnectionType;
 
-/**
- * Used to mock network conditions for Background Sync.
- */
+/** Used to mock network conditions for Background Sync. */
 public class BackgroundSyncNetworkUtils {
     /**
      * Overrides connection type for testing.

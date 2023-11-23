@@ -19,11 +19,10 @@ import org.chromium.content.browser.BrowserStartupControllerImpl;
  * All communication with this class must happen on the main thread.
  */
 public interface BrowserStartupController {
-    /**
-     * This provides the interface to the callbacks for successful or failed startup
-     */
+    /** This provides the interface to the callbacks for successful or failed startup */
     interface StartupCallback {
         void onSuccess();
+
         void onFailure();
     }
 
@@ -51,8 +50,11 @@ public interface BrowserStartupController {
      *                                is started.
      * @param callback the callback to be called when browser startup is complete.
      */
-    void startBrowserProcessesAsync(@LibraryProcessType int libraryProcessType,
-            boolean startGpuProcess, boolean startMinimalBrowser, final StartupCallback callback);
+    void startBrowserProcessesAsync(
+            @LibraryProcessType int libraryProcessType,
+            boolean startGpuProcess,
+            boolean startMinimalBrowser,
+            final StartupCallback callback);
 
     /**
      * Start the browser process synchronously. If the browser is already being started
@@ -69,8 +71,10 @@ public interface BrowserStartupController {
      * @param startGpuProcess Whether to start the GPU process if it is not started. Only has
      *                        effect if browser isn't already started.
      */
-    void startBrowserProcessesSync(@LibraryProcessType int libraryProcessType,
-            boolean singleProcess, boolean startGpuProcess);
+    void startBrowserProcessesSync(
+            @LibraryProcessType int libraryProcessType,
+            boolean singleProcess,
+            boolean startGpuProcess);
 
     /**
      * @return Whether the browser process has been started in "Full Browser" mode successfully. See

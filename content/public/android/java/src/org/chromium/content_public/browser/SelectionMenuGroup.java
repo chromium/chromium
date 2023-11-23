@@ -10,9 +10,7 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-/**
- * Data class representing a group in the text selection menu.
- */
+/** Data class representing a group in the text selection menu. */
 public final class SelectionMenuGroup implements Comparable<SelectionMenuGroup> {
     public final @IdRes int id;
     public final int order;

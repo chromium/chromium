@@ -41,7 +41,9 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
 
     private boolean mAllowInspection;
 
-    RemoteObjectHostImpl(RemoteObjectImpl.Auditor auditor, RemoteObjectRegistry registry,
+    RemoteObjectHostImpl(
+            RemoteObjectImpl.Auditor auditor,
+            RemoteObjectRegistry registry,
             boolean allowInspection) {
         mAuditor = auditor;
         mRegistry = new WeakReference<>(registry);
@@ -63,8 +65,13 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
             if (target == null) {
                 return;
             }
-            RemoteObjectImpl impl = new RemoteObjectImpl(target,
-                    registry.getSafeAnnotationClass(target), mAuditor, registry, mAllowInspection);
+            RemoteObjectImpl impl =
+                    new RemoteObjectImpl(
+                            target,
+                            registry.getSafeAnnotationClass(target),
+                            mAuditor,
+                            registry,
+                            mAllowInspection);
             RemoteObject.MANAGER.bind(impl, request);
         }
     }

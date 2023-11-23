@@ -12,19 +12,22 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.UnguessableToken;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 
-/**
- * Interface which provides native access to an AdditionalNavigationParams instance.
- */
+/** Interface which provides native access to an AdditionalNavigationParams instance. */
 @JNINamespace("content")
 public class AdditionalNavigationParamsUtils {
     private AdditionalNavigationParamsUtils() {}
 
     @CalledByNative
-    private static AdditionalNavigationParams create(UnguessableToken initiatorFrameToken,
-            int initiatorProcessId, @Nullable UnguessableToken attributionSrcToken,
+    private static AdditionalNavigationParams create(
+            UnguessableToken initiatorFrameToken,
+            int initiatorProcessId,
+            @Nullable UnguessableToken attributionSrcToken,
             long attributionRuntimeFeatures) {
-        return new AdditionalNavigationParams(initiatorFrameToken, initiatorProcessId,
-                attributionSrcToken, attributionRuntimeFeatures);
+        return new AdditionalNavigationParams(
+                initiatorFrameToken,
+                initiatorProcessId,
+                attributionSrcToken,
+                attributionRuntimeFeatures);
     }
 
     @CalledByNative

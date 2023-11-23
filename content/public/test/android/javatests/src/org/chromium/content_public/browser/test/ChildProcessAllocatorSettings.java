@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ChildProcessAllocatorSettings {
-    int sandboxedServiceCount() default - 1;
+    int sandboxedServiceCount() default -1;
+
     String sandboxedServiceName() default "";
 }

@@ -27,7 +27,9 @@ class OngoingGesture {
     private final @Nullable IntConsumer mConsumer;
     private final long mCreationTimestamp;
 
-    OngoingGesture(@Nullable StylusWritingGestureData gestureData, @Nullable Executor executor,
+    OngoingGesture(
+            @Nullable StylusWritingGestureData gestureData,
+            @Nullable Executor executor,
             @Nullable IntConsumer consumer) {
         ThreadUtils.assertOnUiThread();
         mId = ++sLastId;
@@ -49,8 +51,12 @@ class OngoingGesture {
         assert timeTaken >= 0;
         // Log time taken to handle gesture.
         // Expected range is from 0ms to 1000ms (1 second) with 50 buckets.
-        RecordHistogram.recordCustomTimesHistogram("InputMethod.StylusHandwriting.GestureTime",
-                timeTaken, /* min */ 10L, /* max */ 1000L, /* numBuckets */ 50);
+        RecordHistogram.recordCustomTimesHistogram(
+                "InputMethod.StylusHandwriting.GestureTime",
+                timeTaken,
+                /* min= */ 10L,
+                /* max= */ 1000L,
+                /* numBuckets= */ 50);
     }
 
     int getId() {
@@ -63,7 +69,9 @@ class OngoingGesture {
     }
 
     private static void logGestureResult(@HandwritingGestureResult.EnumType int gestureResult) {
-        RecordHistogram.recordEnumeratedHistogram("InputMethod.StylusHandwriting.GestureResult",
-                gestureResult, HandwritingGestureResult.MAX_VALUE);
+        RecordHistogram.recordEnumeratedHistogram(
+                "InputMethod.StylusHandwriting.GestureResult",
+                gestureResult,
+                HandwritingGestureResult.MAX_VALUE);
     }
 }

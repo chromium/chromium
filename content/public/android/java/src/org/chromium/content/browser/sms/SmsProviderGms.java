@@ -44,7 +44,9 @@ public class SmsProviderGms {
     private Wrappers.SmsRetrieverClientWrapper mClient;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public SmsProviderGms(long smsProviderGmsAndroid, @GmsBackend int backend,
+    public SmsProviderGms(
+            long smsProviderGmsAndroid,
+            @GmsBackend int backend,
             boolean isVerificationBackendAvailable) {
         mSmsProviderGmsAndroid = smsProviderGmsAndroid;
         mBackend = backend;
@@ -88,10 +90,11 @@ public class SmsProviderGms {
     private static SmsProviderGms create(long smsProviderGmsAndroid, @GmsBackend int backend) {
         Log.d(TAG, "Creating SmsProviderGms");
         boolean isVerificationBackendAvailable =
-                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                        ContextUtils.getApplicationContext(),
-                        MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND)
-                == ConnectionResult.SUCCESS;
+                GoogleApiAvailability.getInstance()
+                                .isGooglePlayServicesAvailable(
+                                        ContextUtils.getApplicationContext(),
+                                        MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND)
+                        == ConnectionResult.SUCCESS;
         return new SmsProviderGms(smsProviderGmsAndroid, backend, isVerificationBackendAvailable);
     }
 
@@ -115,10 +118,14 @@ public class SmsProviderGms {
         // If the SMS retrieval request is made from a remote device, e.g. desktop, we only proceed
         // with the verification receiver because the user consent receiver introduces too much user
         // friction. In addition, we do not apply the fallback logic in such case.
-        boolean shouldUseVerificationReceiver = mVerificationReceiver != null
-                && (!isLocalRequest || mBackend != GmsBackend.USER_CONSENT);
-        boolean shouldUseUserConsentReceiver = mUserConsentReceiver != null && isLocalRequest
-                && mBackend != GmsBackend.VERIFICATION && window != null;
+        boolean shouldUseVerificationReceiver =
+                mVerificationReceiver != null
+                        && (!isLocalRequest || mBackend != GmsBackend.USER_CONSENT);
+        boolean shouldUseUserConsentReceiver =
+                mUserConsentReceiver != null
+                        && isLocalRequest
+                        && mBackend != GmsBackend.VERIFICATION
+                        && window != null;
         if (shouldUseVerificationReceiver) mVerificationReceiver.listen(isLocalRequest);
         if (shouldUseUserConsentReceiver) mUserConsentReceiver.listen(window);
     }
@@ -166,12 +173,15 @@ public class SmsProviderGms {
     void onReceive(String sms, @GmsBackend int backend) {
         SmsProviderGmsJni.get().onReceive(mSmsProviderGmsAndroid, sms, backend);
     }
+
     void onTimeout() {
         SmsProviderGmsJni.get().onTimeout(mSmsProviderGmsAndroid);
     }
+
     void onCancel() {
         SmsProviderGmsJni.get().onCancel(mSmsProviderGmsAndroid);
     }
+
     void onNotAvailable() {
         SmsProviderGmsJni.get().onNotAvailable(mSmsProviderGmsAndroid);
     }
@@ -184,9 +194,12 @@ public class SmsProviderGms {
         if (mClient != null) {
             return mClient;
         }
-        mClient = new Wrappers.SmsRetrieverClientWrapper(
-                mUserConsentReceiver != null ? mUserConsentReceiver.createClient() : null,
-                mVerificationReceiver != null ? mVerificationReceiver.createClient() : null);
+        mClient =
+                new Wrappers.SmsRetrieverClientWrapper(
+                        mUserConsentReceiver != null ? mUserConsentReceiver.createClient() : null,
+                        mVerificationReceiver != null
+                                ? mVerificationReceiver.createClient()
+                                : null);
 
         return mClient;
     }
@@ -205,8 +218,11 @@ public class SmsProviderGms {
     @NativeMethods
     interface Natives {
         void onReceive(long nativeSmsProviderGms, String sms, @GmsBackend int backend);
+
         void onTimeout(long nativeSmsProviderGms);
+
         void onCancel(long nativeSmsProviderGms);
+
         void onNotAvailable(long nativeSmsProviderGms);
     }
 }
