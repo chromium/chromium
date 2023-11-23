@@ -257,6 +257,14 @@ class SyncPrefs {
 
   static void MigrateAutofillWalletImportEnabledPref(PrefService* pref_service);
 
+  // Copies the global versions of the selected-types prefs (used for syncing
+  // users) to the per-account prefs for the given `gaia_id_hash` (used for
+  // signed-in non-syncing users). To be used when an existing syncing user is
+  // migrated to signed-in.
+  static void MigrateGlobalDataTypePrefsToAccount(
+      PrefService* pref_service,
+      const signin::GaiaIdHash& gaia_id_hash);
+
  private:
   static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,
                                        UserSelectableType type);

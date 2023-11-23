@@ -871,6 +871,62 @@ void SyncPrefs::MigrateAutofillWalletImportEnabledPref(
   pref_service->SetBoolean(kObsoleteAutofillWalletImportEnabledMigrated, true);
 }
 
+// static
+void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
+    PrefService* pref_service,
+    const signin::GaiaIdHash& gaia_id_hash) {
+  CHECK(gaia_id_hash.IsValid());
+
+  // Note: This method does *not* ensure that the migration only runs once -
+  // that's the caller's responsibility! (In practice, that's
+  // MaybeMigrateSyncingUserToSignedIn()).
+
+  ScopedDictPrefUpdate update_selected_types_dict(
+      pref_service, prefs::internal::kSelectedTypesPerAccount);
+  base::Value::Dict* account_settings =
+      update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
+
+  // The values of the "global" data type prefs get copied to the
+  // account-specific ones.
+  bool everything_enabled =
+      pref_service->GetBoolean(prefs::internal::kSyncKeepEverythingSynced);
+  // History and Tabs should remain enabled only if they were both enabled
+  // previously, so they're specially tracked here.
+  bool history_and_tabs_enabled = false;
+  if (everything_enabled) {
+    // Most of the per-account prefs default to "true", so nothing needs to be
+    // done for those. The exceptions are History and Tabs, which need to be
+    // enabled explicitly.
+    history_and_tabs_enabled = true;
+  } else {
+    // "Sync everything" is off, so copy over the individual value for each
+    // type.
+    for (UserSelectableType type : UserSelectableTypeSet::All()) {
+      const char* pref_name = GetPrefNameForType(type);
+      CHECK(pref_name);
+      // Copy value from global to per-account pref.
+      account_settings->Set(pref_name, pref_service->GetBoolean(pref_name));
+    }
+    // Special case: History and Tabs remain enabled only if they were both
+    // enabled previously.
+    history_and_tabs_enabled =
+        pref_service->GetBoolean(
+            GetPrefNameForType(UserSelectableType::kHistory)) &&
+        pref_service->GetBoolean(GetPrefNameForType(UserSelectableType::kTabs));
+  }
+  account_settings->Set(GetPrefNameForType(UserSelectableType::kHistory),
+                        history_and_tabs_enabled);
+  account_settings->Set(GetPrefNameForType(UserSelectableType::kTabs),
+                        history_and_tabs_enabled);
+
+  // Usually, the "SyncToSignin" migration (aka phase 2) will have completed
+  // previously. But just in case it hasn't, make sure it doesn't run in the
+  // future - it's not neeced, and in fact it might mess up some of the things
+  // that were just migrated here.
+  pref_service->SetInteger(kSyncToSigninMigrationState,
+                           kMigratedPart2AndFullyDone);
+}
+
 void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
   // If the first part of the migration has run, but the second part has not,
   // then mark the migration as fully done - at this point (after signout)
