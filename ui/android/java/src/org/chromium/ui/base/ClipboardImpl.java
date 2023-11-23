@@ -54,12 +54,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Simple proxy that provides C++ code with an access pathway to the Android clipboard.
- */
+/** Simple proxy that provides C++ code with an access pathway to the Android clipboard. */
 @JNINamespace("ui")
-public class ClipboardImpl
-        extends Clipboard implements ClipboardManager.OnPrimaryClipChangedListener {
+public class ClipboardImpl extends Clipboard
+        implements ClipboardManager.OnPrimaryClipChangedListener {
     private static final float CONFIDENCE_THRESHOLD_FOR_URL_DETECTION = 0.99f;
 
     private static final long MAX_ALLOWED_PNG_SIZE_BYTES = (long) 100e6; // 100 MB.
@@ -99,7 +97,8 @@ public class ClipboardImpl
         // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
         // crbug.com/654802 and b/31501780)
         try {
-            return mClipboardManager.getPrimaryClip()
+            return mClipboardManager
+                    .getPrimaryClip()
                     .getItemAt(0)
                     .coerceToText(mContext)
                     .toString();
@@ -127,7 +126,8 @@ public class ClipboardImpl
 
     private boolean hasStyleSpan(Spanned spanned) {
         Class<?>[] styleClasses = {
-                CharacterStyle.class, ParagraphStyle.class, UpdateAppearance.class};
+            CharacterStyle.class, ParagraphStyle.class, UpdateAppearance.class
+        };
         for (Class<?> clazz : styleClasses) {
             if (spanned.nextSpanTransition(-1, spanned.length(), clazz) < spanned.length()) {
                 return true;
@@ -240,7 +240,8 @@ public class ClipboardImpl
         // crbug.com/654802).
         try {
             ClipData clipData = mClipboardManager.getPrimaryClip();
-            if (clipData == null || clipData.getItemCount() == 0
+            if (clipData == null
+                    || clipData.getItemCount() == 0
                     || !hasImageMimeType(clipData.getDescription())) {
                 return null;
             }
@@ -310,7 +311,7 @@ public class ClipboardImpl
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 // |quality| is ignored since PNG encoding is lossless. See
                 // https://developer.android.com/reference/android/graphics/Bitmap.CompressFormat#PNG.
-                bitmap.compress(Bitmap.CompressFormat.PNG, /*quality=*/100, baos);
+                bitmap.compress(Bitmap.CompressFormat.PNG, /* quality= */ 100, baos);
                 if (baos.size() > MAX_ALLOWED_PNG_SIZE_BYTES) return null;
 
                 return baos.toByteArray();
@@ -322,7 +323,8 @@ public class ClipboardImpl
         // The image is a PNG. Read and return the raw bytes.
         FileInputStream fileStream = null;
         try (AssetFileDescriptor afd = cr.openAssetFileDescriptor(uri, "r")) {
-            if (afd == null || afd.getLength() > MAX_ALLOWED_PNG_SIZE_BYTES
+            if (afd == null
+                    || afd.getLength() > MAX_ALLOWED_PNG_SIZE_BYTES
                     || afd.getLength() == AssetFileDescriptor.UNKNOWN_LENGTH) {
                 return null;
             }
@@ -423,6 +425,7 @@ public class ClipboardImpl
                 return ClipData.newUri(
                         ContextUtils.getApplicationContext().getContentResolver(), "image", uri);
             }
+
             @Override
             protected void onPostExecute(ClipData clipData) {
                 if (setPrimaryClipNoException(clipData) && notifyOnSuccess) {
@@ -458,7 +461,11 @@ public class ClipboardImpl
         }
 
         mImageFileProvider.storeImageAndGenerateUri(
-                imageData, extension, (Uri uri) -> { setImageUri(uri); });
+                imageData,
+                extension,
+                (Uri uri) -> {
+                    setImageUri(uri);
+                });
     }
 
     @Override
@@ -484,9 +491,8 @@ public class ClipboardImpl
         final String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
         // See crbug.com/1123727, there are OEM devices having strict mode violations in their
         // Android framework code. Disabling strict mode for non-google devices.
-        try (StrictModeContext ignored = manufacturer.equals("google")
-                        ? null
-                        : StrictModeContext.allowAllThreadPolicies()) {
+        try (StrictModeContext ignored =
+                manufacturer.equals("google") ? null : StrictModeContext.allowAllThreadPolicies()) {
             mClipboardManager.setPrimaryClip(clip);
             return true;
         } catch (Exception ex) {
@@ -525,8 +531,11 @@ public class ClipboardImpl
 
     @Override
     public void copyUrlToClipboard(GURL url) {
-        ClipData clip = new ClipData("url", new String[] {URL_MIME_TYPE, PLAIN_TEXT_MIME_TYPE},
-                new ClipData.Item(url.getSpec()));
+        ClipData clip =
+                new ClipData(
+                        "url",
+                        new String[] {URL_MIME_TYPE, PLAIN_TEXT_MIME_TYPE},
+                        new ClipData.Item(url.getSpec()));
         if (setPrimaryClipNoException(clip)) {
             showToastIfNeeded(R.string.link_copied);
         }
@@ -563,7 +572,7 @@ public class ClipboardImpl
     @SuppressWarnings("QueryPermissionsNeeded")
     private void grantUriPermission(@NonNull Uri uri) {
         if ((Build.VERSION.SDK_INT != Build.VERSION_CODES.O
-                    && Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1)
+                        && Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1)
                 || mImageFileProvider == null) {
             return;
         }
@@ -600,8 +609,10 @@ public class ClipboardImpl
                 mImageFileProvider.getLastCopiedImageMetadata();
         // Exit early if the URI is empty or event onPrimaryClipChanges was caused by sharing
         // image.
-        if (imageMetadata == null || imageMetadata.uri == null
-                || imageMetadata.uri.equals(Uri.EMPTY) || imageMetadata.uri.equals(getImageUri())) {
+        if (imageMetadata == null
+                || imageMetadata.uri == null
+                || imageMetadata.uri.equals(Uri.EMPTY)
+                || imageMetadata.uri.equals(getImageUri())) {
             return;
         }
 

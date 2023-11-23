@@ -31,7 +31,9 @@ public class ListModelChangeProcessor<M extends ListObservable<P>, V, P>
      */
     public interface ViewBinder<M, V, P> {
         void onItemsInserted(M model, V view, int index, int count);
+
         void onItemsRemoved(M model, V view, int index, int count);
+
         void onItemsChanged(M model, V view, int index, int count, P payload);
     }
 

@@ -92,8 +92,6 @@ public class ViewportInsets {
      */
     public int webContentsHeightInset;
 
-    /**
-     * The bottom inset applied to the WebContents to derive the visual viewport rect.
-     */
+    /** The bottom inset applied to the WebContents to derive the visual viewport rect. */
     public int visualViewportBottomInset;
 }

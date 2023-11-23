@@ -55,8 +55,10 @@ public class DropDataProviderImpl {
      * provider using this class should declare the same authority in order for it to work.
      */
     public static final Uri FULL_AUTH_URI =
-            Uri.parse("content://" + ContextUtils.getApplicationContext().getPackageName()
-                    + DropDataProviderImpl.URI_AUTHORITY_SUFFIX);
+            Uri.parse(
+                    "content://"
+                            + ContextUtils.getApplicationContext().getPackageName()
+                            + DropDataProviderImpl.URI_AUTHORITY_SUFFIX);
 
     /**
      * Implement {@link ContentProvider.PipeDataWriter} to be used by {@link
@@ -64,8 +66,12 @@ public class DropDataProviderImpl {
      */
     private static class DropPipeDataWriter implements ContentProvider.PipeDataWriter<byte[]> {
         @Override
-        public void writeDataToPipe(ParcelFileDescriptor output, Uri uri, String mimeType,
-                Bundle opts, byte[] imageBytes) {
+        public void writeDataToPipe(
+                ParcelFileDescriptor output,
+                Uri uri,
+                String mimeType,
+                Bundle opts,
+                byte[] imageBytes) {
             try (OutputStream out = new FileOutputStream(output.getFileDescriptor())) {
                 if (imageBytes != null) {
                     out.write(imageBytes);
@@ -89,10 +95,10 @@ public class DropDataProviderImpl {
     private String mEncodingFormat;
     private String mImageFilename;
     private String mMimeType;
-    /**
-     * The URI handled by this content provider.
-     */
+
+    /** The URI handled by this content provider. */
     private Uri mContentProviderUri;
+
     private Handler mHandler;
     private long mDragEndTime;
     private long mOpenFileLastAccessTime;
@@ -103,16 +109,12 @@ public class DropDataProviderImpl {
 
     private DropPipeDataWriter mDropPipeDataWriter;
 
-    /**
-     * This constructor is being used to initialize the pipeWriter.
-     */
+    /** This constructor is being used to initialize the pipeWriter. */
     public DropDataProviderImpl() {
         initPipeWriter();
     }
 
-    /**
-     * Update the delayed time before clearing the image cache.
-     */
+    /** Update the delayed time before clearing the image cache. */
     public void setClearCachedDataIntervalMs(int milliseconds) {
         synchronized (LOCK) {
             mClearCachedDataIntervalMs = milliseconds;
@@ -123,8 +125,9 @@ public class DropDataProviderImpl {
         String timestamp = String.valueOf(System.currentTimeMillis());
         return new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_CONTENT)
-                .authority(ContextUtils.getApplicationContext().getPackageName()
-                        + URI_AUTHORITY_SUFFIX)
+                .authority(
+                        ContextUtils.getApplicationContext().getPackageName()
+                                + URI_AUTHORITY_SUFFIX)
                 .path(timestamp)
                 .build();
     }
@@ -185,9 +188,7 @@ public class DropDataProviderImpl {
         }
     }
 
-    /**
-     * Clear the image data of Drag and Drop and record histogram.
-     */
+    /** Clear the image data of Drag and Drop and record histogram. */
     void clearCache() {
         synchronized (LOCK) {
             clearCacheData();
@@ -201,9 +202,7 @@ public class DropDataProviderImpl {
         }
     }
 
-    /**
-     * Clear the image data of Drag and Drop.
-     */
+    /** Clear the image data of Drag and Drop. */
     private void clearCacheData() {
         mImageBytes = null;
         mEncodingFormat = null;
@@ -221,9 +220,7 @@ public class DropDataProviderImpl {
         }
     }
 
-    /**
-     * Clear the image data of Drag and Drop with delay.
-     */
+    /** Clear the image data of Drag and Drop with delay. */
     private void clearCacheWithDelay() {
         if (mHandler == null) {
             mHandler = new Handler(Looper.getMainLooper());
@@ -231,9 +228,7 @@ public class DropDataProviderImpl {
         mHandler.postDelayed(this::clearCache, mClearCachedDataIntervalMs);
     }
 
-    /**
-     * A static initializer for the class.
-     */
+    /** A static initializer for the class. */
     @UsedByReflection("DropDataContentProvider")
     public static DropDataProviderImpl onCreate() {
         // TODO(crbug.com/1302383): Lazily create DropPipeDataWriter in #openFile.
@@ -382,14 +377,18 @@ public class DropDataProviderImpl {
         switch (method) {
             case CACHE_METHOD_NAME:
                 Bundle bundleToReturn = new Bundle();
-                Uri uri = cache((byte[]) extras.getSerializable(BYTES_PARAM),
-                        extras.getString(IMAGE_CONTENT_EXTENSION_PARAM),
-                        extras.getString(IMAGE_FILE_PARAM));
+                Uri uri =
+                        cache(
+                                (byte[]) extras.getSerializable(BYTES_PARAM),
+                                extras.getString(IMAGE_CONTENT_EXTENSION_PARAM),
+                                extras.getString(IMAGE_FILE_PARAM));
                 bundleToReturn.putParcelable("uri", uri);
                 return bundleToReturn;
             case SET_INTERVAL_METHOD_NAME:
-                setClearCachedDataIntervalMs(extras.getInt(CLEAR_CACHE_PARAM,
-                        DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS));
+                setClearCachedDataIntervalMs(
+                        extras.getInt(
+                                CLEAR_CACHE_PARAM,
+                                DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS));
                 break;
             case ON_DRAG_END_METHOD_NAME:
                 onDragEnd(extras.getBoolean(IMAGE_USAGE_PARAM));

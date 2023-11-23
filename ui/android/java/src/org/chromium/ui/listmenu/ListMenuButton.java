@@ -21,21 +21,19 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
- * A menu button meant to be used with modern lists throughout Chrome.  Will automatically show and
- * anchor a popup on press and will rely on a delegate for positioning and content of the popup.
- * You can define your own content description for accessibility through the
- * android:contentDescription parameter in the XML layout of the ListMenuButton. The default content
- * description that corresponds to
- * context.getString(R.string.accessibility_list_menu_button, "") is used otherwise.
+ * A menu button meant to be used with modern lists throughout Chrome. Will automatically show and
+ * anchor a popup on press and will rely on a delegate for positioning and content of the popup. You
+ * can define your own content description for accessibility through the android:contentDescription
+ * parameter in the XML layout of the ListMenuButton. The default content description that
+ * corresponds to context.getString(R.string.accessibility_list_menu_button, "") is used otherwise.
  */
-public class ListMenuButton
-        extends ChromeImageButton implements AnchoredPopupWindow.LayoutObserver {
-    /**
-     * A listener that is notified when the popup menu is shown or dismissed.
-     */
+public class ListMenuButton extends ChromeImageButton
+        implements AnchoredPopupWindow.LayoutObserver {
+    /** A listener that is notified when the popup menu is shown or dismissed. */
     @FunctionalInterface
     public interface PopupMenuShownListener {
         void onPopupMenuShown();
+
         default void onPopupMenuDismissed() {}
     }
 
@@ -60,8 +58,10 @@ public class ListMenuButton
         super(context, attrs);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ListMenuButton);
-        mMenuMaxWidth = a.getDimensionPixelSize(R.styleable.ListMenuButton_menuMaxWidth,
-                getResources().getDimensionPixelSize(R.dimen.list_menu_width));
+        mMenuMaxWidth =
+                a.getDimensionPixelSize(
+                        R.styleable.ListMenuButton_menuMaxWidth,
+                        getResources().getDimensionPixelSize(R.dimen.list_menu_width));
         mMenuHorizontalOverlapAnchor =
                 a.getBoolean(R.styleable.ListMenuButton_menuHorizontalOverlapAnchor, true);
         mMenuVerticalOverlapAnchor =
@@ -83,8 +83,10 @@ public class ListMenuButton
                     getContext().getResources().getString(R.string.accessibility_toolbar_btn_menu));
             return;
         }
-        setContentDescription(getContext().getResources().getString(
-                R.string.accessibility_list_menu_button, context));
+        setContentDescription(
+                getContext()
+                        .getResources()
+                        .getString(R.string.accessibility_list_menu_button, context));
     }
 
     /**
@@ -117,18 +119,14 @@ public class ListMenuButton
         }
     }
 
-    /**
-     * Called to dismiss any popup menu that might be showing for this button.
-     */
+    /** Called to dismiss any popup menu that might be showing for this button. */
     public void dismiss() {
         if (mPopupMenu != null) {
             mPopupMenu.dismiss();
         }
     }
 
-    /**
-     * Shows a popupWindow built by ListMenuButton
-     */
+    /** Shows a popupWindow built by ListMenuButton */
     public void showMenu() {
         if (!mIsAttachedToWindow) return;
         dismiss();
@@ -145,9 +143,7 @@ public class ListMenuButton
         mMenuMaxWidth = maxWidth;
     }
 
-    /**
-     * Init the popup window with provided attributes, called before {@link #showMenu()}
-     */
+    /** Init the popup window with provided attributes, called before {@link #showMenu()} */
     private void initPopupWindow() {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
 
@@ -160,8 +156,13 @@ public class ListMenuButton
         if (viewParent instanceof ViewGroup) {
             ((ViewGroup) viewParent).removeView(contentView);
         }
-        mPopupMenu = new AnchoredPopupWindow(getContext(), this,
-                new ColorDrawable(Color.TRANSPARENT), contentView, mDelegate.getRectProvider(this));
+        mPopupMenu =
+                new AnchoredPopupWindow(
+                        getContext(),
+                        this,
+                        new ColorDrawable(Color.TRANSPARENT),
+                        contentView,
+                        mDelegate.getRectProvider(this));
         mPopupMenu.setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor);
         mPopupMenu.setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor);
         mPopupMenu.setMaxWidth(mMenuMaxWidth);
@@ -172,10 +173,11 @@ public class ListMenuButton
         }
         mPopupMenu.setFocusable(true);
         mPopupMenu.setLayoutObserver(this);
-        mPopupMenu.addOnDismissListener(() -> {
-            mPopupMenu = null;
-            notifyPopupListeners(false);
-        });
+        mPopupMenu.addOnDismissListener(
+                () -> {
+                    mPopupMenu = null;
+                    notifyPopupListeners(false);
+                });
         // This should be called explicitly since it is not a default behavior on Android S
         // in split-screen mode. See crbug.com/1246956.
         mPopupMenu.setOutsideTouchable(true);

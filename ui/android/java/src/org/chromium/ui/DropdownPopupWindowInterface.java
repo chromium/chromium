@@ -9,9 +9,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-/**
- * The interface for dropdown popup window.
- */
+/** The interface for dropdown popup window. */
 public interface DropdownPopupWindowInterface {
     /**
      * Sets the adapter that provides the data and the views to represent the data
@@ -28,9 +26,7 @@ public interface DropdownPopupWindowInterface {
      */
     void setInitialSelection(int initialSelection);
 
-    /**
-     * Shows the popup. The adapter should be set before calling this method.
-     */
+    /** Shows the popup. The adapter should be set before calling this method. */
     void show();
 
     /**
@@ -72,9 +68,7 @@ public interface DropdownPopupWindowInterface {
      */
     void postShow();
 
-    /**
-     * Disposes of the popup window.
-     */
+    /** Disposes of the popup window. */
     void dismiss();
 
     /**

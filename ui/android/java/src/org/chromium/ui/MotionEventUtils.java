@@ -14,9 +14,7 @@ import org.chromium.base.TraceEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Class with helper methods for MotionEvent.
- */
+/** Class with helper methods for MotionEvent. */
 public class MotionEventUtils {
     /**
      * Returns the time in nanoseconds of the given MotionEvent.
@@ -64,7 +62,6 @@ public class MotionEventUtils {
 
     private MotionEventUtils() {}
 
-    @Nullable
-    private static Method sGetTimeNanoMethod;
+    @Nullable private static Method sGetTimeNanoMethod;
     private static boolean sFailedReflection;
 }

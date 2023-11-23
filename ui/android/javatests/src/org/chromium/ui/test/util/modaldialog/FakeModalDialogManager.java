@@ -10,9 +10,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A fake ModalDialogManager for use in tests involving modals.
- */
+/** A fake ModalDialogManager for use in tests involving modals. */
 public class FakeModalDialogManager extends ModalDialogManager {
     private PropertyModel mShownDialogModel;
 
@@ -32,12 +30,14 @@ public class FakeModalDialogManager extends ModalDialogManager {
     }
 
     public void clickPositiveButton() {
-        mShownDialogModel.get(ModalDialogProperties.CONTROLLER)
+        mShownDialogModel
+                .get(ModalDialogProperties.CONTROLLER)
                 .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
     }
 
     public void clickNegativeButton() {
-        mShownDialogModel.get(ModalDialogProperties.CONTROLLER)
+        mShownDialogModel
+                .get(ModalDialogProperties.CONTROLLER)
                 .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
     }
 

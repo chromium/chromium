@@ -11,13 +11,14 @@ import android.view.ViewTreeObserver;
 import androidx.core.view.ViewCompat;
 
 /**
- * Provides a {@link Rect} for the location of a {@link View} in its window, see
- * {@link View#getLocationOnScreen(int[])}. When view bound changes, {@link RectProvider.Observer}
- * will be notified.
+ * Provides a {@link Rect} for the location of a {@link View} in its window, see {@link
+ * View#getLocationOnScreen(int[])}. When view bound changes, {@link RectProvider.Observer} will be
+ * notified.
  */
 public class ViewRectProvider extends RectProvider
-        implements ViewTreeObserver.OnGlobalLayoutListener, View.OnAttachStateChangeListener,
-                   ViewTreeObserver.OnPreDrawListener {
+        implements ViewTreeObserver.OnGlobalLayoutListener,
+                View.OnAttachStateChangeListener,
+                ViewTreeObserver.OnPreDrawListener {
     private final int[] mCachedWindowCoordinates = new int[2];
     private final Rect mInsetRect = new Rect();
     private final View mView;
@@ -58,7 +59,7 @@ public class ViewRectProvider extends RectProvider
         if (insetRect.equals(mInsetRect)) return;
 
         mInsetRect.set(insetRect);
-        refreshRectBounds(/*forceRefresh=*/true);
+        refreshRectBounds(/* forceRefresh= */ true);
     }
 
     /**
@@ -69,7 +70,7 @@ public class ViewRectProvider extends RectProvider
         if (includePadding == mIncludePadding) return;
 
         mIncludePadding = includePadding;
-        refreshRectBounds(/*forceRefresh=*/true);
+        refreshRectBounds(/* forceRefresh= */ true);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class ViewRectProvider extends RectProvider
         mViewTreeObserver.addOnGlobalLayoutListener(this);
         mViewTreeObserver.addOnPreDrawListener(this);
 
-        refreshRectBounds(/*forceRefresh=*/false);
+        refreshRectBounds(/* forceRefresh= */ false);
 
         super.startObserving(observer);
     }
@@ -109,7 +110,7 @@ public class ViewRectProvider extends RectProvider
         if (!mView.isShown()) {
             notifyRectHidden();
         } else {
-            refreshRectBounds(/*forceRefresh=*/false);
+            refreshRectBounds(/* forceRefresh= */ false);
         }
 
         return true;
@@ -141,9 +142,11 @@ public class ViewRectProvider extends RectProvider
         mCachedViewHeight = mView.getHeight();
 
         // Return if the window coordinates and view sizes haven't changed.
-        if (!forceRefresh && mCachedWindowCoordinates[0] == previousPositionX
+        if (!forceRefresh
+                && mCachedWindowCoordinates[0] == previousPositionX
                 && mCachedWindowCoordinates[1] == previousPositionY
-                && mCachedViewWidth == previousWidth && mCachedViewHeight == previousHeight) {
+                && mCachedViewWidth == previousWidth
+                && mCachedViewHeight == previousHeight) {
             return;
         }
 

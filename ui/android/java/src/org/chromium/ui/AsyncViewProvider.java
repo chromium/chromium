@@ -117,11 +117,13 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
             // fire right now if view already inflated.
             callback.onResult(mView);
         } else {
-            mViewStub.addOnInflateListener((View view) -> {
-                if (mDestroyed) return;
-                // listeners are called in order so mView should be set correctly at this point.
-                callback.onResult(mView);
-            });
+            mViewStub.addOnInflateListener(
+                    (View view) -> {
+                        if (mDestroyed) return;
+                        // listeners are called in order so mView should be set correctly at this
+                        // point.
+                        callback.onResult(mView);
+                    });
         }
     }
 
@@ -144,7 +146,10 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
             mView = null;
         }
         if (mViewStub != null) {
-            mViewStub.addOnInflateListener((View view) -> { destroyCallback.onResult(mView); });
+            mViewStub.addOnInflateListener(
+                    (View view) -> {
+                        destroyCallback.onResult(mView);
+                    });
             mViewStub = null;
         }
     }

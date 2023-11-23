@@ -13,9 +13,7 @@ import androidx.annotation.IntRange;
 
 import org.chromium.base.MathUtils;
 
-/**
- * Helper functions for working with colors.
- */
+/** Helper functions for working with colors. */
 public class ColorUtils {
     // Value used by ui::OptionalSkColorToJavaColor() to represent invalid color.
     public static final long INVALID_COLOR = ((long) Integer.MAX_VALUE) + 1;
@@ -37,9 +35,7 @@ public class ColorUtils {
         return (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    /**
-     * Computes the lightness value in HSL standard for the given color.
-     */
+    /** Computes the lightness value in HSL standard for the given color. */
     public static float getLightnessForColor(int color) {
         int red = Color.red(color);
         int green = Color.green(color);
@@ -163,15 +159,25 @@ public class ColorUtils {
      */
     public static int getColorWithOverlay(
             int baseColor, int overlayColor, float overlayAlpha, boolean considerOpacity) {
-        int red = (int) MathUtils.interpolate(
-                Color.red(baseColor), Color.red(overlayColor), overlayAlpha);
-        int green = (int) MathUtils.interpolate(
-                Color.green(baseColor), Color.green(overlayColor), overlayAlpha);
-        int blue = (int) MathUtils.interpolate(
-                Color.blue(baseColor), Color.blue(overlayColor), overlayAlpha);
+        int red =
+                (int)
+                        MathUtils.interpolate(
+                                Color.red(baseColor), Color.red(overlayColor), overlayAlpha);
+        int green =
+                (int)
+                        MathUtils.interpolate(
+                                Color.green(baseColor), Color.green(overlayColor), overlayAlpha);
+        int blue =
+                (int)
+                        MathUtils.interpolate(
+                                Color.blue(baseColor), Color.blue(overlayColor), overlayAlpha);
         if (considerOpacity) {
-            int alpha = (int) MathUtils.interpolate(
-                    Color.alpha(baseColor), Color.alpha(overlayColor), overlayAlpha);
+            int alpha =
+                    (int)
+                            MathUtils.interpolate(
+                                    Color.alpha(baseColor),
+                                    Color.alpha(overlayColor),
+                                    overlayAlpha);
             return Color.argb(alpha, red, green, blue);
         }
         return Color.rgb(red, green, blue);

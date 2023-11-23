@@ -11,9 +11,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
-/**
- * A drawable divider to be used by dropdown adapters.
- */
+/** A drawable divider to be used by dropdown adapters. */
 public class DropdownDividerDrawable extends Drawable {
     private final Paint mPaint;
     private final Rect mDividerRect;
@@ -50,12 +48,10 @@ public class DropdownDividerDrawable extends Drawable {
     }
 
     @Override
-    public void setAlpha(int alpha) {
-    }
+    public void setAlpha(int alpha) {}
 
     @Override
-    public void setColorFilter(ColorFilter cf) {
-    }
+    public void setColorFilter(ColorFilter cf) {}
 
     @Override
     public int getOpacity() {

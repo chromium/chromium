@@ -25,16 +25,12 @@ public abstract class DisplayUtil {
     private static final float UI_SCALING_FACTOR_FOR_AUTOMOTIVE = 1.34f;
     private static float sUiScalingFactorForAutomotive = UI_SCALING_FACTOR_FOR_AUTOMOTIVE;
 
-    /**
-     * Change the UI scaling factor on automotive devices for testing.
-     */
+    /** Change the UI scaling factor on automotive devices for testing. */
     public static void setUiScalingFactorForAutomotiveForTesting(float scalingFactor) {
         sUiScalingFactorForAutomotive = scalingFactor;
     }
 
-    /**
-     * Reset the UI scaling factor on automotive devices to the default value.
-     */
+    /** Reset the UI scaling factor on automotive devices to the default value. */
     public static void resetUiScalingFactorForAutomotiveForTesting() {
         sUiScalingFactorForAutomotive = UI_SCALING_FACTOR_FOR_AUTOMOTIVE;
     }
@@ -144,8 +140,10 @@ public abstract class DisplayUtil {
         // Continue to rely on context on this case.
         Context windowManagerContext =
                 (VERSION.SDK_INT >= VERSION_CODES.R && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
-                ? (display.getWindowContext() != null ? display.getWindowContext() : context)
-                : context;
+                        ? (display.getWindowContext() != null
+                                ? display.getWindowContext()
+                                : context)
+                        : context;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // Context#getSystemService(Context.WINDOW_SERVICE) is preferred over
             // Activity#getWindowManager, because during #attachBaseContext, #getWindowManager

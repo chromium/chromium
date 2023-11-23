@@ -17,9 +17,7 @@ import org.chromium.ui.R;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
-/**
- * UI utilities for accessing form factor information.
- */
+/** UI utilities for accessing form factor information. */
 public class DeviceFormFactor {
     /**
      * Minimum screen size in dp to be considered a tablet. Matches the value
@@ -27,15 +25,10 @@ public class DeviceFormFactor {
      */
     public static final int MINIMUM_TABLET_WIDTH_DP = 600;
 
-    /**
-     * Matches the value set in res/values-sw600dp/values.xml
-     */
-    @VisibleForTesting
-    public static final int SCREEN_BUCKET_TABLET = 2;
+    /** Matches the value set in res/values-sw600dp/values.xml */
+    @VisibleForTesting public static final int SCREEN_BUCKET_TABLET = 2;
 
-    /**
-     * Matches the value set in res/values-sw720dp/values.xml
-     */
+    /** Matches the value set in res/values-sw720dp/values.xml */
     private static final int SCREEN_BUCKET_LARGET_TABLET = 3;
 
     /**

@@ -32,9 +32,7 @@ import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.mojom.CursorType;
 
-/**
- * Class to acquire, position, and remove anchor views from the implementing View.
- */
+/** Class to acquire, position, and remove anchor views from the implementing View. */
 @JNINamespace("ui")
 public class ViewAndroidDelegate {
     private static DragAndDropDelegate sDragAndDropDelegateForTesting;
@@ -49,16 +47,14 @@ public class ViewAndroidDelegate {
     // Temporary storage for use as a parameter of getLocationOnScreen().
     private int[] mTemporaryContainerLocation = new int[2];
 
-    /**
-     * Notifies the observer when container view is updated.
-     */
-    public interface ContainerViewObserver { void onUpdateContainerView(ViewGroup view); }
+    /** Notifies the observer when container view is updated. */
+    public interface ContainerViewObserver {
+        void onUpdateContainerView(ViewGroup view);
+    }
 
     private ObserverList<ContainerViewObserver> mContainerViewObservers = new ObserverList<>();
 
-    /**
-     * Notifies the listener of vertical scroll direction changes.
-     */
+    /** Notifies the listener of vertical scroll direction changes. */
     public interface VerticalScrollDirectionChangeListener {
         /**
          * Called when the vertical scroll direction changes.
@@ -147,8 +143,9 @@ public class ViewAndroidDelegate {
     }
 
     protected DragAndDropDelegate getDragAndDropDelegate() {
-        return sDragAndDropDelegateForTesting != null ? sDragAndDropDelegateForTesting
-                                                      : mDragAndDropDelegateImpl;
+        return sDragAndDropDelegateForTesting != null
+                ? sDragAndDropDelegateForTesting
+                : mDragAndDropDelegateImpl;
     }
 
     /**
@@ -196,16 +193,23 @@ public class ViewAndroidDelegate {
 
     /**
      * Set the anchor view to specified position and size (all units in px).
+     *
      * @param anchorView The view that needs to be positioned. This must be the result of a previous
-     *         call to {@link acquireView} which has not yet been removed via {@link removeView}.
+     *     call to {@link acquireView} which has not yet been removed via {@link removeView}.
      * @param x X coordinate of the top left corner of the anchor view.
      * @param y Y coordinate of the top left corner of the anchor view.
      * @param width The width of the anchor view.
      * @param height The height of the anchor view.
      */
     @CalledByNative
-    public void setViewPosition(View anchorView, float x, float y, float width, float height,
-            int leftMargin, int topMargin) {
+    public void setViewPosition(
+            View anchorView,
+            float x,
+            float y,
+            float width,
+            float height,
+            int leftMargin,
+            int topMargin) {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return;
         assert anchorView.getParent() == containerView;
@@ -231,8 +235,8 @@ public class ViewAndroidDelegate {
     }
 
     /**
-     * Start {@link View#startDragAndDrop(ClipData, DragShadowBuilder, Object, int)} with
-     * {@link DropDataAndroid} from the web content.
+     * Start {@link View#startDragAndDrop(ClipData, DragShadowBuilder, Object, int)} with {@link
+     * DropDataAndroid} from the web content.
      *
      * @param shadowImage The shadow image for the dragged object.
      * @param dropData The drop data presenting the drag target.
@@ -242,13 +246,25 @@ public class ViewAndroidDelegate {
      * @param dragObjRectHeight The height of the drag object.
      */
     @CalledByNative
-    private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData,
-            int cursorOffsetX, int cursorOffsetY, int dragObjRectWidth, int dragObjRectHeight) {
+    private boolean startDragAndDrop(
+            Bitmap shadowImage,
+            DropDataAndroid dropData,
+            int cursorOffsetX,
+            int cursorOffsetY,
+            int dragObjRectWidth,
+            int dragObjRectHeight) {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return false;
 
-        return getDragAndDropDelegate().startDragAndDrop(containerView, shadowImage, dropData,
-                cursorOffsetX, cursorOffsetY, dragObjRectWidth, dragObjRectHeight);
+        return getDragAndDropDelegate()
+                .startDragAndDrop(
+                        containerView,
+                        shadowImage,
+                        dropData,
+                        cursorOffsetX,
+                        cursorOffsetY,
+                        dragObjRectWidth,
+                        dragObjRectHeight);
     }
 
     @VisibleForTesting
@@ -327,8 +343,7 @@ public class ViewAndroidDelegate {
             case CursorType.GRABBING:
                 pointerIconType = PointerIcon.TYPE_GRABBING;
                 break;
-            // TODO(jaebaek): set types correctly
-            // after fixing http://crbug.com/584424.
+                // TODO(jaebaek): set types correctly after fixing http://crbug.com/584424.
             case CursorType.EAST_WEST_RESIZE:
                 pointerIconType = PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW;
                 break;
@@ -462,9 +477,7 @@ public class ViewAndroidDelegate {
         return mContainerView;
     }
 
-    /**
-     * Return the X location of our container view.
-     */
+    /** Return the X location of our container view. */
     @CalledByNative
     private int getXLocationOfContainerViewInWindow() {
         View container = getContainerView();
@@ -474,9 +487,7 @@ public class ViewAndroidDelegate {
         return mTemporaryContainerLocation[0];
     }
 
-    /**
-     * Return the Y location of our container view.
-     */
+    /** Return the Y location of our container view. */
     @CalledByNative
     private int getYLocationOfContainerViewInWindow() {
         View container = getContainerView();
@@ -486,9 +497,7 @@ public class ViewAndroidDelegate {
         return mTemporaryContainerLocation[1];
     }
 
-    /**
-     * Return the X location of our container view on screen.
-     */
+    /** Return the X location of our container view on screen. */
     @CalledByNative
     private int getXLocationOnScreen() {
         View container = getContainerView();
@@ -498,9 +507,7 @@ public class ViewAndroidDelegate {
         return mTemporaryContainerLocation[0];
     }
 
-    /**
-     * Return the Y location of our container view on screen.
-     */
+    /** Return the Y location of our container view on screen. */
     @CalledByNative
     private int getYLocationOnScreen() {
         View container = getContainerView();

@@ -9,9 +9,7 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * Helper class for Autofill state and password preferences for accessibility related code.
- */
+/** Helper class for Autofill state and password preferences for accessibility related code. */
 @JNINamespace("ui")
 public class AccessibilityAutofillHelper {
     @CalledByNative

@@ -23,8 +23,10 @@ public class Animation {
         // users that don't have ANIMATOR_DURATION_SCALE defined.
         final float defaultScale = 1f;
         float durationScale =
-                Settings.Global.getFloat(ContextUtils.getApplicationContext().getContentResolver(),
-                        Settings.Global.ANIMATOR_DURATION_SCALE, defaultScale);
+                Settings.Global.getFloat(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        Settings.Global.ANIMATOR_DURATION_SCALE,
+                        defaultScale);
         return durationScale == 0.0;
     }
 }

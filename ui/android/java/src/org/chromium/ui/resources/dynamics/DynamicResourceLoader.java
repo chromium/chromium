@@ -60,8 +60,9 @@ public class DynamicResourceLoader extends ResourceLoader {
      */
     public void registerResource(int resId, DynamicResource asyncDynamicResource) {
         assert mDynamicResourceHolders.get(resId) == null;
-        DynamicResourceHolder dynamicResourceHolder = new DynamicResourceHolder(
-                asyncDynamicResource, (resource) -> notifyLoadFinished(resId, resource));
+        DynamicResourceHolder dynamicResourceHolder =
+                new DynamicResourceHolder(
+                        asyncDynamicResource, (resource) -> notifyLoadFinished(resId, resource));
         mDynamicResourceHolders.put(resId, dynamicResourceHolder);
     }
 
@@ -89,9 +90,7 @@ public class DynamicResourceLoader extends ResourceLoader {
         dynamicResourceHolder.getDynamicResource().onResourceRequested();
     }
 
-    /**
-     * Since this class relies solely on registration it does not support preloading resources.
-     */
+    /** Since this class relies solely on registration it does not support preloading resources. */
     @Override
     public void preloadResource(int resId) {
         // Not implemented.

@@ -30,8 +30,9 @@ public class DropDataProviderUtils {
         Bundle bundle = new Bundle();
         bundle.putBoolean("imageIsInUse", imageIsInUse);
         try {
-            ContextUtils.getApplicationContext().getContentResolver().call(
-                    DropDataProviderImpl.FULL_AUTH_URI, ON_DRAG_END_METHOD_NAME, "", bundle);
+            ContextUtils.getApplicationContext()
+                    .getContentResolver()
+                    .call(DropDataProviderImpl.FULL_AUTH_URI, ON_DRAG_END_METHOD_NAME, "", bundle);
             return true;
         } catch (NullPointerException | IllegalArgumentException exception) {
             return false;
@@ -43,8 +44,9 @@ public class DropDataProviderUtils {
         Bundle bundle = new Bundle();
         bundle.putInt(DropDataProviderImpl.CLEAR_CACHE_PARAM, delay);
         try {
-            ContextUtils.getApplicationContext().getContentResolver().call(
-                    DropDataProviderImpl.FULL_AUTH_URI, SET_INTERVAL_METHOD_NAME, "", bundle);
+            ContextUtils.getApplicationContext()
+                    .getContentResolver()
+                    .call(DropDataProviderImpl.FULL_AUTH_URI, SET_INTERVAL_METHOD_NAME, "", bundle);
             return true;
         } catch (NullPointerException | IllegalArgumentException exception) {
             return false;
@@ -64,8 +66,14 @@ public class DropDataProviderUtils {
 
         bundle.putString(DropDataProviderImpl.IMAGE_FILE_PARAM, dropData.imageFilename);
         try {
-            Bundle cachedUriBundle = ContextUtils.getApplicationContext().getContentResolver().call(
-                    DropDataProviderImpl.FULL_AUTH_URI, CACHE_METHOD_NAME, "", bundle);
+            Bundle cachedUriBundle =
+                    ContextUtils.getApplicationContext()
+                            .getContentResolver()
+                            .call(
+                                    DropDataProviderImpl.FULL_AUTH_URI,
+                                    CACHE_METHOD_NAME,
+                                    "",
+                                    bundle);
             return cachedUriBundle.getParcelable("uri");
         } catch (NullPointerException | IllegalArgumentException exception) {
             return null;

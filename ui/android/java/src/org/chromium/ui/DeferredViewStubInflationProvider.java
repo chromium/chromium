@@ -23,7 +23,10 @@ public class DeferredViewStubInflationProvider<T extends View> implements ViewPr
     public DeferredViewStubInflationProvider(ViewStub viewStub) {
         assert viewStub != null : "ViewStub to inflate may not be null!";
         mViewStub = viewStub;
-        mViewStub.setOnInflateListener((stub, inflated) -> { mViewPromise.fulfill((T) inflated); });
+        mViewStub.setOnInflateListener(
+                (stub, inflated) -> {
+                    mViewPromise.fulfill((T) inflated);
+                });
     }
 
     @Override

@@ -32,9 +32,7 @@ public final class ResourceBundle {
 
     private ResourceBundle() {}
 
-    /**
-     * Called when there are no locale pak files available.
-     */
+    /** Called when there are no locale pak files available. */
     @CalledByNative
     public static void setNoAvailableLocalePaks() {
         assert sAvailableLocales == null;
@@ -89,8 +87,9 @@ public final class ResourceBundle {
             if (locale.equals("en-US")) {
                 pathPrefix = "assets/fallback-locales/";
             } else {
-                String lang = LocalizationUtils.getSplitLanguageForAndroid(
-                        LocaleUtils.toBaseLanguage(locale));
+                String lang =
+                        LocalizationUtils.getSplitLanguageForAndroid(
+                                LocaleUtils.toBaseLanguage(locale));
                 pathPrefix = "assets/locales#lang_" + lang + "/";
             }
         }

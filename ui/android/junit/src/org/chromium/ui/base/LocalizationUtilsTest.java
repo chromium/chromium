@@ -16,9 +16,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for LocalizationUtils class.
- */
+/** Tests for LocalizationUtils class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LocalizationUtilsTest {

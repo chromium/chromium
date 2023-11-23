@@ -54,6 +54,7 @@ import org.chromium.url.JUnitTestGURLs;
 public class DragAndDropDelegateImplUnitTest {
     /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
     private static final int WINDOW_WIDTH = 1000;
+
     private static final int WINDOW_HEIGHT = 600;
     private static final float DRAG_START_X_DP = 1.0f;
     private static final float DRAG_START_Y_DP = 1.0f;

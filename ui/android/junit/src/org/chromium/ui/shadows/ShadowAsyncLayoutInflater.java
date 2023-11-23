@@ -27,7 +27,9 @@ import org.chromium.base.ThreadUtils;
 @Implements(AsyncLayoutInflater.class)
 public class ShadowAsyncLayoutInflater {
     @Implementation
-    public void inflate(@LayoutRes int resid, @Nullable ViewGroup parent,
+    public void inflate(
+            @LayoutRes int resid,
+            @Nullable ViewGroup parent,
             @NonNull AsyncLayoutInflater.OnInflateFinishedListener callback) {
         Context context =
                 parent != null ? parent.getContext() : ContextUtils.getApplicationContext();

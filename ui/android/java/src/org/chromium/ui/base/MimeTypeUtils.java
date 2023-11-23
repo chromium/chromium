@@ -16,32 +16,21 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Utility methods for determining and working with mime types.
- */
+/** Utility methods for determining and working with mime types. */
 public class MimeTypeUtils {
-    /**
-     * The MIME type for a plain text objects dragged from Chrome.
-     */
+    /** The MIME type for a plain text objects dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TEXT = "chrome/text";
 
-    /**
-     * The MIME type for a link objects dragged from Chrome.
-     */
+    /** The MIME type for a link objects dragged from Chrome. */
     public static final String CHROME_MIMETYPE_LINK = "chrome/link";
 
-    /**
-     * The MIME type for text.
-     */
+    /** The MIME type for text. */
     public static final String TEXT_MIME_TYPE = "text/plain";
-    /**
-     * The MIME type for an image.
-     */
+
+    /** The MIME type for an image. */
     public static final String IMAGE_MIME_TYPE = "image/*";
 
-    /**
-     * A set of known mime types.
-     */
+    /** A set of known mime types. */
     // Note: these values must match the AndroidUtilsMimeTypes enum in enums.xml.
     // Only add new values at the end, right before NUM_ENTRIES. We depend on these specific
     // values in UMA histograms.
@@ -65,8 +54,7 @@ public class MimeTypeUtils {
      */
     public static @Type int getMimeTypeForUrl(GURL url) {
         String extension = MimeTypeMap.getFileExtensionFromUrl(url.getSpec());
-        @Type
-        int mimeType = Type.UNKNOWN;
+        @Type int mimeType = Type.UNKNOWN;
         if (extension != null) {
             String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
             if (type != null) {

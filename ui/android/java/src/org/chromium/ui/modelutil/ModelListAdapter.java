@@ -44,28 +44,32 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
 
     public ModelListAdapter(ModelList data) {
         mModelList = data;
-        mListObserver = new ListObserver<Void>() {
-            @Override
-            public void onItemRangeInserted(ListObservable source, int index, int count) {
-                notifyDataSetChanged();
-            }
+        mListObserver =
+                new ListObserver<Void>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        notifyDataSetChanged();
+                    }
 
-            @Override
-            public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                notifyDataSetChanged();
-            }
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        notifyDataSetChanged();
+                    }
 
-            @Override
-            public void onItemRangeChanged(
-                    ListObservable<Void> source, int index, int count, @Nullable Void payload) {
-                notifyDataSetChanged();
-            }
+                    @Override
+                    public void onItemRangeChanged(
+                            ListObservable<Void> source,
+                            int index,
+                            int count,
+                            @Nullable Void payload) {
+                        notifyDataSetChanged();
+                    }
 
-            @Override
-            public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
-                notifyDataSetChanged();
-            }
-        };
+                    @Override
+                    public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
+                        notifyDataSetChanged();
+                    }
+                };
         mModelList.addObserver(mListObserver);
     }
 
@@ -116,7 +120,8 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
     protected boolean canReuseView(View view, int desiredType) {
         // Check if view type changed. If not, we can re-use this view as is without any
         // modifications.
-        return view != null && view.getTag(R.id.view_type) != null
+        return view != null
+                && view.getTag(R.id.view_type) != null
                 && (int) view.getTag(R.id.view_type) == desiredType;
     }
 
@@ -162,9 +167,10 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
 
         // 3. Attach a PropertyModelChangeProcessor and PropertyModel to the view (for #1/2 above
         //    when re-using a view).
-        convertView.setTag(R.id.view_mcp,
+        convertView.setTag(
+                R.id.view_mcp,
                 PropertyModelChangeProcessor.create(
-                        model, convertView, binder, /* performInitialBind = */ false));
+                        model, convertView, binder, /* performInitialBind= */ false));
         convertView.setTag(R.id.view_model, model);
 
         // 4. Bind properties to the convertView.
@@ -186,7 +192,10 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
      * @param binder The ViewBinder that will bind model properties to {@code view}.
      */
     @VisibleForTesting
-    static void bindNewModel(PropertyModel newModel, @Nullable PropertyModel oldModel, View view,
+    static void bindNewModel(
+            PropertyModel newModel,
+            @Nullable PropertyModel oldModel,
+            View view,
             PropertyModelChangeProcessor.ViewBinder binder) {
         Collection<PropertyKey> setProperties = newModel.getAllSetProperties();
         for (PropertyKey key : newModel.getAllProperties()) {

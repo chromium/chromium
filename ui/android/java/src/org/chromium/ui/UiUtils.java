@@ -70,6 +70,7 @@ public class UiUtils {
      * version Android did.
      */
     private static final Map<String, Integer> sAndroidUiThemeBlocklist = new HashMap<>();
+
     static {
         // HTC doesn't respect theming flags on activity restart until Android O; this affects both
         // the system nav and status bar. More info at https://crbug.com/831737.
@@ -79,11 +80,8 @@ public class UiUtils {
     /** Whether theming the Android system UI has been disabled. */
     private static Boolean sSystemUiThemingDisabled;
 
-    /**
-     * Guards this class from being instantiated.
-     */
-    private UiUtils() {
-    }
+    /** Guards this class from being instantiated. */
+    private UiUtils() {}
 
     /**
      * Gets the set of locales supported by the current enabled Input Methods.
@@ -197,8 +195,8 @@ public class UiUtils {
                 }
                 Bitmap bitmap = Bitmap.createBitmap(newWidth, newHeight, bitmapConfig);
                 Canvas canvas = new Canvas(bitmap);
-                canvas.scale((float) (newWidth / originalWidth),
-                        (float) (newHeight / originalHeight));
+                canvas.scale(
+                        (float) (newWidth / originalWidth), (float) (newHeight / originalHeight));
                 currentView.draw(canvas);
                 screenshot = bitmap;
             }
@@ -243,9 +241,11 @@ public class UiUtils {
             } else {
                 File externalDataDir =
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                path = new File(externalDataDir.getAbsolutePath()
-                                + File.separator
-                                + EXTERNAL_IMAGE_FILE_PATH);
+                path =
+                        new File(
+                                externalDataDir.getAbsolutePath()
+                                        + File.separator
+                                        + EXTERNAL_IMAGE_FILE_PATH);
                 if (!path.exists() && !path.mkdirs()) {
                     path = externalDataDir;
                 }
@@ -294,8 +294,10 @@ public class UiUtils {
     public static int computeMaxWidthOfListAdapterItems(ListAdapter adapter, ViewGroup parentView) {
         final int widthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         final int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-        AbsListView.LayoutParams params = new AbsListView.LayoutParams(
-                AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT);
+        AbsListView.LayoutParams params =
+                new AbsListView.LayoutParams(
+                        AbsListView.LayoutParams.WRAP_CONTENT,
+                        AbsListView.LayoutParams.WRAP_CONTENT);
 
         int maxWidth = 0;
         View[] itemViews = new View[adapter.getViewTypeCount()];
@@ -349,8 +351,7 @@ public class UiUtils {
             Context context, @Nullable TypedArray attrs, @StyleableRes int attrId) {
         if (attrs == null) return null;
 
-        @DrawableRes
-        int resId = attrs.getResourceId(attrId, -1);
+        @DrawableRes int resId = attrs.getResourceId(attrId, -1);
         if (resId == -1) return null;
         return AppCompatResources.getDrawable(context, resId);
     }
@@ -390,8 +391,10 @@ public class UiUtils {
         if (sSystemUiThemingDisabled == null) {
             sSystemUiThemingDisabled = false;
             if (sAndroidUiThemeBlocklist.containsKey(Build.MANUFACTURER.toLowerCase(Locale.US))) {
-                sSystemUiThemingDisabled = Build.VERSION.SDK_INT
-                        < sAndroidUiThemeBlocklist.get(Build.MANUFACTURER.toLowerCase(Locale.US));
+                sSystemUiThemingDisabled =
+                        Build.VERSION.SDK_INT
+                                < sAndroidUiThemeBlocklist.get(
+                                        Build.MANUFACTURER.toLowerCase(Locale.US));
             }
         }
         return sSystemUiThemingDisabled;

@@ -39,9 +39,15 @@ import androidx.annotation.VisibleForTesting;
  * </pre>
  */
 public class DragEventDispatchHelper implements OnDragListener {
-    static final int[] ALL_DRAG_ACTIONS = new int[] {DragEvent.ACTION_DRAG_STARTED,
-            DragEvent.ACTION_DRAG_LOCATION, DragEvent.ACTION_DROP, DragEvent.ACTION_DRAG_ENDED,
-            DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_EXITED};
+    static final int[] ALL_DRAG_ACTIONS =
+            new int[] {
+                DragEvent.ACTION_DRAG_STARTED,
+                DragEvent.ACTION_DRAG_LOCATION,
+                DragEvent.ACTION_DROP,
+                DragEvent.ACTION_DRAG_ENDED,
+                DragEvent.ACTION_DRAG_ENTERED,
+                DragEvent.ACTION_DRAG_EXITED
+            };
 
     /**
      * Interface indicating this view accept drag events that dispatches from the other views.
@@ -103,15 +109,14 @@ public class DragEventDispatchHelper implements OnDragListener {
         for (int action : ALL_DRAG_ACTIONS) {
             // Do no notify DRAG_STARTED or DRAG_ENDED since Android will dispatch such drag event
             // to all views in the current hierarchy.
-            boolean supported = (action != DragEvent.ACTION_DRAG_STARTED
-                    && action != DragEvent.ACTION_DRAG_ENDED);
+            boolean supported =
+                    (action != DragEvent.ACTION_DRAG_STARTED
+                            && action != DragEvent.ACTION_DRAG_ENDED);
             markActionSupported(action, supported);
         }
     }
 
-    /**
-     * Stop dispatching drag events to the destination.
-     */
+    /** Stop dispatching drag events to the destination. */
     public void stop() {
         mSourceView.setOnDragListener(null);
     }
@@ -122,8 +127,10 @@ public class DragEventDispatchHelper implements OnDragListener {
         boolean isDragStart = event.getAction() == DragEvent.ACTION_DRAG_STARTED;
 
         View destinationView = mDestinationView.view();
-        if (destinationView == null || !destinationView.isEnabled()
-                || !destinationView.isAttachedToWindow() || !isActionSupported(event.getAction())) {
+        if (destinationView == null
+                || !destinationView.isEnabled()
+                || !destinationView.isAttachedToWindow()
+                || !isActionSupported(event.getAction())) {
             return isDragStart;
         }
 

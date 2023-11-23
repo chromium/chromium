@@ -4,9 +4,7 @@
 
 package org.chromium.ui.resources;
 
-/**
- * A class responsible for loading {@link Resource}s for the {@link ResourceManager}.
- */
+/** A class responsible for loading {@link Resource}s for the {@link ResourceManager}. */
 public abstract class ResourceLoader {
     /**
      * A callback that specifies when a {@link Resource} has been loaded and can be exposed to the
