@@ -129,9 +129,9 @@ ClientSession::~ClientSession() {
 void ClientSession::NotifyClientResolution(
     const protocol::ClientResolution& resolution) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(resolution.dips_width() >= 0 && resolution.dips_height() >= 0);
-  VLOG(1) << "Received ClientResolution (dips_width=" << resolution.dips_width()
-          << ", dips_height=" << resolution.dips_height()
+  DCHECK(resolution.width_pixels() >= 0 && resolution.height_pixels() >= 0);
+  VLOG(1) << "Received ClientResolution (width=" << resolution.width_pixels()
+          << ", height=" << resolution.height_pixels()
           << ", x_dpi=" << resolution.x_dpi()
           << ", y_dpi=" << resolution.y_dpi() << ")";
 
@@ -139,8 +139,8 @@ void ClientSession::NotifyClientResolution(
     return;
   }
 
-  webrtc::DesktopSize client_size(resolution.dips_width(),
-                                  resolution.dips_height());
+  webrtc::DesktopSize client_size(resolution.width_pixels(),
+                                  resolution.height_pixels());
   if (connection_->session()->config().protocol() ==
       protocol::SessionConfig::Protocol::WEBRTC) {
     // When using WebRTC round down the dimensions to multiple of 2. Otherwise

@@ -112,8 +112,8 @@ void HostControlDispatcher::OnIncomingMessage(
     clipboard_stub_->InjectClipboardEvent(message->clipboard_event());
   } else if (message->has_client_resolution()) {
     const ClientResolution& resolution = message->client_resolution();
-    if ((resolution.has_dips_width() && resolution.dips_width() <= 0) ||
-        (resolution.has_dips_height() && resolution.dips_height() <= 0)) {
+    if ((resolution.has_width_pixels() && resolution.width_pixels() <= 0) ||
+        (resolution.has_height_pixels() && resolution.height_pixels() <= 0)) {
       LOG(ERROR) << "Received invalid ClientResolution message.";
       return;
     }

@@ -324,10 +324,10 @@ fetchSecretWithPairingSupported:(BOOL)pairingSupported
                << ":" << message;
 }
 
-- (void)setHostResolution:(CGSize)dipsResolution scale:(int)scale {
+- (void)setHostResolution:(CGSize)resolutionPixels scale:(int)scale {
   if (_session) {
-    _session->SendClientResolution(dipsResolution.width, dipsResolution.height,
-                                   scale);
+    _session->SendClientResolution(resolutionPixels.width,
+                                   resolutionPixels.height, scale);
   }
 }
 
