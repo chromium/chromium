@@ -75,6 +75,18 @@ const char kGoogleServicesLastSyncingUsername[] =
 const char kGoogleServicesSigninScopedDeviceId[] =
     "google.services.signin_scoped_device_id";
 
+// A string indicating the Gaia ID (as in `kGoogleServicesAccountId`) of a
+// user who was previously syncing (had `kGoogleServicesConsentedToSync` set to
+// true), and was migrated to the signed-in non-syncing state. See feature
+// `kMigrateSyncingUserToSignedIn`.
+const char kGoogleServicesSyncingGaiaIdMigratedToSignedIn[] =
+    "google.services.syncing_gaia_id_migrated_to_signed_in";
+
+// Like `kGoogleServicesSyncingAccountIdMigratedToSignedIn` but for the username
+// instead of the account ID.
+const char kGoogleServicesSyncingUsernameMigratedToSignedIn[] =
+    "google.services.syncing_username_migrated_to_signed_in";
+
 // Local state pref containing a string regex that restricts which accounts
 // can be used to log in to chrome (e.g. "*@google.com"). If missing or blank,
 // all accounts are allowed (no restrictions).

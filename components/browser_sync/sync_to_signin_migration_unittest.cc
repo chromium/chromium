@@ -14,6 +14,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
@@ -48,6 +49,10 @@ class SyncToSigninMigrationTestBase {
                             sync_service_.GetAccountInfo().gaia);
     pref_service_.SetBoolean(prefs::kGoogleServicesConsentedToSync,
                              sync_service_.HasSyncConsent());
+    pref_service_.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
+                            sync_service_.GetAccountInfo().gaia);
+    pref_service_.SetString(prefs::kGoogleServicesLastSyncingUsername,
+                            sync_service_.GetAccountInfo().email);
 
     // Populate sync prefs. The TestSyncService doesn't write these, so they
     // have to be set manually here.
@@ -78,6 +83,184 @@ class SyncToSigninMigrationTestBase {
   std::unique_ptr<syncer::SyncPrefs> sync_prefs_;
   syncer::TestSyncService sync_service_;
 };
+
+class SyncToSigninMigrationTest : public SyncToSigninMigrationTestBase,
+                                  public testing::Test {
+ public:
+  SyncToSigninMigrationTest()
+      : SyncToSigninMigrationTestBase(
+            /*migration_feature_enabled=*/true) {}
+};
+
+TEST_F(SyncToSigninMigrationTest, SyncActive) {
+  // Sync is active.
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  // Run the migration. This should change the user to be non-syncing.
+  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  // The user should still be signed in.
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  // But not syncing anymore.
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  // The fact that the user was migrated should be recorded in prefs.
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
+            gaia_id);
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
+            email);
+}
+
+TEST_F(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
+  // Everything is active.
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  // Save the Sync configuration (enabled data types etc) to prefs, but not the
+  // migration-specific status prefs. This simulates the case of an old client
+  // which has never written those prefs.
+  RecordStateToPrefs(/*include_status_recorder=*/false);
+
+  // Take a copy of all current pref values, to verify that the migration
+  // doesn't modify any of them.
+  const base::Value::Dict all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  // Trigger the migration - it should NOT actually run in this state.
+  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  // Since the migration didn't actually run, the prefs should be unmodified.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+}
+
+TEST_F(SyncToSigninMigrationTest, SyncTransport) {
+  // There's no Sync consent, but otherwise everything is active (running in
+  // transport mode).
+  sync_service_.SetHasSyncConsent(false);
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  // Take a copy of all current pref values, to verify that the migration
+  // doesn't modify any of them.
+  const base::Value::Dict all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  // Trigger the migration - it should NOT actually run in this state.
+  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  // Since the migration didn't actually run, the prefs should be unmodified.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+}
+
+TEST_F(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
+  // The user is signed in and opted in to Sync, but Sync is disabled via
+  // enterprise policy.
+  sync_service_.SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  // Run the migration. This should change the user to be non-syncing (even
+  // though Sync wasn't actually active).
+  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  // The user should still be signed in.
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  // But not syncing anymore.
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  // The fact that the user was migrated should be recorded in prefs.
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
+            gaia_id);
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
+            email);
+}
+
+TEST_F(SyncToSigninMigrationTest, SyncPaused) {
+  // Sync-the-feature is enabled, but in the "paused" state due to a persistent
+  // auth error.
+  sync_service_.SetPersistentAuthError();
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().Empty());
+
+  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  // Run the migration. This should change the user to be non-syncing (even
+  // though Sync wasn't actually active).
+  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  // The user should still be signed in.
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  // But not syncing anymore.
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  // The fact that the user was migrated should be recorded in prefs.
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
+            gaia_id);
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
+            email);
+}
+
+TEST_F(SyncToSigninMigrationTest, SyncInitializing) {
+  // The user is signed in and opted in to Sync, but Sync is still initializing.
+  sync_service_.SetTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  // Take a copy of all current pref values, to verify that the migration
+  // doesn't modify any of them.
+  const base::Value::Dict all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  // Trigger the migration - it should NOT actually run in this state.
+  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  // Since the migration didn't actually run, the prefs should be unmodified.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+}
 
 // Fixture for tests covering migration metrics. The test param determines
 // whether the feature flag is enabled or not.
