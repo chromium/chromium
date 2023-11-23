@@ -46,6 +46,11 @@ void AidaClient::DoConversation(
     return;
   }
   auto* identity_manager = IdentityManagerFactory::GetForProfile(&*profile_);
+  if (!identity_manager) {
+    std::move(callback).Run(
+        R"([{"error": "IdentityManager is not available"}])");
+    return;
+  }
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
