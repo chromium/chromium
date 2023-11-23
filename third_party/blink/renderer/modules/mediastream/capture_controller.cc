@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -96,15 +97,17 @@ ScriptPromise CaptureController::sendWheel(CapturedWheelAction* action) {
 }
 
 int CaptureController::getMinZoomLevel() {
-  // TODO(crbug.com/1466247): Implement.
-  NOTIMPLEMENTED();
-  return 0;
+  // We expect `100 * kMinimumPageZoomFactor` to be an integer. But if it's not,
+  // over-reporting the minimum is preferable, as it would mean the application
+  // still asks to set zoom levels which aren't below the minimum.
+  return static_cast<int>(std::ceil(100 * kMinimumPageZoomFactor));
 }
 
 int CaptureController::getMaxZoomLevel() {
-  // TODO(crbug.com/1466247): Implement.
-  NOTIMPLEMENTED();
-  return 0;
+  // We expect `100 * kMaximumPageZoomFactor` to be an integer. But if it's not,
+  // under-reporting the maximum is preferable, as it would mean the application
+  // still asks to set zoom levels which aren't above the maximum.
+  return static_cast<int>(std::floor(100 * kMaximumPageZoomFactor));
 }
 
 ScriptPromise CaptureController::getZoomLevel() {
