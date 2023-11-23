@@ -157,22 +157,6 @@
       'DevTools Linux (chromium)': 'release_trybot_blink_do_typecheck',
     },
 
-    'chromium.fuchsia': {
-      'Deterministic Fuchsia (dbg)': 'debug_bot_fuchsia_reclient',
-      'fuchsia-arm64-cast-receiver-rel': 'release_bot_fuchsia_arm64_cast_receiver_reclient',
-      'fuchsia-arm64-rel': 'release_bot_fuchsia_arm64_reclient',
-      'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver_reclient',
-      'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
-      'fuchsia-x64-rel': 'release_bot_fuchsia_reclient',
-    },
-
-    'chromium.fuchsia.fyi': {
-      'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64_reclient',
-      'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia_reclient',
-      'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
-      'fuchsia-x64-workstation': 'release_bot_fuchsia_chrome_reclient',
-    },
-
     'chromium.fyi': {
       'Comparison Android (reclient)': {
         'build1': 'android_webview_google_debug_static_bot_arm64_reclient',
@@ -739,23 +723,7 @@
     },
 
     'tryserver.chromium.fuchsia': {
-      'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver_reclient',
-      'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64_reclient',
-      'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64_reclient',
-      'fuchsia-arm64-rel-orchestrator': 'release_trybot_fuchsia_arm64_reclient',
-      'fuchsia-binary-size': 'release_fuchsia_arm64_binary_size_reclient',
-      'fuchsia-binary-size-siso': 'release_fuchsia_arm64_binary_size_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
-      'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient_use_dummy_lastchange',
-      'fuchsia-deterministic-dbg': 'debug_bot_fuchsia_reclient',
-      'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64_reclient',
-      'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia_reclient',
-      'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
-      'fuchsia-fyi-x64-dbg-persistent-emulator': 'debug_bot_fuchsia_reclient',
-      'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver_reclient',
-      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_chrome_reclient',
-      'fuchsia-x64-rel': 'release_trybot_fuchsia_reclient',
-      'fuchsia-x64-workstation': 'release_trybot_fuchsia_chrome',
     },
 
     'tryserver.chromium.linux': {
@@ -1161,10 +1129,6 @@
       'asan', 'dcheck_always_on', 'disable_nacl', 'release_bot_reclient',
     ],
 
-    'asan_lsan_bot_fuchsia_reclient': [
-      'asan', 'lsan', 'release_bot_reclient', 'fuchsia',
-    ],
-
     'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient': [
       'asan', 'lsan', 'chromeos', 'release_trybot_minimal_symbols_reclient',
     ],
@@ -1568,22 +1532,6 @@
 
     'debug_bot_enable_blink_animation_use_time_delta_reclient': [
       'debug_bot_reclient', 'enable_blink_animation_use_time_delta',
-    ],
-
-    'debug_bot_fuchsia_arm64_reclient': [
-      'debug_bot_reclient', 'fuchsia', 'fuchsia_smart_display', 'arm64', 'arm64_host',
-    ],
-
-    'debug_bot_fuchsia_compile_only_reclient': [
-      'debug_bot_reclient', 'fuchsia', 'compile_only',
-    ],
-
-    'debug_bot_fuchsia_compile_only_reclient_use_dummy_lastchange': [
-      'debug_bot_reclient', 'fuchsia', 'compile_only', 'use_dummy_lastchange',
-    ],
-
-    'debug_bot_fuchsia_reclient': [
-      'debug_bot_reclient', 'fuchsia', 'fuchsia_smart_display',
     ],
 
     'debug_bot_no_com_init_hooks_with_codecs_reclient': [
@@ -2244,26 +2192,6 @@
       'release_bot_blink', 'enable_blink_heap_verification', 'dcheck_always_on',
     ],
 
-    'release_bot_fuchsia_arm64_cast_receiver_reclient': [
-      'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
-    ],
-
-    'release_bot_fuchsia_arm64_reclient': [
-      'release_bot_reclient', 'fuchsia', 'fuchsia_smart_display', 'arm64', 'arm64_host',
-    ],
-
-    'release_bot_fuchsia_cast_receiver_reclient': [
-      'release_bot_reclient', 'fuchsia', 'cast_receiver_size_optimized',
-    ],
-
-    'release_bot_fuchsia_chrome_reclient': [
-      'release_bot_reclient', 'fuchsia', 'fuchsia_chrome'
-    ],
-
-    'release_bot_fuchsia_reclient': [
-      'release_bot_reclient', 'fuchsia', 'fuchsia_smart_display'
-    ],
-
     'release_bot_fuchsia_reclient_with_blink_symbol': [
       'release_bot_reclient', 'fuchsia', 'blink_symbol', 'minimal_symbols',
     ],
@@ -2316,10 +2244,6 @@
       'release_bot_reclient', 'x86', 'minimal_symbols',
     ],
 
-    'release_fuchsia_arm64_binary_size_reclient': [
-      'release', 'official_optimize_reclient', 'fuchsia', 'arm64', 'cast_receiver_size_optimized', 'use_dummy_lastchange',
-    ],
-
     'release_rust_android_arm32_reclient': [
       'release_trybot_minimal_symbols_reclient', 'enable_all_rust_features', 'android', 'arm',
     ],
@@ -2350,27 +2274,6 @@
 
     'release_trybot_enable_blink_heap_verification_reclient': [
       'release_trybot_blink', 'enable_blink_heap_verification',
-    ],
-
-    'release_trybot_fuchsia_arm64_cast_receiver_reclient': [
-      'release_trybot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
-    ],
-
-    'release_trybot_fuchsia_arm64_reclient': [
-      'release_trybot_reclient', 'fuchsia', 'arm64', 'arm64_host',
-    ],
-
-    'release_trybot_fuchsia_cast_receiver_reclient': [
-      'release_trybot_reclient', 'fuchsia', 'cast_receiver_size_optimized', 'use_clang_coverage',
-      'fuchsia_code_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
-    'release_trybot_fuchsia_chrome': [
-      'release_trybot', 'fuchsia', 'fuchsia_chrome'
-    ],
-
-    'release_trybot_fuchsia_chrome_reclient': [
-      'release_trybot_reclient', 'fuchsia', 'fuchsia_chrome'
     ],
 
     'release_trybot_fuchsia_reclient': [
@@ -2593,10 +2496,6 @@
 
     'cast_receiver': {
       'gn_args': 'enable_cast_receiver=true'
-    },
-
-    'cast_receiver_size_optimized': {
-      'args_file': '//build/config/fuchsia/size_optimized_cast_receiver_args.gn',
     },
 
     'cast_receiver_size_optimized_internal': {
@@ -2889,11 +2788,6 @@
 
     'fuchsia_include_sd_images': {
       'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/","//third_party/fuchsia-sdk/images-internal/sherlock-release/","//third_party/fuchsia-sdk/images-internal/nelson-release/"]',
-    },
-
-    'fuchsia_smart_display': {
-      'gn_args': ('enable_cast_receiver=true '
-                  'cast_streaming_enable_remoting=true'),
     },
 
     'full_symbols': {

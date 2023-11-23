@@ -1,0 +1,10 @@
+{
+  "gn_args": {
+    "is_component_build": true,
+    "is_debug": true,
+    "symbol_level": 0,
+    "target_os": "fuchsia",
+    "use_dummy_lastchange": true,
+    "use_remoteexec": true
+  }
+}

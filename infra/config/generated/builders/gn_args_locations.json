@@ -165,6 +165,19 @@
     "Dawn Win10 x86 Builder": "ci/Dawn Win10 x86 Builder/gn-args.json",
     "Dawn Win10 x86 DEPS Builder": "ci/Dawn Win10 x86 DEPS Builder/gn-args.json"
   },
+  "chromium.fuchsia": {
+    "Deterministic Fuchsia (dbg)": "ci/Deterministic Fuchsia (dbg)/gn-args.json",
+    "fuchsia-arm64-cast-receiver-rel": "ci/fuchsia-arm64-cast-receiver-rel/gn-args.json",
+    "fuchsia-arm64-rel": "ci/fuchsia-arm64-rel/gn-args.json",
+    "fuchsia-x64-cast-receiver-rel": "ci/fuchsia-x64-cast-receiver-rel/gn-args.json",
+    "fuchsia-x64-dbg": "ci/fuchsia-x64-dbg/gn-args.json",
+    "fuchsia-x64-rel": "ci/fuchsia-x64-rel/gn-args.json"
+  },
+  "chromium.fuchsia.fyi": {
+    "fuchsia-fyi-arm64-dbg": "ci/fuchsia-fyi-arm64-dbg/gn-args.json",
+    "fuchsia-fyi-x64-asan": "ci/fuchsia-fyi-x64-asan/gn-args.json",
+    "fuchsia-fyi-x64-dbg": "ci/fuchsia-fyi-x64-dbg/gn-args.json"
+  },
   "chromium.fuzz": {
     "ASAN Debug": "ci/ASAN Debug/gn-args.json",
     "ASAN Release": "ci/ASAN Release/gn-args.json",
@@ -405,6 +418,20 @@
     "linux-dawn-rel": "try/linux-dawn-rel/gn-args.json",
     "mac-dawn-rel": "try/mac-dawn-rel/gn-args.json",
     "win-dawn-rel": "try/win-dawn-rel/gn-args.json"
+  },
+  "tryserver.chromium.fuchsia": {
+    "fuchsia-arm64-cast-receiver-rel": "try/fuchsia-arm64-cast-receiver-rel/gn-args.json",
+    "fuchsia-arm64-rel": "try/fuchsia-arm64-rel/gn-args.json",
+    "fuchsia-binary-size": "try/fuchsia-binary-size/gn-args.json",
+    "fuchsia-binary-size-siso": "try/fuchsia-binary-size-siso/gn-args.json",
+    "fuchsia-compile-x64-dbg": "try/fuchsia-compile-x64-dbg/gn-args.json",
+    "fuchsia-deterministic-dbg": "try/fuchsia-deterministic-dbg/gn-args.json",
+    "fuchsia-fyi-arm64-dbg": "try/fuchsia-fyi-arm64-dbg/gn-args.json",
+    "fuchsia-fyi-x64-asan": "try/fuchsia-fyi-x64-asan/gn-args.json",
+    "fuchsia-fyi-x64-dbg": "try/fuchsia-fyi-x64-dbg/gn-args.json",
+    "fuchsia-fyi-x64-dbg-persistent-emulator": "try/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json",
+    "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json",
+    "fuchsia-x64-rel": "try/fuchsia-x64-rel/gn-args.json"
   },
   "tryserver.chromium.fuzz": {
     "linux-asan-dbg": "try/linux-asan-dbg/gn-args.json",

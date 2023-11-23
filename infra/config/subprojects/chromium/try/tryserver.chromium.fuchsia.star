@@ -7,6 +7,7 @@ load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
@@ -40,6 +41,12 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-arm64-cast-receiver-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-arm64-cast-receiver-rel",
+            "release_try_builder",
+        ],
+    ),
     main_list_view = "try",
     # This is the only bot that builds //chromecast code for Fuchsia on ARM64
     # so trigger it when changes are made.
@@ -61,6 +68,14 @@ try_.builder(
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "fuchsia",
+            "arm64_host",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -84,6 +99,17 @@ try_.builder(
     executable = "recipe:binary_size_fuchsia_trybot",
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
+    gn_args = gn_args.config(
+        configs = [
+            "release",
+            "official_optimize",
+            "reclient",
+            "fuchsia",
+            "arm64",
+            "cast_receiver_size_optimized",
+            "use_dummy_lastchange",
+        ],
+    ),
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -108,6 +134,7 @@ This builder should be removed after migrating size from Ninja to Siso. b/277863
     builderless = False,
     cores = 16,
     contact_team_email = "chrome-build-team@google.com",
+    gn_args = "try/fuchsia-binary-size",
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -133,6 +160,12 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-x64-dbg",
+            "use_dummy_lastchange",
+        ],
+    ),
     tryjob = try_.job(
         location_filters = [
             "base/fuchsia/.+",
@@ -145,11 +178,19 @@ try_.builder(
 try_.builder(
     name = "fuchsia-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia_smart_display",
+        ],
+    ),
 )
 
 try_.builder(
     name = "fuchsia-fyi-arm64-dbg",
     mirrors = ["ci/fuchsia-fyi-arm64-dbg"],
+    gn_args = "ci/fuchsia-fyi-arm64-dbg",
 )
 
 try_.builder(
@@ -157,11 +198,13 @@ try_.builder(
     mirrors = ["ci/fuchsia-fyi-x64-asan"],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     execution_timeout = 10 * time.hour,
+    gn_args = "ci/fuchsia-fyi-x64-asan",
 )
 
 try_.builder(
     name = "fuchsia-fyi-x64-dbg",
     mirrors = ["ci/fuchsia-fyi-x64-dbg"],
+    gn_args = "ci/fuchsia-fyi-x64-dbg",
 )
 
 try_.builder(
@@ -169,6 +212,7 @@ try_.builder(
     mirrors = ["ci/fuchsia-fyi-x64-dbg-persistent-emulator"],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     execution_timeout = 10 * time.hour,
+    gn_args = "ci/fuchsia-fyi-x64-dbg",
 )
 
 try_.orchestrator_builder(
@@ -184,6 +228,15 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-x64-cast-receiver-rel",
+            "release_try_builder",
+            "use_clang_coverage",
+            "fuchsia_code_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -209,6 +262,13 @@ try_.builder(
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "fuchsia",
+        ],
+    ),
     main_list_view = "try",
 )
 

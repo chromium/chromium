@@ -138,6 +138,9 @@ gn_args.config(
     args = {
         "test_host_cpu": "arm64",
     },
+    configs = [
+        "arm64",
+    ],
 )
 
 gn_args.config(
@@ -502,6 +505,24 @@ gn_args.config(
     args = {
         "target_os": "fuchsia",
     },
+)
+
+gn_args.config(
+    "fuchsia_code_coverage",
+    args = {
+        "fuchsia_code_coverage": True,
+    },
+)
+
+gn_args.config(
+    "fuchsia_smart_display",
+    args = {
+        "enable_cast_receiver": True,
+        "cast_streaming_enable_remoting": True,
+    },
+    configs = [
+        "fuchsia",
+    ],
 )
 
 gn_args.config(
