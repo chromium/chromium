@@ -193,7 +193,11 @@ public class FeatureList {
      * @return Whether the feature has a test value configured.
      */
     public static boolean hasTestFeature(String featureName) {
-        return hasTestFeatures() && sTestFeatures.mFeatureFlags.containsKey(featureName);
+        // TODO(crbug.com/1434471)): Copy into a local reference to avoid race conditions
+        // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow
+        // this mitigation to be removed.
+        TestValues testValues = sTestFeatures;
+        return testValues != null && testValues.mFeatureFlags.containsKey(featureName);
     }
 
     /**
@@ -204,8 +208,12 @@ public class FeatureList {
      * @throws IllegalArgumentException if no test value was set and default values aren't allowed.
      */
     public static Boolean getTestValueForFeature(String featureName) {
-        if (hasTestFeatures()) {
-            Boolean override = sTestFeatures.getFeatureFlagOverride(featureName);
+        // TODO(crbug.com/1434471)): Copy into a local reference to avoid race conditions
+        // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow
+        // this mitigation to be removed.
+        TestValues testValues = sTestFeatures;
+        if (testValues != null) {
+            Boolean override = testValues.getFeatureFlagOverride(featureName);
             if (override != null) {
                 return override;
             }
@@ -229,8 +237,12 @@ public class FeatureList {
      * @return The test value set for the parameter, or null if no test value has been set.
      */
     public static String getTestValueForFieldTrialParam(String featureName, String paramName) {
-        if (hasTestFeatures()) {
-            return sTestFeatures.getFieldTrialParamOverride(featureName, paramName);
+        // TODO(crbug.com/1434471)): Copy into a local reference to avoid race conditions
+        // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow
+        // this mitigation to be removed.
+        TestValues testValues = sTestFeatures;
+        if (testValues != null) {
+            return testValues.getFieldTrialParamOverride(featureName, paramName);
         }
         return null;
     }
@@ -244,8 +256,12 @@ public class FeatureList {
      */
     public static Map<String, String> getTestValuesForAllFieldTrialParamsForFeature(
             String featureName) {
-        if (hasTestFeatures()) {
-            return sTestFeatures.getAllFieldTrialParamOverridesForFeature(featureName);
+        // TODO(crbug.com/1434471)): Copy into a local reference to avoid race conditions
+        // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow
+        // this mitigation to be removed.
+        TestValues testValues = sTestFeatures;
+        if (testValues != null) {
+            return testValues.getAllFieldTrialParamOverridesForFeature(featureName);
         }
         return null;
     }
