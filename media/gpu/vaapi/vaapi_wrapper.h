@@ -376,6 +376,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // exists, it will be attached to the newly created |va_context_id_| as well.
   [[nodiscard]] virtual bool CreateContext(const gfx::Size& size);
 
+  // Returns true iff a VAContextID has been created and hasn't been destroyed.
+  bool HasContext() const;
+
   // Destroys the context identified by |va_context_id_|.
   virtual void DestroyContext();
 

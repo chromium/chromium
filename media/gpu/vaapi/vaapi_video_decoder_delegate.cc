@@ -336,6 +336,8 @@ void VaapiVideoDecoderDelegate::RecoverProtectedSession() {
   protected_session_state_ = ProtectedSessionState::kNeedsRecovery;
   hw_key_data_map_.clear();
   hw_identifier_.clear();
+  OnVAContextDestructionSoon();
+  vaapi_wrapper_->DestroyContext();
   vaapi_wrapper_->DestroyProtectedSession();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos_cdm_context_ && chromeos_cdm_context_->UsingArcCdm()) {

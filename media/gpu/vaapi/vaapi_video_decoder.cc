@@ -446,8 +446,24 @@ void VaapiVideoDecoder::HandleDecodeTask() {
       SetState(State::kWaitingForProtected);
       // If we have lost our protected HW session, it should be recoverable, so
       // indicate that we have lost our decoder state so it can be reloaded.
-      if (decoder_delegate_->HasInitiatedProtectedRecovery())
+      if (decoder_delegate_->HasInitiatedProtectedRecovery()) {
+        // The VA-API requires surfaces to outlive the contexts using them.
+        // Fortunately, if we got here, any context should have already been
+        // destroyed.
+        CHECK(!!vaapi_wrapper_);
+        CHECK(!vaapi_wrapper_->HasContext());
+        allocated_va_surfaces_.clear();
+        const gfx::Size decoder_pic_size = decoder_->GetPicSize();
+        if (decoder_pic_size.IsEmpty()) {
+          SetErrorState("|decoder_| returned an empty picture size");
+          return;
+        }
+        if (!vaapi_wrapper_->CreateContext(decoder_pic_size)) {
+          SetErrorState("failed creating VAContext");
+          return;
+        }
         waiting_cb_.Run(WaitingReason::kDecoderStateLost);
+      }
       break;
   }
 }

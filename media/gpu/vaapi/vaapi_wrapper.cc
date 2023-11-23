@@ -3240,6 +3240,10 @@ bool VaapiWrapper::VaInitialize(
   return true;
 }
 
+bool VaapiWrapper::HasContext() const {
+  return va_context_id_ != VA_INVALID_ID;
+}
+
 void VaapiWrapper::DestroyContext() {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
