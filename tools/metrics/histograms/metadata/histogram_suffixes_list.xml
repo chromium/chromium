@@ -229,20 +229,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="AndroidFeatureModuleName" separator=".">
   <suffix name="ar" label="Augmented Reality Module"/>
-  <suffix name="autofill_assistant" label="Assistant-in-Chrome Module">
-    <obsolete>
-      Deprecated in M110 since we removed the autofill_assistant component.
-    </obsolete>
-  </suffix>
   <suffix name="cablev2_authenticator" label="caBLEv2 Authenticator Module"/>
   <suffix name="chime" label="Chime Notification Module"/>
   <suffix name="chrome" label="Chrome Module"/>
   <suffix name="dev_ui" label="Developer UI Module"/>
-  <suffix name="extra_icu" label="Extra ICU Module">
-    <obsolete>
-      Deprecated in M98 since we removed the extra_icu module.
-    </obsolete>
-  </suffix>
   <suffix name="feedv2" label="Feed V2 Module"/>
   <suffix name="image_editor" label="Image Editor Module"/>
   <suffix name="read_aloud_playback" label="Read Aloud Playback Module"/>
@@ -922,25 +912,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SessionOnly" label="Session only"/>
   <suffix name="TemporaryAllowThirdParty"
       label="Third-party cookies temporarily allowed on a domain"/>
-  <affected-histogram name="ContentSettings.Exceptions.cookies">
-    <obsolete>
-      Removed in M109. See ContentSettings.RegularProfile.Exceptions.cookies
-      instead, which includes data only from regular profiles.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="ContentSettings.Exceptions.popups">
-    <obsolete>
-      Removed in M109. See ContentSettings.RegularProfile.Exceptions.popups
-      instead, which includes data only from regular profiles.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="ContentSettings.Exceptions.subresource-filter">
-    <obsolete>
-      Removed in M109. See
-      ContentSettings.RegularProfile.Exceptions.subresource-filter instead,
-      which includes data only from regular profiles.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.cookies"/>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.popups"/>
   <affected-histogram
@@ -2511,42 +2482,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="Notifications.Scheduler.NotificationLifeCycleEvent"/>
   <affected-histogram name="Notifications.Scheduler.UserAction"/>
-</histogram_suffixes>
-
-<histogram_suffixes
-    name="NQE_Accuracy_Metric_EffectiveConnectionType_ObservedIntervals"
-    separator=".">
-  <suffix name="2G" label="Observed effective connection type was 2G"/>
-  <suffix name="3G" label="Observed effective connection type was 3G"/>
-  <suffix name="4G" label="Observed effective connection type was 4G"/>
-  <suffix name="Broadband"
-      label="Observed effective connection type was Broadband"/>
-  <suffix name="Offline"
-      label="Observed effective connection type was Offline"/>
-  <suffix name="Slow2G" label="Observed effective connection type was Slow2G"/>
-  <suffix name="Unknown"
-      label="Observed effective connection type was Unknown"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NQE_Accuracy_RTT_ObservedIntervals" separator=".">
-  <suffix name="0_20"
-      label="Observed metric was between 0 and 20 (inclusive) units"/>
-  <suffix name="20_60"
-      label="Observed metric was between 20 and 60 (inclusive) units"/>
-  <suffix name="60_140"
-      label="Observed metric was between 60 and 140 (inclusive) units"/>
-  <suffix name="140_300"
-      label="Observed metric was between 140 and 300 (inclusive) units"/>
-  <suffix name="300_620"
-      label="Observed metric was between 300 and 620 (inclusive) units"/>
-  <suffix name="620_1260"
-      label="Observed metric was between 620 and 1260 (inclusive) units"/>
-  <suffix name="1260_2540"
-      label="Observed metric was between 1260 and 2540 (inclusive) units"/>
-  <suffix name="2540_5100"
-      label="Observed metric was between 2540 and 51000 (inclusive) units"/>
-  <suffix name="5100_Infinity"
-      label="Observed metric was greater than 5100 (inclusive) units"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OfflinePagesNamespace" separator=".">
@@ -4228,11 +4163,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="ChromeExtMalware" label=""/>
   <suffix name="ChromeUrlClientIncident" label=""/>
   <suffix name="IpMalware" label=""/>
-  <suffix name="UrlAccuracyTips" label="">
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
-  </suffix>
   <suffix name="UrlBilling" label=""/>
   <suffix name="UrlCsdAllowlist" label=""/>
   <suffix name="UrlCsdDownloadAllowlist" label=""/>
