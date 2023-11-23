@@ -1803,7 +1803,6 @@ targets.legacy_basic_suite(
         "interactive_ui_tests": None,
         "net_unittests": None,
         "pdf_unittests": None,
-        "ppapi_unittests": None,
         "remoting_unittests": None,
         "services_unittests": None,
         "sync_integration_tests": targets.legacy_test_config(

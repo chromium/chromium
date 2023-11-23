@@ -1515,7 +1515,6 @@
       'interactive_ui_tests': {},
       'net_unittests': {},
       'pdf_unittests': {},
-      'ppapi_unittests': {},
       'remoting_unittests': {},
       'services_unittests': {},
       'sync_integration_tests': {

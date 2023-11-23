@@ -6544,7 +6544,6 @@
           'net_unittests',
           'pdf_unittests',
           'pdfium_test',
-          'ppapi_unittests',
           'printing_unittests',
           'remoting_unittests',
           'sandbox_linux_unittests',
