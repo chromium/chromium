@@ -31,7 +31,6 @@ namespace ui {
 #if BUILDFLAG(IS_MAC)
 class ContextFactory;
 #endif
-class TouchEditingControllerFactory;
 }  // namespace ui
 
 namespace views {
@@ -195,9 +194,6 @@ class VIEWS_EXPORT ViewsDelegate {
 #endif
 
  private:
-  std::unique_ptr<ui::TouchEditingControllerFactory>
-      editing_controller_factory_;
-
 #if defined(USE_AURA)
   std::unique_ptr<TouchSelectionMenuRunnerViews> touch_selection_menu_runner_;
 #endif

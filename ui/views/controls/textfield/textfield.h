@@ -41,6 +41,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/selection_controller.h"
 #include "ui/views/selection_controller_delegate.h"
+#include "ui/views/touchui/touch_selection_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/word_lookup_client.h"
 
@@ -769,8 +770,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Is the user potentially dragging and dropping from this view?
   bool initiating_drag_ = false;
 
-  std::unique_ptr<ui::TouchEditingControllerDeprecated>
-      touch_selection_controller_;
+  std::unique_ptr<TouchSelectionController> touch_selection_controller_;
 
   SelectionController selection_controller_;
 

@@ -72,6 +72,7 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
+#include "ui/views/touchui/touch_selection_controller.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
@@ -105,6 +106,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#endif
+
+#if defined(USE_AURA)
+#include "ui/views/touchui/touch_selection_controller_impl.h"
 #endif
 
 namespace views {
@@ -2830,8 +2835,10 @@ void Textfield::CreateTouchSelectionControllerAndNotifyIt() {
     return;
 
   if (!touch_selection_controller_) {
-    touch_selection_controller_.reset(
-        ui::TouchEditingControllerDeprecated::Create(this));
+#if defined(USE_AURA)
+    touch_selection_controller_ =
+        std::make_unique<TouchSelectionControllerImpl>(this);
+#endif
   }
   if (touch_selection_controller_)
     touch_selection_controller_->SelectionChanged();

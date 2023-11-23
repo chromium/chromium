@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
+#include "ui/views/touchui/touch_selection_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -25,25 +26,23 @@ class TouchSelectionMagnifierAura;
 
 namespace views {
 
-// Touch specific implementation of TouchEditingControllerDeprecated.
 // Responsible for displaying selection handles and menu elements relevant in a
 // touch interface.
 class VIEWS_EXPORT TouchSelectionControllerImpl
-    : public ui::TouchEditingControllerDeprecated,
+    : public TouchSelectionController,
       public ui::TouchSelectionMenuClient,
       public WidgetObserver,
       public ui::EventObserver {
  public:
   class EditingHandleView;
 
-  // Use ui::TouchEditingControllerFactory::Create() instead.
   explicit TouchSelectionControllerImpl(ui::TouchEditable* client_view);
   TouchSelectionControllerImpl(const TouchSelectionControllerImpl&) = delete;
   TouchSelectionControllerImpl& operator=(const TouchSelectionControllerImpl&) =
       delete;
   ~TouchSelectionControllerImpl() override;
 
-  // ui::TouchEditingControllerDeprecated:
+  // TouchSelectionController:
   void SelectionChanged() override;
   void ToggleQuickMenu() override;
 

@@ -37,7 +37,7 @@ class TextfieldTestApi {
     return textfield_->context_menu_contents_.get();
   }
 
-  ui::TouchEditingControllerDeprecated* touch_selection_controller() const {
+  TouchSelectionController* touch_selection_controller() const {
     return textfield_->touch_selection_controller_.get();
   }
 

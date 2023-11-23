@@ -40,7 +40,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/views/views_touch_selection_controller_factory.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -75,19 +74,14 @@ namespace views {
 
 class TouchSelectionControllerImplTest : public ViewsTestBase {
  public:
-  TouchSelectionControllerImplTest()
-      : views_tsc_factory_(new ViewsTouchEditingControllerFactory) {
-    ui::TouchEditingControllerFactory::SetInstance(views_tsc_factory_.get());
-  }
+  TouchSelectionControllerImplTest() = default;
 
   TouchSelectionControllerImplTest(const TouchSelectionControllerImplTest&) =
       delete;
   TouchSelectionControllerImplTest& operator=(
       const TouchSelectionControllerImplTest&) = delete;
 
-  ~TouchSelectionControllerImplTest() override {
-    ui::TouchEditingControllerFactory::SetInstance(nullptr);
-  }
+  ~TouchSelectionControllerImplTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -139,8 +133,7 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   }
 
  protected:
-  static bool IsCursorHandleVisibleFor(
-      ui::TouchEditingControllerDeprecated* controller) {
+  static bool IsCursorHandleVisibleFor(TouchSelectionController* controller) {
     TouchSelectionControllerImpl* impl =
         static_cast<TouchSelectionControllerImpl*>(controller);
     return impl->IsCursorHandleVisible();
@@ -351,7 +344,6 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   raw_ptr<Widget> widget_ = nullptr;
 
   raw_ptr<Textfield> textfield_ = nullptr;
-  std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
 };
 
@@ -1157,9 +1149,8 @@ TEST_F(TouchSelectionControllerImplTest,
   CreateWidget();
 
   TestTouchEditable touch_editable(widget_->GetNativeView());
-  std::unique_ptr<ui::TouchEditingControllerDeprecated>
-      touch_selection_controller(
-          ui::TouchEditingControllerDeprecated::Create(&touch_editable));
+  std::unique_ptr<TouchSelectionController> touch_selection_controller =
+      std::make_unique<TouchSelectionControllerImpl>(&touch_editable);
 
   touch_editable.set_bounds(gfx::Rect(0, 0, 100, 20));
 
