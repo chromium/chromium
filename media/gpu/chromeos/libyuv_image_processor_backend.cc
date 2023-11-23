@@ -47,6 +47,9 @@ static constexpr struct {
 #define CONV(in, out, trans, result) \
   {Fourcc::in, Fourcc::out, Transform::trans, SupportResult::result}
     // Conversion.
+#if BUILDFLAG(IS_LINUX)
+    CONV(NV12, AR24, kConversion, Supported),
+#endif
     CONV(NV12, NV12, kConversion, Supported),
     CONV(YM16, NV12, kConversion, Supported),
     CONV(YM16, YU12, kConversion, Supported),
@@ -422,6 +425,12 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
           fr->GetWritableVisibleData(VideoFrame::kUVPlane)), \
       fr->stride(VideoFrame::kUVPlane)
 
+#if BUILDFLAG(IS_LINUX)
+#define ARGB_DATA(fr)                                 \
+  fr->GetWritableVisibleData(VideoFrame::kARGBPlane), \
+      fr->stride(VideoFrame::kARGBPlane)
+#endif
+
 #define LIBYUV_FUNC(func, i, o)                      \
   libyuv::func(i, o, output->visible_rect().width(), \
                output->visible_rect().height())
@@ -558,6 +567,15 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
                          Y_UV_DATA_W_10BIT(output));
     }
   }
+
+#if BUILDFLAG(IS_LINUX)
+  if (output->format() == PIXEL_FORMAT_ARGB) {
+    if (input_config_.fourcc == Fourcc(Fourcc::NV12)) {
+      return LIBYUV_FUNC(NV12ToARGB, Y_UV_DATA(input),
+                         ARGB_DATA(output));
+    }
+  }
+#endif
 
 #undef Y_U_V_DATA
 #undef Y_V_U_DATA
