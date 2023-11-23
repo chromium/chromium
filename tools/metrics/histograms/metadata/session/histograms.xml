@@ -1001,12 +1001,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SessionCrashed.Bubble" enum="SessionCrashedBubbleUserAction"
-    expires_after="M77">
-  <owner>yiyaoliu@chromium.org</owner>
-  <summary>How did the user interact with the SessionCrashed Bubble?</summary>
-</histogram>
-
 <histogram name="SessionRestore.ForegroundTabFirstPaint4" units="ms"
     expires_after="2024-04-28">
   <owner>chrisha@chromium.org</owner>

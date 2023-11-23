@@ -33,7 +33,7 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     // TODO(pbos): Set up UMA opt-in conditions instead of providing this bool.
     crash_bubble_ = SessionCrashedBubbleView::ShowBubble(
-        browser(), false, name == "SessionCrashedBubbleOfferUma");
+        browser(), name == "SessionCrashedBubbleOfferUma");
   }
 
  protected:
@@ -79,9 +79,11 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 // the bubble with the "rotate pane focus" (F6) hotkey.
 // TODO(crbug.com/1343849): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey DISABLED_CanFocusBubbleWithRotatePaneFocusHotkey
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey \
+  DISABLED_CanFocusBubbleWithRotatePaneFocusHotkey
 #else
-#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey CanFocusBubbleWithRotatePaneFocusHotkey
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey \
+  CanFocusBubbleWithRotatePaneFocusHotkey
 #endif
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
                        MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey) {

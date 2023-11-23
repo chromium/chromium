@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
@@ -1814,19 +1813,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ExitTypeService::GetInstanceForProfile(&profile_urls)
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Use HistogramTester to make sure a bubble is shown when it's not on
-  // platform Mac OS X and it's not official Chrome build.
-  //
-  // On Mac OS X, an infobar is shown to restore the previous session, which
-  // is tested by function EnsureRestoreUIWasShown.
-  //
-  // Under a Google Chrome build, it is not tested because a task is posted to
-  // the file thread before the bubble is shown. It is difficult to make sure
-  // that the histogram check runs after all threads have finished their tasks.
-  base::HistogramTester histogram_tester;
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   dummy.AppendSwitchASCII(switches::kTestType, "browser");
   StartupBrowserCreator browser_creator;
@@ -1875,12 +1861,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_TRUE(search::IsInstantNTP(tab_strip->GetWebContentsAt(0)));
   EnsureRestoreUIWasShown(tab_strip->GetWebContentsAt(0));
-
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Each profile should have one session restore bubble shown, so we should
-  // observe count 3 in bucket 0 (which represents bubble shown).
-  histogram_tester.ExpectBucketCount("SessionCrashed.Bubble", 0, 3);
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,

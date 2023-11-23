@@ -54335,18 +54335,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Warm start of ServiceManager only"/>
 </enum>
 
-<enum name="SessionCrashedBubbleUserAction">
-  <int value="0" label="The bubble was shown"/>
-  <int value="1" label="There was an error when showing the bubble."/>
-  <int value="2" label="The Restore button was clicked"/>
-  <int value="3" label="User was already opted in to UMA"/>
-  <int value="4" label="User chose to opt in to UMA"/>
-  <int value="5" label="User clicked on the help button"/>
-  <int value="6" label="User ignored or closed the bubble"/>
-  <int value="7" label="The bar with UMA opt-in option was shown."/>
-  <int value="8" label="The Startup pages button was clicked."/>
-</enum>
-
 <enum name="SessionRestoreFinishReason">
   <int value="0"
       label="SessionRestore.ForegroundTabFirstPaint4_XX successfully
