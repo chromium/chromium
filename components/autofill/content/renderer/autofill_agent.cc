@@ -311,7 +311,6 @@ AutofillAgent::AutofillAgent(
       password_generation_agent_(std::move(password_generation_agent)),
       query_node_autofill_state_(WebAutofillState::kNotFilled),
       is_popup_possibly_visible_(false),
-      is_user_gesture_required_(true),
       is_secure_context_required_(false),
       form_tracker_(render_frame),
       field_data_manager_(base::MakeRefCounted<FieldDataManager>()),

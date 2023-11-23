@@ -431,10 +431,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // messages to close the Autofill popup when it can't possibly be showing.
   bool is_popup_possibly_visible_;
 
-  // Whether or not a user gesture is required before notification of a text
-  // field change. Default to true.
-  bool is_user_gesture_required_;
-
   // Whether or not the secure context is required to query autofill suggestion.
   // Default to false.
   bool is_secure_context_required_;
