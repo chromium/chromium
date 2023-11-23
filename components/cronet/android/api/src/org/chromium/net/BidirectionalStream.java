@@ -42,26 +42,22 @@ public abstract class BidirectionalStream {
          */
         public abstract Builder addHeader(String header, String value);
 
-        /**
-         * Lowest stream priority. Passed to {@link #setPriority}.
-         */
+        /** Lowest stream priority. Passed to {@link #setPriority}. */
         public static final int STREAM_PRIORITY_IDLE = 0;
-        /**
-         * Very low stream priority. Passed to {@link #setPriority}.
-         */
+
+        /** Very low stream priority. Passed to {@link #setPriority}. */
         public static final int STREAM_PRIORITY_LOWEST = 1;
-        /**
-         * Low stream priority. Passed to {@link #setPriority}.
-         */
+
+        /** Low stream priority. Passed to {@link #setPriority}. */
         public static final int STREAM_PRIORITY_LOW = 2;
+
         /**
          * Medium stream priority. Passed to {@link #setPriority}. This is the default priority
          * given to the stream.
          */
         public static final int STREAM_PRIORITY_MEDIUM = 3;
-        /**
-         * Highest stream priority. Passed to {@link #setPriority}.
-         */
+
+        /** Highest stream priority. Passed to {@link #setPriority}. */
         public static final int STREAM_PRIORITY_HIGHEST = 4;
 
         /**
@@ -166,9 +162,7 @@ public abstract class BidirectionalStream {
         public abstract BidirectionalStream build();
     }
 
-    /**
-     * Callback class used to receive callbacks from a {@link BidirectionalStream}.
-     */
+    /** Callback class used to receive callbacks from a {@link BidirectionalStream}. */
     public abstract static class Callback {
         /**
          * Invoked when the stream is ready for reading and writing. Consumer may call {@link
@@ -208,8 +202,11 @@ public abstract class BidirectionalStream {
          *         and
          * the read side is closed.
          */
-        public abstract void onReadCompleted(BidirectionalStream stream, UrlResponseInfo info,
-                ByteBuffer buffer, boolean endOfStream);
+        public abstract void onReadCompleted(
+                BidirectionalStream stream,
+                UrlResponseInfo info,
+                ByteBuffer buffer,
+                boolean endOfStream);
 
         /**
          * Invoked when the entire ByteBuffer passed to {@link BidirectionalStream#write write()} is
@@ -225,8 +222,11 @@ public abstract class BidirectionalStream {
          * @param endOfStream the endOfStream flag that was passed to the corresponding {@link
          * BidirectionalStream#write write()}. If true, the write side is closed.
          */
-        public abstract void onWriteCompleted(BidirectionalStream stream, UrlResponseInfo info,
-                ByteBuffer buffer, boolean endOfStream);
+        public abstract void onWriteCompleted(
+                BidirectionalStream stream,
+                UrlResponseInfo info,
+                ByteBuffer buffer,
+                boolean endOfStream);
 
         /**
          * Invoked when trailers are received before closing the stream. Only invoked when server
@@ -239,7 +239,9 @@ public abstract class BidirectionalStream {
          * @param info the response information
          * @param trailers the trailers received
          */
-        public void onResponseTrailersReceived(BidirectionalStream stream, UrlResponseInfo info,
+        public void onResponseTrailersReceived(
+                BidirectionalStream stream,
+                UrlResponseInfo info,
                 UrlResponseInfo.HeaderBlock trailers) {}
 
         /**

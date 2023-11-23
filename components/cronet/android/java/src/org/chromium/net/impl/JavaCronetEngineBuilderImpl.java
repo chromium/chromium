@@ -9,9 +9,7 @@ import android.content.Context;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 
-/**
- * Implementation of {@link ICronetEngineBuilder} that builds Java-based Cronet engine.
- */
+/** Implementation of {@link ICronetEngineBuilder} that builds Java-based Cronet engine. */
 public class JavaCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     /**
      * Builder for Platform Cronet Engine.

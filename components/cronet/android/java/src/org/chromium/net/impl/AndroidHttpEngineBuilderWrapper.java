@@ -45,7 +45,8 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
 
     @Override
     public ICronetEngineBuilder setLibraryLoader(CronetEngine.Builder.LibraryLoader loader) {
-        Log.w(TAG,
+        Log.w(
+                TAG,
                 "Custom library loader isn't supported when using the platform Cronet provider."
                         + " Ignoring...");
         return this;
@@ -95,8 +96,11 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
-    public ICronetEngineBuilder addPublicKeyPins(String hostName, Set<byte[]> pinsSha256,
-            boolean includeSubdomains, Date expirationDate) {
+    public ICronetEngineBuilder addPublicKeyPins(
+            String hostName,
+            Set<byte[]> pinsSha256,
+            boolean includeSubdomains,
+            Date expirationDate) {
         mBackend.addPublicKeyPins(
                 hostName, pinsSha256, includeSubdomains, expirationDate.toInstant());
         return this;

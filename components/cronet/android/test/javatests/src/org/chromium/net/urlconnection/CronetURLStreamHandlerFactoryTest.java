@@ -78,8 +78,8 @@ public class CronetURLStreamHandlerFactoryTest {
             implementations = {CronetImplementation.AOSP_PLATFORM},
             reason =
                     "URL#setURLStreamHandlerFactory can be called at most once during JVM lifetime."
-                        + " Running against both impls through CronetTestRule would violate that."
-                        + " Instead duplicate the test targets")
+                            + " Running against both impls through CronetTestRule would violate that."
+                            + " Instead duplicate the test targets")
     public void testSetUrlStreamFactoryUsesCronetForNative() throws Exception {
         internalSetUrlStreamFactoryUsesCronet();
     }
@@ -90,8 +90,8 @@ public class CronetURLStreamHandlerFactoryTest {
             implementations = {CronetImplementation.STATICALLY_LINKED},
             reason =
                     "URL#setURLStreamHandlerFactory can be called at most once during JVM lifetime."
-                        + " Running against both impls through CronetTestRule would violate that."
-                        + " Instead duplicate the test targets")
+                            + " Running against both impls through CronetTestRule would violate that."
+                            + " Instead duplicate the test targets")
     @RequiresMinAndroidApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSetUrlStreamFactoryUsesCronetForHttpEngine() throws Exception {
         internalSetUrlStreamFactoryUsesCronet();

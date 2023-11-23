@@ -29,8 +29,9 @@ public class SampleActivityViewModel extends ViewModel {
                 fragment = new OptionsFragment();
                 break;
             default:
-                throw new IllegalArgumentException(String.format(
-                        "Fragment %d does not map to any implementation.", fragmentId));
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Fragment %d does not map to any implementation.", fragmentId));
         }
         mFragmentMap.put(fragmentId, fragment);
         return fragment;

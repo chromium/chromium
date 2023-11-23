@@ -22,8 +22,10 @@ public final class NativeTestServer {
 
     public static boolean startNativeTestServer(Context context) {
         TestFilesInstaller.installIfNeeded(context);
-        return NativeTestServerJni.get().startNativeTestServer(
-                TestFilesInstaller.getInstalledPath(context), UrlUtils.getIsolatedTestRoot());
+        return NativeTestServerJni.get()
+                .startNativeTestServer(
+                        TestFilesInstaller.getInstalledPath(context),
+                        UrlUtils.getIsolatedTestRoot());
     }
 
     public static void shutdownNativeTestServer() {
@@ -89,15 +91,25 @@ public final class NativeTestServer {
     @NativeMethods("cronet_tests")
     interface Natives {
         boolean startNativeTestServer(String filePath, String testDataDir);
+
         void shutdownNativeTestServer();
+
         String getEchoBodyURL();
+
         String getEchoHeaderURL(String header);
+
         String getEchoAllHeadersURL();
+
         String getEchoMethodURL();
+
         String getRedirectToEchoBody();
+
         String getFileURL(String filePath);
+
         String getExabyteResponseURL();
+
         String getHostPort();
+
         int getPort();
     }
 }

@@ -62,14 +62,10 @@ public interface TestSupport {
      */
     void installMockCertVerifierForTesting(ExperimentalCronetEngine.Builder builder);
 
-    /**
-     * Loads a native library that is required for testing if any required.
-     */
+    /** Loads a native library that is required for testing if any required. */
     void loadTestNativeLibrary();
 
-    /**
-     * A test server.
-     */
+    /** A test server. */
     interface TestServer {
         /**
          * Starts the server.
@@ -78,9 +74,7 @@ public interface TestSupport {
          */
         boolean start();
 
-        /**
-         * Shuts down the server.
-         */
+        /** Shuts down the server. */
         void shutdown();
 
         /**

@@ -32,7 +32,8 @@ class BidirectionalStreamCallbackWrapper implements android.net.http.Bidirection
     }
 
     @Override
-    public void onResponseHeadersReceived(android.net.http.BidirectionalStream bidirectionalStream,
+    public void onResponseHeadersReceived(
+            android.net.http.BidirectionalStream bidirectionalStream,
             android.net.http.UrlResponseInfo urlResponseInfo) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForBidirectionalStream(urlResponseInfo);
@@ -42,8 +43,10 @@ class BidirectionalStreamCallbackWrapper implements android.net.http.Bidirection
     }
 
     @Override
-    public void onReadCompleted(android.net.http.BidirectionalStream bidirectionalStream,
-            android.net.http.UrlResponseInfo urlResponseInfo, ByteBuffer byteBuffer,
+    public void onReadCompleted(
+            android.net.http.BidirectionalStream bidirectionalStream,
+            android.net.http.UrlResponseInfo urlResponseInfo,
+            ByteBuffer byteBuffer,
             boolean endOfStream) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForBidirectionalStream(urlResponseInfo);
@@ -54,8 +57,10 @@ class BidirectionalStreamCallbackWrapper implements android.net.http.Bidirection
     }
 
     @Override
-    public void onWriteCompleted(android.net.http.BidirectionalStream bidirectionalStream,
-            android.net.http.UrlResponseInfo urlResponseInfo, ByteBuffer byteBuffer,
+    public void onWriteCompleted(
+            android.net.http.BidirectionalStream bidirectionalStream,
+            android.net.http.UrlResponseInfo urlResponseInfo,
+            ByteBuffer byteBuffer,
             boolean endOfStream) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForBidirectionalStream(urlResponseInfo);
@@ -81,7 +86,8 @@ class BidirectionalStreamCallbackWrapper implements android.net.http.Bidirection
     }
 
     @Override
-    public void onSucceeded(android.net.http.BidirectionalStream bidirectionalStream,
+    public void onSucceeded(
+            android.net.http.BidirectionalStream bidirectionalStream,
             android.net.http.UrlResponseInfo urlResponseInfo) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForBidirectionalStream(urlResponseInfo);
@@ -91,18 +97,23 @@ class BidirectionalStreamCallbackWrapper implements android.net.http.Bidirection
     }
 
     @Override
-    public void onFailed(android.net.http.BidirectionalStream bidirectionalStream,
-            android.net.http.UrlResponseInfo urlResponseInfo, HttpException e) {
+    public void onFailed(
+            android.net.http.BidirectionalStream bidirectionalStream,
+            android.net.http.UrlResponseInfo urlResponseInfo,
+            HttpException e) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForBidirectionalStream(urlResponseInfo);
         AndroidBidirectionalStreamWrapper specializedStream =
                 new AndroidBidirectionalStreamWrapper(bidirectionalStream);
-        mBackend.onFailed(specializedStream, specializedResponseInfo,
+        mBackend.onFailed(
+                specializedStream,
+                specializedResponseInfo,
                 CronetExceptionTranslationUtils.translateCheckedAndroidCronetException(e));
     }
 
     @Override
-    public void onCanceled(@NonNull android.net.http.BidirectionalStream bidirectionalStream,
+    public void onCanceled(
+            @NonNull android.net.http.BidirectionalStream bidirectionalStream,
             @Nullable android.net.http.UrlResponseInfo urlResponseInfo) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForBidirectionalStream(urlResponseInfo);

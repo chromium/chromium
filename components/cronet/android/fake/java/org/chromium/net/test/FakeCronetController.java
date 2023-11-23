@@ -77,9 +77,7 @@ public final class FakeCronetController {
         mResponseMatchers.remove(matcher);
     }
 
-    /**
-     * Removes all {@link ResponseMatcher}s from the list of {@link ResponseMatcher}s.
-     */
+    /** Removes all {@link ResponseMatcher}s from the list of {@link ResponseMatcher}s. */
     public void clearResponseMatchers() {
         mResponseMatchers.clear();
     }
@@ -92,10 +90,11 @@ public final class FakeCronetController {
      * @param url              the URL that will trigger the redirect
      */
     public void addRedirectResponse(String redirectLocation, String url) {
-        FakeUrlResponse redirectResponse = new FakeUrlResponse.Builder()
-                                                   .setHttpStatusCode(302)
-                                                   .addHeader("location", redirectLocation)
-                                                   .build();
+        FakeUrlResponse redirectResponse =
+                new FakeUrlResponse.Builder()
+                        .setHttpStatusCode(302)
+                        .addHeader("location", redirectLocation)
+                        .build();
         addResponseForUrl(redirectResponse, url);
     }
 

@@ -8,12 +8,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.ConditionVariable;
 
-import org.chromium.base.Log;
-import org.chromium.net.test.util.CertTestUtil;
-
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,9 +30,13 @@ import io.netty.handler.ssl.OpenSslServerContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SupportedCipherSuiteFilter;
 
-/**
- * Wrapper class to start a HTTP/2 test server.
- */
+import org.chromium.base.Log;
+import org.chromium.net.test.util.CertTestUtil;
+
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
+
+/** Wrapper class to start a HTTP/2 test server. */
 public final class Http2TestServer {
     private static Channel sServerChannel;
     private static final String TAG = Http2TestServer.class.getSimpleName();
@@ -113,44 +111,32 @@ public final class Http2TestServer {
         return getServerUrl() + Http2TestHandler.HANGING_REQUEST_PATH;
     }
 
-    /**
-     * @return url of the server resource which will echo every received stream data frame.
-     */
+    /** @return url of the server resource which will echo every received stream data frame. */
     public static String getEchoStreamUrl() {
         return getServerUrl() + Http2TestHandler.ECHO_STREAM_PATH;
     }
 
-    /**
-     * @return url of the server resource which will echo request headers as response trailers.
-     */
+    /** @return url of the server resource which will echo request headers as response trailers. */
     public static String getEchoTrailersUrl() {
         return getServerUrl() + Http2TestHandler.ECHO_TRAILERS_PATH;
     }
 
-    /**
-     * @return url of a brotli-encoded server resource.
-     */
+    /** @return url of a brotli-encoded server resource. */
     public static String getServeSimpleBrotliResponse() {
         return getServerUrl() + Http2TestHandler.SERVE_SIMPLE_BROTLI_RESPONSE;
     }
 
-    /**
-     * @return url of the reporting collector
-     */
+    /** @return url of the reporting collector */
     public static String getReportingCollectorUrl() {
         return getServerUrl() + Http2TestHandler.REPORTING_COLLECTOR_PATH;
     }
 
-    /**
-     * @return url of a resource that includes Reporting and NEL policy headers in its response
-     */
+    /** @return url of a resource that includes Reporting and NEL policy headers in its response */
     public static String getSuccessWithNELHeadersUrl() {
         return getServerUrl() + Http2TestHandler.SUCCESS_WITH_NEL_HEADERS_PATH;
     }
 
-    /**
-     * @return url of a resource that sends response headers with the same key
-     */
+    /** @return url of a resource that sends response headers with the same key */
     public static String getCombinedHeadersUrl() {
         return getServerUrl() + Http2TestHandler.COMBINED_HEADERS_PATH;
     }
@@ -167,12 +153,18 @@ public final class Http2TestServer {
                 context, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, hangingUrlLatch);
     }
 
-    private static boolean startHttp2TestServer(Context context, String certFileName,
-            String keyFileName, CountDownLatch hangingUrlLatch) throws Exception {
+    private static boolean startHttp2TestServer(
+            Context context,
+            String certFileName,
+            String keyFileName,
+            CountDownLatch hangingUrlLatch)
+            throws Exception {
         sReportingCollector = new ReportingCollector();
         Http2TestServerRunnable http2TestServerRunnable =
-                new Http2TestServerRunnable(new File(CertTestUtil.CERTS_DIRECTORY + certFileName),
-                        new File(CertTestUtil.CERTS_DIRECTORY + keyFileName), hangingUrlLatch);
+                new Http2TestServerRunnable(
+                        new File(CertTestUtil.CERTS_DIRECTORY + certFileName),
+                        new File(CertTestUtil.CERTS_DIRECTORY + keyFileName),
+                        hangingUrlLatch);
         new Thread(http2TestServerRunnable).start();
         http2TestServerRunnable.blockUntilStarted();
         return true;
@@ -187,17 +179,27 @@ public final class Http2TestServer {
 
         Http2TestServerRunnable(File certFile, File keyFile, CountDownLatch hangingUrlLatch)
                 throws Exception {
-            ApplicationProtocolConfig applicationProtocolConfig = new ApplicationProtocolConfig(
-                    Protocol.ALPN, SelectorFailureBehavior.NO_ADVERTISE,
-                    SelectedListenerFailureBehavior.ACCEPT, ApplicationProtocolNames.HTTP_2);
+            ApplicationProtocolConfig applicationProtocolConfig =
+                    new ApplicationProtocolConfig(
+                            Protocol.ALPN, SelectorFailureBehavior.NO_ADVERTISE,
+                            SelectedListenerFailureBehavior.ACCEPT,
+                                    ApplicationProtocolNames.HTTP_2);
 
             // Don't make netty use java.security.KeyStore.getInstance("JKS") as it doesn't
             // exist.  Just avoid a KeyManagerFactory as it's unnecessary for our testing.
             System.setProperty("io.netty.handler.ssl.openssl.useKeyManagerFactory", "false");
 
-            mSslCtx = new OpenSslServerContext(certFile, keyFile, null, null,
-                    Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE,
-                    applicationProtocolConfig, 0, 0);
+            mSslCtx =
+                    new OpenSslServerContext(
+                            certFile,
+                            keyFile,
+                            null,
+                            null,
+                            Http2SecurityUtil.CIPHERS,
+                            SupportedCipherSuiteFilter.INSTANCE,
+                            applicationProtocolConfig,
+                            0,
+                            0);
 
             mHangingUrlLatch = hangingUrlLatch;
         }
@@ -235,16 +237,17 @@ public final class Http2TestServer {
                     Log.e(TAG, "Netty server failed to start", e);
                     // Retry once if we hit https://github.com/netty/netty/issues/2616 before the
                     // server starts.
-                    retry = !retry && sServerChannel == null
-                            && e.toString().contains("java.nio.channels.ClosedChannelException");
+                    retry =
+                            !retry
+                                    && sServerChannel == null
+                                    && e.toString()
+                                            .contains("java.nio.channels.ClosedChannelException");
                 }
             } while (retry);
         }
     }
 
-    /**
-     * Sets up the Netty pipeline for the test server.
-     */
+    /** Sets up the Netty pipeline for the test server. */
     private static class Http2ServerInitializer extends ChannelInitializer<SocketChannel> {
         private final SslContext mSslCtx;
         private final CountDownLatch mHangingUrlLatch;
@@ -256,8 +259,10 @@ public final class Http2TestServer {
 
         @Override
         public void initChannel(SocketChannel ch) {
-            ch.pipeline().addLast(
-                    mSslCtx.newHandler(ch.alloc()), new Http2NegotiationHandler(mHangingUrlLatch));
+            ch.pipeline()
+                    .addLast(
+                            mSslCtx.newHandler(ch.alloc()),
+                            new Http2NegotiationHandler(mHangingUrlLatch));
         }
     }
 
@@ -273,11 +278,13 @@ public final class Http2TestServer {
         protected void configurePipeline(ChannelHandlerContext ctx, String protocol)
                 throws Exception {
             if (ApplicationProtocolNames.HTTP_2.equals(protocol)) {
-                ctx.pipeline().addLast(new Http2TestHandler.Builder()
-                                               .setReportingCollector(sReportingCollector)
-                                               .setServerUrl(getServerUrl())
-                                               .setHangingUrlLatch(mHangingUrlLatch)
-                                               .build());
+                ctx.pipeline()
+                        .addLast(
+                                new Http2TestHandler.Builder()
+                                        .setReportingCollector(sReportingCollector)
+                                        .setServerUrl(getServerUrl())
+                                        .setHangingUrlLatch(mHangingUrlLatch)
+                                        .build());
                 return;
             }
 

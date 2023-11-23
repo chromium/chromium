@@ -11,9 +11,7 @@ import org.chromium.net.UrlRequest;
 import java.util.List;
 import java.util.Map;
 
-/**
- * An interface for matching {@link UrlRequest}s to {@link FakeUrlResponse}s.
- */
+/** An interface for matching {@link UrlRequest}s to {@link FakeUrlResponse}s. */
 public interface ResponseMatcher {
     /**
      * Optionally gets a response based on the request parameters.

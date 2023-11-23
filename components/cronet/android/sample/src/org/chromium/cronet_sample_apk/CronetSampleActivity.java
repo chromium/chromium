@@ -23,9 +23,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Activity for managing the Cronet Sample.
- */
+/** Activity for managing the Cronet Sample. */
 public class CronetSampleActivity extends FragmentActivity {
     private static final String TAG = CronetSampleActivity.class.getSimpleName();
 
@@ -41,11 +39,12 @@ public class CronetSampleActivity extends FragmentActivity {
         mFragmentIdMap.put(R.id.navigation_home, FRAGMENT_ID_HOME);
         mFragmentIdMap.put(R.id.navigation_options_ui, FRAGMENT_ID_FLAGS);
         final int childCount = mBottomNav.getChildCount();
-        View.OnClickListener switchFragmentListener = view -> {
-            assert mFragmentIdMap.containsKey(view.getId());
-            int fragmentId = mFragmentIdMap.get(view.getId());
-            switchFragment(fragmentId);
-        };
+        View.OnClickListener switchFragmentListener =
+                view -> {
+                    assert mFragmentIdMap.containsKey(view.getId());
+                    int fragmentId = mFragmentIdMap.get(view.getId());
+                    switchFragment(fragmentId);
+                };
         for (int i = 0; i < childCount; i++) {
             mBottomNav.getChildAt(i).setOnClickListener(switchFragmentListener);
         }
@@ -68,11 +67,15 @@ public class CronetSampleActivity extends FragmentActivity {
             TextView textView = (TextView) view;
 
             boolean isSelectedFragment = chosenFragmentId == fragmentId;
-            ApiCompatibilityUtils.setTextAppearance(textView,
-                    isSelectedFragment ? R.style.SelectedNavigationButton
-                                       : R.style.UnselectedNavigationButton);
-            int color = isSelectedFragment ? getResources().getColor(R.color.navigation_selected)
-                                           : getResources().getColor(R.color.navigation_unselected);
+            ApiCompatibilityUtils.setTextAppearance(
+                    textView,
+                    isSelectedFragment
+                            ? R.style.SelectedNavigationButton
+                            : R.style.UnselectedNavigationButton);
+            int color =
+                    isSelectedFragment
+                            ? getResources().getColor(R.color.navigation_selected)
+                            : getResources().getColor(R.color.navigation_unselected);
             for (Drawable drawable : textView.getCompoundDrawables()) {
                 if (drawable != null) {
                     drawable.mutate();

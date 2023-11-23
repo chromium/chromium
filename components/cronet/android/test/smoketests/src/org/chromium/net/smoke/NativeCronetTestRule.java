@@ -24,14 +24,16 @@ public class NativeCronetTestRule extends CronetSmokeTestRule {
 
     @Override
     public Statement apply(final Statement base, Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                ruleSetUp();
-                base.evaluate();
-                ruleTearDown();
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        ruleSetUp();
+                        base.evaluate();
+                        ruleTearDown();
+                    }
+                },
+                desc);
     }
 
     @Override

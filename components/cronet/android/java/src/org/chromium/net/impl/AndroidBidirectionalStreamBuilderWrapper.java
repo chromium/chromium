@@ -55,7 +55,7 @@ class AndroidBidirectionalStreamBuilderWrapper
 
     @Override
     public org.chromium.net.ExperimentalBidirectionalStream.Builder
-    delayRequestHeadersUntilFirstFlush(boolean delayRequestHeadersUntilFirstFlush) {
+            delayRequestHeadersUntilFirstFlush(boolean delayRequestHeadersUntilFirstFlush) {
         mBackend.setDelayRequestHeadersUntilFirstFlushEnabled(delayRequestHeadersUntilFirstFlush);
         return this;
     }

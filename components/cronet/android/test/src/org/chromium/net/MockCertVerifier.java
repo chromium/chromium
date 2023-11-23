@@ -25,8 +25,8 @@ public class MockCertVerifier {
      * @return a pointer to the newly created net::MockCertVerifier.
      */
     public static long createMockCertVerifier(String[] certs, boolean knownRoot) {
-        return MockCertVerifierJni.get().createMockCertVerifier(
-                certs, knownRoot, UrlUtils.getIsolatedTestRoot());
+        return MockCertVerifierJni.get()
+                .createMockCertVerifier(certs, knownRoot, UrlUtils.getIsolatedTestRoot());
     }
 
     /**
@@ -41,6 +41,7 @@ public class MockCertVerifier {
     @NativeMethods("cronet_tests")
     interface Natives {
         long createMockCertVerifier(String[] certs, boolean knownRoot, String testDataDir);
+
         long createFreeForAllMockCertVerifier();
     }
 }

@@ -92,14 +92,16 @@ class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
     @Override
     public org.chromium.net.ExperimentalBidirectionalStream.Builder newBidirectionalStreamBuilder(
             String url, org.chromium.net.BidirectionalStream.Callback callback, Executor executor) {
-        return new AndroidBidirectionalStreamBuilderWrapper(mBackend.newBidirectionalStreamBuilder(
-                url, executor, new BidirectionalStreamCallbackWrapper(callback)));
+        return new AndroidBidirectionalStreamBuilderWrapper(
+                mBackend.newBidirectionalStreamBuilder(
+                        url, executor, new BidirectionalStreamCallbackWrapper(callback)));
     }
 
     @Override
     public org.chromium.net.ExperimentalUrlRequest.Builder newUrlRequestBuilder(
             String url, org.chromium.net.UrlRequest.Callback callback, Executor executor) {
-        return new AndroidUrlRequestBuilderWrapper(mBackend.newUrlRequestBuilder(
-                url, executor, new UrlRequestCallbackWrapper(callback)));
+        return new AndroidUrlRequestBuilderWrapper(
+                mBackend.newUrlRequestBuilder(
+                        url, executor, new UrlRequestCallbackWrapper(callback)));
     }
 }

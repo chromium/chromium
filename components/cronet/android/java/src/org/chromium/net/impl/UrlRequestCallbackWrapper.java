@@ -29,8 +29,11 @@ class UrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback 
      *     Bar</a>
      */
     @Override
-    public void onRedirectReceived(android.net.http.UrlRequest request,
-            android.net.http.UrlResponseInfo info, String newLocationUrl) throws Exception {
+    public void onRedirectReceived(
+            android.net.http.UrlRequest request,
+            android.net.http.UrlResponseInfo info,
+            String newLocationUrl)
+            throws Exception {
         CronetExceptionTranslationUtils.executeTranslatingCronetExceptions(
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
@@ -45,8 +48,9 @@ class UrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback 
     }
 
     @Override
-    public void onResponseStarted(android.net.http.UrlRequest request,
-            android.net.http.UrlResponseInfo info) throws Exception {
+    public void onResponseStarted(
+            android.net.http.UrlRequest request, android.net.http.UrlResponseInfo info)
+            throws Exception {
         CronetExceptionTranslationUtils.executeTranslatingCronetExceptions(
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
@@ -60,8 +64,11 @@ class UrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback 
     }
 
     @Override
-    public void onReadCompleted(android.net.http.UrlRequest request,
-            android.net.http.UrlResponseInfo info, ByteBuffer byteBuffer) throws Exception {
+    public void onReadCompleted(
+            android.net.http.UrlRequest request,
+            android.net.http.UrlResponseInfo info,
+            ByteBuffer byteBuffer)
+            throws Exception {
         CronetExceptionTranslationUtils.executeTranslatingCronetExceptions(
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
@@ -85,17 +92,22 @@ class UrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback 
     }
 
     @Override
-    public void onFailed(android.net.http.UrlRequest request, android.net.http.UrlResponseInfo info,
+    public void onFailed(
+            android.net.http.UrlRequest request,
+            android.net.http.UrlResponseInfo info,
             HttpException error) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
         AndroidUrlRequestWrapper specializedRequest = new AndroidUrlRequestWrapper(request);
-        mBackend.onFailed(specializedRequest, specializedResponseInfo,
+        mBackend.onFailed(
+                specializedRequest,
+                specializedResponseInfo,
                 CronetExceptionTranslationUtils.translateCheckedAndroidCronetException(error));
     }
 
     @Override
-    public void onCanceled(@NonNull android.net.http.UrlRequest request,
+    public void onCanceled(
+            @NonNull android.net.http.UrlRequest request,
             @Nullable android.net.http.UrlResponseInfo info) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);

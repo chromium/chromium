@@ -6,9 +6,7 @@ package org.chromium.net.impl;
 
 import org.chromium.net.CronetException;
 
-/**
- * Implements {@link CronetException}.
- */
+/** Implements {@link CronetException}. */
 public class CronetExceptionImpl extends CronetException {
     public CronetExceptionImpl(String message, Throwable cause) {
         super(message, cause);

@@ -42,8 +42,11 @@ public final class TestUploadDataStreamHandler {
         mNetworkThreadTestConnector = new CronetTestUtil.NetworkThreadTestConnector(mCronetEngine);
         CronetUrlRequestContext requestContext = (CronetUrlRequestContext) mCronetEngine;
         mTestUploadDataStreamHandler =
-                TestUploadDataStreamHandlerJni.get().createTestUploadDataStreamHandler(
-                        this, uploadDataStream, requestContext.getUrlRequestContextAdapter());
+                TestUploadDataStreamHandlerJni.get()
+                        .createTestUploadDataStreamHandler(
+                                this,
+                                uploadDataStream,
+                                requestContext.getUrlRequestContextAdapter());
     }
 
     public void destroyNativeObjects() {
@@ -55,9 +58,7 @@ public final class TestUploadDataStreamHandler {
         }
     }
 
-    /**
-     * Init and returns whether init completes synchronously.
-     */
+    /** Init and returns whether init completes synchronously. */
     public boolean init() {
         mData = "";
         TestUploadDataStreamHandlerJni.get().init(mTestUploadDataStreamHandler);
@@ -82,8 +83,8 @@ public final class TestUploadDataStreamHandler {
      * by the native UploadDataStream.
      */
     public void checkInitCallbackNotInvoked() {
-        TestUploadDataStreamHandlerJni.get().checkInitCallbackNotInvoked(
-                mTestUploadDataStreamHandler);
+        TestUploadDataStreamHandlerJni.get()
+                .checkInitCallbackNotInvoked(mTestUploadDataStreamHandler);
         mWaitCheckInit.block();
         mWaitCheckInit.close();
     }
@@ -93,8 +94,8 @@ public final class TestUploadDataStreamHandler {
      * by the native UploadDataStream.
      */
     public void checkReadCallbackNotInvoked() {
-        TestUploadDataStreamHandlerJni.get().checkReadCallbackNotInvoked(
-                mTestUploadDataStreamHandler);
+        TestUploadDataStreamHandlerJni.get()
+                .checkReadCallbackNotInvoked(mTestUploadDataStreamHandler);
         mWaitCheckRead.block();
         mWaitCheckRead.close();
     }

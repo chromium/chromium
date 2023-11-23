@@ -17,9 +17,7 @@ import java.util.concurrent.Executor;
  * one test file.
  */
 public class MetricsTestUtil {
-    /**
-     * Executor which runs tasks only when told to with runAllTasks().
-     */
+    /** Executor which runs tasks only when told to with runAllTasks(). */
     public static class TestExecutor implements Executor {
         private final LinkedList<Runnable> mTaskQueue = new LinkedList<Runnable>();
 
@@ -95,9 +93,7 @@ public class MetricsTestUtil {
         }
     }
 
-    /**
-     * Check that the timing metrics from net::LoadTimingInfo::ConnectTiming don't exist.
-     */
+    /** Check that the timing metrics from net::LoadTimingInfo::ConnectTiming don't exist. */
     public static void checkNoConnectTiming(RequestFinishedInfo.Metrics metrics) {
         assertThat(metrics.getDnsStart()).isNull();
         assertThat(metrics.getDnsEnd()).isNull();
@@ -107,9 +103,7 @@ public class MetricsTestUtil {
         assertThat(metrics.getConnectEnd()).isNull();
     }
 
-    /**
-     * Check that RequestFinishedInfo looks the way it should look for a normal successful request.
-     */
+    /** Check that RequestFinishedInfo looks the way it should look for a normal successful request. */
     public static void checkRequestFinishedInfo(
             RequestFinishedInfo info, String url, Date startTime, Date endTime) {
         assertWithMessage("RequestFinishedInfo.Listener must be called").that(info).isNotNull();

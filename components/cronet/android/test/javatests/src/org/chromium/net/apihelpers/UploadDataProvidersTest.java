@@ -42,8 +42,8 @@ import java.nio.ByteBuffer;
 public class UploadDataProvidersTest {
     private static final String LOREM =
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin elementum, libero"
-                + " laoreet fringilla faucibus, metus tortor vehicula ante, lacinia lorem eros vel"
-                + " sapien.";
+                    + " laoreet fringilla faucibus, metus tortor vehicula ante, lacinia lorem eros vel"
+                    + " sapien.";
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     private File mFile;
 

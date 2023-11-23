@@ -13,23 +13,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Utility class for bridging the gap between HTTP flags and the native `base::Feature` framework.
- */
+/** Utility class for bridging the gap between HTTP flags and the native `base::Feature` framework. */
 public final class BaseFeature {
-    /**
-     * HTTP flags that start with this name will be turned into base::Feature overrides.
-     */
-    @VisibleForTesting
-    public static final String FLAG_PREFIX = "ChromiumBaseFeature_";
+    /** HTTP flags that start with this name will be turned into base::Feature overrides. */
+    @VisibleForTesting public static final String FLAG_PREFIX = "ChromiumBaseFeature_";
 
     /**
      * If this delimiter is found in an HTTP flag name, the HTTP flag is assumed to refer to a
      * base::Feature param. The part before the delimiter is the base::Feature name, and the part
      * after the delimiter is the param name.
      */
-    @VisibleForTesting
-    public static final String PARAM_DELIMITER = "_PARAM_";
+    @VisibleForTesting public static final String PARAM_DELIMITER = "_PARAM_";
 
     private BaseFeature() {}
 
@@ -71,7 +65,9 @@ public final class BaseFeature {
             try {
                 applyOverride(flag.getKey(), flag.getValue(), featureStateBuilders);
             } catch (RuntimeException exception) {
-                throw new IllegalArgumentException("Could not parse HTTP flag `" + flag.getKey()
+                throw new IllegalArgumentException(
+                        "Could not parse HTTP flag `"
+                                + flag.getKey()
                                 + "` as a base::Feature override",
                         exception);
             }
@@ -86,7 +82,9 @@ public final class BaseFeature {
         return builder.build();
     }
 
-    private static void applyOverride(String flagName, ResolvedFlags.Value flagValue,
+    private static void applyOverride(
+            String flagName,
+            ResolvedFlags.Value flagValue,
             Map<String, BaseFeatureOverrides.FeatureState.Builder> featureStateBuilders) {
         ParsedFlagName parsedFlagName = parseFlagName(flagName);
         if (parsedFlagName == null) return;
@@ -107,9 +105,9 @@ public final class BaseFeature {
 
     private static final class ParsedFlagName {
         public String featureName;
-        @Nullable
-        public String paramName;
+        @Nullable public String paramName;
     }
+
     @Nullable
     private static ParsedFlagName parseFlagName(String flagName) {
         if (!flagName.startsWith(FLAG_PREFIX)) return null;
@@ -128,35 +126,44 @@ public final class BaseFeature {
         return parsed;
     }
 
-    private static void applyStateOverride(ResolvedFlags.Value value,
+    private static void applyStateOverride(
+            ResolvedFlags.Value value,
             BaseFeatureOverrides.FeatureState.Builder featureStateBuilder) {
         ResolvedFlags.Value.Type valueType = value.getType();
         if (valueType != ResolvedFlags.Value.Type.BOOL) {
-            throw new IllegalArgumentException("HTTP flag has type " + valueType
-                    + ", but only boolean flags are supported as base::Feature overrides");
+            throw new IllegalArgumentException(
+                    "HTTP flag has type "
+                            + valueType
+                            + ", but only boolean flags are supported as base::Feature overrides");
         }
         featureStateBuilder.setEnabled(value.getBoolValue());
     }
 
-    private static void applyParamOverride(String paramName, ResolvedFlags.Value value,
+    private static void applyParamOverride(
+            String paramName,
+            ResolvedFlags.Value value,
             BaseFeatureOverrides.FeatureState.Builder featureStateBuilder) {
         ResolvedFlags.Value.Type valueType = value.getType();
         ByteString rawValue;
         switch (valueType) {
             case BOOL:
-                rawValue = ByteString.copyFrom(
-                        value.getBoolValue() ? "true" : "false", StandardCharsets.UTF_8);
+                rawValue =
+                        ByteString.copyFrom(
+                                value.getBoolValue() ? "true" : "false", StandardCharsets.UTF_8);
                 break;
             case INT:
-                rawValue = ByteString.copyFrom(
-                        Long.toString(value.getIntValue(), /*radix=*/10), StandardCharsets.UTF_8);
+                rawValue =
+                        ByteString.copyFrom(
+                                Long.toString(value.getIntValue(), /* radix= */ 10),
+                                StandardCharsets.UTF_8);
                 break;
             case FLOAT:
                 // TODO: if the value is "weird" (e.g. NaN, infinities) this probably won't produce
                 // something that the Chromium feature param code can parse. As a workaround, the
                 // user can use a string-valued flag to directly feed the value to be parsed.
-                rawValue = ByteString.copyFrom(
-                        Float.toString(value.getFloatValue()), StandardCharsets.UTF_8);
+                rawValue =
+                        ByteString.copyFrom(
+                                Float.toString(value.getFloatValue()), StandardCharsets.UTF_8);
                 break;
             case STRING:
                 rawValue = ByteString.copyFrom(value.getStringValue(), StandardCharsets.UTF_8);
@@ -166,8 +173,10 @@ public final class BaseFeature {
                 break;
             default:
                 throw new UnsupportedOperationException(
-                        "Unsupported HTTP flag value type for base::Feature param `" + paramName
-                        + "`: " + valueType);
+                        "Unsupported HTTP flag value type for base::Feature param `"
+                                + paramName
+                                + "`: "
+                                + valueType);
         }
         featureStateBuilder.putParams(paramName, rawValue);
     }

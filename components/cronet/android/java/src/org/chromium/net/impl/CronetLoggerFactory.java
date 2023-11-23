@@ -13,9 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.telemetry.CronetLoggerImpl;
 
-/**
- * Takes care of instantiating the correct CronetLogger.
- */
+/** Takes care of instantiating the correct CronetLogger. */
 public final class CronetLoggerFactory {
     private static final String TAG = CronetLoggerFactory.class.getSimpleName();
     private static final int SAMPLE_RATE_PER_SECOND = 1;
@@ -34,9 +32,7 @@ public final class CronetLoggerFactory {
         return sDefaultLogger;
     }
 
-    /**
-     * @return The correct CronetLogger to be used for logging.
-     */
+    /** @return The correct CronetLogger to be used for logging. */
     public static CronetLogger createLogger(Context ctx, CronetSource source) {
         if (sTestingLogger != null) return sTestingLogger;
 
@@ -72,9 +68,7 @@ public final class CronetLoggerFactory {
             CronetLoggerFactory.setLoggerForTesting(testLogger);
         }
 
-        /**
-         * Restores CronetLoggerFactory to its original state.
-         */
+        /** Restores CronetLoggerFactory to its original state. */
         @Override
         public void close() {
             CronetLoggerFactory.setLoggerForTesting(null);

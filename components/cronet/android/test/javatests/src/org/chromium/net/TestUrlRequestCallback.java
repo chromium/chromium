@@ -74,22 +74,24 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     private static class ExecutorThreadFactory implements ThreadFactory {
         @Override
         public Thread newThread(final Runnable r) {
-            return new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    StrictMode.ThreadPolicy threadPolicy = StrictMode.getThreadPolicy();
-                    try {
-                        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                                           .detectNetwork()
-                                                           .penaltyLog()
-                                                           .penaltyDeath()
-                                                           .build());
-                        r.run();
-                    } finally {
-                        StrictMode.setThreadPolicy(threadPolicy);
-                    }
-                }
-            });
+            return new Thread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            StrictMode.ThreadPolicy threadPolicy = StrictMode.getThreadPolicy();
+                            try {
+                                StrictMode.setThreadPolicy(
+                                        new StrictMode.ThreadPolicy.Builder()
+                                                .detectNetwork()
+                                                .penaltyLog()
+                                                .penaltyDeath()
+                                                .build());
+                                r.run();
+                            } finally {
+                                StrictMode.setThreadPolicy(threadPolicy);
+                            }
+                        }
+                    });
         }
     }
 
@@ -113,21 +115,18 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         THROW_SYNC
     }
 
-    /**
-     * Set {@code mExecutorThread}.
-     */
+    /** Set {@code mExecutorThread}. */
     private void fillInExecutorThread() {
-        mExecutorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                mExecutorThread = Thread.currentThread();
-            }
-        });
+        mExecutorService.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mExecutorThread = Thread.currentThread();
+                    }
+                });
     }
 
-    /**
-     * Create a {@link TestUrlRequestCallback} with a new single-threaded executor.
-     */
+    /** Create a {@link TestUrlRequestCallback} with a new single-threaded executor. */
     public TestUrlRequestCallback() {
         this(Executors.newSingleThreadExecutor(new ExecutorThreadFactory()));
     }
@@ -298,8 +297,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         assertThat(mOnCanceledCalled).isFalse();
         if (mCallbackExceptionThrown) {
             assertThat(error).isInstanceOf(CallbackException.class);
-            assertThat(error).hasMessageThat().contains(
-                    "Exception received from UrlRequest.Callback");
+            assertThat(error)
+                    .hasMessageThat()
+                    .contains("Exception received from UrlRequest.Callback");
             assertThat(error).hasCauseThat().isInstanceOf(IllegalStateException.class);
             assertThat(error).hasCauseThat().hasMessageThat().contains("Listener Exception.");
         }
@@ -393,12 +393,13 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
             mCallbackExceptionThrown = true;
             throw new IllegalStateException("Listener Exception.");
         }
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                request.cancel();
-            }
-        };
+        Runnable task =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        request.cancel();
+                    }
+                };
         if (mFailureType == FailureType.CANCEL_ASYNC
                 || mFailureType == FailureType.CANCEL_ASYNC_WITHOUT_PAUSE) {
             getExecutor().execute(task);

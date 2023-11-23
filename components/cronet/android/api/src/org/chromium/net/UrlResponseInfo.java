@@ -13,9 +13,7 @@ import java.util.Map;
  * copy of {@code UrlResponseInfo} describing a particular redirect response.
  */
 public abstract class UrlResponseInfo {
-    /**
-     * Unmodifiable container of response headers or trailers. {@hide crbug/1394772}.
-     */
+    /** Unmodifiable container of response headers or trailers. {@hide crbug/1394772}. */
     public abstract static class HeaderBlock {
         /**
          * Returns an unmodifiable list of the response header field and value pairs. The headers

@@ -339,9 +339,7 @@ public class PkpTest {
         assertSuccessfulResponse(callback);
     }
 
-    /**
-     * Tests that host pinning is not persisted between multiple CronetEngine instances.
-     */
+    /** Tests that host pinning is not persisted between multiple CronetEngine instances. */
     @Test
     @SmallTest
     public void testPinsAreNotPersisted() throws Exception {
@@ -459,9 +457,7 @@ public class PkpTest {
         verifyExceptionWhenAddPkpArgumentIsNull(mTestRule.getTestFramework(), false, false, false);
     }
 
-    /**
-     * Tests that IllegalArgumentException is thrown if SHA1 is passed as the value of a pin.
-     */
+    /** Tests that IllegalArgumentException is thrown if SHA1 is passed as the value of a pin. */
     @Test
     @SmallTest
     public void testIllegalArgumentExceptionWhenPinValueIsSHA1() throws Exception {

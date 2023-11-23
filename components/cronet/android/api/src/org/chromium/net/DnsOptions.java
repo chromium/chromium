@@ -39,19 +39,13 @@ import java.time.Duration;
  * <p>Most configuration in this class is only applicable if the built-in DNS resolver is used.
  */
 public final class DnsOptions {
-    @Nullable
-    private final Boolean mUseBuiltInDnsResolver;
-    @Nullable
-    private final Boolean mPersistHostCache;
-    @Nullable
-    private final Boolean mEnableStaleDns;
-    @Nullable
-    private final Long mPersistHostCachePeriodMillis;
+    @Nullable private final Boolean mUseBuiltInDnsResolver;
+    @Nullable private final Boolean mPersistHostCache;
+    @Nullable private final Boolean mEnableStaleDns;
+    @Nullable private final Long mPersistHostCachePeriodMillis;
 
-    @Nullable
-    private final Boolean mPreestablishConnectionsToStaleDnsResults;
-    @Nullable
-    private final StaleDnsOptions mStaleDnsOptions;
+    @Nullable private final Boolean mPreestablishConnectionsToStaleDnsResults;
+    @Nullable private final StaleDnsOptions mStaleDnsOptions;
 
     DnsOptions(Builder builder) {
         this.mEnableStaleDns = builder.mEnableStaleDns;
@@ -139,14 +133,10 @@ public final class DnsOptions {
             return new Builder();
         }
 
-        @Nullable
-        private final Long mFreshLookupTimeoutMillis;
-        @Nullable
-        private final Long mMaxExpiredDelayMillis;
-        @Nullable
-        private final Boolean mAllowCrossNetworkUsage;
-        @Nullable
-        private final Boolean mUseStaleOnNameNotResolved;
+        @Nullable private final Long mFreshLookupTimeoutMillis;
+        @Nullable private final Long mMaxExpiredDelayMillis;
+        @Nullable private final Boolean mAllowCrossNetworkUsage;
+        @Nullable private final Boolean mUseStaleOnNameNotResolved;
 
         StaleDnsOptions(Builder builder) {
             this.mFreshLookupTimeoutMillis = builder.mFreshLookupTimeoutMillis;
@@ -155,9 +145,7 @@ public final class DnsOptions {
             this.mUseStaleOnNameNotResolved = builder.mUseStaleOnNameNotResolved;
         }
 
-        /**
-         * Builder for {@link StaleDnsOptions}.
-         */
+        /** Builder for {@link StaleDnsOptions}. */
         public static final class Builder {
             private Long mFreshLookupTimeoutMillis;
             private Long mMaxExpiredDelayMillis;
@@ -248,22 +236,14 @@ public final class DnsOptions {
         }
     }
 
-    /**
-     * Builder for {@link DnsOptions}.
-     */
+    /** Builder for {@link DnsOptions}. */
     public static final class Builder {
-        @Nullable
-        private Boolean mUseBuiltInDnsResolver;
-        @Nullable
-        private Boolean mEnableStaleDns;
-        @Nullable
-        private StaleDnsOptions mStaleDnsOptions;
-        @Nullable
-        private Boolean mPersistHostCache;
-        @Nullable
-        private Long mPersistHostCachePeriodMillis;
-        @Nullable
-        private Boolean mPreestablishConnectionsToStaleDnsResults;
+        @Nullable private Boolean mUseBuiltInDnsResolver;
+        @Nullable private Boolean mEnableStaleDns;
+        @Nullable private StaleDnsOptions mStaleDnsOptions;
+        @Nullable private Boolean mPersistHostCache;
+        @Nullable private Long mPersistHostCachePeriodMillis;
+        @Nullable private Boolean mPreestablishConnectionsToStaleDnsResults;
 
         Builder() {}
 
@@ -294,9 +274,7 @@ public final class DnsOptions {
             return this;
         }
 
-        /**
-         * @see #setStaleDnsOptions(StaleDnsOptions)
-         */
+        /** @see #setStaleDnsOptions(StaleDnsOptions) */
         @Experimental
         public Builder setStaleDnsOptions(StaleDnsOptions.Builder staleDnsOptionsBuilder) {
             return setStaleDnsOptions(staleDnsOptionsBuilder.build());
@@ -313,7 +291,7 @@ public final class DnsOptions {
          * <p>To use cached DNS records straight away, use {@link #enableStaleDns} and {@link
          * StaleDnsOptions} configuration options.
          *
-         * <p>This option may not be available for all networking protocols.         
+         * <p>This option may not be available for all networking protocols.
          *
          * @return the builder for chaining
          */

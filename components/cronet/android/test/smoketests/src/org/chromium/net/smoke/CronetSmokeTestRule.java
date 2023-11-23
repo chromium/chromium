@@ -20,9 +20,7 @@ import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.UrlResponseInfo;
 
-/**
- * Base test class. This class should not import any classes from the org.chromium.base package.
- */
+/** Base test class. This class should not import any classes from the org.chromium.base package. */
 public class CronetSmokeTestRule implements TestRule {
     /**
      * The key in the string resource file that specifies {@link TestSupport} that should

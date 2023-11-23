@@ -1815,10 +1815,9 @@ public class BidirectionalStreamTest {
 
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
             // android.net.http.UrlRequestBuilder#bindToNetwork requires an android.net.Network
-            // object. So, in this case, it
-            // will be the wrapper layer that will fail to translate that to a Network, not
-            // something in net's code. Hence, the failure will manifest itself at bind time, not at
-            // request execution time.
+            // object. So, in this case, it will be the wrapper layer that will fail to translate
+            // that to a Network, not something in net's code. Hence, the failure will manifest
+            // itself at bind time, not at request execution time.
             // Note: this will never happen in prod, as translation failure can only happen if we're
             // given a fake networkHandle.
             assertThrows(

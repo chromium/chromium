@@ -23,8 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * manages the executors for this upload.
  */
 public abstract class JavaUploadDataSinkBase extends UploadDataSink {
-    @IntDef({SinkState.AWAITING_READ_RESULT, SinkState.AWAITING_REWIND_RESULT, SinkState.UPLOADING,
-            SinkState.NOT_STARTED})
+    @IntDef({
+        SinkState.AWAITING_READ_RESULT,
+        SinkState.AWAITING_REWIND_RESULT,
+        SinkState.UPLOADING,
+        SinkState.NOT_STARTED
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface SinkState {
         int AWAITING_READ_RESULT = 0;
@@ -40,79 +44,87 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
     private final Executor mExecutor;
     private final VersionSafeCallbacks.UploadDataProviderWrapper mUploadProvider;
     private ByteBuffer mBuffer;
+
     /** This holds the total bytes to send (the content-length). -1 if unknown. */
     private long mTotalBytes;
+
     /** This holds the bytes written so far */
     private long mWrittenBytes;
 
     public JavaUploadDataSinkBase(
             final Executor userExecutor, Executor executor, UploadDataProvider provider) {
-        mUserUploadExecutor = new Executor() {
-            @Override
-            public void execute(Runnable runnable) {
-                try {
-                    userExecutor.execute(runnable);
-                } catch (RejectedExecutionException e) {
-                    processUploadError(e);
-                }
-            }
-        };
+        mUserUploadExecutor =
+                new Executor() {
+                    @Override
+                    public void execute(Runnable runnable) {
+                        try {
+                            userExecutor.execute(runnable);
+                        } catch (RejectedExecutionException e) {
+                            processUploadError(e);
+                        }
+                    }
+                };
         mExecutor = executor;
         mUploadProvider = new VersionSafeCallbacks.UploadDataProviderWrapper(provider);
     }
 
     @Override
     public void onReadSucceeded(final boolean finalChunk) {
-        if (!mSinkState.compareAndSet(/* expected= */ SinkState.AWAITING_READ_RESULT,
-                    /* updated= */ SinkState.UPLOADING)) {
+        if (!mSinkState.compareAndSet(
+                /* expected= */ SinkState.AWAITING_READ_RESULT,
+                /* updated= */ SinkState.UPLOADING)) {
             throw new IllegalStateException(
                     "onReadSucceeded() called when not awaiting a read result; in state: "
-                    + mSinkState.get());
+                            + mSinkState.get());
         }
-        mExecutor.execute(getErrorSettingRunnable(new JavaUrlRequestUtils.CheckedRunnable() {
-            @Override
-            public void run() throws Exception {
-                mBuffer.flip();
-                if (mTotalBytes != -1 && mTotalBytes - mWrittenBytes < mBuffer.remaining()) {
-                    processUploadError(
-                            new IllegalArgumentException(String.format(Locale.getDefault(),
-                                    "Read upload data length %d exceeds expected length %d",
-                                    mWrittenBytes + mBuffer.remaining(), mTotalBytes)));
-                    return;
-                }
+        JavaUrlRequestUtils.CheckedRunnable checkedRunnable =
+                () -> {
+                    mBuffer.flip();
+                    if (mTotalBytes != -1 && mTotalBytes - mWrittenBytes < mBuffer.remaining()) {
+                        String msg =
+                                String.format(
+                                        Locale.getDefault(),
+                                        "Read upload data length %d exceeds expected length %d",
+                                        mWrittenBytes + mBuffer.remaining(),
+                                        mTotalBytes);
+                        processUploadError(new IllegalArgumentException(msg));
+                        return;
+                    }
 
-                mWrittenBytes += processSuccessfulRead(mBuffer);
+                    mWrittenBytes += processSuccessfulRead(mBuffer);
 
-                if (mWrittenBytes < mTotalBytes || (mTotalBytes == -1 && !finalChunk)) {
-                    mBuffer.clear();
-                    mSinkState.set(SinkState.AWAITING_READ_RESULT);
-                    executeOnUploadExecutor(new JavaUrlRequestUtils.CheckedRunnable() {
-                        @Override
-                        public void run() throws Exception {
-                            mUploadProvider.read(JavaUploadDataSinkBase.this, mBuffer);
-                        }
-                    });
-                } else if (mTotalBytes == -1) {
-                    finish();
-                } else if (mTotalBytes == mWrittenBytes) {
-                    finish();
-                } else {
-                    processUploadError(
-                            new IllegalArgumentException(String.format(Locale.getDefault(),
-                                    "Read upload data length %d exceeds expected length %d",
-                                    mWrittenBytes, mTotalBytes)));
-                }
-            }
-        }));
+                    if (mWrittenBytes < mTotalBytes || (mTotalBytes == -1 && !finalChunk)) {
+                        mBuffer.clear();
+                        mSinkState.set(SinkState.AWAITING_READ_RESULT);
+                        executeOnUploadExecutor(
+                                () -> {
+                                    mUploadProvider.read(JavaUploadDataSinkBase.this, mBuffer);
+                                });
+                    } else if (mTotalBytes == -1) {
+                        finish();
+                    } else if (mTotalBytes == mWrittenBytes) {
+                        finish();
+                    } else {
+                        String msg =
+                                String.format(
+                                        Locale.getDefault(),
+                                        "Read upload data length %d exceeds expected length %d",
+                                        mWrittenBytes,
+                                        mTotalBytes);
+                        processUploadError(new IllegalArgumentException(msg));
+                    }
+                };
+        mExecutor.execute(getErrorSettingRunnable(checkedRunnable));
     }
 
     @Override
     public void onRewindSucceeded() {
-        if (!mSinkState.compareAndSet(/* expected= */ SinkState.AWAITING_REWIND_RESULT,
-                    /* updated= */ SinkState.UPLOADING)) {
+        if (!mSinkState.compareAndSet(
+                /* expected= */ SinkState.AWAITING_REWIND_RESULT,
+                /* updated= */ SinkState.UPLOADING)) {
             throw new IllegalStateException(
                     "onRewindSucceeded() called when not awaiting a rewind; in state: "
-                    + mSinkState.get());
+                            + mSinkState.get());
         }
         startRead();
     }
@@ -128,19 +140,16 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
     }
 
     private void startRead() {
-        mExecutor.execute(getErrorSettingRunnable(new JavaUrlRequestUtils.CheckedRunnable() {
-            @Override
-            public void run() throws Exception {
-                initializeRead();
-                mSinkState.set(SinkState.AWAITING_READ_RESULT);
-                executeOnUploadExecutor(new JavaUrlRequestUtils.CheckedRunnable() {
-                    @Override
-                    public void run() throws Exception {
-                        mUploadProvider.read(JavaUploadDataSinkBase.this, mBuffer);
-                    }
-                });
-            }
-        }));
+        mExecutor.execute(
+                getErrorSettingRunnable(
+                        () -> {
+                            initializeRead();
+                            mSinkState.set(SinkState.AWAITING_READ_RESULT);
+                            executeOnUploadExecutor(
+                                    () -> {
+                                        mUploadProvider.read(JavaUploadDataSinkBase.this, mBuffer);
+                                    });
+                        }));
     }
 
     /**
@@ -165,34 +174,32 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
      *                  upload
      */
     public void start(final boolean firstTime) {
-        executeOnUploadExecutor(new JavaUrlRequestUtils.CheckedRunnable() {
-            @Override
-            public void run() throws Exception {
-                mTotalBytes = mUploadProvider.getLength();
-                if (mTotalBytes == 0) {
-                    finish();
-                } else {
-                    // If we know how much data we have to upload, and it's small, we can save
-                    // memory by allocating a reasonably sized buffer to read into.
-                    if (mTotalBytes > 0 && mTotalBytes < DEFAULT_UPLOAD_BUFFER_SIZE) {
-                        // Allocate one byte more than necessary, to detect callers uploading
-                        // more bytes than they specified in length.
-                        mBuffer = ByteBuffer.allocateDirect((int) mTotalBytes + 1);
+        executeOnUploadExecutor(
+                () -> {
+                    mTotalBytes = mUploadProvider.getLength();
+                    if (mTotalBytes == 0) {
+                        finish();
                     } else {
-                        mBuffer = ByteBuffer.allocateDirect(DEFAULT_UPLOAD_BUFFER_SIZE);
-                    }
+                        // If we know how much data we have to upload, and it's small, we can
+                        // save memory by allocating a reasonably sized buffer to read into.
+                        if (mTotalBytes > 0 && mTotalBytes < DEFAULT_UPLOAD_BUFFER_SIZE) {
+                            // Allocate one byte more than necessary, to detect callers
+                            // uploading more bytes than they specified in length.
+                            mBuffer = ByteBuffer.allocateDirect((int) mTotalBytes + 1);
+                        } else {
+                            mBuffer = ByteBuffer.allocateDirect(DEFAULT_UPLOAD_BUFFER_SIZE);
+                        }
 
-                    initializeStart(mTotalBytes);
+                        initializeStart(mTotalBytes);
 
-                    if (firstTime) {
-                        startRead();
-                    } else {
-                        mSinkState.set(SinkState.AWAITING_REWIND_RESULT);
-                        mUploadProvider.rewind(JavaUploadDataSinkBase.this);
+                        if (firstTime) {
+                            startRead();
+                        } else {
+                            mSinkState.set(SinkState.AWAITING_REWIND_RESULT);
+                            mUploadProvider.rewind(JavaUploadDataSinkBase.this);
+                        }
                     }
-                }
-            }
-        });
+                });
     }
 
     /**
