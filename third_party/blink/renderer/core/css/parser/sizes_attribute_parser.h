@@ -21,7 +21,7 @@ class CORE_EXPORT SizesAttributeParser {
  public:
   SizesAttributeParser(MediaValues*, const String&, const ExecutionContext*);
 
-  float length();
+  float Size();
 
  private:
   bool Parse(CSSParserTokenRange, const CSSParserTokenOffsets&);
@@ -30,11 +30,11 @@ class CORE_EXPORT SizesAttributeParser {
   bool MediaConditionMatches(const MediaQuerySet& media_condition);
   float EffectiveSizeDefaultValue();
 
-  MediaValues* media_values_;
-  const ExecutionContext* execution_context_;
-  float length_;
-  bool length_was_set_;
-  bool is_valid_;
+  MediaValues* media_values_{};
+  const ExecutionContext* execution_context_{};
+  float size_{};
+  bool size_was_set_{};
+  bool is_valid_{};
 };
 
 }  // namespace blink

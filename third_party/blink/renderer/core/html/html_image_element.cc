@@ -869,7 +869,7 @@ static bool SourceSizeValue(const Element* element,
   source_size =
       SizesAttributeParser(MediaValuesDynamic::Create(current_document), sizes,
                            current_document.GetExecutionContext())
-          .length();
+          .Size();
   return exists;
 }
 

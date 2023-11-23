@@ -196,7 +196,7 @@ class TokenPreloadScanner::StartTagScanner {
         Match(tag_impl_, html_names::kSourceTag) ||
         Match(tag_impl_, html_names::kLinkTag)) {
       source_size_ =
-          SizesAttributeParser(media_values_, String(), nullptr).length();
+          SizesAttributeParser(media_values_, String(), nullptr).Size();
       return;
     }
     if (!Match(tag_impl_, html_names::kInputTag) &&
@@ -738,7 +738,7 @@ class TokenPreloadScanner::StartTagScanner {
 
   void ParseSourceSize(const String& attribute_value) {
     source_size_ =
-        SizesAttributeParser(media_values_, attribute_value, nullptr).length();
+        SizesAttributeParser(media_values_, attribute_value, nullptr).Size();
     source_size_set_ = true;
   }
 

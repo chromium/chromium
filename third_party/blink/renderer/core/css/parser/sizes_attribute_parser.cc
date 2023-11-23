@@ -15,13 +15,11 @@ SizesAttributeParser::SizesAttributeParser(
     MediaValues* media_values,
     const String& attribute,
     const ExecutionContext* execution_context)
-    : media_values_(media_values),
-      execution_context_(execution_context),
-      length_(0),
-      length_was_set_(false) {
+    : media_values_(media_values), execution_context_(execution_context) {
   DCHECK(media_values_);
   DCHECK(media_values_->Width().has_value());
   DCHECK(media_values_->Height().has_value());
+
   CSSTokenizer tokenizer(attribute);
   auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
   is_valid_ =
@@ -29,7 +27,7 @@ SizesAttributeParser::SizesAttributeParser(
             CSSParserTokenOffsets(tokens, std::move(offsets), attribute));
 }
 
-float SizesAttributeParser::length() {
+float SizesAttributeParser::Size() {
   if (is_valid_) {
     return EffectiveSize();
   }
@@ -45,6 +43,7 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
     if (!CSSPrimitiveValue::IsLength(start_token.GetUnitType())) {
       return false;
     }
+
     if ((media_values_->ComputeLength(start_token.NumericValue(),
                                       start_token.GetUnitType(), length)) &&
         (length >= 0)) {
@@ -56,6 +55,7 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
     if (!calc_parser.IsValid()) {
       return false;
     }
+
     result = calc_parser.Result();
     return true;
   } else if (type == kNumberToken && !start_token.NumericValue()) {
@@ -96,23 +96,27 @@ bool SizesAttributeParser::Parse(CSSParserTokenRange range,
             range.MakeSubRange(length_token_start, length_token_end), length)) {
       continue;
     }
+
     MediaQuerySet* media_condition = MediaQueryParser::ParseMediaCondition(
         range.MakeSubRange(media_condition_start, length_token_start), offsets,
         execution_context_);
     if (!media_condition || !MediaConditionMatches(*media_condition)) {
       continue;
     }
-    length_ = length;
-    length_was_set_ = true;
+
+    size_ = length;
+    size_was_set_ = true;
     return true;
   }
+
   return false;
 }
 
 float SizesAttributeParser::EffectiveSize() {
-  if (length_was_set_) {
-    return length_;
+  if (size_was_set_) {
+    return size_;
   }
+
   return EffectiveSizeDefaultValue();
 }
 

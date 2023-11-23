@@ -92,7 +92,7 @@ TEST(SizesAttributeParserTest, Basic) {
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
-    ASSERT_EQ(test_cases[i].effective_size, parser.length());
+    ASSERT_EQ(test_cases[i].effective_size, parser.Size());
   }
 }
 
@@ -172,7 +172,7 @@ TEST(SizesAttributeParserTest, FloatViewportWidth) {
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
-    ASSERT_EQ(test_cases[i].effective_size, parser.length());
+    ASSERT_EQ(test_cases[i].effective_size, parser.Size());
   }
 }
 
