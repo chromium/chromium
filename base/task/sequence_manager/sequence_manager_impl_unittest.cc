@@ -538,21 +538,6 @@ class QueueTimeTaskObserver : public TaskObserver {
   std::vector<TimeTicks> queue_times_;
 };
 
-class ScopedNoWakeUpsForCanceledTasks {
- public:
-  ScopedNoWakeUpsForCanceledTasks()
-      : scoped_feature_list_(kNoWakeUpsForCanceledTasks) {
-    SequenceManagerImpl::ApplyNoWakeUpsForCanceledTasks();
-  }
-
-  ~ScopedNoWakeUpsForCanceledTasks() {
-    SequenceManagerImpl::ResetNoWakeUpsForCanceledTasksForTesting();
-  }
-
- private:
-  test::ScopedFeatureList scoped_feature_list_;
-};
-
 }  // namespace
 
 TEST_P(SequenceManagerTest, GetCorrectTaskRunnerForCurrentTask) {
@@ -2925,8 +2910,6 @@ TEST_P(SequenceManagerTest,
 
 TEST_P(SequenceManagerTest,
        CancelledTaskPostAnother_RemoveAllCanceledDelayedTasksFromFront) {
-  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks;
-
   // This check ensures that a task whose destruction causes another task to be
   // posted as a side-effect doesn't cause us to access invalid iterators while
   // removing canceled tasks from the front of the queues.
@@ -3773,8 +3756,6 @@ TEST_P(SequenceManagerTest, GetPendingWakeUp_DelayedTaskReady) {
 }
 
 TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
-  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks;
-
   auto queue = CreateTaskQueue();
 
   // Posts a cancelable task.
@@ -3796,8 +3777,6 @@ TEST_P(SequenceManagerTest, RemoveAllCanceledDelayedTasksFromFront) {
 
 TEST_P(SequenceManagerTest,
        RemoveAllCanceledDelayedTasksFromFront_MultipleQueues) {
-  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks;
-
   auto queues = CreateTaskQueues(2u);
 
   // Post a task in each queue such that they would be executed in order

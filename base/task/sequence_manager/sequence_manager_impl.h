@@ -105,15 +105,6 @@ class BASE_EXPORT SequenceManagerImpl
   // after FeatureList initialization.
   static void InitializeFeatures();
 
-  // Sets the global cached state of the NoWakeUpsForCanceledTasks feature
-  // according to its enabled state. Must be invoked after FeatureList
-  // initialization.
-  static void ApplyNoWakeUpsForCanceledTasks();
-
-  // Resets the global cached state of the NoWakeUpsForCanceledTasks feature
-  // according to its default state.
-  static void ResetNoWakeUpsForCanceledTasksForTesting();
-
   // SequenceManager implementation:
   void BindToCurrentThread() override;
   scoped_refptr<SequencedTaskRunner> GetTaskRunnerForCurrentTask() override;

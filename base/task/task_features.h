@@ -25,12 +25,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);
 // only excess workers are cleaned up immediately after finishing a task.
 BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);
 
-// This feature controls whether wake ups are possible for canceled tasks.
-BASE_EXPORT BASE_DECLARE_FEATURE(kNoWakeUpsForCanceledTasks);
-
-// Controls whether or not canceled delayed tasks are removed from task queues.
-BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveCanceledTasksInTaskQueue);
-
 // This feature controls whether ThreadPool WorkerThreads should hold off waking
 // up to purge partition alloc within the first minute of their lifetime. See
 // base::internal::GetSleepTimeBeforePurge.
