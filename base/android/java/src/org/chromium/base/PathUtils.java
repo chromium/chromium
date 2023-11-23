@@ -31,9 +31,7 @@ import java.util.Set;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * This class provides the path related methods for the native library.
- */
+/** This class provides the path related methods for the native library. */
 public abstract class PathUtils {
     private static final String TAG = "PathUtils";
     private static final String THUMBNAIL_DIRECTORY_NAME = "textures";
@@ -176,13 +174,13 @@ public abstract class PathUtils {
             AsyncTask.THREAD_POOL_EXECUTOR.execute(sDirPathFetchTask);
         } else {
             assert TextUtils.equals(sDataDirectoryBasePath, dataBasePath)
-                : String.format("%s != %s", dataBasePath, sDataDirectoryBasePath);
+                    : String.format("%s != %s", dataBasePath, sDataDirectoryBasePath);
             assert TextUtils.equals(sCacheDirectoryBasePath, cacheBasePath)
-                : String.format("%s != %s", cacheBasePath, sCacheDirectoryBasePath);
+                    : String.format("%s != %s", cacheBasePath, sCacheDirectoryBasePath);
             assert TextUtils.equals(sDataDirectorySuffix, dataDirSuffix)
-                : String.format("%s != %s", dataDirSuffix, sDataDirectorySuffix);
+                    : String.format("%s != %s", dataDirSuffix, sDataDirectorySuffix);
             assert TextUtils.equals(sCacheSubDirectory, cacheSubDir)
-                : String.format("%s != %s", cacheSubDir, sCacheSubDirectory);
+                    : String.format("%s != %s", cacheSubDir, sCacheSubDirectory);
         }
     }
 
@@ -199,7 +197,6 @@ public abstract class PathUtils {
      * @param cacheSubDir The subdirectory in the cache directory to use, if non-null.
      * @see Context#getDir(String, int)
      */
-
     public static void setPrivateDataDirectorySuffix(String suffix, String cacheSubDir) {
         setPrivateDirectoryPath(null, null, suffix, cacheSubDir);
     }
@@ -278,8 +275,9 @@ public abstract class PathUtils {
     public static @NonNull String[] getAllPrivateDownloadsDirectories() {
         List<File> files = new ArrayList<>();
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            File[] externalDirs = ContextUtils.getApplicationContext().getExternalFilesDirs(
-                    Environment.DIRECTORY_DOWNLOADS);
+            File[] externalDirs =
+                    ContextUtils.getApplicationContext()
+                            .getExternalFilesDirs(Environment.DIRECTORY_DOWNLOADS);
             files = (externalDirs == null) ? files : Arrays.asList(externalDirs);
         }
         return toAbsolutePathStrings(files);
@@ -299,16 +297,20 @@ public abstract class PathUtils {
                 ApiHelperForQ.getExternalVolumeNames(ContextUtils.getApplicationContext());
         for (String vol : volumes) {
             if (!TextUtils.isEmpty(vol) && !vol.contains(MediaStore.VOLUME_EXTERNAL_PRIMARY)) {
-                StorageManager manager = ApiHelperForM.getSystemService(
-                        ContextUtils.getApplicationContext(), StorageManager.class);
+                StorageManager manager =
+                        ApiHelperForM.getSystemService(
+                                ContextUtils.getApplicationContext(), StorageManager.class);
                 File volumeDir =
                         ApiHelperForR.getVolumeDir(manager, MediaStore.Files.getContentUri(vol));
                 File volumeDownloadDir = new File(volumeDir, Environment.DIRECTORY_DOWNLOADS);
                 // Happens in rare case when Android doesn't create the download directory for this
                 // volume.
                 if (!volumeDownloadDir.isDirectory()) {
-                    Log.w(TAG, "Download dir missing: %s, parent dir:%s, isDirectory:%s",
-                            volumeDownloadDir.getAbsolutePath(), volumeDir.getAbsolutePath(),
+                    Log.w(
+                            TAG,
+                            "Download dir missing: %s, parent dir:%s, isDirectory:%s",
+                            volumeDownloadDir.getAbsolutePath(),
+                            volumeDir.getAbsolutePath(),
                             volumeDir.isDirectory());
                 }
                 files.add(volumeDownloadDir);

@@ -27,33 +27,24 @@ import org.chromium.base.compat.ApiHelperForS;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Utilities dealing with extracting information from intents and creating common intents.
- */
+/** Utilities dealing with extracting information from intents and creating common intents. */
 public class IntentUtils {
     private static final String TAG = "IntentUtils";
 
-    /**
-     * The scheme for referrer coming from an application.
-     */
+    /** The scheme for referrer coming from an application. */
     public static final String ANDROID_APP_REFERRER_SCHEME = "android-app";
 
-    /**
-     * Intent extra used to identify the sending application.
-     */
+    /** Intent extra used to identify the sending application. */
     public static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
 
-    /**
-     * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
-     */
+    /** Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA. */
     private static ComponentName sFakeComponentName;
+
     private static final Object COMPONENT_NAME_LOCK = new Object();
 
     private static boolean sForceTrustedIntentForTesting;
 
-    /**
-     * Just like {@link Intent#hasExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#hasExtra(String)} but doesn't throw exceptions. */
     public static boolean safeHasExtra(Intent intent, String name) {
         try {
             return intent.hasExtra(name);
@@ -64,9 +55,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#removeExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#removeExtra(String)} but doesn't throw exceptions. */
     public static void safeRemoveExtra(Intent intent, String name) {
         try {
             intent.removeExtra(name);
@@ -76,9 +65,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getBooleanExtra(String, boolean)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getBooleanExtra(String, boolean)} but doesn't throw exceptions. */
     public static boolean safeGetBooleanExtra(Intent intent, String name, boolean defaultValue) {
         try {
             return intent.getBooleanExtra(name, defaultValue);
@@ -89,9 +76,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Bundle#getBoolean(String, boolean)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Bundle#getBoolean(String, boolean)} but doesn't throw exceptions. */
     public static boolean safeGetBoolean(Bundle bundle, String name, boolean defaultValue) {
         try {
             return bundle.getBoolean(name, defaultValue);
@@ -102,9 +87,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getIntExtra(String, int)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getIntExtra(String, int)} but doesn't throw exceptions. */
     public static int safeGetIntExtra(Intent intent, String name, int defaultValue) {
         try {
             return intent.getIntExtra(name, defaultValue);
@@ -115,9 +98,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Bundle#getInt(String, int)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Bundle#getInt(String, int)} but doesn't throw exceptions. */
     public static int safeGetInt(Bundle bundle, String name, int defaultValue) {
         try {
             return bundle.getInt(name, defaultValue);
@@ -128,9 +109,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getIntArrayExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getIntArrayExtra(String)} but doesn't throw exceptions. */
     public static int[] safeGetIntArrayExtra(Intent intent, String name) {
         try {
             return intent.getIntArrayExtra(name);
@@ -141,9 +120,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Bundle#getIntArray(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Bundle#getIntArray(String)} but doesn't throw exceptions. */
     public static int[] safeGetIntArray(Bundle bundle, String name) {
         try {
             return bundle.getIntArray(name);
@@ -154,9 +131,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Bundle#getFloatArray(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Bundle#getFloatArray(String)} but doesn't throw exceptions. */
     public static float[] safeGetFloatArray(Bundle bundle, String name) {
         try {
             return bundle.getFloatArray(name);
@@ -167,9 +142,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getLongExtra(String, long)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getLongExtra(String, long)} but doesn't throw exceptions. */
     public static long safeGetLongExtra(Intent intent, String name, long defaultValue) {
         try {
             return intent.getLongExtra(name, defaultValue);
@@ -180,9 +153,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getStringExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getStringExtra(String)} but doesn't throw exceptions. */
     public static String safeGetStringExtra(Intent intent, String name) {
         try {
             return intent.getStringExtra(name);
@@ -193,9 +164,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Bundle#getString(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Bundle#getString(String)} but doesn't throw exceptions. */
     public static String safeGetString(Bundle bundle, String name) {
         try {
             return bundle.getString(name);
@@ -206,9 +175,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getBundleExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getBundleExtra(String)} but doesn't throw exceptions. */
     public static Bundle safeGetBundleExtra(Intent intent, String name) {
         try {
             return intent.getBundleExtra(name);
@@ -219,9 +186,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Bundle#getBundle(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Bundle#getBundle(String)} but doesn't throw exceptions. */
     public static Bundle safeGetBundle(Bundle bundle, String name) {
         try {
             return bundle.getBundle(name);
@@ -232,9 +197,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Bundle#getParcelable(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Bundle#getParcelable(String)} but doesn't throw exceptions. */
     public static <T extends Parcelable> T safeGetParcelable(Bundle bundle, String name) {
         try {
             return bundle.getParcelable(name);
@@ -245,9 +208,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getParcelableExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getParcelableExtra(String)} but doesn't throw exceptions. */
     public static <T extends Parcelable> T safeGetParcelableExtra(Intent intent, String name) {
         try {
             return intent.getParcelableExtra(name);
@@ -272,9 +233,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just link {@link Bundle#getParcelableArrayList(String)} but doesn't throw exceptions.
-     */
+    /** Just link {@link Bundle#getParcelableArrayList(String)} but doesn't throw exceptions. */
     public static <T extends Parcelable> ArrayList<T> safeGetParcelableArrayList(
             Bundle bundle, String name) {
         try {
@@ -286,9 +245,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getParcelableArrayExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getParcelableArrayExtra(String)} but doesn't throw exceptions. */
     public static Parcelable[] safeGetParcelableArrayExtra(Intent intent, String name) {
         try {
             return intent.getParcelableArrayExtra(name);
@@ -298,9 +255,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getStringArrayListExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getStringArrayListExtra(String)} but doesn't throw exceptions. */
     public static ArrayList<String> safeGetStringArrayListExtra(Intent intent, String name) {
         try {
             return intent.getStringArrayListExtra(name);
@@ -311,9 +266,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getByteArrayExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getByteArrayExtra(String)} but doesn't throw exceptions. */
     public static byte[] safeGetByteArrayExtra(Intent intent, String name) {
         try {
             return intent.getByteArrayExtra(name);
@@ -324,9 +277,7 @@ public class IntentUtils {
         }
     }
 
-    /**
-     * Just like {@link Intent#getSerializableExtra(String)} but doesn't throw exceptions.
-     */
+    /** Just like {@link Intent#getSerializableExtra(String)} but doesn't throw exceptions. */
     @SuppressWarnings("unchecked")
     public static <T extends Serializable> T safeGetSerializableExtra(Intent intent, String name) {
         try {
@@ -479,7 +430,8 @@ public class IntentUtils {
      * @return True if the intent is a MAIN intent a launcher would send.
      */
     public static boolean isMainIntentFromLauncher(Intent intent) {
-        return intent != null && TextUtils.equals(intent.getAction(), Intent.ACTION_MAIN)
+        return intent != null
+                && TextUtils.equals(intent.getAction(), Intent.ACTION_MAIN)
                 && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
                 && 0 == (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
     }
@@ -512,8 +464,9 @@ public class IntentUtils {
         boolean hasPackage = !TextUtils.isEmpty(intent.getPackage());
         boolean matchesPackage = hasPackage && context.getPackageName().equals(intent.getPackage());
         boolean hasComponent = intent.getComponent() != null;
-        boolean matchesComponent = hasComponent
-                && context.getPackageName().equals(intent.getComponent().getPackageName());
+        boolean matchesComponent =
+                hasComponent
+                        && context.getPackageName().equals(intent.getComponent().getPackageName());
 
         // Component takes precedence over PackageName when routing Intents if both are set, but to
         // be on the safe side, ensure that if we have both package and component set, that they

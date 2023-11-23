@@ -10,9 +10,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Skips the annotated test when the device's API level is lower than {@code value()}.
- */
+/** Skips the annotated test when the device's API level is lower than {@code value()}. */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -23,4 +21,3 @@ public @interface MinAndroidSdkLevel {
     /** Why a test is skipped below this API level. */
     String reason() default "";
 }
-

@@ -262,8 +262,9 @@ public class RecordHistogram {
 
     private static void recordCustomTimesHistogramMilliseconds(
             String name, long duration, long min, long max, int numBuckets) {
-        UmaRecorderHolder.get().recordExponentialHistogram(
-                name, clampToInt(duration), clampToInt(min), clampToInt(max), numBuckets);
+        UmaRecorderHolder.get()
+                .recordExponentialHistogram(
+                        name, clampToInt(duration), clampToInt(min), clampToInt(max), numBuckets);
     }
 
     /**

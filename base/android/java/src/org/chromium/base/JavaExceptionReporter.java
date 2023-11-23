@@ -59,8 +59,8 @@ public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
     @UiThread
     public static void reportStackTrace(String stackTrace) {
         assert ThreadUtils.runningOnUiThread();
-        JavaExceptionReporterJni.get().reportJavaStackTrace(
-                PiiElider.sanitizeStacktrace(stackTrace));
+        JavaExceptionReporterJni.get()
+                .reportJavaStackTrace(PiiElider.sanitizeStacktrace(stackTrace));
     }
 
     /**
@@ -78,13 +78,15 @@ public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
 
     @CalledByNative
     private static void installHandler(boolean crashAfterReport) {
-        Thread.setDefaultUncaughtExceptionHandler(new JavaExceptionReporter(
-                Thread.getDefaultUncaughtExceptionHandler(), crashAfterReport));
+        Thread.setDefaultUncaughtExceptionHandler(
+                new JavaExceptionReporter(
+                        Thread.getDefaultUncaughtExceptionHandler(), crashAfterReport));
     }
 
     @NativeMethods
     interface Natives {
         void reportJavaException(boolean crashAfterReport, Throwable e);
+
         void reportJavaStackTrace(String stackTrace);
     }
 }

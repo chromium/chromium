@@ -37,18 +37,14 @@ public class LifetimeAssert {
         void onCleaned(WrappedReference ref, String msg);
     }
 
-    /**
-     * Thrown for failed assertions.
-     */
+    /** Thrown for failed assertions. */
     static class LifetimeAssertException extends RuntimeException {
         LifetimeAssertException(String msg, Throwable causedBy) {
             super(msg, causedBy);
         }
     }
 
-    /**
-     * For capturing where objects were created.
-     */
+    /** For capturing where objects were created. */
     private static class CreationException extends RuntimeException {
         CreationException() {
             super("vvv This is where object was created. vvv");
@@ -58,8 +54,7 @@ public class LifetimeAssert {
     // Used only for unit test.
     static TestHook sTestHook;
 
-    @VisibleForTesting
-    final WrappedReference mWrapper;
+    @VisibleForTesting final WrappedReference mWrapper;
 
     private final Object mTarget;
 
@@ -101,10 +96,12 @@ public class LifetimeAssert {
                                 continue;
                             }
                             if (!wrapper.mSafeToGc) {
-                                String msg = String.format(
-                                        "Object of type %s was GC'ed without cleanup. Refer to "
-                                                + "\"Caused by\" for where object was created.",
-                                        wrapper.mTargetClass.getName());
+                                String msg =
+                                        String.format(
+                                                "Object of type %s was GC'ed without cleanup. Refer"
+                                                        + " to \"Caused by\" for where object was"
+                                                        + " created.",
+                                                wrapper.mTargetClass.getName());
                                 if (sTestHook != null) {
                                     sTestHook.onCleaned(wrapper, msg);
                                 } else {
@@ -173,10 +170,12 @@ public class LifetimeAssert {
             try {
                 for (WrappedReference ref : WrappedReference.sActiveWrappers) {
                     if (!ref.mSafeToGc) {
-                        String msg = String.format(
-                                "Object of type %s was not destroyed after test completed. "
-                                        + "Refer to \"Caused by\" for where object was created.",
-                                ref.mTargetClass.getName());
+                        String msg =
+                                String.format(
+                                        "Object of type %s was not destroyed after test completed."
+                                                + " Refer to \"Caused by\" for where object was"
+                                                + " created.",
+                                        ref.mTargetClass.getName());
                         throw new LifetimeAssertException(msg, ref.mCreationException);
                     }
                 }

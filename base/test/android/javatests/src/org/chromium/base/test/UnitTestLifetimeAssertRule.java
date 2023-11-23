@@ -12,9 +12,7 @@ import org.chromium.base.LifetimeAssert;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.RequiresRestart;
 
-/**
- * TestRule used to ensure we don't leak LifetimeAsserts in unit tests.
- */
+/** TestRule used to ensure we don't leak LifetimeAsserts in unit tests. */
 public final class UnitTestLifetimeAssertRule implements TestRule {
     @Override
     public Statement apply(Statement base, Description description) {

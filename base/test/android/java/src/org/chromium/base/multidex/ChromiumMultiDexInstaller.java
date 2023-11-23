@@ -12,9 +12,7 @@ import androidx.multidex.MultiDex;
 
 import org.chromium.base.Log;
 
-/**
- *  Performs multidex installation for non-isolated processes.
- */
+/** Performs multidex installation for non-isolated processes. */
 public class ChromiumMultiDexInstaller {
     private static final String TAG = "base_multidex";
 

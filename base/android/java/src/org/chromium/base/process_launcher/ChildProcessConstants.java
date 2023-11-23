@@ -4,9 +4,7 @@
 
 package org.chromium.base.process_launcher;
 
-/**
- * Constants to be used by child processes.
- */
+/** Constants to be used by child processes. */
 public interface ChildProcessConstants {
     // Below are the names for the items placed in the bind or start command intent.
     // Note that because that intent maybe reused if a service is restarted, none should be process

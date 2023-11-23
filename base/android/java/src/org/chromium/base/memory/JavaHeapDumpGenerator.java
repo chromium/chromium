@@ -12,11 +12,10 @@ import org.chromium.base.Log;
 
 import java.io.IOException;
 
-/**
- * Enables the generation of hprof files from heap dumps.
- */
+/** Enables the generation of hprof files from heap dumps. */
 public final class JavaHeapDumpGenerator {
     private static final String TAG = "JavaHprofGenerator";
+
     private JavaHeapDumpGenerator() {}
 
     /**

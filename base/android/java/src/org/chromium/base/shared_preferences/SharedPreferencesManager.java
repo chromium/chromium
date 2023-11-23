@@ -24,9 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Layer over android {@link SharedPreferences}.
- */
+/** Layer over android {@link SharedPreferences}. */
 @JNINamespace("base::android")
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
 public class SharedPreferencesManager {
@@ -36,8 +34,10 @@ public class SharedPreferencesManager {
     private PreferenceKeyChecker mKeyChecker;
 
     protected SharedPreferencesManager(PreferenceKeyRegistry registry) {
-        mKeyChecker = BuildConfig.ENABLE_ASSERTS ? new StrictPreferenceKeyChecker(registry)
-                                                 : new NoOpPreferenceKeyChecker();
+        mKeyChecker =
+                BuildConfig.ENABLE_ASSERTS
+                        ? new StrictPreferenceKeyChecker(registry)
+                        : new NoOpPreferenceKeyChecker();
     }
 
     @VisibleForTesting
@@ -95,42 +95,38 @@ public class SharedPreferencesManager {
         return (values != null) ? Collections.unmodifiableSet(values) : null;
     }
 
-    /**
-     * Adds a value to string set in shared preferences.
-     */
+    /** Adds a value to string set in shared preferences. */
     public void addToStringSet(String key, String value) {
         mKeyChecker.checkIsKeyInUse(key);
         // Construct a new set so it can be modified safely. See crbug.com/568369.
-        Set<String> values = new HashSet<>(
-                ContextUtils.getAppSharedPreferences().getStringSet(key, Collections.emptySet()));
+        Set<String> values =
+                new HashSet<>(
+                        ContextUtils.getAppSharedPreferences()
+                                .getStringSet(key, Collections.emptySet()));
         values.add(value);
         writeStringSetUnchecked(key, values);
     }
 
-    /**
-     * Removes value from string set in shared preferences.
-     */
+    /** Removes value from string set in shared preferences. */
     public void removeFromStringSet(String key, String value) {
         mKeyChecker.checkIsKeyInUse(key);
         // Construct a new set so it can be modified safely. See crbug.com/568369.
-        Set<String> values = new HashSet<>(
-                ContextUtils.getAppSharedPreferences().getStringSet(key, Collections.emptySet()));
+        Set<String> values =
+                new HashSet<>(
+                        ContextUtils.getAppSharedPreferences()
+                                .getStringSet(key, Collections.emptySet()));
         if (values.remove(value)) {
             writeStringSetUnchecked(key, values);
         }
     }
 
-    /**
-     * Writes string set to shared preferences.
-     */
+    /** Writes string set to shared preferences. */
     public void writeStringSet(String key, Set<String> values) {
         mKeyChecker.checkIsKeyInUse(key);
         writeStringSetUnchecked(key, values);
     }
 
-    /**
-     * Writes string set to shared preferences.
-     */
+    /** Writes string set to shared preferences. */
     private void writeStringSetUnchecked(String key, Set<String> values) {
         Editor editor = ContextUtils.getAppSharedPreferences().edit().putStringSet(key, values);
         editor.apply();

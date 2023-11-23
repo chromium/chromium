@@ -15,9 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link KeyPrefix}.
- */
+/** Unit tests for {@link KeyPrefix}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class KeyPrefixTest {
     @Test

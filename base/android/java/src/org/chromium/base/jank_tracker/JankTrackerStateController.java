@@ -48,7 +48,10 @@ public class JankTrackerStateController {
                 window.removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
             } catch (IllegalArgumentException e) {
                 // Adding the listener failed for whatever reason, so it could not be unregistered.
-                Log.e(TAG, "Could not remove listener %s from window %s", mFrameMetricsListener,
+                Log.e(
+                        TAG,
+                        "Could not remove listener %s from window %s",
+                        mFrameMetricsListener,
                         window);
             }
         }
@@ -56,5 +59,6 @@ public class JankTrackerStateController {
 
     // Extra methods for subclasses that need to perform extra work on initialization/destruction.
     public void initialize() {}
+
     public void destroy() {}
 }

@@ -68,9 +68,7 @@ public final class StrictModeContext implements Closeable {
         }
     }
 
-    /**
-     * Convenience method for disabling StrictMode for disk-writes with try-with-resources.
-     */
+    /** Convenience method for disabling StrictMode for disk-writes with try-with-resources. */
     public static StrictModeContext allowDiskWrites() {
         try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowDiskWrites")) {
             StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
@@ -78,9 +76,7 @@ public final class StrictModeContext implements Closeable {
         }
     }
 
-    /**
-     * Convenience method for disabling StrictMode for disk-reads with try-with-resources.
-     */
+    /** Convenience method for disabling StrictMode for disk-reads with try-with-resources. */
     public static StrictModeContext allowDiskReads() {
         try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowDiskReads")) {
             StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
@@ -88,9 +84,7 @@ public final class StrictModeContext implements Closeable {
         }
     }
 
-    /**
-     * Convenience method for disabling StrictMode for slow calls with try-with-resources.
-     */
+    /** Convenience method for disabling StrictMode for slow calls with try-with-resources. */
     public static StrictModeContext allowSlowCalls() {
         try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowSlowCalls")) {
             StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
@@ -110,9 +104,10 @@ public final class StrictModeContext implements Closeable {
         try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowUnbufferedIo")) {
             StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder(oldPolicy)
-                                                   .permitUnbufferedIo()
-                                                   .build());
+                StrictMode.setThreadPolicy(
+                        new StrictMode.ThreadPolicy.Builder(oldPolicy)
+                                .permitUnbufferedIo()
+                                .build());
             }
             return new StrictModeContext(oldPolicy);
         }

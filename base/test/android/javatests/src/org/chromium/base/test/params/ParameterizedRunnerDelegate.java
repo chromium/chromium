@@ -19,18 +19,12 @@ import java.util.List;
  * org.chromium.base.test.params.BaseJUnit4RunnerDelegate.
  */
 public interface ParameterizedRunnerDelegate {
-    /**
-     * Override to use DelegateCommon's implementation
-     */
+    /** Override to use DelegateCommon's implementation */
     void collectInitializationErrors(List<Throwable> errors);
 
-    /**
-     * Override to use DelegateCommon's implementation
-     */
+    /** Override to use DelegateCommon's implementation */
     List<FrameworkMethod> computeTestMethods();
 
-    /**
-     * Override to use DelegateCommon's implementation
-     */
+    /** Override to use DelegateCommon's implementation */
     Object createTest() throws ParameterizedTestInstantiationException;
 }

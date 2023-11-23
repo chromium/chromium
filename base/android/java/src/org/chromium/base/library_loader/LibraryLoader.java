@@ -105,6 +105,7 @@ public class LibraryLoader {
         int MAIN_DEX_LOADED = 1;
         int LOADED = 2;
     }
+
     private volatile @LoadState int mLoadState;
 
     // Tracks mLoadState, but can be reset to NOT_LOADED between tests to ensure that each test that
@@ -163,8 +164,7 @@ public class LibraryLoader {
 
     // Used by tests to ensure that sLoadFailedCallback is called, also referenced by
     // SplitCompatApplication.
-    @VisibleForTesting
-    public static boolean sOverrideNativeLibraryCannotBeLoadedForTesting;
+    @VisibleForTesting public static boolean sOverrideNativeLibraryCannotBeLoadedForTesting;
 
     // Allow embedders to register a callback to handle native library load failures.
     public static Callback<UnsatisfiedLinkError> sLoadFailedCallback;
@@ -248,18 +248,25 @@ public class LibraryLoader {
                 // because waiting for zygote to reveal its address would have
                 // delayed startup.
                 if (DEBUG) {
-                    Log.i(TAG, "ensureInitializedInMainProcess, producing RELRO FD: %b",
+                    Log.i(
+                            TAG,
+                            "ensureInitializedInMainProcess, producing RELRO FD: %b",
                             attemptProduceRelro);
                 }
                 // For devices avoiding the App Zygote in
-                // ChildConnectionAllocator.createVariableSize() the FIND_RESERVED search can be
-                // avoided: a random region is sufficient. TODO(pasko): Investigate whether it is
-                // worth coordinating with the ChildConnectionAllocator. To speed up process
-                // creation.
-                int preferAddress = attemptProduceRelro ? Linker.PreferAddress.RESERVE_RANDOM
-                                                        : Linker.PreferAddress.FIND_RESERVED;
-                getLinker().ensureInitialized(
-                        attemptProduceRelro, preferAddress, /* addressHint= */ 0);
+                // ChildConnectionAllocator.createVariableSize()
+                // the FIND_RESERVED search can be avoided: a random region is sufficient.
+                // TODO(pasko):
+                // Investigate whether it is worth coordinating with the ChildConnectionAllocator.
+                // To
+                // speed up process creation.
+                int preferAddress =
+                        attemptProduceRelro
+                                ? Linker.PreferAddress.RESERVE_RANDOM
+                                : Linker.PreferAddress.FIND_RESERVED;
+                getLinker()
+                        .ensureInitialized(
+                                attemptProduceRelro, preferAddress, /* addressHint= */ 0);
             }
             mCreatedIn = CreatedIn.MAIN;
             mInitDone = true;
@@ -284,8 +291,9 @@ public class LibraryLoader {
         public void initInAppZygote() {
             assert !mInitDone;
             if (useChromiumLinker() && !mainProcessIntendsToProvideRelroFd()) {
-                getLinker().ensureInitialized(
-                        /* asRelroProducer= */ true, Linker.PreferAddress.FIND_RESERVED, 0);
+                getLinker()
+                        .ensureInitialized(
+                                /* asRelroProducer= */ true, Linker.PreferAddress.FIND_RESERVED, 0);
             } else {
                 // The main process will attempt to create RELRO FD without coordination. Fall back
                 // to loading with the system linker. Can happen in tests and on dev builds with
@@ -310,11 +318,15 @@ public class LibraryLoader {
                 if (DEBUG) {
                     Log.i(TAG, "initInChildProcess: RELRO FD not provided by App Zygote");
                 }
-                getLinker().ensureInitialized(/* asRelroProducer= */ false,
-                        Linker.PreferAddress.RESERVE_HINT, getLoadAddress());
+                getLinker()
+                        .ensureInitialized(
+                                /* asRelroProducer= */ false,
+                                Linker.PreferAddress.RESERVE_HINT,
+                                getLoadAddress());
             } else if (isLoadedByZygote()) {
                 if (DEBUG) {
-                    Log.i(TAG,
+                    Log.i(
+                            TAG,
                             "initInChildProcess: already loaded by app zygote "
                                     + "(mFallbackToSystemLinker=%b)",
                             mFallbackToSystemLinker);
@@ -323,8 +335,11 @@ public class LibraryLoader {
                 if (DEBUG) {
                     Log.i(TAG, "initInChildProcess: the app zygote failed to produce RELRO FD");
                 }
-                getLinker().ensureInitialized(/* asRelroProducer= */ false,
-                        Linker.PreferAddress.RESERVE_HINT, getLoadAddress());
+                getLinker()
+                        .ensureInitialized(
+                                /* asRelroProducer= */ false,
+                                Linker.PreferAddress.RESERVE_HINT,
+                                getLoadAddress());
             } else {
                 // The main process expects the app zygote to provide the RELRO FD, but this process
                 // does not inherit from the app zygote. This could be because:
@@ -337,13 +352,17 @@ public class LibraryLoader {
                 // TODO(pasko): Investigate whether searching with FIND_RESERVED affects startup
                 // speed on Go devices.
                 if (DEBUG) {
-                    Log.i(TAG,
+                    Log.i(
+                            TAG,
                             "initInChildProcess: child process not from app zygote, with address "
                                     + "hint: 0x%x",
                             getLoadAddress());
                 }
-                getLinker().ensureInitialized(/* asRelroProducer= */ false,
-                        Linker.PreferAddress.FIND_RESERVED, getLoadAddress());
+                getLinker()
+                        .ensureInitialized(
+                                /* asRelroProducer= */ false,
+                                Linker.PreferAddress.FIND_RESERVED,
+                                getLoadAddress());
             }
             if (mCreatedIn != CreatedIn.ZYGOTE) mCreatedIn = CreatedIn.CHILD_WITHOUT_ZYGOTE;
             mInitDone = true;
@@ -414,12 +433,13 @@ public class LibraryLoader {
             logLinkerUsed();
         }
         if (BuildConfig.ENABLE_ASSERTS) {
-            NativeLibraryLoadedStatus.setProvider(new NativeLibraryLoadedStatusProvider() {
-                @Override
-                public boolean areNativeMethodsReady() {
-                    return isMainDexLoaded();
-                }
-            });
+            NativeLibraryLoadedStatus.setProvider(
+                    new NativeLibraryLoadedStatusProvider() {
+                        @Override
+                        public boolean areNativeMethodsReady() {
+                            return isMainDexLoaded();
+                        }
+                    });
         }
     }
 
@@ -435,7 +455,8 @@ public class LibraryLoader {
         if (type == mLibraryProcessType) return;
         if (mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED) {
             throw new IllegalStateException(
-                    String.format("Trying to change the LibraryProcessType from %d to %d",
+                    String.format(
+                            "Trying to change the LibraryProcessType from %d to %d",
                             mLibraryProcessType, type));
         }
         mLibraryProcessType = type;
@@ -502,9 +523,7 @@ public class LibraryLoader {
         }
     }
 
-    /**
-     * Return if library is already loaded successfully by the zygote.
-     */
+    /** Return if library is already loaded successfully by the zygote. */
     public boolean isLoadedByZygote() {
         synchronized (mLock) {
             return mLoadedByZygote;
@@ -552,9 +571,7 @@ public class LibraryLoader {
                 ContextUtils.getApplicationContext().getApplicationInfo().packageName);
     }
 
-    /**
-     * Similar to {@link #preloadNow}, but allows specifying app context to use.
-     */
+    /** Similar to {@link #preloadNow}, but allows specifying app context to use. */
     public void preloadNowOverridePackageName(String packageName) {
         synchronized (mLock) {
             if (useChromiumLinker()) return;
@@ -612,9 +629,7 @@ public class LibraryLoader {
         loadNowOverrideApplicationContext(ContextUtils.getApplicationContext());
     }
 
-    /**
-     * Causes LibraryLoader to pretend that native libraries have not yet been initialized.
-     */
+    /** Causes LibraryLoader to pretend that native libraries have not yet been initialized. */
     public void resetForTesting() {
         mLoadStateForTesting = LoadState.NOT_LOADED;
         mInitializedForTesting = false;
@@ -690,12 +705,12 @@ public class LibraryLoader {
     @VisibleForTesting
     public static int getReachedCodeSamplingIntervalUs() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (ContextUtils.getAppSharedPreferences().getBoolean(
-                        DEPRECATED_REACHED_CODE_PROFILER_KEY, false)) {
+            if (ContextUtils.getAppSharedPreferences()
+                    .getBoolean(DEPRECATED_REACHED_CODE_PROFILER_KEY, false)) {
                 return DEFAULT_REACHED_CODE_SAMPLING_INTERVAL_US;
             }
-            return ContextUtils.getAppSharedPreferences().getInt(
-                    REACHED_CODE_SAMPLING_INTERVAL_KEY, 0);
+            return ContextUtils.getAppSharedPreferences()
+                    .getInt(REACHED_CODE_SAMPLING_INTERVAL_KEY, 0);
         }
     }
 
@@ -721,8 +736,8 @@ public class LibraryLoader {
     @VisibleForTesting
     public static boolean isBackgroundThreadPoolEnabled() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getAppSharedPreferences().getBoolean(
-                    BACKGROUND_THREAD_POOL_KEY, false);
+            return ContextUtils.getAppSharedPreferences()
+                    .getBoolean(BACKGROUND_THREAD_POOL_KEY, false);
         }
     }
 
@@ -855,9 +870,10 @@ public class LibraryLoader {
             int reachedCodeSamplingIntervalUs = getReachedCodeSamplingIntervalUs();
             if (reachedCodeSamplingIntervalUs > 0) {
                 CommandLine.getInstance().appendSwitch(BaseSwitches.ENABLE_REACHED_CODE_PROFILER);
-                CommandLine.getInstance().appendSwitchWithValue(
-                        BaseSwitches.REACHED_CODE_SAMPLING_INTERVAL_US,
-                        Integer.toString(reachedCodeSamplingIntervalUs));
+                CommandLine.getInstance()
+                        .appendSwitchWithValue(
+                                BaseSwitches.REACHED_CODE_SAMPLING_INTERVAL_US,
+                                Integer.toString(reachedCodeSamplingIntervalUs));
             }
 
             // Similarly, append a switch to enable the background thread pool group if the cached
@@ -921,7 +937,8 @@ public class LibraryLoader {
         if (BuildConfig.IS_UBSAN) {
             try {
                 // This value is duplicated in build/android/pylib/constants/__init__.py.
-                Os.setenv("UBSAN_OPTIONS",
+                Os.setenv(
+                        "UBSAN_OPTIONS",
                         "print_stacktrace=1 stack_trace_format='#%n pc %o %m' "
                                 + "handle_segv=0 handle_sigbus=0 handle_sigfpe=0",
                         true);

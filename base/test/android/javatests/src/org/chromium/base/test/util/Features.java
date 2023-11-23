@@ -56,10 +56,9 @@ public class Features extends FeaturesBase {
      */
     public static Features getInstance() {
         if (sInstance == null) sInstance = new Features();
-        assert sInstance
-                instanceof Features
-            : "Mixed use of Features annotations detected. "
-              + "Ensure the correct base/ or chrome/ version is being used.";
+        assert sInstance instanceof Features
+                : "Mixed use of Features annotations detected. "
+                        + "Ensure the correct base/ or chrome/ version is being used.";
         return (Features) sInstance;
     }
 

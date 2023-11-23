@@ -18,15 +18,10 @@ import org.jni_zero.CalledByNative;
 import java.util.ArrayList;
 import java.util.Locale;
 
-/**
- * This class provides the locale related methods.
- */
+/** This class provides the locale related methods. */
 public class LocaleUtils {
-    /**
-     * Guards this class from being instantiated.
-     */
-    private LocaleUtils() {
-    }
+    /** Guards this class from being instantiated. */
+    private LocaleUtils() {}
 
     /**
      * Java keeps deprecated language codes for Hebrew, Yiddish and Indonesian but Chromium uses
@@ -255,15 +250,14 @@ public class LocaleUtils {
         }
     }
 
-    /**
-     * Helper class for N only code that is not validated on pre-N devices.
-     */
+    /** Helper class for N only code that is not validated on pre-N devices. */
     @RequiresApi(Build.VERSION_CODES.N)
     @VisibleForTesting
     static class ApisN {
         static void setConfigLocales(Context base, Configuration config, String language) {
-            LocaleList updatedLocales = prependToLocaleList(
-                    language, base.getResources().getConfiguration().getLocales());
+            LocaleList updatedLocales =
+                    prependToLocaleList(
+                            language, base.getResources().getConfiguration().getLocales());
             config.setLocales(updatedLocales);
         }
 

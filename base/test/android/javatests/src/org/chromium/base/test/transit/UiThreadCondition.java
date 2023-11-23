@@ -7,6 +7,6 @@ package org.chromium.base.test.transit;
 /** A {@link Condition} that is checked in the UI thread. */
 public abstract class UiThreadCondition extends Condition {
     public UiThreadCondition() {
-        super(/*shouldRunOnUiThread*/ true);
+        super(/* isRunOnUiThread= */ true);
     }
 }

@@ -10,9 +10,7 @@ import android.util.Patterns;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Provides public methods for detecting and eliding sensitive PII.
- */
+/** Provides public methods for detecting and eliding sensitive PII. */
 public class PiiElider {
     private static final String EMAIL_ELISION = "XXX@EMAIL.ELIDED";
 
@@ -22,9 +20,9 @@ public class PiiElider {
 
     private static final String IP_ADDRESS =
             "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
-            + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
-            + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
-            + "|[1-9][0-9]|[0-9]))";
+                    + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
+                    + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
+                    + "|[1-9][0-9]|[0-9]))";
 
     private static final String IRI =
             "[" + GOOD_IRI_CHAR + "]([" + GOOD_IRI_CHAR + "-]{0,61}[" + GOOD_IRI_CHAR + "]){0,1}";
@@ -41,8 +39,13 @@ public class PiiElider {
             // Either a single valid path component character or a URI-encoded character.
             "(([" + GOOD_IRI_CHAR + ";/?:@&=#~.+!*'(),_-])|" + URI_ENCODED_CHAR + ")";
 
-    private static final String URI_SCHEME = "((http|https|Http|Https|rtsp|Rtsp)://"
-            + "(" + URI_CHAR + "{1,64}(:" + URI_CHAR + "{1,25})?@)?)";
+    private static final String URI_SCHEME =
+            "((http|https|Http|Https|rtsp|Rtsp)://"
+                    + "("
+                    + URI_CHAR
+                    + "{1,64}(:"
+                    + URI_CHAR
+                    + "{1,25})?@)?)";
 
     private static final String DOMAIN_NAME = "(" + HOST_NAME + "|" + IP_ADDRESS + ")";
 
@@ -62,25 +65,33 @@ public class PiiElider {
             "(" + URL_WITH_OPTIONAL_SCHEME_AND_PORT + "|" + INTENT + ")";
 
     private static final Pattern WEB_URL =
-            Pattern.compile("(\\b|^)" // Always start on a word boundary or start of string.
-                    + "(" + URL_OR_INTENT + ")" // Main URL or Intent scheme/domain/root path.
-                    + "(/" + PATH_CHAR + "*)?" // Rest of the URI path.
-                    + "(\\b|$)"); // Always end on a word boundary or end of string.
+            Pattern.compile(
+                    "(\\b|^)" // Always start on a word boundary or start of string.
+                            + "("
+                            + URL_OR_INTENT
+                            + ")" // Main URL or Intent scheme/domain/root path.
+                            + "(/"
+                            + PATH_CHAR
+                            + "*)?" // Rest of the URI path.
+                            + "(\\b|$)"); // Always end on a word boundary or end of string.
 
     // Example variant info chromium-TrichromeChromeGoogle6432.aab
     private static final String CHROME_VARIANT_INFO = "chromium-[^\\.]+\\.aab";
-    private static final Pattern LIKELY_EXCEPTION_LOG = Pattern.compile("\\sat\\s"
-            // These are all package prefixes of classes that are likely to
-            // exist on a stacktrace and are very unlikely to be a PII url.
-            + "(org\\.chromium|com\\.google|java|android|com\\.android)\\.[^ ]+.|"
-            // if a line has what looks like line number info, it's probably an
-            // exception log.
-            + "\\(" + CHROME_VARIANT_INFO
-            + "[^:]+:\\d+\\)|"
-            // When a class is not found it can fail to satisfy our isClass
-            // check but is still worth noting what it was.
-            + "Caused by: java\\.lang\\."
-            + "(ClassNotFoundException|NoClassDefFoundError):");
+    private static final Pattern LIKELY_EXCEPTION_LOG =
+            Pattern.compile(
+                    "\\sat\\s"
+                            // These are all package prefixes of classes that are likely to
+                            // exist on a stacktrace and are very unlikely to be a PII url.
+                            + "(org\\.chromium|com\\.google|java|android|com\\.android)\\.[^ ]+.|"
+                            // if a line has what looks like line number info, it's probably an
+                            // exception log.
+                            + "\\("
+                            + CHROME_VARIANT_INFO
+                            + "[^:]+:\\d+\\)|"
+                            // When a class is not found it can fail to satisfy our isClass
+                            // check but is still worth noting what it was.
+                            + "Caused by: java\\.lang\\."
+                            + "(ClassNotFoundException|NoClassDefFoundError):");
 
     private static final String IP_ELISION = "1.2.3.4";
     private static final String MAC_ELISION = "01:23:45:67:89:AB";
@@ -95,8 +106,19 @@ public class PiiElider {
             new String[] {"org.chromium.", "com.google.", "com.chrome."};
 
     private static final String[] SYSTEM_NAMESPACE =
-            new String[] {"android.", "com.android.", "dalvik.", "java.", "javax.", "org.apache.",
-                    "org.json.", "org.w3c.dom.", "org.xml.", "org.xmlpull.", "System."};
+            new String[] {
+                "android.",
+                "com.android.",
+                "dalvik.",
+                "java.",
+                "javax.",
+                "org.apache.",
+                "org.json.",
+                "org.w3c.dom.",
+                "org.xml.",
+                "org.xmlpull.",
+                "System."
+            };
 
     /**
      * Elides any emails in the specified {@link String} with
@@ -126,7 +148,8 @@ public class PiiElider {
             start = matcher.start();
             int end = matcher.end();
             String url = buffer.substring(start, end);
-            if (!likelyToBeAppNamespace(url) && !likelyToBeSystemNamespace(url)
+            if (!likelyToBeAppNamespace(url)
+                    && !likelyToBeSystemNamespace(url)
                     && !likelyToBeClassOrMethodName(url)) {
                 buffer.replace(start, end, URL_ELISION);
                 end = start + URL_ELISION.length();

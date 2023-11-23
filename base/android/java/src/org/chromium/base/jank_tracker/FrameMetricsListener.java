@@ -95,8 +95,8 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
         long frameTotalDurationNs = frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION);
         long frame_start_vsync_ts = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP);
 
-        try (TraceEvent e = TraceEvent.scoped(
-                     "onFrameMetricsAvailable", Long.toString(frameTotalDurationNs))) {
+        try (TraceEvent e =
+                TraceEvent.scoped("onFrameMetricsAvailable", Long.toString(frameTotalDurationNs))) {
             // FrameMetrics.DEADLINE was added in API level 31(S).
             // TODO(b/311139161): Update RequiresApi level to Android S.
             long deadlineNs = frameMetrics.getMetric(FrameMetrics.DEADLINE);

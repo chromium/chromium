@@ -41,7 +41,9 @@ public class ShadowPostTask {
         if (sTestImpl == null) {
             // Can use reflection to call into the real method that is being shadowed. This is the
             // same as not having a shadow.
-            Shadow.directlyOn(PostTask.class, "postDelayedTask",
+            Shadow.directlyOn(
+                    PostTask.class,
+                    "postDelayedTask",
                     ClassParameter.from(int.class, taskTraits),
                     ClassParameter.from(Runnable.class, task),
                     ClassParameter.from(long.class, delay));

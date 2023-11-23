@@ -19,9 +19,9 @@ class MockitoErrorHandler implements TestRule {
     private static final String TAG = "MockitoErrorHandler";
 
     private static final String MOCKITO_ERROR =
-            "Note: Proguard optimization is enabled and may cause exceptions when Mocking Derived "
-            + "classes, or classes that implement interfaces whose methods are not kept. You may "
-            + "need to add org.chromium.build.annotations.MockedInTests to such classes.";
+            "Note: Proguard optimization is enabled and may cause exceptions when Mocking Derived"
+                + " classes, or classes that implement interfaces whose methods are not kept. You"
+                + " may need to add org.chromium.build.annotations.MockedInTests to such classes.";
 
     @CheckDiscard("")
     private void removedMethodUnderRelease() {}

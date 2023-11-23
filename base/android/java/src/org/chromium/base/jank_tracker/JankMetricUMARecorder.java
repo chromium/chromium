@@ -7,13 +7,14 @@ package org.chromium.base.jank_tracker;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Sends Android jank metrics to native to be recorded using UMA.
- */
+/** Sends Android jank metrics to native to be recorded using UMA. */
 @JNINamespace("base::android")
 public class JankMetricUMARecorder {
-    public static void recordJankMetricsToUMA(JankMetrics metric, long reportingIntervalStartTime,
-            long reportingIntervalDuration, @JankScenario int scenario) {
+    public static void recordJankMetricsToUMA(
+            JankMetrics metric,
+            long reportingIntervalStartTime,
+            long reportingIntervalDuration,
+            @JankScenario int scenario) {
         if (metric == null) {
             return;
         }

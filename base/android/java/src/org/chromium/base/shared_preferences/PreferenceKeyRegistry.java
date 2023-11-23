@@ -19,7 +19,10 @@ public class PreferenceKeyRegistry {
     public final HashSet<String> mLegacyFormatKeys;
     public final List<KeyPrefix> mLegacyPrefixes;
 
-    public PreferenceKeyRegistry(String module, List<String> keysInUse, List<String> legacyKeys,
+    public PreferenceKeyRegistry(
+            String module,
+            List<String> keysInUse,
+            List<String> legacyKeys,
             List<KeyPrefix> legacyPrefixes) {
         mModule = module;
         mKeysInUse = new HashSet<>(keysInUse);
@@ -29,7 +32,12 @@ public class PreferenceKeyRegistry {
 
     @NonNull
     public String toDebugString() {
-        return String.format(Locale.getDefault(), "%s (%d in use, %d legacy, %d legacy prefixes)",
-                mModule, mKeysInUse.size(), mLegacyFormatKeys.size(), mLegacyPrefixes.size());
+        return String.format(
+                Locale.getDefault(),
+                "%s (%d in use, %d legacy, %d legacy prefixes)",
+                mModule,
+                mKeysInUse.size(),
+                mLegacyFormatKeys.size(),
+                mLegacyPrefixes.size());
     }
 }

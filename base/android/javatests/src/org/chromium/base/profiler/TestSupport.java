@@ -8,9 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Helper to run code through JNI layer to test JNI unwinding.
- */
+/** Helper to run code through JNI layer to test JNI unwinding. */
 @JNINamespace("base")
 public final class TestSupport {
     @CalledByNative

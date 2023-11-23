@@ -4,9 +4,7 @@
 
 package org.chromium.base;
 
-/**
- * Contains various math utilities used throughout Chrome Mobile.
- */
+/** Contains various math utilities used throughout Chrome Mobile. */
 public class MathUtils {
     /** A minimum difference to use when comparing floats for equality. */
     public static final float EPSILON = 0.001f;
@@ -119,7 +117,7 @@ public class MathUtils {
         if (dimensions.length < 2 || dimensions[0] <= 0 || dimensions[1] <= 0) {
             throw new IllegalArgumentException(
                     "Expected dimensions to have length >= 2 && dimensions[0] > 0 && "
-                    + "dimensions[1] > 0");
+                            + "dimensions[1] > 0");
         }
         float scale =
                 Math.max((float) targetWidth / dimensions[0], (float) targetHeight / dimensions[1]);

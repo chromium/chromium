@@ -17,9 +17,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- * Tests for (@link ObserverList}.
- */
+/** Tests for (@link ObserverList}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ObserverListTest {
     interface Observer {
@@ -40,9 +38,7 @@ public class ObserverListTest {
         }
     }
 
-    /**
-     * An observer which add a given Observer object to the list when observe is called.
-     */
+    /** An observer which add a given Observer object to the list when observe is called. */
     private static class FooAdder implements Observer {
         private final ObserverList<Observer> mList;
         private final Observer mLucky;
@@ -58,9 +54,7 @@ public class ObserverListTest {
         }
     }
 
-    /**
-     * An observer which removes a given Observer object from the list when observe is called.
-     */
+    /** An observer which removes a given Observer object from the list when observe is called. */
     private static class FooRemover implements Observer {
         private final ObserverList<Observer> mList;
         private final Observer mDoomed;

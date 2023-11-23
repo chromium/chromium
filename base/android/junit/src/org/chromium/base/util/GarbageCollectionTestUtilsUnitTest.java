@@ -21,9 +21,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Tests for {@link GarbageCollectionTestUtils}.
- */
+/** Tests for {@link GarbageCollectionTestUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GarbageCollectionTestUtilsUnitTest {

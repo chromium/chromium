@@ -43,8 +43,8 @@ public abstract class Features {
      *         specified parameter does not exist or its string value is neither "true" nor "false".
      */
     public boolean getFieldTrialParamByFeatureAsBoolean(String paramName, boolean defaultValue) {
-        return FeaturesJni.get().getFieldTrialParamByFeatureAsBoolean(
-                getFeaturePointer(), paramName, defaultValue);
+        return FeaturesJni.get()
+                .getFieldTrialParamByFeatureAsBoolean(getFeaturePointer(), paramName, defaultValue);
     }
 
     /**
@@ -56,8 +56,8 @@ public abstract class Features {
      *         specified parameter does not exist.
      */
     public String getFieldTrialParamByFeatureAsString(String paramName) {
-        return FeaturesJni.get().getFieldTrialParamByFeatureAsString(
-                getFeaturePointer(), paramName);
+        return FeaturesJni.get()
+                .getFieldTrialParamByFeatureAsString(getFeaturePointer(), paramName);
     }
 
     /** Returns a pointer to the native Feature object represented by this object instance. */
@@ -66,8 +66,10 @@ public abstract class Features {
     @NativeMethods
     interface Natives {
         boolean isEnabled(long featurePointer);
+
         boolean getFieldTrialParamByFeatureAsBoolean(
                 long featurePointer, String paramName, boolean defaultValue);
+
         String getFieldTrialParamByFeatureAsString(long featurePointer, String paramName);
     }
 }

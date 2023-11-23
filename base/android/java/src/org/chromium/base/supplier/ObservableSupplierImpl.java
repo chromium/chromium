@@ -49,10 +49,11 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
 
         if (mObject != null) {
             final E currentObject = mObject;
-            mHandler.post(() -> {
-                if (mObject != currentObject || !mObservers.hasObserver(obs)) return;
-                obs.onResult(mObject);
-            });
+            mHandler.post(
+                    () -> {
+                        if (mObject != currentObject || !mObservers.hasObserver(obs)) return;
+                        obs.onResult(mObject);
+                    });
         }
 
         return mObject;
@@ -96,10 +97,8 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
     }
 
     private void checkThread() {
-        assert sIgnoreThreadChecksForTesting
-                || mThread
-                        == Thread.currentThread()
-            : "ObservableSupplierImpl must only be used on a single Thread.";
+        assert sIgnoreThreadChecksForTesting || mThread == Thread.currentThread()
+                : "ObservableSupplierImpl must only be used on a single Thread.";
     }
 
     /** Used to allow developers to access supplier values on the instrumentation thread. */

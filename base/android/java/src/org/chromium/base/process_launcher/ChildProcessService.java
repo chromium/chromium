@@ -87,6 +87,7 @@ public class ChildProcessService {
     // PID of the client of this service, set in bindToCaller(), if mBindToCallerCheck is true.
     @GuardedBy("mBinderLock")
     private int mBoundCallingPid;
+
     @GuardedBy("mBinderLock")
     private String mBoundCallingClazz;
 
@@ -117,121 +118,134 @@ public class ChildProcessService {
     }
 
     // Binder object used by clients for this service.
-    private final IChildProcessService.Stub mBinder = new IChildProcessService.Stub() {
-        // NOTE: Implement any IChildProcessService methods here.
-        @Override
-        public boolean bindToCaller(String clazz) {
-            assert mBindToCallerCheck;
-            assert mServiceBound;
-            synchronized (mBinderLock) {
-                int callingPid = Binder.getCallingPid();
-                if (mBoundCallingPid == 0 && mBoundCallingClazz == null) {
-                    mBoundCallingPid = callingPid;
-                    mBoundCallingClazz = clazz;
-                } else if (mBoundCallingPid != callingPid) {
-                    Log.e(TAG, "Service is already bound by pid %d, cannot bind for pid %d",
-                            mBoundCallingPid, callingPid);
-                    return false;
-                } else if (!TextUtils.equals(mBoundCallingClazz, clazz)) {
-                    Log.w(TAG, "Service is already bound by %s, cannot bind for %s",
-                            mBoundCallingClazz, clazz);
-                    return false;
+    private final IChildProcessService.Stub mBinder =
+            new IChildProcessService.Stub() {
+                // NOTE: Implement any IChildProcessService methods here.
+                @Override
+                public boolean bindToCaller(String clazz) {
+                    assert mBindToCallerCheck;
+                    assert mServiceBound;
+                    synchronized (mBinderLock) {
+                        int callingPid = Binder.getCallingPid();
+                        if (mBoundCallingPid == 0 && mBoundCallingClazz == null) {
+                            mBoundCallingPid = callingPid;
+                            mBoundCallingClazz = clazz;
+                        } else if (mBoundCallingPid != callingPid) {
+                            Log.e(
+                                    TAG,
+                                    "Service is already bound by pid %d, cannot bind for pid %d",
+                                    mBoundCallingPid,
+                                    callingPid);
+                            return false;
+                        } else if (!TextUtils.equals(mBoundCallingClazz, clazz)) {
+                            Log.w(
+                                    TAG,
+                                    "Service is already bound by %s, cannot bind for %s",
+                                    mBoundCallingClazz,
+                                    clazz);
+                            return false;
+                        }
+                    }
+                    return true;
                 }
-            }
-            return true;
-        }
 
-        @Override
-        public ApplicationInfo getAppInfo() {
-            return mApplicationContext.getApplicationInfo();
-        }
-
-        @Override
-        public void setupConnection(Bundle args, IParentProcess parentProcess,
-                List<IBinder> callbacks) throws RemoteException {
-            assert mServiceBound;
-            synchronized (mBinderLock) {
-                if (mBindToCallerCheck && mBoundCallingPid == 0) {
-                    Log.e(TAG, "Service has not been bound with bindToCaller()");
-                    parentProcess.finishSetupConnection(-1, 0, 0, null);
-                    return;
+                @Override
+                public ApplicationInfo getAppInfo() {
+                    return mApplicationContext.getApplicationInfo();
                 }
-            }
 
-            int pid = Process.myPid();
-            int zygotePid = 0;
-            long startupTimeMillis = -1;
-            Bundle relroBundle = null;
-            if (LibraryLoader.getInstance().isLoadedByZygote()) {
-                zygotePid = sZygotePid;
-                startupTimeMillis = sZygoteStartupTimeMillis;
-                LibraryLoader.MultiProcessMediator m = LibraryLoader.getInstance().getMediator();
-                m.initInChildProcess();
-                // In a number of cases the app zygote decides not to produce a RELRO FD. The bundle
-                // will tell the receiver to silently ignore it.
-                relroBundle = new Bundle();
-                m.putSharedRelrosToBundle(relroBundle);
-            }
-            // After finishSetupConnection() the parent process will stop accepting |relroBundle|
-            // from this process to ensure that another FD to shared memory is not sent later.
-            parentProcess.finishSetupConnection(pid, zygotePid, startupTimeMillis, relroBundle);
-            mParentProcess = parentProcess;
-            processConnectionBundle(args, callbacks);
-        }
+                @Override
+                public void setupConnection(
+                        Bundle args, IParentProcess parentProcess, List<IBinder> callbacks)
+                        throws RemoteException {
+                    assert mServiceBound;
+                    synchronized (mBinderLock) {
+                        if (mBindToCallerCheck && mBoundCallingPid == 0) {
+                            Log.e(TAG, "Service has not been bound with bindToCaller()");
+                            parentProcess.finishSetupConnection(-1, 0, 0, null);
+                            return;
+                        }
+                    }
 
-        @Override
-        public void forceKill() {
-            assert mServiceBound;
-            Process.killProcess(Process.myPid());
-        }
-
-        @Override
-        public void onMemoryPressure(@MemoryPressureLevel int pressure) {
-            // This method is called by the host process when the host process reports pressure
-            // to its native side. The key difference between the host process and its services is
-            // that the host process polls memory pressure when it gets CRITICAL, and periodically
-            // invokes pressure listeners until pressure subsides. (See MemoryPressureMonitor for
-            // more info.)
-            //
-            // Services don't poll, so this side-channel is used to notify services about memory
-            // pressure from the host process's POV.
-            //
-            // However, since both host process and services listen to ComponentCallbacks2, we
-            // can't be sure that the host process won't get better signals than their services.
-            // I.e. we need to watch out for a situation where a service gets CRITICAL, but the
-            // host process gets MODERATE - in this case we need to ignore MODERATE.
-            //
-            // So we're ignoring pressure from the host process if it's better than the last
-            // reported pressure. I.e. the host process can drive pressure up, but it'll go
-            // down only when we the service get a signal through ComponentCallbacks2.
-            ThreadUtils.postOnUiThread(() -> {
-                if (pressure >= MemoryPressureMonitor.INSTANCE.getLastReportedPressure()) {
-                    MemoryPressureMonitor.INSTANCE.notifyPressure(pressure);
+                    int pid = Process.myPid();
+                    int zygotePid = 0;
+                    long startupTimeMillis = -1;
+                    Bundle relroBundle = null;
+                    if (LibraryLoader.getInstance().isLoadedByZygote()) {
+                        zygotePid = sZygotePid;
+                        startupTimeMillis = sZygoteStartupTimeMillis;
+                        LibraryLoader.MultiProcessMediator m =
+                                LibraryLoader.getInstance().getMediator();
+                        m.initInChildProcess();
+                        // In a number of cases the app zygote decides not to produce a RELRO FD.
+                        // The bundle will tell the receiver to silently ignore it.
+                        relroBundle = new Bundle();
+                        m.putSharedRelrosToBundle(relroBundle);
+                    }
+                    // After finishSetupConnection() the parent process will stop accepting
+                    // |relroBundle| from this process to ensure that another FD to shared memory
+                    // is not sent later.
+                    parentProcess.finishSetupConnection(
+                            pid, zygotePid, startupTimeMillis, relroBundle);
+                    mParentProcess = parentProcess;
+                    processConnectionBundle(args, callbacks);
                 }
-            });
-        }
 
-        @Override
-        public void dumpProcessStack() {
-            assert mServiceBound;
-            synchronized (mLibraryInitializedLock) {
-                if (!mLibraryInitialized) {
-                    Log.e(TAG, "Cannot dump process stack before native is loaded");
-                    return;
+                @Override
+                public void forceKill() {
+                    assert mServiceBound;
+                    Process.killProcess(Process.myPid());
                 }
-            }
-            ChildProcessServiceJni.get().dumpProcessStack();
-        }
 
-        @Override
-        public void consumeRelroBundle(Bundle bundle) {
-            mDelegate.consumeRelroBundle(bundle);
-        }
-    };
+                @Override
+                public void onMemoryPressure(@MemoryPressureLevel int pressure) {
+                    // This method is called by the host process when the host process reports
+                    // pressure to its native side. The key difference between the host process
+                    // and its services is that the host process polls memory pressure when it
+                    // gets CRITICAL, and periodically invokes pressure listeners until pressure
+                    // subsides. (See MemoryPressureMonitor for more info.)
+                    //
+                    // Services don't poll, so this side-channel is used to notify services about
+                    // memory pressure from the host process's POV.
+                    //
+                    // However, since both host process and services listen to ComponentCallbacks2,
+                    // we can't be sure that the host process won't get better signals than their
+                    // services.
+                    // I.e. we need to watch out for a situation where a service gets CRITICAL, but
+                    // the host process gets MODERATE - in this case we need to ignore MODERATE.
+                    //
+                    // So we're ignoring pressure from the host process if it's better than the last
+                    // reported pressure. I.e. the host process can drive pressure up, but it'll go
+                    // down only when we the service get a signal through ComponentCallbacks2.
+                    ThreadUtils.postOnUiThread(
+                            () -> {
+                                if (pressure
+                                        >= MemoryPressureMonitor.INSTANCE
+                                                .getLastReportedPressure()) {
+                                    MemoryPressureMonitor.INSTANCE.notifyPressure(pressure);
+                                }
+                            });
+                }
 
-    /**
-     * Loads Chrome's native libraries and initializes a ChildProcessService.
-     */
+                @Override
+                public void dumpProcessStack() {
+                    assert mServiceBound;
+                    synchronized (mLibraryInitializedLock) {
+                        if (!mLibraryInitialized) {
+                            Log.e(TAG, "Cannot dump process stack before native is loaded");
+                            return;
+                        }
+                    }
+                    ChildProcessServiceJni.get().dumpProcessStack();
+                }
+
+                @Override
+                public void consumeRelroBundle(Bundle bundle) {
+                    mDelegate.consumeRelroBundle(bundle);
+                }
+            };
+
+    /** Loads Chrome's native libraries and initializes a ChildProcessService. */
     // For sCreateCalled check.
     public void onCreate() {
         Log.i(TAG, "Creating new ChildProcessService pid=%d", Process.myPid());
@@ -251,93 +265,92 @@ public class ChildProcessService {
         // default, which can be much smaller. So, explicitly set up a larger stack here.
         long stackSize = ContextUtils.isProcess64Bit() ? 8 * 1024 * 1024 : 4 * 1024 * 1024;
 
-        mMainThread = new Thread(/*threadGroup=*/null, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // CommandLine must be initialized before everything else.
-                    synchronized (mMainThread) {
-                        while (mCommandLineParams == null) {
-                            mMainThread.wait();
-                        }
-                    }
-                    assert mServiceBound;
-                    CommandLine.init(mCommandLineParams);
-
-                    if (CommandLine.getInstance().hasSwitch(
-                                BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER)) {
-                        android.os.Debug.waitForDebugger();
-                    }
-
-                    EarlyTraceEvent.onCommandLineAvailableInChildProcess();
-                    mDelegate.loadNativeLibrary(getApplicationContext());
-
-                    synchronized (mLibraryInitializedLock) {
-                        mLibraryInitialized = true;
-                        mLibraryInitializedLock.notifyAll();
-                    }
-                    synchronized (mMainThread) {
-                        mMainThread.notifyAll();
-                        while (mFdInfos == null) {
-                            mMainThread.wait();
-                        }
-                    }
-
-                    SparseArray<String> idsToKeys = mDelegate.getFileDescriptorsIdsToKeys();
-
-                    int[] fileIds = new int[mFdInfos.length];
-                    String[] keys = new String[mFdInfos.length];
-                    int[] fds = new int[mFdInfos.length];
-                    long[] regionOffsets = new long[mFdInfos.length];
-                    long[] regionSizes = new long[mFdInfos.length];
-                    for (int i = 0; i < mFdInfos.length; i++) {
-                        FileDescriptorInfo fdInfo = mFdInfos[i];
-                        String key = idsToKeys != null ? idsToKeys.get(fdInfo.id) : null;
-                        if (key != null) {
-                            keys[i] = key;
-                        } else {
-                            fileIds[i] = fdInfo.id;
-                        }
-                        fds[i] = fdInfo.fd.detachFd();
-                        regionOffsets[i] = fdInfo.offset;
-                        regionSizes[i] = fdInfo.size;
-                    }
-                    ChildProcessServiceJni.get().registerFileDescriptors(
-                            keys, fileIds, fds, regionOffsets, regionSizes);
-
-                    mDelegate.onBeforeMain();
-                } catch (Throwable e) {
-                    try {
-                        mParentProcess.reportExceptionInInit(ChildProcessService.class.getName()
-                                + "\n" + android.util.Log.getStackTraceString(e));
-                    } catch (RemoteException re) {
-                        Log.e(TAG, "Failed to call reportExceptionInInit.", re);
-                    }
-                    throw new RuntimeException(e);
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    // Record process startup time histograms.
-                    long startTime =
-                            SystemClock.uptimeMillis() - ApiHelperForN.getStartUptimeMillis();
-                    String baseHistogramName = "Android.ChildProcessStartTimeV2";
-                    String suffix = ContextUtils.isIsolatedProcess() ? ".Isolated" : ".NotIsolated";
-                    RecordHistogram.recordMediumTimesHistogram(
-                            baseHistogramName + ".All", startTime);
-                    RecordHistogram.recordMediumTimesHistogram(
-                            baseHistogramName + suffix, startTime);
-                }
-
-                mDelegate.runMain();
-                try {
-                    mParentProcess.reportCleanExit();
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Failed to call clean exit callback.", e);
-                }
-                ChildProcessServiceJni.get().exitChildProcess();
-            }
-        }, MAIN_THREAD_NAME, stackSize);
+        mMainThread =
+                new Thread(
+                        /* threadGroup= */ null, this::mainThreadMain, MAIN_THREAD_NAME, stackSize);
         mMainThread.start();
+    }
+
+    private void mainThreadMain() {
+        try {
+            // CommandLine must be initialized before everything else.
+            synchronized (mMainThread) {
+                while (mCommandLineParams == null) {
+                    mMainThread.wait();
+                }
+            }
+            assert mServiceBound;
+            CommandLine.init(mCommandLineParams);
+
+            if (CommandLine.getInstance().hasSwitch(BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER)) {
+                android.os.Debug.waitForDebugger();
+            }
+
+            EarlyTraceEvent.onCommandLineAvailableInChildProcess();
+            mDelegate.loadNativeLibrary(getApplicationContext());
+
+            synchronized (mLibraryInitializedLock) {
+                mLibraryInitialized = true;
+                mLibraryInitializedLock.notifyAll();
+            }
+            synchronized (mMainThread) {
+                mMainThread.notifyAll();
+                while (mFdInfos == null) {
+                    mMainThread.wait();
+                }
+            }
+
+            SparseArray<String> idsToKeys = mDelegate.getFileDescriptorsIdsToKeys();
+
+            int[] fileIds = new int[mFdInfos.length];
+            String[] keys = new String[mFdInfos.length];
+            int[] fds = new int[mFdInfos.length];
+            long[] regionOffsets = new long[mFdInfos.length];
+            long[] regionSizes = new long[mFdInfos.length];
+            for (int i = 0; i < mFdInfos.length; i++) {
+                FileDescriptorInfo fdInfo = mFdInfos[i];
+                String key = idsToKeys != null ? idsToKeys.get(fdInfo.id) : null;
+                if (key != null) {
+                    keys[i] = key;
+                } else {
+                    fileIds[i] = fdInfo.id;
+                }
+                fds[i] = fdInfo.fd.detachFd();
+                regionOffsets[i] = fdInfo.offset;
+                regionSizes[i] = fdInfo.size;
+            }
+            ChildProcessServiceJni.get()
+                    .registerFileDescriptors(keys, fileIds, fds, regionOffsets, regionSizes);
+
+            mDelegate.onBeforeMain();
+        } catch (Throwable e) {
+            try {
+                mParentProcess.reportExceptionInInit(
+                        ChildProcessService.class.getName()
+                                + "\n"
+                                + android.util.Log.getStackTraceString(e));
+            } catch (RemoteException re) {
+                Log.e(TAG, "Failed to call reportExceptionInInit.", re);
+            }
+            throw new RuntimeException(e);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Record process startup time histograms.
+            long startTime = SystemClock.uptimeMillis() - ApiHelperForN.getStartUptimeMillis();
+            String baseHistogramName = "Android.ChildProcessStartTimeV2";
+            String suffix = ContextUtils.isIsolatedProcess() ? ".Isolated" : ".NotIsolated";
+            RecordHistogram.recordMediumTimesHistogram(baseHistogramName + ".All", startTime);
+            RecordHistogram.recordMediumTimesHistogram(baseHistogramName + suffix, startTime);
+        }
+
+        mDelegate.runMain();
+        try {
+            mParentProcess.reportCleanExit();
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to call clean exit callback.", e);
+        }
+        ChildProcessServiceJni.get().exitChildProcess();
     }
 
     @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed due to http://crbug.com/928521#c16.
@@ -425,14 +438,10 @@ public class ChildProcessService {
          */
         void registerFileDescriptors(String[] keys, int[] id, int[] fd, long[] offset, long[] size);
 
-        /**
-         * Force the child process to exit.
-         */
+        /** Force the child process to exit. */
         void exitChildProcess();
 
-        /**
-         * Dumps the child process stack without crashing it.
-         */
+        /** Dumps the child process stack without crashing it. */
         void dumpProcessStack();
     }
 }

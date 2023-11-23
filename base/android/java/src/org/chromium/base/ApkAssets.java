@@ -38,8 +38,9 @@ public class ApkAssets {
             }
             AssetManager manager = context.getAssets();
             afd = manager.openNonAssetFd(fileName);
-            return new long[] {afd.getParcelFileDescriptor().detachFd(), afd.getStartOffset(),
-                    afd.getLength()};
+            return new long[] {
+                afd.getParcelFileDescriptor().detachFd(), afd.getStartOffset(), afd.getLength()
+            };
         } catch (IOException e) {
             sLastError = "Error while loading asset " + fileName + " from " + splitName + ": " + e;
             // As a general rule there's no point logging here because the caller should handle

@@ -4,9 +4,7 @@
 
 package org.chromium.base.jank_tracker;
 
-/**
- * Placeholder implementation of JankTracker.
- */
+/** Placeholder implementation of JankTracker. */
 public class PlaceholderJankTracker implements JankTracker {
     @Override
     public void startTrackingScenario(int scenario) {}

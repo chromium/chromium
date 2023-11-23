@@ -4,9 +4,7 @@
 
 package org.chromium.base.metrics;
 
-/**
- * Represents one single bucket of a histogram, with the count of records in that bucket.
- */
+/** Represents one single bucket of a histogram, with the count of records in that bucket. */
 public class HistogramBucket {
     public final int mMin;
     public final long mMax;

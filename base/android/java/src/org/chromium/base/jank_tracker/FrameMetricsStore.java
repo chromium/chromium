@@ -4,7 +4,6 @@
 
 package org.chromium.base.jank_tracker;
 
-
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
@@ -104,7 +103,7 @@ public class FrameMetricsStore {
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void startTrackingScenario(@JankScenario int scenario) {
         try (TraceEvent e =
-                        TraceEvent.scoped("startTrackingScenario: " + scenarioToString(scenario))) {
+                TraceEvent.scoped("startTrackingScenario: " + scenarioToString(scenario))) {
             mThreadChecker.assertOnValidThread();
             // Ignore multiple calls to startTrackingScenario without corresponding
             // stopTrackingScenario calls.
@@ -136,8 +135,9 @@ public class FrameMetricsStore {
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     JankMetrics stopTrackingScenario(@JankScenario int scenario, long endScenarioTimeNs) {
         try (TraceEvent e =
-                        TraceEvent.scoped("finishTrackingScenario: " + scenarioToString(scenario),
-                                Long.toString(endScenarioTimeNs))) {
+                TraceEvent.scoped(
+                        "finishTrackingScenario: " + scenarioToString(scenario),
+                        Long.toString(endScenarioTimeNs))) {
             mThreadChecker.assertOnValidThread();
             TraceEvent.finishAsync(
                     "JankCUJ:" + scenarioToString(scenario), TRACE_EVENT_TRACK_ID + scenario);
@@ -166,8 +166,8 @@ public class FrameMetricsStore {
             // Ending index is exclusive, so this is not out of bounds.
             int endingIndex = mTimestampsNs.size();
             if (endScenarioTimeNs > 0) {
-                // binarySearch returns
-                // index of the search key (non-negative value) or (-(insertion point) - 1).
+                // binarySearch returns index of the search key (non-negative value) or (-(insertion
+                // point) - 1).
                 // The insertion point is defined as the index of the first element greater than the
                 // key, or a.length if all elements in the array are less than the specified key.
                 endingIndex = Collections.binarySearch(mTimestampsNs, endScenarioTimeNs);

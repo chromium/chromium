@@ -17,8 +17,7 @@ import org.jni_zero.JNINamespace;
  */
 @JNINamespace("base")
 public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements SingleThreadTaskRunner {
-    @Nullable
-    private final Handler mHandler;
+    @Nullable private final Handler mHandler;
 
     /**
      * @param handler                The backing Handler if any. Note this must run tasks on the

@@ -30,8 +30,9 @@ public class JankTrackerImpl implements JankTracker {
         FrameMetricsStore metricsStore = new FrameMetricsStore();
         if (!constructInternalPreController(new JankReportingScheduler(metricsStore))) return;
 
-        constructInternalFinal(new JankActivityTracker(
-                activity, new FrameMetricsListener(metricsStore), mReportingScheduler));
+        constructInternalFinal(
+                new JankActivityTracker(
+                        activity, new FrameMetricsListener(metricsStore), mReportingScheduler));
     }
 
     /**
@@ -77,9 +78,7 @@ public class JankTrackerImpl implements JankTracker {
         mReportingScheduler.finishTrackingScenario(scenario, endScenarioTimeNs);
     }
 
-    /**
-     * Stops listening for Activity state changes.
-     */
+    /** Stops listening for Activity state changes. */
     @Override
     public void destroy() {
         if (!IS_TRACKING_ENABLED) return;

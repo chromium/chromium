@@ -16,9 +16,7 @@ import org.chromium.base.TraceEvent;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * This class is used to start a child process by connecting to a ChildProcessService.
- */
+/** This class is used to start a child process by connecting to a ChildProcessService. */
 public class ChildProcessLauncher {
     private static final String TAG = "ChildProcLauncher";
 
@@ -112,10 +110,14 @@ public class ChildProcessLauncher {
      * @param filesToBeMapped the files that should be passed to the started process.
      * @param connectionAllocator the allocator used to create connections to the service.
      * @param clientInterfaces the interfaces that should be passed to the started process so it can
-     * communicate with the parent process.
+     *     communicate with the parent process.
      */
-    public ChildProcessLauncher(Handler launcherHandler, Delegate delegate, String[] commandLine,
-            FileDescriptorInfo[] filesToBeMapped, ChildConnectionAllocator connectionAllocator,
+    public ChildProcessLauncher(
+            Handler launcherHandler,
+            Delegate delegate,
+            String[] commandLine,
+            FileDescriptorInfo[] filesToBeMapped,
+            ChildConnectionAllocator connectionAllocator,
             List<IBinder> clientInterfaces) {
         assert connectionAllocator != null;
         mLauncherHandler = launcherHandler;
@@ -150,18 +152,20 @@ public class ChildProcessLauncher {
                             assert isRunningOnLauncherThread();
                             assert mConnection == connection;
                             Log.e(TAG, "ChildProcessConnection.start failed, trying again");
-                            mLauncherHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // The child process may already be bound to another client
-                                    // (this can happen if multi-process WebView is used in more
-                                    // than one process), so try starting the process again.
-                                    // This connection that failed to start has not been freed,
-                                    // so a new bound connection will be allocated.
-                                    mConnection = null;
-                                    start(setupConnection, queueIfNoFreeConnection);
-                                }
-                            });
+                            mLauncherHandler.post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // The child process may already be bound to another
+                                            // client (this can happen if multi-process WebView is
+                                            // used in more than one process), so try starting the
+                                            // process again.
+                                            // This connection that failed to start has not been
+                                            // freed, so a new bound connection will be allocated.
+                                            mConnection = null;
+                                            start(setupConnection, queueIfNoFreeConnection);
+                                        }
+                                    });
                         }
 
                         @Override
@@ -177,7 +181,7 @@ public class ChildProcessLauncher {
                 return true;
             }
             if (!allocateAndSetupConnection(
-                        serviceCallback, setupConnection, queueIfNoFreeConnection)
+                            serviceCallback, setupConnection, queueIfNoFreeConnection)
                     && !queueIfNoFreeConnection) {
                 return false;
             }
@@ -197,20 +201,23 @@ public class ChildProcessLauncher {
 
     private boolean allocateAndSetupConnection(
             final ChildProcessConnection.ServiceCallback serviceCallback,
-            final boolean setupConnection, final boolean queueIfNoFreeConnection) {
+            final boolean setupConnection,
+            final boolean queueIfNoFreeConnection) {
         assert mConnection == null;
         Bundle serviceBundle = new Bundle();
         mDelegate.onBeforeConnectionAllocated(serviceBundle);
 
-        mConnection = mConnectionAllocator.allocate(
-                ContextUtils.getApplicationContext(), serviceBundle, serviceCallback);
+        mConnection =
+                mConnectionAllocator.allocate(
+                        ContextUtils.getApplicationContext(), serviceBundle, serviceCallback);
         if (mConnection == null) {
             if (!queueIfNoFreeConnection) {
                 Log.d(TAG, "Failed to allocate a child connection (no queuing).");
                 return false;
             }
             mConnectionAllocator.queueAllocation(
-                    () -> allocateAndSetupConnection(
+                    () ->
+                            allocateAndSetupConnection(
                                     serviceCallback, setupConnection, queueIfNoFreeConnection));
             return false;
         }

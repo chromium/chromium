@@ -31,6 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
 public class PostTask {
     private static final String TAG = "PostTask";
     private static final Object sPreNativeTaskRunnerLock = new Object();
+
     @GuardedBy("sPreNativeTaskRunnerLock")
     private static List<TaskRunnerImpl> sPreNativeTaskRunners = new ArrayList<>();
 
@@ -186,9 +187,7 @@ public class PostTask {
         ResettersForTesting.register(() -> sPrenativeThreadPoolExecutorForTesting = null);
     }
 
-    /**
-     * Clears an override set by setPrenativeThreadPoolExecutorOverrideForTesting.
-     */
+    /** Clears an override set by setPrenativeThreadPoolExecutorOverrideForTesting. */
     public static void resetPrenativeThreadPoolExecutorForTesting() {
         sPrenativeThreadPoolExecutorForTesting = null;
     }

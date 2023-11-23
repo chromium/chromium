@@ -9,12 +9,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-/**
- * Helper class containing Hamcrest matchers.
- */
+/** Helper class containing Hamcrest matchers. */
 public class Matchers extends CoreMatchers {
-    private static class GreaterThanOrEqualTo<T extends Comparable<T>>
-            extends TypeSafeMatcher<T> {
+    private static class GreaterThanOrEqualTo<T extends Comparable<T>> extends TypeSafeMatcher<T> {
 
         private final T mComparisonValue;
 

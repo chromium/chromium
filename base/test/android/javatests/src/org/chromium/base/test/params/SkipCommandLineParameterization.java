@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
  * BaseJUnit4ClassRunner and host side test harness skips commandline parameterization for test
  * classes or methods annotated with SkipCommandLineParameterization.
  */
-
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
