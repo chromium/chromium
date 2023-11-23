@@ -602,6 +602,13 @@
       status: {"Android": "", "default": "test"},
     },
     {
+      name: "CapturedSurfaceControl",
+      // TODO(crbug.com/1466247): Once implementation is further along,
+      // set "default" to "experimental". (Note that Android support
+      // is not planned.)
+      status: {"Android": ""},
+    },
+    {
       name: "CaptureHandle",
       depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "stable"},
