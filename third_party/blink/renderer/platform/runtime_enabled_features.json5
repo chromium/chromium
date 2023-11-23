@@ -1045,6 +1045,12 @@
       status: "test",
       base_feature: "none",
     },
+    // https://drafts.csswg.org/css-values-5/#progress
+    // progress(), media-progress(), container-progress()
+    {
+      name: "CSSProgressNotation",
+      status: "experimental",
+    },
     {
       // Shipping in M120.  Flag should be removed after M120 has been
       // shipping to stable for a few weeks.

@@ -199,4 +199,17 @@ TEST(CalculationExpressionOperationNodeTest, NonExplicitPixelsAndPercent) {
   EXPECT_FALSE(pixels_and_percent_node->HasExplicitPercent());
 }
 
+TEST(CalculationExpressionOperationNodeTest, ProgressNotation) {
+  EXPECT_EQ(BuildOperationNode({3.f, 0.f, 1.f}, CalculationOperator::kProgress)
+                ->Evaluate(FLT_MAX, nullptr),
+            3.f);
+  EXPECT_EQ(
+      BuildOperationNode({10.f, 5.f, 10.f}, CalculationOperator::kProgress)
+          ->Evaluate(FLT_MAX, nullptr),
+      2.f);
+  EXPECT_TRUE(std::isnan(
+      BuildOperationNode({0.f, 0.f, 0.f}, CalculationOperator::kProgress)
+          ->Evaluate(FLT_MAX, nullptr)));
+}
+
 }  // namespace blink

@@ -518,6 +518,76 @@ TEST(CSSMathExpressionNode, IdentifierLiteralConversion) {
             AtomicString("test"));
 }
 
+TEST(CSSMathExpressionNode, TestProgressNotation) {
+  const struct TestCase {
+    const std::string input;
+    const double output;
+  } test_cases[] = {
+      {"progress(1px from 0px to 4px)", 0.25f},
+      {"progress(10deg from 0deg to 10deg)", 1.0f},
+      {"progress(progress(10% from 20% to 40%) * 1px from 0.5px to 1px)", 1.0f},
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(String(test_case.input.c_str()));
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
+    EXPECT_EQ(res->DoubleValue(), test_case.output);
+    CSSToLengthConversionData resolver;
+    scoped_refptr<const CalculationExpressionNode> node =
+        res->ToCalculationExpression(resolver);
+    EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+  }
+}
+
+TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
+  const struct TestCase {
+    const std::string input;
+    const double output;
+  } test_cases[] = {
+      {"progress(abs(5%) from hypot(3%, 4%) to 10%)", 1.0f},
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(String(test_case.input.c_str()));
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
+    EXPECT_TRUE(res);
+    EXPECT_TRUE(res->IsOperation());
+    CSSToLengthConversionData resolver;
+    scoped_refptr<const CalculationExpressionNode> node =
+        res->ToCalculationExpression(resolver);
+    EXPECT_FLOAT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+  }
+}
+
+TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
+  const std::string test_cases[] = {
+      "progress(1% from 0px to 4px)",
+      "progress(1px, 0px, 4px)",
+      "progress(10deg from 0 to 10deg)",
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(String(test_case.c_str()));
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
+    EXPECT_FALSE(res);
+  }
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

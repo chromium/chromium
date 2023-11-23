@@ -294,6 +294,25 @@ bool CanEagerlySimplify(const CSSMathExpressionOperation::Operands& operands) {
   return true;
 }
 
+// Either all the arguments are numerics and have the same unit type (e.g.
+// progress(1em from 0em to 1em)), or they are all numerics and can be resolved
+// to the canonical unit (e.g. progress(1deg from 0rad to 1deg)). Note: this
+// can't be eagerly simplified - progress(1em from 0px to 1em).
+bool CanEagerlySimplifyProgressArgs(
+    const CSSMathExpressionOperation::Operands& operands) {
+  return std::all_of(operands.begin(), operands.end(),
+                     [](const CSSMathExpressionNode* node) {
+                       return node->IsNumericLiteral() &&
+                              node->ComputeValueInCanonicalUnit().has_value();
+                     }) ||
+         std::all_of(operands.begin(), operands.end(),
+                     [&](const CSSMathExpressionNode* node) {
+                       return node->IsNumericLiteral() &&
+                              node->ResolvedUnitType() ==
+                                  operands.front()->ResolvedUnitType();
+                     });
+}
+
 using UnitsHashMap = HashMap<CSSPrimitiveValue::UnitType, double>;
 struct CSSMathExpressionNodeWithOperator {
   DISALLOW_NEW();
@@ -1515,6 +1534,7 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kRem:
     case CSSMathOperator::kHypot:
     case CSSMathOperator::kAbs:
+    case CSSMathOperator::kProgress:
     case CSSMathOperator::kSign:
       return absl::nullopt;
     case CSSMathOperator::kInvalid:
@@ -1598,7 +1618,8 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kRem:
     case CSSMathOperator::kHypot:
     case CSSMathOperator::kAbs:
-    case CSSMathOperator::kSign: {
+    case CSSMathOperator::kSign:
+    case CSSMathOperator::kProgress: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_) {
@@ -1621,8 +1642,11 @@ CSSMathExpressionOperation::ToCalculationExpression(
         op = CalculationOperator::kHypot;
       } else if (operator_ == CSSMathOperator::kAbs) {
         op = CalculationOperator::kAbs;
-      } else {
+      } else if (operator_ == CSSMathOperator::kSign) {
         op = CalculationOperator::kSign;
+      } else {
+        CHECK(operator_ == CSSMathOperator::kProgress);
+        op = CalculationOperator::kProgress;
       }
       return CalculationExpressionOperationNode::CreateSimplified(
           std::move(operands), op);
@@ -1740,6 +1764,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
     case CSSMathOperator::kSign:
       // When stepped value functions are involved, we can't resolve the
       // expression into a length array.
+    case CSSMathOperator::kProgress:
       return false;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -1856,6 +1881,20 @@ String CSSMathExpressionOperation::CustomCSSText() const {
 
       return result.ReleaseString();
     }
+    case CSSMathOperator::kProgress: {
+      CHECK_EQ(operands_.size(), 3u);
+      StringBuilder result;
+      result.Append(ToString(operator_));
+      result.Append('(');
+      result.Append(operands_.front()->CustomCSSText());
+      result.Append(" from ");
+      result.Append(operands_[1]->CustomCSSText());
+      result.Append(" to ");
+      result.Append(operands_.back()->CustomCSSText());
+      result.Append(')');
+
+      return result.ReleaseString();
+    }
     case CSSMathOperator::kInvalid:
       NOTREACHED();
       return String();
@@ -1935,6 +1974,8 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           }
           return first_type;
         }
+        case CSSMathOperator::kProgress:
+          return CSSPrimitiveValue::UnitType::kNumber;
         case CSSMathOperator::kInvalid:
           NOTREACHED();
           return CSSPrimitiveValue::UnitType::kUnknown;
@@ -2052,6 +2093,10 @@ double CSSMathExpressionOperation::EvaluateOperator(
       const double signum =
           (value == 0 || std::isnan(value)) ? value : ((value > 0) ? 1 : -1);
       return signum;
+    }
+    case CSSMathOperator::kProgress: {
+      CHECK_EQ(operands.size(), 3u);
+      return operands[0] / (operands[2] - operands[1]);
     }
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2289,6 +2334,8 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
         return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled();
+      case CSSValueID::kProgress:
+        return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return false;
@@ -2366,6 +2413,69 @@ class CSSMathExpressionNodeParser {
         anchor_query_type, anchor_specifier, *value, fallback);
   }
 
+  // https://drafts.csswg.org/css-values-5/#progress-func
+  CSSMathExpressionNode* ParseProgressNotation(
+      CSSValueID function_id,
+      CSSParserTokenRange& tokens,
+      const HashMap<CSSValueID, double> color_channel_keyword_values,
+      int depth) {
+    if (function_id != CSSValueID::kProgress) {
+      return nullptr;
+    }
+    // <progress()> = progress(<calc-sum> from <calc-sum> to <calc-sum>)
+    //                         0          1    2          3  4
+    HeapVector<Member<const CSSMathExpressionNode>> nodes;
+    tokens.ConsumeWhitespace();
+    if (CSSMathExpressionNode* node =
+            ParseValueExpression(tokens, color_channel_keyword_values, depth)) {
+      nodes.push_back(node);
+    }
+    if (tokens.ConsumeIncludingWhitespace().Id() != CSSValueID::kFrom) {
+      return nullptr;
+    }
+    if (CSSMathExpressionNode* node =
+            ParseValueExpression(tokens, color_channel_keyword_values, depth)) {
+      nodes.push_back(node);
+    }
+    if (tokens.ConsumeIncludingWhitespace().Id() != CSSValueID::kTo) {
+      return nullptr;
+    }
+    if (CSSMathExpressionNode* node =
+            ParseValueExpression(tokens, color_channel_keyword_values, depth)) {
+      nodes.push_back(node);
+    }
+    if (nodes.size() != 3u) {
+      return nullptr;
+    }
+    if (!tokens.AtEnd()) {
+      return nullptr;
+    }
+    if (nodes[0]->Category() != nodes[1]->Category() ||
+        nodes[0]->Category() != nodes[2]->Category()) {
+      return nullptr;
+    }
+    // Note: we don't need to resolve percents in such case,
+    // as all the operands are numeric literals,
+    // so p% / (t% - f%) will lose %.
+    if (CanEagerlySimplifyProgressArgs(nodes)) {
+      Vector<double> canonical_values;
+      canonical_values.reserve(nodes.size());
+      for (const CSSMathExpressionNode* operand : nodes) {
+        absl::optional<double> canonical_value =
+            operand->ComputeValueInCanonicalUnit();
+        CHECK(canonical_value.has_value());
+        canonical_values.push_back(canonical_value.value());
+      }
+      double progress_value =
+          canonical_values[0] / (canonical_values[2] - canonical_values[1]);
+      return CSSMathExpressionNumericLiteral::Create(
+          progress_value, CSSPrimitiveValue::UnitType::kNumber);
+    }
+    return MakeGarbageCollected<CSSMathExpressionOperation>(
+        CalculationResultCategory::kCalcNumber, std::move(nodes),
+        CSSMathOperator::kProgress);
+  }
+
   CSSMathExpressionNode* ParseMathFunction(
       CSSValueID function_id,
       CSSParserTokenRange& tokens,
@@ -2378,6 +2488,12 @@ class CSSMathExpressionNodeParser {
       if (auto* anchor_query = ParseAnchorQuery(function_id, tokens)) {
         context_.Count(WebFeature::kCSSAnchorPositioning);
         return anchor_query;
+      }
+    }
+    if (RuntimeEnabledFeatures::CSSProgressNotationEnabled()) {
+      if (CSSMathExpressionNode* progress = ParseProgressNotation(
+              function_id, tokens, color_channel_keyword_values, depth)) {
+        return progress;
       }
     }
 
@@ -3035,6 +3151,16 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
                                                            : CSSValueID::kSign;
       return CSSMathExpressionOperation::CreateSignRelatedFunction(
           std::move(operands), op);
+    }
+    case CalculationOperator::kProgress: {
+      CHECK_EQ(children.size(), 3u);
+      CSSMathExpressionOperation::Operands operands;
+      operands.push_back(Create(*children.front()));
+      operands.push_back(Create(*children[1]));
+      operands.push_back(Create(*children.back()));
+      return MakeGarbageCollected<CSSMathExpressionOperation>(
+          CalculationResultCategory::kCalcNumber, std::move(operands),
+          CSSMathOperator::kProgress);
     }
     case CalculationOperator::kInvalid:
       NOTREACHED();

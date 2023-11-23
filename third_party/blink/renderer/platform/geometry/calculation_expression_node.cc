@@ -255,6 +255,30 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         }
       }
     }
+    case CalculationOperator::kProgress: {
+      DCHECK_EQ(children.size(), 3u);
+      Vector<float, 3> operand_pixels;
+      bool can_simplify = true;
+      for (scoped_refptr<const CalculationExpressionNode>& child : children) {
+        const auto* pixels_and_percent =
+            DynamicTo<CalculationExpressionPixelsAndPercentNode>(*child);
+        if (!pixels_and_percent || pixels_and_percent->Percent()) {
+          can_simplify = false;
+          break;
+        }
+        operand_pixels.push_back(pixels_and_percent->Pixels());
+      }
+      if (can_simplify) {
+        float progress_px = operand_pixels[0];
+        float from_px = operand_pixels[1];
+        float to_px = operand_pixels[2];
+        float progress = progress_px / (to_px - from_px);
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(progress));
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
     case CalculationOperator::kInvalid:
       NOTREACHED();
       return nullptr;
@@ -373,6 +397,13 @@ float CalculationExpressionOperationNode::Evaluate(
         return value > 0 ? 1 : -1;
       }
     }
+    case CalculationOperator::kProgress: {
+      DCHECK(!children_.empty());
+      float progress = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float from = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float to = children_[2]->Evaluate(max_value, anchor_evaluator);
+      return progress / (to - from);
+    }
     case CalculationOperator::kInvalid:
       break;
       // TODO(crbug.com/1284199): Support other math functions.
@@ -422,7 +453,8 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kRem:
     case CalculationOperator::kHypot:
     case CalculationOperator::kAbs:
-    case CalculationOperator::kSign: {
+    case CalculationOperator::kSign:
+    case CalculationOperator::kProgress: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
       cloned_operands.reserve(children_.size());
@@ -490,6 +522,8 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
 
       return first_child_type;
     }
+    case CalculationOperator::kProgress:
+      return ResultType::kNumber;
     case CalculationOperator::kInvalid:
       NOTREACHED();
       return result_type_;

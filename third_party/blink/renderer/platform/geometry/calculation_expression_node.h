@@ -30,6 +30,7 @@ enum class CalculationOperator {
   kHypot,
   kAbs,
   kSign,
+  kProgress,
   kInvalid
 };
 
