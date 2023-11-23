@@ -826,6 +826,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
 void CopyOrMoveIOTaskImpl::OnEncryptedFileSkipped(size_t idx,
                                                   storage::FileSystemURL url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  progress_->skipped_encrypted_files.emplace_back(std::move(url));
   progress_->sources[idx].error = base::File::FILE_ERROR_FAILED;
   progress_->outputs[idx].error = base::File::FILE_ERROR_FAILED;
 }

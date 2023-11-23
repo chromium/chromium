@@ -125,6 +125,7 @@ export class FileOperationHandler {
           item.state = ProgressItemState.CANCELED;
         } else {  // ERROR
           item.state = ProgressItemState.ERROR;
+          item.skippedEncryptedFiles = event.skippedEncryptedFiles;
           // Check if there was a policy error.
           if (event.policyError) {
             item.policyError =

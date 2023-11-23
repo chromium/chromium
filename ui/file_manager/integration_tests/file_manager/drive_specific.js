@@ -1794,6 +1794,7 @@ testcase.copyDirectoryWithEncryptedFile = async () => {
       appId, ['#progress-panel', `xf-panel-item[panel-type="${panelType}"]`]);
 
   chrome.test.assertEq(
-      'Copy operation failed. The file or the directory is not usable.',
+      ENTRIES.testCSEFileInDirectory.nameText +
+          ' could not be copied because it is encrypted.',
       panel.attributes['primary-text']);
 };

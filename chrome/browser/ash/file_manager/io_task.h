@@ -310,6 +310,10 @@ class ProgressStatus {
   // Whether notifications should be shown on progress status.
   bool show_notification = true;
 
+  // List of files skipped during the operation because we couldn't decrypt
+  // them.
+  std::vector<storage::FileSystemURL> skipped_encrypted_files;
+
  private:
   // Optional destination folder for operations that transfer files to a
   // directory (e.g. copy or move).

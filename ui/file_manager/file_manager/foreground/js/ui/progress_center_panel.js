@@ -264,6 +264,27 @@ export class ProgressCenterPanel {
         if (item.policyError) {
           return getStrForPolicyError(item);
         }
+        if (item.skippedEncryptedFiles !== undefined &&
+            item.skippedEncryptedFiles.length > 0) {
+          switch (item.type) {
+            case ProgressItemType.COPY:
+              return item.skippedEncryptedFiles.length == 1 ?
+                  strf(
+                      'COPY_SKIPPED_ENCRYPTED_SINGLE_FILE',
+                      item.skippedEncryptedFiles[0]) :
+                  strf(
+                      'COPY_SKIPPED_ENCRYPTED_FILES',
+                      item.skippedEncryptedFiles.length);
+            case ProgressItemType.MOVE:
+              return item.skippedEncryptedFiles.length == 1 ?
+                  strf(
+                      'MOVE_SKIPPED_ENCRYPTED_SINGLE_FILE',
+                      item.skippedEncryptedFiles[0]) :
+                  strf(
+                      'MOVE_SKIPPED_ENCRYPTED_FILES',
+                      item.skippedEncryptedFiles.length);
+          }
+        }
         // General error
         return item.message;
       case ProgressItemState.CANCELED:
@@ -373,6 +394,9 @@ export class ProgressCenterPanel {
     }
 
     if (item.state === ProgressItemState.ERROR) {
+      if (item.skippedEncryptedFiles.length > 0) {
+        return str('ENCRYPTED_DETAILS');
+      }
       if (!item.policyError) {
         // General error doesn't have secondary text.
         return '';

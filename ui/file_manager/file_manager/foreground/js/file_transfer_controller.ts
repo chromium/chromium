@@ -459,7 +459,7 @@ export class FileTransferController {
 
     const encrypted =
         this.metadataModel_.getCache(entries, ['contentMimeType'])
-            .some(
+            .every(
                 (metadata, i) => entries[i] ?
                     isEncrypted(entries[i]!, metadata.contentMimeType) :
                     false);
@@ -1216,7 +1216,7 @@ export class FileTransferController {
     }
     // Don't allow copy of encrypted files.
     if (this.metadataModel_.getCache(entries, ['contentMimeType'])
-            .some(
+            .every(
                 (metadata, i) => entries[i] ?
                     isEncrypted(entries[i]!, metadata.contentMimeType) :
                     false)) {

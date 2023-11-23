@@ -658,6 +658,21 @@
   <message name="IDS_FILE_BROWSER_COPY_FILESYSTEM_ERROR" desc="File Manager error message.">
     Copy operation failed. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
   </message>
+  <message name="IDS_FILE_BROWSER_COPY_SKIPPED_ENCRYPTED_SINGLE_FILE" desc="File Manager error message. An encrypted (Google Drive CSE) file wasn't copied.">
+    <ph name="FILE_NAME">$1<ex>encrypted.pdf</ex></ph> could not be copied because it is encrypted.
+  </message>
+  <message name="IDS_FILE_BROWSER_MOVE_SKIPPED_ENCRYPTED_SINGLE_FILE" desc="File Manager error message. An encrypted (Google Drive CSE) file wasn't moved..">
+    <ph name="FILE_NAME">$1<ex>encrypted.pdf</ex></ph> could not be moved because it is encrypted.
+  </message>
+  <message name="IDS_FILE_BROWSER_COPY_SKIPPED_ENCRYPTED_FILES" desc="File Manager error message. Several encrypted (Google Drive CSE) files weren't moved.">
+    <ph name="NUMBER_OF_FILES">$1<ex>3</ex></ph> files could not be copied because they are encrypted.
+  </message>
+  <message name="IDS_FILE_BROWSER_MOVE_SKIPPED_ENCRYPTED_FILES" desc="File Manager error message. Several encrypted (Google Drive CSE) files weren't moved.">
+    <ph name="NUMBER_OF_FILES">$1<ex>3</ex></ph> files could not be moved because they are encrypted.
+  </message>
+  <message name="IDS_FILE_BROWSER_ENCRYPTED_DETAILS" desc="File manager secondary error message when encrypted (Google Drive CSE) files caused an error.">
+    Contact your administrator for details.
+  </message>
   <message name="IDS_FILE_BROWSER_EMPTY_TRASH_UNEXPECTED_ERROR" desc="File manager error whilst emptying trash">
     Failed to empty the trash.
   </message>

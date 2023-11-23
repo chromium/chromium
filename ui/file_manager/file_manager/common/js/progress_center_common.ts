@@ -133,6 +133,12 @@ export class ProgressCenterItem {
   policyFileName: string|null = null;
 
   /**
+   * List of files skipped during the operation because we couldn't decrypt
+   * them.
+   */
+  skippedEncryptedFiles: string[] = [];
+
+  /**
    * Sets the extra button text and callback. Use this to add an additional
    * button with configurable functionality.
    * @param text Text to use for the button.

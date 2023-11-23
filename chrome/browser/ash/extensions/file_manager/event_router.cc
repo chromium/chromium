@@ -1380,6 +1380,12 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     event_status.pause_params = std::move(pause_params);
   }
 
+  for (const FileSystemURL& skipped_encrypted_file :
+       status.skipped_encrypted_files) {
+    event_status.skipped_encrypted_files.push_back(
+        skipped_encrypted_file.path().BaseName().value());
+  }
+
   // The TrashIOTask is the only IOTask that uses the output Entry's, so don't
   // try to resolve the outputs for all other IOTasks.
   if (GetIOTaskType(status.type) != fmp::IOTaskType::kTrash ||

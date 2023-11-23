@@ -985,7 +985,8 @@ chrome.fileManagerPrivate.ResumeParams;
  *   errorName: string,
  *   pauseParams: (!chrome.fileManagerPrivate.PauseParams|undefined),
  *   outputs: (!Array<Entry>|undefined),
- *   destinationVolumeId: string
+ *   destinationVolumeId: string,
+ *   skippedEncryptedFiles: Array<string>
  * }}
  */
 chrome.fileManagerPrivate.ProgressStatus;
