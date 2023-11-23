@@ -3941,6 +3941,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW" desc="The label of the 'Learn how' button of the alert informing the user that in order to view or copy the password, a screen lock needs to be set up on the device. The button leads to a help article on how to set up a device lock.">
         Learn How
       </message>
+      <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_OPEN_SETTINGS" desc="The label of the 'Go to Settings' button of the alert informing the user that in order to view or copy the password, a screen lock needs to be set up on the device. The button opens the Passwords page of the iOS Settings App. Title case. [iOS only]">
+        Go to Settings
+      </message>
       <message name="IDS_IOS_SETTINGS_TITLE" desc="Title for the settings panel [iOS].">
         Settings
       </message>

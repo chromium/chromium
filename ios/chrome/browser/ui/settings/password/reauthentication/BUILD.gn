@@ -9,6 +9,7 @@ source_set("reauthentication") {
   ]
 
   deps = [
+    ":reauthentication_constants",
     ":reauthentication_ui",
     "//base",
     "//components/strings",
@@ -23,6 +24,7 @@ source_set("reauthentication") {
     "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/public/provider/chrome/browser/passcode_settings:passcode_settings_api",
     "//ui/base",
   ]
 

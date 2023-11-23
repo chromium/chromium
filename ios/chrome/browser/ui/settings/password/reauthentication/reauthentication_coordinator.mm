@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -17,13 +18,30 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/passcode_settings/passcode_settings_api.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Whether the passcode settings action should be displayed in the alert asking
+// the user to set a passcode before accessing the Password Manager.
+bool IsPasscodeSettingsAvailable() {
+  // Use both kill switch and auth on entry feature flag to control the
+  // dispalying of the action.
+  return password_manager::features::IsPasscodeSettingsEnabled() &&
+         password_manager::features::IsAuthOnEntryV2Enabled() &&
+         ios::provider::SupportsPasscodeSettings();
+}
+
+}  // namespace
 
 @interface ReauthenticationCoordinator () <
     ReauthenticationViewControllerDelegate,
@@ -124,13 +142,27 @@
 
   __weak __typeof(self) weakSelf = self;
 
-  // Action OK -> Close UI.
-  [_passcodeRequestAlertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                action:^{
-                  [weakSelf closeUI];
-                }
-                 style:UIAlertActionStyleCancel];
+  if (IsPasscodeSettingsAvailable()) {
+    // Action Go to Settings.
+    [_passcodeRequestAlertCoordinator
+        addItemWithTitle:l10n_util::GetNSString(
+                             IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_OPEN_SETTINGS)
+                  action:^{
+                    [weakSelf openPasscodeSettings];
+                  }
+                   style:UIAlertActionStyleDefault
+               preferred:YES
+                 enabled:YES];
+
+  } else {
+    // Action OK -> Close UI.
+    [_passcodeRequestAlertCoordinator
+        addItemWithTitle:l10n_util::GetNSString(IDS_OK)
+                  action:^{
+                    [weakSelf closeUI];
+                  }
+                   style:UIAlertActionStyleCancel];
+  }
 
   // Action Learn How -> Close settings and open passcode help page.
   [_passcodeRequestAlertCoordinator
@@ -272,6 +304,16 @@
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
   [_dispatcher closeSettingsUIAndOpenURL:command];
+}
+
+- (void)openPasscodeSettings {
+  [self closeUI];
+
+  base::UmaHistogramEnumeration(
+      /*name=*/password_manager::kReauthenticationUIEventHistogram,
+      /*sample=*/ReauthenticationEvent::kOpenPasscodeSettings);
+
+  ios::provider::OpenPasscodeSettings();
 }
 
 @end

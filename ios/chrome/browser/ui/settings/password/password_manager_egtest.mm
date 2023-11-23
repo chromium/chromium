@@ -302,13 +302,6 @@ id<GREYMatcher> TooLongNoteFooter() {
           password_manager::constants::kMaxPasswordNoteLength)));
 }
 
-// Returns matcher for the title of the alert displayed when reauthentication is
-// requested but the user doesn't have a passcode set.
-id<GREYMatcher> SetPasscodeDialogTitle() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE));
-}
-
 // Returns matcher for the Password Manager widget promo.
 id<GREYMatcher> PasswordManagerWidgetPromo() {
   return grey_accessibilityID(kWidgetPromoId);
@@ -401,14 +394,6 @@ void CopyPasswordDetailWithInteraction(GREYElementInteraction* element) {
 void CopyPasswordDetailWithID(int detail_id) {
   CopyPasswordDetailWithInteraction(
       GetPasswordDetailTextFieldWithID(detail_id));
-}
-
-// Close the alert requesting the user to set a passcode.
-void DismissSetPasscodeDialog() {
-  [[EarlGrey selectElementWithMatcher:SetPasscodeDialogTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      performAction:grey_tap()];
 }
 
 // Ensure the save passwords in account section is visible.
@@ -3418,13 +3403,25 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Go to Settings should be present.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AlertAction(@"Go to Settings")]
+      assertWithMatcher:grey_notNil()];
+#else
   // Dismiss the passcode alert, this should dismiss the Password Manager.
-  DismissSetPasscodeDialog();
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+      performAction:grey_tap()];
 
   // Check for the Settings page after Password Manager is gone.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
+#endif
 
   // Check Reauthentication UI metrics.
   CheckReauthenticationUIEventMetricTotalCount(2);
