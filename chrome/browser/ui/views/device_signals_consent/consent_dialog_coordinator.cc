@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -137,16 +139,18 @@ void ConsentDialogCoordinator::Show() {
     }
     return;
   }
-
+  base::RecordAction(base::UserMetricsAction("DeviceSignalsConsent_Shown"));
   dialog_widget_ = chrome::ShowBrowserModal(
       browser_, CreateDeviceSignalsConsentDialogModel());
 }
 
 void ConsentDialogCoordinator::OnConsentDialogAccept() {
+  base::RecordAction(base::UserMetricsAction("DeviceSignalsConsent_Accepted"));
   profile_->GetPrefs()->SetBoolean(kDeviceSignalsConsentReceived, true);
 }
 
 void ConsentDialogCoordinator::OnConsentDialogCancel() {
+  base::RecordAction(base::UserMetricsAction("DeviceSignalsConsent_Cancelled"));
   profiles::CloseProfileWindows(profile_);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
@@ -157,6 +161,8 @@ void ConsentDialogCoordinator::OnConsentDialogCancel() {
 void ConsentDialogCoordinator::OnConsentDialogClose() {
   if (dialog_widget_->closed_reason() ==
       views::Widget::ClosedReason::kEscKeyPressed) {
+    base::RecordAction(
+        base::UserMetricsAction("DeviceSignalsConsent_EscPressed"));
     OnConsentDialogCancel();
   }
 }

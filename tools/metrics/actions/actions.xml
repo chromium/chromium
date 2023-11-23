@@ -8683,6 +8683,33 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="DeviceSignalsConsent_Accepted">
+  <owner>xzonghan@chromium.org</owner>
+  <description>User accepted device signals consent dialog.</description>
+</action>
+
+<action name="DeviceSignalsConsent_Cancelled">
+  <owner>xzonghan@chromium.org</owner>
+  <description>
+    User cancelled device signals consent dialog via either clicking cancel
+    button or pressing escape key.
+  </description>
+</action>
+
+<action name="DeviceSignalsConsent_EscPressed">
+  <owner>xzonghan@chromium.org</owner>
+  <description>
+    User cancelled device signals consent dialog via pressing escape key.
+  </description>
+</action>
+
+<action name="DeviceSignalsConsent_Shown">
+  <owner>xzonghan@chromium.org</owner>
+  <description>
+    The device signals consent dialog is triggered and shown to the user.
+  </description>
+</action>
+
 <action name="DevicesPage_AddPrintersClicked">
   <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
