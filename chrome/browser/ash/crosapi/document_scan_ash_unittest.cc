@@ -5,10 +5,13 @@
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
@@ -38,6 +41,7 @@ std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
 class DocumentScanAshTest : public testing::Test {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(ash::features::kAdvancedDocumentScanAPI);
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     ash::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&BuildLorgnetteScannerManager));
@@ -55,7 +59,10 @@ class DocumentScanAshTest : public testing::Test {
     fake_user_manager_->SimulateUserProfileLoad(account_id);
   }
 
-  void TearDown() override { fake_user_manager_.Reset(); }
+  void TearDown() override {
+    fake_user_manager_.Reset();
+    feature_list_.Reset();
+  }
 
   ash::FakeLorgnetteScannerManager* GetLorgnetteScannerManager() {
     return static_cast<ash::FakeLorgnetteScannerManager*>(
@@ -74,10 +81,12 @@ class DocumentScanAshTest : public testing::Test {
   // Must outlive `document_scan_ash_`.
   TestingProfile profile_;
 
+  base::test::ScopedFeatureList feature_list_;
+
   DocumentScanAsh document_scan_ash_;
 };
 
-TEST_F(DocumentScanAshTest, NoScanners) {
+TEST_F(DocumentScanAshTest, ScanFirstPage_NoScanners) {
   base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({});
   document_scan_ash().GetScannerNames(base::BindLambdaForTesting(
@@ -88,7 +97,7 @@ TEST_F(DocumentScanAshTest, NoScanners) {
   run_loop.Run();
 }
 
-TEST_F(DocumentScanAshTest, SingleScanner) {
+TEST_F(DocumentScanAshTest, ScanFirstPage_SingleScanner) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
   base::RunLoop run_loop;
   document_scan_ash().GetScannerNames(base::BindLambdaForTesting(
@@ -99,7 +108,7 @@ TEST_F(DocumentScanAshTest, SingleScanner) {
   run_loop.Run();
 }
 
-TEST_F(DocumentScanAshTest, MultipleScanner) {
+TEST_F(DocumentScanAshTest, ScanFirstPage_MultipleScanner) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse(
       {kTestScannerName, kVirtualUSBPrinterName});
   base::RunLoop run_loop;
@@ -113,7 +122,7 @@ TEST_F(DocumentScanAshTest, MultipleScanner) {
   run_loop.Run();
 }
 
-TEST_F(DocumentScanAshTest, InvalidScannerName) {
+TEST_F(DocumentScanAshTest, ScanFirstPage_InvalidScannerName) {
   base::RunLoop run_loop;
   document_scan_ash().ScanFirstPage(
       "bad_scanner", base::BindLambdaForTesting(
@@ -127,7 +136,7 @@ TEST_F(DocumentScanAshTest, InvalidScannerName) {
   run_loop.Run();
 }
 
-TEST_F(DocumentScanAshTest, ScannerNoData) {
+TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerNoData) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
   base::RunLoop run_loop;
   document_scan_ash().ScanFirstPage(
@@ -142,7 +151,7 @@ TEST_F(DocumentScanAshTest, ScannerNoData) {
   run_loop.Run();
 }
 
-TEST_F(DocumentScanAshTest, ScannerData) {
+TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerData) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
   const std::vector<std::string> scan_data = {"PrettyPicture"};
   GetLorgnetteScannerManager()->SetScanResponse(scan_data);
@@ -157,6 +166,69 @@ TEST_F(DocumentScanAshTest, ScannerData) {
                               EXPECT_EQ(scan_data.value(), "PrettyPicture");
                               run_loop.Quit();
                             }));
+  run_loop.Run();
+}
+
+TEST_F(DocumentScanAshTest, GetScannerList_FeatureDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
+
+  GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(std::nullopt);
+  base::RunLoop run_loop;
+  auto request = mojom::ScannerEnumFilter::New();
+  request->local = true;
+  request->secure = true;
+  document_scan_ash().GetScannerList(
+      "client-id", std::move(request),
+      base::BindLambdaForTesting(
+          [&](mojom::GetScannerListResponsePtr response) {
+            run_loop.Quit();
+            EXPECT_EQ(response->result,
+                      mojom::ScannerOperationResult::kUnsupported);
+            EXPECT_EQ(response->scanners.size(), 0U);
+          }));
+  run_loop.Run();
+}
+
+TEST_F(DocumentScanAshTest, GetScannerList_BadResponse) {
+  GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(std::nullopt);
+  base::RunLoop run_loop;
+  auto request = mojom::ScannerEnumFilter::New();
+  request->local = true;
+  request->secure = true;
+  document_scan_ash().GetScannerList(
+      "client-id", std::move(request),
+      base::BindLambdaForTesting(
+          [&](mojom::GetScannerListResponsePtr response) {
+            run_loop.Quit();
+            EXPECT_NE(response->result,
+                      mojom::ScannerOperationResult::kSuccess);
+            EXPECT_EQ(response->scanners.size(), 0U);
+          }));
+  run_loop.Run();
+}
+
+TEST_F(DocumentScanAshTest, GetScannerList_GoodResponse) {
+  lorgnette::ListScannersResponse fake_response;
+  fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  lorgnette::ScannerInfo* scanner = fake_response.add_scanners();
+  scanner->set_name("test:scanner");
+  GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(
+      std::move(fake_response));
+  base::RunLoop run_loop;
+  auto request = mojom::ScannerEnumFilter::New();
+  request->local = true;
+  request->secure = true;
+  document_scan_ash().GetScannerList(
+      "client-id", std::move(request),
+      base::BindLambdaForTesting(
+          [&](mojom::GetScannerListResponsePtr response) {
+            run_loop.Quit();
+            EXPECT_EQ(response->result,
+                      mojom::ScannerOperationResult::kSuccess);
+            ASSERT_EQ(response->scanners.size(), 1U);
+            EXPECT_EQ(response->scanners[0]->id, "test:scanner");
+          }));
   run_loop.Run();
 }
 

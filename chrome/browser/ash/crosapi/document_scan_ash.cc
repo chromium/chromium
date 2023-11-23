@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -97,6 +99,19 @@ void OnScanCompleted(DocumentScanAsh::ScanFirstPageCallback callback,
                           std::move(scan_result->data));
 }
 
+void GetScannerListAdapter(
+    DocumentScanAsh::GetScannerListCallback callback,
+    const absl::optional<lorgnette::ListScannersResponse>& response_in) {
+  if (!response_in) {
+    auto response_out = mojom::GetScannerListResponse::New();
+    response_out->result = mojom::ScannerOperationResult::kInternalError;
+    std::move(callback).Run(std::move(response_out));
+    return;
+  }
+  std::move(callback).Run(
+      mojom::GetScannerListResponse::From(response_in.value()));
+}
+
 }  // namespace
 
 DocumentScanAsh::DocumentScanAsh() = default;
@@ -126,6 +141,29 @@ void DocumentScanAsh::ScanFirstPage(const std::string& scanner_name,
              base::BindRepeating(&OnPageReceived, scan_result_weak_ptr),
              base::BindOnce(&OnScanCompleted, std::move(callback),
                             std::move(scan_result)));
+}
+
+void DocumentScanAsh::GetScannerList(const std::string& client_id,
+                                     mojom::ScannerEnumFilterPtr filter,
+                                     GetScannerListCallback callback) {
+  using LocalScannerFilter = ash::LorgnetteScannerManager::LocalScannerFilter;
+  using SecureScannerFilter = ash::LorgnetteScannerManager::SecureScannerFilter;
+
+  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
+    auto response = crosapi::mojom::GetScannerListResponse::New();
+    response->result = crosapi::mojom::ScannerOperationResult::kUnsupported;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
+      ->GetScannerInfoList(
+          client_id,
+          filter->local ? LocalScannerFilter::kLocalScannersOnly
+                        : LocalScannerFilter::kIncludeNetworkScanners,
+          filter->secure ? SecureScannerFilter::kSecureScannersOnly
+                         : SecureScannerFilter::kIncludeUnsecureScanners,
+          base::BindOnce(&GetScannerListAdapter, std::move(callback)));
 }
 
 }  // namespace crosapi

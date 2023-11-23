@@ -75,6 +75,11 @@ class TestDocumentScan : public crosapi::mojom::DocumentScan {
                               absl::nullopt);
     }
   }
+  void GetScannerList(const std::string& client_id,
+                      crosapi::mojom::ScannerEnumFilterPtr filter,
+                      GetScannerListCallback callback) override {
+    NOTIMPLEMENTED();
+  }
 
  private:
   std::vector<std::string> scanner_names_;
