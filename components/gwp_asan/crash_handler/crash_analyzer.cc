@@ -205,8 +205,7 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
     const crashpad::ProcessSnapshot& process_snapshot,
     gwp_asan::Crash* proto) {
   LightweightDetectorState valid_state;
-  // TODO(glazunov): Add LUD to the `Allocator` enum. It is no longer
-  // bound to PartitionAlloc.
+  // The lightweight detector only supports PartitionAlloc.
   if (!GetState(process_snapshot, kLightweightDetectorCrashKey,
                 Crash_Allocator_PARTITIONALLOC, &valid_state)) {
     return false;
