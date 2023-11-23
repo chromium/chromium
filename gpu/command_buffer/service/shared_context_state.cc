@@ -1011,9 +1011,15 @@ int32_t SharedContextState::GetMaxTextureSize() const {
     NOTREACHED_NORETURN();
 #endif
   } else {
-    // TODO(crbug.com/1090476): Query Dawn for this value once an API exists for
-    // capabilities.
+#if BUILDFLAG(SKIA_USE_DAWN)
+    DCHECK(dawn_context_provider());
+    wgpu::SupportedLimits limits = {};
+    auto succeded = dawn_context_provider()->GetDevice().GetLimits(&limits);
+    CHECK(succeded);
+    max_texture_size = limits.limits.maxTextureDimension2D;
+#else
     max_texture_size = 8192;
+#endif
   }
   // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
   // can be used to accurately represent all valid sub-rects, with overflow

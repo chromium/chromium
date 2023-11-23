@@ -363,6 +363,17 @@ bool DawnContextProvider::Initialize(
   descriptor.requiredFeatures = features.data();
   descriptor.requiredFeatureCount = std::size(features);
 
+  // Use best limits for the device.
+  wgpu::SupportedLimits supportedLimits = {};
+  if (!adapter.GetLimits(&supportedLimits)) {
+    LOG(ERROR) << "Failed to call adapter.GetLimits().";
+    return false;
+  }
+
+  wgpu::RequiredLimits deviceCreationLimits = {};
+  deviceCreationLimits.limits = supportedLimits.limits;
+  descriptor.requiredLimits = &deviceCreationLimits;
+
   // ANGLE always tries creating D3D11 device with debug layer when dcheck is
   // on, so tries creating dawn device with backend validation as well.
   constexpr bool enable_backend_validation =
