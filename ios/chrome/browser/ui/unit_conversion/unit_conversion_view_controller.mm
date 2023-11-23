@@ -58,6 +58,9 @@ const NSInteger kTargetSection = 1;
 const NSInteger kUnitTypeRow = 0;
 const NSInteger kUnitValueFieldRow = 1;
 
+// The height offset to add to the computed preferredContentSize's height.
+const CGFloat kTableViewHeightOffset = 16;
+
 // Returns the `UnitType` group for the given `unit`.
 ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   if ([unit isKindOfClass:[NSUnitArea class]]) {
@@ -107,6 +110,11 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
   // The `Report an issue` button.
   UIButton* _reportAnIssueButton;
+
+  // A copy of `self.view.bounds.size.height` before its change, made during
+  // calls to viewDidLayoutSubviews, and used to reduce the number of calls to
+  // calculatePreferredContentHeight.
+  CGFloat _previousHeight;
 }
 
 @property(nonatomic, strong) NSUnit* targetUnit;
@@ -135,13 +143,13 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   if (self) {
     _unitValue = unitValue;
     _sourceUnit = sourceUnit;
+    _previousHeight = 0;
   }
   return self;
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-
   // Capture the tableView's width and use it to calculate the footer's size.
   CGFloat width = self.tableView.bounds.size.width;
   CGSize size = [_reportAnIssueButton
@@ -156,6 +164,14 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     frame.size.height = size.height;
     _tableViewFooterView.frame = frame;
     self.tableView.tableFooterView = _tableViewFooterView;
+  }
+
+  // Check for height change before computing the new height.
+  if (!AreCGFloatsEqual(_previousHeight, self.view.bounds.size.height)) {
+    self.preferredContentSize =
+        CGSizeMake(self.preferredContentSize.width,
+                   [self calculatePreferredContentHeight]);
+    _previousHeight = self.view.bounds.size.height;
   }
 }
 
@@ -232,6 +248,11 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 }
 
 #pragma mark - Private
+
+// Computes the new height based on the height `tableView`.
+- (CGFloat)calculatePreferredContentHeight {
+  return self.tableView.contentSize.height + kTableViewHeightOffset;
+}
 
 - (void)closeButtonTapped:(UIButton*)sender {
   [self.delegate didTapCloseUnitConversionController:self];

@@ -16,16 +16,20 @@ namespace {
 const CGFloat kPopOverSourceRectWidth = 1;
 const CGFloat kPopOverSourceRectHeight = 1;
 
+// The height offset to add to the half sheet detent's height.
+const CGFloat kHalfSheetDetentHeightOffset = 40;
+
 }  // namespace
 
 @interface UnitConversionCoordinator () <
     UIAdaptivePresentationControllerDelegate>
 
+// The view controller managed by this coordinator.
+@property(nonatomic, strong) UnitConversionViewController* viewController;
+
 @end
 
 @implementation UnitConversionCoordinator {
-  // The view controller managed by this coordinator.
-  UnitConversionViewController* _viewController;
 
   // Mediator to handle the units updates and conversion.
   UnitConversionMediator* _mediator;
@@ -112,10 +116,33 @@ const CGFloat kPopOverSourceRectHeight = 1;
       popover.adaptiveSheetPresentationController;
   sheetPresentationController.delegate = _viewController;
   sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-  sheetPresentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent,
-  ];
+
+  if (@available(iOS 16, *)) {
+    __weak UnitConversionCoordinator* weakSelf = self;
+    auto resolver = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      CGFloat sheetHeight =
+          weakSelf.viewController.preferredContentSize.height +
+          kHalfSheetDetentHeightOffset;
+      BOOL tooLarge = (sheetHeight > context.maximumDetentValue);
+      return tooLarge ? context.maximumDetentValue : sheetHeight;
+    };
+
+    UISheetPresentationControllerDetent* customDetent =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:nil
+                              resolver:resolver];
+
+    sheetPresentationController.detents =
+        @[ customDetent, UISheetPresentationControllerDetent.largeDetent ];
+
+  } else {
+    sheetPresentationController.detents = @[
+      UISheetPresentationControllerDetent.mediumDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+  }
+
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];
