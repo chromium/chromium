@@ -5175,8 +5175,8 @@
   },
   {
     "name": "launcher-system-info-answer-cards",
-    "owners": ["laurencom@chromium.org", "amandadeacon@chromium.org"],
-    "expiry_milestone": 120
+    "owners": ["laurencom@chromium.org", "dgrebenyuk@chromium.org"],
+    "expiry_milestone": 130
   },
   {
     "name": "layout-extraction",
