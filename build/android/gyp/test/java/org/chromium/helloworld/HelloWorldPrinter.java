@@ -9,4 +9,3 @@ public class HelloWorldPrinter {
         System.out.println("Hello, world!");
     }
 }
-
