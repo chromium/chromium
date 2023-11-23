@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/apps/app_dialog/shortcut_removal_dialog_view.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -129,18 +130,16 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
           sync_processor.get()));
   content::RunAllTasksUntilIdle();
 
-  // Register a shortcut in the shortcut registry cache.
-  apps::ShortcutPtr shortcut =
-      std::make_unique<Shortcut>("host_app_id", "local_id");
-  shortcut->shortcut_source = ShortcutSource::kUser;
-  shortcut->name = "Test";
-  cache()->UpdateShortcut(std::move(shortcut));
-
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
   apps::ShortcutId shortcut_id =
-      apps::GenerateShortcutId("host_app_id", "local_id");
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
   ash::AppListItem* item = GetAppListItem(shortcut_id.value());
   ASSERT_TRUE(item);
-  ASSERT_EQ(item->name(), "Test");
+  ASSERT_EQ(item->name(), "Example");
+  ASSERT_EQ(item->accessible_name(),
+            "Example, " + l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
 
   // Verify that the shortcut item is added to local storage.
   const base::Value::Dict& local_items =

@@ -7352,6 +7352,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Remove
   </message>
 
+  <!-- Shortcut Accessibility Label-->
+  <message name="IDS_APP_SHORTCUT_ACCESSIBILITY_LABEL"
+    desc="The accessibility label of an app shortcut. Example: 'Funny Cat Video, Google Chrome'">
+    <ph name="SHORTCUT_NAME">$1<ex>Funny Cat Video</ex></ph>, <ph name="APP_FULL_NAME">$2<ex>Google Chrome</ex></ph>
+  </message>  
+
   <!-- Remote activity notification dialog -->
   <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_TITLE" desc="Title text displayed to inform the user a remote admin had taken control of the ChromeOS device for maintenance.">
     Maintenance is done

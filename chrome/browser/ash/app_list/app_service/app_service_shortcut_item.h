@@ -13,6 +13,8 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
+class Profile;
+
 namespace apps {
 class ShortcutUpdate;
 }  // namespace apps
@@ -66,6 +68,8 @@ class AppServiceShortcutItem : public ChromeAppListItem,
   std::unique_ptr<app_list::AppContextMenu> context_menu_;
 
   apps::ShortcutId shortcut_id_;
+
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<AppServiceShortcutItem> weak_ptr_factory_{this};
 };
