@@ -499,7 +499,6 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
                                        ? kTopLeft_GrSurfaceOrigin
                                        : kBottomLeft_GrSurfaceOrigin;
   SkAlphaType surface_alpha_type = GetSkColorInfo().alphaType();
-  gpu::Mailbox shared_image_mailbox;
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   if (!is_accelerated_ &&
@@ -520,21 +519,18 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     if (!client_shared_image) {
       return;
     }
-    shared_image_mailbox = client_shared_image->mailbox();
   } else if (gpu_memory_buffer_) {
     client_shared_image = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
         gpu_memory_buffer_->CloneHandle());
     CHECK(client_shared_image);
-    shared_image_mailbox = client_shared_image->mailbox();
   } else {
     client_shared_image = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRaster",
         gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
-    shared_image_mailbox = client_shared_image->mailbox();
   }
 
   // Wait for the mailbox to be ready to be used.
@@ -553,12 +549,12 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     return;
 
   owning_thread_data().texture_id_for_read_access =
-      raster_interface->CreateAndConsumeForGpuRaster(shared_image_mailbox);
+      raster_interface->CreateAndConsumeForGpuRaster(client_shared_image);
 
   if (shared_image_usage_flags &
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
     owning_thread_data().texture_id_for_write_access =
-        raster_interface->CreateAndConsumeForGpuRaster(shared_image_mailbox);
+        raster_interface->CreateAndConsumeForGpuRaster(client_shared_image);
   } else {
     owning_thread_data().texture_id_for_write_access =
         owning_thread_data().texture_id_for_read_access;
