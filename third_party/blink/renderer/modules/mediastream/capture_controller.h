@@ -30,6 +30,13 @@ class MODULES_EXPORT CaptureController final : public EventTarget,
   // https://w3c.github.io/mediacapture-screen-share/#dom-capturecontroller-setfocusbehavior
   void setFocusBehavior(V8CaptureStartFocusBehavior, ExceptionState&);
 
+  // IDL interface, APIs related to Captured Surface Control
+  // TODO(crbug.com/1466247): Link to spec.
+  int getMinZoomLevel();
+  int getMaxZoomLevel();
+  ScriptPromise getZoomLevel();
+  ScriptPromise setZoomLevel(int zoom_level);
+
   void SetIsBound(bool value) { is_bound_ = value; }
   bool IsBound() const { return is_bound_; }
 
@@ -43,6 +50,10 @@ class MODULES_EXPORT CaptureController final : public EventTarget,
 
   // https://screen-share.github.io/mouse-events/#capture-controller-extensions
   DEFINE_ATTRIBUTE_EVENT_LISTENER(capturedmousechange, kCapturedmousechange)
+
+  // TODO(crbug.com/1466247): Link to spec.
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(capturedzoomlevelchange,
+                                  kCapturedzoomlevelchange)
 
   // Close the window of opportunity to make the focus decision.
   // Further calls to setFocusBehavior() will raise an exception.

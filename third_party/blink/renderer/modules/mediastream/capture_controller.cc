@@ -89,6 +89,30 @@ void CaptureController::setFocusBehavior(
   FinalizeFocusDecision();
 }
 
+int CaptureController::getMinZoomLevel() {
+  // TODO(crbug.com/1466247): Implement.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
+int CaptureController::getMaxZoomLevel() {
+  // TODO(crbug.com/1466247): Implement.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
+ScriptPromise CaptureController::getZoomLevel() {
+  // TODO(crbug.com/1466247): Implement.
+  NOTIMPLEMENTED();
+  return ScriptPromise();
+}
+
+ScriptPromise CaptureController::setZoomLevel(int zoom_level) {
+  // TODO(crbug.com/1466247): Implement.
+  NOTIMPLEMENTED();
+  return ScriptPromise();
+}
+
 void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
                                       std::string descriptor_id) {
   DCHECK(IsMainThread());
