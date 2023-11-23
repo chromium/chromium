@@ -276,12 +276,12 @@ bool CanComputeBlockSizeWithoutLayout(const BlockNode& node) {
 LogicalOofInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
-    const WritingDirectionMode& self_writing_direction,
     NGAnchorEvaluatorImpl* anchor_evaluator) {
   // Compute in physical, because anchors may be in different `writing-mode` or
   // `direction`.
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
   const PhysicalSize available_size = ToPhysicalSize(
-      available_logical_size, self_writing_direction.GetWritingMode());
+      available_logical_size, writing_direction.GetWritingMode());
   absl::optional<LayoutUnit> left;
   if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
@@ -318,8 +318,8 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   }
 
   // Convert the physical insets to logical.
-  PhysicalToLogical<absl::optional<LayoutUnit>&> insets(
-      self_writing_direction, top, right, bottom, left);
+  PhysicalToLogical<absl::optional<LayoutUnit>&> insets(writing_direction, top,
+                                                        right, bottom, left);
   return {insets.InlineStart(), insets.InlineEnd(), insets.BlockStart(),
           insets.BlockEnd()};
 }
