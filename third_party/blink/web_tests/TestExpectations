@@ -7111,7 +7111,10 @@ crbug.com/1503067 [ Linux ] virtual/pna-iframes-enabled/external/wpt/fetch/priva
 crbug.com/1503086 [ Linux ] external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Failure Pass ]
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
 
-# Gerdener 2023-11-21
+# Gardener 2023-11-21
 crbug.com/1504071 [ Mac ] http/tests/navigation/ping-cross-origin-from-https.html [ Failure Pass ]
 crbug.com/1352545 [ Linux ] external/wpt/html/cross-origin-opener-policy/coop-sandbox-cuts-opener.https.html [ Failure Pass ]
 crbug.com/1501090 [ Linux ] external/wpt/preload/preload-strict-dynamic.sub.html [ Failure Pass ]
+
+# Gardener 2023-11-23
+crbug.com/1504651 [ Linux ] external/wpt/touch-events/single-touch.html [ Failure Pass ]
