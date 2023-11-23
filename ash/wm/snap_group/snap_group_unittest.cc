@@ -218,6 +218,20 @@ void DragGroupItemToPoint(OverviewItemBase* item,
   }
 }
 
+// Returns true if the union bounds of `w1`, `w2` and the split view
+// divider (if exists) equal to the bounds of the work area and false
+// otherwise.
+bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1, aura::Window* w2) {
+  gfx::Rect union_bounds;
+  union_bounds.Union(w1->GetBoundsInScreen());
+  union_bounds.Union(w2->GetBoundsInScreen());
+  const auto divider_bounds = split_view_divider()
+                                  ? split_view_divider_bounds_in_screen()
+                                  : gfx::Rect();
+  union_bounds.Union(divider_bounds);
+  return union_bounds == work_area_bounds();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -457,12 +471,41 @@ TEST_F(FasterSplitScreenTest, MultiDisplay) {
 
 // Verifies that there will be no crash when transitioning the
 // `SplitViewOverviewSession` between clamshell and tablet mode.
-TEST_F(FasterSplitScreenTest, ClamshellTabletTransition) {
+TEST_F(FasterSplitScreenTest, ClamshellTabletTransitionOneSnappedWindow) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
   VerifySplitViewOverviewSession(w1.get());
 
   SwitchToTabletMode();
+  EXPECT_TRUE(split_view_divider());
+  auto observed_windows = split_view_divider()->observed_windows();
+  EXPECT_EQ(1u, observed_windows.size());
+  EXPECT_EQ(w1.get(), observed_windows.front());
+
+  TabletModeControllerTestApi().LeaveTabletMode();
+}
+
+TEST_F(FasterSplitScreenTest, ClamshellTabletTransitionTwoSnappedWindows) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  // Select the second window from overview to snap it.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(GetOverviewItemForWindow(w2.get())
+                              ->GetTransformedBounds()
+                              .CenterPoint()));
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(split_view_divider());
+
+  SwitchToTabletMode();
+  EXPECT_TRUE(split_view_divider());
+  auto observed_windows = split_view_divider()->observed_windows();
+  EXPECT_EQ(2u, observed_windows.size());
+  // TODO(b/312229933): Determine whether the order of `observed_windows_`
+  // matters.
+  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get()));
+
   TabletModeControllerTestApi().LeaveTabletMode();
 }
 
@@ -968,21 +1011,6 @@ class SnapGroupTest : public AshTestBase {
     right_bounds.set_width(right_bounds.width() - divider_bounds.width() / 2);
     EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
     EXPECT_EQ(right_bounds, window2->GetBoundsInScreen());
-  }
-
-  // Returns true if the union bounds of the `w1`, `w2` and split view
-  // divider(if exists) equal to the bounds of the work area and false
-  // otherwise.
-  bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
-                                        aura::Window* w2) const {
-    gfx::Rect(union_bounds);
-    union_bounds.Union(w1->GetBoundsInScreen());
-    union_bounds.Union(w2->GetBoundsInScreen());
-    const auto divider_bounds = split_view_divider()
-                                    ? split_view_divider_bounds_in_screen()
-                                    : gfx::Rect();
-    union_bounds.Union(divider_bounds);
-    return union_bounds == work_area_bounds();
   }
 
   void CompleteWindowCycling() {
@@ -2872,6 +2900,9 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionWithOneSnapGroup) {
 
   SwitchToTabletMode();
   EXPECT_TRUE(split_view_divider());
+  auto observed_windows = split_view_divider()->observed_windows();
+  EXPECT_EQ(window1.get(), observed_windows.front());
+  EXPECT_EQ(window2.get(), observed_windows.back());
   EXPECT_EQ(0.5f, *WindowState::Get(window1.get())->snap_ratio());
   EXPECT_EQ(0.5f, *WindowState::Get(window2.get())->snap_ratio());
 

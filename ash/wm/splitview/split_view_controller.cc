@@ -830,10 +830,6 @@ void SplitViewController::AttachSnappingWindow(
 
     default_snap_position_ = snap_position;
 
-    if (split_view_type_ == SplitViewType::kTabletType) {
-      split_view_divider_ = std::make_unique<SplitViewDivider>(this);
-    }
-
     splitview_start_time_ = base::Time::Now();
     // We are about to enter split view on |root_window_|. If split view is
     // already active on exactly one root, then |root_window_| will be the
@@ -888,6 +884,11 @@ void SplitViewController::AttachSnappingWindow(
     // overview items and |previous_snapped_window| was not yet among them.
     overview_session->GetOverviewItemForWindow(previous_snapped_window)
         ->OnOverviewItemDragEnded(/*snap=*/true);
+  }
+
+  if (split_view_type_ == SplitViewType::kTabletType && !split_view_divider_) {
+    // `split_view_divider_` must be created after we start observing windows.
+    split_view_divider_ = std::make_unique<SplitViewDivider>(this);
   }
 
   if (split_view_divider_) {
@@ -1881,6 +1882,55 @@ void SplitViewController::OnSnapGroupCreated() {
 void SplitViewController::OnSnapGroupRemoved() {
   CHECK(Shell::Get()->snap_group_controller());
   split_view_divider_.reset();
+}
+
+void SplitViewController::StartResizeWithDivider(
+    const gfx::Point& location_in_screen) {
+  StartTabletResize();
+}
+
+void SplitViewController::UpdateResizeWithDivider(
+    const gfx::Point& location_in_screen) {
+  // This updates `tablet_resize_mode_` based on drag speed.
+  UpdateTabletResizeMode(base::TimeTicks::Now(), location_in_screen);
+
+  // Update `divider_position_`.
+  UpdateDividerPosition(location_in_screen);
+  NotifyDividerPositionChanged();
+  UpdateSnappedWindowsAndDividerBounds();
+
+  // Update the resize backdrop, as well as the black scrim layer's bounds and
+  // opacity.
+  // TODO(b/298515546): Add performant resizing pattern.
+  UpdateResizeBackdrop();
+  UpdateBlackScrim(location_in_screen);
+
+  // Apply window transform if necessary.
+  SetWindowsTransformDuringResizing();
+}
+
+void SplitViewController::EndResizeWithDivider(
+    const gfx::Point& location_in_screen) {
+  UpdateDividerPosition(location_in_screen);
+  NotifyDividerPositionChanged();
+
+  // Need to update snapped windows bounds even if the split view mode may have
+  // to exit. Otherwise it's possible for a snapped window stuck in the edge of
+  // of the screen while overview mode is active.
+  UpdateSnappedWindowsAndDividerBounds();
+  NotifyWindowResized();
+
+  EndTabletResize();
+}
+
+aura::Window::Windows SplitViewController::GetLayoutWindows() const {
+  aura::Window::Windows window_list;
+  for (aura::Window* window : {primary_window_, secondary_window_}) {
+    if (window) {
+      window_list.push_back(window);
+    }
+  }
+  return window_list;
 }
 
 aura::Window* SplitViewController::GetPhysicalLeftOrTopWindow() {

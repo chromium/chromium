@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
@@ -97,7 +98,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public AccessibilityObserver,
                                        public ash::KeyboardControllerObserver,
                                        public wm::ActivationChangeObserver,
-                                       public SnapGroupController::Observer {
+                                       public SnapGroupController::Observer,
+                                       public LayoutDividerController {
  public:
   // `LEFT` and `RIGHT` are named for the positions to which they correspond in
   // clamshell mode or primary-landscape-oriented tablet mode. In portrait-
@@ -452,6 +454,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // SnapGroupController::Observer:
   void OnSnapGroupCreated() override;
   void OnSnapGroupRemoved() override;
+
+  // LayoutDividerController:
+  void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
+  void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
+  void EndResizeWithDivider(const gfx::Point& location_in_screen) override;
+  aura::Window::Windows GetLayoutWindows() const override;
 
  private:
   friend class SplitViewControllerTest;
