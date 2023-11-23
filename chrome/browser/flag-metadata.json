@@ -6134,6 +6134,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "optimization-guide-on-device-model",
+    "owners": [ "cduvall@chromium.org", "jam@chromium.org", "rockot@chromium.org", "sky@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "optimization-guide-personalized-fetching",
     "owners": [ "sophiechang@chromium.org", "chrome-intelligence-core@google.com", "edmundw@google.com", "gbb-cct-eng@google.com" ],
     "expiry_milestone": 130

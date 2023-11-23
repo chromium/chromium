@@ -2631,6 +2631,11 @@ const char kOptimizationGuideModelExecutionName[] =
 const char kOptimizationGuideModelExecutionDescription[] =
     "Enables the optimization guide to execute models.";
 
+const char kOptimizationGuideOnDeviceModelName[] =
+    "Enables optimization guide on device";
+const char kOptimizationGuideOnDeviceModelDescription[]=
+    "Enables the optimization guide to execute models on device.";
+
 const char kOptimizationGuidePersonalizedFetchingName[] =
     "Enable optimization guide personalized fetching";
 const char kOptimizationGuidePersonalizedFetchingDescription[] =

@@ -1509,6 +1509,9 @@ extern const char kOptimizationGuideDebugLogsDescription[];
 extern const char kOptimizationGuideModelExecutionName[];
 extern const char kOptimizationGuideModelExecutionDescription[];
 
+extern const char kOptimizationGuideOnDeviceModelName[];
+extern const char kOptimizationGuideOnDeviceModelDescription[];
+
 extern const char kOptimizationGuidePersonalizedFetchingName[];
 extern const char kOptimizationGuidePersonalizedFetchingDescription[];
 

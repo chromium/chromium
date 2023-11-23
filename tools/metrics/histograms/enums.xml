@@ -36013,6 +36013,7 @@ from previous Chrome versions.
   <int value="-746042208" label="QuickCommands:enabled"/>
   <int value="-745969829" label="BackGestureRefactorAndroid:enabled"/>
   <int value="-745616196" label="ClickToCall:disabled"/>
+  <int value="-745267150" label="OptimizationGuideOnDeviceModel:enabled"/>
   <int value="-745082968" label="SyncDeviceInfoInTransportMode:disabled"/>
   <int value="-745005043"
       label="enable-experimental-accessibility-switch-access-setup-guide"/>
@@ -41292,6 +41293,7 @@ from previous Chrome versions.
   <int value="1783967606" label="PageContentAnnotations:enabled"/>
   <int value="1784129660" label="OmniboxDocumentProviderNoSetting:enabled"/>
   <int value="1784514956" label="QuickAnswersForMoreLocales:enabled"/>
+  <int value="1784982889" label="OptimizationGuideOnDeviceModel:disabled"/>
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
   <int value="1785274337"
       label="AutofillEnableOfferNotificationCrossTabTracking:disabled"/>

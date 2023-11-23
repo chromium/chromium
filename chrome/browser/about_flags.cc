@@ -6524,6 +6524,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kOptimizationGuideModelExecution)},
 
+    {"optimization-guide-on-device-model",
+     flag_descriptions::kOptimizationGuideOnDeviceModelName,
+     flag_descriptions::kOptimizationGuideOnDeviceModelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kOptimizationGuideOnDeviceModel)},
+
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,
      flag_descriptions::kOrganicRepeatableQueriesDescription,
