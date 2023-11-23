@@ -75,6 +75,9 @@ id<GREYMatcher> DeleteButtonForUsernameAndSites(NSString* username,
 // Local Authentication is passed.
 id<GREYMatcher> ReauthenticationController();
 
+// Matcher for the TableView inside the Password Settings UI.
+id<GREYMatcher> PasswordSettingsTableView();
+
 // GREYElementInteraction* for the item on the password issues list
 // with the given `matcher`. It scrolls in `direction` if necessary to ensure
 // that the matched item is interactable.

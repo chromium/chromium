@@ -62,8 +62,10 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::PasswordsTableViewMatcher;
+using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::SettingsNavigationBar;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 using chrome_test_util::TurnTableViewSwitchOn;
@@ -81,7 +83,9 @@ using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::NavigationBarEditButton;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::PasswordDetailPassword;
+using password_manager_test_utils::PasswordSettingsTableView;
 using password_manager_test_utils::PasswordTextfieldForUsernameAndSites;
+using password_manager_test_utils::ReauthenticationController;
 using password_manager_test_utils::SavePasswordForm;
 using password_manager_test_utils::TapNavigationBarEditButton;
 using password_manager_test_utils::UsernameTextfieldForUsernameAndSites;
@@ -557,6 +561,12 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+void CheckVisibilityOfElement(id<GREYMatcher> matcher, bool is_visible) {
+  [[EarlGrey selectElementWithMatcher:matcher]
+      assertWithMatcher:is_visible ? grey_sufficientlyVisible()
+                                   : grey_notVisible()];
+}
+
 // Opens the instructions for enabling the Password Manager Widget.
 void OpenPasswordManagerWidgetPromoInstructions() {
   OpenPasswordManager();
@@ -699,7 +709,10 @@ void OpenPasswordManagerWidgetPromoInstructions() {
           isRunningTest:@selector(testOpenPasswordManagerWithSuccessfulAuth)] ||
       [self isRunningTest:@selector(testOpenPasswordManagerWithFailedAuth)] ||
       [self isRunningTest:@selector
-            (testOpenPasswordManagerWithWithoutPasscodeSet)]) {
+            (testOpenPasswordManagerWithWithoutPasscodeSet)] ||
+      [self isRunningTest:@selector
+            (testOpenPasswordSettingsSubmenuWithFailedAuth)] ||
+      [self isRunningTest:@selector(testAddNewPasswordWithFailedAuth)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntry);
     config.features_enabled.push_back(
@@ -2297,6 +2310,43 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_textFieldValue(@"new password")];
 }
 
+// Validates that the Password Manager UI is dismissed if local authentication
+// fails while within the Add Password UI.
+- (void)testAddNewPasswordWithFailedAuth {
+  OpenPasswordManager();
+
+  // Press "Add".
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
+      performAction:grey_tap()];
+
+  CheckVisibilityOfElement(/*matcher=*/AddPasswordSaveButton(),
+                           /*is_visible=*/true);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Verify that Add Password UI is covered by Reauthentication UI until local
+  // authentication is passed.
+  CheckVisibilityOfElement(/*matcher=*/AddPasswordSaveButton(),
+                           /*is_visible=*/false);
+  CheckVisibilityOfElement(/*matcher=*/ReauthenticationController(),
+                           /*is_visible=*/true);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Password Manager should be dismissed leaving the Settings UI visible.
+  CheckVisibilityOfElement(/*matcher=*/AddPasswordSaveButton(),
+                           /*is_visible=*/false);
+  CheckVisibilityOfElement(/*matcher=*/ReauthenticationController(),
+                           /*is_visible=*/false);
+  CheckVisibilityOfElement(/*matcher=*/SettingsCollectionView(),
+                           /*is_visible=*/true);
+}
+
 // Checks that entering too long note while adding passwords blocks the save
 // button and displays a footer explanation.
 - (void)testAddPasswordLayoutWithLongNotes {
@@ -2712,9 +2762,43 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   OpenPasswordManager();
   OpenSettingsSubmenu();
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordsSettingsTableViewId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckVisibilityOfElement(/*matcher=*/PasswordSettingsTableView(),
+                           /*is_visible=*/true);
+}
+
+// Tests that the Password Manager UI is dismissed when local authentication
+// fails while within the Password Settings UI.
+- (void)testOpenPasswordSettingsSubmenuWithFailedAuth {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  CheckVisibilityOfElement(/*matcher=*/PasswordSettingsTableView(),
+                           /*is_visible=*/true);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Password Settings shouldn't be visible until successful authentication.
+  CheckVisibilityOfElement(/*matcher=*/PasswordSettingsTableView(),
+                           /*is_visible=*/false);
+  CheckVisibilityOfElement(/*matcher=*/ReauthenticationController(),
+                           /*is_visible=*/true);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // The Password Manager UI should be gone leaving the Settings UI visible.
+  CheckVisibilityOfElement(/*matcher=*/PasswordSettingsTableView(),
+                           /*is_visible=*/false);
+  CheckVisibilityOfElement(/*matcher=*/PasswordsTableViewMatcher(),
+                           /*is_visible=*/false);
+  CheckVisibilityOfElement(/*matcher=*/ReauthenticationController(),
+                           /*is_visible=*/false);
+  CheckVisibilityOfElement(/*matcher=*/SettingsCollectionView(),
+                           /*is_visible=*/true);
 }
 
 // Tests that the detail text in this row reflects the status of the system
@@ -3397,9 +3481,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Failed auth should dismiss the Password Manager, the Settings menu is
   // displayed.
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckVisibilityOfElement(/*matcher=*/SettingsCollectionView(),
+                           /*is_visible=*/true);
 
   // Check password manager visit metric.
   CheckPasswordManagerVisitMetricCount(0);
