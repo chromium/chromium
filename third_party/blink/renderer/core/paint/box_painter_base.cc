@@ -801,6 +801,42 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(Node* node,
   return ImagePaintTimingInfo(image_may_be_lcp_candidate, report_paint_timing);
 }
 
+inline bool CanUseBottomLayerFastPath(const BoxPainterBase::FillLayerInfo& info,
+                                      const BackgroundImageGeometry& geometry,
+                                      BackgroundBleedAvoidance bleed_avoidance,
+                                      bool did_adjust_paint_rect) {
+  // This should have been checked by the caller already.
+  DCHECK(info.should_paint_color || info.should_paint_image);
+
+  // Painting a background image from an ancestor onto a cell is a complex case.
+  if (geometry.CellUsingContainerBackground()) {
+    return false;
+  }
+  // Complex cases not handled on the fast path.
+  if (!info.is_bottom_layer || !info.is_border_fill) {
+    return false;
+  }
+  if (info.should_paint_image) {
+    // Do not use the fast path for images if we are shrinking the background
+    // for bleed avoidance, because this adjusts the border rects in a way that
+    // breaks the optimization.
+    if (bleed_avoidance == kBackgroundBleedShrinkBackground) {
+      return false;
+    }
+    // Do not use the fast path with images if the dest rect has been adjusted
+    // for scrolling backgrounds because correcting the dest rect for scrolling
+    // reduces the accuracy of the destination rects.
+    if (did_adjust_paint_rect) {
+      return false;
+    }
+    // Avoid image shaders when printing (poorly supported in PDF).
+    if (info.is_rounded_fill && info.is_printing) {
+      return false;
+    }
+  }
+  return true;
+}
+
 inline bool PaintFastBottomLayer(const Document* document,
                                  Node* node,
                                  const ComputedStyle& style,
@@ -811,17 +847,6 @@ inline bool PaintFastBottomLayer(const Document* document,
                                  BackgroundImageGeometry& geometry,
                                  Image* image,
                                  SkBlendMode composite_op) {
-  // Painting a background image from an ancestor onto a cell is a complex case.
-  if (geometry.CellUsingContainerBackground())
-    return false;
-  // Complex cases not handled on the fast path.
-  if (!info.is_bottom_layer || !info.is_border_fill)
-    return false;
-
-  // Transparent layer, nothing to paint.
-  if (!info.should_paint_color && !info.should_paint_image)
-    return true;
-
   // Compute the destination rect for painting the color here because we may
   // need it for computing the image painting rect for optimization.
   FloatRoundedRect color_border =
@@ -834,10 +859,6 @@ inline bool PaintFastBottomLayer(const Document* document,
   gfx::RectF src_rect;
   FloatRoundedRect image_border;
   if (info.should_paint_image && image) {
-    // Avoid image shaders when printing (poorly supported in PDF).
-    if (info.is_rounded_fill && info.is_printing)
-      return false;
-
     // Compute the dest rect we will be using for images.
     image_border =
         info.is_rounded_fill
@@ -1213,17 +1234,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
       flow_box_size, bleed_avoidance, border_padding_insets);
 
-  // Fast path for drawing simple color backgrounds. Do not use the fast
-  // path with images if the dest rect has been adjusted for scrolling
-  // backgrounds because correcting the dest rect for scrolling reduces the
-  // accuracy of the destination rects. Also disable the fast path for images
-  // if we are shrinking the background for bleed avoidance, because this
-  // adjusts the border rects in a way that breaks the optimization.
-  bool disable_fast_path =
-      fill_layer_info.should_paint_image &&
-      (bleed_avoidance == kBackgroundBleedShrinkBackground ||
-       did_adjust_paint_rect);
-  if (!disable_fast_path &&
+  // Fast path for drawing simple color/image backgrounds.
+  if (CanUseBottomLayerFastPath(fill_layer_info, geometry, bleed_avoidance,
+                                did_adjust_paint_rect) &&
       PaintFastBottomLayer(document_, node_, style_, context, fill_layer_info,
                            rect, border_rect, geometry, image.get(),
                            composite_op)) {
