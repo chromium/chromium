@@ -58,13 +58,17 @@ class ChromiumDepGraph {
             licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
             licenseName: 'Apache 2.0'),
         com_google_errorprone_error_prone_annotation: new PropertyOverride(
-            url: 'https://errorprone.info/',
+            url: 'https://github.com/google/error-prone/tree/master/annotation',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
         com_google_errorprone_error_prone_annotations: new PropertyOverride(
-            url: 'https://errorprone.info/',
+            url: 'https://github.com/google/error-prone/tree/master/type_annotations',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
+        com_google_errorprone_error_prone_check_api: new PropertyOverride(
+            url: 'https://github.com/google/error-prone/tree/master/check_api'),
+        com_google_errorprone_error_prone_core: new PropertyOverride(
+            url: 'https://github.com/google/error-prone/tree/master/core'),
         com_google_firebase_firebase_annotations: new PropertyOverride(
             description: 'Common annotations for Firebase SKDs.'),
         com_google_firebase_firebase_common: new PropertyOverride(
