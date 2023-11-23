@@ -14,7 +14,7 @@ import {PathComponent} from './path_component.js';
 export async function testComputeComponentsFromEntry() {
   const volumeManager = new MockVolumeManager();
   window.webkitResolveLocalFileSystemURL =
-      MockVolumeManager.resolveLocalFileSystemURL.bind(null, volumeManager);
+      MockVolumeManager.resolveLocalFileSystemUrl.bind(null, volumeManager);
   const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
       VolumeManagerCommon.VolumeType.DRIVE);
   if (!driveVolumeInfo) {

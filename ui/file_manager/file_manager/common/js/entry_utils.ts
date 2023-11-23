@@ -194,7 +194,7 @@ export function getRootType(entry: Entry|FilesAppEntry|DirectoryEntry|
 /**
  * Obtains whether an entry is fake or not.
  */
-export function isFakeEntry(entry: Entry|FilesAppEntry) {
+export function isFakeEntry(entry: Entry|FilesAppEntry): entry is FakeEntry {
   if (entry.getParent === undefined) {
     return true;
   }

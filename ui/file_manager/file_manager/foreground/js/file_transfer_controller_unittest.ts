@@ -96,7 +96,7 @@ export function setUp() {
   // Create fake VolumeManager and install webkitResolveLocalFileSystemURL.
   volumeManager = new MockVolumeManager();
   window.webkitResolveLocalFileSystemURL =
-      MockVolumeManager.resolveLocalFileSystemURL.bind(null, volumeManager) as
+      MockVolumeManager.resolveLocalFileSystemUrl.bind(null, volumeManager) as
       unknown as Window['webkitResolveLocalFileSystemURL'];
 
 
