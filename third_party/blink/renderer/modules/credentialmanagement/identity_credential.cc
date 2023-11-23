@@ -124,6 +124,12 @@ ScriptPromise IdentityCredential::disconnect(
     return promise;
   }
 
+  if (!options->hasClientId()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "clientId is required"));
+    return promise;
+  }
+
   KURL provider_url(options->configURL());
   if (!provider_url.IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
