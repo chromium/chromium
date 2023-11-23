@@ -10,24 +10,20 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-#include "net/base/load_flags.h"
-#include "net/log/net_log_event_type.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -77,192 +73,6 @@ bool KnownSafeUrl(const GURL& url) {
 }  // namespace
 
 namespace safe_browsing {
-
-BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
-    GetDelegateCallback delegate_getter,
-    int frame_tree_node_id,
-    base::RepeatingCallback<content::WebContents*()> web_contents_getter,
-    base::WeakPtr<BrowserURLLoaderThrottle> throttle,
-    bool url_real_time_lookup_enabled,
-    bool can_urt_check_subresource_url,
-    bool can_check_db,
-    bool can_check_high_confidence_allowlist,
-    std::string url_lookup_service_metric_suffix,
-    base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
-    base::WeakPtr<HashRealTimeService> hash_realtime_service,
-    base::WeakPtr<PingManager> ping_manager,
-    bool is_mechanism_experiment_allowed,
-    hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
-    : delegate_getter_(std::move(delegate_getter)),
-      frame_tree_node_id_(frame_tree_node_id),
-      web_contents_getter_(web_contents_getter),
-      throttle_(std::move(throttle)),
-      url_real_time_lookup_enabled_(url_real_time_lookup_enabled),
-      can_urt_check_subresource_url_(can_urt_check_subresource_url),
-      can_check_db_(can_check_db),
-      can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
-      url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
-      url_lookup_service_(url_lookup_service),
-      hash_realtime_service_(hash_realtime_service),
-      ping_manager_(ping_manager),
-      is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
-      hash_realtime_selection_(hash_realtime_selection),
-      creation_time_(base::TimeTicks::Now()) {
-  content::WebContents* contents = web_contents_getter_.Run();
-  if (!!contents) {
-    last_committed_url_ = contents->GetLastCommittedURL();
-  }
-}
-
-BrowserURLLoaderThrottle::CheckerOnSB::~CheckerOnSB() {
-  base::UmaHistogramMediumTimes(
-      "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
-      base::TimeTicks::Now() - creation_time_);
-  if (mechanism_experimenter_) {
-    mechanism_experimenter_->OnBrowserUrlLoaderThrottleCheckerOnSBDestructed();
-  }
-}
-
-void BrowserURLLoaderThrottle::CheckerOnSB::Start(
-    const net::HttpRequestHeaders& headers,
-    int load_flags,
-    network::mojom::RequestDestination request_destination,
-    bool has_user_gesture,
-    bool originated_from_service_worker,
-    const GURL& url,
-    const std::string& method) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
-  scoped_refptr<UrlCheckerDelegate> url_checker_delegate =
-      std::move(delegate_getter_).Run();
-  skip_checks_ =
-      !url_checker_delegate ||
-      url_checker_delegate->ShouldSkipRequestCheck(
-          url, frame_tree_node_id_,
-          /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
-          /*render_frame_token=*/std::nullopt, originated_from_service_worker);
-  if (skip_checks_) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      throttle_->SkipChecks();
-    } else {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BrowserURLLoaderThrottle::SkipChecks, throttle_));
-    }
-    return;
-  }
-
-  if (is_mechanism_experiment_allowed_ &&
-      request_destination == network::mojom::RequestDestination::kDocument) {
-    mechanism_experimenter_ =
-        base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
-            /*is_prefetch=*/load_flags & net::LOAD_PREFETCH,
-            /*ping_manager_on_ui=*/ping_manager_,
-            /*ui_task_runner=*/content::GetUIThreadTaskRunner({}));
-  }
-  if (url_checker_for_testing_) {
-    url_checker_ = std::move(url_checker_for_testing_);
-  } else {
-    url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        headers, load_flags, request_destination, has_user_gesture,
-        url_checker_delegate, web_contents_getter_, nullptr,
-        content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
-        frame_tree_node_id_, url_real_time_lookup_enabled_,
-        can_urt_check_subresource_url_, can_check_db_,
-        can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
-        last_committed_url_, content::GetUIThreadTaskRunner({}),
-        url_lookup_service_, WebUIInfoSingleton::GetInstance(),
-        hash_realtime_service_, mechanism_experimenter_,
-        is_mechanism_experiment_allowed_, hash_realtime_selection_);
-  }
-
-  CheckUrl(url, method);
-}
-
-void BrowserURLLoaderThrottle::CheckerOnSB::CheckUrl(
-    const GURL& url,
-    const std::string& method) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
-  if (skip_checks_) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      throttle_->SkipChecks();
-    } else {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BrowserURLLoaderThrottle::SkipChecks, throttle_));
-    }
-    return;
-  }
-
-  DCHECK(url_checker_);
-  url_checker_->CheckUrl(
-      url, method,
-      base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnSB::OnCheckUrlResult,
-                     base::Unretained(this)));
-}
-
-void BrowserURLLoaderThrottle::CheckerOnSB::LogWillProcessResponseTime(
-    base::TimeTicks reached_time) {
-  if (mechanism_experimenter_) {
-    mechanism_experimenter_->OnWillProcessResponseReached(reached_time);
-  }
-}
-
-void BrowserURLLoaderThrottle::CheckerOnSB::SetUrlCheckerForTesting(
-    std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker) {
-  url_checker_for_testing_ = std::move(checker);
-}
-
-void BrowserURLLoaderThrottle::CheckerOnSB::OnCheckUrlResult(
-    NativeUrlCheckNotifier* slow_check_notifier,
-    bool proceed,
-    bool showed_interstitial,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
-  if (!slow_check_notifier) {
-    OnCompleteCheck(false /* slow_check */, proceed, showed_interstitial,
-                    performed_check, did_check_url_real_time_allowlist);
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    throttle_->NotifySlowCheck();
-  } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BrowserURLLoaderThrottle::NotifySlowCheck, throttle_));
-  }
-
-  // In this case |proceed| and |showed_interstitial| should be ignored. The
-  // result will be returned by calling |*slow_check_notifier| callback.
-  *slow_check_notifier =
-      base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnSB::OnCompleteCheck,
-                     base::Unretained(this), true /* slow_check */);
-}
-
-void BrowserURLLoaderThrottle::CheckerOnSB::OnCompleteCheck(
-    bool slow_check,
-    bool proceed,
-    bool showed_interstitial,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool did_check_url_real_time_allowlist) {
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    throttle_->OnCompleteCheck(slow_check, proceed, showed_interstitial,
-                               performed_check,
-                               did_check_url_real_time_allowlist);
-  } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck, throttle_,
-                       slow_check, proceed, showed_interstitial,
-                       performed_check, did_check_url_real_time_allowlist));
-  }
-}
 
 // static
 std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
@@ -327,7 +137,7 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
       url_real_time_lookup_enabled_ ? url_lookup_service->GetMetricSuffix()
                                     : kNoRealTimeURLLookupService;
 
-  sb_checker_ = std::make_unique<CheckerOnSB>(
+  sb_checker_ = std::make_unique<UrlCheckerOnSB>(
       std::move(delegate_getter), frame_tree_node_id, web_contents_getter,
       weak_factory_.GetWeakPtr(), url_real_time_lookup_enabled_,
       can_urt_check_subresource_url, can_check_db,
@@ -386,12 +196,12 @@ void BrowserURLLoaderThrottle::WillStartRequest(
                        request->method);
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnSB::Start,
-                                  sb_checker_->AsWeakPtr(), request->headers,
-                                  request->load_flags, request->destination,
-                                  request->has_user_gesture,
-                                  request->originated_from_service_worker,
-                                  request->url, request->method));
+        FROM_HERE,
+        base::BindOnce(&UrlCheckerOnSB::Start, sb_checker_->AsWeakPtr(),
+                       request->headers, request->load_flags,
+                       request->destination, request->has_user_gesture,
+                       request->originated_from_service_worker, request->url,
+                       request->method));
   }
 }
 
@@ -422,9 +232,8 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnSB::CheckUrl,
-                       sb_checker_->AsWeakPtr(), redirect_info->new_url,
-                       redirect_info->new_method));
+        base::BindOnce(&UrlCheckerOnSB::CheckUrl, sb_checker_->AsWeakPtr(),
+                       redirect_info->new_url, redirect_info->new_method));
   }
 }
 
@@ -444,8 +253,7 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
     } else {
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnSB::
-                             LogWillProcessResponseTime,
+          base::BindOnce(&UrlCheckerOnSB::LogWillProcessResponseTime,
                          sb_checker_->AsWeakPtr(), base::TimeTicks::Now()));
     }
   }
@@ -498,8 +306,7 @@ const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
   return "SafeBrowsingBrowserThrottle";
 }
 
-BrowserURLLoaderThrottle::CheckerOnSB*
-BrowserURLLoaderThrottle::GetSBCheckerForTesting() {
+UrlCheckerOnSB* BrowserURLLoaderThrottle::GetSBCheckerForTesting() {
   return sb_checker_.get();
 }
 
