@@ -83,7 +83,12 @@ void OnWebAppInstallShowInstallDialog(
       if (base::FeatureList::IsEnabled(
               chromeos::features::kCrosWebAppInstallDialog)) {
         ash::web_app_install::WebAppInstallDialog::Show(
-            initiator_web_contents->GetNativeView());
+            initiator_web_contents->GetNativeView(),
+            ash::web_app_install::ChromeOsAppInstallDialogParams(
+                std::move(web_app_info),
+                webapps::AppBannerManager::FromWebContents(
+                    initiator_web_contents)
+                    ->screenshots()));
         return;
       }
 #endif
