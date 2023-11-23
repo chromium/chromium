@@ -729,7 +729,7 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
   gfx::ImageSkia image_icon;
   if (image_model.IsImage()) {
     image_icon = image_model.GetImage().AsImageSkia();
-  } else if (image_model.IsVectorIcon()) {
+  } else if (image_model.IsVectorIcon() && GetColorProvider()) {
     image_icon = ui::ThemedVectorIcon(image_model.GetVectorIcon())
                      .GetImageSkia(GetColorProvider());
   }
@@ -1917,7 +1917,7 @@ void AppListItemView::OnAnimatedInFromPromiseApp(
   title_->DestroyLayer();
   new_install_dot_->DestroyLayer();
   forced_progress_indicator_value_.reset();
-  if (progress_indicator_) {
+  if (progress_indicator_ && layer()) {
     layer()->Remove(progress_indicator_->layer());
   }
   progress_indicator_.reset();
@@ -2336,7 +2336,7 @@ ui::Layer* AppListItemView::GetIconBackgroundLayer() {
 }
 
 bool AppListItemView::AlwaysPaintsToLayer() {
-  return is_promise_app_;
+  return is_promise_app_ || progress_indicator_;
 }
 
 BEGIN_METADATA(AppListItemView, views::Button)

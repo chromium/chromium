@@ -464,9 +464,11 @@ void AppsGridView::EndDragCallback(
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
   output_drag_op = ui::mojom::DragOperation::kMove;
-  drag_image_layer_ = std::move(drag_image_layer_owner);
 
-  EndDrag(/*cancel=*/false);
+  if (drag_item_) {
+    drag_image_layer_ = std::move(drag_image_layer_owner);
+    EndDrag(/*cancel=*/false);
+  }
 }
 
 void AppsGridView::CancelDragWithNoDropAnimation() {
@@ -3127,7 +3129,7 @@ void AppsGridView::DestroyLayerItemsIfNotNeeded() {
 bool AppsGridView::ItemViewsRequireLayers() const {
   // Layers required for app list item move animations during drag (to make room
   // for the current placeholder).
-  if (drag_item_ || drag_icon_proxy_) {
+  if (drag_item_ || drag_icon_proxy_ || drag_image_layer_) {
     return true;
   }
 
