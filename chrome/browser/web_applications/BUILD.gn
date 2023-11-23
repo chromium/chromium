@@ -982,6 +982,7 @@ source_set("web_applications_browser_tests") {
     deps += [
       "//chrome/browser/web_applications/app_service:test_support",
       "//chromeos/constants",
+      "//chromeos/lacros",
       "//chromeos/startup",
     ]
   }

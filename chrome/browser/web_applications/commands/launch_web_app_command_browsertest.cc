@@ -46,6 +46,9 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -358,9 +361,21 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
  public:
+  LaunchWebAppCommandTest_Shortstand() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kCrosShortstand);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->is_cros_shortstand_enabled = true;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
   std::tuple<base::WeakPtr<Browser>,
              base::WeakPtr<content::WebContents>,
              apps::LaunchContainer>
@@ -374,8 +389,7 @@ class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kCrosShortstand};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
@@ -483,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
     EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerWindow);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

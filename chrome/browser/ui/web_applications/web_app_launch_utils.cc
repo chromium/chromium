@@ -758,8 +758,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
     }
   }
 
-// TODO(crbug.com/1491299): Support Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // With Shortstand enabled all browser shortcuts (backed by shortcut web apps)
   // open in a browser tab and all non-shortcut web apps open in a standalone
   // window.
