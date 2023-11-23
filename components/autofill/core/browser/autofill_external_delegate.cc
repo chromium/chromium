@@ -642,6 +642,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             manager_->client().GetPopupScreenLocation(), std::move(callback));
       }
       break;
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMixedFormMessage:
+      // If the selected element is a warning we don't want to do anything.
+      break;
     case PopupItemId::kEntryNotSelectable:
       return;
     default:
@@ -855,11 +859,6 @@ void AutofillExternalDelegate::FillAutofillFormData(
     Suggestion::BackendId backend_id,
     bool is_preview,
     const AutofillTriggerDetails& trigger_details) {
-  // If the selected element is a warning we don't want to do anything.
-  if (IsAutofillWarningEntry(popup_item_id)) {
-    return;
-  }
-
   if (base::FeatureList::IsEnabled(
           features::kAutofillGranularFillingAvailable)) {
     // Only address suggestions store the last field types to
