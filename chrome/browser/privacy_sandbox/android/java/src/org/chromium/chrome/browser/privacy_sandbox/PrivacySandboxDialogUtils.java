@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_sandbox.v4;
+package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -17,7 +17,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;

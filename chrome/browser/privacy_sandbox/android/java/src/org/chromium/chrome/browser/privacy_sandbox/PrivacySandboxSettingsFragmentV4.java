@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_sandbox.v4;
+package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
-import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 

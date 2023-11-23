@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_sandbox.v4;
+package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
@@ -47,9 +47,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
-import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;

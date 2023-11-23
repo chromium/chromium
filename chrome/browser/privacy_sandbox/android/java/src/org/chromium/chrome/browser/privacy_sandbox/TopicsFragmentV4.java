@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_sandbox.v4;
+package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
 import android.view.View;
@@ -14,11 +14,6 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
-import org.chromium.chrome.browser.privacy_sandbox.R;
-import org.chromium.chrome.browser.privacy_sandbox.Topic;
-import org.chromium.chrome.browser.privacy_sandbox.TopicPreference;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;

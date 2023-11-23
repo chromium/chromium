@@ -9,10 +9,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogConsentEEAV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeEEAV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeROWV4;
-import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeRestrictedV4;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.lang.ref.WeakReference;

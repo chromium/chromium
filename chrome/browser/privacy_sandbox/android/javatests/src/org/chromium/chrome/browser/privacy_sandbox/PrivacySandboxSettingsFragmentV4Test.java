@@ -1,7 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.chrome.browser.privacy_sandbox.v4;
+package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -13,9 +13,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.hasItems;
 
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
-import static org.chromium.chrome.browser.privacy_sandbox.v4.AdMeasurementFragmentV4.setAdMeasurementPrefEnabled;
-import static org.chromium.chrome.browser.privacy_sandbox.v4.FledgeFragmentV4.setFledgePrefEnabled;
-import static org.chromium.chrome.browser.privacy_sandbox.v4.TopicsFragmentV4.setTopicsPrefEnabled;
+import static org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragmentV4.setAdMeasurementPrefEnabled;
+import static org.chromium.chrome.browser.privacy_sandbox.FledgeFragmentV4.setFledgePrefEnabled;
+import static org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentV4.setTopicsPrefEnabled;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -35,8 +35,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
-import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;

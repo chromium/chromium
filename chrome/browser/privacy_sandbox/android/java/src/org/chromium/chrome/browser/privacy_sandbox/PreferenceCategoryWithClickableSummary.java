@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_sandbox.v4;
+package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
