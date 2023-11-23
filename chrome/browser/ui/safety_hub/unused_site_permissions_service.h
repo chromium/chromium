@@ -18,6 +18,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -25,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -144,8 +146,9 @@ class UnusedSitePermissionsService : public SafetyHubService,
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
-  explicit UnusedSitePermissionsService(HostContentSettingsMap* hcsm,
-                                        PrefService* prefs);
+  explicit UnusedSitePermissionsService(
+      content::BrowserContext* browser_context,
+      PrefService* prefs);
 
   UnusedSitePermissionsService(const UnusedSitePermissionsService&) = delete;
   UnusedSitePermissionsService& operator=(const UnusedSitePermissionsService&) =
@@ -236,6 +239,10 @@ class UnusedSitePermissionsService : public SafetyHubService,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
+  HostContentSettingsMap* hcsm() {
+    return HostContentSettingsMapFactory::GetForProfile(browser_context_.get());
+  }
+
   // SafetyHubService implementation
 
   std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
@@ -261,7 +268,7 @@ class UnusedSitePermissionsService : public SafetyHubService,
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
 
-  const scoped_refptr<HostContentSettingsMap> hcsm_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Observer to watch for content settings changed.
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>

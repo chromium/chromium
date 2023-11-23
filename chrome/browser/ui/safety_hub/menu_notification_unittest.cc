@@ -57,10 +57,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     // the correct permission types.
     auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
     registry->ResetForTest();
-    HostContentSettingsMap* hcsm =
-        HostContentSettingsMapFactory::GetForProfile(profile());
     service_ = std::make_unique<UnusedSitePermissionsService>(
-        hcsm, profile()->GetPrefs());
+        profile(), profile()->GetPrefs());
   }
 
  protected:

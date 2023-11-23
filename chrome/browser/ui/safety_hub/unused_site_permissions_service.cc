@@ -37,9 +37,11 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -262,13 +264,15 @@ void UnusedSitePermissionsService::TabHelper::PrimaryPageChanged(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(UnusedSitePermissionsService::TabHelper);
 
 UnusedSitePermissionsService::UnusedSitePermissionsService(
-    HostContentSettingsMap* hcsm,
+    content::BrowserContext* browser_context,
     PrefService* prefs)
-    : hcsm_(hcsm), clock_(base::DefaultClock::GetInstance()) {
+    : browser_context_(browser_context),
+      clock_(base::DefaultClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content_settings_observation_.Observe(hcsm);
+  DCHECK(browser_context_);
 
-  DCHECK(prefs);
+  content_settings_observation_.Observe(hcsm());
+
   if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(prefs);
@@ -328,7 +332,7 @@ void UnusedSitePermissionsService::Shutdown() {
 void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
     const url::Origin& origin) {
   content_settings::SettingInfo info;
-  base::Value stored_value(hcsm_->GetWebsiteSetting(
+  base::Value stored_value(hcsm()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &info));
 
@@ -349,7 +353,7 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
     if (!type_int.has_value()) {
       continue;
     }
-    hcsm_->SetContentSettingCustomScope(
+    hcsm()->SetContentSettingCustomScope(
         info.primary_pattern, info.secondary_pattern,
         static_cast<ContentSettingsType>(type_int.value()),
         ContentSetting::CONTENT_SETTING_ALLOW);
@@ -379,7 +383,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
         constraint,
     const url::Origin origin) {
   for (const auto& permission : permissions) {
-    hcsm_->SetContentSettingCustomScope(
+    hcsm()->SetContentSettingCustomScope(
         ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
         ContentSettingsPattern::Wildcard(), permission,
         ContentSetting::CONTENT_SETTING_DEFAULT);
@@ -389,7 +393,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
 }
 
 void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
-  for (const auto& revoked_permissions : hcsm_->GetSettingsForOneType(
+  for (const auto& revoked_permissions : hcsm()->GetSettingsForOneType(
            ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
     DeletePatternFromRevokedPermissionList(
         revoked_permissions.primary_pattern,
@@ -404,12 +408,12 @@ void UnusedSitePermissionsService::IgnoreOriginForAutoRevocation(
   for (const content_settings::ContentSettingsInfo* info : *registry) {
     ContentSettingsType type = info->website_settings_info()->type();
 
-    for (const auto& setting : hcsm_->GetSettingsForOneType(type)) {
+    for (const auto& setting : hcsm()->GetSettingsForOneType(type)) {
       if (setting.metadata.last_visited() != base::Time() &&
           setting.primary_pattern.MatchesSingleOrigin() &&
           setting.primary_pattern.Matches(origin.GetURL())) {
-        hcsm_->ResetLastVisitedTime(setting.primary_pattern,
-                                    setting.secondary_pattern, type);
+        hcsm()->ResetLastVisitedTime(setting.primary_pattern,
+                                     setting.secondary_pattern, type);
         break;
       }
     }
@@ -429,8 +433,8 @@ void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
   auto& site_permissions = origin_entry->second;
   for (auto it = site_permissions.begin(); it != site_permissions.end();) {
     if (it->source.primary_pattern.Matches(origin.GetURL())) {
-      hcsm_->UpdateLastVisitedTime(it->source.primary_pattern,
-                                   it->source.secondary_pattern, it->type);
+      hcsm()->UpdateLastVisitedTime(it->source.primary_pattern,
+                                    it->source.secondary_pattern, it->type);
       site_permissions.erase(it++);
     } else {
       it++;
@@ -445,7 +449,7 @@ void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
 void UnusedSitePermissionsService::DeletePatternFromRevokedPermissionList(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
-  hcsm_->SetWebsiteSettingCustomScope(
+  hcsm()->SetWebsiteSettingCustomScope(
       primary_pattern, secondary_pattern,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
 }
@@ -453,7 +457,7 @@ void UnusedSitePermissionsService::DeletePatternFromRevokedPermissionList(
 base::OnceCallback<std::unique_ptr<SafetyHubService::Result>()>
 UnusedSitePermissionsService::GetBackgroundTask() {
   return base::BindOnce(&UnusedSitePermissionsService::UpdateOnBackgroundThread,
-                        clock_, hcsm_);
+                        clock_, base::WrapRefCounted(hcsm()));
 }
 
 std::unique_ptr<SafetyHubService::Result>
@@ -509,7 +513,7 @@ UnusedSitePermissionsService::UpdateOnUIThread(
 
 std::unique_ptr<UnusedSitePermissionsService::Result>
 UnusedSitePermissionsService::GetRevokedPermissions() {
-  ContentSettingsForOneType settings = hcsm_->GetSettingsForOneType(
+  ContentSettingsForOneType settings = hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
   auto result = std::make_unique<
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
@@ -577,8 +581,12 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
       if (entry.source.metadata.last_visited() < threshold &&
           entry.source.secondary_pattern ==
               ContentSettingsPattern::Wildcard()) {
+        permissions::PermissionUmaUtil::ScopedRevocationReporter reporter(
+            browser_context_.get(), entry.source.primary_pattern,
+            entry.source.secondary_pattern, entry.type,
+            permissions::PermissionSourceUI::SAFETY_HUB_AUTO_REVOCATION);
         revoked_permissions.insert(entry.type);
-        hcsm_->SetContentSettingCustomScope(
+        hcsm()->SetContentSettingCustomScope(
             entry.source.primary_pattern, entry.source.secondary_pattern,
             entry.type, ContentSetting::CONTENT_SETTING_DEFAULT);
         unused_site_permissions.erase(permission_itr++);
@@ -637,7 +645,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   DCHECK(url.is_valid());
   // Get the current value of the setting to append the recently revoked
   // permissions.
-  base::Value cur_value(hcsm_->GetWebsiteSetting(
+  base::Value cur_value(hcsm()->GetWebsiteSetting(
       url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS));
 
   base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
@@ -659,7 +667,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
 
   // Set website setting for the list of recently revoked permissions and
   // previously revoked permissions, if exists.
-  hcsm_->SetWebsiteSettingCustomScope(
+  hcsm()->SetWebsiteSettingCustomScope(
       primary_pattern, secondary_pattern,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       base::Value(std::move(dict)),

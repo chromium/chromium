@@ -38,9 +38,7 @@ UnusedSitePermissionsServiceFactory::~UnusedSitePermissionsServiceFactory() =
 
 KeyedService* UnusedSitePermissionsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
   auto* service = new UnusedSitePermissionsService(
-      HostContentSettingsMapFactory::GetForProfile(context),
-      profile->GetPrefs());
+      context, Profile::FromBrowserContext(context)->GetPrefs());
   return service;
 }

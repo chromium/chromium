@@ -115,6 +115,10 @@ enum class PermissionSourceUI {
   // Permission settings changes as part of the abusive origins revocation.
   AUTO_REVOCATION = 6,
 
+  // Permission changes due to automatic revocations of permissions from unused
+  // sites, as part of Safety Hub.
+  SAFETY_HUB_AUTO_REVOCATION = 7,
+
   // Always keep this at the end.
   NUM,
 };
