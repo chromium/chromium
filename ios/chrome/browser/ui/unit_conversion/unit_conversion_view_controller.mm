@@ -485,19 +485,26 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
         [tableView dequeueReusableCellWithIdentifier:kUnitTypeCellIdentifier];
     cell.unitMenuButton.menu = [self unitsMenuAtSection:indexPath.section];
     cell.unitMenuButton.showsMenuAsPrimaryAction = YES;
+    NSString* unitMenuButtonTitle;
     if (indexPath.section == kSourceSection) {
-      cell.unitTypeLabel.text = _formattedSourceUnit;
-      cell.unitTypeLabel.accessibilityIdentifier = kSourceUnitLabelIdentifier;
+      unitMenuButtonTitle = _formattedSourceUnit;
       cell.unitMenuButton.accessibilityIdentifier =
           kSourceUnitMenuButtonIdentifier;
     } else if (indexPath.section == kTargetSection) {
-      cell.unitTypeLabel.text = _formattedTargetUnit;
-      cell.unitTypeLabel.accessibilityIdentifier = kTargetUnitLabelIdentifier;
+      unitMenuButtonTitle = _formattedTargetUnit;
       cell.unitMenuButton.accessibilityIdentifier =
           kTargetUnitMenuButtonIdentifier;
     } else {
       NOTREACHED_NORETURN();
     }
+    UIButtonConfiguration* unitMenuButtonConfiguration =
+        cell.unitMenuButton.configuration;
+    unitMenuButtonConfiguration.attributedTitle = [self
+        createAttributedStringWithTitle:unitMenuButtonTitle
+                                   font:[UIFont
+                                            preferredFontForTextStyle:
+                                                UIFontTextStyleSubheadline]];
+    cell.unitMenuButton.configuration = unitMenuButtonConfiguration;
     return cell;
   }
 

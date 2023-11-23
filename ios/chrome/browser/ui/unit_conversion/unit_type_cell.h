@@ -7,15 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-// The cell where the unit (meters, pounds, etc) and the unit menu button are
-// displayed.
+// The cell where the unit (meters, pounds, etc) is displayed and the unit menu
+// is triggered when the cell is tapped.
 @interface UnitTypeCell : UITableViewCell
 
 // The button to display the units UIMenu
 @property(nonatomic, strong) UIButton* unitMenuButton;
-
-// The label to display the unit.
-@property(nonatomic, strong) UILabel* unitTypeLabel;
 
 @end
 

@@ -21,9 +21,9 @@ id<GREYMatcher> UnitConversionMatcher() {
   return grey_accessibilityID(kUnitConversionTableViewIdentifier);
 }
 
-// Matcher for the source unit label for a given unit label.
+// Matcher for the source unit button label for a given unit label.
 id<GREYMatcher> SourceUnitLabelMatcher(NSString* unit_label) {
-  return grey_allOf(grey_accessibilityID(kSourceUnitLabelIdentifier),
+  return grey_allOf(grey_accessibilityID(kSourceUnitMenuButtonIdentifier),
                     testing::ElementWithAccessibilityLabelSubstring(unit_label),
                     nil);
 }
@@ -33,9 +33,9 @@ id<GREYMatcher> SourceUnitFieldMatcher() {
   return grey_accessibilityID(kSourceUnitFieldIdentifier);
 }
 
-// Matcher for the target unit label for a given unit label.
+// Matcher for the target unit button label for a given unit label.
 id<GREYMatcher> TargetUnitLabelMatcher(NSString* unit_label) {
-  return grey_allOf(grey_accessibilityID(kTargetUnitLabelIdentifier),
+  return grey_allOf(grey_accessibilityID(kTargetUnitMenuButtonIdentifier),
                     testing::ElementWithAccessibilityLabelSubstring(unit_label),
                     nil);
 }
@@ -50,6 +50,20 @@ void TapOnButton(id<GREYMatcher> item_button) {
   [[EarlGrey selectElementWithMatcher:item_button]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:item_button] performAction:grey_tap()];
+}
+
+// Taps on a context menu button.
+void TapOnContextMenuButton(NSString* label) {
+  // Since the strings in the context menu and those in the `unitMenu` buttons
+  // are similar we needed a way to separate their matchers hence the use of the
+  // `grey_not()` function.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::ContextMenuItemWithAccessibilityLabel(label),
+              grey_not(grey_accessibilityID(kSourceUnitMenuButtonIdentifier)),
+              grey_not(grey_accessibilityID(kTargetUnitMenuButtonIdentifier)),
+              nil)] performAction:grey_tap()];
 }
 
 // Matcher for the unit conversion view controller title button for the mass
@@ -76,12 +90,6 @@ id<GREYMatcher> SourceUnitMenuButton() {
 // Matcher for the target unit menu button.
 id<GREYMatcher> TargetUnitMenuButton() {
   return grey_accessibilityID(kTargetUnitMenuButtonIdentifier);
-}
-
-// Matcher for the unit button in a displayed context menu.
-id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(label),
-                    grey_interactable(), nil);
 }
 
 }  // namespace
@@ -178,7 +186,7 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [UnitConversionAppInterface presentUnitConversionFeature];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
   TapOnButton(SourceUnitMenuButton());
-  TapOnButton(UnitButtonWithLabel(@"Pounds (lb)"));
+  TapOnContextMenuButton(@"Pounds (lb)");
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
@@ -190,7 +198,7 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [UnitConversionAppInterface presentUnitConversionFeature];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
   TapOnButton(TargetUnitMenuButton());
-  TapOnButton(UnitButtonWithLabel(@"Kilograms (kg)"));
+  TapOnContextMenuButton(@"Kilograms (kg)");
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
