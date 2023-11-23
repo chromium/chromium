@@ -1377,6 +1377,25 @@ TEST_P(PasswordSaveManagerImplTest, MarkSharedCredentialAsNotifiedUponSave) {
   password_save_manager_impl()->Save(&observed_form_, saved_shared_credentials);
 }
 
+TEST_P(PasswordSaveManagerImplTest,
+       PresavedGeneratedPasswordWithEmptyUsernameUpdate) {
+  fetcher()->NotifyFetchCompleted();
+
+  PasswordForm form_with_generated_password = parsed_submitted_form_;
+  form_with_generated_password.username_value = u"";
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      form_with_generated_password);
+  password_save_manager_impl()->CreatePendingCredentials(
+      form_with_generated_password, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  // Do not consider as update if there is a pre-saved generated password with
+  // the same value.
+  ASSERT_FALSE(password_save_manager_impl()->IsPasswordUpdate());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PasswordSaveManagerImplTest,
                          testing::Values(false, true));

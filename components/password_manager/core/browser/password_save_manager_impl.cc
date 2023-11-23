@@ -150,12 +150,25 @@ bool AccountStoreMatchesContainForm(
 
 PendingCredentialsState ComputePendingCredentialsState(
     const PasswordForm& parsed_submitted_form,
-    const PasswordForm* similar_saved_form) {
+    const PasswordForm* similar_saved_form,
+    PasswordGenerationManager* generation_manager) {
   AlternativeElement password_to_save(PasswordToSave(parsed_submitted_form));
   // Check if there are previously saved credentials (that were available to
   // autofilling) matching the actually submitted credentials.
   if (!similar_saved_form) {
     return PendingCredentialsState::NEW_LOGIN;
+  }
+
+  if (generation_manager && generation_manager->HasGeneratedPassword() &&
+      generation_manager->generated_password() == password_to_save.value &&
+      parsed_submitted_form.username_value == u"" &&
+      similar_saved_form->username_value == u"") {
+    // This is the special corner case when a generated password is being saved
+    // with an empty username, while another generated password with an empty
+    // username is already being stored. In this case, just silently update the
+    // password (the allowance to update is asked before filling the form in
+    // this case).
+    return PendingCredentialsState::EQUAL_TO_SAVED_MATCH;
   }
 
   // A similar credential exists in the store already.
@@ -177,7 +190,8 @@ PendingCredentialsState ComputePendingCredentialsState(
 PendingCredentialsStates ComputePendingCredentialsStates(
     const PasswordForm& parsed_submitted_form,
     const std::vector<const PasswordForm*>& matches,
-    bool username_updated_in_bubble) {
+    bool username_updated_in_bubble,
+    PasswordGenerationManager* generation_manager) {
   PendingCredentialsStates result;
 
   // Try to find a similar existing saved form from each of the stores.
@@ -193,9 +207,11 @@ PendingCredentialsStates ComputePendingCredentialsStates(
   // Compute the PendingCredentialsState (i.e. what to do - save, update, silent
   // update) separately for the two stores.
   result.profile_store_state = ComputePendingCredentialsState(
-      parsed_submitted_form, result.similar_saved_form_from_profile_store);
+      parsed_submitted_form, result.similar_saved_form_from_profile_store,
+      generation_manager);
   result.account_store_state = ComputePendingCredentialsState(
-      parsed_submitted_form, result.similar_saved_form_from_account_store);
+      parsed_submitted_form, result.similar_saved_form_from_account_store,
+      generation_manager);
 
   return result;
 }
@@ -536,7 +552,7 @@ void PasswordSaveManagerImpl::BlockMovingToAccountStoreFor(
   // login. This entails that the credentials must exist in the profile store.
   PendingCredentialsStates states = ComputePendingCredentialsStates(
       pending_credentials_, form_fetcher_->GetAllRelevantMatches(),
-      username_updated_in_bubble_);
+      username_updated_in_bubble_, generation_manager_.get());
   DCHECK(states.similar_saved_form_from_profile_store);
   DCHECK_EQ(PendingCredentialsState::EQUAL_TO_SAVED_MATCH,
             states.profile_store_state);
@@ -674,7 +690,7 @@ PasswordSaveManagerImpl::FindSimilarSavedFormAndComputeState(
     const PasswordForm& parsed_submitted_form) const {
   PendingCredentialsStates states = ComputePendingCredentialsStates(
       parsed_submitted_form, form_fetcher_->GetBestMatches(),
-      username_updated_in_bubble_);
+      username_updated_in_bubble_, generation_manager_.get());
 
   // Resolve the two states to a single canonical one. This will be used to
   // decide what UI bubble (if any) to show to the user.
@@ -713,7 +729,8 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
     const PasswordForm& parsed_submitted_form) {
   auto matches = form_fetcher_->GetAllRelevantMatches();
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      parsed_submitted_form, matches, username_updated_in_bubble_);
+      parsed_submitted_form, matches, username_updated_in_bubble_,
+      generation_manager_.get());
 
   auto account_matches = AccountStoreMatches(matches);
   auto profile_matches = ProfileStoreMatches(matches);
