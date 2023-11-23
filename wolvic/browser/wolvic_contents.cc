@@ -64,14 +64,20 @@ WolvicContents::DidFinishNavigation(content::NavigationHandle* navigation_handle
   if (!navigation_handle->HasCommitted())
     return;
 
+  auto* browser_context =
+      content::WolvicBrowserContext::FromWebContents(*web_contents());
+
+  // Do not record visited links in incognito mode.
+  if (browser_context->IsOffTheRecord())
+    return;
+
   // Only record a visit if the navigation affects user-facing session history
   // (i.e. it occurs in the primary frame tree).
   if (navigation_handle->IsInPrimaryMainFrame() ||
       (navigation_handle->GetParentFrame() &&
        navigation_handle->GetParentFrame()->GetPage().IsPrimary() &&
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
-    content::WolvicBrowserContext::FromWebContents(*web_contents())
-        ->AddVisitedURLs(navigation_handle->GetRedirectChain());
+    browser_context->AddVisitedURLs(navigation_handle->GetRedirectChain());
   }
 }
 
