@@ -5964,6 +5964,13 @@
       }
      },
      "the-details-element": {
+      "details-autofocus-crash.html": [
+       "70a220feace45c47b74cf8d6e67f8762475d8992",
+       [
+        null,
+        {}
+       ]
+      ],
       "empty-crash.html": [
        "d409eff4a88c88011e7a8ffc48d1dc7e71462d7a",
        [
@@ -429048,7 +429055,7 @@
       ]
      ],
      "nonces.html": [
-      "7ee10a7b29e5a54918a75037ded0e5bd087f601a",
+      "5ce14360e2860ebf2b25e7171d3cba97ce59746f",
       [
        null,
        {}
@@ -465445,6 +465452,27 @@
      ],
      "minmax-time-serialize.html": [
       "27d09cfa28b60c6b0e0e61e65d000345c5bb4a53",
+      [
+       null,
+       {}
+      ]
+     ],
+     "progress-computed.tentative.html": [
+      "cb1edfffb473dd6443970f4f5ad6f785e3783543",
+      [
+       null,
+       {}
+      ]
+     ],
+     "progress-invalid.tentative.html": [
+      "e009eef4ccfa8c4aed3cfb91f76ba99c92b86643",
+      [
+       null,
+       {}
+      ]
+     ],
+     "progress-serialize.tentative.html": [
+      "6ea12f2b7561e3422aeb5434abc859d78a9a0498",
       [
        null,
        {}
