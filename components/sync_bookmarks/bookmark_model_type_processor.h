@@ -70,7 +70,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
       base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
-  void ClearMetadataWhileStopped() override;
+  void ClearMetadataIfStopped() override;
 
   // Encodes all sync metadata into a string, representing a state that can be
   // restored via ModelReadyToSync() below.
@@ -213,7 +213,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   size_t max_bookmarks_till_sync_enabled_;
 
   // Marks whether metadata should be cleared upon ModelReadyToSync(). True if
-  // ClearMetadataWhileStopped() is called before ModelReadyToSync().
+  // ClearMetadataIfStopped() is called before ModelReadyToSync().
   bool pending_clear_metadata_ = false;
 
   // WeakPtrFactory for this processor for ModelTypeController.

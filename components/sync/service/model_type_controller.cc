@@ -179,7 +179,7 @@ void ModelTypeController::LoadModels(
   // this is a no-op for the delegate that was just started. Note^2 that that
   // also covers the case of data types using the same underlying delegate for
   // both modes.
-  ClearMetadataWhileStopped();
+  ClearMetadataIfStopped();
 }
 
 std::unique_ptr<DataTypeActivationResponse> ModelTypeController::Connect() {
@@ -204,7 +204,7 @@ void ModelTypeController::Stop(SyncStopMetadataFate fate,
       std::move(callback).Run();
       // Clear metadata if needed.
       if (fate == CLEAR_METADATA) {
-        ClearMetadataWhileStopped();
+        ClearMetadataIfStopped();
       }
       return;
 
@@ -393,12 +393,12 @@ void ModelTypeController::TriggerCompletionCallbacks(const SyncError& error) {
   }
 }
 
-void ModelTypeController::ClearMetadataWhileStopped() {
+void ModelTypeController::ClearMetadataIfStopped() {
   for (auto& [sync_mode, delegate] : delegate_map_) {
     // `delegate` can be null during testing.
     // TODO(crbug.com/1418351): Remove test-only code-path.
     if (delegate) {
-      delegate->ClearMetadataWhileStopped();
+      delegate->ClearMetadataIfStopped();
     }
   }
 }

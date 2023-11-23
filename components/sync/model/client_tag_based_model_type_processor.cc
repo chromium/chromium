@@ -1287,7 +1287,7 @@ bool ClientTagBasedModelTypeProcessor::ClearPersistedMetadataIfInvalid(
       metadata.GetModelTypeState();
   const EntityMetadataMap& metadata_map = metadata.GetAllMetadata();
 
-  // Check if ClearMetadataWhileStopped() was called before ModelReadyToSync().
+  // Check if ClearMetadataIfStopped() was called before ModelReadyToSync().
   // If so, clear the metadata from storage (using the bridge's
   // ApplyDisableSyncChanges()).
   if (pending_clear_metadata_) {
@@ -1419,7 +1419,7 @@ ClientTagBasedModelTypeProcessor::GetWeakPtr() {
   return weak_ptr_factory_for_controller_.GetWeakPtr();
 }
 
-void ClientTagBasedModelTypeProcessor::ClearMetadataWhileStopped() {
+void ClientTagBasedModelTypeProcessor::ClearMetadataIfStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If a model error has been encountered, the local model is assumed to be

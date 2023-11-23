@@ -3146,7 +3146,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_FALSE(bridge()->sync_started());
 }
 
-TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
+TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataIfStopped) {
   // Bring the processor to a stopped state.
   InitializeToReadyState();
   WritePrefItem(bridge(), kKey1, kValue1);
@@ -3159,7 +3159,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
   base::HistogramTester histogram_tester;
 
   // Should clear the metadata even if already stopped.
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
   EXPECT_FALSE(type_processor()->IsTrackingMetadata());
   EXPECT_EQ(0U, db()->model_type_state().ByteSizeLong());
   EXPECT_EQ(0U, db()->metadata_count());
@@ -3173,11 +3173,11 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldClearMetadataWhileStoppedUponModelReadyToSync) {
+       ShouldClearMetadataIfStoppedUponModelReadyToSync) {
   base::HistogramTester histogram_tester;
 
   // Called before ModelReadyToSync().
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
 
   // Nothing recorded to the histograms yet.
   histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
@@ -3218,7 +3218,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   base::HistogramTester histogram_tester;
 
   // Called before ModelReadyToSync().
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
 
   // Nothing recorded to the histograms yet.
   histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
@@ -3260,7 +3260,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   base::HistogramTester histogram_tester;
 
   // Should NOT clear the metadata since the processor is not stopped.
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
   EXPECT_NE(0U, db()->model_type_state().ByteSizeLong());
   EXPECT_NE(0U, db()->metadata_count());
@@ -3269,7 +3269,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldNotClearMetadataWhileStoppedIfNotTracking) {
+       ShouldNotClearMetadataIfStoppedIfNotTracking) {
   // Bring the processor to a stopped state.
   InitializeToReadyState();
   type_processor()->OnSyncStopping(CLEAR_METADATA);
@@ -3280,7 +3280,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   base::HistogramTester histogram_tester;
 
   // Should do nothing since there's nothing to clear.
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
   // Expect no entry to the histogram.
   histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
@@ -3288,16 +3288,16 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldNotClearMetadataWhileStoppedWithoutMetadataInitially) {
+       ShouldNotClearMetadataIfStoppedWithoutMetadataInitially) {
   InitializeToMetadataLoaded(
       sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   ASSERT_FALSE(type_processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
 
-  // Call ClearMetadataWhileStopped() without a prior call to OnSyncStopping().
+  // Call ClearMetadataIfStopped() without a prior call to OnSyncStopping().
   // Since there's no metadata, this should do nothing.
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
   // Expect no entry to the histogram.
   histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
   histogram_tester.ExpectTotalCount(
@@ -3305,11 +3305,11 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldNotClearMetadataWhileStoppedUponModelReadyToSyncWithoutMetadata) {
+       ShouldNotClearMetadataIfStoppedUponModelReadyToSyncWithoutMetadata) {
   base::HistogramTester histogram_tester;
 
   // Called before ModelReadyToSync().
-  type_processor()->ClearMetadataWhileStopped();
+  type_processor()->ClearMetadataIfStopped();
 
   InitializeToMetadataLoaded(
       sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);

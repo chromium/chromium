@@ -64,7 +64,7 @@ class MockDelegate : public ModelTypeControllerDelegate {
               (base::OnceCallback<void(const TypeEntitiesCount&)> callback),
               (const override));
   MOCK_METHOD(void, RecordMemoryUsageAndCountsHistograms, (), (override));
-  MOCK_METHOD(void, ClearMetadataWhileStopped, (), (override));
+  MOCK_METHOD(void, ClearMetadataIfStopped, (), (override));
 };
 
 // Class used to expose ReportModelError() publicly.
@@ -295,9 +295,9 @@ TEST_F(ModelTypeControllerTest, StopWhileStopping) {
 // Test emulates disabling sync when datatype is not loaded yet.
 TEST_F(ModelTypeControllerTest, StopBeforeLoadModels) {
   // OnSyncStopping() should not be called, since the delegate was never
-  // started. Instead, ClearMetadataWhileStopped() should get called.
+  // started. Instead, ClearMetadataIfStopped() should get called.
   EXPECT_CALL(*delegate(), OnSyncStopping(_)).Times(0);
-  EXPECT_CALL(*delegate(), ClearMetadataWhileStopped());
+  EXPECT_CALL(*delegate(), ClearMetadataIfStopped());
 
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
@@ -641,12 +641,12 @@ TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeNotRunning) {
   {
     InSequence s;
     EXPECT_CALL(*delegate(), OnSyncStopping(KEEP_METADATA));
-    EXPECT_CALL(*delegate(), ClearMetadataWhileStopped);
+    EXPECT_CALL(*delegate(), ClearMetadataIfStopped);
   }
   controller()->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
-  // ClearMetadataWhileStopped() should be called on Stop() even if state is
+  // ClearMetadataIfStopped() should be called on Stop() even if state is
   // NOT_RUNNING.
   controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
@@ -668,10 +668,10 @@ TEST_F(ModelTypeControllerTest,
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   base::RunLoop().RunUntilIdle();
 
-  // ClearMetadataWhileStopped() should not be called on Stop() if the state is
+  // ClearMetadataIfStopped() should not be called on Stop() if the state is
   // FAILED.
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
-  EXPECT_CALL(*delegate(), ClearMetadataWhileStopped).Times(0);
+  EXPECT_CALL(*delegate(), ClearMetadataIfStopped).Times(0);
   controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 }

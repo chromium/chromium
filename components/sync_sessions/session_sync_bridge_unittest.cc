@@ -1655,7 +1655,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
   InitializeBridge();
 
   // Clear the metadata. This will lose the placeholder tab permanently.
-  real_processor()->ClearMetadataWhileStopped();
+  real_processor()->ClearMetadataIfStopped();
   EXPECT_TRUE(bridge()->IsLocalDataOutOfSyncForTest());
 
   StartSyncing();

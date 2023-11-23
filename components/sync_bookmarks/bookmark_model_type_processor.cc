@@ -348,7 +348,7 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
               model_metadata.model_type_state().initial_sync_state())) {
         // There used to be a tracker, which is dropped now due to
         // `pending_clear_metadata_`. This isn't very different to
-        // ClearMetadataWhileStopped(), in the sense that the need to wipe the
+        // ClearMetadataIfStopped(), in the sense that the need to wipe the
         // local model needs to be considered.
         TriggerWipeModelUponSyncDisabledBehavior();
       }
@@ -391,7 +391,7 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
     // Since the model isn't initially tracking metadata, move away from
     // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync is
     // turned on later and back to off. This should be practically unreachable
-    // because usually ClearMetadataWhileStopped() would be invoked earlier,
+    // because usually ClearMetadataIfStopped() would be invoked earlier,
     // but let's be extra safe and avoid relying on this behavior.
     wipe_model_upon_sync_disabled_behavior_ =
         syncer::WipeModelUponSyncDisabledBehavior::kNever;
@@ -784,7 +784,7 @@ void BookmarkModelTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
   max_bookmarks_till_sync_enabled_ = limit;
 }
 
-void BookmarkModelTypeProcessor::ClearMetadataWhileStopped() {
+void BookmarkModelTypeProcessor::ClearMetadataIfStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If Sync is not actually stopped, ignore this call.

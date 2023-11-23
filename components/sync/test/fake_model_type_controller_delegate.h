@@ -50,7 +50,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   void SimulateModelError(const ModelError& error);
 
   // The number of times sync metadata was cleared, via either
-  // OnSyncStopping(CLEAR_METADATA) or ClearMetadataWhileStopped() while sync
+  // OnSyncStopping(CLEAR_METADATA) or ClearMetadataIfStopped() while sync
   // was actually stopped.
   // TODO(crbug.com/1504481): Replace this with something like "HasMetadata".
   int clear_metadata_count() const;
@@ -64,7 +64,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
-  void ClearMetadataWhileStopped() override;
+  void ClearMetadataIfStopped() override;
 
   base::WeakPtr<ModelTypeControllerDelegate> GetWeakPtr();
 

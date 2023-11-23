@@ -490,7 +490,7 @@ void NigoriModelTypeProcessor::ClearMetadataAndReset() {
       sync_pb::EntitySpecifics::kNigoriFieldNumber);
 }
 
-void NigoriModelTypeProcessor::ClearMetadataWhileStopped() {
+void NigoriModelTypeProcessor::ClearMetadataIfStopped() {
   // Nigori has a separate load callback and way to clear data. In particular,
   // Nigori is never considered to be stopped.
 }

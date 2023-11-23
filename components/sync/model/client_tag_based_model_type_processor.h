@@ -121,7 +121,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
-  void ClearMetadataWhileStopped() override;
+  void ClearMetadataIfStopped() override;
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
@@ -279,7 +279,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   bool model_ready_to_sync_ = false;
 
   // Marks whether metadata should be cleared upon ModelReadyToSync(). True if
-  // ClearMetadataWhileStopped() is called before ModelReadyToSync().
+  // ClearMetadataIfStopped() is called before ModelReadyToSync().
   bool pending_clear_metadata_ = false;
 
   ////////////////

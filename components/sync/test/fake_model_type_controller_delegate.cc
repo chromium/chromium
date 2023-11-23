@@ -117,10 +117,9 @@ FakeModelTypeControllerDelegate::MakeActivationResponse() const {
   return response;
 }
 
-void FakeModelTypeControllerDelegate::ClearMetadataWhileStopped() {
-  // If Sync is not actually stopped, ignore this call.
-  // This mirrors logic in ClientTagBasedModelTypeProcessor and
-  // BookmarkModelTypeProcessor.
+void FakeModelTypeControllerDelegate::ClearMetadataIfStopped() {
+  // If Sync is not actually stopped, ignore this call. This mirrors logic in
+  // ClientTagBasedModelTypeProcessor and BookmarkModelTypeProcessor.
   if (sync_started_) {
     return;
   }
