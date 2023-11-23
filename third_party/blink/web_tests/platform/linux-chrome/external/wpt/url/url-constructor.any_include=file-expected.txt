@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <file:c:\\foo\\bar.html> against <file:///tmp/mock/path>
   assert_equals: href expected "file:///c:/foo/bar.html" but got "file:///tmp/mock/c:/foo/bar.html"
 [FAIL] Parsing: <  File:c|////foo\\bar.html> against <file:///tmp/mock/path>
@@ -9,7 +9,7 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: </C|\\foo\\bar> against <file:///tmp/mock/path>
   assert_equals: href expected "file:///C:/foo/bar" but got "file:///C%7C/foo/bar"
 [FAIL] Parsing: <//C|/foo/bar> against <file:///tmp/mock/path>
-  assert_equals: href expected "file:///C:/foo/bar" but got "//C|/foo/bar"
+  Failed to construct 'URL': Invalid URL
 [FAIL] Parsing: <file://localhost> against <file:///tmp/mock/path>
   assert_equals: href expected "file:///" but got "file://localhost/"
 [FAIL] Parsing: <file://localhost/> against <file:///tmp/mock/path>
@@ -23,22 +23,22 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: </> against <file://h/C:/a/b>
   assert_equals: href expected "file://h/C:/" but got "file://h/"
 [FAIL] Parsing: <//d:> against <file:///C:/a/b>
-  assert_equals: href expected "file:///d:" but got "//d:"
+  Failed to construct 'URL': Invalid URL
 [FAIL] Parsing: <//d:/..> against <file:///C:/a/b>
-  assert_equals: href expected "file:///d:/" but got "//d:/.."
-[FAIL] Parsing: <file:\\\\//> against <about:blank>
+  Failed to construct 'URL': Invalid URL
+[FAIL] Parsing: <file:\\\\//> without base
   assert_equals: href expected "file:////" but got "file:///"
-[FAIL] Parsing: <file:\\\\\\\\> against <about:blank>
+[FAIL] Parsing: <file:\\\\\\\\> without base
   assert_equals: href expected "file:////" but got "file:///"
-[FAIL] Parsing: <file:\\\\\\\\?fox> against <about:blank>
+[FAIL] Parsing: <file:\\\\\\\\?fox> without base
   assert_equals: href expected "file:////?fox" but got "file:///?fox"
-[FAIL] Parsing: <file:\\\\\\\\#guppy> against <about:blank>
+[FAIL] Parsing: <file:\\\\\\\\#guppy> without base
   assert_equals: href expected "file:////#guppy" but got "file:///#guppy"
-[FAIL] Parsing: <file:\\\\localhost//> against <about:blank>
+[FAIL] Parsing: <file:\\\\localhost//> without base
   assert_equals: href expected "file:////" but got "file://localhost//"
-[FAIL] Parsing: <file://\\/localhost//cat> against <about:blank>
+[FAIL] Parsing: <file://\\/localhost//cat> without base
   assert_equals: href expected "file:////localhost//cat" but got "file:///localhost//cat"
-[FAIL] Parsing: <file://localhost//a//../..//> against <about:blank>
+[FAIL] Parsing: <file://localhost//a//../..//> without base
   assert_equals: href expected "file://///" but got "file://localhost///"
 [FAIL] Parsing: </////mouse> against <file:///elephant>
   assert_equals: href expected "file://///mouse" but got "file:///mouse"
@@ -67,30 +67,26 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <C|/> against <file://host/>
   assert_equals: href expected "file://host/C:/" but got "file://host/C%7C/"
 [FAIL] Parsing: <//C:/> against <file://host/>
-  assert_equals: href expected "file:///C:/" but got "//C:/"
+  Failed to construct 'URL': Invalid URL
 [FAIL] Parsing: <file://C:/> against <file://host/>
-  assert_equals: href expected "file:///C:/" but got "file://C:/"
-[FAIL] Parsing: <file:/C|/> against <about:blank>
+  Failed to construct 'URL': Invalid URL
+[FAIL] Parsing: <file:/C|/> without base
   assert_equals: href expected "file:///C:/" but got "file:///C%7C/"
-[FAIL] Parsing: <file://C|/> against <about:blank>
-  assert_equals: href expected "file:///C:/" but got "file://C|/"
-[FAIL] Parsing: <file://localhost//a//../..//foo> against <about:blank>
+[FAIL] Parsing: <file://C|/> without base
+  Failed to construct 'URL': Invalid URL
+[FAIL] Parsing: <file://localhost//a//../..//foo> without base
   assert_equals: href expected "file://///foo" but got "file://localhost///foo"
-[FAIL] Parsing: <file://localhost////foo> against <about:blank>
+[FAIL] Parsing: <file://localhost////foo> without base
   assert_equals: href expected "file://////foo" but got "file://localhost////foo"
-[FAIL] Parsing: <file:////foo> against <about:blank>
+[FAIL] Parsing: <file:////foo> without base
   assert_equals: href expected "file:////foo" but got "file:///foo"
 [FAIL] Parsing: <file:////one/two> against <file:///>
   assert_equals: href expected "file:////one/two" but got "file:///one/two"
 [FAIL] Parsing: <////one/two> against <file:///>
   assert_equals: href expected "file:////one/two" but got "file:///one/two"
-[FAIL] Parsing: <file://loC𝐀𝐋𝐇𝐨𝐬𝐭/usr/bin> against <about:blank>
+[FAIL] Parsing: <file://loC𝐀𝐋𝐇𝐨𝐬𝐭/usr/bin> without base
   assert_equals: href expected "file:///usr/bin" but got "file://localhost/usr/bin"
-[FAIL] Parsing: <file://xn--/p> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: </\\//\\/a/../> against <file:///>
-  assert_equals: href expected "file://////" but got "file:///"
-[FAIL] Parsing: <//a/../> against <file:///>
-  assert_equals: host expected "" but got "a"
+[FAIL] Parsing: <file://xn--/p> without base
+  assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 Harness: the test ran to completion.
 
