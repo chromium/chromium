@@ -610,6 +610,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Promise icon created in the Shelf"/>
 </enum>
 
+<enum name="PromiseAppType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Arc"/>
+  <int value="2" label="Twa"/>
+</enum>
+
 <enum name="ReinstallResponseParseResult">
   <int value="0" label="Good result."/>
   <int value="1" label="Timeout."/>

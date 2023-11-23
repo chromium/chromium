@@ -464,4 +464,61 @@ TEST_F(PromiseAppServiceTest, FailedWebAppInstallationRemovesTwaPromiseApp) {
   EXPECT_FALSE(cache()->HasPromiseApp(package_id));
 }
 
+TEST_F(PromiseAppServiceTest, PromiseAppTypeRecorded) {
+  // Case 1: ARC promise app.
+  std::string arc_package_name = "com.arc.example";
+  apps::PackageId arc_package_id =
+      apps::PackageId(apps::AppType::kArc, arc_package_name);
+  std::string arc_app_id = "qwerty";
+
+  // Add an ARC package ID promise app to the cache.
+  std::unique_ptr<apps::PromiseApp> arc_promise_app =
+      std::make_unique<apps::PromiseApp>(arc_package_id);
+  service()->OnPromiseApp(std::move(arc_promise_app));
+
+  // Register the installed ARC app.
+  apps::AppPtr arc_app =
+      std::make_unique<apps::App>(apps::AppType::kArc, arc_app_id);
+  arc_app->publisher_id = arc_package_name;
+  arc_app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> arc_apps;
+  arc_apps.push_back(std::move(arc_app));
+  proxy()->OnApps(std::move(arc_apps), apps::AppType::kArc,
+                  /*should_notify_initialized=*/false);
+
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kArc, 1);
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kTwa, 0);
+
+  // Case 2: TWA promise app: should have an ARC package ID but results in a web
+  // app.
+  std::string twa_package_name = "com.twa.example";
+  apps::PackageId twa_package_id =
+      apps::PackageId(apps::AppType::kArc, twa_package_name);
+  std::string twa_app_id = "asdfghjkl";
+
+  // Add an ARC package ID promise app to the cache.
+  std::unique_ptr<apps::PromiseApp> twa_promise_app =
+      std::make_unique<apps::PromiseApp>(twa_package_id);
+  service()->OnPromiseApp(std::move(twa_promise_app));
+
+  // Register the installed web app.
+  apk_web_app_service()->AddInstallingWebApkPackageName(twa_app_id,
+                                                        twa_package_name);
+  apps::AppPtr twa_app =
+      std::make_unique<apps::App>(apps::AppType::kWeb, twa_app_id);
+  twa_app->publisher_id = "https://something.com";
+  twa_app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> twa_apps;
+  twa_apps.push_back(std::move(twa_app));
+  proxy()->OnApps(std::move(twa_apps), apps::AppType::kWeb,
+                  /*should_notify_initialized=*/false);
+
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kArc, 1);
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kTwa, 1);
+}
+
 }  // namespace apps

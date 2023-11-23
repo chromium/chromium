@@ -2375,6 +2375,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.PromiseApp.PromiseAppType" enum="PromiseAppType"
+    expires_after="2024-10-20">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records what app type a promise app is. A promise app is a temporary item in
+    the Launcher/ Shelf which represents an app installation, and this metric
+    tracks which app type is installed most frequently and additionally
+    indicates which platform the installation was triggered from.
+  </summary>
+</histogram>
+
 <histogram name="Apps.QuickAppIconLoadTime" units="ms"
     expires_after="2024-05-19">
   <owner>mmourgos@chromium.org</owner>

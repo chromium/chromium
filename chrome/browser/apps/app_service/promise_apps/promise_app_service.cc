@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_icon_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
@@ -73,6 +74,19 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         "cannot be disabled by policy."
     }
   )");
+
+apps::PromiseAppType GetPromiseAppType(apps::AppType promise_app_type,
+                                       apps::AppType installed_app_type) {
+  if (promise_app_type == apps::AppType::kArc &&
+      installed_app_type == apps::AppType::kArc) {
+    return apps::PromiseAppType::kArc;
+  }
+  if (promise_app_type == apps::AppType::kArc &&
+      installed_app_type == apps::AppType::kWeb) {
+    return apps::PromiseAppType::kTwa;
+  }
+  return apps::PromiseAppType::kUnknown;
+}
 
 }  // namespace
 
@@ -177,6 +191,11 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
   if (!promise_app_registry_cache_->HasPromiseApp(package_id.value())) {
     return;
   }
+
+  // Record metrics for app type, noting that the app type may differ between
+  // the promise app and the installed app.
+  RecordPromiseAppType(
+      GetPromiseAppType(package_id->app_type(), update.AppType()));
 
   // Delete the promise app.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id.value());

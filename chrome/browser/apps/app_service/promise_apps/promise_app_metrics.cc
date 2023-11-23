@@ -12,6 +12,7 @@ const char kPromiseAppLifecycleEventHistogram[] =
     "Apps.PromiseApp.LifecycleEvent";
 const char kPromiseAppIconTypeHistogram[] =
     "Apps.PromiseApp.PromiseAppIconType";
+const char kPromiseAppTypeHistogram[] = "Apps.PromiseApp.PromiseAppType";
 
 void RecordPromiseAppLifecycleEvent(const PromiseAppLifecycleEvent event) {
   base::UmaHistogramEnumeration(kPromiseAppLifecycleEventHistogram, event);
@@ -19,6 +20,10 @@ void RecordPromiseAppLifecycleEvent(const PromiseAppLifecycleEvent event) {
 
 void RecordPromiseAppIconType(const PromiseAppIconType icon_type) {
   base::UmaHistogramEnumeration(kPromiseAppIconTypeHistogram, icon_type);
+}
+
+void RecordPromiseAppType(const PromiseAppType app_type) {
+  base::UmaHistogramEnumeration(kPromiseAppTypeHistogram, app_type);
 }
 
 }  // namespace apps
