@@ -89,6 +89,12 @@ void CaptureController::setFocusBehavior(
   FinalizeFocusDecision();
 }
 
+ScriptPromise CaptureController::sendWheel(CapturedWheelAction* action) {
+  // TODO(crbug.com/1466247): Implement.
+  NOTIMPLEMENTED();
+  return ScriptPromise();
+}
+
 int CaptureController::getMinZoomLevel() {
   // TODO(crbug.com/1466247): Implement.
   NOTIMPLEMENTED();
