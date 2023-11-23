@@ -20,10 +20,6 @@ void ShowPrivacySandboxPrompt(Browser* browser,
 void ShowPrivacySandboxDialog(Browser* browser,
                               PrivacySandboxService::PromptType prompt_type);
 
-// Creates and shows a bubble for |browser| displaying the Privacy Sandbox
-// notice the user.
-void ShowPrivacySandboxNoticeBubble(Browser* browser);
-
 // Returns whether a Privacy Sandbox prompt can be shown in the |browser|.
 // Checks if the maximum dialog height fits the prompt height.
 bool CanWindowHeightFitPrivacySandboxPrompt(Browser* browser);

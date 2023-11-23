@@ -4024,8 +4024,6 @@ static_library("ui") {
       "views/hats/hats_next_web_dialog.h",
       "views/privacy_sandbox/privacy_sandbox_dialog_view.cc",
       "views/privacy_sandbox/privacy_sandbox_dialog_view.h",
-      "views/privacy_sandbox/privacy_sandbox_notice_bubble.cc",
-      "views/privacy_sandbox/privacy_sandbox_notice_bubble.h",
       "views/profiles/incognito_menu_view.cc",
       "views/profiles/incognito_menu_view.h",
       "views/profiles/profile_menu_coordinator.cc",
