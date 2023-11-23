@@ -71,7 +71,7 @@ mojo::ScopedHandle AssertCreateReadOnlySharedMemoryMojoHandle(
 }
 
 using SendUiMessageToWilcoDtcImplCallback =
-    base::RepeatingCallback<void(const std::string& response_json_message)>;
+    base::OnceCallback<void(const std::string& response_json_message)>;
 
 class MockMojoWilcoDtcSupportdService
     : public chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService {
@@ -84,20 +84,21 @@ class MockMojoWilcoDtcSupportdService
     // std::string's rather than memory handles).
     SendUiMessageToWilcoDtcImpl(
         AssertGetStringFromMojoHandle(std::move(json_message)),
-        base::BindRepeating(
+        base::BindOnce(
             [](SendUiMessageToWilcoDtcCallback original_callback,
                const std::string& response_json_message) {
               std::move(original_callback)
                   .Run(AssertCreateReadOnlySharedMemoryMojoHandle(
                       response_json_message));
             },
-            base::Passed(&callback)));
+            std::move(callback)));
   }
 
-  MOCK_METHOD2(SendUiMessageToWilcoDtcImpl,
-               void(const std::string& json_message,
-                    SendUiMessageToWilcoDtcImplCallback callback));
-  MOCK_METHOD0(NotifyConfigurationDataChanged, void());
+  MOCK_METHOD(void,
+              SendUiMessageToWilcoDtcImpl,
+              (const std::string& json_message,
+               SendUiMessageToWilcoDtcImplCallback callback));
+  MOCK_METHOD(void, NotifyConfigurationDataChanged, ());
 };
 
 }  // namespace
@@ -204,8 +205,11 @@ class WilcoDtcSupportdMessagingOpenedByExtensionSingleHostTest
       base::RunLoop* run_loop) {
     EXPECT_CALL(*mojo_wilco_dtc_supportd_service(),
                 SendUiMessageToWilcoDtcImpl(expected_message, _))
-        .WillOnce(DoAll(SaveArg<1>(captured_callback),
-                        InvokeWithoutArgs(run_loop, &base::RunLoop::Quit)));
+        .WillOnce([=](const std::string&,
+                      SendUiMessageToWilcoDtcImplCallback callback) {
+          *captured_callback = std::move(callback);
+          run_loop->Quit();
+        });
   }
 
   void ExpectMojoSendMessageCallAndRespond(
