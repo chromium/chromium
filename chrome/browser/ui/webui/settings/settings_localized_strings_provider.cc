@@ -1605,6 +1605,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"privacyPageMore", IDS_SETTINGS_PRIVACY_MORE},
       {"doNotTrack", IDS_SETTINGS_ENABLE_DO_NOT_TRACK},
       {"doNotTrackDialogTitle", IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TITLE},
+      {"doNotTrackDialogMessage", IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT},
+      {"doNotTrackDialogLearnMoreA11yLabel",
+       IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_LEARN_MORE_ACCESSIBILITY_LABEL},
       // TODO(crbug.com/1062607): This string is no longer used. Remove.
       {"permissionsPageTitle", IDS_SETTINGS_PERMISSIONS},
       {"permissionsPageDescription", IDS_SETTINGS_PERMISSIONS_DESCRIPTION},
@@ -1818,12 +1821,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
 
-  html_source->AddString(
-      "doNotTrackDialogMessage",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT,
-          chrome::kDoNotTrackLearnMoreURL,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  html_source->AddString("doNotTrackLearnMoreURL",
+                         chrome::kDoNotTrackLearnMoreURL);
   html_source->AddString("exceptionsLearnMoreURL",
                          chrome::kContentSettingsExceptionsLearnMoreURL);
   html_source->AddBoolean(
