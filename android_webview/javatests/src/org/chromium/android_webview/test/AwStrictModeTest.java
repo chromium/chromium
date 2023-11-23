@@ -23,23 +23,23 @@ import org.chromium.base.test.util.Feature;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwStrictModeTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AwStrictModeTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public boolean needsAwBrowserContextCreated() {
-                return false;
-            }
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsAwBrowserContextCreated() {
+                        return false;
+                    }
 
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                // Don't start the browser process in AwActivityTestRule - we want to start it
-                // ourselves with strictmode policies turned on.
-                return false;
-            }
-        };
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        // Don't start the browser process in AwActivityTestRule - we want to start
+                        // it ourselves with strictmode policies turned on.
+                        return false;
+                    }
+                };
     }
 
     private TestAwContentsClient mContentsClient;

@@ -21,14 +21,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * Tests for AwContentsClient.getVisitedHistory and AwContents.doUpdateVisitedHistory callbacks.
- */
+/** Tests for AwContentsClient.getVisitedHistory and AwContents.doUpdateVisitedHistory callbacks. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientVisitedHistoryTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static class GetVisitedHistoryHelper extends CallbackHelper {
         private Callback<String[]> mCallback;

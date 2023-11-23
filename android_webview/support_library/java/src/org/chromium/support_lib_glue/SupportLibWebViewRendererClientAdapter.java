@@ -29,8 +29,9 @@ class SupportLibWebViewRendererClientAdapter extends SharedWebViewRendererClient
 
     public SupportLibWebViewRendererClientAdapter(
             /* WebViewRendererClient */ InvocationHandler invocationHandler) {
-        mImpl = BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                WebViewRendererClientBoundaryInterface.class, invocationHandler);
+        mImpl =
+                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                        WebViewRendererClientBoundaryInterface.class, invocationHandler);
         mSupportedFeatures = mImpl.getSupportedFeatures();
     }
 
@@ -42,10 +43,11 @@ class SupportLibWebViewRendererClientAdapter extends SharedWebViewRendererClient
     @Override
     public void onRendererUnresponsive(final WebView webView, final AwRenderProcess renderProcess) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
-                    mSupportedFeatures, Features.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
+                mSupportedFeatures, Features.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
             return;
         }
-        mImpl.onRendererUnresponsive(webView,
+        mImpl.onRendererUnresponsive(
+                webView,
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibWebViewRendererAdapter(renderProcess)));
     }
@@ -53,10 +55,11 @@ class SupportLibWebViewRendererClientAdapter extends SharedWebViewRendererClient
     @Override
     public void onRendererResponsive(final WebView webView, final AwRenderProcess renderProcess) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
-                    mSupportedFeatures, Features.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
+                mSupportedFeatures, Features.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE)) {
             return;
         }
-        mImpl.onRendererResponsive(webView,
+        mImpl.onRendererResponsive(
+                webView,
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibWebViewRendererAdapter(renderProcess)));
     }

@@ -19,9 +19,7 @@ import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
-/**
- * Adapter between ServiceWorkerClientBoundaryInterface and AwServiceWorkerClient.
- */
+/** Adapter between ServiceWorkerClientBoundaryInterface and AwServiceWorkerClient. */
 class SupportLibServiceWorkerClientAdapter extends AwServiceWorkerClient {
     ServiceWorkerClientBoundaryInterface mImpl;
 
@@ -31,11 +29,13 @@ class SupportLibServiceWorkerClientAdapter extends AwServiceWorkerClient {
 
     @Override
     public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST")) {
             recordApiCall(ApiCall.SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST);
-            if (!BoundaryInterfaceReflectionUtil.containsFeature(mImpl.getSupportedFeatures(),
-                        Features.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST)) {
+            if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                    mImpl.getSupportedFeatures(),
+                    Features.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST)) {
                 // If the shouldInterceptRequest callback isn't supported, return null;
                 return null;
             }
@@ -44,8 +44,12 @@ class SupportLibServiceWorkerClientAdapter extends AwServiceWorkerClient {
             if (response == null) {
                 return null;
             }
-            return new WebResourceResponseInfo(response.getMimeType(), response.getEncoding(),
-                    response.getData(), response.getStatusCode(), response.getReasonPhrase(),
+            return new WebResourceResponseInfo(
+                    response.getMimeType(),
+                    response.getEncoding(),
+                    response.getData(),
+                    response.getStatusCode(),
+                    response.getReasonPhrase(),
                     response.getResponseHeaders());
         }
     }

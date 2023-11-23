@@ -15,19 +15,29 @@ import androidx.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 
-/**
- * Boundary interface for DropDataProvider.
- */
+/** Boundary interface for DropDataProvider. */
 public interface DropDataContentProviderBoundaryInterface {
     boolean onCreate();
+
     String[] getStreamTypes(@NonNull Uri uri, @NonNull String mimeTypeFilter);
+
     ParcelFileDescriptor openFile(@NonNull ContentProvider providerWrapper, @NonNull Uri uri)
             throws FileNotFoundException;
-    Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
-            @Nullable String[] selectionArgs, @Nullable String sortOrder);
+
+    Cursor query(
+            @NonNull Uri uri,
+            @Nullable String[] projection,
+            @Nullable String selection,
+            @Nullable String[] selectionArgs,
+            @Nullable String sortOrder);
+
     String getType(@NonNull Uri uri);
+
     Uri cache(byte[] imageBytes, String encodingFormat, String filename);
+
     void setClearCachedDataIntervalMs(int milliseconds);
+
     void onDragEnd(boolean imageInUse);
+
     Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras);
 }

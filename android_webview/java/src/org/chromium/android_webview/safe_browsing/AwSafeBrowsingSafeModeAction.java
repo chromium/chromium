@@ -20,7 +20,6 @@ import org.chromium.android_webview.common.SafeModeActionIds;
  * AwUrlCheckerDelegateImpl.ShouldSkipRequestCheck skips safe browsing checks for URL loads.
  * AwContentsStatics.initSafeBrowsing skips GMSCore communication in safe browsing initialization.
  */
-
 @JNINamespace("android_webview")
 @Lifetime.Singleton
 public class AwSafeBrowsingSafeModeAction implements SafeModeAction {

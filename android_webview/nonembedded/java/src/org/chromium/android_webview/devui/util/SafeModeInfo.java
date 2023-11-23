@@ -20,9 +20,7 @@ import org.chromium.base.Log;
 import java.util.Set;
 import java.util.function.LongConsumer;
 
-/**
- * Expose information about SafeMode status needed for the UI.
- */
+/** Expose information about SafeMode status needed for the UI. */
 public class SafeModeInfo {
     private static final String TAG = "WebViewDevTools";
     private final Context mContext;
@@ -32,6 +30,7 @@ public class SafeModeInfo {
         mContext = context;
         mWebViewPackageName = webViewPackageName;
     }
+
     public boolean isEnabledForUI() {
         return SafeModeController.getInstance().isSafeModeEnabled(mWebViewPackageName);
     }
@@ -41,24 +40,28 @@ public class SafeModeInfo {
     }
 
     public void getActivationTimeForUI(LongConsumer callback) {
-        ServiceConnection connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName className, IBinder service) {
-                // This is called when the connection with the service is established.
-                ISafeModeService mService = ISafeModeService.Stub.asInterface(service);
-                try {
-                    long activationTime = mService.getSafeModeActivationTimestamp();
-                    callback.accept(activationTime);
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Failed to get SafeMode Activation Time from SafeModeService", e);
-                } finally {
-                    mContext.unbindService(this);
-                }
-            }
+        ServiceConnection connection =
+                new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName className, IBinder service) {
+                        // This is called when the connection with the service is established.
+                        ISafeModeService mService = ISafeModeService.Stub.asInterface(service);
+                        try {
+                            long activationTime = mService.getSafeModeActivationTimestamp();
+                            callback.accept(activationTime);
+                        } catch (RemoteException e) {
+                            Log.e(
+                                    TAG,
+                                    "Failed to get SafeMode Activation Time from SafeModeService",
+                                    e);
+                        } finally {
+                            mContext.unbindService(this);
+                        }
+                    }
 
-            @Override
-            public void onServiceDisconnected(ComponentName className) {}
-        };
+                    @Override
+                    public void onServiceDisconnected(ComponentName className) {}
+                };
 
         Intent intent = new Intent();
         intent.setClassName(mWebViewPackageName, SafeModeService.class.getName());

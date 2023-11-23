@@ -8,9 +8,7 @@ import android.webkit.WebChromeClient;
 
 import org.chromium.blink.mojom.FileChooserParams;
 
-/**
- * This is a helper class to map native file choice mode flags to their correct values.
- */
+/** This is a helper class to map native file choice mode flags to their correct values. */
 public final class FileModeConversionHelper {
     public static int convertFileChooserMode(int fileChooserMode) {
         switch (fileChooserMode) {
@@ -21,7 +19,7 @@ public final class FileModeConversionHelper {
                 return WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE;
             case FileChooserParams.Mode.SAVE:
                 assert false : "Save file chooser mode deprecated.";
-            // fall through
+                // fall through
             default:
                 assert false : "Unexpected file chooser mode encountered.";
         }

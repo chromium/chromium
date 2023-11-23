@@ -32,7 +32,8 @@ public class AwEmbeddedTestServer extends EmbeddedTestServer {
      */
     @Override
     protected void setIntentClassName(Intent intent) {
-        intent.setClassName("org.chromium.android_webview.test.support",
+        intent.setClassName(
+                "org.chromium.android_webview.test.support",
                 "org.chromium.android_webview.test.AwEmbeddedTestServerService");
     }
 

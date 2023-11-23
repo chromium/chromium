@@ -51,8 +51,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setSupportZoom(boolean support) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_SUPPORT_ZOOM")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_SUPPORT_ZOOM")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_SUPPORT_ZOOM);
             mAwSettings.setSupportZoom(support);
         }
@@ -61,7 +61,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public boolean supportZoom() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SUPPORT_ZOOM")) {
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SUPPORT_ZOOM")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SUPPORT_ZOOM);
             return mAwSettings.supportZoom();
         }
@@ -69,8 +69,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setBuiltInZoomControls(boolean enabled) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_BUILT_IN_ZOOM_CONTROLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_BUILT_IN_ZOOM_CONTROLS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_BUILT_IN_ZOOM_CONTROLS);
             mAwSettings.setBuiltInZoomControls(enabled);
         }
@@ -78,8 +79,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getBuiltInZoomControls() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_BUILT_IN_ZOOM_CONTROLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_BUILT_IN_ZOOM_CONTROLS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_BUILT_IN_ZOOM_CONTROLS);
             return mAwSettings.getBuiltInZoomControls();
         }
@@ -87,8 +89,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setDisplayZoomControls(boolean enabled) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_DISPLAY_ZOOM_CONTROLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_DISPLAY_ZOOM_CONTROLS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_DISPLAY_ZOOM_CONTROLS);
             mAwSettings.setDisplayZoomControls(enabled);
         }
@@ -96,8 +99,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getDisplayZoomControls() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_DISPLAY_ZOOM_CONTROLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_DISPLAY_ZOOM_CONTROLS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_DISPLAY_ZOOM_CONTROLS);
             return mAwSettings.getDisplayZoomControls();
         }
@@ -105,8 +109,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setAllowFileAccess(boolean allow) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS);
             mAwSettings.setAllowFileAccess(allow);
         }
@@ -114,8 +118,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getAllowFileAccess() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS);
             return mAwSettings.getAllowFileAccess();
         }
@@ -123,8 +127,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setAllowContentAccess(boolean allow) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS);
             mAwSettings.setAllowContentAccess(allow);
         }
@@ -132,8 +137,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getAllowContentAccess() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_ALLOW_CONTENT_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_ALLOW_CONTENT_ACCESS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_ALLOW_CONTENT_ACCESS);
             return mAwSettings.getAllowContentAccess();
         }
@@ -141,8 +147,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setLoadWithOverviewMode(boolean overview) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_LOAD_WITH_OVERVIEW_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_LOAD_WITH_OVERVIEW_MODE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_LOAD_WITH_OVERVIEW_MODE);
             mAwSettings.setLoadWithOverviewMode(overview);
         }
@@ -150,8 +157,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getLoadWithOverviewMode() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_LOAD_WITH_OVERVIEW_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_LOAD_WITH_OVERVIEW_MODE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_LOAD_WITH_OVERVIEW_MODE);
             return mAwSettings.getLoadWithOverviewMode();
         }
@@ -159,8 +167,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setSafeBrowsingEnabled(boolean accept) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED);
             mAwSettings.setSafeBrowsingEnabled(accept);
         }
@@ -168,8 +177,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getSafeBrowsingEnabled() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED);
             return mAwSettings.getSafeBrowsingEnabled();
         }
@@ -232,7 +242,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public synchronized void setTextZoom(int textZoom) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_TEXT_ZOOM")) {
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_TEXT_ZOOM")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_TEXT_ZOOM);
             mAwSettings.setTextZoom(textZoom);
         }
@@ -241,7 +251,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public synchronized int getTextZoom() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_TEXT_ZOOM")) {
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_TEXT_ZOOM")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_TEXT_ZOOM);
             return mAwSettings.getTextZoom();
         }
@@ -271,8 +281,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setUserAgent(int ua) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_USER_AGENT")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_USER_AGENT")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_USER_AGENT);
             mAwSettings.setUserAgent(ua);
         }
@@ -286,8 +296,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setUseWideViewPort(boolean use) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT);
             mAwSettings.setUseWideViewPort(use);
         }
@@ -295,8 +306,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getUseWideViewPort() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT);
             return mAwSettings.getUseWideViewPort();
         }
@@ -304,8 +316,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setSupportMultipleWindows(boolean support) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_SUPPORT_MULTIPLE_WINDOWS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_SUPPORT_MULTIPLE_WINDOWS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_SUPPORT_MULTIPLE_WINDOWS);
             mAwSettings.setSupportMultipleWindows(support);
         }
@@ -313,8 +326,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean supportMultipleWindows() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS);
             return mAwSettings.supportMultipleWindows();
         }
@@ -322,8 +336,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setLayoutAlgorithm(LayoutAlgorithm l) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_LAYOUT_ALGORITHM")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_LAYOUT_ALGORITHM")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_LAYOUT_ALGORITHM);
             switch (l) {
                 case NORMAL:
@@ -346,8 +360,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized LayoutAlgorithm getLayoutAlgorithm() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_LAYOUT_ALGORITHM")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_LAYOUT_ALGORITHM")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_LAYOUT_ALGORITHM);
             int value = mAwSettings.getLayoutAlgorithm();
             switch (value) {
@@ -367,8 +381,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setStandardFontFamily(String font) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_STANDARD_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_STANDARD_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_STANDARD_FONT_FAMILY);
             mAwSettings.setStandardFontFamily(font);
         }
@@ -376,8 +391,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getStandardFontFamily() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_STANDARD_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_STANDARD_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_STANDARD_FONT_FAMILY);
             return mAwSettings.getStandardFontFamily();
         }
@@ -385,8 +401,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setFixedFontFamily(String font) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_FIXED_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_FIXED_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_FIXED_FONT_FAMILY);
             mAwSettings.setFixedFontFamily(font);
         }
@@ -394,8 +410,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getFixedFontFamily() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_FIXED_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_FIXED_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_FIXED_FONT_FAMILY);
             return mAwSettings.getFixedFontFamily();
         }
@@ -403,8 +419,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setSansSerifFontFamily(String font) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_SANS_SERIF_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_SANS_SERIF_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_SANS_SERIF_FONT_FAMILY);
             mAwSettings.setSansSerifFontFamily(font);
         }
@@ -412,8 +429,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getSansSerifFontFamily() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_SANS_SERIF_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_SANS_SERIF_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_SANS_SERIF_FONT_FAMILY);
             return mAwSettings.getSansSerifFontFamily();
         }
@@ -421,8 +439,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setSerifFontFamily(String font) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_SERIF_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_SERIF_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_SERIF_FONT_FAMILY);
             mAwSettings.setSerifFontFamily(font);
         }
@@ -430,8 +448,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getSerifFontFamily() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_SERIF_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_SERIF_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_SERIF_FONT_FAMILY);
             return mAwSettings.getSerifFontFamily();
         }
@@ -439,8 +457,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setCursiveFontFamily(String font) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_CURSIVE_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_CURSIVE_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_CURSIVE_FONT_FAMILY);
             mAwSettings.setCursiveFontFamily(font);
         }
@@ -448,8 +467,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getCursiveFontFamily() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_CURSIVE_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_CURSIVE_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_CURSIVE_FONT_FAMILY);
             return mAwSettings.getCursiveFontFamily();
         }
@@ -457,8 +477,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setFantasyFontFamily(String font) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_FANTASY_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_FANTASY_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_FANTASY_FONT_FAMILY);
             mAwSettings.setFantasyFontFamily(font);
         }
@@ -466,8 +487,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getFantasyFontFamily() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_FANTASY_FONT_FAMILY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_FANTASY_FONT_FAMILY")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_FANTASY_FONT_FAMILY);
             return mAwSettings.getFantasyFontFamily();
         }
@@ -475,8 +497,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setMinimumFontSize(int size) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_MINIMUM_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_MINIMUM_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_MINIMUM_FONT_SIZE);
             mAwSettings.setMinimumFontSize(size);
         }
@@ -484,8 +506,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized int getMinimumFontSize() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_MINIMUM_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_MINIMUM_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_MINIMUM_FONT_SIZE);
             return mAwSettings.getMinimumFontSize();
         }
@@ -493,8 +515,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setMinimumLogicalFontSize(int size) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_MINIMUM_LOGICAL_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_MINIMUM_LOGICAL_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_MINIMUM_LOGICAL_FONT_SIZE);
             mAwSettings.setMinimumLogicalFontSize(size);
@@ -503,8 +526,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized int getMinimumLogicalFontSize() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_MINIMUM_LOGICAL_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_MINIMUM_LOGICAL_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_MINIMUM_LOGICAL_FONT_SIZE);
             return mAwSettings.getMinimumLogicalFontSize();
@@ -513,8 +537,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setDefaultFontSize(int size) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_DEFAULT_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_DEFAULT_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_DEFAULT_FONT_SIZE);
             mAwSettings.setDefaultFontSize(size);
         }
@@ -522,8 +546,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized int getDefaultFontSize() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE);
             return mAwSettings.getDefaultFontSize();
         }
@@ -531,8 +556,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setDefaultFixedFontSize(int size) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_DEFAULT_FIXED_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_DEFAULT_FIXED_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_DEFAULT_FIXED_FONT_SIZE);
             mAwSettings.setDefaultFixedFontSize(size);
         }
@@ -540,8 +566,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized int getDefaultFixedFontSize() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_DEFAULT_FIXED_FONT_SIZE);
             return mAwSettings.getDefaultFixedFontSize();
         }
@@ -549,8 +576,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setLoadsImagesAutomatically(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_LOADS_IMAGES_AUTOMATICALLY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_LOADS_IMAGES_AUTOMATICALLY")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_LOADS_IMAGES_AUTOMATICALLY);
             mAwSettings.setLoadsImagesAutomatically(flag);
@@ -559,8 +587,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getLoadsImagesAutomatically() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_LOADS_IMAGES_AUTOMATICALLY")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_LOADS_IMAGES_AUTOMATICALLY")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_LOADS_IMAGES_AUTOMATICALLY);
             return mAwSettings.getLoadsImagesAutomatically();
@@ -569,8 +598,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setBlockNetworkImage(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_BLOCK_NETWORK_IMAGE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_BLOCK_NETWORK_IMAGE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_IMAGE);
             mAwSettings.setImagesEnabled(!flag);
         }
@@ -578,8 +608,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getBlockNetworkImage() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_BLOCK_NETWORK_IMAGE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_BLOCK_NETWORK_IMAGE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_IMAGE);
             return !mAwSettings.getImagesEnabled();
         }
@@ -587,8 +618,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setBlockNetworkLoads(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_BLOCK_NETWORK_LOADS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_BLOCK_NETWORK_LOADS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_BLOCK_NETWORK_LOADS);
             mAwSettings.setBlockNetworkLoads(flag);
         }
@@ -596,8 +628,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getBlockNetworkLoads() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_BLOCK_NETWORK_LOADS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_BLOCK_NETWORK_LOADS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_BLOCK_NETWORK_LOADS);
             return mAwSettings.getBlockNetworkLoads();
         }
@@ -605,8 +638,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setJavaScriptEnabled(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_JAVA_SCRIPT_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_JAVA_SCRIPT_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_ENABLED);
             mAwSettings.setJavaScriptEnabled(flag);
         }
@@ -614,8 +648,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setAllowUniversalAccessFromFileURLs(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS);
             mAwSettings.setAllowUniversalAccessFromFileURLs(flag);
@@ -624,8 +659,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setAllowFileAccessFromFileURLs(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS);
             mAwSettings.setAllowFileAccessFromFileURLs(flag);
@@ -639,8 +675,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setPluginState(PluginState state) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_PLUGIN_STATE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_PLUGIN_STATE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_PLUGIN_STATE);
             mPluginState = state;
         }
@@ -676,8 +712,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setDatabaseEnabled(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_DATABASE_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_DATABASE_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_DATABASE_ENABLED);
             mAwSettings.setDatabaseEnabled(flag);
         }
@@ -685,8 +721,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setDomStorageEnabled(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_DOM_STORAGE_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_DOM_STORAGE_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_DOM_STORAGE_ENABLED);
             mAwSettings.setDomStorageEnabled(flag);
         }
@@ -694,8 +731,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getDomStorageEnabled() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_DOM_STORAGE_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_DOM_STORAGE_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_DOM_STORAGE_ENABLED);
             return mAwSettings.getDomStorageEnabled();
         }
@@ -709,8 +747,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getDatabaseEnabled() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_DATABASE_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_DATABASE_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_DATABASE_ENABLED);
             return mAwSettings.getDatabaseEnabled();
         }
@@ -718,8 +756,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setGeolocationEnabled(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_GEOLOCATION_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_GEOLOCATION_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_GEOLOCATION_ENABLED);
             mAwSettings.setGeolocationEnabled(flag);
         }
@@ -727,8 +766,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized boolean getJavaScriptEnabled() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_JAVA_SCRIPT_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_JAVA_SCRIPT_ENABLED")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_ENABLED);
             return mAwSettings.getJavaScriptEnabled();
         }
@@ -736,8 +776,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getAllowUniversalAccessFromFileURLs() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS);
             return mAwSettings.getAllowUniversalAccessFromFileURLs();
@@ -746,8 +787,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getAllowFileAccessFromFileURLs() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS);
             return mAwSettings.getAllowFileAccessFromFileURLs();
@@ -761,8 +803,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized PluginState getPluginState() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_PLUGIN_STATE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_PLUGIN_STATE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_PLUGIN_STATE);
             return mPluginState;
         }
@@ -792,8 +834,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setDefaultTextEncodingName(String encoding) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_DEFAULT_TEXT_ENCODING_NAME")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_DEFAULT_TEXT_ENCODING_NAME")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_DEFAULT_TEXT_ENCODING_NAME);
             mAwSettings.setDefaultTextEncodingName(encoding);
@@ -802,8 +845,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getDefaultTextEncodingName() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_DEFAULT_TEXT_ENCODING_NAME")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_DEFAULT_TEXT_ENCODING_NAME")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_DEFAULT_TEXT_ENCODING_NAME);
             return mAwSettings.getDefaultTextEncodingName();
@@ -812,8 +856,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setUserAgentString(String ua) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_USER_AGENT_STRING")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_USER_AGENT_STRING")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_USER_AGENT_STRING);
             mAwSettings.setUserAgentString(ua);
         }
@@ -821,8 +865,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized String getUserAgentString() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_USER_AGENT_STRING")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_USER_AGENT_STRING")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_USER_AGENT_STRING);
             return mAwSettings.getUserAgentString();
         }
@@ -830,8 +874,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setNeedInitialFocus(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_NEED_INITIAL_FOCUS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_NEED_INITIAL_FOCUS")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_NEED_INITIAL_FOCUS);
             mAwSettings.setShouldFocusFirstNode(flag);
         }
@@ -844,8 +889,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setCacheMode(int mode) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_CACHE_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_CACHE_MODE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_CACHE_MODE);
             mAwSettings.setCacheMode(mode);
         }
@@ -853,8 +898,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public int getCacheMode() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_CACHE_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_CACHE_MODE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_CACHE_MODE);
             return mAwSettings.getCacheMode();
         }
@@ -862,8 +907,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setMediaPlaybackRequiresUserGesture(boolean require) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE);
             mAwSettings.setMediaPlaybackRequiresUserGesture(require);
@@ -872,8 +918,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getMediaPlaybackRequiresUserGesture() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE);
             return mAwSettings.getMediaPlaybackRequiresUserGesture();
@@ -882,8 +929,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setMixedContentMode(int mode) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_MIXED_CONTENT_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_MIXED_CONTENT_MODE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_MIXED_CONTENT_MODE);
             mAwSettings.setMixedContentMode(mode);
         }
@@ -891,8 +939,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public int getMixedContentMode() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_MIXED_CONTENT_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_MIXED_CONTENT_MODE")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_MIXED_CONTENT_MODE);
             return mAwSettings.getMixedContentMode();
         }
@@ -900,8 +949,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setOffscreenPreRaster(boolean enabled) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER);
             mAwSettings.setOffscreenPreRaster(enabled);
         }
@@ -909,8 +959,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public boolean getOffscreenPreRaster() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER);
             return mAwSettings.getOffscreenPreRaster();
         }
@@ -918,8 +969,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public void setDisabledActionModeMenuItems(int menuItems) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS);
             mAwSettings.setDisabledActionModeMenuItems(menuItems);
@@ -928,8 +980,9 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public int getDisabledActionModeMenuItems() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS);
             return mAwSettings.getDisabledActionModeMenuItems();
@@ -950,8 +1003,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     @SuppressLint("Override")
     public void setForceDark(int forceDarkMode) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_FORCE_DARK")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_SET_FORCE_DARK")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK);
             if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
                 Log.w(TAG, "setForceDark() is a no-op in an app with targetSdkVersion>=T");
@@ -977,8 +1030,8 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     @SuppressLint("Override")
     public int getForceDark() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_GET_FORCE_DARK")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.WEB_SETTINGS_GET_FORCE_DARK")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK);
             if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
                 Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
@@ -1001,12 +1054,14 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @SuppressWarnings("Override")
     @Override
     public void setAlgorithmicDarkeningAllowed(boolean allow) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED);
             if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "setAlgorithmicDarkeningAllowed() is a no-op in an app with "
                                 + "targetSdkVersion<T");
                 return;
@@ -1020,12 +1075,14 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @SuppressWarnings("Override")
     @Override
     public boolean isAlgorithmicDarkeningAllowed() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED);
             if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "isAlgorithmicDarkeningAllowed() is a no-op in an app with "
                                 + "targetSdkVersion<T");
                 return false;

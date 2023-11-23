@@ -24,8 +24,8 @@ import java.io.OutputStream;
  * Content provider for about:credits.
  * Used by SystemWebview and TrichromeWebview, but not Monochrome.
  */
-public class LicenseContentProvider
-        extends ContentProvider implements ContentProvider.PipeDataWriter<String> {
+public class LicenseContentProvider extends ContentProvider
+        implements ContentProvider.PipeDataWriter<String> {
     public static final String LICENSES_URI_SUFFIX = "LicenseContentProvider/webview_licenses";
     public static final String LICENSES_CONTENT_TYPE = "text/html";
     private static boolean sLibraryLoaded;
@@ -85,7 +85,11 @@ public class LicenseContentProvider
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         throw new UnsupportedOperationException();
     }

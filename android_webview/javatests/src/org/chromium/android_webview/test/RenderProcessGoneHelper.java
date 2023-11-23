@@ -9,9 +9,7 @@ import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * The helper class for test to wait for render process gone related events.
- */
+/** The helper class for test to wait for render process gone related events. */
 public class RenderProcessGoneHelper implements RenderProcessGoneObserver {
     private static final int RENDER_PROCESS_GONE_NOTIFIED_TO_AW_CONTENTS_CLIENT = 1;
     private static final int AW_CONTENTS_DESTROYED = 2;
@@ -34,8 +32,11 @@ public class RenderProcessGoneHelper implements RenderProcessGoneObserver {
 
     private void waitForState(int state) throws Exception {
         while (mState < state) {
-            mCallbackHelper.waitForCallback(mCallbackHelper.getCallCount(), 1,
-                    CallbackHelper.WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            mCallbackHelper.waitForCallback(
+                    mCallbackHelper.getCallCount(),
+                    1,
+                    CallbackHelper.WAIT_TIMEOUT_SECONDS,
+                    TimeUnit.SECONDS);
         }
         if (mState != state) {
             throw new IllegalStateException("AwContents is in state " + mState);

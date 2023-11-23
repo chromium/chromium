@@ -17,12 +17,11 @@ import java.util.Set;
  */
 public class ClientCertLookupTable {
 
-    /**
-     * A container for the certificate data.
-     */
+    /** A container for the certificate data. */
     public static class Cert {
         PrivateKey mPrivateKey;
         byte[][] mCertChain;
+
         public Cert(PrivateKey privateKey, byte[][] certChain) {
             this.mPrivateKey = privateKey;
             byte[][] newChain = new byte[certChain.length][];

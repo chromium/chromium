@@ -40,8 +40,12 @@ public class SupportLibDropDataContentProviderAdapter
     }
 
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
-            @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(
+            @NonNull Uri uri,
+            @Nullable String[] projection,
+            @Nullable String selection,
+            @Nullable String[] selectionArgs,
+            @Nullable String sortOrder) {
         return mProviderImpl.query(uri, projection);
     }
 

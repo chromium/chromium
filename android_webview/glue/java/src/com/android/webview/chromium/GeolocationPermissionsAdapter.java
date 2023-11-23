@@ -20,7 +20,8 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     private final WebViewChromiumFactoryProvider mFactory;
     private final AwGeolocationPermissions mChromeGeolocationPermissions;
 
-    public GeolocationPermissionsAdapter(WebViewChromiumFactoryProvider factory,
+    public GeolocationPermissionsAdapter(
+            WebViewChromiumFactoryProvider factory,
             AwGeolocationPermissions chromeGeolocationPermissions) {
         mFactory = factory;
         mChromeGeolocationPermissions = chromeGeolocationPermissions;
@@ -29,13 +30,13 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     @Override
     public void allow(final String origin) {
         if (checkNeedsPost()) {
-            mFactory.addTask(new Runnable() {
-                @Override
-                public void run() {
-                    mChromeGeolocationPermissions.allow(origin);
-                }
-
-            });
+            mFactory.addTask(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mChromeGeolocationPermissions.allow(origin);
+                        }
+                    });
             return;
         }
         mChromeGeolocationPermissions.allow(origin);
@@ -44,13 +45,13 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     @Override
     public void clear(final String origin) {
         if (checkNeedsPost()) {
-            mFactory.addTask(new Runnable() {
-                @Override
-                public void run() {
-                    mChromeGeolocationPermissions.clear(origin);
-                }
-
-            });
+            mFactory.addTask(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mChromeGeolocationPermissions.clear(origin);
+                        }
+                    });
             return;
         }
         mChromeGeolocationPermissions.clear(origin);
@@ -59,13 +60,13 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     @Override
     public void clearAll() {
         if (checkNeedsPost()) {
-            mFactory.addTask(new Runnable() {
-                @Override
-                public void run() {
-                    mChromeGeolocationPermissions.clearAll();
-                }
-
-            });
+            mFactory.addTask(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mChromeGeolocationPermissions.clearAll();
+                        }
+                    });
             return;
         }
         mChromeGeolocationPermissions.clearAll();
@@ -74,14 +75,14 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     @Override
     public void getAllowed(final String origin, final ValueCallback<Boolean> callback) {
         if (checkNeedsPost()) {
-            mFactory.addTask(new Runnable() {
-                @Override
-                public void run() {
-                    mChromeGeolocationPermissions.getAllowed(
-                            origin, CallbackConverter.fromValueCallback(callback));
-                }
-
-            });
+            mFactory.addTask(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mChromeGeolocationPermissions.getAllowed(
+                                    origin, CallbackConverter.fromValueCallback(callback));
+                        }
+                    });
             return;
         }
         mChromeGeolocationPermissions.getAllowed(
@@ -91,14 +92,14 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
     @Override
     public void getOrigins(final ValueCallback<Set<String>> callback) {
         if (checkNeedsPost()) {
-            mFactory.addTask(new Runnable() {
-                @Override
-                public void run() {
-                    mChromeGeolocationPermissions.getOrigins(
-                            CallbackConverter.fromValueCallback(callback));
-                }
-
-            });
+            mFactory.addTask(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mChromeGeolocationPermissions.getOrigins(
+                                    CallbackConverter.fromValueCallback(callback));
+                        }
+                    });
             return;
         }
         mChromeGeolocationPermissions.getOrigins(CallbackConverter.fromValueCallback(callback));

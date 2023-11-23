@@ -15,9 +15,7 @@ import androidx.webkit.WebViewClientCompat;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 
-/**
- * This activity is designed for sending memory pressure signals for testing WebView.
- */
+/** This activity is designed for sending memory pressure signals for testing WebView. */
 public class TelemetryMemoryPressureActivity extends Activity {
 
     private static final String TAG = "WebViewTelemetry";
@@ -25,21 +23,21 @@ public class TelemetryMemoryPressureActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setTitle(
-                getResources().getString(R.string.title_activity_telemetry));
+        getWindow().setTitle(getResources().getString(R.string.title_activity_telemetry));
         setContentView(R.layout.activity_webview);
 
         WebView webview = (WebView) findViewById(R.id.webview);
         CookieManager.setAcceptFileSchemeCookies(true);
         webview.getSettings().setJavaScriptEnabled(true);
 
-        webview.setWebViewClient(new WebViewClientCompat() {
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                return false;
-            }
-        });
+        webview.setWebViewClient(
+                new WebViewClientCompat() {
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                        return false;
+                    }
+                });
 
         webview.loadUrl("about:blank");
     }
@@ -48,8 +46,11 @@ public class TelemetryMemoryPressureActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         moveTaskToBack(true);
         if (MemoryPressureListener.handleDebugIntent(this, intent.getAction())) {
-            Log.i(TAG, "MemoryPressureListener.handleDebugIntent(this, " + intent.getAction()
-                    + ") is true");
+            Log.i(
+                    TAG,
+                    "MemoryPressureListener.handleDebugIntent(this, "
+                            + intent.getAction()
+                            + ") is true");
         }
     }
 }

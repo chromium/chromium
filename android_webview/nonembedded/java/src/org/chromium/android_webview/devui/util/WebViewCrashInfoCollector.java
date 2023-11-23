@@ -31,19 +31,13 @@ public class WebViewCrashInfoCollector {
 
     private final CrashInfoLoader[] mCrashInfoLoaders;
 
-    /**
-     * Funcational interface to implement special filters to crashes.
-     */
+    /** Funcational interface to implement special filters to crashes. */
     public static interface Filter {
-        /**
-         * @return {@code true} to keep the {@link CrashInfo}, {@code false} to filter it out.
-         */
+        /** @return {@code true} to keep the {@link CrashInfo}, {@code false} to filter it out. */
         public boolean test(CrashInfo c);
     }
 
-    /**
-     * A class that creates the CrashInfoLoaders that the collector uses. Allows mocking in tests.
-     */
+    /** A class that creates the CrashInfoLoaders that the collector uses. Allows mocking in tests. */
     @VisibleForTesting
     public static class CrashInfoLoadersFactory {
         public CrashInfoLoader[] create() {
@@ -51,9 +45,10 @@ public class WebViewCrashInfoCollector {
                     new CrashFileManager(SystemWideCrashDirectories.getOrCreateWebViewCrashDir());
 
             return new CrashInfoLoader[] {
-                    new UploadedCrashesInfoLoader(crashFileManager.getCrashUploadLogFile()),
-                    new UnuploadedFilesStateLoader(crashFileManager),
-                    new WebViewCrashLogParser(SystemWideCrashDirectories.getWebViewCrashLogDir())};
+                new UploadedCrashesInfoLoader(crashFileManager.getCrashUploadLogFile()),
+                new UnuploadedFilesStateLoader(crashFileManager),
+                new WebViewCrashLogParser(SystemWideCrashDirectories.getWebViewCrashLogDir())
+            };
         }
     }
 
@@ -135,16 +130,20 @@ public class WebViewCrashInfoCollector {
      */
     @VisibleForTesting
     public static void sortByMostRecent(List<CrashInfo> list) {
-        Collections.sort(list, (a, b) -> {
-            if (a.captureTime != b.captureTime) return a.captureTime < b.captureTime ? 1 : -1;
-            if (a.uploadTime != b.uploadTime) return a.uploadTime < b.uploadTime ? 1 : -1;
-            return 0;
-        });
+        Collections.sort(
+                list,
+                (a, b) -> {
+                    if (a.captureTime != b.captureTime) {
+                        return a.captureTime < b.captureTime ? 1 : -1;
+                    }
+                    if (a.uploadTime != b.uploadTime) {
+                        return a.uploadTime < b.uploadTime ? 1 : -1;
+                    }
+                    return 0;
+                });
     }
 
-    /**
-     * Modify WebView crash JSON log file with the new crash info if the JSON file exists
-     */
+    /** Modify WebView crash JSON log file with the new crash info if the JSON file exists */
     public static void updateCrashLogFileWithNewCrashInfo(CrashInfo crashInfo) {
         File logDir = SystemWideCrashDirectories.getOrCreateWebViewCrashLogDir();
         File[] logFiles = logDir.listFiles();

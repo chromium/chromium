@@ -19,9 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Stores visited sites and logs the count of distinct visits over a week.
- */
+/** Stores visited sites and logs the count of distinct visits over a week. */
 @Lifetime.Singleton
 public final class AwSiteVisitLogger {
     // This uses the same file name as {@link AwOriginVisitLogger} so that
@@ -43,16 +41,18 @@ public final class AwSiteVisitLogger {
     @WorkerThread
     public static void logVisit(long siteHash) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            SharedPreferences prefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                    PREFS_FILE, Context.MODE_PRIVATE);
+            SharedPreferences prefs =
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
 
             // TimeUtils is used to make testing easier.
             long now = TimeUtils.currentTimeMillis();
             long storedTime = prefs.getLong(KEY_VISITED_WEEKLY_TIME, now);
             long expiryTime = storedTime + MILLIS_PER_WEEK;
 
-            Set<String> sitesVisited = new HashSet<>(
-                    prefs.getStringSet(KEY_VISITED_WEEKLY_SET, Collections.emptySet()));
+            Set<String> sitesVisited =
+                    new HashSet<>(
+                            prefs.getStringSet(KEY_VISITED_WEEKLY_SET, Collections.emptySet()));
 
             // If there are any stored site hashes from the previous week, then their count must be
             // logged exactly once and the set cleared before we start storing hashes for this week.

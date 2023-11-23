@@ -32,8 +32,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientGetDefaultVideoPosterTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String TAG = "AwContentsClientGetDefaultVideoPosterTest";
 

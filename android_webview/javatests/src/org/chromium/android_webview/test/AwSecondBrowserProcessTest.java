@@ -40,16 +40,16 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwSecondBrowserProcessTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AwSecondBrowserProcessTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                return false;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        return false;
+                    }
+                };
     }
 
     private CountDownLatch mSecondBrowserProcessLatch;

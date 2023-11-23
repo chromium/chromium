@@ -71,8 +71,7 @@ import java.util.concurrent.TimeUnit;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @CommandLineFlags.Add({MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING}) // Override sampling logic
 public class AwMetricsIntegrationTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
@@ -441,8 +440,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                     AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(
                             InstallerPackageType.GOOGLE_PLAY_STORE);
                     // A valid version string and non expired date means the app package name should
-                    // be
-                    // recorded.
+                    // be recorded.
                     AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
                             /* allowlistComponentVersion= */ "123.456.78.9",
                             /* allowlistExpiryDateMs= */ System.currentTimeMillis()

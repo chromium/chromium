@@ -10,9 +10,7 @@ import android.graphics.Canvas;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * Provides auxiliary methods related to Picture objects and native SkPictures.
- */
+/** Provides auxiliary methods related to Picture objects and native SkPictures. */
 @JNINamespace("android_webview")
 public class JavaBrowserViewRendererHelper {
     private static final String LOGTAG = "JavaBrowserViewRendererHelper";

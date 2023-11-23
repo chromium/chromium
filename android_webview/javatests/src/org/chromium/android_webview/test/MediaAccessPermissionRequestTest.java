@@ -28,8 +28,7 @@ import org.chromium.net.test.util.TestWebServer;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static class OnPermissionRequestHelper extends CallbackHelper {
         private boolean mCanceled;

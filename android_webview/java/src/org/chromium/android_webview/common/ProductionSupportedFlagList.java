@@ -619,9 +619,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.THIRD_PARTY_STORAGE_PARTITIONING,
                 "Enables partitioning of third-party storage by top-level site. Note: this is under"
-                    + " active development and may result in unexpected behavior. Please file bugs"
-                    + " at https://bugs.chromium.org/p/chromium/issues/"
-                    + "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage."),
+                        + " active development and may result in unexpected behavior. Please file bugs"
+                        + " at https://bugs.chromium.org/p/chromium/issues/"
+                        + "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage."),
         Flag.baseFeature(
                 NetFeatures.ASYNC_QUIC_SESSION, "Enables asynchronous QUIC session creation"),
         Flag.baseFeature(
@@ -684,8 +684,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PROPAGATE_NETWORK_SIGNALS,
                 "This flag will allow webView to propagate networking signals to the networking"
-                    + " stack. Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault)"
-                    + " signals are propagated."),
+                        + " stack. Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault)"
+                        + " signals are propagated."),
         Flag.baseFeature(
                 ContentFeatures.PREFETCH_NEW_LIMITS,
                 "Enables new limits policy for SpeculationRules Prefetch."),

@@ -11,9 +11,7 @@ import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.base.Log;
 
-/**
- * A {@link SafeModeAction} that has no effect.
- */
+/** A {@link SafeModeAction} that has no effect. */
 @Lifetime.Singleton
 public class NoopSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";

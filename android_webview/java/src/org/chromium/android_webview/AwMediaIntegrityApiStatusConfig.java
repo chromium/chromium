@@ -53,10 +53,9 @@ public class AwMediaIntegrityApiStatusConfig {
             Map<String, @MediaIntegrityApiStatus Integer> permissionConfig) {
         mDefaultStatus = defaultStatus;
         String[] badRules =
-            mRuleValidationMatcher.updateRuleList(new ArrayList<>(permissionConfig.keySet()));
+                mRuleValidationMatcher.updateRuleList(new ArrayList<>(permissionConfig.keySet()));
         if (badRules.length > 0) {
-            throw new IllegalArgumentException(
-                "Badly formed rules: " + Arrays.toString(badRules));
+            throw new IllegalArgumentException("Badly formed rules: " + Arrays.toString(badRules));
         }
         mOverrideRulesToPermission = permissionConfig;
         populateMatchersForLookup(permissionConfig);

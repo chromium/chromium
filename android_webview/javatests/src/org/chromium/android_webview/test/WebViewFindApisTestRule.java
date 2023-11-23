@@ -15,9 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Base class for WebView find-in-page API tests.
- */
+/** Base class for WebView find-in-page API tests. */
 public class WebViewFindApisTestRule extends AwActivityTestRule {
     private static final String WOODCHUCK =
             "How much WOOD would a woodchuck chuck if a woodchuck could chuck wOoD?";
@@ -27,17 +25,19 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    mContents = loadContentsFromStringSync(WOODCHUCK);
-                } catch (Throwable t) {
-                    throw new Exception(t);
-                }
-                base.evaluate();
-            }
-        }, description);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        try {
+                            mContents = loadContentsFromStringSync(WOODCHUCK);
+                        } catch (Throwable t) {
+                            throw new Exception(t);
+                        }
+                        base.evaluate();
+                    }
+                },
+                description);
     }
 
     public AwContents contents() {
@@ -51,15 +51,16 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
     }
 
     private AwContents loadContentsFromStringSync(final String html) throws Throwable {
-        final TestAwContentsClient contentsClient = new TestAwContentsClient() {
-            @Override
-            public void onFindResultReceived(
-                    int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting) {
-                if (mFindResultListener == null) return;
-                mFindResultListener.onFindResultReceived(
-                        activeMatchOrdinal, numberOfMatches, isDoneCounting);
-            }
-        };
+        final TestAwContentsClient contentsClient =
+                new TestAwContentsClient() {
+                    @Override
+                    public void onFindResultReceived(
+                            int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting) {
+                        if (mFindResultListener == null) return;
+                        mFindResultListener.onFindResultReceived(
+                                activeMatchOrdinal, numberOfMatches, isDoneCounting);
+                    }
+                };
 
         final AwContents contents =
                 createAwTestContainerViewOnMainSync(contentsClient).getAwContents();
@@ -77,15 +78,17 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
      * @throws Throwable
      */
     public int findAllAsyncOnUiThread(final String searchString) throws Throwable {
-        final IntegerFuture future = new IntegerFuture() {
-            @Override
-            public void run() {
-                mFindResultListener = (activeMatchOrdinal, numberOfMatches, isDoneCounting) -> {
-                    if (isDoneCounting) set(numberOfMatches);
+        final IntegerFuture future =
+                new IntegerFuture() {
+                    @Override
+                    public void run() {
+                        mFindResultListener =
+                                (activeMatchOrdinal, numberOfMatches, isDoneCounting) -> {
+                                    if (isDoneCounting) set(numberOfMatches);
+                                };
+                        mContents.findAllAsync(searchString);
+                    }
                 };
-                mContents.findAllAsync(searchString);
-            }
-        };
         InstrumentationRegistry.getInstrumentation().runOnMainSync(future);
         return future.get(10, TimeUnit.SECONDS);
     }
@@ -100,15 +103,17 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
      * @throws Throwable
      */
     public int findNextOnUiThread(final boolean forwards) throws Throwable {
-        final IntegerFuture future = new IntegerFuture() {
-            @Override
-            public void run() {
-                mFindResultListener = (activeMatchOrdinal, numberOfMatches, isDoneCounting) -> {
-                    if (isDoneCounting) set(activeMatchOrdinal);
+        final IntegerFuture future =
+                new IntegerFuture() {
+                    @Override
+                    public void run() {
+                        mFindResultListener =
+                                (activeMatchOrdinal, numberOfMatches, isDoneCounting) -> {
+                                    if (isDoneCounting) set(activeMatchOrdinal);
+                                };
+                        mContents.findNext(forwards);
+                    }
                 };
-                mContents.findNext(forwards);
-            }
-        };
         InstrumentationRegistry.getInstrumentation().runOnMainSync(future);
         return future.get(10, TimeUnit.SECONDS);
     }
@@ -141,9 +146,7 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
             return mValue;
         }
 
-        /**
-         * Sets the value of this Future.
-         */
+        /** Sets the value of this Future. */
         protected void set(int value) {
             mValue = value;
             mLatch.countDown();

@@ -4,11 +4,11 @@
 
 package org.chromium.android_webview.test;
 
+import org.junit.runner.Runner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.parameterized.ParametersRunnerFactory;
 import org.junit.runners.parameterized.TestWithParameters;
-import org.junit.runner.Runner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +39,9 @@ public class AwJUnit4ClassRunnerWithParameters extends AwJUnit4ClassRunner {
     protected List<FrameworkMethod> getChildren() {
         List<FrameworkMethod> result = new ArrayList<>();
         for (FrameworkMethod method : super.getChildren()) {
-            if (method.getAnnotation(SkipMutations.class) == null ||
-                ((AwSettingsMutation) mParameters[0]).getMutation() == null) {
-                  result.add(method);
+            if (method.getAnnotation(SkipMutations.class) == null
+                    || ((AwSettingsMutation) mParameters[0]).getMutation() == null) {
+                result.add(method);
             }
         }
         return result;

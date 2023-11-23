@@ -15,13 +15,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * A class that bundles various information about a crash.
- */
+/** A class that bundles various information about a crash. */
 public class CrashInfo {
-    /**
-     * Crash file report/minidump upload status.
-     */
+    /** Crash file report/minidump upload status. */
     public static enum UploadState {
         SKIPPED,
         PENDING,
@@ -29,17 +25,12 @@ public class CrashInfo {
         UPLOADED,
     }
 
-    /**
-     * Upload state for the crash.
-     */
-    @Nullable
-    public UploadState uploadState;
+    /** Upload state for the crash. */
+    @Nullable public UploadState uploadState;
 
-    /**
-     * ID for locally stored data that may or may not be uploaded.
-     */
-    @NonNull
-    public String localId;
+    /** ID for locally stored data that may or may not be uploaded. */
+    @NonNull public String localId;
+
     /**
      * The time the data was captured in millisecs since epoch.
      * This is useful if the data is stored locally when
@@ -51,8 +42,8 @@ public class CrashInfo {
      * ID the crash collecting servers responded with after the crash report is uploaded.
      * Only valid when |uploadState| == Uploaded.
      */
-    @Nullable
-    public String uploadId;
+    @Nullable public String uploadId;
+
     /**
      * The time when the crash report is uploaded in millisecs since epoch.
      * Only valid when |uploadState| == Uploaded.
@@ -65,8 +56,7 @@ public class CrashInfo {
      */
     public boolean isHidden;
 
-    @NonNull
-    private final Map<String, String> mCrashKeys;
+    @NonNull private final Map<String, String> mCrashKeys;
 
     private static final String CRASH_LOCAL_ID_KEY = "crash-local-id";
     private static final String CRASH_CAPTURE_TIME_KEY = "crash-capture-time";
@@ -90,9 +80,7 @@ public class CrashInfo {
         this(localId, new HashMap<>());
     }
 
-    /**
-     * @param crashKeys crash keys map extracted from the minidump crash report.
-     */
+    /** @param crashKeys crash keys map extracted from the minidump crash report. */
     public CrashInfo(@NonNull String localId, @NonNull Map<String, String> crashKeys) {
         this.localId = localId;
         mCrashKeys = crashKeys;
@@ -104,7 +92,7 @@ public class CrashInfo {
      */
     public CrashInfo(@NonNull CrashInfo a, @NonNull CrashInfo b) {
         assert a.localId.equals(b.localId)
-            : "CrashInfo objects should be only merged if they have the same localId";
+                : "CrashInfo objects should be only merged if they have the same localId";
         this.localId = a.localId;
 
         this.uploadId = a.uploadId != null ? a.uploadId : b.uploadId;
@@ -140,8 +128,13 @@ public class CrashInfo {
      *
      * {@code appPackageName} is used as a representative of crash keys in tests.
      */
-    public static CrashInfo createCrashInfoForTesting(String localId, long captureTime,
-            String uploadId, long uploadTime, String appPackageName, UploadState state) {
+    public static CrashInfo createCrashInfoForTesting(
+            String localId,
+            long captureTime,
+            String uploadId,
+            long uploadTime,
+            String appPackageName,
+            UploadState state) {
         Map<String, String> crashKeys = new HashMap<>();
         if (appPackageName != null) {
             crashKeys.put("app-package-name", appPackageName);

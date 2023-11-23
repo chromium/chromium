@@ -53,8 +53,7 @@ import java.util.regex.Pattern;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class ClientHintsTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String[] USER_AGENT_CLIENT_HINTS = {
         "sec-ch-ua",
@@ -341,11 +340,13 @@ public class ClientHintsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint,ClientHintsFormFactor",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
     @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
     public void testEnableUserAgentClientHintsJavaScript() throws Throwable {
-        verifyClientHintsJavaScript(/*useCustomUserAgent=*/false);
+        verifyClientHintsJavaScript(/* useCustomUserAgent= */ false);
     }
 
     @Test
@@ -392,7 +393,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         url =
                 server.getURL(
                         "/critical-client-hints-header?accept-ch=sec-ch-device-memory,device-memory&"
-                            + "critical-ch=sec-ch-device-memory");
+                                + "critical-ch=sec-ch-device-memory");
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
         validateHeadersFromJSON(contents, contentsClient, "device-memory", false);

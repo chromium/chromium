@@ -356,8 +356,7 @@ public class AwAutofillTest extends AwParameterizedTest {
 
     private static boolean sIsAwGCurrentAutofillService;
 
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     private TestWebServer mWebServer;
     private EmbeddedTestServer mEmbeddedServer;
@@ -845,7 +844,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testCommit() throws Throwable {
         final String data =
-                    """
+                """
                         <html>
                         <head></head>
                         <body>

@@ -44,14 +44,13 @@ public class SharedStatics {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
-            ApiCall.FIND_ADDRESS, ApiCall.GET_DEFAULT_USER_AGENT,
-            ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED, ApiCall.CLEAR_CLIENT_CERT_PREFERENCES,
-            ApiCall.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW, ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
-            // Add new constants above. The final constant should have a trailing comma for
-            // cleaner diffs.
-            ApiCall.COUNT, // Added to suppress WrongConstant in #recordStaticApiCall
+        ApiCall.FIND_ADDRESS, ApiCall.GET_DEFAULT_USER_AGENT,
+        ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED, ApiCall.CLEAR_CLIENT_CERT_PREFERENCES,
+        ApiCall.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW, ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
+        // Add new constants above. The final constant should have a trailing comma for
+        // cleaner diffs.
+        ApiCall.COUNT, // Added to suppress WrongConstant in #recordStaticApiCall
     })
-
     public @interface ApiCall {
         int FIND_ADDRESS = 0;
         int GET_DEFAULT_USER_AGENT = 1;
@@ -79,15 +78,15 @@ public class SharedStatics {
 
     public String getDefaultUserAgent(Context context) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.Framework.GET_DEFAULT_USER_AGENT")) {
+                TraceEvent.scoped("WebView.APICall.Framework.GET_DEFAULT_USER_AGENT")) {
             recordStaticApiCall(ApiCall.GET_DEFAULT_USER_AGENT);
             return AwSettings.getDefaultUserAgent();
         }
     }
 
     public void setWebContentsDebuggingEnabled(boolean enable) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.SET_WEB_CONTENTS_DEBUGGING_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.SET_WEB_CONTENTS_DEBUGGING_ENABLED")) {
             recordStaticApiCall(ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED);
             // On debug builds, Web Contents debugging is enabled elsewhere, and cannot be disabled.
             if (BuildInfo.isDebugAndroidOrApp()) return;
@@ -108,27 +107,30 @@ public class SharedStatics {
     }
 
     public void clearClientCertPreferences(Runnable onCleared) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.CLEAR_CLIENT_CERT_PREFERENCES")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.CLEAR_CLIENT_CERT_PREFERENCES")) {
             recordStaticApiCall(ApiCall.CLEAR_CLIENT_CERT_PREFERENCES);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () ->
-                AwContentsStatics.clearClientCertPreferences(onCleared));
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> AwContentsStatics.clearClientCertPreferences(onCleared));
         }
     }
 
     public void freeMemoryForTests() {
         if (ActivityManager.isRunningInTestHarness()) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                // This variable is needed to prevent weird formatting by "git cl format".
-                MemoryPressureMonitor pressureMonitor = MemoryPressureMonitor.INSTANCE;
-                pressureMonitor.notifyPressure(MemoryPressureLevel.CRITICAL);
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        // This variable is needed to prevent weird formatting by "git cl format".
+                        MemoryPressureMonitor pressureMonitor = MemoryPressureMonitor.INSTANCE;
+                        pressureMonitor.notifyPressure(MemoryPressureLevel.CRITICAL);
+                    });
         }
     }
 
     public void enableSlowWholeDocumentDraw() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW")) {
             recordStaticApiCall(ApiCall.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW);
             WebViewChromium.enableSlowWholeDocumentDraw();
         }
@@ -145,12 +147,13 @@ public class SharedStatics {
      * successful. The callback will be run on the UI thread.
      */
     public void initSafeBrowsing(Context context, Callback<Boolean> callback) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                () -> AwContentsStatics.initSafeBrowsing(context, callback));
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> AwContentsStatics.initSafeBrowsing(context, callback));
     }
 
     public void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
                 () -> AwContentsStatics.setSafeBrowsingAllowlist(urls, callback));
     }
 
@@ -161,10 +164,12 @@ public class SharedStatics {
      * to users.
      */
     public Uri getSafeBrowsingPrivacyPolicyUrl() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.Framework.GET_SAFE_BROWSING_PRIVACY_POLICY_URL")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.GET_SAFE_BROWSING_PRIVACY_POLICY_URL")) {
             recordStaticApiCall(ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL);
-            return PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
+            return PostTask.runSynchronously(
+                    TaskTraits.UI_DEFAULT,
                     () -> AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl());
         }
     }

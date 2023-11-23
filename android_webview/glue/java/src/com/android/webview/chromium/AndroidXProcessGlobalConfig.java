@@ -41,33 +41,41 @@ public final class AndroidXProcessGlobalConfig {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         throw new RuntimeException(
                                 "AndroidXProcessGlobalConfig map should not have value set for "
-                                + "key: " + entry.getKey()
-                                + " in SDK version >= " + Build.VERSION_CODES.P);
+                                        + "key: "
+                                        + entry.getKey()
+                                        + " in SDK version >= "
+                                        + Build.VERSION_CODES.P);
                     }
                     if (!(configValue instanceof String)) {
-                        throw new RuntimeException("AndroidXProcessGlobalConfig map does not have "
-                                + "right type of value for key: " + entry.getKey());
+                        throw new RuntimeException(
+                                "AndroidXProcessGlobalConfig map does not have "
+                                        + "right type of value for key: "
+                                        + entry.getKey());
                     }
                     mDataDirectorySuffix = (String) configValue;
                     break;
                 case ProcessGlobalConfigConstants.DATA_DIRECTORY_BASE_PATH:
                     if (!(configValue instanceof String)) {
-                        throw new RuntimeException("AndroidXProcessGlobalConfig map does not have "
-                                + "right type of value for key: " + entry.getKey());
+                        throw new RuntimeException(
+                                "AndroidXProcessGlobalConfig map does not have "
+                                        + "right type of value for key: "
+                                        + entry.getKey());
                     }
                     mDataDirectoryBasePath = (String) configValue;
                     break;
                 case ProcessGlobalConfigConstants.CACHE_DIRECTORY_BASE_PATH:
                     if (!(configValue instanceof String)) {
-                        throw new RuntimeException("AndroidXProcessGlobalConfig map does not have "
-                                + "right type of value for key: " + entry.getKey());
+                        throw new RuntimeException(
+                                "AndroidXProcessGlobalConfig map does not have "
+                                        + "right type of value for key: "
+                                        + entry.getKey());
                     }
                     mCacheDirectoryBasePath = (String) configValue;
                     break;
                 default:
                     throw new RuntimeException(
                             "AndroidXProcessGlobalConfig map contains unknown key: "
-                            + entry.getKey());
+                                    + entry.getKey());
             }
         }
     }

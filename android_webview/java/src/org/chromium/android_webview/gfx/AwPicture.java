@@ -26,9 +26,11 @@ public class AwPicture extends Picture {
     // handled via the CleanupReference.
     private static final class DestroyRunnable implements Runnable {
         private long mNativeAwPicture;
+
         private DestroyRunnable(long nativeAwPicture) {
             mNativeAwPicture = nativeAwPicture;
         }
+
         @Override
         public void run() {
             AwPictureJni.get().destroy(mNativeAwPicture);
@@ -84,8 +86,11 @@ public class AwPicture extends Picture {
     @NativeMethods
     interface Natives {
         void destroy(long nativeAwPicture);
+
         int getWidth(long nativeAwPicture, AwPicture caller);
+
         int getHeight(long nativeAwPicture, AwPicture caller);
+
         void draw(long nativeAwPicture, AwPicture caller, Canvas canvas);
     }
 }

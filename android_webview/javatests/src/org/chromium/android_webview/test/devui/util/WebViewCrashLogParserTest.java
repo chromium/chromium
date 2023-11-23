@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class WebViewCrashLogParserTest {
     private static final String TEST_LOG_ENTRY =
             "{'crash-local-id':'123456abc','crash-capture-time':1234567890,"
-                + "'crash-keys':{'app-package-name':'test.package','variations':'123456,7890'}}";
+                    + "'crash-keys':{'app-package-name':'test.package','variations':'123456,7890'}}";
 
     @Rule public TemporaryFolder mTestLogDir = new TemporaryFolder();
 

@@ -45,22 +45,24 @@ public class WebViewLayoutTestActivity extends Activity {
         WebSettings settings = mWebView.getSettings();
         initializeSettings(settings);
 
-        mWebView.setWebViewClient(new WebViewClientCompat() {
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                return false;
-            }
+        mWebView.setWebViewClient(
+                new WebViewClientCompat() {
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                        return false;
+                    }
 
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description,
-                    String failingUrl) {
-                mConsoleLog.append("WebView error: " + description + ", " + failingUrl + "\n");
-                mConsoleLog.append(TEST_FINISHED_SENTINEL + "\n");
-                finishTest();
-            }
-        });
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public void onReceivedError(
+                            WebView view, int errorCode, String description, String failingUrl) {
+                        mConsoleLog.append(
+                                "WebView error: " + description + ", " + failingUrl + "\n");
+                        mConsoleLog.append(TEST_FINISHED_SENTINEL + "\n");
+                        finishTest();
+                    }
+                });
 
         mWebView.setWebChromeClient(
                 new WebChromeClient() {
@@ -128,8 +130,8 @@ public class WebViewLayoutTestActivity extends Activity {
         mWebView.addJavascriptInterface(new SynchronousConsole(), "awConsole");
     }
 
-    public void waitForFinish(long timeout, TimeUnit unit) throws InterruptedException,
-            TimeoutException {
+    public void waitForFinish(long timeout, TimeUnit unit)
+            throws InterruptedException, TimeoutException {
         synchronized (mLock) {
             long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
             while (!mFinished && System.currentTimeMillis() < deadline) {

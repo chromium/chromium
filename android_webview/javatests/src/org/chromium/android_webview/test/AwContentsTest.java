@@ -95,17 +95,17 @@ import java.util.function.Predicate;
 public class AwContentsTest extends AwParameterizedTest {
     private static final String TAG = "AwContentsTest";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AwContentsTest(AwSettingsMutation param) {
-            mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            // Allow specific tests to use vulkan.
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                return false;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    // Allow specific tests to use vulkan.
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        return false;
+                    }
+                };
     }
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -1582,8 +1582,8 @@ public class AwContentsTest extends AwParameterizedTest {
             // Main frame has green color at the top half, and iframe in the bottom half.
             final String pageHtml =
                     "<html><body><div"
-                        + " style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div><iframe"
-                        + " style=\"width:100%;height:50%;\" src=\""
+                            + " style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div><iframe"
+                            + " style=\"width:100%;height:50%;\" src=\""
                             + iframePath
                             + "\"></iframe>"
                             + "</body></html>";

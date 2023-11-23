@@ -9,9 +9,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.android_webview.common.Lifetime;
 
-/**
- * For native to pass the information of a WebMessageListener related info to Java.
- */
+/** For native to pass the information of a WebMessageListener related info to Java. */
 @Lifetime.Temporary
 @JNINamespace("android_webview")
 public class WebMessageListenerInfo {

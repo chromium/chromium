@@ -19,14 +19,11 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
 
-/**
- * Tests dark-mode related data are correctly passed to blink.
- */
+/** Tests dark-mode related data are correctly passed to blink. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class DarkModeTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwContents mContents;

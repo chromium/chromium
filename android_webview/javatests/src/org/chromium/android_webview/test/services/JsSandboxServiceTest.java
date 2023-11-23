@@ -709,12 +709,12 @@ public class JsSandboxServiceTest {
         final byte[] bytes = {0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00};
         final String code =
                 "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => { return"
-                    + " android.consumeNamedDataAsArrayBuffer(\"id-2\").then((value) => {  return"
-                    + " android.consumeNamedDataAsArrayBuffer(\"id-3\").then((value) => {   return"
-                    + " android.consumeNamedDataAsArrayBuffer(\"id-4\").then((value) => {    return"
-                    + " android.consumeNamedDataAsArrayBuffer(\"id-5\").then((value) => {    "
-                    + " return \"success\";     }, (error) => {     return error.message;    });  "
-                    + " });  }); });});";
+                        + " android.consumeNamedDataAsArrayBuffer(\"id-2\").then((value) => {  return"
+                        + " android.consumeNamedDataAsArrayBuffer(\"id-3\").then((value) => {   return"
+                        + " android.consumeNamedDataAsArrayBuffer(\"id-4\").then((value) => {    return"
+                        + " android.consumeNamedDataAsArrayBuffer(\"id-5\").then((value) => {    "
+                        + " return \"success\";     }, (error) => {     return error.message;    });  "
+                        + " });  }); });});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
@@ -1273,12 +1273,12 @@ public class JsSandboxServiceTest {
         // with a RangeError, and a subsequent smaller request succeeds.
         final String code =
                 "function ab2str(buf) { return String.fromCharCode.apply(null, new"
-                    + " Uint8Array(buf));}async function test() { try {  await"
-                    + " android.consumeNamedDataAsArrayBuffer('large');  throw new"
-                    + " Error('consumption of large named data should not have succeeded'); } catch"
-                    + " (e) {  if (!(e instanceof RangeError)) {   throw e;  } } const buffer ="
-                    + " await android.consumeNamedDataAsArrayBuffer('small'); return await"
-                    + " ab2str(buffer);}test()";
+                        + " Uint8Array(buf));}async function test() { try {  await"
+                        + " android.consumeNamedDataAsArrayBuffer('large');  throw new"
+                        + " Error('consumption of large named data should not have succeeded'); } catch"
+                        + " (e) {  if (!(e instanceof RangeError)) {   throw e;  } } const buffer ="
+                        + " await android.consumeNamedDataAsArrayBuffer('small'); return await"
+                        + " ab2str(buffer);}test()";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);

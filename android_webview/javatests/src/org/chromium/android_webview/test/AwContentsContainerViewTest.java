@@ -16,14 +16,11 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.base.test.util.Feature;
 
-/**
- * AwContents container view tests.
- */
+/** AwContents container view tests. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsContainerViewTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mContainerView;

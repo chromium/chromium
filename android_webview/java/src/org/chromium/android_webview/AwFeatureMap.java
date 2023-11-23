@@ -9,9 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
-/**
- * Java accessor for base/feature_map.h state.
- */
+/** Java accessor for base/feature_map.h state. */
 @JNINamespace("android_webview")
 public final class AwFeatureMap extends FeatureMap {
     private static final AwFeatureMap sInstance = new AwFeatureMap();
@@ -19,16 +17,12 @@ public final class AwFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private AwFeatureMap() {}
 
-    /**
-     * @return the singleton UiAndroidFeatureMap.
-     */
+    /** @return the singleton UiAndroidFeatureMap. */
     public static AwFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

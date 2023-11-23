@@ -36,14 +36,11 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Test for getHitTestResult, requestFocusNodeHref, and requestImageRef methods
- */
+/** Test for getHitTestResult, requestFocusNodeHref, and requestImageRef methods */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class WebKitHitTestTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;
@@ -479,9 +476,9 @@ public class WebKitHitTestTest extends AwParameterizedTest {
         String html =
                 CommonResources.makeHtmlPageFrom(
                         "<meta name=\"viewport\""
-                            + " content=\"width=device-width,height=device-height\" /><style"
-                            + " type=\"text/css\">.full_width { width:100%; position:absolute; }"
-                            + "</style>",
+                                + " content=\"width=device-width,height=device-height\" /><style"
+                                + " type=\"text/css\">.full_width { width:100%; position:absolute; }"
+                                + "</style>",
                         "<form><input class=\"full_width\" style=\"height:25%;\" "
                                 + "type=\"text\" name=\"test\"></form>"
                                 + "<img class=\"full_width\" style=\"height:50%;top:25%;\" "

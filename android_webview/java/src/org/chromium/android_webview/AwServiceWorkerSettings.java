@@ -33,7 +33,7 @@ public class AwServiceWorkerSettings {
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
     private boolean mAllowContentUrlAccess = true;
     private boolean mAllowFileUrlAccess = true;
-    private boolean mBlockNetworkLoads;  // Default depends on permission of the embedding APK
+    private boolean mBlockNetworkLoads; // Default depends on permission of the embedding APK
     private boolean mAcceptThirdPartyCookies;
     private boolean mBlockSpecialFileUrls;
 
@@ -47,10 +47,12 @@ public class AwServiceWorkerSettings {
 
     public AwServiceWorkerSettings(Context context, AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
-        boolean hasInternetPermission = context.checkPermission(
-                android.Manifest.permission.INTERNET,
-                Process.myPid(),
-                Process.myUid()) == PackageManager.PERMISSION_GRANTED;
+        boolean hasInternetPermission =
+                context.checkPermission(
+                                android.Manifest.permission.INTERNET,
+                                Process.myPid(),
+                                Process.myUid())
+                        == PackageManager.PERMISSION_GRANTED;
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
@@ -63,7 +65,7 @@ public class AwServiceWorkerSettings {
             mBlockSpecialFileUrls = ContextUtils.isSdkSandboxProcess();
 
             if (AwFeatureMap.isEnabled(
-                        AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
+                    AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
                 mRequestedWithHeaderAllowedOriginRules =
                         ManifestMetadataUtil.getXRequestedWithAllowList();
             } else {
@@ -72,9 +74,7 @@ public class AwServiceWorkerSettings {
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#setCacheMode}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#setCacheMode}. */
     public void setCacheMode(int mode) {
         if (TRACE) Log.d(TAG, "setCacheMode=" + mode);
         synchronized (mAwServiceWorkerSettingsLock) {
@@ -84,18 +84,14 @@ public class AwServiceWorkerSettings {
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#getCacheMode}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#getCacheMode}. */
     public int getCacheMode() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mCacheMode;
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#setAllowContentAccess}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#setAllowContentAccess}. */
     public void setAllowContentAccess(boolean allow) {
         if (TRACE) Log.d(TAG, "setAllowContentAccess=" + allow);
         synchronized (mAwServiceWorkerSettingsLock) {
@@ -105,18 +101,14 @@ public class AwServiceWorkerSettings {
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#getAllowContentAccess}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#getAllowContentAccess}. */
     public boolean getAllowContentAccess() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mAllowContentUrlAccess;
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#setAllowFileAccess}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#setAllowFileAccess}. */
     public void setAllowFileAccess(boolean allow) {
         if (TRACE) Log.d(TAG, "setAllowFileAccess=" + allow);
         synchronized (mAwServiceWorkerSettingsLock) {
@@ -126,9 +118,7 @@ public class AwServiceWorkerSettings {
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#getAllowFileAccess}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#getAllowFileAccess}. */
     public boolean getAllowFileAccess() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mAllowFileUrlAccess;
@@ -148,23 +138,19 @@ public class AwServiceWorkerSettings {
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#setBlockNetworkLoads}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#setBlockNetworkLoads}. */
     public void setBlockNetworkLoads(boolean flag) {
         if (TRACE) Log.d(TAG, "setBlockNetworkLoads=" + flag);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (!flag && !mHasInternetPermission) {
-                throw new SecurityException("Permission denied - "
-                        + "application missing INTERNET permission");
+                throw new SecurityException(
+                        "Permission denied - " + "application missing INTERNET permission");
             }
             mBlockNetworkLoads = flag;
         }
     }
 
-    /**
-     * See {@link android.webkit.ServiceWorkerWebSettings#getBlockNetworkLoads}.
-     */
+    /** See {@link android.webkit.ServiceWorkerWebSettings#getBlockNetworkLoads}. */
     public boolean getBlockNetworkLoads() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mBlockNetworkLoads;

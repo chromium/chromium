@@ -60,8 +60,10 @@ public class WebViewTracingActivity extends Activity {
         public void close() throws IOException {
             super.close();
             sOverallTracingTimeEndMs = SystemClock.elapsedRealtime();
-            android.util.Log.i(TAG,
-                    "TracingLogger.complete(), byte count = " + getByteCount()
+            android.util.Log.i(
+                    TAG,
+                    "TracingLogger.complete(), byte count = "
+                            + getByteCount()
                             + ", overall duration (ms) = "
                             + (sOverallTracingTimeEndMs - sOverallTracingTimeStartMs));
             mActivity.finish();
@@ -99,36 +101,43 @@ public class WebViewTracingActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         final TracingController tracingController = TracingController.getInstance();
 
-        webView.setWebViewClient(new WebViewClientCompat() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                sUrlLoadTimeEndMs = SystemClock.elapsedRealtime();
-                android.util.Log.i(TAG,
-                        "onPageFinished(), enableTracing = " + enableTracing + ", url = " + url
-                                + ", urlLoadTimeMillis = "
-                                + (sUrlLoadTimeEndMs - sUrlLoadTimeStartMs));
+        webView.setWebViewClient(
+                new WebViewClientCompat() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+                        sUrlLoadTimeEndMs = SystemClock.elapsedRealtime();
+                        android.util.Log.i(
+                                TAG,
+                                "onPageFinished(), enableTracing = "
+                                        + enableTracing
+                                        + ", url = "
+                                        + url
+                                        + ", urlLoadTimeMillis = "
+                                        + (sUrlLoadTimeEndMs - sUrlLoadTimeStartMs));
 
-                if (enableTracing) {
-                    String outFileName = getFilesDir() + "/webview_tracing.json";
-                    try {
-                        tracingController.stop(new TracingLogger(outFileName, activity),
-                                Executors.newSingleThreadExecutor());
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
+                        if (enableTracing) {
+                            String outFileName = getFilesDir() + "/webview_tracing.json";
+                            try {
+                                tracingController.stop(
+                                        new TracingLogger(outFileName, activity),
+                                        Executors.newSingleThreadExecutor());
+                            } catch (FileNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        } else {
+                            activity.finish();
+                        }
                     }
-                } else {
-                    activity.finish();
-                }
-            }
-        });
+                });
 
         if (enableTracing) {
             sOverallTracingTimeStartMs = SystemClock.elapsedRealtime();
-            tracingController.start(new TracingConfig.Builder()
-                                            .addCategories(TracingConfig.CATEGORIES_WEB_DEVELOPER)
-                                            .setTracingMode(TracingConfig.RECORD_UNTIL_FULL)
-                                            .build());
+            tracingController.start(
+                    new TracingConfig.Builder()
+                            .addCategories(TracingConfig.CATEGORIES_WEB_DEVELOPER)
+                            .setTracingMode(TracingConfig.RECORD_UNTIL_FULL)
+                            .build());
         }
         sUrlLoadTimeStartMs = SystemClock.elapsedRealtime();
         webView.loadUrl(url);

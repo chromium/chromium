@@ -47,14 +47,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for the WebViewClient.shouldInterceptRequest() method.
- */
+/** Tests for the WebViewClient.shouldInterceptRequest() method. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final int TEAPOT_STATUS_CODE = 418;
     private static final String TEAPOT_RESPONSE_PHRASE = "I'm a teapot";

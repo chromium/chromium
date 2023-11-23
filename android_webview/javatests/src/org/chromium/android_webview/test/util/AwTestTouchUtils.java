@@ -29,8 +29,14 @@ public class AwTestTouchUtils {
         return downTime;
     }
 
-    private static void dragTo(View view, float fromX, float toX, float fromY,
-            float toY, int stepCount, long downTime) {
+    private static void dragTo(
+            View view,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            int stepCount,
+            long downTime) {
         float x = fromX;
         float y = fromY;
         float yStep = (toY - fromY) / stepCount;
@@ -58,13 +64,19 @@ public class AwTestTouchUtils {
      * @param toY The relative y-coordinate of the end point of the drag.
      * @param stepCount The total number of motion events that should be generated during the drag.
      */
-    public static void dragCompleteView(final View view, final int fromX, final int toX,
-            final int fromY, final int toY, final int stepCount) {
-        view.post(() -> {
-            long downTime = dragStart(view, fromX, fromY);
-            dragTo(view, fromX, toX, fromY, toY, stepCount, downTime);
-            dragEnd(view, toX, toY, downTime);
-        });
+    public static void dragCompleteView(
+            final View view,
+            final int fromX,
+            final int toX,
+            final int fromY,
+            final int toY,
+            final int stepCount) {
+        view.post(
+                () -> {
+                    long downTime = dragStart(view, fromX, fromY);
+                    dragTo(view, fromX, toX, fromY, toY, stepCount, downTime);
+                    dragEnd(view, toX, toY, downTime);
+                });
     }
 
     /**
@@ -75,17 +87,17 @@ public class AwTestTouchUtils {
      * @param view The view the coordinates are relative to.
      */
     public static void simulateTouchCenterOfView(final View view) {
-        view.post(() -> {
-            long eventTime = SystemClock.uptimeMillis();
-            float x = (float) (view.getRight() - view.getLeft()) / 2;
-            float y = (float) (view.getBottom() - view.getTop()) / 2;
-            view.onTouchEvent(MotionEvent.obtain(
-                    eventTime, eventTime, MotionEvent.ACTION_DOWN,
-                    x, y, 0));
-            view.onTouchEvent(MotionEvent.obtain(
-                    eventTime, eventTime, MotionEvent.ACTION_UP,
-                    x, y, 0));
-        });
+        view.post(
+                () -> {
+                    long eventTime = SystemClock.uptimeMillis();
+                    float x = (float) (view.getRight() - view.getLeft()) / 2;
+                    float y = (float) (view.getBottom() - view.getTop()) / 2;
+                    view.onTouchEvent(
+                            MotionEvent.obtain(
+                                    eventTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0));
+                    view.onTouchEvent(
+                            MotionEvent.obtain(
+                                    eventTime, eventTime, MotionEvent.ACTION_UP, x, y, 0));
+                });
     }
 }
-

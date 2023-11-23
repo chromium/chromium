@@ -58,21 +58,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * A fragment to show a list of recent WebView crashes.
- */
+/** A fragment to show a list of recent WebView crashes. */
 public class CrashesListFragment extends DevUiBaseFragment {
     private static final String TAG = "WebViewDevTools";
 
     public static final String CRASH_BUG_DIALOG_MESSAGE =
             "This crash has already been reported to our crash system. "
-            + "Do you want to share more information, such as steps to reproduce the crash?";
+                    + "Do you want to share more information, such as steps to reproduce the crash?";
     public static final String NO_WIFI_DIALOG_MESSAGE =
-            "You are connected to a metered network or cellular data."
-            + " Do you want to proceed?";
+            "You are connected to a metered network or cellular data." + " Do you want to proceed?";
     public static final String CRASH_COLLECTION_DISABLED_ERROR_MESSAGE =
             "Crash collection is disabled. Please turn on 'Usage & diagnostics' "
-            + "from the three-dotted menu in Google settings.";
+                    + "from the three-dotted menu in Google settings.";
     public static final String NO_GMS_ERROR_MESSAGE =
             "Crash collection is not supported at the moment.";
 
@@ -89,10 +86,14 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({CollectionState.ENABLED_BY_COMMANDLINE, CollectionState.ENABLED_BY_FLAG_UI,
-            CollectionState.ENABLED_BY_USER_CONSENT, CollectionState.DISABLED_BY_USER_CONSENT,
-            CollectionState.DISABLED_BY_USER_CONSENT_CANNOT_FIND_SETTINGS,
-            CollectionState.DISABLED_CANNOT_USE_GMS})
+    @IntDef({
+        CollectionState.ENABLED_BY_COMMANDLINE,
+        CollectionState.ENABLED_BY_FLAG_UI,
+        CollectionState.ENABLED_BY_USER_CONSENT,
+        CollectionState.DISABLED_BY_USER_CONSENT,
+        CollectionState.DISABLED_BY_USER_CONSENT_CANNOT_FIND_SETTINGS,
+        CollectionState.DISABLED_CANNOT_USE_GMS
+    })
     private @interface CollectionState {
         int ENABLED_BY_COMMANDLINE = 0;
         int ENABLED_BY_FLAG_UI = 1;
@@ -110,11 +111,16 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({CrashInteraction.FORCE_UPLOAD_BUTTON, CrashInteraction.FORCE_UPLOAD_NO_DIALOG,
-            CrashInteraction.FORCE_UPLOAD_DIALOG_METERED_NETWORK,
-            CrashInteraction.FORCE_UPLOAD_DIALOG_CANCEL, CrashInteraction.FILE_BUG_REPORT_BUTTON,
-            CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED,
-            CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS, CrashInteraction.HIDE_CRASH_BUTTON})
+    @IntDef({
+        CrashInteraction.FORCE_UPLOAD_BUTTON,
+        CrashInteraction.FORCE_UPLOAD_NO_DIALOG,
+        CrashInteraction.FORCE_UPLOAD_DIALOG_METERED_NETWORK,
+        CrashInteraction.FORCE_UPLOAD_DIALOG_CANCEL,
+        CrashInteraction.FILE_BUG_REPORT_BUTTON,
+        CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED,
+        CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS,
+        CrashInteraction.HIDE_CRASH_BUTTON
+    })
     private @interface CrashInteraction {
         int FORCE_UPLOAD_BUTTON = 0;
         int FORCE_UPLOAD_NO_DIALOG = 1;
@@ -173,16 +179,15 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
     private boolean isCrashUploadsEnabledFromFlagsUi() {
         if (DeveloperModeUtils.isDeveloperModeEnabled(mContext.getPackageName())) {
-            Boolean flagValue = DeveloperModeUtils.getFlagOverrides(mContext.getPackageName())
-                                        .get(BaseSwitches.ENABLE_CRASH_REPORTER_FOR_TESTING);
+            Boolean flagValue =
+                    DeveloperModeUtils.getFlagOverrides(mContext.getPackageName())
+                            .get(BaseSwitches.ENABLE_CRASH_REPORTER_FOR_TESTING);
             return Boolean.TRUE.equals(flagValue);
         }
         return false;
     }
 
-    /**
-     * Adapter to create crashes list items from a list of CrashInfo.
-     */
+    /** Adapter to create crashes list items from a list of CrashInfo. */
     private class CrashListExpandableAdapter extends BaseExpandableListAdapter {
         private List<CrashInfo> mCrashInfoList;
 
@@ -190,15 +195,18 @@ public class CrashesListFragment extends DevUiBaseFragment {
             mCrashInfoList = new ArrayList<>();
 
             // Update crash summary when the data changes.
-            registerDataSetObserver(new DataSetObserver() {
-                @Override
-                public void onChanged() {
-                    crashesSummaryView.setText(
-                            String.format(Locale.US, "Crashes (%d)", mCrashInfoList.size()));
-                    RecordHistogram.recordCount100Histogram(
-                            "Android.WebView.DevUi.CrashList.NumberShown", mCrashInfoList.size());
-                }
-            });
+            registerDataSetObserver(
+                    new DataSetObserver() {
+                        @Override
+                        public void onChanged() {
+                            crashesSummaryView.setText(
+                                    String.format(
+                                            Locale.US, "Crashes (%d)", mCrashInfoList.size()));
+                            RecordHistogram.recordCount100Histogram(
+                                    "Android.WebView.DevUi.CrashList.NumberShown",
+                                    mCrashInfoList.size());
+                        }
+                    });
         }
 
         // Group View which is used as header for a crash in crashes list.
@@ -233,7 +241,9 @@ public class CrashesListFragment extends DevUiBaseFragment {
                     packageIcon.setImageResource(android.R.drawable.sym_def_app_icon);
                 }
             }
-            setTwoLineListItemText(view.findViewById(R.id.crash_header), packageName,
+            setTwoLineListItemText(
+                    view.findViewById(R.id.crash_header),
+                    packageName,
                     new Date(crashInfo.captureTime).toString());
             return view;
         }
@@ -241,8 +251,12 @@ public class CrashesListFragment extends DevUiBaseFragment {
         // Child View where more info about the crash is shown:
         //    - Crash report upload status.
         @Override
-        public View getChildView(int groupPosition, final int childPosition, boolean isLastChild,
-                View view, ViewGroup parent) {
+        public View getChildView(
+                int groupPosition,
+                final int childPosition,
+                boolean isLastChild,
+                View view,
+                ViewGroup parent) {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
             if (view == null) {
@@ -257,15 +271,18 @@ public class CrashesListFragment extends DevUiBaseFragment {
             if (crashInfo.uploadState == UploadState.UPLOADED) {
                 final String uploadInfo =
                         new Date(crashInfo.uploadTime).toString() + "\nID: " + crashInfo.uploadId;
-                uploadInfoView.setOnLongClickListener(v -> {
-                    ClipboardManager clipboard =
-                            (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("upload info", uploadInfo);
-                    clipboard.setPrimaryClip(clip);
-                    // Show a toast that the text has been copied.
-                    Toast.makeText(mContext, "Copied upload info", Toast.LENGTH_SHORT).show();
-                    return true;
-                });
+                uploadInfoView.setOnLongClickListener(
+                        v -> {
+                            ClipboardManager clipboard =
+                                    (ClipboardManager)
+                                            mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("upload info", uploadInfo);
+                            clipboard.setPrimaryClip(clip);
+                            // Show a toast that the text has been copied.
+                            Toast.makeText(mContext, "Copied upload info", Toast.LENGTH_SHORT)
+                                    .show();
+                            return true;
+                        });
                 setTwoLineListItemText(uploadInfoView, uploadState, uploadInfo);
             } else {
                 setTwoLineListItemText(uploadInfoView, uploadState, null);
@@ -275,10 +292,11 @@ public class CrashesListFragment extends DevUiBaseFragment {
             // Report button is only clickable if the crash report is uploaded.
             if (crashInfo.uploadState == UploadState.UPLOADED) {
                 bugButton.setEnabled(true);
-                bugButton.setOnClickListener(v -> {
-                    logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_BUTTON);
-                    buildCrashBugDialog(crashInfo).show();
-                });
+                bugButton.setOnClickListener(
+                        v -> {
+                            logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_BUTTON);
+                            buildCrashBugDialog(crashInfo).show();
+                        });
             } else {
                 bugButton.setEnabled(false);
             }
@@ -287,42 +305,47 @@ public class CrashesListFragment extends DevUiBaseFragment {
             if (crashInfo.uploadState == UploadState.SKIPPED
                     || crashInfo.uploadState == UploadState.PENDING) {
                 uploadButton.setVisibility(View.VISIBLE);
-                uploadButton.setOnClickListener(v -> {
-                    if (!CrashUploadUtil.isNetworkUnmetered(mContext)) {
-                        new AlertDialog.Builder(mContext)
-                                .setTitle("Network Warning")
-                                .setMessage(NO_WIFI_DIALOG_MESSAGE)
-                                .setPositiveButton("Upload",
-                                        (dialog, id) -> {
-                                            logCrashInteraction(
-                                                    CrashInteraction
-                                                            .FORCE_UPLOAD_DIALOG_METERED_NETWORK);
-                                            attemptUploadCrash(crashInfo.localId);
-                                        })
-                                .setNegativeButton("Cancel",
-                                        (dialog, id) -> {
-                                            logCrashInteraction(
-                                                    CrashInteraction.FORCE_UPLOAD_DIALOG_CANCEL);
-                                            dialog.dismiss();
-                                        })
-                                .create()
-                                .show();
-                    } else {
-                        logCrashInteraction(CrashInteraction.FORCE_UPLOAD_NO_DIALOG);
-                        attemptUploadCrash(crashInfo.localId);
-                    }
-                });
+                uploadButton.setOnClickListener(
+                        v -> {
+                            if (!CrashUploadUtil.isNetworkUnmetered(mContext)) {
+                                new AlertDialog.Builder(mContext)
+                                        .setTitle("Network Warning")
+                                        .setMessage(NO_WIFI_DIALOG_MESSAGE)
+                                        .setPositiveButton(
+                                                "Upload",
+                                                (dialog, id) -> {
+                                                    logCrashInteraction(
+                                                            CrashInteraction
+                                                                    .FORCE_UPLOAD_DIALOG_METERED_NETWORK);
+                                                    attemptUploadCrash(crashInfo.localId);
+                                                })
+                                        .setNegativeButton(
+                                                "Cancel",
+                                                (dialog, id) -> {
+                                                    logCrashInteraction(
+                                                            CrashInteraction
+                                                                    .FORCE_UPLOAD_DIALOG_CANCEL);
+                                                    dialog.dismiss();
+                                                })
+                                        .create()
+                                        .show();
+                            } else {
+                                logCrashInteraction(CrashInteraction.FORCE_UPLOAD_NO_DIALOG);
+                                attemptUploadCrash(crashInfo.localId);
+                            }
+                        });
             } else {
                 uploadButton.setVisibility(View.GONE);
             }
 
             ImageButton hideButton = view.findViewById(R.id.crash_hide_button);
-            hideButton.setOnClickListener(v -> {
-                logCrashInteraction(CrashInteraction.HIDE_CRASH_BUTTON);
-                crashInfo.isHidden = true;
-                WebViewCrashInfoCollector.updateCrashLogFileWithNewCrashInfo(crashInfo);
-                updateCrashes();
-            });
+            hideButton.setOnClickListener(
+                    v -> {
+                        logCrashInteraction(CrashInteraction.HIDE_CRASH_BUTTON);
+                        crashInfo.isHidden = true;
+                        WebViewCrashInfoCollector.updateCrashLogFileWithNewCrashInfo(crashInfo);
+                        updateCrashes();
+                    });
 
             return view;
         }
@@ -387,33 +410,39 @@ public class CrashesListFragment extends DevUiBaseFragment {
          * data is loaded.
          */
         public void updateCrashes() {
-            AsyncTask<List<CrashInfo>> asyncTask = new AsyncTask<List<CrashInfo>>() {
-                @Override
-                @WorkerThread
-                protected List<CrashInfo> doInBackground() {
-                    WebViewCrashInfoCollector crashCollector = new WebViewCrashInfoCollector();
-                    // Only show crashes from the same WebView channel, which usually means the
-                    // same package.
-                    List<CrashInfo> crashes = crashCollector.loadCrashesInfo(crashInfo -> {
-                        @Channel
-                        int channel = getCrashInfoChannel(crashInfo);
-                        // Always show the crash if the channel is unknown (to handle missing
-                        // channel info for example for crashes from older versions).
-                        return channel == Channel.DEFAULT || channel == VersionConstants.CHANNEL;
-                    });
-                    if (crashes.size() > MAX_CRASHES_NUMBER) {
-                        return crashes.subList(0, MAX_CRASHES_NUMBER);
-                    }
-                    return crashes;
-                }
+            AsyncTask<List<CrashInfo>> asyncTask =
+                    new AsyncTask<List<CrashInfo>>() {
+                        @Override
+                        @WorkerThread
+                        protected List<CrashInfo> doInBackground() {
+                            WebViewCrashInfoCollector crashCollector =
+                                    new WebViewCrashInfoCollector();
+                            // Only show crashes from the same WebView channel, which usually means
+                            // the same package.
+                            List<CrashInfo> crashes =
+                                    crashCollector.loadCrashesInfo(
+                                            crashInfo -> {
+                                                @Channel
+                                                int channel = getCrashInfoChannel(crashInfo);
+                                                // Always show the crash if the channel is unknown
+                                                // (to handle missing channel info for example for
+                                                // crashes from older versions).
+                                                return channel == Channel.DEFAULT
+                                                        || channel == VersionConstants.CHANNEL;
+                                            });
+                            if (crashes.size() > MAX_CRASHES_NUMBER) {
+                                return crashes.subList(0, MAX_CRASHES_NUMBER);
+                            }
+                            return crashes;
+                        }
 
-                @Override
-                protected void onPostExecute(List<CrashInfo> result) {
-                    mCrashInfoList = result;
-                    notifyDataSetChanged();
-                    if (sCrashInfoLoadedListener != null) sCrashInfoLoadedListener.run();
-                }
-            };
+                        @Override
+                        protected void onPostExecute(List<CrashInfo> result) {
+                            mCrashInfoList = result;
+                            notifyDataSetChanged();
+                            if (sCrashInfoLoadedListener != null) sCrashInfoLoadedListener.run();
+                        }
+                    };
             asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
@@ -483,15 +512,18 @@ public class CrashesListFragment extends DevUiBaseFragment {
             logCrashCollectionState(CollectionState.ENABLED_BY_FLAG_UI);
             errorView.hide();
         } else {
-            PlatformServiceBridge.getInstance().queryMetricsSetting(enabled -> {
-                if (Boolean.TRUE.equals(enabled)) {
-                    logCrashCollectionState(CollectionState.ENABLED_BY_USER_CONSENT);
-                    errorView.hide();
-                } else {
-                    buildCrashConsentError(errorView);
-                    errorView.show();
-                }
-            });
+            PlatformServiceBridge.getInstance()
+                    .queryMetricsSetting(
+                            enabled -> {
+                                if (Boolean.TRUE.equals(enabled)) {
+                                    logCrashCollectionState(
+                                            CollectionState.ENABLED_BY_USER_CONSENT);
+                                    errorView.hide();
+                                } else {
+                                    buildCrashConsentError(errorView);
+                                    errorView.show();
+                                }
+                            });
         }
     }
 
@@ -520,22 +552,25 @@ public class CrashesListFragment extends DevUiBaseFragment {
     private AlertDialog buildCrashBugDialog(CrashInfo crashInfo) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
         dialogBuilder.setMessage(CRASH_BUG_DIALOG_MESSAGE);
-        dialogBuilder.setPositiveButton("Provide more info", (dialog, id) -> {
-            logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED);
-            SafeIntentUtils.startActivityOrShowError(mContext,
-                    new CrashBugUrlFactory(crashInfo).getReportIntent(),
-                    SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
-        });
-        dialogBuilder.setNegativeButton("Dismiss", (dialog, id) -> {
-            logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS);
-            dialog.dismiss();
-        });
+        dialogBuilder.setPositiveButton(
+                "Provide more info",
+                (dialog, id) -> {
+                    logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED);
+                    SafeIntentUtils.startActivityOrShowError(
+                            mContext,
+                            new CrashBugUrlFactory(crashInfo).getReportIntent(),
+                            SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
+                });
+        dialogBuilder.setNegativeButton(
+                "Dismiss",
+                (dialog, id) -> {
+                    logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS);
+                    dialog.dismiss();
+                });
         return dialogBuilder.create();
     }
 
-    /**
-     * Notifies the caller when all CrashInfo is reloaded in the ListView.
-     */
+    /** Notifies the caller when all CrashInfo is reloaded in the ListView. */
     @MainThread
     public static void setCrashInfoLoadedListenerForTesting(@Nullable Runnable listener) {
         sCrashInfoLoadedListener = listener;

@@ -78,13 +78,14 @@ public class ManifestMetadataMockApplicationContext extends ApplicationContextWr
         Resources resourcesSpy = Mockito.spy(super.getResources());
         // Use the "doAnswer-when" ordering since the real method call throws an exception
         // which breaks the more fluent "when-then" call pattern.
-        Mockito.doAnswer(invocation -> {
-                   Integer key = invocation.getArgument(0);
-                   if (mStringArrayResources.containsKey(key)) {
-                       return mStringArrayResources.get(key);
-                   }
-                   return invocation.callRealMethod();
-               })
+        Mockito.doAnswer(
+                        invocation -> {
+                            Integer key = invocation.getArgument(0);
+                            if (mStringArrayResources.containsKey(key)) {
+                                return mStringArrayResources.get(key);
+                            }
+                            return invocation.callRealMethod();
+                        })
                 .when(resourcesSpy)
                 .getStringArray(Mockito.anyInt());
         return resourcesSpy;

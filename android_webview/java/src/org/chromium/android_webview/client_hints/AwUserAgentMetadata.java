@@ -37,13 +37,19 @@ public class AwUserAgentMetadata {
     private boolean mWow64;
     private @FormFactors String[] mFormFactor;
 
-    /**
-     * Key for the user-agent metadata properties.
-     */
-    @StringDef({MetadataKeys.BRAND_VERSION_LIST, MetadataKeys.FULL_VERSION, MetadataKeys.PLATFORM,
-            MetadataKeys.PLATFORM_VERSION, MetadataKeys.ARCHITECTURE, MetadataKeys.MODEL,
-            MetadataKeys.MOBILE, MetadataKeys.BITNESS, MetadataKeys.WOW64,
-            MetadataKeys.FORM_FACTOR})
+    /** Key for the user-agent metadata properties. */
+    @StringDef({
+        MetadataKeys.BRAND_VERSION_LIST,
+        MetadataKeys.FULL_VERSION,
+        MetadataKeys.PLATFORM,
+        MetadataKeys.PLATFORM_VERSION,
+        MetadataKeys.ARCHITECTURE,
+        MetadataKeys.MODEL,
+        MetadataKeys.MOBILE,
+        MetadataKeys.BITNESS,
+        MetadataKeys.WOW64,
+        MetadataKeys.FORM_FACTOR
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MetadataKeys {
         String BRAND_VERSION_LIST = "BRAND_VERSION_LIST";
@@ -60,9 +66,7 @@ public class AwUserAgentMetadata {
 
     public static final int BITNESS_DEFAULT = 0;
 
-    /**
-     * each brand should contains brand, major version and full version.
-     */
+    /** each brand should contains brand, major version and full version. */
     public static final int BRAND_VERSION_LENGTH = 3;
 
     /**
@@ -182,9 +186,7 @@ public class AwUserAgentMetadata {
         return mFormFactor;
     }
 
-    /**
-     * Construct a AwUserAgentMetadata instance, and low-entropy client hints should not be null.
-     */
+    /** Construct a AwUserAgentMetadata instance, and low-entropy client hints should not be null. */
     @CalledByNative
     private static AwUserAgentMetadata create(
             @NonNull String[][] brandVersionList,
@@ -203,8 +205,9 @@ public class AwUserAgentMetadata {
         for (int i = 0; i < brandVersionList.length; i++) {
             result.mBrandVersionList[i][0] = brandVersionList[i][0]; // brand
             result.mBrandVersionList[i][1] = brandVersionList[i][1]; // majorVersion
-            result.mBrandVersionList[i][2] = getFullVersionFromBandList(
-                    brandFullVersionList, brandVersionList[i][0]); // fullVersion
+            result.mBrandVersionList[i][2] =
+                    getFullVersionFromBandList(
+                            brandFullVersionList, brandVersionList[i][0]); // fullVersion
         }
         result.mFullVersion = fullVersion;
         result.mPlatform = platform;
@@ -222,8 +225,10 @@ public class AwUserAgentMetadata {
             Map<String, Object> map, @MetadataKeys String key, String defaultValue) {
         Object value = map.get(key);
         if (value != null && !(value instanceof String)) {
-            throw new IllegalArgumentException("AwUserAgentMetadata map does not have "
-                    + "right type of value for key: " + key);
+            throw new IllegalArgumentException(
+                    "AwUserAgentMetadata map does not have "
+                            + "right type of value for key: "
+                            + key);
         }
         if (value != null) {
             return (String) value;
@@ -235,8 +240,10 @@ public class AwUserAgentMetadata {
             Map<String, Object> map, @MetadataKeys String key, boolean defaultValue) {
         Object value = map.get(key);
         if (value != null && !(value instanceof Boolean)) {
-            throw new IllegalArgumentException("AwUserAgentMetadata map does not have "
-                    + "right type of value for key: " + key);
+            throw new IllegalArgumentException(
+                    "AwUserAgentMetadata map does not have "
+                            + "right type of value for key: "
+                            + key);
         }
         if (value != null) {
             return (Boolean) value;
@@ -248,8 +255,10 @@ public class AwUserAgentMetadata {
             Map<String, Object> map, @MetadataKeys String key, int defaultValue) {
         Object value = map.get(key);
         if (value != null && !(value instanceof Integer)) {
-            throw new IllegalArgumentException("AwUserAgentMetadata map does not have "
-                    + "right type of value for key: " + key);
+            throw new IllegalArgumentException(
+                    "AwUserAgentMetadata map does not have "
+                            + "right type of value for key: "
+                            + key);
         }
         if (value != null) {
             return (Integer) value;
@@ -282,24 +291,33 @@ public class AwUserAgentMetadata {
         String[][] brandVersionList = defaultData.mBrandVersionList;
         if (brandVersionValue != null) {
             if (!(brandVersionValue instanceof String[][])) {
-                throw new IllegalArgumentException("AwUserAgentMetadata map does not have "
-                        + "right type of value for key: " + MetadataKeys.BRAND_VERSION_LIST);
+                throw new IllegalArgumentException(
+                        "AwUserAgentMetadata map does not have "
+                                + "right type of value for key: "
+                                + MetadataKeys.BRAND_VERSION_LIST);
             }
             String[][] overrideBrandVersionList = (String[][]) brandVersionValue;
             brandVersionList = new String[overrideBrandVersionList.length][];
             for (int i = 0; i < overrideBrandVersionList.length; i++) {
                 String[] brandVersionInfo = overrideBrandVersionList[i];
                 if (brandVersionInfo.length != BRAND_VERSION_LENGTH) {
-                    throw new IllegalArgumentException("AwUserAgentMetadata map does not have "
-                            + "right type of value for key: " + MetadataKeys.BRAND_VERSION_LIST
-                            + ", expect brand item length:" + BRAND_VERSION_LENGTH
-                            + ", actual:" + brandVersionInfo.length);
+                    throw new IllegalArgumentException(
+                            "AwUserAgentMetadata map does not have "
+                                    + "right type of value for key: "
+                                    + MetadataKeys.BRAND_VERSION_LIST
+                                    + ", expect brand item length:"
+                                    + BRAND_VERSION_LENGTH
+                                    + ", actual:"
+                                    + brandVersionInfo.length);
                 }
-                if (brandVersionInfo[0] == null || brandVersionInfo[1] == null
+                if (brandVersionInfo[0] == null
+                        || brandVersionInfo[1] == null
                         || brandVersionInfo[2] == null) {
-                    throw new IllegalArgumentException("AwUserAgentMetadata map does not have "
-                            + "right type of value for key: " + MetadataKeys.BRAND_VERSION_LIST
-                            + ", brand item should not set as null");
+                    throw new IllegalArgumentException(
+                            "AwUserAgentMetadata map does not have "
+                                    + "right type of value for key: "
+                                    + MetadataKeys.BRAND_VERSION_LIST
+                                    + ", brand item should not set as null");
                 }
                 brandVersionList[i] = Arrays.copyOf(brandVersionInfo, brandVersionInfo.length);
             }
@@ -320,14 +338,17 @@ public class AwUserAgentMetadata {
 
         AwUserAgentMetadata result = new AwUserAgentMetadata();
         result.mBrandVersionList = brandVersionList;
-        result.mFullVersion = getValueAsString(
-                uaMetadataMap, MetadataKeys.FULL_VERSION, defaultData.mFullVersion);
+        result.mFullVersion =
+                getValueAsString(
+                        uaMetadataMap, MetadataKeys.FULL_VERSION, defaultData.mFullVersion);
         result.mPlatform =
                 getValueAsString(uaMetadataMap, MetadataKeys.PLATFORM, defaultData.mPlatform);
-        result.mPlatformVersion = getValueAsString(
-                uaMetadataMap, MetadataKeys.PLATFORM_VERSION, defaultData.mPlatformVersion);
-        result.mArchitecture = getValueAsString(
-                uaMetadataMap, MetadataKeys.ARCHITECTURE, defaultData.mArchitecture);
+        result.mPlatformVersion =
+                getValueAsString(
+                        uaMetadataMap, MetadataKeys.PLATFORM_VERSION, defaultData.mPlatformVersion);
+        result.mArchitecture =
+                getValueAsString(
+                        uaMetadataMap, MetadataKeys.ARCHITECTURE, defaultData.mArchitecture);
         result.mModel = getValueAsString(uaMetadataMap, MetadataKeys.MODEL, defaultData.mModel);
         result.mMobile = getValueAsBoolean(uaMetadataMap, MetadataKeys.MOBILE, defaultData.mMobile);
         result.mBitness = getValueAsInt(uaMetadataMap, MetadataKeys.BITNESS, defaultData.mBitness);

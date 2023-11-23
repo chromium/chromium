@@ -14,41 +14,48 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 
 import org.hamcrest.Matcher;
-/**
- * A {@link ViewAction} that executes JavaScript code in a {@link WebView}.
- */
+
+/** A {@link ViewAction} that executes JavaScript code in a {@link WebView}. */
 public class JavaScriptExecutionViewAction implements ViewAction {
     // Taken from
     // javatests/com/google/android/apps/common
     // /testing/testrunner/web/JavaScriptIntegrationTest.java
     String mScript;
     public MyCallback callback;
+
     public class MyCallback implements ValueCallback<String> {
         public String returnValue;
+
         @Override
         public void onReceiveValue(String returnValue) {
             this.returnValue = returnValue;
         }
+
         public MyCallback() {
             this.returnValue = null;
         }
     }
+
     public JavaScriptExecutionViewAction(String script) {
         this.mScript = script;
         this.callback = new MyCallback();
     }
+
     @Override
     public Matcher<View> getConstraints() {
         return isAssignableFrom(WebView.class);
     }
+
     @Override
     public String getDescription() {
         return "Execute JavaScript inside WebView.";
     }
+
     @Override
     public void perform(UiController controller, View view) {
         ((WebView) view).evaluateJavascript("javascript:" + mScript, callback);
     }
+
     /**
      * Returns the {@link ViewAction} to execute the script.
      *

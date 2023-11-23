@@ -11,14 +11,17 @@ import android.webkit.ValueCallback;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Boundary interface for WebViewFactoryProvider.Statics.
- */
+/** Boundary interface for WebViewFactoryProvider.Statics. */
 public interface StaticsBoundaryInterface {
     void initSafeBrowsing(Context context, ValueCallback<Boolean> callback);
+
     void setSafeBrowsingAllowlist(Set<String> hosts, ValueCallback<Boolean> callback);
+
     void setSafeBrowsingWhitelist(List<String> hosts, ValueCallback<Boolean> callback);
+
     Uri getSafeBrowsingPrivacyPolicyUrl();
+
     boolean isMultiProcessEnabled();
+
     String getVariationsHeader();
 }

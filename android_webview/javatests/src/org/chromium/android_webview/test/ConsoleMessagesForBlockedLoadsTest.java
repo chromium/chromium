@@ -42,8 +42,7 @@ import java.util.List;
 public class ConsoleMessagesForBlockedLoadsTest extends AwParameterizedTest {
     public static final String SERVER_HOSTNAME = "example.test";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
@@ -140,8 +139,8 @@ public class ConsoleMessagesForBlockedLoadsTest extends AwParameterizedTest {
         startWebServer();
         final String iframeXsl =
                 "<?xml version='1.0' encoding='UTF-8'?><xsl:stylesheet version='1.0'"
-                    + " xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='*'>"
-                    + "<html><body>FAIL</body></html></xsl:template></xsl:stylesheet>";
+                        + " xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='*'>"
+                        + "<html><body>FAIL</body></html></xsl:template></xsl:stylesheet>";
         final String iframeXslUrl =
                 mWebServer
                         .setResponse("/iframe.xsl", iframeXsl, null)

@@ -13,9 +13,7 @@ import android.webkit.WebView;
 
 import androidx.webkit.WebViewClientCompat;
 
-/**
- * This activity is designed for Telemetry testing of WebView.
- */
+/** This activity is designed for Telemetry testing of WebView. */
 public class TelemetryActivity extends Activity {
     static final String START_UP_TRACE_TAG_NAME = "WebViewStartUpTraceTag";
     static final String DEFAULT_START_UP_TRACE_TAG = "WebViewStartupInterval";
@@ -42,15 +40,16 @@ public class TelemetryActivity extends Activity {
         super.onCreate(savedInstanceState);
         mIntent = getIntent();
 
-        getWindow().setTitle(
-                getResources().getString(R.string.title_activity_telemetry));
+        getWindow().setTitle(getResources().getString(R.string.title_activity_telemetry));
 
         final String startUpTraceTag =
                 getTraceTag(START_UP_TRACE_TAG_NAME, DEFAULT_START_UP_TRACE_TAG);
         final String loadUrlTraceTag =
                 getTraceTag(LOAD_URL_TRACE_TAG_NAME, DEFAULT_LOAD_URL_TRACE_TAG);
-        final String startUpAndLoadUrlTraceTag = getTraceTag(
-                START_UP_AND_LOAD_URL_TRACE_TAG_NAME, DEFAULT_START_UP_AND_LOAD_URL_TRACE_TAG);
+        final String startUpAndLoadUrlTraceTag =
+                getTraceTag(
+                        START_UP_AND_LOAD_URL_TRACE_TAG_NAME,
+                        DEFAULT_START_UP_AND_LOAD_URL_TRACE_TAG);
         final String dummyTraceTag = getTraceTag(DUMMY_TRACE_TAG_NAME, DEFAULT_DUMMY_TRACE_TAG);
 
         Trace.beginSection(startUpAndLoadUrlTraceTag);
@@ -73,32 +72,33 @@ public class TelemetryActivity extends Activity {
             settings.setUserAgentString(userAgentString);
         }
 
-        webView.setWebViewClient(new WebViewClientCompat() {
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
+        webView.setWebViewClient(
+                new WebViewClientCompat() {
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        return false;
+                    }
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                // dummyTraceTag was ended by code in Android intended to end
-                // activityStart before onPageFinished was called, so the time
-                // reported as the activityStart will be longer than actual.
-                // The actual duration of activityStart will be from the
-                // beginning of the activityStart to the end of the dummyTraceTag
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+                        // dummyTraceTag was ended by code in Android intended to end
+                        // activityStart before onPageFinished was called, so the time
+                        // reported as the activityStart will be longer than actual.
+                        // The actual duration of activityStart will be from the
+                        // beginning of the activityStart to the end of the dummyTraceTag
 
-                // Ends loadUrlTraceTag
-                Trace.endSection();
+                        // Ends loadUrlTraceTag
+                        Trace.endSection();
 
-                // Ends startUpAndLoadUrlTraceTag
-                Trace.endSection();
+                        // Ends startUpAndLoadUrlTraceTag
+                        Trace.endSection();
 
-                // Ends activityStart
-                Trace.endSection();
-            }
-        });
+                        // Ends activityStart
+                        Trace.endSection();
+                    }
+                });
 
         Trace.beginSection(loadUrlTraceTag);
 

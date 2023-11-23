@@ -58,12 +58,14 @@ public class NetworkFetcherTask {
                 /* connection= */ null, nativeDownloadFileTask, mainTaskRunner, url, filePath);
     }
 
-    /**
-     * Downloads from a given url to a file.
-     */
+    /** Downloads from a given url to a file. */
     @VisibleForTesting
-    public static void downloadToFile(HttpURLConnection connection, long nativeDownloadFileTask,
-            long mainTaskRunner, GURL gurl, String filePath) {
+    public static void downloadToFile(
+            HttpURLConnection connection,
+            long nativeDownloadFileTask,
+            long mainTaskRunner,
+            GURL gurl,
+            String filePath) {
         long bytesDownloaded = 0;
         try {
             if (connection == null) {
@@ -78,9 +80,12 @@ public class NetworkFetcherTask {
                 contentLength = Long.parseLong(contentLengthString);
             }
 
-            NetworkFetcherTaskJni.get().callResponseStartedCallback(nativeDownloadFileTask,
-                    mainTaskRunner,
-                    /* responseCode= */ connection.getResponseCode(), contentLength);
+            NetworkFetcherTaskJni.get()
+                    .callResponseStartedCallback(
+                            nativeDownloadFileTask,
+                            mainTaskRunner,
+                            /* responseCode= */ connection.getResponseCode(),
+                            contentLength);
 
             connection.setConnectTimeout(READ_TIMEOUT_MS);
 
@@ -91,19 +96,28 @@ public class NetworkFetcherTask {
                 while ((bytesCount = inputStream.read(buffer)) > 0) {
                     outputStream.write(buffer, 0, bytesCount);
                     bytesDownloaded += bytesCount;
-                    NetworkFetcherTaskJni.get().callProgressCallback(
-                            nativeDownloadFileTask, mainTaskRunner, bytesDownloaded);
+                    NetworkFetcherTaskJni.get()
+                            .callProgressCallback(
+                                    nativeDownloadFileTask, mainTaskRunner, bytesDownloaded);
                 }
             }
 
-            NetworkFetcherTaskJni.get().callDownloadToFileCompleteCallback(
-                    nativeDownloadFileTask, mainTaskRunner, /* networkError= */ 0, bytesDownloaded);
+            NetworkFetcherTaskJni.get()
+                    .callDownloadToFileCompleteCallback(
+                            nativeDownloadFileTask,
+                            mainTaskRunner,
+                            /* networkError= */ 0,
+                            bytesDownloaded);
         } catch (IOException exception) {
             Log.w(TAG, "IOException during downloadToFile.", exception);
 
             // Notify task completion with a generic error.
-            NetworkFetcherTaskJni.get().callDownloadToFileCompleteCallback(nativeDownloadFileTask,
-                    mainTaskRunner, /* networkError= */ -2, bytesDownloaded);
+            NetworkFetcherTaskJni.get()
+                    .callDownloadToFileCompleteCallback(
+                            nativeDownloadFileTask,
+                            mainTaskRunner,
+                            /* networkError= */ -2,
+                            bytesDownloaded);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -112,11 +126,23 @@ public class NetworkFetcherTask {
     }
 
     @CalledByNative
-    private static void postRequest(long nativeNetworkFetcherTask, long mainTaskRunner, GURL url,
-            byte[] postData, String contentType, String[] headerKeys, String[] headerValues) {
+    private static void postRequest(
+            long nativeNetworkFetcherTask,
+            long mainTaskRunner,
+            GURL url,
+            byte[] postData,
+            String contentType,
+            String[] headerKeys,
+            String[] headerValues) {
         postRequest(
-                /* connection= */ null, nativeNetworkFetcherTask, mainTaskRunner, url, postData,
-                contentType, headerKeys, headerValues);
+                /* connection= */ null,
+                nativeNetworkFetcherTask,
+                mainTaskRunner,
+                url,
+                postData,
+                contentType,
+                headerKeys,
+                headerValues);
     }
 
     private static String getHeaderFieldOrEmptyStringIfUnset(
@@ -138,13 +164,17 @@ public class NetworkFetcherTask {
         }
     }
 
-    /**
-     * Posts a request to a URL.
-     */
+    /** Posts a request to a URL. */
     @VisibleForTesting
-    public static void postRequest(HttpURLConnection connection, long nativeNetworkFetcherTask,
-            long mainTaskRunner, GURL gurl, byte[] postData, String contentType,
-            String[] headerKeys, String[] headerValues) {
+    public static void postRequest(
+            HttpURLConnection connection,
+            long nativeNetworkFetcherTask,
+            long mainTaskRunner,
+            GURL gurl,
+            byte[] postData,
+            String contentType,
+            String[] headerKeys,
+            String[] headerValues) {
         String eTag = "";
         String xCupServerProof = "";
         byte[] responseBody = new byte[0];
@@ -175,8 +205,9 @@ public class NetworkFetcherTask {
             long contentLength = getHeaderFieldAsLong(connection, "Content-Length");
 
             int responseCode = connection.getResponseCode();
-            NetworkFetcherTaskJni.get().callResponseStartedCallback(
-                    nativeNetworkFetcherTask, mainTaskRunner, responseCode, contentLength);
+            NetworkFetcherTaskJni.get()
+                    .callResponseStartedCallback(
+                            nativeNetworkFetcherTask, mainTaskRunner, responseCode, contentLength);
 
             eTag = getHeaderFieldOrEmptyStringIfUnset(connection, ETAG);
             xCupServerProof = getHeaderFieldOrEmptyStringIfUnset(connection, XCUPSERVERPROOF);
@@ -195,22 +226,35 @@ public class NetworkFetcherTask {
                 int bytesCount;
                 while ((bytesCount = inputStream.read(buffer)) > 0) {
                     bytesDownloaded += bytesCount;
-                    outBuffer.write(buffer, /*offset = */ 0, bytesCount);
-                    NetworkFetcherTaskJni.get().callProgressCallback(
-                            nativeNetworkFetcherTask, mainTaskRunner, bytesDownloaded);
+                    outBuffer.write(buffer, /* offset= */ 0, bytesCount);
+                    NetworkFetcherTaskJni.get()
+                            .callProgressCallback(
+                                    nativeNetworkFetcherTask, mainTaskRunner, bytesDownloaded);
                 }
                 responseBody = outBuffer.toByteArray();
             }
 
-            NetworkFetcherTaskJni.get().callPostRequestCompleteCallback(nativeNetworkFetcherTask,
-                    mainTaskRunner, responseBody,
-                    /* networkError= */ 0, eTag, xCupServerProof, xRetryAfter);
+            NetworkFetcherTaskJni.get()
+                    .callPostRequestCompleteCallback(
+                            nativeNetworkFetcherTask,
+                            mainTaskRunner,
+                            responseBody,
+                            /* networkError= */ 0,
+                            eTag,
+                            xCupServerProof,
+                            xRetryAfter);
 
         } catch (IOException exception) {
             Log.w(TAG, "IOException during post request.", exception);
-            NetworkFetcherTaskJni.get().callPostRequestCompleteCallback(nativeNetworkFetcherTask,
-                    mainTaskRunner, responseBody, /* networkError= */ -2, eTag, xCupServerProof,
-                    xRetryAfter);
+            NetworkFetcherTaskJni.get()
+                    .callPostRequestCompleteCallback(
+                            nativeNetworkFetcherTask,
+                            mainTaskRunner,
+                            responseBody,
+                            /* networkError= */ -2,
+                            eTag,
+                            xCupServerProof,
+                            xRetryAfter);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -226,12 +270,20 @@ public class NetworkFetcherTask {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         void callProgressCallback(long weakPtr, long taskRunner, long current);
+
         void callResponseStartedCallback(
                 long weakPtr, long taskRunner, int responseCode, long contentLength);
+
         void callDownloadToFileCompleteCallback(
                 long weakPtr, long taskRunner, int networkError, long contentSize);
-        void callPostRequestCompleteCallback(long weakPtr, long taskRunner, byte[] responseBody,
-                int networkError, String headerETag, String headerXCupServerProof,
+
+        void callPostRequestCompleteCallback(
+                long weakPtr,
+                long taskRunner,
+                byte[] responseBody,
+                int networkError,
+                String headerETag,
+                String headerXCupServerProof,
                 long xHeaderRetryAfterSec);
     } // interface Natives
 }

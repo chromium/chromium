@@ -45,8 +45,8 @@ public class AwGLFunctor implements AwFunctor {
     @Override
     public void destroy() {
         assert mRefCount > 0;
-        AwGLFunctorJni.get().removeFromCompositorFrameProducer(
-                mNativeAwGLFunctor, AwGLFunctor.this);
+        AwGLFunctorJni.get()
+                .removeFromCompositorFrameProducer(mNativeAwGLFunctor, AwGLFunctor.this);
         removeReference();
     }
 
@@ -57,8 +57,8 @@ public class AwGLFunctor implements AwFunctor {
     @Override
     public long getNativeCompositorFrameConsumer() {
         assert mRefCount > 0;
-        return AwGLFunctorJni.get().getCompositorFrameConsumer(
-                mNativeAwGLFunctor, AwGLFunctor.this);
+        return AwGLFunctorJni.get()
+                .getCompositorFrameConsumer(mNativeAwGLFunctor, AwGLFunctor.this);
     }
 
     @Override
@@ -116,11 +116,17 @@ public class AwGLFunctor implements AwFunctor {
     @NativeMethods
     interface Natives {
         void deleteHardwareRenderer(long nativeAwGLFunctor, AwGLFunctor caller);
+
         void removeFromCompositorFrameProducer(long nativeAwGLFunctor, AwGLFunctor caller);
+
         long getCompositorFrameConsumer(long nativeAwGLFunctor, AwGLFunctor caller);
+
         long getAwDrawGLFunction();
+
         void destroy(long nativeAwGLFunctor);
+
         long create(AwGLFunctor javaProxy);
+
         int getNativeInstanceCount();
     }
 }

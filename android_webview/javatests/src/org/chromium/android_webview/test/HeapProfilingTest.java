@@ -20,15 +20,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.heap_profiling.multi_process.HeapProfilingTestShim;
 
-/**
- * Tests suite for heap profiling.
- */
+/** Tests suite for heap profiling. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(MULTI_PROCESS)
 public class HeapProfilingTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public HeapProfilingTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

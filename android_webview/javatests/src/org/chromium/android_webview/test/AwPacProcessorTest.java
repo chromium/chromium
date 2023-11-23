@@ -39,8 +39,7 @@ public class AwPacProcessorTest extends AwParameterizedTest {
                     + "}";
     private final String mTestUrl = "http://testurl.test";
 
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     public AwPacProcessorTest(AwSettingsMutation param) {
         this.mRule = new AwActivityTestRule(param.getMutation());

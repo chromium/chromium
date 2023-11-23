@@ -34,7 +34,7 @@ import java.util.Set;
 public class CleanupReference extends WeakReference<Object> {
     private static final String TAG = "CleanupReference";
 
-    private static final boolean DEBUG = false;  // Always check in as false!
+    private static final boolean DEBUG = false; // Always check in as false!
 
     // The VM will enqueue CleanupReference instance onto sGcQueue when it becomes eligible for
     // garbage collection (i.e. when all references to the underlying object are nullified).
@@ -43,26 +43,28 @@ public class CleanupReference extends WeakReference<Object> {
     private static ReferenceQueue<Object> sGcQueue = new ReferenceQueue<Object>();
     private static Object sCleanupMonitor = new Object();
 
-    private static final Thread sReaperThread = new Thread(TAG) {
-        @Override
-        @SuppressWarnings("WaitNotInLoop")
-        public void run() {
-            while (true) {
-                try {
-                    CleanupReference ref = (CleanupReference) sGcQueue.remove();
-                    if (DEBUG) Log.d(TAG, "removed one ref from GC queue");
-                    synchronized (sCleanupMonitor) {
-                        Message.obtain(LazyHolder.sHandler, REMOVE_REF, ref).sendToTarget();
-                        // Give the UI thread chance to run cleanup before looping around and
-                        // taking the next item from the queue, to avoid Message bombing it.
-                        sCleanupMonitor.wait(500);
+    private static final Thread sReaperThread =
+            new Thread(TAG) {
+                @Override
+                @SuppressWarnings("WaitNotInLoop")
+                public void run() {
+                    while (true) {
+                        try {
+                            CleanupReference ref = (CleanupReference) sGcQueue.remove();
+                            if (DEBUG) Log.d(TAG, "removed one ref from GC queue");
+                            synchronized (sCleanupMonitor) {
+                                Message.obtain(LazyHolder.sHandler, REMOVE_REF, ref).sendToTarget();
+                                // Give the UI thread chance to run cleanup before looping around
+                                // and taking the next item from the queue, to avoid Message
+                                // bombing it.
+                                sCleanupMonitor.wait(500);
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Queue remove exception:", e);
+                        }
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "Queue remove exception:", e);
                 }
-            }
-        }
-    };
+            };
 
     static {
         sReaperThread.setDaemon(true);
@@ -84,39 +86,41 @@ public class CleanupReference extends WeakReference<Object> {
      */
     @SuppressLint("HandlerLeak")
     private static class LazyHolder {
-        static final Handler sHandler = new Handler(ThreadUtils.getUiThreadLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                try {
-                    TraceEvent.begin("CleanupReference.LazyHolder.handleMessage");
-                    CleanupReference ref = (CleanupReference) msg.obj;
-                    switch (msg.what) {
-                        case ADD_REF:
-                            sRefs.add(ref);
-                            break;
-                        case REMOVE_REF:
-                            ref.runCleanupTaskInternal();
-                            break;
-                        default:
-                            Log.e(TAG, "Bad message=%d", msg.what);
-                            break;
-                    }
+        static final Handler sHandler =
+                new Handler(ThreadUtils.getUiThreadLooper()) {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        try {
+                            TraceEvent.begin("CleanupReference.LazyHolder.handleMessage");
+                            CleanupReference ref = (CleanupReference) msg.obj;
+                            switch (msg.what) {
+                                case ADD_REF:
+                                    sRefs.add(ref);
+                                    break;
+                                case REMOVE_REF:
+                                    ref.runCleanupTaskInternal();
+                                    break;
+                                default:
+                                    Log.e(TAG, "Bad message=%d", msg.what);
+                                    break;
+                            }
 
-                    if (DEBUG) Log.d(TAG, "will try and cleanup; max = %d", sRefs.size());
+                            if (DEBUG) Log.d(TAG, "will try and cleanup; max = %d", sRefs.size());
 
-                    synchronized (sCleanupMonitor) {
-                        // Always run the cleanup loop here even when adding or removing refs, to
-                        // avoid falling behind on rapid garbage allocation inner loops.
-                        while ((ref = (CleanupReference) sGcQueue.poll()) != null) {
-                            ref.runCleanupTaskInternal();
+                            synchronized (sCleanupMonitor) {
+                                // Always run the cleanup loop here even when adding or removing
+                                // refs, to avoid falling behind on rapid garbage allocation inner
+                                // loops.
+                                while ((ref = (CleanupReference) sGcQueue.poll()) != null) {
+                                    ref.runCleanupTaskInternal();
+                                }
+                                sCleanupMonitor.notifyAll();
+                            }
+                        } finally {
+                            TraceEvent.end("CleanupReference.LazyHolder.handleMessage");
                         }
-                        sCleanupMonitor.notifyAll();
                     }
-                } finally {
-                    TraceEvent.end("CleanupReference.LazyHolder.handleMessage");
-                }
-            }
-        };
+                };
     }
 
     /**

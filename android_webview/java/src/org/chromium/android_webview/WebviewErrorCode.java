@@ -12,14 +12,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.SOURCE)
-@IntDef({WebviewErrorCode.ERROR_OK, WebviewErrorCode.ERROR_UNKNOWN,
-        WebviewErrorCode.ERROR_HOST_LOOKUP, WebviewErrorCode.ERROR_UNSUPPORTED_AUTH_SCHEME,
-        WebviewErrorCode.ERROR_AUTHENTICATION, WebviewErrorCode.ERROR_PROXY_AUTHENTICATION,
-        WebviewErrorCode.ERROR_CONNECT, WebviewErrorCode.ERROR_IO, WebviewErrorCode.ERROR_TIMEOUT,
-        WebviewErrorCode.ERROR_REDIRECT_LOOP, WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME,
-        WebviewErrorCode.ERROR_FAILED_SSL_HANDSHAKE, WebviewErrorCode.ERROR_BAD_URL,
-        WebviewErrorCode.ERROR_FILE, WebviewErrorCode.ERROR_FILE_NOT_FOUND,
-        WebviewErrorCode.ERROR_TOO_MANY_REQUESTS, WebviewErrorCode.ERROR_UNSAFE_RESOURCE})
+@IntDef({
+    WebviewErrorCode.ERROR_OK,
+    WebviewErrorCode.ERROR_UNKNOWN,
+    WebviewErrorCode.ERROR_HOST_LOOKUP,
+    WebviewErrorCode.ERROR_UNSUPPORTED_AUTH_SCHEME,
+    WebviewErrorCode.ERROR_AUTHENTICATION,
+    WebviewErrorCode.ERROR_PROXY_AUTHENTICATION,
+    WebviewErrorCode.ERROR_CONNECT,
+    WebviewErrorCode.ERROR_IO,
+    WebviewErrorCode.ERROR_TIMEOUT,
+    WebviewErrorCode.ERROR_REDIRECT_LOOP,
+    WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME,
+    WebviewErrorCode.ERROR_FAILED_SSL_HANDSHAKE,
+    WebviewErrorCode.ERROR_BAD_URL,
+    WebviewErrorCode.ERROR_FILE,
+    WebviewErrorCode.ERROR_FILE_NOT_FOUND,
+    WebviewErrorCode.ERROR_TOO_MANY_REQUESTS,
+    WebviewErrorCode.ERROR_UNSAFE_RESOURCE
+})
 public @interface WebviewErrorCode {
     // Success
     int ERROR_OK = 0;

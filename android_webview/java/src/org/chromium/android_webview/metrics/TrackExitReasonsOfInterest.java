@@ -55,8 +55,8 @@ public class TrackExitReasonsOfInterest {
     private static int sTestCount;
     private static boolean sUseMockedSystemExitReason;
 
-    @VisibleForTesting
-    public static final Map<Integer, String> sUmaSuffixMap = createMap();
+    @VisibleForTesting public static final Map<Integer, String> sUmaSuffixMap = createMap();
+
     private static Map<Integer, String> createMap() {
         Map<Integer, String> umaSuffixMap = new HashMap<Integer, String>();
         umaSuffixMap.put(AppState.UNKNOWN, "UNKNOWN");
@@ -82,7 +82,10 @@ public class TrackExitReasonsOfInterest {
      */
     public static void init(Supplier<Integer> stateSupplier) {
         sAppStateSupplier = stateSupplier;
-        sSequencedTaskRunner.postTask(() -> { run(); });
+        sSequencedTaskRunner.postTask(
+                () -> {
+                    run();
+                });
     }
 
     /**
@@ -108,8 +111,9 @@ public class TrackExitReasonsOfInterest {
             // Log the new record
             if (mappedExitReasonData != null) {
                 if (previousInfoData.mTimestampAtLastRecordingInMillis > 0L) {
-                    long delta = sTimestampAtLastRecording
-                            - previousInfoData.mTimestampAtLastRecordingInMillis;
+                    long delta =
+                            sTimestampAtLastRecording
+                                    - previousInfoData.mTimestampAtLastRecordingInMillis;
                     RecordHistogram.recordLongTimesHistogram100(UMA_DELTA, delta);
                 }
                 ProcessExitReasonFromSystem.recordAsEnumHistogram(UMA_COUNTS, systemExitReason);
@@ -149,8 +153,7 @@ public class TrackExitReasonsOfInterest {
 
             long timestampAtLastRecordingInMillis =
                     jsonObj.optLong(TIMESTAMP_AT_LAST_RECORDING_IN_MILLIS);
-            @AppState
-            int state = jsonObj.optInt(LAST_STATE_KEY);
+            @AppState int state = jsonObj.optInt(LAST_STATE_KEY);
 
             return new ExitReasonData(exitInfoPid, timestampAtLastRecordingInMillis, state);
         } catch (IOException e) {
@@ -183,7 +186,8 @@ public class TrackExitReasonsOfInterest {
                 new FileOutputStream(getLastExitInfoFile(), /* append= */ false)) {
             JSONObject jsonObj = new JSONObject();
             jsonObj.put(LAST_EXIT_INFO_PID, newData.mExitInfoPid);
-            jsonObj.put(TIMESTAMP_AT_LAST_RECORDING_IN_MILLIS,
+            jsonObj.put(
+                    TIMESTAMP_AT_LAST_RECORDING_IN_MILLIS,
                     newData.mTimestampAtLastRecordingInMillis);
             jsonObj.put(LAST_STATE_KEY, newData.mState);
             String jsonString = jsonObj.toString();
@@ -209,9 +213,7 @@ public class TrackExitReasonsOfInterest {
         return new File(PathUtils.getDataDirectory(), LAST_EXIT_INFO_FILENAME);
     }
 
-    /**
-     * Commits the latest app state for exit reason tracking to disk.
-     */
+    /** Commits the latest app state for exit reason tracking to disk. */
     public static void writeLastWebViewState() {
         writeLastWebViewState(/* callbackResult= */ null);
     }
@@ -224,14 +226,15 @@ public class TrackExitReasonsOfInterest {
     @VisibleForTesting
     public static void writeLastWebViewState(final Callback<Boolean> callbackResult) {
         int pid = sPid != 0 ? sPid : Process.myPid();
-        sSequencedTaskRunner.postTask(() -> {
-            @AppState
-            int currentState = sAppStateSupplier.get();
-            if (sLastStateWritten != currentState) {
-                writeLastExitInfo(new ExitReasonData(pid, sTimestampAtLastRecording, currentState),
-                        callbackResult);
-            }
-        });
+        sSequencedTaskRunner.postTask(
+                () -> {
+                    @AppState int currentState = sAppStateSupplier.get();
+                    if (sLastStateWritten != currentState) {
+                        writeLastExitInfo(
+                                new ExitReasonData(pid, sTimestampAtLastRecording, currentState),
+                                callbackResult);
+                    }
+                });
     }
 
     private static long currentTimeMillis() {

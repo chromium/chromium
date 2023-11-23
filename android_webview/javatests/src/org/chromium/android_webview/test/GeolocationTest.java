@@ -39,16 +39,18 @@ import java.util.concurrent.Callable;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class GeolocationTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public GeolocationTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public TestDependencyFactory createTestDependencyFactory() {
-                return mOverriddenFactory == null ? new TestDependencyFactory() : mOverriddenFactory;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public TestDependencyFactory createTestDependencyFactory() {
+                        return mOverriddenFactory == null
+                                ? new TestDependencyFactory()
+                                : mOverriddenFactory;
+                    }
+                };
     }
 
     private TestAwContentsClient mContentsClient;

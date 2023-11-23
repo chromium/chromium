@@ -48,8 +48,7 @@ import org.chromium.base.test.util.Feature;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class VisualStateCallbackTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static class VisualStateCallbackHelper extends CallbackHelper {
         // Indicates VisualStateCallback has been received by AwContents, but

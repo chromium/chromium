@@ -44,8 +44,7 @@ public class AwDarkModeTest extends AwParameterizedTest {
             "<html><head><meta name=\"color-scheme\" content=\"dark light\"></head>"
                     + "<body>DarkMode</body></html>";
 
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     private TestWebServer mWebServer;
     private AwTestContainerView mTestContainerView;

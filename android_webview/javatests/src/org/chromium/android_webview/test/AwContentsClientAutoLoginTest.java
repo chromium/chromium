@@ -27,8 +27,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientAutoLoginTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
@@ -42,7 +41,7 @@ public class AwContentsClientAutoLoginTest extends AwParameterizedTest {
             final String expectedRealm,
             final String expectedAccount,
             final String expectedArgs)
-    throws Throwable {
+            throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         AwContents awContents = testView.getAwContents();

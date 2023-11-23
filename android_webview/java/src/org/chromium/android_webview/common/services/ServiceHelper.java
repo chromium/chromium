@@ -12,9 +12,7 @@ import android.os.Build;
 
 import org.chromium.base.Log;
 
-/**
- * Helper methods for working with Services in WebView.
- */
+/** Helper methods for working with Services in WebView. */
 public class ServiceHelper {
     private static final String TAG = "ServiceHelper";
 
@@ -40,7 +38,9 @@ public class ServiceHelper {
                 // permission to view the system WebView provider app (most likely, this is
                 // Monochrome). In this case, we cannot bind to services so we just log the
                 // exception and carry on.
-                Log.e(TAG, "Unable to bind to services from a secondary user account on Android N",
+                Log.e(
+                        TAG,
+                        "Unable to bind to services from a secondary user account on Android N",
                         e);
                 return false;
             } else {

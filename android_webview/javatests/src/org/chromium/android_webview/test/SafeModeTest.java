@@ -279,8 +279,7 @@ public class SafeModeTest extends AwParameterizedTest {
         }
     }
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public SafeModeTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

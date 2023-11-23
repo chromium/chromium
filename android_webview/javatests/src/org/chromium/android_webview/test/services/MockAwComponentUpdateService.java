@@ -16,9 +16,7 @@ import org.chromium.base.test.util.CallbackHelper;
 
 import java.io.File;
 
-/**
- * Mock service that feeds mock data to components download directory.
- */
+/** Mock service that feeds mock data to components download directory. */
 public class MockAwComponentUpdateService extends Service {
     public static ResultReceiver sFinishCallback;
     private static CallbackHelper sServiceFinishedCallbackHelper = new CallbackHelper();

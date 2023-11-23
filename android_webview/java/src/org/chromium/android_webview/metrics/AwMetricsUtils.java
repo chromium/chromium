@@ -11,9 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/**
- * Contains Metrics related utility functions.
- */
+/** Contains Metrics related utility functions. */
 public final class AwMetricsUtils {
     private AwMetricsUtils() {}
 

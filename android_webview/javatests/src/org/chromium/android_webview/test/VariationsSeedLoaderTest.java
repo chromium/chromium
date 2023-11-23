@@ -48,8 +48,7 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
     private static final long TIMEOUT_MILLIS = 10000;
 
     // Needed for tests that test histograms, which rely on native code.
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     /**
      * Helper class to interact with {@link TestLoader}. This can be used to retrieve whether

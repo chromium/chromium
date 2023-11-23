@@ -29,8 +29,7 @@ import org.chromium.base.test.util.Feature;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class KeySystemTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     /**
      * AwContentsClient subclass that allows permissions requests for the

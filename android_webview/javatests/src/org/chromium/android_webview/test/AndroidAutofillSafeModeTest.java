@@ -38,13 +38,11 @@ import java.util.Set;
 public class AndroidAutofillSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "AndroidAutofillTest";
 
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     public AndroidAutofillSafeModeTest(AwSettingsMutation param) {
         this.mRule = new AwActivityTestRule(param.getMutation());
     }
-
 
     @After
     public void tearDown() {

@@ -27,7 +27,9 @@ public class CommandLineUtil {
         if (sInstance != null) return sInstance;
         try {
             sInstance = (CommandLineUtil) Class.forName(COMMAND_LINE_UTIL_INTERNAL).newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+        } catch (ClassNotFoundException
+                | InstantiationException
+                | IllegalAccessException
                 | IllegalArgumentException e) {
             sInstance = new CommandLineUtil();
         }

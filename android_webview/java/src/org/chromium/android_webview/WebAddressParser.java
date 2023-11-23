@@ -56,8 +56,9 @@ public class WebAddressParser {
     static final int MATCH_GROUP_PORT = 4;
     static final int MATCH_GROUP_PATH = 5;
 
-    static Pattern sAddressPattern = Pattern.compile(
-            SCHEME + AUTHORITY + HOST + PORT + PATH + ANCHOR, Pattern.CASE_INSENSITIVE);
+    static Pattern sAddressPattern =
+            Pattern.compile(
+                    SCHEME + AUTHORITY + HOST + PORT + PATH + ANCHOR, Pattern.CASE_INSENSITIVE);
 
     /** parses given uriString. */
     public WebAddressParser(String address) throws URISyntaxException {
@@ -92,7 +93,7 @@ public class WebAddressParser {
             t = m.group(MATCH_GROUP_PATH);
             if (t != null && t.length() > 0) {
                 /* handle busted myspace frontpage redirect with
-                   missing initial "/" */
+                missing initial "/" */
                 if (t.charAt(0) == '/') {
                     mPath = t;
                 } else {
@@ -105,7 +106,7 @@ public class WebAddressParser {
         }
 
         /* Get port from scheme or scheme from port, if necessary and
-           possible */
+        possible */
         if (mPort == 443 && mScheme.equals("")) {
             mScheme = "https";
         } else if (mPort == -1) {

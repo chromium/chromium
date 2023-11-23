@@ -44,8 +44,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwImeTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static class TestJavascriptInterface {
         private final CallbackHelper mFocusCallbackHelper = new CallbackHelper();

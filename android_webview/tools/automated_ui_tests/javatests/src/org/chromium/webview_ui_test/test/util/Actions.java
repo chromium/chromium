@@ -20,14 +20,13 @@ import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Matcher;
 
-/**
- * Actions to help with WebView tests
- */
+/** Actions to help with WebView tests */
 public class Actions {
 
     public static ViewAction setUseWideViewPort() {
         return setUseWideViewPort(true);
     }
+
     public static ViewAction setUseWideViewPort(final boolean useWideViewPort) {
         return new ViewAction() {
             @Override
@@ -55,12 +54,14 @@ public class Actions {
             }
         };
     }
+
     public static ViewAction scrollBy(final int x, final int y) {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return allOf(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
-                    isDescendantOfA(isAssignableFrom(View.class)));
+                return allOf(
+                        withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
+                        isDescendantOfA(isAssignableFrom(View.class)));
             }
 
             @Override

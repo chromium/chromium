@@ -33,9 +33,7 @@ import java.util.Collections;
 @OnlyRunIn(SINGLE_PROCESS)
 @Batch(Batch.UNIT_TESTS)
 public class CrashReceiverServiceTest {
-    /**
-     * Ensure that the minidump copying doesn't trigger when we pass it invalid file descriptors.
-     */
+    /** Ensure that the minidump copying doesn't trigger when we pass it invalid file descriptors. */
     @Test
     @MediumTest
     public void testCopyingAbortsForInvalidFds() {

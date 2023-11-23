@@ -4,9 +4,7 @@
 
 package org.chromium.android_webview.devui.util;
 
-/**
- * A class to hold the information needed for the UI about a SafeMode Action.
- */
+/** A class to hold the information needed for the UI about a SafeMode Action. */
 public class SafeModeActionInfo {
     private final String mId;
 

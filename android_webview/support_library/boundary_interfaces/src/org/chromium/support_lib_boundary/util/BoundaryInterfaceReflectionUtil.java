@@ -16,9 +16,7 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- * A set of utility methods used for calling across the support library boundary.
- */
+/** A set of utility methods used for calling across the support library boundary. */
 // Although this is not enforced in chromium, this is a requirement enforced when this file is
 // mirrored into AndroidX. See http://b/120770118 for details.
 public class BoundaryInterfaceReflectionUtil {
@@ -74,8 +72,10 @@ public class BoundaryInterfaceReflectionUtil {
             @NonNull Class<T> clazz, @Nullable InvocationHandler invocationHandler) {
         if (invocationHandler == null) return null;
         return clazz.cast(
-                Proxy.newProxyInstance(BoundaryInterfaceReflectionUtil.class.getClassLoader(),
-                        new Class[] {clazz}, invocationHandler));
+                Proxy.newProxyInstance(
+                        BoundaryInterfaceReflectionUtil.class.getClassLoader(),
+                        new Class[] {clazz},
+                        invocationHandler));
     }
 
     /**
@@ -104,7 +104,7 @@ public class BoundaryInterfaceReflectionUtil {
      * <p>A {@code null} array of delegates is represented with a {@code null} array of {@link
      * InvocationHandler}s. Any individual {@code null} delegate is represented with a {@code null}
      * {@link InvocationHandler}.
-
+     *
      * @param delegates an array of objects to which to delegate.
      * @return an array of InvocationHandlerWithDelegateGetter instances, each delegating to
      *     the corresponding member of {@code delegates}.
@@ -168,9 +168,7 @@ public class BoundaryInterfaceReflectionUtil {
             }
         }
 
-        /**
-         * Gets the delegate object (which is never {@code null}).
-         */
+        /** Gets the delegate object (which is never {@code null}). */
         @NonNull
         public Object getDelegate() {
             return mDelegate;

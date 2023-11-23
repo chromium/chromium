@@ -82,8 +82,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         return sb.toString();
     }
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
     private AwContents mAwContents;

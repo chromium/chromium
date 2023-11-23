@@ -105,9 +105,7 @@ public class Features {
     public static final String SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL =
             "SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL";
 
-    /**
-     * @deprecated Feature was renamed to WEB_MESSAGE_ARRAY_BUFFER. Do not reuse feature name.
-     */
+    /** @deprecated Feature was renamed to WEB_MESSAGE_ARRAY_BUFFER. Do not reuse feature name. */
     @Deprecated()
     public static final String WEB_MESSAGE_GET_MESSAGE_PAYLOAD = "WEB_MESSAGE_GET_MESSAGE_PAYLOAD";
 
@@ -208,9 +206,7 @@ public class Features {
     // WebSettingsCompat.getRequestedWithHeaderMode
     // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderMode
     // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderMode
-    /**
-     * @deprecated Feature was never launched. Do not reuse feature name.
-     */
+    /** @deprecated Feature was never launched. Do not reuse feature name. */
     @Deprecated()
     public static final String REQUESTED_WITH_HEADER_CONTROL = "REQUESTED_WITH_HEADER_CONTROL";
 

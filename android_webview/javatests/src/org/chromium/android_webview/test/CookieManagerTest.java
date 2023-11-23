@@ -61,8 +61,7 @@ import java.util.TimeZone;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class CookieManagerTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     @IntDef({
         CookieLifetime.OUTLIVE_THE_TEST_SEC,

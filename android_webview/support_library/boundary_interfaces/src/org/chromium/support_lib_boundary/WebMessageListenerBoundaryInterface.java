@@ -9,10 +9,12 @@ import android.webkit.WebView;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Boundary interface for org.chromium.android_webview.WebMessageListener.
- */
+/** Boundary interface for org.chromium.android_webview.WebMessageListener. */
 public interface WebMessageListenerBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
-    void onPostMessage(WebView view, /* WebMessage */ InvocationHandler message, Uri sourceOrigin,
-            boolean isMainFrame, /* JsReplyProxy */ InvocationHandler replyProxy);
+    void onPostMessage(
+            WebView view,
+            /* WebMessage */ InvocationHandler message,
+            Uri sourceOrigin,
+            boolean isMainFrame,
+            /* JsReplyProxy */ InvocationHandler replyProxy);
 }

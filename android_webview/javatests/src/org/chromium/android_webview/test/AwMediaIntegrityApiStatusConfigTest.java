@@ -82,7 +82,7 @@ public class AwMediaIntegrityApiStatusConfigTest {
         Assert.assertEquals(defaultPermission, config.getDefaultStatus());
         Assert.assertEquals(overrideRules, config.getOverrideRules());
         Assert.assertEquals(
-            defaultPermission, config.getStatusForUri(Uri.parse("http://randomsite.com")));
+                defaultPermission, config.getStatusForUri(Uri.parse("http://randomsite.com")));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class AwMediaIntegrityApiStatusConfigTest {
         Assert.assertEquals(defaultPermission2, config.getDefaultStatus());
         Assert.assertEquals(overrideRules2, config.getOverrideRules());
         Assert.assertEquals(
-            defaultPermission2, config.getStatusForUri(Uri.parse("http://sub.example.com")));
+                defaultPermission2, config.getStatusForUri(Uri.parse("http://sub.example.com")));
         Assert.assertEquals(
                 MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY,
                 config.getStatusForUri(Uri.parse("http://sub.somedomain.com")));
@@ -126,16 +126,16 @@ public class AwMediaIntegrityApiStatusConfigTest {
         Map<String, @MediaIntegrityApiStatus Integer> overrideRules =
                 Map.of("xyz://*.abc.com", MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY);
         @MediaIntegrityApiStatus int defaultPermission = MediaIntegrityApiStatus.DISABLED;
-        Assert.assertThrows(IllegalArgumentException.class,
-            () -> config.setApiAvailabilityRules(defaultPermission, overrideRules));
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                () -> config.setApiAvailabilityRules(defaultPermission, overrideRules));
         Assert.assertTrue(config.getOverrideRules().isEmpty());
-
     }
 
     @Test
     @SmallTest
     public void testSetApiConfig_doesNotOverwritePreviousRules_whenGivenNewInvalidRules()
-        throws Throwable {
+            throws Throwable {
         AwMediaIntegrityApiStatusConfig config = new AwMediaIntegrityApiStatusConfig();
         Map<String, @MediaIntegrityApiStatus Integer> overrideRules =
                 Map.of(
@@ -152,8 +152,9 @@ public class AwMediaIntegrityApiStatusConfigTest {
                         "http://*.sub.example.com", MediaIntegrityApiStatus.ENABLED,
                         // one bad rule
                         "xyz://*.abc.com", MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY);
-        Assert.assertThrows(IllegalArgumentException.class,
-            () -> config.setApiAvailabilityRules(defaultPermission, overrideRules2));
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                () -> config.setApiAvailabilityRules(defaultPermission, overrideRules2));
         Assert.assertEquals(defaultPermission, config.getDefaultStatus());
         // Previously set rules have not been overwritten
         Assert.assertEquals(overrideRules, config.getOverrideRules());
@@ -163,7 +164,8 @@ public class AwMediaIntegrityApiStatusConfigTest {
 
     @Test
     @SmallTest
-    public void testGetStatusForUri_returnsLessPermissiveStatus_whenMultipleMatches() throws Throwable {
+    public void testGetStatusForUri_returnsLessPermissiveStatus_whenMultipleMatches()
+            throws Throwable {
         AwMediaIntegrityApiStatusConfig config = new AwMediaIntegrityApiStatusConfig();
         Map<String, @MediaIntegrityApiStatus Integer> overrideRules =
                 Map.of(

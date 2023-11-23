@@ -7,9 +7,7 @@ package org.chromium.android_webview.common.origin_trial;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * A util class for disable origin trials Safe Mode operations.
- */
+/** A util class for disable origin trials Safe Mode operations. */
 @JNINamespace("android_webview")
 public class DisableOriginTrialsSafeModeUtils {
     private static final String TAG = "AwDisableOriginTrialsSafeMode";

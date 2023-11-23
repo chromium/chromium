@@ -22,8 +22,9 @@ public class EmbeddedComponentLoaderFactory {
     private EmbeddedComponentLoaderFactory() {}
 
     public static EmbeddedComponentLoader makeEmbeddedComponentLoader() {
-        return new EmbeddedComponentLoader(Arrays.asList(
-                EmbeddedComponentLoaderFactoryJni.get().getComponentLoaderPolicies()));
+        return new EmbeddedComponentLoader(
+                Arrays.asList(
+                        EmbeddedComponentLoaderFactoryJni.get().getComponentLoaderPolicies()));
     }
 
     @NativeMethods

@@ -601,12 +601,12 @@ public class JsSandboxFledgeTest {
 
         final String codeRunWasmModule =
                 "'use strict';function callWasm(input1, input2, wasmModule) {  const instance = new"
-                    + " WebAssembly.Instance(wasmModule);  const { addTwo } = instance.exports; "
-                    + " return addTwo(input1,input2);}\n"
-                    + "(function() {  const input1 = 3;  const input2 = 4;  return"
-                    + " android.consumeNamedDataAsArrayBuffer('module').then((value) => {    return"
-                    + " WebAssembly.compile(value).then((wasmModule) => {      return"
-                    + " JSON.stringify(callWasm(input1, input2, wasmModule));    })  });})();";
+                        + " WebAssembly.Instance(wasmModule);  const { addTwo } = instance.exports; "
+                        + " return addTwo(input1,input2);}\n"
+                        + "(function() {  const input1 = 3;  const input2 = 4;  return"
+                        + " android.consumeNamedDataAsArrayBuffer('module').then((value) => {    return"
+                        + " WebAssembly.compile(value).then((wasmModule) => {      return"
+                        + " JSON.stringify(callWasm(input1, input2, wasmModule));    })  });})();";
         final String expected = "7";
 
         final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =

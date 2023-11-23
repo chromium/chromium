@@ -7,9 +7,7 @@ package org.chromium.android_webview.test.util;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Utilities for force recording memory metrics.
- */
+/** Utilities for force recording memory metrics. */
 @JNINamespace("android_webview")
 public class MemoryMetricsLoggerUtils {
     @NativeMethods

@@ -25,8 +25,7 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class ClearHistoryTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String[] URLS = new String[3];
 

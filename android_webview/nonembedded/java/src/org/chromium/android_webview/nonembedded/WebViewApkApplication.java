@@ -60,10 +60,15 @@ public class WebViewApkApplication extends Application {
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
         // Using concatenation rather than %s to allow values to be inlined by R8.
-        Log.i(TAG,
-                "Launched version=" + VersionConstants.PRODUCT_VERSION
-                        + " minSdkVersion=" + BuildConfig.MIN_SDK_VERSION
-                        + " isBundle=" + ProductConfig.IS_BUNDLE + " processName=%s",
+        Log.i(
+                TAG,
+                "Launched version="
+                        + VersionConstants.PRODUCT_VERSION
+                        + " minSdkVersion="
+                        + BuildConfig.MIN_SDK_VERSION
+                        + " isBundle="
+                        + ProductConfig.IS_BUNDLE
+                        + " processName=%s",
                 ContextUtils.getProcessName());
 
         ContextUtils.initApplicationContext(this);
@@ -137,32 +142,43 @@ public class WebViewApkApplication extends Application {
      * or a browser process.
      */
     public static void postDeveloperUiLauncherIconTask() {
-        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
-            Context context = ContextUtils.getApplicationContext();
-            try {
-                ComponentName devToolsLauncherActivity = new ComponentName(
-                        context, "org.chromium.android_webview.devui.MonochromeLauncherActivity");
-                int oldIconState = context.getPackageManager().getComponentEnabledSetting(
-                        devToolsLauncherActivity);
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    Context context = ContextUtils.getApplicationContext();
+                    try {
+                        ComponentName devToolsLauncherActivity =
+                                new ComponentName(
+                                        context,
+                                        "org.chromium.android_webview.devui.MonochromeLauncherActivity");
+                        int oldIconState =
+                                context.getPackageManager()
+                                        .getComponentEnabledSetting(devToolsLauncherActivity);
 
-                // Enable the icon if this is the current WebView provider, otherwise set the icon
-                // back to default (disabled) state.
-                boolean shouldShowIcon =
-                        WebViewPackageHelper.isCurrentSystemWebViewImplementation(context);
-                int newIconState = shouldShowIcon ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                                                  : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
+                        // Enable the icon if this is the current WebView provider, otherwise set
+                        // the icon back to default (disabled) state.
+                        boolean shouldShowIcon =
+                                WebViewPackageHelper.isCurrentSystemWebViewImplementation(context);
+                        int newIconState =
+                                shouldShowIcon
+                                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                                        : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
 
-                if (oldIconState == newIconState) return;
+                        if (oldIconState == newIconState) return;
 
-                context.getPackageManager().setComponentEnabledSetting(
-                        devToolsLauncherActivity, newIconState, PackageManager.DONT_KILL_APP);
-                RecordHistogram.recordBooleanHistogram(
-                        "Android.WebView.DevUi.MonochromeIconStateToggled", shouldShowIcon);
-            } catch (IllegalArgumentException e) {
-                // If MonochromeLauncherActivity doesn't exist, Dynamically showing/hiding DevTools
-                // launcher icon is not enabled in this package; e.g when it is a stable channel.
-            }
-        });
+                        context.getPackageManager()
+                                .setComponentEnabledSetting(
+                                        devToolsLauncherActivity,
+                                        newIconState,
+                                        PackageManager.DONT_KILL_APP);
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.WebView.DevUi.MonochromeIconStateToggled", shouldShowIcon);
+                    } catch (IllegalArgumentException e) {
+                        // If MonochromeLauncherActivity doesn't exist, Dynamically showing/hiding
+                        // DevTools launcher icon is not enabled in this package; e.g when it is a
+                        // stable channel.
+                    }
+                });
     }
 
     /**
@@ -171,15 +187,15 @@ public class WebViewApkApplication extends Application {
      */
     static synchronized boolean ensureNativeInitialized() {
         assert ThreadUtils.runningOnUiThread()
-            : "WebViewApkApplication#ensureNativeInitialized should only be called on the UIThread";
+                : "WebViewApkApplication#ensureNativeInitialized should only be called on the UIThread";
         try {
             if (LibraryLoader.getInstance().isInitialized()) {
                 return true;
             }
             // Should not call LibraryLoader.initialize() since this will reset UmaRecorder
             // delegate.
-            LibraryLoader.getInstance().setLibraryProcessType(
-                    LibraryProcessType.PROCESS_WEBVIEW_NONEMBEDDED);
+            LibraryLoader.getInstance()
+                    .setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW_NONEMBEDDED);
             LibraryLoader.getInstance().ensureInitialized();
             LibraryLoader.getInstance().switchCommandLineForWebView();
             WebViewApkApplicationJni.get().initializeGlobalsAndResources();

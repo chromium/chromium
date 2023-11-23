@@ -31,17 +31,17 @@ public class AwContentsStaticsTest extends AwParameterizedTest {
     private AwTestContainerView mTestContainer;
     private TestAwContentsClient mContentsClient;
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AwContentsStaticsTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            /** This is necessary so we can set the cleartext setting before browser startup. */
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                return false;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    /** This is necessary so we can set the cleartext setting before browser startup. */
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        return false;
+                    }
+                };
     }
 
     private static class ClearClientCertCallbackHelper extends CallbackHelper implements Runnable {

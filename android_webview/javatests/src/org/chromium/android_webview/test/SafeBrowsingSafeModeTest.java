@@ -42,8 +42,7 @@ import java.util.Set;
 public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     private static final String WEB_UI_MALWARE_URL = "chrome://safe-browsing/match?type=malware";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mContainerView;

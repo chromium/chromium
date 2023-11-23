@@ -19,8 +19,12 @@ class MockAwContentsClientBridge extends AwContentsClientBridge {
     }
 
     @Override
-    protected void selectClientCertificate(final int id, final String[] keyTypes,
-            byte[][] encodedPrincipals, final String host, final int port) {
+    protected void selectClientCertificate(
+            final int id,
+            final String[] keyTypes,
+            byte[][] encodedPrincipals,
+            final String host,
+            final int port) {
         mId = id;
         mKeyTypes = keyTypes;
     }
@@ -42,6 +46,6 @@ class MockAwContentsClientBridge extends AwContentsClientBridge {
 
     @CalledByNative
     private byte[][] createTestCertChain() {
-        return new byte[][]{{1}};
+        return new byte[][] {{1}};
     }
 }

@@ -24,9 +24,7 @@ import org.chromium.components.version_info.VersionConstants;
 import java.io.File;
 import java.util.Random;
 
-/**
- * Android Webview-specific implementations for minidump uploading logic.
- */
+/** Android Webview-specific implementations for minidump uploading logic. */
 public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
     // Sample 1% of crashes for stable WebView channel.
     public static final int CRASH_DUMP_PERCENTAGE_FOR_STABLE = 1;
@@ -44,32 +42,35 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
     @VisibleForTesting
     public static interface SamplingDelegate {
         public int getChannel();
+
         public int getRandomSample();
     }
 
     @VisibleForTesting
     public AwMinidumpUploaderDelegate(SamplingDelegate samplingDelegate) {
         mConnectivityManager =
-                (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.CONNECTIVITY_SERVICE);
 
         mSamplingDelegate = samplingDelegate;
     }
 
     public AwMinidumpUploaderDelegate() {
-        this(new SamplingDelegate() {
-            private Random mRandom = new Random();
+        this(
+                new SamplingDelegate() {
+                    private Random mRandom = new Random();
 
-            @Override
-            public int getChannel() {
-                return VersionConstants.CHANNEL;
-            }
+                    @Override
+                    public int getChannel() {
+                        return VersionConstants.CHANNEL;
+                    }
 
-            @Override
-            public int getRandomSample() {
-                return mRandom.nextInt(100);
-            }
-        });
+                    @Override
+                    public int getRandomSample() {
+                        return mRandom.nextInt(100);
+                    }
+                });
     }
 
     @Override
@@ -98,34 +99,39 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
                 // our network requirements no longer hold.
                 return NetworkPermissionUtil.isNetworkUnmetered(mConnectivityManager);
             }
+
             @Override
             public boolean isUsageAndCrashReportingPermittedByPolicy() {
                 // Metrics reporting can only be disabled by the user and the app.
                 // Return true since Chrome policy doesn't apply to WebView.
                 return true;
             }
+
             @Override
             public boolean isUsageAndCrashReportingPermittedByUser() {
                 return mPermittedByUser;
             }
+
             @Override
             public boolean isUploadEnabledForTests() {
                 // Note that CommandLine/CommandLineUtil are not thread safe. They are initialized
                 // on the main thread, but before the current worker thread started - so this thread
                 // will have seen the initialization of the CommandLine.
-                return CommandLine.getInstance().hasSwitch(
-                        BaseSwitches.ENABLE_CRASH_REPORTER_FOR_TESTING);
+                return CommandLine.getInstance()
+                        .hasSwitch(BaseSwitches.ENABLE_CRASH_REPORTER_FOR_TESTING);
             }
         };
     }
 
     @Override
     public void prepareToUploadMinidumps(final Runnable startUploads) {
-        PlatformServiceBridge.getInstance().queryMetricsSetting(enabled -> {
-            ThreadUtils.assertOnUiThread();
-            mPermittedByUser = Boolean.TRUE.equals(enabled);
-            startUploads.run();
-        });
+        PlatformServiceBridge.getInstance()
+                .queryMetricsSetting(
+                        enabled -> {
+                            ThreadUtils.assertOnUiThread();
+                            mPermittedByUser = Boolean.TRUE.equals(enabled);
+                            startUploads.run();
+                        });
     }
 
     @Override

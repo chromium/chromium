@@ -27,9 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * A browser-process class for querying SafeMode state and executing SafeModeActions.
- */
+/** A browser-process class for querying SafeMode state and executing SafeModeActions. */
 public class SafeModeController {
     public static final String SAFE_MODE_STATE_COMPONENT =
             "org.chromium.android_webview.SafeModeState";
@@ -51,9 +49,13 @@ public class SafeModeController {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR,
-            SafeModeExecutionResult.ACTION_FAILED, SafeModeExecutionResult.ACTION_UNKNOWN,
-            SafeModeExecutionResult.COUNT})
+    @IntDef({
+        SafeModeExecutionResult.SUCCESS,
+        SafeModeExecutionResult.UNKNOWN_ERROR,
+        SafeModeExecutionResult.ACTION_FAILED,
+        SafeModeExecutionResult.ACTION_UNKNOWN,
+        SafeModeExecutionResult.COUNT
+    })
     public static @interface SafeModeExecutionResult {
         int SUCCESS = 0;
         int UNKNOWN_ERROR = 1;
@@ -159,11 +161,12 @@ public class SafeModeController {
     public Set<String> queryActions(String webViewPackageName) {
         Set<String> actions = new HashSet<>();
 
-        Uri uri = new Uri.Builder()
-                          .scheme("content")
-                          .authority(webViewPackageName + URI_AUTHORITY_SUFFIX)
-                          .path(SAFE_MODE_ACTIONS_URI_PATH)
-                          .build();
+        Uri uri =
+                new Uri.Builder()
+                        .scheme("content")
+                        .authority(webViewPackageName + URI_AUTHORITY_SUFFIX)
+                        .path(SAFE_MODE_ACTIONS_URI_PATH)
+                        .build();
 
         final Context appContext = ContextUtils.getApplicationContext();
         try (Cursor cursor =
@@ -203,8 +206,7 @@ public class SafeModeController {
 
         String currentSafeModeActionName = "";
         try {
-            @SafeModeExecutionResult
-            int overallStatus = SafeModeExecutionResult.SUCCESS;
+            @SafeModeExecutionResult int overallStatus = SafeModeExecutionResult.SUCCESS;
             Set<String> allIds = new HashSet<>();
             for (SafeModeAction action : mRegisteredActions) {
                 allIds.add(action.getId());

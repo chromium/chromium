@@ -13,9 +13,7 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.util.Set;
 
-/**
- * Adapter between AwServiceWorkerSettings and ServiceWorkerWebSettingsBoundaryInterface.
- */
+/** Adapter between AwServiceWorkerSettings and ServiceWorkerWebSettingsBoundaryInterface. */
 class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettingsBoundaryInterface {
     private AwServiceWorkerSettings mAwServiceWorkerSettings;
 
@@ -29,8 +27,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public void setCacheMode(int mode) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_CACHE_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_CACHE_MODE")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_SET_CACHE_MODE);
             mAwServiceWorkerSettings.setCacheMode(mode);
         }
@@ -38,8 +37,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public int getCacheMode() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_CACHE_MODE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_CACHE_MODE")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_GET_CACHE_MODE);
             return mAwServiceWorkerSettings.getCacheMode();
         }
@@ -47,8 +47,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public void setAllowContentAccess(boolean allow) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_ALLOW_CONTENT_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_ALLOW_CONTENT_ACCESS")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_SET_ALLOW_CONTENT_ACCESS);
             mAwServiceWorkerSettings.setAllowContentAccess(allow);
         }
@@ -56,8 +57,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public boolean getAllowContentAccess() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_ALLOW_CONTENT_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_ALLOW_CONTENT_ACCESS")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_GET_ALLOW_CONTENT_ACCESS);
             return mAwServiceWorkerSettings.getAllowContentAccess();
         }
@@ -65,8 +67,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public void setAllowFileAccess(boolean allow) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_ALLOW_FILE_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_ALLOW_FILE_ACCESS")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_SET_ALLOW_FILE_ACCESS);
             mAwServiceWorkerSettings.setAllowFileAccess(allow);
         }
@@ -74,8 +77,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public boolean getAllowFileAccess() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_ALLOW_FILE_ACCESS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_ALLOW_FILE_ACCESS")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_GET_ALLOW_FILE_ACCESS);
             return mAwServiceWorkerSettings.getAllowFileAccess();
         }
@@ -83,8 +87,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public void setBlockNetworkLoads(boolean flag) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_BLOCK_NETWORK_LOADS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_BLOCK_NETWORK_LOADS")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_SET_BLOCK_NETWORK_LOADS);
             mAwServiceWorkerSettings.setBlockNetworkLoads(flag);
         }
@@ -92,8 +97,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public boolean getBlockNetworkLoads() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS")) {
             recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS);
             return mAwServiceWorkerSettings.getBlockNetworkLoads();
         }
@@ -101,8 +107,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
             recordApiCall(
                     ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
             mAwServiceWorkerSettings.setRequestedWithHeaderOriginAllowList(allowedOriginRules);
@@ -111,8 +118,9 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
 
     @Override
     public Set<String> getRequestedWithHeaderOriginAllowList() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
             recordApiCall(
                     ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
             return mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList();

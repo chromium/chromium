@@ -59,8 +59,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String DATA_URL = "data:text/html,<div/>";
     private static final String REDIRECT_TARGET_PATH = "/redirect_target.html";

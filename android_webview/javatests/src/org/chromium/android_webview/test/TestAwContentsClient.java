@@ -33,9 +33,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/**
- * AwContentsClient subclass used for testing.
- */
+/** AwContentsClient subclass used for testing. */
 public class TestAwContentsClient extends NullContentsClient {
     private static final boolean TRACE = false;
     private static final String TAG = "TestAwContentsClient";
@@ -173,9 +171,7 @@ public class TestAwContentsClient extends NullContentsClient {
         return mOnFormResubmissionHelper;
     }
 
-    /**
-     * Callback helper for onFormResubmission.
-     */
+    /** Callback helper for onFormResubmission. */
     public static class OnFormResubmissionHelper extends CallbackHelper {
         // Number of times onFormResubmit is called.
         private int mResubmissions;
@@ -205,12 +201,11 @@ public class TestAwContentsClient extends NullContentsClient {
         }
     }
 
-    /**
-     * Callback helper for onScaleChangedScaled.
-     */
+    /** Callback helper for onScaleChangedScaled. */
     public static class OnScaleChangedHelper extends CallbackHelper {
         private float mPreviousScale;
         private float mCurrentScale;
+
         public void notifyCalled(float oldScale, float newScale) {
             mPreviousScale = oldScale;
             mCurrentScale = newScale;
@@ -239,9 +234,7 @@ public class TestAwContentsClient extends NullContentsClient {
         return mPictureListenerHelper;
     }
 
-    /**
-     * Callback helper for onReceivedTitle.
-     */
+    /** Callback helper for onReceivedTitle. */
     public static class OnReceivedTitleHelper extends CallbackHelper {
         private String mTitle;
 
@@ -249,6 +242,7 @@ public class TestAwContentsClient extends NullContentsClient {
             mTitle = title;
             super.notifyCalled();
         }
+
         public String getTitle() {
             return mTitle;
         }
@@ -303,9 +297,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mAllowSslError = allow;
     }
 
-    /**
-     * CallbackHelper for OnDownloadStart.
-     */
+    /** CallbackHelper for OnDownloadStart. */
     public static class OnDownloadStartHelper extends CallbackHelper {
         private String mUrl;
         private String mUserAgent;
@@ -338,8 +330,12 @@ public class TestAwContentsClient extends NullContentsClient {
             return mContentLength;
         }
 
-        public void notifyCalled(String url, String userAgent, String contentDisposition,
-                String mimeType, long contentLength) {
+        public void notifyCalled(
+                String url,
+                String userAgent,
+                String contentDisposition,
+                String mimeType,
+                long contentLength) {
             mUrl = url;
             mUserAgent = userAgent;
             mContentDisposition = contentDisposition;
@@ -350,19 +346,18 @@ public class TestAwContentsClient extends NullContentsClient {
     }
 
     @Override
-    public void onDownloadStart(String url,
+    public void onDownloadStart(
+            String url,
             String userAgent,
             String contentDisposition,
             String mimeType,
             long contentLength) {
         if (TRACE) Log.i(TAG, "onDownloadStart " + url);
-        getOnDownloadStartHelper().notifyCalled(url, userAgent, contentDisposition, mimeType,
-                contentLength);
+        getOnDownloadStartHelper()
+                .notifyCalled(url, userAgent, contentDisposition, mimeType, contentLength);
     }
 
-    /**
-     * Callback helper for onCreateWindow.
-     */
+    /** Callback helper for onCreateWindow. */
     public static class OnCreateWindowHelper extends CallbackHelper {
         private boolean mIsDialog;
         private boolean mIsUserGesture;
@@ -397,9 +392,7 @@ public class TestAwContentsClient extends NullContentsClient {
         return mOnCreateWindowHelper.notifyCalled(isDialog, isUserGesture);
     }
 
-    /**
-     * CallbackHelper for OnReceivedLoginRequest.
-     */
+    /** CallbackHelper for OnReceivedLoginRequest. */
     public static class OnReceivedLoginRequestHelper extends CallbackHelper {
         private String mRealm;
         private String mAccount;
@@ -434,9 +427,7 @@ public class TestAwContentsClient extends NullContentsClient {
         getOnReceivedLoginRequestHelper().notifyCalled(realm, account, args);
     }
 
-    /**
-     * Method to pass back a FileChooserParamsImpl object back to users of the class.
-     */
+    /** Method to pass back a FileChooserParamsImpl object back to users of the class. */
     @Override
     public void showFileChooser(
             Callback<String[]> uploadFilePathsCallback, FileChooserParamsImpl fileChooserParams) {
@@ -444,9 +435,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mShowFileChooserHelper.notifyCalled(fileChooserParams);
     }
 
-    /**
-     * Callback helper for showFileChooser.
-     */
+    /** Callback helper for showFileChooser. */
     public static class ShowFileChooserHelper extends CallbackHelper {
         private FileChooserParamsImpl mFileChooserParams;
         private String[] mFilesUploaded;
@@ -487,8 +476,13 @@ public class TestAwContentsClient extends NullContentsClient {
     }
 
     private void logConsoleMessage(AwConsoleMessage consoleMessage) {
-        String formattedMessage = "[" + consoleMessage.sourceId() + ":"
-                + consoleMessage.lineNumber() + "] " + consoleMessage.message();
+        String formattedMessage =
+                "["
+                        + consoleMessage.sourceId()
+                        + ":"
+                        + consoleMessage.lineNumber()
+                        + "] "
+                        + consoleMessage.message();
         switch (consoleMessage.messageLevel()) {
             case AwConsoleMessage.MESSAGE_LEVEL_TIP:
             case AwConsoleMessage.MESSAGE_LEVEL_LOG:
@@ -508,9 +502,7 @@ public class TestAwContentsClient extends NullContentsClient {
         }
     }
 
-    /**
-     * Callback helper for AddMessageToConsole.
-     */
+    /** Callback helper for AddMessageToConsole. */
     public static class AddMessageToConsoleHelper extends CallbackHelper {
         private List<AwConsoleMessage> mMessages = new ArrayList<AwConsoleMessage>();
 
@@ -558,9 +550,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mOnScaleChangedHelper.notifyCalled(oldScale, newScale);
     }
 
-    /**
-     * Callback helper for PictureListener.
-     */
+    /** Callback helper for PictureListener. */
     public static class PictureListenerHelper extends CallbackHelper {
         // Generally null, depending on |invalidationOnly| in enableOnNewPicture()
         private Picture mPicture;
@@ -582,38 +572,47 @@ public class TestAwContentsClient extends NullContentsClient {
         mPictureListenerHelper.notifyCalled(picture);
     }
 
-    /**
-     * Callback helper for ShouldOverrideUrlLoading.
-     */
+    /** Callback helper for ShouldOverrideUrlLoading. */
     public static class ShouldOverrideUrlLoadingHelper extends CallbackHelper {
         private String mShouldOverrideUrlLoadingUrl;
         private boolean mShouldOverrideUrlLoadingReturnValue;
         private boolean mIsRedirect;
         private boolean mHasUserGesture;
         private boolean mIsOutermostMainFrame;
+
         void setShouldOverrideUrlLoadingUrl(String url) {
             mShouldOverrideUrlLoadingUrl = url;
         }
+
         void setShouldOverrideUrlLoadingReturnValue(boolean value) {
             mShouldOverrideUrlLoadingReturnValue = value;
         }
+
         public String getShouldOverrideUrlLoadingUrl() {
             assert getCallCount() > 0;
             return mShouldOverrideUrlLoadingUrl;
         }
+
         public boolean getShouldOverrideUrlLoadingReturnValue() {
             return mShouldOverrideUrlLoadingReturnValue;
         }
+
         public boolean isRedirect() {
             return mIsRedirect;
         }
+
         public boolean hasUserGesture() {
             return mHasUserGesture;
         }
+
         public boolean isOutermostMainFrame() {
             return mIsOutermostMainFrame;
         }
-        public void notifyCalled(String url, boolean isRedirect, boolean hasUserGesture,
+
+        public void notifyCalled(
+                String url,
+                boolean isRedirect,
+                boolean hasUserGesture,
                 boolean isOutermostMainFrame) {
             mShouldOverrideUrlLoadingUrl = url;
             mIsRedirect = isRedirect;
@@ -629,14 +628,15 @@ public class TestAwContentsClient extends NullContentsClient {
         super.shouldOverrideUrlLoading(request);
         boolean returnValue =
                 mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingReturnValue();
-        mShouldOverrideUrlLoadingHelper.notifyCalled(request.url, request.isRedirect,
-                request.hasUserGesture, request.isOutermostMainFrame);
+        mShouldOverrideUrlLoadingHelper.notifyCalled(
+                request.url,
+                request.isRedirect,
+                request.hasUserGesture,
+                request.isOutermostMainFrame);
         return returnValue;
     }
 
-    /**
-     * Callback helper for shouldInterceptRequest.
-     */
+    /** Callback helper for shouldInterceptRequest. */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
         private final List<String> mShouldInterceptRequestUrls = new ArrayList<>();
         private final Map<String, WebResourceResponseInfo> mReturnValuesByUrls =
@@ -646,38 +646,47 @@ public class TestAwContentsClient extends NullContentsClient {
 
         @GuardedBy("mRequestCountLock") // Needs explicit locking for get-and-increment
         private final Map<String, Integer> mRequestCountByUrl = new HashMap<>();
+
         private final Object mRequestCountLock = new Object();
 
         private Runnable mRunnableForFirstTimeCallback;
         private boolean mRaiseExceptionWhenCalled;
         // This is read on another thread, so needs to be marked volatile.
         private volatile WebResourceResponseInfo mShouldInterceptRequestReturnValue;
+
         void setRaiseExceptionWhenCalled(boolean value) {
             mRaiseExceptionWhenCalled = value;
         }
+
         boolean getRaiseExceptionWhenCalled() {
             return mRaiseExceptionWhenCalled;
         }
+
         void setReturnValue(WebResourceResponseInfo value) {
             mShouldInterceptRequestReturnValue = value;
         }
+
         void setReturnValueForUrl(String url, WebResourceResponseInfo value) {
             mReturnValuesByUrls.put(url, value);
         }
+
         public List<String> getUrls() {
             assert getCallCount() > 0;
             return mShouldInterceptRequestUrls;
         }
+
         public WebResourceResponseInfo getReturnValue(String url) {
             WebResourceResponseInfo value = mReturnValuesByUrls.get(url);
             if (value != null) return value;
             return mShouldInterceptRequestReturnValue;
         }
+
         public AwWebResourceRequest getRequestsForUrl(String url) {
             assert getCallCount() > 0;
             assert mRequestsByUrls.containsKey(url);
             return mRequestsByUrls.get(url);
         }
+
         public int getRequestCountForUrl(String url) {
             assert getCallCount() > 0;
             synchronized (mRequestCountLock) {
@@ -685,6 +694,7 @@ public class TestAwContentsClient extends NullContentsClient {
                 return count != null ? count : 0;
             }
         }
+
         public void notifyCalled(AwWebResourceRequest request) {
             mShouldInterceptRequestUrls.add(request.url);
             mRequestsByUrls.put(request.url, request);
@@ -698,6 +708,7 @@ public class TestAwContentsClient extends NullContentsClient {
             }
             notifyCalled();
         }
+
         public void runDuringFirstTimeCallback(Runnable r) {
             mRunnableForFirstTimeCallback = r;
         }
@@ -714,9 +725,7 @@ public class TestAwContentsClient extends NullContentsClient {
         return mShouldInterceptRequestHelper.getReturnValue(request.url);
     }
 
-    /**
-     * Callback helper for OnLoadedResource.
-     */
+    /** Callback helper for OnLoadedResource. */
     public static class OnLoadResourceHelper extends CallbackHelper {
         private String mLastLoadedResource;
 
@@ -738,9 +747,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mOnLoadResourceHelper.notifyCalled(url);
     }
 
-    /**
-     * Callback helper for doUpdateVisitedHistory.
-     */
+    /** Callback helper for doUpdateVisitedHistory. */
     public static class DoUpdateVisitedHistoryHelper extends CallbackHelper {
         String mUrl;
         boolean mIsReload;
@@ -768,9 +775,7 @@ public class TestAwContentsClient extends NullContentsClient {
         getDoUpdateVisitedHistoryHelper().notifyCalled(url, isReload);
     }
 
-    /**
-     * CallbackHelper for onReceivedSslError.
-     */
+    /** CallbackHelper for onReceivedSslError. */
     public static class OnReceivedSslErrorHelper extends CallbackHelper {
         private SslError mSslError;
 
@@ -785,30 +790,29 @@ public class TestAwContentsClient extends NullContentsClient {
         }
     }
 
-    /**
-     * CallbackHelper for OnReceivedError.
-     */
+    /** CallbackHelper for OnReceivedError. */
     public static class OnReceivedErrorHelper extends CallbackHelper {
         private AwWebResourceRequest mRequest;
         private AwWebResourceError mError;
+
         public void notifyCalled(AwWebResourceRequest request, AwWebResourceError error) {
             mRequest = request;
             mError = error;
             notifyCalled();
         }
+
         public AwWebResourceRequest getRequest() {
             assert getCallCount() > 0;
             return mRequest;
         }
+
         public AwWebResourceError getError() {
             assert getCallCount() > 0;
             return mError;
         }
     }
 
-    /**
-     * CallbackHelper for OnReceivedHttpError.
-     */
+    /** CallbackHelper for OnReceivedHttpError. */
     public static class OnReceivedHttpErrorHelper extends CallbackHelper {
         private AwWebResourceRequest mRequest;
         private WebResourceResponseInfo mResponse;
@@ -818,10 +822,12 @@ public class TestAwContentsClient extends NullContentsClient {
             mResponse = response;
             notifyCalled();
         }
+
         public AwWebResourceRequest getRequest() {
             assert getCallCount() > 0;
             return mRequest;
         }
+
         public WebResourceResponseInfo getResponse() {
             assert getCallCount() > 0;
             return mResponse;
@@ -836,9 +842,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mOnReceivedHttpErrorHelper.notifyCalled(request, response);
     }
 
-    /**
-     * CallbackHelper for onReceivedIcon.
-     */
+    /** CallbackHelper for onReceivedIcon. */
     public static class FaviconHelper extends CallbackHelper {
         private Bitmap mIcon;
 
@@ -860,9 +864,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mFaviconHelper.notifyFavicon(bitmap);
     }
 
-    /**
-     * CallbackHelper for onReceivedTouchIconUrl.
-     */
+    /** CallbackHelper for onReceivedTouchIconUrl. */
     public static class TouchIconHelper extends CallbackHelper {
         private HashMap<String, Boolean> mTouchIcons = new HashMap<String, Boolean>();
 
@@ -887,9 +889,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mTouchIconHelper.notifyTouchIcon(url, precomposed);
     }
 
-    /**
-     * CallbackHelper for onRenderProcessGone.
-     */
+    /** CallbackHelper for onRenderProcessGone. */
     public static class RenderProcessGoneHelper extends CallbackHelper {
         private AwRenderProcessGoneDetail mDetail;
         private boolean mResponse;

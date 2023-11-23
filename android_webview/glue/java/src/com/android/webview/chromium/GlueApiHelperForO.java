@@ -34,17 +34,19 @@ public final class GlueApiHelperForO {
      */
     public static boolean onRenderProcessGone(
             WebViewClient webViewClient, WebView webView, AwRenderProcessGoneDetail detail) {
-        return webViewClient.onRenderProcessGone(webView, new RenderProcessGoneDetail() {
-            @Override
-            public boolean didCrash() {
-                return detail.didCrash();
-            }
+        return webViewClient.onRenderProcessGone(
+                webView,
+                new RenderProcessGoneDetail() {
+                    @Override
+                    public boolean didCrash() {
+                        return detail.didCrash();
+                    }
 
-            @Override
-            public int rendererPriorityAtExit() {
-                return detail.rendererPriority();
-            }
-        });
+                    @Override
+                    public int rendererPriorityAtExit() {
+                        return detail.rendererPriority();
+                    }
+                });
     }
 
     public static boolean isMultiProcessEnabled(WebViewDelegate webViewDelegate) {

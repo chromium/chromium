@@ -25,9 +25,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/**
- * Service that is responsible for receiving crash dumps from an application, for upload.
- */
+/** Service that is responsible for receiving crash dumps from an application, for upload. */
 public class CrashReceiverService extends Service {
     private static final String TAG = "CrashReceiverService";
 
@@ -57,8 +55,11 @@ public class CrashReceiverService extends Service {
      * during testing).
      */
     @VisibleForTesting
-    public void performMinidumpCopyingSerially(int uid, ParcelFileDescriptor[] fileDescriptors,
-            List<Map<String, String>> crashesInfo, boolean scheduleUploads) {
+    public void performMinidumpCopyingSerially(
+            int uid,
+            ParcelFileDescriptor[] fileDescriptors,
+            List<Map<String, String>> crashesInfo,
+            boolean scheduleUploads) {
         if (!waitUntilWeCanCopy()) {
             Log.e(TAG, "something went wrong when waiting to copy minidumps, bailing!");
             return;
@@ -106,7 +107,9 @@ public class CrashReceiverService extends Service {
      * @return whether any minidump was copied.
      */
     @VisibleForTesting
-    public static boolean copyMinidumps(int uid, ParcelFileDescriptor[] fileDescriptors,
+    public static boolean copyMinidumps(
+            int uid,
+            ParcelFileDescriptor[] fileDescriptors,
             List<Map<String, String>> crashesInfo) {
         CrashFileManager crashFileManager =
                 new CrashFileManager(SystemWideCrashDirectories.getOrCreateWebViewCrashDir());
@@ -116,8 +119,11 @@ public class CrashReceiverService extends Service {
             Map<String, String> crashInfo = crashesInfo.get(i);
             if (fd == null) continue;
             try {
-                File copiedFile = crashFileManager.copyMinidumpFromFD(fd.getFileDescriptor(),
-                        SystemWideCrashDirectories.getWebViewTmpCrashDir(), uid);
+                File copiedFile =
+                        crashFileManager.copyMinidumpFromFD(
+                                fd.getFileDescriptor(),
+                                SystemWideCrashDirectories.getWebViewTmpCrashDir(),
+                                uid);
                 if (copiedFile == null) {
                     Log.w(TAG, "failed to copy minidump from " + fd);
                     // TODO(gsennton): add UMA metric to ensure we aren't losing too many
@@ -137,9 +143,7 @@ public class CrashReceiverService extends Service {
         return copiedAnything;
     }
 
-    /**
-     * Delete all files in the directory where temporary files from this Service are stored.
-     */
+    /** Delete all files in the directory where temporary files from this Service are stored. */
     @VisibleForTesting
     public static void deleteFilesInWebViewTmpDirIfExists() {
         deleteFilesInDirIfExists(SystemWideCrashDirectories.getWebViewTmpCrashDir());

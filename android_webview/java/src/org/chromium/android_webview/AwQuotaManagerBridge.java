@@ -61,17 +61,15 @@ public class AwQuotaManagerBridge {
      */
     public void deleteAllData() {
         ThreadUtils.assertOnUiThread();
-        AwQuotaManagerBridgeJni.get().deleteAllData(
-                mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this);
+        AwQuotaManagerBridgeJni.get()
+                .deleteAllData(mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this);
     }
 
-    /**
-     * Implements WebStorage.deleteOrigin(). Clear the storage of APIs 2-5 for the given origin.
-     */
+    /** Implements WebStorage.deleteOrigin(). Clear the storage of APIs 2-5 for the given origin. */
     public void deleteOrigin(String origin) {
         ThreadUtils.assertOnUiThread();
-        AwQuotaManagerBridgeJni.get().deleteOrigin(
-                mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this, origin);
+        AwQuotaManagerBridgeJni.get()
+                .deleteOrigin(mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this, origin);
     }
 
     /**
@@ -80,8 +78,8 @@ public class AwQuotaManagerBridge {
      */
     public void getOrigins(@NonNull Callback<Origins> callback) {
         ThreadUtils.assertOnUiThread();
-        AwQuotaManagerBridgeJni.get().getOrigins(
-                mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this, callback);
+        AwQuotaManagerBridgeJni.get()
+                .getOrigins(mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this, callback);
     }
 
     /**
@@ -90,8 +88,13 @@ public class AwQuotaManagerBridge {
      */
     public void getQuotaForOrigin(String origin, @NonNull Callback<Long> callback) {
         ThreadUtils.assertOnUiThread();
-        AwQuotaManagerBridgeJni.get().getUsageAndQuotaForOrigin(
-                mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this, origin, callback, true);
+        AwQuotaManagerBridgeJni.get()
+                .getUsageAndQuotaForOrigin(
+                        mNativeAwQuotaManagerBridge,
+                        AwQuotaManagerBridge.this,
+                        origin,
+                        callback,
+                        true);
     }
 
     /**
@@ -100,8 +103,13 @@ public class AwQuotaManagerBridge {
      */
     public void getUsageForOrigin(String origin, @NonNull Callback<Long> callback) {
         ThreadUtils.assertOnUiThread();
-        AwQuotaManagerBridgeJni.get().getUsageAndQuotaForOrigin(
-                mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this, origin, callback, false);
+        AwQuotaManagerBridgeJni.get()
+                .getUsageAndQuotaForOrigin(
+                        mNativeAwQuotaManagerBridge,
+                        AwQuotaManagerBridge.this,
+                        origin,
+                        callback,
+                        false);
     }
 
     @CalledByNative
@@ -113,12 +121,22 @@ public class AwQuotaManagerBridge {
     @NativeMethods
     interface Natives {
         void init(long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller);
+
         void deleteAllData(long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller);
+
         void deleteOrigin(
                 long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller, String origin);
-        void getOrigins(long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller,
+
+        void getOrigins(
+                long nativeAwQuotaManagerBridge,
+                AwQuotaManagerBridge caller,
                 Callback<Origins> callback);
-        void getUsageAndQuotaForOrigin(long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller,
-                String origin, Callback<Long> callback, boolean isQuota);
+
+        void getUsageAndQuotaForOrigin(
+                long nativeAwQuotaManagerBridge,
+                AwQuotaManagerBridge caller,
+                String origin,
+                Callback<Long> callback,
+                boolean isQuota);
     }
 }

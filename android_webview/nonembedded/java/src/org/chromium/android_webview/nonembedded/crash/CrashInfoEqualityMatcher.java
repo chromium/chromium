@@ -10,9 +10,7 @@ import org.hamcrest.Description;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Matcher class to assert equality of two {@link CrashInfo} objects in tests.
- */
+/** Matcher class to assert equality of two {@link CrashInfo} objects in tests. */
 public class CrashInfoEqualityMatcher extends BaseMatcher<CrashInfo> {
     private static final String MISMATCH_STRING_FORMAT = "%s: found<%s>, expected<%s>";
 
@@ -53,7 +51,11 @@ public class CrashInfoEqualityMatcher extends BaseMatcher<CrashInfo> {
             return "Item is null";
         }
         if (o.getClass() != mCrashInfo.getClass()) {
-            return String.format(Locale.US, MISMATCH_STRING_FORMAT, "class", o.getClass(),
+            return String.format(
+                    Locale.US,
+                    MISMATCH_STRING_FORMAT,
+                    "class",
+                    o.getClass(),
                     mCrashInfo.getClass());
         }
 
@@ -61,43 +63,76 @@ public class CrashInfoEqualityMatcher extends BaseMatcher<CrashInfo> {
         StringBuilder builder = new StringBuilder();
 
         if (!Objects.equals(mCrashInfo.uploadState, c.uploadState)) {
-            builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "uploadState",
-                    c.uploadState, mCrashInfo.uploadState));
+            builder.append(
+                    String.format(
+                            Locale.US,
+                            MISMATCH_STRING_FORMAT,
+                            "uploadState",
+                            c.uploadState,
+                            mCrashInfo.uploadState));
         }
         if (!Objects.equals(mCrashInfo.localId, c.localId)) {
-            builder.append(String.format(
-                    Locale.US, MISMATCH_STRING_FORMAT, "localId", c.localId, mCrashInfo.localId));
+            builder.append(
+                    String.format(
+                            Locale.US,
+                            MISMATCH_STRING_FORMAT,
+                            "localId",
+                            c.localId,
+                            mCrashInfo.localId));
         }
-        if (!Objects.equals(mCrashInfo.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY),
-                    c.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY))) {
-            builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "appPackageName",
-                    c.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY),
-                    mCrashInfo.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY)));
+        if (!Objects.equals(
+                mCrashInfo.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY),
+                c.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY))) {
+            builder.append(
+                    String.format(
+                            Locale.US,
+                            MISMATCH_STRING_FORMAT,
+                            "appPackageName",
+                            c.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY),
+                            mCrashInfo.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY)));
         }
         if (!Objects.equals(mCrashInfo.uploadId, c.uploadId)) {
-            builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "uploadId", c.uploadId,
-                    mCrashInfo.uploadId));
+            builder.append(
+                    String.format(
+                            Locale.US,
+                            MISMATCH_STRING_FORMAT,
+                            "uploadId",
+                            c.uploadId,
+                            mCrashInfo.uploadId));
         }
         if (mCrashInfo.uploadTime != c.uploadTime) {
-            builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "uploadTime",
-                    c.uploadTime, mCrashInfo.uploadTime));
+            builder.append(
+                    String.format(
+                            Locale.US,
+                            MISMATCH_STRING_FORMAT,
+                            "uploadTime",
+                            c.uploadTime,
+                            mCrashInfo.uploadTime));
         }
         if (mCrashInfo.captureTime != c.captureTime) {
-            builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "captureTime",
-                    c.captureTime, mCrashInfo.captureTime));
+            builder.append(
+                    String.format(
+                            Locale.US,
+                            MISMATCH_STRING_FORMAT,
+                            "captureTime",
+                            c.captureTime,
+                            mCrashInfo.captureTime));
         }
 
         if (mCrashInfo.isHidden != c.isHidden) {
-            builder.append(String.format(Locale.US, MISMATCH_STRING_FORMAT, "isHidden", c.isHidden,
-                    mCrashInfo.isHidden));
+            builder.append(
+                    String.format(
+                            Locale.US,
+                            MISMATCH_STRING_FORMAT,
+                            "isHidden",
+                            c.isHidden,
+                            mCrashInfo.isHidden));
         }
         // empty means a match
         return builder.length() == 0 ? null : builder.toString();
     }
 
-    /**
-     * Create an equality {@link org.hamcrest.Matcher} for the given {@link CrashInfo object}.
-     */
+    /** Create an equality {@link org.hamcrest.Matcher} for the given {@link CrashInfo object}. */
     public static CrashInfoEqualityMatcher equalsTo(CrashInfo c) {
         return new CrashInfoEqualityMatcher(c);
     }

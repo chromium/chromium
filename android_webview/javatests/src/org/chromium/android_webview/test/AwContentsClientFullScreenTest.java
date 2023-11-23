@@ -48,8 +48,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientFullScreenTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String VIDEO_TEST_URL =
             "file:///android_asset/full_screen_video_test.html";

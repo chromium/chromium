@@ -31,16 +31,13 @@ import org.chromium.components.metrics.UserActionEventProtos.UserActionEventProt
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 
-/**
- * Instrumentation tests for {@link MetricsFilteringDecorator}.
- */
+/** Instrumentation tests for {@link MetricsFilteringDecorator}. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MediumTest
 @Batch(Batch.PER_CLASS)
 public class MetricsFilteringDecoratorTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
     private AndroidMetricsLogConsumer mUploader;

@@ -14,9 +14,7 @@ import org.chromium.base.Log;
 
 import java.io.File;
 
-/**
- * A {@link SafeModeAction} to delete the variations seed.
- */
+/** A {@link SafeModeAction} to delete the variations seed. */
 @Lifetime.Singleton
 public class VariationsSeedSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";

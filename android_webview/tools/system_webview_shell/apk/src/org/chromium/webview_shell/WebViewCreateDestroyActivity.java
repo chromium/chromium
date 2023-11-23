@@ -39,8 +39,7 @@ public class WebViewCreateDestroyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_empty);
-        getWindow().setTitle(
-                getResources().getString(R.string.title_activity_create_destroy));
+        getWindow().setTitle(getResources().getString(R.string.title_activity_create_destroy));
         onNewIntent(getIntent());
     }
 
@@ -53,8 +52,8 @@ public class WebViewCreateDestroyActivity extends Activity {
     private void openUsingNewWebView(Intent intent) {
         sWebView = new WebView(this);
         sWebView.setLayoutParams(
-                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT));
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.emptyview);
         layout.addView(sWebView);
 
@@ -63,13 +62,14 @@ public class WebViewCreateDestroyActivity extends Activity {
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
 
-        sWebView.setWebViewClient(new WebViewClientCompat() {
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
-        });
+        sWebView.setWebViewClient(
+                new WebViewClientCompat() {
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        return false;
+                    }
+                });
 
         String url = getUrlFromIntent(intent);
         sWebView.loadUrl(url == null ? "about:blank" : url);

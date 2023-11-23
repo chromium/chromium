@@ -42,8 +42,7 @@ import java.util.Set;
 @Batch(Batch.PER_CLASS)
 public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
     public static final String TAG = "AwSWSettingsTest";
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestWebServer mWebServer;
 

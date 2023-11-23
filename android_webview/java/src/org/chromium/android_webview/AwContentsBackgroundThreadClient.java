@@ -29,8 +29,12 @@ public abstract class AwContentsBackgroundThreadClient {
 
     @NonNull
     @CalledByNative
-    private AwWebResourceInterceptResponse shouldInterceptRequestFromNative(String url,
-            boolean isMainFrame, boolean hasUserGesture, String method, String[] requestHeaderNames,
+    private AwWebResourceInterceptResponse shouldInterceptRequestFromNative(
+            String url,
+            boolean isMainFrame,
+            boolean hasUserGesture,
+            String method,
+            String[] requestHeaderNames,
             String[] requestHeaderValues) {
         try {
             return new AwWebResourceInterceptResponse(
@@ -44,13 +48,15 @@ public abstract class AwContentsBackgroundThreadClient {
                                     requestHeaderValues)),
                     /* raisedException= */ false);
         } catch (Throwable e) {
-            Log.e(TAG,
+            Log.e(
+                    TAG,
                     "Client raised exception in shouldInterceptRequest. Re-throwing on UI thread.");
 
-            AwThreadUtils.postToUiThreadLooper(() -> {
-                Log.e(TAG, "The following exception was raised by shouldInterceptRequest:");
-                throw e;
-            });
+            AwThreadUtils.postToUiThreadLooper(
+                    () -> {
+                        Log.e(TAG, "The following exception was raised by shouldInterceptRequest:");
+                        throw e;
+                    });
 
             return new AwWebResourceInterceptResponse(null, /* raisedException= */ true);
         }

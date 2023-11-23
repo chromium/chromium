@@ -33,8 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class ArchiveTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final long TEST_TIMEOUT = scaleTimeout(20000L);
 

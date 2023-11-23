@@ -32,11 +32,9 @@ import org.chromium.base.test.util.Features;
 @Features.EnableFeatures({AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS})
 @Batch(Batch.PER_CLASS)
 public class AwKeyboardShortcutsTest extends AwParameterizedTest {
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private AwContents mAwContents;
 

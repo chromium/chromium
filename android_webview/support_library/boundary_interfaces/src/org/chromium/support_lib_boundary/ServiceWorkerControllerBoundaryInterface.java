@@ -6,10 +6,9 @@ package org.chromium.support_lib_boundary;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Boundary interface for ServiceWorkerController.
- */
+/** Boundary interface for ServiceWorkerController. */
 public interface ServiceWorkerControllerBoundaryInterface {
     /* ServiceWorkerWebSettings */ InvocationHandler getServiceWorkerWebSettings();
+
     void setServiceWorkerClient(/* ServiceWorkerClient */ InvocationHandler client);
 }

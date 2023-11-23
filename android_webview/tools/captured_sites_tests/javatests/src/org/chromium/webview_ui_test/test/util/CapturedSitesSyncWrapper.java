@@ -69,9 +69,7 @@ public class CapturedSitesSyncWrapper {
         }
     }
 
-    /**
-     * A custom WebViewClient that signals tests when onPageStarted and onPageFinished is called
-     */
+    /** A custom WebViewClient that signals tests when onPageStarted and onPageFinished is called */
     private class SyncWebViewClient extends WebViewClient {
         @Override
         public void onPageFinished(WebView view, String url) {
@@ -81,38 +79,46 @@ public class CapturedSitesSyncWrapper {
     }
 
     private void init() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.getSettings().setJavaScriptEnabled(true);
-                mWebView.setWebViewClient(CapturedSitesSyncWrapper.this.new SyncWebViewClient());
-                mWebView.setWebChromeClient(new WebChromeClient() {
+        runOnUiThread(
+                new Runnable() {
                     @Override
-                    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                        if (consoleMessage.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
-                            mErrorMessageList.add(consoleMessage);
-                        }
-                        return super.onConsoleMessage(consoleMessage);
-                    }
+                    public void run() {
+                        mWebView.getSettings().setJavaScriptEnabled(true);
+                        mWebView.setWebViewClient(
+                                CapturedSitesSyncWrapper.this.new SyncWebViewClient());
+                        mWebView.setWebChromeClient(
+                                new WebChromeClient() {
+                                    @Override
+                                    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                                        if (consoleMessage.messageLevel()
+                                                == ConsoleMessage.MessageLevel.ERROR) {
+                                            mErrorMessageList.add(consoleMessage);
+                                        }
+                                        return super.onConsoleMessage(consoleMessage);
+                                    }
 
-                    @Override
-                    public boolean onJsAlert(
-                            WebView view, String url, String message, JsResult result) {
-                        mJsCallback.notifyCalled();
-                        return super.onJsAlert(view, url, message, result);
+                                    @Override
+                                    public boolean onJsAlert(
+                                            WebView view,
+                                            String url,
+                                            String message,
+                                            JsResult result) {
+                                        mJsCallback.notifyCalled();
+                                        return super.onJsAlert(view, url, message, result);
+                                    }
+                                });
+                        mWebView.addJavascriptInterface(
+                                CapturedSitesSyncWrapper.this.new SyncJavaScriptBridge(),
+                                JS_BRIDGE);
                     }
                 });
-                mWebView.addJavascriptInterface(
-                        CapturedSitesSyncWrapper.this.new SyncJavaScriptBridge(), JS_BRIDGE);
-            }
-        });
     }
 
     private static void runOnUiThread(final Runnable runnable) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new RuntimeException(
                     "Actions in CapturedSitesSyncWrapper is not allowed to be run on "
-                    + "UI thread");
+                            + "UI thread");
         } else {
             getInstrumentation().runOnMainSync(runnable);
         }
@@ -120,12 +126,13 @@ public class CapturedSitesSyncWrapper {
 
     public void loadUrlSync(final String url) {
         mErrorMessageList.clear();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.getSettings().setAllowFileAccess(true);
-                mWebView.loadUrl(url);
-            }
-        });
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebView.getSettings().setAllowFileAccess(true);
+                        mWebView.loadUrl(url);
+                    }
+                });
     }
 }

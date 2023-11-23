@@ -28,7 +28,7 @@ public class AwMetricsUtilsTest {
         Assert.assertEquals(
                 AwMetricsUtils.hashHistogramName(
                         "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-                            + "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2"),
+                                + "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2"),
                 Long.parseUnsignedLong("17564198105882768940"));
 
         Assert.assertEquals(

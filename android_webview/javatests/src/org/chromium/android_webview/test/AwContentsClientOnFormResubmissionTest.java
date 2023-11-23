@@ -32,8 +32,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientOnFormResubmissionTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static class TestAwContentsClient
             extends org.chromium.android_webview.test.TestAwContentsClient {

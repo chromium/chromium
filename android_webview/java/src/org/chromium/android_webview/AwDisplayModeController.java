@@ -24,12 +24,11 @@ public class AwDisplayModeController {
     private static final boolean DEBUG = false;
     private static final String TAG = "DisplayMode";
 
-    /**
-     * This is a delegate that the embedder needs to implement.
-     */
+    /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
         /** @return The display width. */
         int getDisplayWidth();
+
         /** @return The display height. */
         int getDisplayHeight();
     }
@@ -70,9 +69,14 @@ public class AwDisplayModeController {
         sCachedDisplayRect.set(0, 0, displayWidth, displayHeight);
 
         if (DEBUG) {
-            Log.i(TAG,
-                    "isDisplayInFullscreen. view rect: " + sCachedViewRect + ", display rect: "
-                            + sCachedDisplayRect + ", window rect: " + sCachedWindowRect);
+            Log.i(
+                    TAG,
+                    "isDisplayInFullscreen. view rect: "
+                            + sCachedViewRect
+                            + ", display rect: "
+                            + sCachedDisplayRect
+                            + ", window rect: "
+                            + sCachedWindowRect);
         }
 
         // Display is in fullscreen only when webview is occupying the entire window and display.
@@ -106,8 +110,11 @@ public class AwDisplayModeController {
         int width = view.getMeasuredWidth();
         int height = view.getMeasuredHeight();
 
-        rect.set(sCachedLocationOnScreen[0], sCachedLocationOnScreen[1],
-                sCachedLocationOnScreen[0] + width, sCachedLocationOnScreen[1] + height);
+        rect.set(
+                sCachedLocationOnScreen[0],
+                sCachedLocationOnScreen[1],
+                sCachedLocationOnScreen[0] + width,
+                sCachedLocationOnScreen[1] + height);
     }
 
     @SuppressLint("NewApi") // need this exception since we will try using Q API in P

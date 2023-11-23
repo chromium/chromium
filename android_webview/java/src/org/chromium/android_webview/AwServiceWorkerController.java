@@ -15,9 +15,7 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
-/**
- * Manages clients and settings for Service Workers.
- */
+/** Manages clients and settings for Service Workers. */
 @Lifetime.Profile
 public class AwServiceWorkerController {
     @GuardedBy("mAwServiceWorkerClientLock")
@@ -26,12 +24,10 @@ public class AwServiceWorkerController {
     @DoNotInline // Native stores this as a weak reference.
     @NonNull
     private final AwContentsIoThreadClient mServiceWorkerIoThreadClient;
-    @NonNull
-    private final AwContentsBackgroundThreadClient mServiceWorkerBackgroundThreadClient;
-    @NonNull
-    private final AwServiceWorkerSettings mServiceWorkerSettings;
-    @NonNull
-    private final AwBrowserContext mBrowserContext;
+
+    @NonNull private final AwContentsBackgroundThreadClient mServiceWorkerBackgroundThreadClient;
+    @NonNull private final AwServiceWorkerSettings mServiceWorkerSettings;
+    @NonNull private final AwBrowserContext mBrowserContext;
 
     // Lock to protect access to the |mServiceWorkerClient|
     private final Object mAwServiceWorkerClientLock = new Object();
@@ -45,16 +41,12 @@ public class AwServiceWorkerController {
         mBrowserContext.setServiceWorkerIoThreadClient(mServiceWorkerIoThreadClient);
     }
 
-    /**
-     * Returns the current settings for Service Worker.
-     */
+    /** Returns the current settings for Service Worker. */
     public AwServiceWorkerSettings getAwServiceWorkerSettings() {
         return mServiceWorkerSettings;
     }
 
-    /**
-     * Set custom client to receive callbacks from Service Workers. Can be null.
-     */
+    /** Set custom client to receive callbacks from Service Workers. Can be null. */
     public void setServiceWorkerClient(@Nullable AwServiceWorkerClient client) {
         synchronized (mAwServiceWorkerClientLock) {
             mServiceWorkerClient = client;
@@ -109,8 +101,7 @@ public class AwServiceWorkerController {
         }
     }
 
-    private class ServiceWorkerBackgroundThreadClientImpl
-            extends AwContentsBackgroundThreadClient {
+    private class ServiceWorkerBackgroundThreadClientImpl extends AwContentsBackgroundThreadClient {
         // All methods are called on the background thread.
         @Override
         public WebResourceResponseInfo shouldInterceptRequest(

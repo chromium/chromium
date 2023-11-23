@@ -9,9 +9,7 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * A base class for all fragments in the UI.
- */
+/** A base class for all fragments in the UI. */
 public abstract class DevUiBaseFragment extends Fragment {
     private long mStartOfSession;
 

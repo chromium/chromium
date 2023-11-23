@@ -223,8 +223,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
     private static final String MAIN_FRAME_FILE = "/main_frame.html";
     private static final String SECOND_PAGE = "/second_page.html";
 
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     private TestWebServer mWebServer;
 

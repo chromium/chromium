@@ -44,7 +44,11 @@ public final class SafeModeContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         if (SafeModeController.SAFE_MODE_ACTIONS_URI_PATH.equals(uri.getPath())) {
             final String[] columns = {SafeModeController.ACTIONS_COLUMN};

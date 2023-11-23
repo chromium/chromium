@@ -6,13 +6,9 @@ package org.chromium.support_lib_boundary;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Boundary interface for org.chromium.android_webview.WebMessageListener.
- */
+/** Boundary interface for org.chromium.android_webview.WebMessageListener. */
 public interface JsReplyProxyBoundaryInterface extends IsomorphicObjectBoundaryInterface {
-    /**
-     * Prefer using {@link #postMessageWithPayload}.
-     */
+    /** Prefer using {@link #postMessageWithPayload}. */
     void postMessage(String message);
 
     void postMessageWithPayload(/* MessagePayload */ InvocationHandler payload);

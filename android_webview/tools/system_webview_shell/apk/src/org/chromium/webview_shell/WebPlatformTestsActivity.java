@@ -39,13 +39,12 @@ public class WebPlatformTestsActivity extends Activity {
     private static final String TAG = "WPTActivity";
     private static final boolean DEBUG = false;
 
-    /**
-     * A callback for testing.
-     */
+    /** A callback for testing. */
     @VisibleForTesting
     public interface TestCallback {
         /** Called after child layout is added. */
         void onChildLayoutAdded(WebView webView);
+
         /** Called after child layout is removed. */
         void onChildLayoutRemoved();
     }
@@ -65,16 +64,18 @@ public class WebPlatformTestsActivity extends Activity {
             WebView childWebView = createChildLayoutAndGetNewWebView(parentWebView);
             WebSettings settings = childWebView.getSettings();
             setUpWebSettings(settings);
-            childWebView.setWebViewClient(new WebViewClientCompat() {
-                @Override
-                public void onPageFinished(WebView childWebView, String url) {
-                    if (DEBUG) Log.i(TAG, "onPageFinished");
-                    // Once the view has loaded, display its title for debugging.
-                    ViewGroup childLayout = mLayoutToWebViewBiMap.inverse().get(childWebView);
-                    TextView childTitleText = childLayout.findViewById(R.id.childTitleText);
-                    childTitleText.setText(childWebView.getTitle());
-                }
-            });
+            childWebView.setWebViewClient(
+                    new WebViewClientCompat() {
+                        @Override
+                        public void onPageFinished(WebView childWebView, String url) {
+                            if (DEBUG) Log.i(TAG, "onPageFinished");
+                            // Once the view has loaded, display its title for debugging.
+                            ViewGroup childLayout =
+                                    mLayoutToWebViewBiMap.inverse().get(childWebView);
+                            TextView childTitleText = childLayout.findViewById(R.id.childTitleText);
+                            childTitleText.setText(childWebView.getTitle());
+                        }
+                    });
             childWebView.setWebChromeClient(new MultiWindowWebChromeClient());
             // Tell the transport about the new view
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
@@ -123,7 +124,8 @@ public class WebPlatformTestsActivity extends Activity {
             // This is equivalent to Chrome's WPT setup.
             setUpMainWebView("about:blank");
         } else {
-            Log.w(TAG,
+            Log.w(
+                    TAG,
                     "Handling a non-empty intent. This should only be used for testing. URL: "
                             + url);
             setUpMainWebView(url);
@@ -148,7 +150,10 @@ public class WebPlatformTestsActivity extends Activity {
         LinearLayout childLayout =
                 (LinearLayout) parentLayout.getChildAt(parentLayout.getChildCount() - 1);
         Button childCloseButton = childLayout.findViewById(R.id.childCloseButton);
-        childCloseButton.setOnClickListener((View v) -> { closeChild(childLayout); });
+        childCloseButton.setOnClickListener(
+                (View v) -> {
+                    closeChild(childLayout);
+                });
         WebView childWebView = childLayout.findViewById(R.id.childWebView);
         mLayoutToWebViewBiMap.put(childLayout, childWebView);
         return childWebView;

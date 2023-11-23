@@ -24,11 +24,11 @@ public final class BrowserSafeModeActionList {
      * the service) will be executed in the order listed below.
      */
     public static final SafeModeAction[] sList = {
-            new VariationsSeedSafeModeAction(),
-            new AndroidAutofillSafeModeAction(),
-            new NoopSafeModeAction(),
-            new FastVariationsSeedSafeModeAction(),
-            new AwSafeBrowsingSafeModeAction(),
-            new DisableOriginTrialsSafeModeAction(),
+        new VariationsSeedSafeModeAction(),
+        new AndroidAutofillSafeModeAction(),
+        new NoopSafeModeAction(),
+        new FastVariationsSeedSafeModeAction(),
+        new AwSafeBrowsingSafeModeAction(),
+        new DisableOriginTrialsSafeModeAction(),
     };
 }
