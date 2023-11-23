@@ -76,6 +76,42 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
 
 }  // namespace internal
 
+bool IsOptedInForAccountStorage(const PrefService* pref_service,
+                                const syncer::SyncService* sync_service) {
+  DCHECK(pref_service);
+
+  if (!internal::IsUserEligibleForAccountStorage(sync_service)) {
+    return false;
+  }
+
+  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPasswords)) {
+    return false;
+  }
+
+// TODO(crbug.com/1430075): Enable the checks below on Desktop too.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // From this point on, we want to check for encryption errors, which we can
+  // only do when the engine is initialized. In that meantime, we give it the
+  // benefit of the doubt and say the user is opted in.
+  if (!sync_service->IsEngineInitialized()) {
+    return true;
+  }
+
+  // Encryption errors mean the account store can't upload data, which is bad.
+  // Worse: in some cases sign-out might not clear the store. If another user
+  // signs in later, the leftover data might end up in their account, see
+  // crbug.com/1426774.
+  // TODO(crbug.com/1428598): Hook this code to IsTrackingMetadata().
+  if (sync_service->GetUserSettings()->IsPassphraseRequired() ||
+      sync_service->GetUserSettings()->IsTrustedVaultKeyRequired()) {
+    return false;
+  }
+#endif
+
+  return true;
+}
+
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service) {
   // Opted in implies eligible, so that case is covered here too.

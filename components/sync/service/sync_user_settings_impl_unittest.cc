@@ -179,6 +179,11 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
       UserSelectableType::kApps,    UserSelectableType::kExtensions,
       UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups};
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On Desktop, kPasswords is disabled by default.
+  expected_disabled_types.Put(UserSelectableType::kPasswords);
+#endif
+
   EXPECT_EQ(selected_types,
             Difference(registered_types, expected_disabled_types));
 }

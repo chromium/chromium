@@ -1175,15 +1175,15 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   for (bool opted_in : {false, true}) {
     if (opted_in) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      features_util::OptInToAccountStorage(&prefs_, sync_service());
+      features_util::OptInToAccountStorage(&prefs_, test_sync_service());
 #else
       test_sync_service()->GetUserSettings()->SetSelectedTypes(
           /*sync_everything=*/true, syncer::UserSelectableTypeSet::All());
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     } else {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      features_util::OptOutOfAccountStorageAndClearSettings(&prefs_,
-                                                            sync_service());
+      features_util::OptOutOfAccountStorageAndClearSettings(
+          &prefs_, test_sync_service());
 #else
       test_sync_service()->GetUserSettings()->SetSelectedTypes(
           /*sync_everything=*/false, syncer::UserSelectableTypeSet());

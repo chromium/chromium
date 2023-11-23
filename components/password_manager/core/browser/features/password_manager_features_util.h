@@ -79,6 +79,8 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service);
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::IsOptedInForAccountStorage.
+// TODO(crbug.com/1484531): Remove the `pref_service` parameter, it's unused
+// now. Possibly also from other functions in this file.
 bool IsOptedInForAccountStorage(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service);
 
@@ -158,16 +160,17 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 // |pref_service| and |sync_service| must not be null.
 // See PasswordFeatureManager::OptInToAccountStorage.
 void OptInToAccountStorage(PrefService* pref_service,
-                           const syncer::SyncService* sync_service);
+                           syncer::SyncService* sync_service);
 
 // Clears the opt-in to using account storage for passwords for the
 // current signed-in user (unconsented primary account), as well as all other
 // associated settings (e.g. default store choice).
+// WARNING: this does not clear the account key from prefs like
+// KeepAccountStorageSettingsOnlyForUsers().
 // |pref_service| and |sync_service| must not be null.
 // See PasswordFeatureManager::OptOutOfAccountStorageAndClearSettings.
-void OptOutOfAccountStorageAndClearSettings(
-    PrefService* pref_service,
-    const syncer::SyncService* sync_service);
+void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
+                                            syncer::SyncService* sync_service);
 
 // Sets the default storage location for signed-in but non-syncing users. This
 // store is used for saving new credentials and adding blacking listing entries.
@@ -178,8 +181,8 @@ void SetDefaultPasswordStore(PrefService* pref_service,
                              PasswordForm::Store default_store);
 
 // Clears all account-storage-related settings for all users *except* the ones
-// in the passed-in |gaia_ids|. Most notably, this includes the opt-in, but also
-// all other related settings like the default password store.
+// in the passed-in |gaia_ids|. Most notably, the default password store.
+// WARNING: this does not clear the opt-in!
 // |pref_service| must not be null.
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
@@ -201,6 +204,11 @@ void RecordMoveOfferedToNonOptedInUser(PrefService* pref_service,
 int GetMoveOfferedToNonOptedInUserCount(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
+
+// Migrates the old password_manager account storage opt-in pref to
+// SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
+// TODO(crbug.com/1503112): Delete the migration when appropriate, see bug.
+void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager::features_util

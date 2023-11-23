@@ -58,7 +58,9 @@ using password_manager::metrics_util::PasswordType;
 
 namespace {
 
-const syncer::SyncService* GetSyncServiceForBrowserState(
+// Used for callbacks that expect a const pointer, since base::Callback isn't
+// smart enough to allow binding the SyncServiceFactory method directly.
+const syncer::SyncService* GetConstSyncServicePtr(
     ChromeBrowserState* browser_state) {
   return SyncServiceFactory::GetForBrowserStateIfExists(browser_state);
 }
@@ -71,10 +73,10 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       password_feature_manager_(
           GetPrefs(),
           GetLocalStatePrefs(),
-          GetSyncServiceForBrowserState(bridge_.browserState)),
-      credentials_filter_(this,
-                          base::BindRepeating(&GetSyncServiceForBrowserState,
-                                              bridge_.browserState)),
+          SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState)),
+      credentials_filter_(
+          this,
+          base::BindRepeating(&GetConstSyncServicePtr, bridge_.browserState)),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
@@ -180,7 +182,7 @@ PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
 
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
     const {
-  return GetSyncServiceForBrowserState(bridge_.browserState);
+  return GetConstSyncServicePtr(bridge_.browserState);
 }
 
 PasswordStoreInterface*

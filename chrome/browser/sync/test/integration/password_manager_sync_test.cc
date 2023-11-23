@@ -1012,15 +1012,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   SignIn("first@gmail.com");
   password_manager::features_util::OptInToAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
-  std::string first_gaia_id = GetSyncService(0)->GetAccountInfo().gaia;
+  auto first_gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(GetSyncService(0)->GetAccountInfo().gaia);
   SignOut();
   SignIn("second@gmail.com");
   password_manager::features_util::OptInToAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
   SignOut();
 
-  password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
-      GetProfile(0)->GetPrefs(), {first_gaia_id});
+  GetSyncService(0)->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
+      {first_gaia_id_hash});
 
   SignIn("first@gmail.com");
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
@@ -1107,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
     ASSERT_TRUE(prefs.has_value());
     ASSERT_TRUE(prefs->is_dict());
     ASSERT_TRUE(prefs->GetDict().RemoveByDottedPath(
-        password_manager::prefs::kAccountStoragePerAccountSettings));
+        syncer::prefs::internal::kSelectedTypesPerAccount));
     ASSERT_TRUE(base::JSONWriter::Write(*prefs, &json));
     ASSERT_TRUE(base::WriteFile(json_path, json));
   }

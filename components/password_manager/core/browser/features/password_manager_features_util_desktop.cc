@@ -16,7 +16,10 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 using signin::GaiaIdHash;
@@ -35,26 +38,9 @@ PasswordForm::Store PasswordStoreFromInt(int value) {
   return PasswordForm::Store::kNotSet;
 }
 
-const char kAccountStorageOptedInKey[] = "opted_in";
 const char kAccountStorageDefaultStoreKey[] = "default_store";
 const char kMoveToAccountStoreOfferedCountKey[] =
     "move_to_account_store_refused_count";
-
-// Returns the total number of accounts for which an opt-in to the account
-// storage exists. Used for metrics.
-int GetNumberOfOptedInAccounts(const PrefService* pref_service) {
-  const base::Value::Dict& global_pref =
-      pref_service->GetDict(prefs::kAccountStoragePerAccountSettings);
-  int count = 0;
-  for (auto entry : global_pref) {
-    if (entry.second.GetDict()
-            .FindBool(kAccountStorageOptedInKey)
-            .value_or(false)) {
-      ++count;
-    }
-  }
-  return count;
-}
 
 // Helper class for reading account storage settings for a given account.
 class AccountStorageSettingsReader {
@@ -64,14 +50,6 @@ class AccountStorageSettingsReader {
     const base::Value::Dict& global_pref =
         prefs->GetDict(prefs::kAccountStoragePerAccountSettings);
     account_settings_ = global_pref.FindDict(gaia_id_hash.ToBase64());
-  }
-
-  bool IsOptedIn() {
-    if (!account_settings_) {
-      return false;
-    }
-    return account_settings_->FindBool(kAccountStorageOptedInKey)
-        .value_or(false);
   }
 
   PasswordForm::Store GetDefaultStore() const {
@@ -113,11 +91,9 @@ class ScopedAccountStorageSettingsUpdate {
     return update_->EnsureDict(account_hash_);
   }
 
-  void SetOptedIn() {
+  void ResetMoveToAccountStoreOfferedCount() {
     base::Value::Dict* account_settings = GetOrCreateAccountSettings();
-    // The count of refusals is only tracked when the user is not opted-in.
     account_settings->Remove(kMoveToAccountStoreOfferedCountKey);
-    account_settings->Set(kAccountStorageOptedInKey, true);
   }
 
   void SetDefaultStore(PasswordForm::Store default_store) {
@@ -141,25 +117,6 @@ class ScopedAccountStorageSettingsUpdate {
 };
 
 }  // namespace
-
-bool IsOptedInForAccountStorage(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-
-  if (!internal::IsUserEligibleForAccountStorage(sync_service)) {
-    return false;
-  }
-
-  // If there's no signed-in account, there can be no opt-in.
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty()) {
-    return false;
-  }
-
-  return AccountStorageSettingsReader(pref_service,
-                                      GaiaIdHash::FromGaiaId(gaia_id))
-      .IsOptedIn();
-}
 
 bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
                                    const syncer::SyncService* sync_service) {
@@ -194,13 +151,8 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
 
   // Show the opt-in if any known previous user opted into using the account
   // storage before and might want to access it again.
-  return base::ranges::any_of(
-      pref_service->GetDict(prefs::kAccountStoragePerAccountSettings),
-      [](const std::pair<std::string, const base::Value&>& p) {
-        return p.second.GetDict()
-            .FindBool(kAccountStorageOptedInKey)
-            .value_or(false);
-      });
+  return sync_service->GetUserSettings()
+             ->GetNumberOfAccountsWithPasswordsSelected() > 0;
 }
 
 PasswordForm::Store GetDefaultPasswordStore(
@@ -258,7 +210,7 @@ bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
 }
 
 void OptInToAccountStorage(PrefService* pref_service,
-                           const syncer::SyncService* sync_service) {
+                           syncer::SyncService* sync_service) {
   DCHECK(pref_service);
   DCHECK(sync_service);
   DCHECK(
@@ -270,19 +222,27 @@ void OptInToAccountStorage(PrefService* pref_service,
     // rare, but is ultimately harmless - just do nothing here.
     return;
   }
+  if (sync_service->IsSyncFeatureEnabled()) {
+    // Same as above, maybe the user enabled sync since the UI was shown. This
+    // should be rare, but is ultimately harmless - just do nothing here.
+    return;
+  }
+  syncer::SyncUserSettings* sync_user_settings =
+      sync_service->GetUserSettings();
+  sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
+                                      /*is_type_on=*/true);
   ScopedAccountStorageSettingsUpdate(pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
-      .SetOptedIn();
+      .ResetMoveToAccountStoreOfferedCount();
 
   // Record the total number of (now) opted-in accounts.
   base::UmaHistogramExactLinear(
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn",
-      GetNumberOfOptedInAccounts(pref_service), 10);
+      sync_user_settings->GetNumberOfAccountsWithPasswordsSelected(), 10);
 }
 
-void OptOutOfAccountStorageAndClearSettings(
-    PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
+void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
+                                            syncer::SyncService* sync_service) {
   DCHECK(pref_service);
   DCHECK(sync_service);
   DCHECK(
@@ -295,6 +255,12 @@ void OptOutOfAccountStorageAndClearSettings(
     return;
   }
 
+  // Note SyncUserSettings::SetSelectedType() won't clear the gaia id hash
+  // but that's not required here.
+  syncer::SyncUserSettings* sync_user_settings =
+      sync_service->GetUserSettings();
+  sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
+                                      false);
   ScopedAccountStorageSettingsUpdate(pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .ClearAllSettings();
@@ -302,7 +268,7 @@ void OptOutOfAccountStorageAndClearSettings(
   // Record the total number of (still) opted-in accounts.
   base::UmaHistogramExactLinear(
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut",
-      GetNumberOfOptedInAccounts(pref_service), 10);
+      sync_user_settings->GetNumberOfAccountsWithPasswordsSelected(), 10);
 }
 
 void SetDefaultPasswordStore(PrefService* pref_service,
@@ -362,9 +328,7 @@ void RecordMoveOfferedToNonOptedInUser(
   DCHECK(sync_service);
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   DCHECK(!gaia_id.empty());
-  DCHECK(!AccountStorageSettingsReader(pref_service,
-                                       GaiaIdHash::FromGaiaId(gaia_id))
-              .IsOptedIn());
+  DCHECK(!IsOptedInForAccountStorage(pref_service, sync_service));
   ScopedAccountStorageSettingsUpdate(pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .RecordMoveOfferedToNonOptedInUser();
@@ -377,10 +341,36 @@ int GetMoveOfferedToNonOptedInUserCount(
   DCHECK(sync_service);
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   DCHECK(!gaia_id.empty());
+  DCHECK(!IsOptedInForAccountStorage(pref_service, sync_service));
   AccountStorageSettingsReader reader(pref_service,
                                       GaiaIdHash::FromGaiaId(gaia_id));
-  DCHECK(!reader.IsOptedIn());
   return reader.GetMoveOfferedToNonOptedInUserCount();
+}
+
+void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service) {
+  const char kLegacyAccountStorageOptedInKey[] = "opted_in";
+
+  ScopedDictPrefUpdate legacy_pref_update(
+      pref_service, prefs::kAccountStoragePerAccountSettings);
+  ScopedDictPrefUpdate new_pref_update(
+      pref_service, syncer::prefs::internal::kSelectedTypesPerAccount);
+  for (auto [serialized_gaia_id_hash, settings] : *legacy_pref_update) {
+    // `settings` should be a dict but check to avoid a possible startup crash.
+    if (!settings.is_dict()) {
+      continue;
+    }
+    if (settings.GetDict()
+            .FindBool(kLegacyAccountStorageOptedInKey)
+            .value_or(false)) {
+      // Sync doesn't expose an API to set selected types for an arbitrary
+      // account, so manipulate the underlying prefs directly. The serialization
+      // for the gaia id hash is indeed the same, unit tests verify that by
+      // invoking GetSelectedTypes() after the migration.
+      new_pref_update->EnsureDict(serialized_gaia_id_hash)
+          ->Set(syncer::prefs::internal::kSyncPasswords, true);
+    }
+    settings.GetDict().Remove(kLegacyAccountStorageOptedInKey);
+  }
 }
 
 // Note: See also password_manager_features_util_common.cc for shared

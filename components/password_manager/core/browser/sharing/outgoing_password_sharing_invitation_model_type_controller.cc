@@ -5,8 +5,6 @@
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_model_type_controller.h"
 
 #include "base/functional/bind.h"
-#include "build/build_config.h"
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -40,7 +38,6 @@ OutgoingPasswordSharingInvitationModelTypeController::
           /*delegate_for_transport_mode=*/
           CreateDelegateFromPasswordSenderService(password_sender_service)),
       sync_service_(sync_service),
-      pref_service_(pref_service),
       account_storage_settings_watcher_(
           pref_service,
           sync_service,
@@ -68,19 +65,6 @@ OutgoingPasswordSharingInvitationModelTypeController::GetPreconditionState()
   if (!password_sharing_enabled_policy_.GetValue()) {
     return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
   }
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (!sync_service_->IsSyncFeatureEnabled() &&
-      !sync_service_->IsLocalSyncEnabled() &&
-      !features_util::IsOptedInForAccountStorage(pref_service_,
-                                                 sync_service_)) {
-    // The user is in transport mode and password sync is disabled because they
-    // are not opted in to account storage. Sharing should be disabled too.
-    // TODO(crbug.com/1484531): IsOptedInForAccountStorage() with "selected
-    // types" and delete this check.
-    return PreconditionState::kMustStopAndClearData;
-  }
-#endif
 
   return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
 }

@@ -66,30 +66,6 @@ void CredentialModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
   ModelTypeController::Stop(fate, std::move(callback));
 }
 
-syncer::DataTypeController::PreconditionState
-CredentialModelTypeController::GetPreconditionState() const {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // If Sync-the-feature is enabled, then the user has opted in to that, and no
-  // additional opt-in is required here.
-  // TODO(crbug.com/1466447): IsSyncFeatureEnabled() is deprecated and should be
-  // removed. See ConsentLevel::kSync documentation for details.
-  if (sync_service_->IsSyncFeatureEnabled() ||
-      sync_service_->IsLocalSyncEnabled()) {
-    return PreconditionState::kPreconditionsMet;
-  }
-  // If Sync-the-feature is *not* enabled, then credential sync should only be
-  // turned on if the user has opted in to the account-scoped storage.
-  return features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
-#else
-  // On Android and iOS, there is no explicit opt-in - instead the user's choice
-  // is handled via Sync's selected types (see `UserSelectableType`). So nothing
-  // to check here.
-  return PreconditionState::kPreconditionsMet;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
 bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
 #if !BUILDFLAG(IS_IOS)
   // Outside iOS, passphrase errors aren't reported in the UI, so it doesn't

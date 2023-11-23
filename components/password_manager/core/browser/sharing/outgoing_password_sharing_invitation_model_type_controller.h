@@ -37,7 +37,6 @@ class OutgoingPasswordSharingInvitationModelTypeController
   void OnAccountStorageSettingsChanged();
 
   const raw_ptr<syncer::SyncService> sync_service_;
-  const raw_ptr<PrefService> pref_service_;
   PasswordAccountStorageSettingsWatcher account_storage_settings_watcher_;
   BooleanPrefMember password_sharing_enabled_policy_;
 };

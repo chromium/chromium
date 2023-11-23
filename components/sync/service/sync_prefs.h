@@ -106,6 +106,12 @@ class SyncPrefs {
   // parent/guardian of a child account).
   bool IsTypeManagedByCustodian(UserSelectableType type) const;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On Desktop, kPasswords isn't considered "selected" by default in transport
+  // mode. This method returns how many accounts selected (enabled) the type.
+  int GetNumberOfAccountsWithPasswordsSelected() const;
+#endif
+
   // Sets the selection state for all |registered_types| and "keep everything
   // synced" flag.
   // |keep_everything_synced| indicates that all current and future types

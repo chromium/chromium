@@ -18,7 +18,8 @@
 
 namespace password_manager {
 
-TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
+// TODO(crbug.com/1484531): Delete class and tests.
+TEST(PasswordAccountStorageSettingsWatcherTest, DISABLED_NotifiesOnChanges) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kEnablePasswordsAccountStorage);
 

@@ -19,7 +19,7 @@ namespace password_manager {
 PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
     PrefService* pref_service,
     PrefService* local_state,
-    const syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service)
     : pref_service_(pref_service),
       local_state_(local_state),
       sync_service_(sync_service) {}

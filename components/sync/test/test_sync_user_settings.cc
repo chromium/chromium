@@ -108,6 +108,12 @@ bool TestSyncUserSettings::IsTypeManagedByCustodian(
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+int TestSyncUserSettings::GetNumberOfAccountsWithPasswordsSelected() const {
+  return selected_types_.Has(UserSelectableType::kPasswords) ? 1 : 0;
+}
+#endif
+
 ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   ModelTypeSet types = UserSelectableTypesToModelTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());

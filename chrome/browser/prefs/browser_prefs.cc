@@ -2605,6 +2605,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
   profile_prefs->ClearPref(kUserGeolocationAllowed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 11/2023.
+  password_manager::features_util::MigrateOptInPrefToSyncSelectedTypes(
+      profile_prefs);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Deprecated 11/2023.
   profile_prefs->ClearPref(kPasswordChangeSuccessTrackerFlows);
   profile_prefs->ClearPref(kPasswordChangeSuccessTrackerVersion);

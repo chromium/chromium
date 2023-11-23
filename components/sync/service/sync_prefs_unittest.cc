@@ -332,6 +332,11 @@ TEST_F(SyncPrefsTest,
       UserSelectableType::kPasswords, UserSelectableType::kAutofill,
       UserSelectableType::kPayments};
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On Desktop, kPasswords is disabled by default.
+  expected_types.Remove(UserSelectableType::kPasswords);
+#endif
+
 #if BUILDFLAG(IS_IOS)
   // On iOS, Bookmarks and Reading list require a dedicated opt-in.
   EXPECT_EQ(
@@ -367,6 +372,12 @@ TEST_F(SyncPrefsTest,
       UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
       UserSelectableType::kPasswords, UserSelectableType::kAutofill,
       UserSelectableType::kPayments,  UserSelectableType::kPreferences};
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On Desktop, kPasswords is disabled by default.
+  expected_types.Remove(UserSelectableType::kPasswords);
+#endif
+
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
             expected_types);
 }
@@ -631,6 +642,32 @@ TEST_F(SyncPrefsTest, SetBookmarksAndReadingListAccountStorageOptInPrefChange) {
           ->IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsTest, GetNumberOfAccountsWithPasswordsSelected) {
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 0);
+
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
+                                         gaia_id_hash_);
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 1);
+
+  const auto other_gaia_id_hash = signin::GaiaIdHash::FromGaiaId("other");
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
+                                         other_gaia_id_hash);
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 2);
+
+  sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPasswords, false,
+                                         gaia_id_hash_);
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 1);
+
+  sync_prefs_->KeepAccountSettingsPrefsOnlyForUsers({});
+
+  EXPECT_EQ(sync_prefs_->GetNumberOfAccountsWithPasswordsSelected(), 0);
+}
+#endif
 
 enum BooleanPrefState { PREF_FALSE, PREF_TRUE, PREF_UNSET };
 
