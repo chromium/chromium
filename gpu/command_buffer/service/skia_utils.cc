@@ -126,13 +126,12 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
                                             &glyph_cache_max_texture_bytes);
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
 
-  // Disable multisampled antialiasing when it's slow.
-  // NOTE: `workarounds.msaa_is_slow` is true on all Intel devices.
-  // gpu::gles2::MSAAIsSlow() will return true on Intel devices unless the
-  // features::kEnableMSAAOnNewIntelGPUs base::Feature is enabled. If rolling
-  // out single-sampling for Graphite, we should consider whether to tie the
-  // rollout to the features::kEnableMSSAOnNewIntelGPUs experiment.
-  if (workarounds.msaa_is_slow) {
+  // msaa_is_slow_2 excludes new Intel >= Gen 11 GPUs. We're unconditionally
+  // enabling MSAA on those GPUs for Graphite instead of looking at the
+  // features::kEnableMSSAOnNewIntelGPUs experiment or gles2::MSAAIsSlow().
+  if (workarounds.msaa_is_slow_2) {
+    // For single-sampling, currently Graphite falls back to the CPU-based
+    // RasterPathAtlas, which is still a little slow and buggy now.
     options.fInternalMultisampleCount = 1;
   }
 
