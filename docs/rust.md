@@ -59,6 +59,10 @@ To use a third-party crate "bar" version 3 from first party code:
    * `./tools/crates/run_gnrt.py vendor` to download the new crate.
    * Or, directly through (nightly) cargo:
      `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt vendor`
+   * This will also apply any patches in `//third_party/rust/chromium_crates_io/patches`
+     for the crates. If a patch can not apply, the crate's download will be cancelled and
+     an error will be printed. See [patching errors](#patching-errors) below for how to resolve
+     this.
 1. Add the new files to git:
    * `git add -f third_party/rust/chromium_crates_io/vendor`
    * The `-f` is important, as files may be skipped otherwise from a
@@ -89,7 +93,7 @@ To enable a feature "spaceships" in the crate, change the entry in
 bar = { version = "3", features = [ "spaceships" ] }
 ```
 
-### Patching third-party crates.
+### Patching third-party crates
 
 You may patch a crate in tree, but save any changes made into a diff file in
 a `//third_party/rust/chromium_crates_io/patches/` directory for the crate.
@@ -110,6 +114,23 @@ The recommended procedure to create such patches is:
 4. Use `git format-patch <unpatched version>` to generate the patch files
 5. Add the patch files in a new, third, commit
 6. Squash them, or rely on `git cl upload` doing so
+
+#### Patching errors
+
+If `gnrt vendor` fails to apply a patch for a crate, it will cancel the download of that
+crate rather than leave it in a broken state. To recreate patches, first get a pristine
+copy of the crate by using the `--no-patches` argument:
+
+1. Download the crate without applying patches:
+   * `vpython3 ./tools/crates/run_gnrt.py vendor --no-patches=<CRATE_NAME>`
+2. Then recreate the patches as described in [Patching third-party crates](
+   #patching-third_party-crates).
+
+To verify the patches work, remove the vendored crate directory in
+`//third_party/rust/chromium_crates_io/vendor/`, named after the crate name
+and version. Then run the `vendor` action without `--no-patches` which will
+download the crate and apply the patches:
+   * `vpython3 ./tools/crates/run_gnrt.py vendor`
 
 ## Security
 

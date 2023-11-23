@@ -5,13 +5,13 @@ Subject: [PATCH 4/4] Export symbols from cxx
 
 Change-Id: Ib53acaa4cbcd2c872c3e11580970e6cf562c9109
 ---
- third_party/rust/cxx/v1/crate/src/cxx.cc | 328 +++++++++++++----------
+ third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc | 328 +++++++++++++----------
  1 file changed, 179 insertions(+), 149 deletions(-)
 
-diff --git a/third_party/rust/cxx/v1/crate/src/cxx.cc b/third_party/rust/cxx/v1/crate/src/cxx.cc
+diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
 index a1cdc44ea1ba9..bacf3f7d81323 100644
---- a/third_party/rust/cxx/v1/crate/src/cxx.cc
-+++ b/third_party/rust/cxx/v1/crate/src/cxx.cc
+--- a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
++++ b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
 @@ -4,71 +4,93 @@
  #include <iostream>
  #include <memory>

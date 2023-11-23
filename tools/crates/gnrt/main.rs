@@ -79,6 +79,17 @@ fn main() -> Result<()> {
                             "Exit before writing BUILD.gn files, instead serialize the template \
                             engine input and write it to a file named `gnrt-template-input.json`.",
                         ),
+                )
+                .arg(
+                    Arg::new("no-patches")
+                        .long("no-patches")
+                        .value_name("CRATE_NAME")
+                        .num_args(0..)
+                        .help(
+                            "Don't apply patches from the chromium_crates_io/patches directory \
+                     to newly vendored crates. If a crate name is given as a value for the \
+                     flag, patches will only not be applied for that crate.",
+                        ),
                 ),
         )
         .subcommand(

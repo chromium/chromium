@@ -5,13 +5,13 @@ Subject: [PATCH 3/4] Absolute path for cxx header
 
 Change-Id: Iaaa5965443bd3446ac8cd645936614a24e8bb500
 ---
- third_party/rust/cxx/v1/crate/src/cxx.cc | 2 +-
+ third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/third_party/rust/cxx/v1/crate/src/cxx.cc b/third_party/rust/cxx/v1/crate/src/cxx.cc
+diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
 index 2522d61aa33dc..a1cdc44ea1ba9 100644
---- a/third_party/rust/cxx/v1/crate/src/cxx.cc
-+++ b/third_party/rust/cxx/v1/crate/src/cxx.cc
+--- a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
++++ b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
 @@ -1,4 +1,4 @@
 -#include "../include/cxx.h"
 +#include "third_party/rust/cxx/v1/cxx.h"

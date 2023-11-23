@@ -20,6 +20,23 @@ pub fn check_wait_with_output(child: process::Child, cmd_msg: &str) -> Result<pr
     child.wait_with_output().with_context(|| format!("unexpected error while running {cmd_msg}"))
 }
 
+pub fn run_command(mut cmd: process::Command, cmd_msg: &str, stdin: Option<&[u8]>) -> Result<()> {
+    if stdin.is_some() {
+        cmd.stdin(std::process::Stdio::piped());
+    }
+    let mut child = check_spawn(&mut cmd, cmd_msg)?;
+    if let Some(stdin) = stdin {
+        use std::io::Write;
+        child.stdin.as_mut().unwrap().write(stdin)?;
+    }
+    let status = child.wait()?;
+    if !status.success() {
+        Err(format_err!("command '{}' failed: {}", cmd_msg, status))
+    } else {
+        Ok(())
+    }
+}
+
 pub fn check_exit_ok(output: &process::Output, cmd_msg: &str) -> Result<()> {
     if output.status.success() {
         Ok(())
