@@ -420,8 +420,11 @@ PasswordGenerationPopupControllerImpl::GetElementTextDirection() const {
 
 void PasswordGenerationPopupControllerImpl::HideImpl() {
   // Detach if the frame is still alive.
-  if (driver_)
+  if (driver_) {
     key_press_handler_manager_->RemoveKeyPressHandler();
+    // The preview might have not been cleared (e.g. popup closed with ESC).
+    driver_->ClearPreviewedForm();
+  }
 
   if (view_)
     view_->Hide();
