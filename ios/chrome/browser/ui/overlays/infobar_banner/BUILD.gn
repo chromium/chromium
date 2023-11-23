@@ -4,6 +4,8 @@
 
 source_set("coordinators") {
   sources = [
+    "features.h",
+    "features.mm",
     "infobar_banner_overlay_coordinator.h",
     "infobar_banner_overlay_coordinator.mm",
   ]

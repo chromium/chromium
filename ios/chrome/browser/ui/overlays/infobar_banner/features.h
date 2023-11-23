@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_FEATURES_H_
-#define IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_FEATURES_H_
+#ifndef IOS_CHROME_BROWSER_UI_OVERLAYS_INFOBAR_BANNER_FEATURES_H_
+#define IOS_CHROME_BROWSER_UI_OVERLAYS_INFOBAR_BANNER_FEATURES_H_
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -26,4 +26,4 @@ BASE_DECLARE_FEATURE(kAddressInfobarDisplayLength);
 // The param value for the address save infobar display duration.
 extern const base::FeatureParam<int> kAddressInfobarDisplayLengthParam;
 
-#endif  // IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_FEATURES_H_
+#endif  // IOS_CHROME_BROWSER_UI_OVERLAYS_INFOBAR_BANNER_FEATURES_H_
