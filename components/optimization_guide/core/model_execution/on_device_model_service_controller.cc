@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -11,11 +13,38 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
+
+namespace {
+
+class ScopedEligibilityReasonLogger {
+ public:
+  explicit ScopedEligibilityReasonLogger(proto::ModelExecutionFeature feature)
+      : feature_(feature) {}
+  ~ScopedEligibilityReasonLogger() {
+    CHECK_NE(reason_, OnDeviceModelEligibilityReason::kUnknown);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
+             GetStringNameForModelExecutionFeature(feature_)}),
+        reason_);
+  }
+
+  void set_reason(OnDeviceModelEligibilityReason reason) { reason_ = reason; }
+
+ private:
+  proto::ModelExecutionFeature feature_;
+
+  OnDeviceModelEligibilityReason reason_ =
+      OnDeviceModelEligibilityReason::kUnknown;
+};
+
+}  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
     std::unique_ptr<OnDeviceModelAccessController> access_controller)
@@ -48,12 +77,29 @@ void OnDeviceModelServiceController::Init() {
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::StartSession(
     proto::ModelExecutionFeature feature) {
+  ScopedEligibilityReasonLogger logger(feature);
   if (!base::FeatureList::IsEnabled(
-          features::kOptimizationGuideOnDeviceModel) ||
-      !config_interpreter_->HasConfigForFeature(feature) ||
-      !access_controller_->ShouldStartNewSession()) {
+          features::kOptimizationGuideOnDeviceModel)) {
+    logger.set_reason(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
     return nullptr;
   }
+  if (model_path_.empty()) {
+    logger.set_reason(OnDeviceModelEligibilityReason::kModelNotAvailable);
+    return nullptr;
+  }
+  if (!config_interpreter_->HasConfigForFeature(feature)) {
+    logger.set_reason(
+        OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
+    return nullptr;
+  }
+  OnDeviceModelEligibilityReason reason =
+      access_controller_->ShouldStartNewSession();
+  logger.set_reason(reason);
+  if (reason != OnDeviceModelEligibilityReason::kSuccess) {
+    return nullptr;
+  }
+  CHECK_EQ(reason, OnDeviceModelEligibilityReason::kSuccess);
+
   return std::make_unique<OnDeviceSession>(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),

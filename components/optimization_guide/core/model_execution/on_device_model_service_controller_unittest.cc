@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
@@ -292,6 +293,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
+  base::HistogramTester histogram_tester;
+
   auto session = test_controller_->StartSession(kFeature);
   EXPECT_TRUE(session);
   ExecuteModel(*session, "foo");
@@ -300,6 +303,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   const std::string expected_response = "Input: execute:foo\n";
   EXPECT_EQ(*response_received_, expected_response);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
+      OnDeviceModelEligibilityReason::kSuccess, 1);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
@@ -381,8 +388,15 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_FALSE(test_controller_->StartSession(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+      "TabOrganization",
+      OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
@@ -468,8 +482,17 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
   // Wait for the service to launch, and be shut down.
   task_environment_.RunUntilIdle();
 
-  // Because the model returned kGpuBlocked, no more sessions should start.
-  EXPECT_FALSE(test_controller_->StartSession(kFeature));
+  {
+    base::HistogramTester histogram_tester;
+
+    // Because the model returned kGpuBlocked, no more sessions should start.
+    EXPECT_FALSE(test_controller_->StartSession(kFeature));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kGpuBlocked, 1);
+  }
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
@@ -481,8 +504,17 @@ TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
     EXPECT_TRUE(session) << i;
     task_environment_.RunUntilIdle();
   }
-  auto session = test_controller_->StartSession(kFeature);
-  EXPECT_FALSE(session);
+
+  {
+    base::HistogramTester histogram_tester;
+    auto session = test_controller_->StartSession(kFeature);
+    EXPECT_FALSE(session);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kTooManyRecentCrashes, 1);
+  }
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {

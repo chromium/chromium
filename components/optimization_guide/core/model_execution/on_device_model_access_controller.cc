@@ -28,10 +28,16 @@ OnDeviceModelAccessController::OnDeviceModelAccessController(
 
 OnDeviceModelAccessController::~OnDeviceModelAccessController() = default;
 
-bool OnDeviceModelAccessController::ShouldStartNewSession() const {
-  return !is_gpu_blocked_ &&
-         pref_service_->GetInteger(kOnDeviceModelCrashCount) <
-             features::GetOnDeviceModelCrashCountBeforeDisable();
+OnDeviceModelEligibilityReason
+OnDeviceModelAccessController::ShouldStartNewSession() const {
+  if (is_gpu_blocked_) {
+    return OnDeviceModelEligibilityReason::kGpuBlocked;
+  }
+  if (pref_service_->GetInteger(kOnDeviceModelCrashCount) >=
+      features::GetOnDeviceModelCrashCountBeforeDisable()) {
+    return OnDeviceModelEligibilityReason::kTooManyRecentCrashes;
+  }
+  return OnDeviceModelEligibilityReason::kSuccess;
 }
 
 void OnDeviceModelAccessController::OnResponseCompleted() {

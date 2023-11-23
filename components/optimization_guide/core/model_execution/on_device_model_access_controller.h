@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ACCESS_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 
 class PrefService;
 
@@ -20,8 +21,8 @@ class OnDeviceModelAccessController {
   explicit OnDeviceModelAccessController(PrefService& pref_service);
   ~OnDeviceModelAccessController();
 
-  // Returns true if a new session should be started.
-  bool ShouldStartNewSession() const;
+  // Returns success if a new session should be started.
+  OnDeviceModelEligibilityReason ShouldStartNewSession() const;
 
   // Called when the complete response was received.
   void OnResponseCompleted();
