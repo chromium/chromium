@@ -705,8 +705,10 @@ void SequenceManagerImpl::RemoveAllCanceledDelayedTasksFromFront(
 
 absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
     LazyNow* lazy_now,
-    SelectTaskOption option) const {
+    SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+
+  RemoveAllCanceledDelayedTasksFromFront(lazy_now);
 
   if (main_thread_only().selector.GetHighestPendingPriority(option)) {
     // If the selector has non-empty queues we trivially know there is immediate
@@ -1060,13 +1062,6 @@ void SequenceManagerImpl::CleanUpQueues() {
   main_thread_only().queues_to_delete.clear();
 }
 
-void SequenceManagerImpl::RemoveAllCanceledTasksFromFrontOfWorkQueues() {
-  for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
-    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
-    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
-  }
-}
-
 WeakPtr<SequenceManagerImpl> SequenceManagerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -1114,7 +1109,13 @@ void SequenceManagerImpl::AttachToMessagePump() {
 
 bool SequenceManagerImpl::IsIdleForTesting() {
   ReloadEmptyWorkQueues();
-  RemoveAllCanceledTasksFromFrontOfWorkQueues();
+
+  // Make sure that canceled tasks don't affect the return value.
+  for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
+    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
+    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+  }
+
   return !main_thread_only().selector.GetHighestPendingPriority().has_value();
 }
 

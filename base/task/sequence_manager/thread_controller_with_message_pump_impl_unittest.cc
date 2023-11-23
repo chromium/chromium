@@ -146,11 +146,8 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
     task_execution_stack_.pop_back();
   }
 
-  void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override {}
-
-  absl::optional<WakeUp> GetPendingWakeUp(
-      LazyNow* lazy_now,
-      SelectTaskOption option) const override {
+  absl::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
+                                          SelectTaskOption option) override {
     if (tasks_.empty())
       return absl::nullopt;
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
