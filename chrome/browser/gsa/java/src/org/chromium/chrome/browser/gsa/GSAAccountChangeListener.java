@@ -57,9 +57,6 @@ public class GSAAccountChangeListener {
         public void onReceive(Context context, Intent intent) {
             if (!ACCOUNT_UPDATE_BROADCAST_INTENT.equals(intent.getAction())) return;
             String accountName = intent.getStringExtra(BROADCAST_INTENT_ACCOUNT_NAME_EXTRA);
-            RecordHistogram.recordEnumeratedHistogram(GSAServiceClient.ACCOUNT_CHANGE_HISTOGRAM,
-                    GSAServiceClient.ACCOUNT_CHANGE_SOURCE_BROADCAST,
-                    GSAServiceClient.ACCOUNT_CHANGE_SOURCE_COUNT);
             GSAState.getInstance().setGsaAccount(accountName);
         }
     }

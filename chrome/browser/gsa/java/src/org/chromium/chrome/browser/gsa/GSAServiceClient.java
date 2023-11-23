@@ -18,7 +18,6 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * A simple client that connects and talks to the GSAService using Messages.
@@ -39,12 +38,6 @@ public class GSAServiceClient {
     public static final String KEY_GSA_PACKAGE_NAME = "ssb_service:ssb_package_name";
     public static final String KEY_GSA_SUPPORTS_BROADCAST =
             "ssb_service:chrome_holds_account_update_permission";
-
-    static final String ACCOUNT_CHANGE_HISTOGRAM = "Search.GsaAccountChangeNotificationSource";
-    // For the histogram above. Append-only.
-    static final int ACCOUNT_CHANGE_SOURCE_SERVICE = 0;
-    static final int ACCOUNT_CHANGE_SOURCE_BROADCAST = 1;
-    static final int ACCOUNT_CHANGE_SOURCE_COUNT = 2;
 
     /** Messenger to handle incoming messages from the service */
     private final Messenger mMessenger;
@@ -72,8 +65,6 @@ public class GSAServiceClient {
             if (mService == null) return;
             final Bundle bundle = (Bundle) msg.obj;
             String account = mGsaHelper.getGSAAccountFromState(bundle.getByteArray(KEY_GSA_STATE));
-            RecordHistogram.recordEnumeratedHistogram(ACCOUNT_CHANGE_HISTOGRAM,
-                    ACCOUNT_CHANGE_SOURCE_SERVICE, ACCOUNT_CHANGE_SOURCE_COUNT);
             GSAState.getInstance().setGsaAccount(account);
             if (mOnMessageReceived != null) mOnMessageReceived.onResult(bundle);
         }

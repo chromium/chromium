@@ -27928,11 +27928,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="User ignores the message many times"/>
 </enum>
 
-<enum name="GsaAccountChangeNotificationSource">
-  <int value="0" label="Service"/>
-  <int value="1" label="Broadcast"/>
-</enum>
-
 <enum name="GuestOsFailureClasses">
   <int value="0" label="Concierge"/>
   <int value="1" label="Cicerone"/>
