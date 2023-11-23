@@ -3450,6 +3450,15 @@
       'fuchsia-x64-rel',
     ],
   },
+  'model_validation_tests MODEL_VALIDATION_BASE': {
+    'modifications': {
+      'optimization_guide-win32': {
+        'args': [
+          '--target-platform=win32',
+        ],
+      },
+    },
+  },
   'mojo_test_apk': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.

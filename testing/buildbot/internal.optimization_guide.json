@@ -473,6 +473,9 @@
     ],
     "isolated_scripts": [
       {
+        "args": [
+          "--target-platform=win32"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
