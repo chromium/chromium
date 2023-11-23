@@ -1,6 +1,6 @@
 Name: error-prone library
 Short Name: error_prone_core
-URL: 
+URL: https://github.com/google/error-prone/tree/master/core
 Version: 2.11.0
 License: Apache 2.0
 License File: LICENSE

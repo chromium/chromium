@@ -54,7 +54,7 @@ URL: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers
 Version: N/A
 Revision: unknown
 License: Apache 2.0
-License File: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers/-/blob/a3ca2c505a338cdffcca2bf91021ee72b010122f/LICENSES/Apache-2.0.txt
+License File: src/LICENSES/Apache-2.0.txt
 Security Critical: yes
 Shipped: yes
 
