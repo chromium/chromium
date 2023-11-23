@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -74,7 +75,9 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
       snap_container.SetNeedsPaintPropertyUpdate();
       scrollable_area->SetSnapChangingTargetData(absl::nullopt);
       scrollable_area->SetSnappedTargetData(absl::nullopt);
-      scrollable_area->EnqueueSnapChangedEvent();
+      if (RuntimeEnabledFeatures::CSSSnapChangingEventEnabled()) {
+        scrollable_area->EnqueueSnapChangedEvent();
+      }
       scrollable_area->SetSnapContainerData(absl::nullopt);
     }
     return false;
