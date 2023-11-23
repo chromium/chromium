@@ -1166,6 +1166,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didCloseAll {
   self.isClosingAllOrUndoRunning = NO;
+  [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 - (void)willUndoCloseAll {
@@ -1174,6 +1175,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didUndoCloseAll {
   self.isClosingAllOrUndoRunning = NO;
+  [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 #pragma mark - Actions
