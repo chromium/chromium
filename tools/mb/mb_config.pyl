@@ -476,20 +476,6 @@
       'win-swangle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
     },
 
-    'chromium.updater': {
-      'linux-updater-builder-dbg': 'updater_debug_bot_reclient',
-      'linux-updater-builder-rel': 'updater_release_bot_reclient',
-      'mac-updater-builder-arm64-dbg': 'updater_debug_bot_arm64_reclient',
-      'mac-updater-builder-arm64-rel': 'updater_release_bot_arm64_reclient',
-      'mac-updater-builder-asan-dbg': 'updater_debug_bot_asan_reclient',
-      'mac-updater-builder-dbg': 'updater_debug_bot_reclient',
-      'mac-updater-builder-rel': 'updater_release_bot_reclient',
-      'win-updater-builder-dbg': 'updater_debug_bot_reclient',
-      'win-updater-builder-rel': 'updater_release_bot_reclient',
-      'win32-updater-builder-dbg': 'updater_debug_bot_x86_reclient',
-      'win32-updater-builder-rel': 'updater_release_bot_x86_reclient',
-    },
-
     # TODO(crbug.com/818301): This group is going away.
     'chromium.webkit': {
       'WebKit Linux Trusty ASAN': 'asan_lsan_release_bot',
@@ -949,15 +935,6 @@
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient',
       'mac-clang-tidy-rel': 'release_trybot_reclient',
       'win10-clang-tidy-rel': 'release_trybot_reclient',
-    },
-
-    'tryserver.chromium.updater': {
-       'linux-updater-try-builder-dbg': 'updater_debug_bot_reclient_use_dummy_lastchange',
-       'linux-updater-try-builder-rel': 'updater_release_trybot_reclient',
-       'mac-updater-try-builder-dbg': 'updater_debug_bot_reclient_use_dummy_lastchange',
-       'mac-updater-try-builder-rel': 'updater_release_trybot_reclient',
-       'win-updater-try-builder-dbg': 'updater_debug_bot_reclient_use_dummy_lastchange',
-       'win-updater-try-builder-rel': 'updater_release_trybot_reclient',
     },
 
     'tryserver.chromium.win': {
@@ -2458,42 +2435,6 @@
 
     'ubsan_vptr_release_bot_reclient': [
       'ubsan_vptr', 'ubsan_vptr_no_recover_hack', 'release_bot_reclient',
-    ],
-
-    'updater_debug_bot_arm64_reclient': [
-      'arm64', 'updater', 'debug_static_bot_reclient',
-    ],
-
-    'updater_debug_bot_asan_reclient': [
-      'updater', 'asan', 'debug_static_bot_reclient',
-    ],
-
-    'updater_debug_bot_reclient': [
-      'updater', 'debug_static_bot_reclient',
-    ],
-
-    'updater_debug_bot_reclient_use_dummy_lastchange': [
-      'updater', 'debug_static_bot_reclient', 'use_dummy_lastchange',
-    ],
-
-    'updater_debug_bot_x86_reclient': [
-      'updater', 'debug_static_bot_reclient', 'x86', 'no_symbols',
-    ],
-
-    'updater_release_bot_arm64_reclient': [
-      'arm64', 'updater', 'release_bot_reclient',
-    ],
-
-    'updater_release_bot_reclient': [
-      'updater', 'release_bot_reclient',
-    ],
-
-    'updater_release_bot_x86_reclient': [
-      'updater', 'release_bot_reclient', 'x86',
-    ],
-
-    'updater_release_trybot_reclient': [
-      'updater', 'release_trybot_reclient',
     ],
 
     'v8_future_debug_bot_reclient': [

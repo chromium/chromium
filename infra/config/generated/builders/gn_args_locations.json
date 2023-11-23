@@ -264,6 +264,19 @@
     "mac-arm64-rel reclient test": "reclient/mac-arm64-rel reclient test/gn-args.json",
     "mac-arm64-rel reclient test untrusted": "reclient/mac-arm64-rel reclient test untrusted/gn-args.json"
   },
+  "chromium.updater": {
+    "linux-updater-builder-dbg": "ci/linux-updater-builder-dbg/gn-args.json",
+    "linux-updater-builder-rel": "ci/linux-updater-builder-rel/gn-args.json",
+    "mac-updater-builder-arm64-dbg": "ci/mac-updater-builder-arm64-dbg/gn-args.json",
+    "mac-updater-builder-arm64-rel": "ci/mac-updater-builder-arm64-rel/gn-args.json",
+    "mac-updater-builder-asan-dbg": "ci/mac-updater-builder-asan-dbg/gn-args.json",
+    "mac-updater-builder-dbg": "ci/mac-updater-builder-dbg/gn-args.json",
+    "mac-updater-builder-rel": "ci/mac-updater-builder-rel/gn-args.json",
+    "win-updater-builder-dbg": "ci/win-updater-builder-dbg/gn-args.json",
+    "win-updater-builder-rel": "ci/win-updater-builder-rel/gn-args.json",
+    "win32-updater-builder-dbg": "ci/win32-updater-builder-dbg/gn-args.json",
+    "win32-updater-builder-rel": "ci/win32-updater-builder-rel/gn-args.json"
+  },
   "chromium.win": {
     "Win Builder": "ci/Win Builder/gn-args.json",
     "Win Builder (dbg)": "ci/Win Builder (dbg)/gn-args.json",
@@ -451,6 +464,14 @@
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
     "mac_chromium_compile_rel_ng": "try/mac_chromium_compile_rel_ng/gn-args.json",
     "mac_chromium_dbg_ng": "try/mac_chromium_dbg_ng/gn-args.json"
+  },
+  "tryserver.chromium.updater": {
+    "linux-updater-try-builder-dbg": "try/linux-updater-try-builder-dbg/gn-args.json",
+    "linux-updater-try-builder-rel": "try/linux-updater-try-builder-rel/gn-args.json",
+    "mac-updater-try-builder-dbg": "try/mac-updater-try-builder-dbg/gn-args.json",
+    "mac-updater-try-builder-rel": "try/mac-updater-try-builder-rel/gn-args.json",
+    "win-updater-try-builder-dbg": "try/win-updater-try-builder-dbg/gn-args.json",
+    "win-updater-try-builder-rel": "try/win-updater-try-builder-rel/gn-args.json"
   },
   "tryserver.chromium.win": {
     "win-rel": "try/win-rel/gn-args.json",

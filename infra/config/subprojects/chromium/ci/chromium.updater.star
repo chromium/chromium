@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builders", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -62,6 +63,13 @@ ci.builder(
         category = "debug|linux",
         short_name = "bld",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -85,6 +93,13 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "release|linux",
         short_name = "bld",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
     ),
 )
 
@@ -159,6 +174,13 @@ ci.builder(
         category = "debug|mac",
         short_name = "bld",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -183,6 +205,13 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
         short_name = "bld",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
     ),
 )
 
@@ -210,6 +239,14 @@ ci.builder(
         category = "debug|mac",
         short_name = "bld",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -236,6 +273,14 @@ ci.builder(
         category = "release|mac",
         short_name = "bld",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -260,6 +305,14 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
         short_name = "bld-asan",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "asan",
+            "debug_static_builder",
+            "reclient",
+        ],
     ),
 )
 
@@ -525,6 +578,13 @@ ci.builder(
         category = "debug|win (64)",
         short_name = "bld",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -552,6 +612,15 @@ ci.builder(
         short_name = "bld",
     ),
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT * 2,
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+            "x86",
+            "no_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -577,6 +646,13 @@ ci.builder(
         category = "release|win (64)",
         short_name = "bld",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -601,6 +677,14 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "release|win (32)",
         short_name = "bld",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+            "x86",
+        ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
