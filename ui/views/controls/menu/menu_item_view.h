@@ -617,8 +617,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Whether the menu item contains user-created text.
   bool may_have_mnemonics_ = true;
 
-  // Submenu, created via CreateSubmenu.
-  raw_ptr<SubmenuView, DanglingUntriaged> submenu_ = nullptr;
+  // Submenu, created via `CreateSubmenu`.
+  std::unique_ptr<SubmenuView> submenu_;
 
   // Identifier to assign to a submenu if one is created.
   ui::ElementIdentifier submenu_id_;

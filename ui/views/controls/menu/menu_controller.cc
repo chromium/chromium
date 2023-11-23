@@ -2265,7 +2265,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       const gfx::Point mouse_pos = ConvertFromScreen(
           *item->submenu_,
           display::Screen::GetScreen()->GetCursorScreenPoint());
-      MenuPart part_under_mouse = GetMenuPart(item->submenu_, mouse_pos);
+      MenuPart part_under_mouse = GetMenuPart(item->submenu_.get(), mouse_pos);
       if (part_under_mouse.type != MenuPartType::kNone) {
         menu_open_mouse_loc_ =
             GetLocationInRootMenu(*item->submenu_, mouse_pos);
