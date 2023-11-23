@@ -169,7 +169,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
   _titleLabel.font =
       CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
-  _titleLabel.numberOfLines = 2;
+  _titleLabel.numberOfLines = 0;
   _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
   _titleLabel.textColor = [UIColor colorNamed:kGreen600Color];
   [_titleLabel setContentHuggingPriority:UILayoutPriorityDefaultLow
@@ -244,7 +244,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
         constraintEqualToAnchor:_imageContainer.bottomAnchor
                        constant:-kStatusBarMarginFromBottom],
     [rightVerticalStackView.topAnchor
-        constraintEqualToAnchor:_imageContainer.topAnchor],
+        constraintLessThanOrEqualToAnchor:_imageContainer.topAnchor],
     [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
     [horizontalStackView.bottomAnchor
         constraintEqualToAnchor:self.bottomAnchor],

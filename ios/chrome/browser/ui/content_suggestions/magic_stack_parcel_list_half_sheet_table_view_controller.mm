@@ -17,7 +17,7 @@
 
 namespace {
 
-const CGFloat kEllipsisButtonPointSize = 15;
+const CGFloat kEllipsisButtonPointSize = 24;
 const CGFloat kParcelCellMargin = 16;
 
 enum SectionIdentifier : NSInteger {
@@ -75,6 +75,8 @@ enum ItemType : NSInteger {
                           forAxis:UILayoutConstraintAxisHorizontal];
     self.ellipsisButton = [[UIButton alloc] init];
 
+    UIImage* ellipsisImage = DefaultSymbolWithPointSize(
+        kEllipsisCircleFillSymbol, kEllipsisButtonPointSize);
     UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
         configurationWithPointSize:kEllipsisButtonPointSize
                             weight:UIImageSymbolWeightMedium
@@ -85,8 +87,7 @@ enum ItemType : NSInteger {
           [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
         ]];
     config = [config configurationByApplyingConfiguration:colorConfig];
-    UIImage* ellipsisImage =
-        DefaultSymbolWithConfiguration(kEllipsisCircleFillSymbol, colorConfig);
+    ellipsisImage = [ellipsisImage imageByApplyingSymbolConfiguration:config];
     [self.ellipsisButton setImage:ellipsisImage forState:UIControlStateNormal];
 
     __weak __typeof(self) weakSelf = self;
