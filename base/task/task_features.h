@@ -76,6 +76,9 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kMaxDelayedStarvationTasks);
 extern const BASE_EXPORT base::FeatureParam<int>
     kMaxDelayedStarvationTasksParam;
 
+// Feature to use a JobTaskSource implementation that minimizes lock contention.
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseNewJobImplementation);
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

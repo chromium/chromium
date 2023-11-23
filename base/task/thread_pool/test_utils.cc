@@ -61,8 +61,7 @@ bool MockJobTaskRunner::PostDelayedTask(const Location& from_here,
   auto job_task = base::MakeRefCounted<MockJobTask>(std::move(closure));
   scoped_refptr<JobTaskSource> task_source = job_task->GetJobTaskSource(
       from_here, traits_, pooled_task_runner_delegate_);
-  return pooled_task_runner_delegate_->EnqueueJobTaskSource(
-      std::move(task_source));
+  return task_source->NotifyConcurrencyIncrease();
 }
 
 scoped_refptr<TaskRunner> CreateJobTaskRunner(
@@ -288,7 +287,7 @@ scoped_refptr<JobTaskSource> MockJobTask::GetJobTaskSource(
     const Location& from_here,
     const TaskTraits& traits,
     PooledTaskRunnerDelegate* delegate) {
-  return MakeRefCounted<JobTaskSource>(
+  return CreateJobTaskSource(
       from_here, traits, base::BindRepeating(&test::MockJobTask::Run, this),
       base::BindRepeating(&test::MockJobTask::GetMaxConcurrency, this),
       delegate);

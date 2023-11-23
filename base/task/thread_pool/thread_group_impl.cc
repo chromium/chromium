@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread_waitable_event.h"
@@ -383,6 +384,8 @@ void ThreadGroupImpl::Start(
       thread_type_hint_ != ThreadType::kBackground
           ? kForegroundBlockedWorkersPoll
           : kBackgroundBlockedWorkersPoll;
+  in_start().ensure_enough_workers_at_end_of_get_work =
+      base::FeatureList::IsEnabled(kUseNewJobImplementation);
 
   ScopedCommandsExecutor executor(this);
   CheckedAutoLock auto_lock(lock_);
@@ -575,15 +578,17 @@ ThreadGroupImpl::WorkerThreadDelegateImpl::GetWorkLockRequired(
     WorkerThreadWaitableEvent* worker) {
   DCHECK(ContainsWorker(outer_->workers_, worker));
 
-  // Use this opportunity, before assigning work to this worker, to create/wake
-  // additional workers if needed (doing this here allows us to reduce
-  // potentially expensive create/wake directly on PostTask()).
-  //
-  // Note: FlushWorkerCreation() below releases |outer_->lock_|. It is thus
-  // important that all other operations come after it to keep this method
-  // transactional.
-  outer_->EnsureEnoughWorkersLockRequired(executor);
-  executor->FlushWorkerCreation(&outer_->lock_);
+  if (!outer_->after_start().ensure_enough_workers_at_end_of_get_work) {
+    // Use this opportunity, before assigning work to this worker, to
+    // create/wake additional workers if needed (doing this here allows us to
+    // reduce potentially expensive create/wake directly on PostTask()).
+    //
+    // Note: FlushWorkerCreation() below releases |outer_->lock_|. It is thus
+    // important that all other operations come after it to keep this method
+    // transactional.
+    outer_->EnsureEnoughWorkersLockRequired(executor);
+    executor->FlushWorkerCreation(&outer_->lock_);
+  }
 
   if (!CanGetWorkLockRequired(executor, worker)) {
     return nullptr;
@@ -614,6 +619,25 @@ ThreadGroupImpl::WorkerThreadDelegateImpl::GetWorkLockRequired(
   DCHECK(!outer_->idle_workers_set_.Contains(worker));
   write_worker().current_task_priority = priority;
   write_worker().current_shutdown_behavior = task_source->shutdown_behavior();
+
+  if (outer_->after_start().ensure_enough_workers_at_end_of_get_work) {
+    // Subtle: This must be after the call to WillRunTask() inside
+    // TakeRegisteredTaskSource(), so that any state used by WillRunTask() to
+    // determine that the task source must remain in the TaskQueue is also used
+    // to determine the desired number of workers. Concretely, this wouldn't
+    // work:
+    //
+    //   Thread 1: GetWork() calls EnsureEnoughWorkers(). No worker woken up
+    //             because the queue contains a job with max concurrency = 1 and
+    //             the current worker is awake.
+    //   Thread 2: Increases the job's max concurrency.
+    //             ShouldQueueUponCapacityIncrease() returns false because the
+    //             job is already queued.
+    //   Thread 1: Calls WillRunTask() on the job. It returns
+    //             kAllowedNotSaturated because max concurrency is not reached.
+    //             But no extra worker is woken up to run the job!
+    outer_->EnsureEnoughWorkersLockRequired(executor);
+  }
 
   return task_source;
 }

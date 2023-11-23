@@ -106,4 +106,8 @@ BASE_FEATURE(kMaxDelayedStarvationTasks,
 const base::FeatureParam<int> kMaxDelayedStarvationTasksParam{
     &kMaxDelayedStarvationTasks, "count", 3};
 
+BASE_FEATURE(kUseNewJobImplementation,
+             "UseNewJobImplementation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace base

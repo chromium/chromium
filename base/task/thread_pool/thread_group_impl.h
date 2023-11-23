@@ -255,6 +255,11 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
     // The period between calls to AdjustMaxTasks() when the thread group is at
     // capacity.
     TimeDelta blocked_workers_poll_period;
+
+    // Whether EnsureEnoughWorkersLockRequired() should be called at the end of
+    // GetWork() instead of at the beginning.
+    bool ensure_enough_workers_at_end_of_get_work = false;
+
   } initialized_in_start_;
 
   InitializedInStart& in_start() {
