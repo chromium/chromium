@@ -320,9 +320,25 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
   }
 }
 
-void LoginDisplayHostMojo::StartCryptohomeRecovery(
-    std::unique_ptr<UserContext> user_context) {
+void LoginDisplayHostMojo::UseAlternativeAuthentication(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   DCHECK(GetOobeUI());
+  // We only get here if the user already exist on the device,
+  // so mark the flow as reauth:
+  if (GetWizardContext()->knowledge_factor_setup.auth_setup_flow ==
+      WizardContext::AuthChangeFlow::kInitialSetup) {
+    GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
+        WizardContext::AuthChangeFlow::kReauthentication;
+  }
+  // If GAIA password was changed, treat this flow as a recovery flow,
+  // so that we would update password later:
+  if (online_password_mismatch &&
+      (GetWizardContext()->knowledge_factor_setup.auth_setup_flow ==
+       WizardContext::AuthChangeFlow::kReauthentication)) {
+    GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
+        WizardContext::AuthChangeFlow::kRecovery;
+  }
   wizard_controller_->ShowCryptohomeRecoveryScreen(std::move(user_context));
   ShowDialog();
 }
@@ -526,8 +542,13 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
   GetWizardContext()->knowledge_factor_setup =
       WizardContext::KnowledgeFactorSetup();
 
-  GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
-      WizardContext::AuthChangeFlow::kInitialSetup;
+  if (prefilled_account.is_valid()) {
+    GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
+        WizardContext::AuthChangeFlow::kReauthentication;
+  } else {
+    GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
+        WizardContext::AuthChangeFlow::kInitialSetup;
+  }
 
   ShowGaiaDialogImpl(prefilled_account);
 }

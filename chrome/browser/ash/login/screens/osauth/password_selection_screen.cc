@@ -127,23 +127,29 @@ void PasswordSelectionScreen::ProcessOptions() {
     return;
   }
 
-  // If user is going through recovery, detect which password need to be updated
-  // and return immediately.
-  if (context()->knowledge_factor_setup.auth_setup_flow ==
-      WizardContext::AuthChangeFlow::kRecovery) {
-    CHECK(auth_factors_config_.HasConfiguredFactor(
-        cryptohome::AuthFactorType::kPassword))
-        << "User need to have a password that should be updated";
-    if (auth::IsLocalPassword(*auth_factors_config_.FindFactorByType(
-            cryptohome::AuthFactorType::kPassword))) {
-      exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
+  // Only show UI if the user is going trough initial setup, otherwise
+  // detect which password need to be updated and return immediately.
+  switch (context()->knowledge_factor_setup.auth_setup_flow) {
+    case WizardContext::AuthChangeFlow::kReauthentication:
+      LOG(WARNING) << "In reauthentication flow, should not update anything";
+      exit_callback_.Run(Result::NOT_APPLICABLE);
       return;
-    } else {
-      CHECK(auth::IsGaiaPassword(*auth_factors_config_.FindFactorByType(
-          cryptohome::AuthFactorType::kPassword)));
-      exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
-      return;
-    }
+    case WizardContext::AuthChangeFlow::kRecovery:
+      CHECK(auth_factors_config_.HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPassword))
+          << "User need to have a password that should be updated";
+      if (auth::IsLocalPassword(*auth_factors_config_.FindFactorByType(
+              cryptohome::AuthFactorType::kPassword))) {
+        exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
+        return;
+      } else {
+        CHECK(auth::IsGaiaPassword(*auth_factors_config_.FindFactorByType(
+            cryptohome::AuthFactorType::kPassword)));
+        exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+        return;
+      }
+    case WizardContext::AuthChangeFlow::kInitialSetup:
+      break;
   }
 
   if (context()->skip_post_login_screens_for_tests) {

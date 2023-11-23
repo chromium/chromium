@@ -974,8 +974,8 @@ void ExistingUserController::OnOnlinePasswordUnusableImpl(
     }
   }
 
-  GetLoginDisplayHost()->GetSigninUI()->StartCryptohomeRecovery(
-      std::move(user_context));
+  GetLoginDisplayHost()->GetSigninUI()->UseAlternativeAuthentication(
+      std::move(user_context), online_password_mismatch);
 }
 
 void ExistingUserController::OnLocalAuthenticationRequired(

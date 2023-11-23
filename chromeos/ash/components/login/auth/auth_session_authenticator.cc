@@ -323,11 +323,11 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       // Password-based login
       if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
         const auto& factors = context->GetAuthFactorsData();
-        if (!factors.FindOnlinePasswordFactor() &&
-            !factors.FindRecoveryFactor()) {
-          // User has knowledge factor other than online password and recovery
-          // flow can't be used
-          NotifyLocalAuthenticationRequired(std::move(context));
+        if (!factors.FindOnlinePasswordFactor()) {
+          // User has knowledge factor other than online password need
+          // to go through custom flow.
+          NotifyOnlinePasswordUnusable(std::move(context),
+                                       /*online_password_mismatch=*/false);
           return;
         }
       }
@@ -1002,22 +1002,22 @@ void AuthSessionAuthenticator::HandlePasswordChangeDetected(
           error.get_cryptohome_code(),
           user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED)) {
     LOGIN_LOG(EVENT) << "Password change detected";
-    if (!consumer_) {
-      return;
-    }
-    consumer_->OnOnlinePasswordUnusable(std::move(context), true);
+    NotifyOnlinePasswordUnusable(std::move(context),
+                                 /*online_password_mismatch=*/true);
     return;
   }
   std::move(fallback).Run(std::move(context), std::move(error));
 }
 
-void AuthSessionAuthenticator::NotifyLocalAuthenticationRequired(
-    std::unique_ptr<UserContext> context) {
-  LOGIN_LOG(EVENT) << "Local authentication required";
+void AuthSessionAuthenticator::NotifyOnlinePasswordUnusable(
+    std::unique_ptr<UserContext> context,
+    bool online_password_mismatch) {
+  LOGIN_LOG(EVENT) << "Online password unusable / " << online_password_mismatch;
   if (!consumer_) {
     return;
   }
-  consumer_->OnLocalAuthenticationRequired(std::move(context));
+  consumer_->OnOnlinePasswordUnusable(std::move(context),
+                                      online_password_mismatch);
 }
 
 void AuthSessionAuthenticator::HandleMigrationRequired(

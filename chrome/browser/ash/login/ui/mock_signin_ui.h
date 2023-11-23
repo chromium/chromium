@@ -42,8 +42,8 @@ class MockSigninUI : public SigninUI {
               (override));
   MOCK_METHOD(void, ClearOnboardingAuthSession, (), (override));
   MOCK_METHOD(void,
-              StartCryptohomeRecovery,
-              (std::unique_ptr<UserContext> user_context),
+              UseAlternativeAuthentication,
+              (std::unique_ptr<UserContext> user_context, bool),
               (override));
   MOCK_METHOD(void,
               RunLocalAuthentication,

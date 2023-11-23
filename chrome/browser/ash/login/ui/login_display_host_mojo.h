@@ -98,8 +98,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
-  void StartCryptohomeRecovery(
-      std::unique_ptr<UserContext> user_context) override;
+  void UseAlternativeAuthentication(std::unique_ptr<UserContext> user_context,
+                                    bool online_password_mismatch) override;
   void RunLocalAuthentication(
       std::unique_ptr<UserContext> user_context) override;
   void StartBrowserDataMigration() override;

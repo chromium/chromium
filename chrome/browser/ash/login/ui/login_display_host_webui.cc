@@ -1065,8 +1065,9 @@ void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
   NOTREACHED();
 }
 
-void LoginDisplayHostWebUI::StartCryptohomeRecovery(
-    std::unique_ptr<UserContext> user_context) {
+void LoginDisplayHostWebUI::UseAlternativeAuthentication(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   NOTREACHED();
 }
 

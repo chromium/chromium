@@ -31,6 +31,7 @@ constexpr const char kUserActionProceed[] = "proceed";
 std::string GetChangeModeString(WizardContext::AuthChangeFlow flow) {
   switch (flow) {
     case WizardContext::AuthChangeFlow::kRecovery:
+    case WizardContext::AuthChangeFlow::kReauthentication:
       return "update";
     case WizardContext::AuthChangeFlow::kInitialSetup:
       return "set";

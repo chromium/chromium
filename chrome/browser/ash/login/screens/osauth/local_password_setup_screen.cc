@@ -90,6 +90,8 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
             base::BindOnce(&LocalPasswordSetupScreen::OnUpdateLocalPassword,
                            weak_factory_.GetWeakPtr()));
         break;
+      case WizardContext::AuthChangeFlow::kReauthentication:
+        NOTREACHED();
     }
     return;
   } else if (action_id == kUserActionBack) {

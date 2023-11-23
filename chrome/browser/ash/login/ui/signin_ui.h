@@ -72,9 +72,12 @@ class SigninUI {
   // Clears authentication data that were stored for user onboarding.
   virtual void ClearOnboardingAuthSession() = 0;
 
-  // Start Cryptohome recovery flow and show the screen.
-  virtual void StartCryptohomeRecovery(
-      std::unique_ptr<UserContext> user_context) = 0;
+  // Start authentication flow that would use factors beyond
+  // online authentication factor (Recovery, old online password,
+  // fallback to local password/PIN, etc).
+  virtual void UseAlternativeAuthentication(
+      std::unique_ptr<UserContext> user_context,
+      bool online_password_mismatch) = 0;
 
   // Runs an extra step of local authentication.
   virtual void RunLocalAuthentication(
