@@ -1928,7 +1928,7 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
         this, DocumentUpdateReason::kCanvas);
     const_cast<HTMLCanvasElement*>(this)->EnsureComputedStyle();
   }
-  return LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());
+  return LayoutObject::GetImageOrientation(GetLayoutObject());
 }
 
 // Temporary plumbing

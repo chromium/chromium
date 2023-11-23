@@ -194,9 +194,9 @@ gfx::SizeF SVGMaskGeometry::ComputeTileSize(
     const FillLayer& layer,
     const gfx::RectF& positioning_area) const {
   const StyleImage* image = layer.GetImage();
-  const IntrinsicSizingInfo sizing_info = image->GetNaturalSizingInfo(
-      object_.StyleRef().EffectiveZoom(),
-      LayoutObject::ShouldRespectImageOrientation(&object_));
+  const IntrinsicSizingInfo sizing_info =
+      image->GetNaturalSizingInfo(object_.StyleRef().EffectiveZoom(),
+                                  object_.StyleRef().ImageOrientation());
 
   switch (layer.SizeType()) {
     case EFillSizeType::kSizeLength: {
@@ -229,9 +229,9 @@ gfx::SizeF SVGMaskGeometry::ComputeTileSize(
           tile_size.set_height(sizing_info.size.height());
         }
       } else if (layer_width.IsAuto() && layer_height.IsAuto()) {
-        tile_size = image->ImageSize(
-            object_.StyleRef().EffectiveZoom(), positioning_area.size(),
-            LayoutObject::ShouldRespectImageOrientation(&object_));
+        tile_size = image->ImageSize(object_.StyleRef().EffectiveZoom(),
+                                     positioning_area.size(),
+                                     object_.StyleRef().ImageOrientation());
       }
       return tile_size;
     }
@@ -539,7 +539,7 @@ void PaintMaskLayers(GraphicsContext& context, const LayoutObject& object) {
   const FillInfo fill_info = {
       style.GetInterpolationQuality(),
       static_cast<cc::PaintFlags::DynamicRangeLimit>(style.DynamicRangeLimit()),
-      LayoutObject::ShouldRespectImageOrientation(&object),
+      style.ImageOrientation(),
       object,
   };
   SVGMaskGeometry geometry(object);

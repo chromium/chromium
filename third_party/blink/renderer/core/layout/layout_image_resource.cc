@@ -128,9 +128,8 @@ RespectImageOrientationEnum LayoutImageResource::ImageOrientation() const {
   DCHECK(cached_image_);
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
-  RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(layout_object_);
-  return cached_image_->ForceOrientationIfNecessary(respect_orientation);
+  return cached_image_->ForceOrientationIfNecessary(
+      layout_object_->StyleRef().ImageOrientation());
 }
 
 IntrinsicSizingInfo LayoutImageResource::GetNaturalDimensions(
@@ -162,7 +161,7 @@ gfx::SizeF LayoutImageResource::ImageSize(float multiplier) const {
   if (!cached_image_)
     return gfx::SizeF();
   gfx::SizeF size(cached_image_->IntrinsicSize(
-      LayoutObject::ShouldRespectImageOrientation(layout_object_)));
+      layout_object_->StyleRef().ImageOrientation()));
   if (multiplier != 1 && HasIntrinsicSize()) {
     size = ApplyClampedZoom(size, multiplier);
   }

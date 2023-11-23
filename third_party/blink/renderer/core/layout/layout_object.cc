@@ -3699,7 +3699,7 @@ bool LayoutObject::IsRooted() const {
   return false;
 }
 
-RespectImageOrientationEnum LayoutObject::ShouldRespectImageOrientation(
+RespectImageOrientationEnum LayoutObject::GetImageOrientation(
     const LayoutObject* layout_object) {
   return layout_object ? layout_object->StyleRef().ImageOrientation()
                        : ComputedStyleInitialValues::InitialImageOrientation();

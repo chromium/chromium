@@ -77,18 +77,16 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
     const FillLayer& bg_layer,
     BackgroundBleedAvoidance bleed_avoidance,
     bool is_painting_background_in_contents_space) const {
-  PhysicalBoxSides sides_to_include;
-  RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(&box_model_);
+  const ComputedStyle& style = box_model_.StyleRef();
+  RespectImageOrientationEnum respect_orientation = style.ImageOrientation();
   if (auto* style_image = bg_layer.GetImage()) {
     respect_orientation =
         style_image->ForceOrientationIfNecessary(respect_orientation);
   }
   return BoxPainterBase::FillLayerInfo(
-      box_model_.GetDocument(), box_model_.StyleRef(),
-      box_model_.IsScrollContainer(), color, bg_layer, bleed_avoidance,
-      respect_orientation, sides_to_include, box_model_.IsLayoutInline(),
-      is_painting_background_in_contents_space);
+      box_model_.GetDocument(), style, box_model_.IsScrollContainer(), color,
+      bg_layer, bleed_avoidance, respect_orientation, PhysicalBoxSides(),
+      box_model_.IsLayoutInline(), is_painting_background_in_contents_space);
 }
 
 }  // namespace blink

@@ -700,9 +700,9 @@ void BackgroundImageGeometry::CalculateFillTileSize(
   // generated content) and unsnapped for content that has intrinsic
   // dimensions. Once we choose here we stop tracking whether the tile size is
   // snapped or unsnapped.
-  IntrinsicSizingInfo sizing_info = image->GetNaturalSizingInfo(
-      positioning_box_->StyleRef().EffectiveZoom(),
-      LayoutObject::ShouldRespectImageOrientation(box_));
+  IntrinsicSizingInfo sizing_info =
+      image->GetNaturalSizingInfo(positioning_box_->StyleRef().EffectiveZoom(),
+                                  box_->StyleRef().ImageOrientation());
   PhysicalSize image_aspect_ratio =
       PhysicalSize::FromSizeFFloor(sizing_info.aspect_ratio);
   PhysicalSize positioning_area_size = !image->HasIntrinsicSize()
@@ -758,11 +758,10 @@ void BackgroundImageGeometry::CalculateFillTileSize(
           tile_size_.height = positioning_area_size.height;
         }
       } else if (layer_width.IsAuto() && layer_height.IsAuto()) {
-        PhysicalSize concrete_image_size =
-            PhysicalSize::FromSizeFFloor(image->ImageSize(
-                positioning_box_->StyleRef().EffectiveZoom(),
-                gfx::SizeF(positioning_area_size),
-                LayoutObject::ShouldRespectImageOrientation(box_)));
+        PhysicalSize concrete_image_size = PhysicalSize::FromSizeFFloor(
+            image->ImageSize(positioning_box_->StyleRef().EffectiveZoom(),
+                             gfx::SizeF(positioning_area_size),
+                             box_->StyleRef().ImageOrientation()));
         tile_size_ = concrete_image_size;
       }
 

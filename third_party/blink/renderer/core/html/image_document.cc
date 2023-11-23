@@ -225,8 +225,7 @@ gfx::Size ImageDocument::ImageSize() const {
   DCHECK(image_element_);
   DCHECK(image_element_->CachedImage());
   return image_element_->CachedImage()->IntrinsicSize(
-      LayoutObject::ShouldRespectImageOrientation(
-          image_element_->GetLayoutObject()));
+      LayoutObject::GetImageOrientation(image_element_->GetLayoutObject()));
 }
 
 void ImageDocument::CreateDocumentStructure(

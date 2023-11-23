@@ -83,18 +83,15 @@ gfx::SizeF LayoutImageResourceStyleImage::ImageSize(float multiplier) const {
 gfx::SizeF LayoutImageResourceStyleImage::ConcreteObjectSize(
     float multiplier,
     const gfx::SizeF& default_object_size) const {
-  return style_image_->ImageSize(
-      multiplier, default_object_size,
-      LayoutObject::ShouldRespectImageOrientation(layout_object_));
+  return style_image_->ImageSize(multiplier, default_object_size,
+                                 ImageOrientation());
 }
 
 IntrinsicSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
     float multiplier) const {
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
-  RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(layout_object_);
-  return style_image_->GetNaturalSizingInfo(multiplier, respect_orientation);
+  return style_image_->GetNaturalSizingInfo(multiplier, ImageOrientation());
 }
 
 RespectImageOrientationEnum LayoutImageResourceStyleImage::ImageOrientation()
@@ -102,7 +99,7 @@ RespectImageOrientationEnum LayoutImageResourceStyleImage::ImageOrientation()
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
   RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(layout_object_);
+      layout_object_->StyleRef().ImageOrientation();
   return style_image_->ForceOrientationIfNecessary(respect_orientation);
 }
 
