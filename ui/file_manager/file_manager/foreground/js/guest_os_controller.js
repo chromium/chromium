@@ -6,7 +6,6 @@ import {listMountableGuests} from '../../common/js/api.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {getEntry, getStore} from '../../state/store.js';
 
@@ -22,7 +21,8 @@ export class GuestOsController {
   /**
    * @param {!DirectoryModel} directoryModel DirectoryModel.
    * @param {!DirectoryTree} directoryTree DirectoryTree.
-   * @param {!VolumeManager} volumeManager VolumeManager.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager VolumeManager.
    */
   constructor(directoryModel, directoryTree, volumeManager) {
     if (!isGuestOsEnabled()) {
@@ -34,7 +34,9 @@ export class GuestOsController {
     /** @private @const */
     this.directoryTree_ = directoryTree;
 
-    /** @private @const @type {!VolumeManager} */
+    /**
+     * @private @const @type {!import('../../externs/volume_manager.js').VolumeManager}
+     */
     this.volumeManager_ = volumeManager;
 
     chrome.fileManagerPrivate.onMountableGuestsChanged.addListener(

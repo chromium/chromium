@@ -5,7 +5,6 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 /**
  * An item in the model. Represents a single providing extension.
@@ -102,10 +101,13 @@ class ProvidersModelItem {
  */
 export class ProvidersModel {
   /**
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    */
   constructor(volumeManager) {
-    /** @private @const @type {!VolumeManager} */
+    /**
+     * @private @const @type {!import('../../externs/volume_manager.js').VolumeManager}
+     */
     this.volumeManager_ = volumeManager;
   }
 

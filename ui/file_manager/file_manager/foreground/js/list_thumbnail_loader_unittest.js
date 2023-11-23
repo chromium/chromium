@@ -9,7 +9,6 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileListModel} from './file_list_model.js';
@@ -135,15 +134,16 @@ export function setUp() {
   /** @suppress {checkTypes} */
   directoryModel = /** @type {!DirectoryModel} */ (new TestDirectoryModel());
 
-  const fakeVolumeManager = /** @type {!VolumeManager} */ ({
-    // @ts-ignore: error TS6133: 'entry' is declared but its value is never
-    // read.
-    getVolumeInfo: function(entry) {
-      return {
-        volumeType: currentVolumeType,
-      };
-    },
-  });
+  const fakeVolumeManager =
+      /** @type {!import('../../externs/volume_manager.js').VolumeManager} */ ({
+        // @ts-ignore: error TS6133: 'entry' is declared but its value is never
+        // read.
+        getVolumeInfo: function(entry) {
+          return {
+            volumeType: currentVolumeType,
+          };
+        },
+      });
 
   listThumbnailLoader = new ListThumbnailLoader(
       directoryModel, thumbnailModel, fakeVolumeManager, MockThumbnailLoader);
@@ -475,7 +475,7 @@ export function testDirectoryScanIsRunning() {
 export function testExifIOError(callback) {
   const task = new ListThumbnailLoader.Task(
       entry1,
-      /** @type {!VolumeManager} */ ({
+      /** @type {!import('../../externs/volume_manager.js').VolumeManager} */ ({
         // @ts-ignore: error TS6133: 'entry' is declared but its value is never
         // read.
         getVolumeInfo: function(entry) {

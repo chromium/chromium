@@ -6,8 +6,8 @@ import {assertEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_asser
 
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {FileFilter, RecentContentScanner} from './directory_contents.js';
 

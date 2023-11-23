@@ -19,7 +19,6 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
 import {Store} from '../../externs/ts/store.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
@@ -90,7 +89,8 @@ export class DirectoryModel extends EventTarget {
    * @param {FileFilter} fileFilter Instance of FileFilter.
    * @param {!MetadataModel} metadataModel Metadata model.
    *     service.
-   * @param {!VolumeManager} volumeManager The volume manager.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager The volume manager.
    */
   constructor(singleSelection, fileFilter, metadataModel, volumeManager) {
     super();

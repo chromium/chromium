@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {FilesAppState} from '../../common/js/files_app_state.js';
-import {VolumeManager} from '../volume_manager.js';
 
 import {Crostini} from './crostini.js';
 import {DriveSyncHandler} from './drive_sync_handler.js';
@@ -41,7 +40,7 @@ export class FileManagerBaseInterface {
 
   // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
   // nor 'any' must return a value.
-  /** @return {!Promise<!VolumeManager>} */
+  /** @return {!Promise<!import('../volume_manager.js').VolumeManager>} */
   getVolumeManager() {}
 
   /**

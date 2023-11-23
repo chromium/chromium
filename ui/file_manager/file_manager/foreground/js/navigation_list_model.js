@@ -12,7 +12,6 @@ import {str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../externs/ts/state.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 
 import {AndroidAppListModel} from './android_app_list_model.js';
@@ -207,7 +206,8 @@ export class NavigationModelFakeItem extends NavigationModelItem {
  */
 export class NavigationListModel extends EventTarget {
   /**
-   * @param {!VolumeManager} volumeManager VolumeManager instance.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager VolumeManager instance.
    * @param {!FolderShortcutsDataModel} shortcutListModel The list of folder
    *     shortcut.
    * @param {?NavigationModelFakeItem} recentModelItem Recent folder.
@@ -221,7 +221,7 @@ export class NavigationListModel extends EventTarget {
     super();
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;

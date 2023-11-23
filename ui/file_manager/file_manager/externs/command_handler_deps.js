@@ -20,7 +20,6 @@ import {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 import {Crostini} from './background/crostini.js';
 import {ProgressCenter} from './background/progress_center.js';
 import {FilesAppEntry} from './files_app_entry_interfaces.js';
-import {VolumeManager} from './volume_manager.js';
 
 
 /**
@@ -71,7 +70,7 @@ export class CommandHandlerDeps {
     /** @type {FileManagerUI} */
     this.ui;
 
-    /** @type {!VolumeManager} */
+    /** @type {!import('./volume_manager.js').VolumeManager} */
     this.volumeManager;
 
     /** @type {MetadataModel} */

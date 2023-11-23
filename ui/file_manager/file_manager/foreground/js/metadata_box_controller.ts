@@ -12,7 +12,7 @@ import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_
 import {getType} from '../../common/js/file_type.js';
 import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesMetadataBox, RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 

@@ -4,7 +4,7 @@
 
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
-import {VolumeManager} from '../../../externs/volume_manager.js';
+import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {getStore} from '../../../state/store.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';

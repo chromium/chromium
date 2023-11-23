@@ -16,7 +16,6 @@ import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
-import {VolumeManager} from '../../../externs/volume_manager.js';
 import {getStore} from '../../../state/store.js';
 import {constants} from '../constants.js';
 import {FileFilter} from '../directory_contents.js';
@@ -2325,7 +2324,10 @@ export class DirectoryTree extends Tree {
     // 'DirectoryModel'.
     this.directoryModel_ = null;
 
-    /** @type {VolumeManager} this is set in decorate() */
+    /**
+     * @type {import('../../../externs/volume_manager.js').VolumeManager} this
+     *     is set in decorate()
+     */
     // @ts-ignore: error TS2322: Type 'null' is not assignable to type
     // 'VolumeManager'.
     this.volumeManager_ = null;
@@ -2358,7 +2360,8 @@ export class DirectoryTree extends Tree {
   /**
    * Decorates an element.
    * @param {!DirectoryModel} directoryModel Current DirectoryModel.
-   * @param {!VolumeManager} volumeManager VolumeManager of the system.
+   * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager VolumeManager of the system.
    * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
    * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.
    */
@@ -2995,7 +2998,7 @@ export class DirectoryTree extends Tree {
 
   /**
    * The VolumeManager instance of the system.
-   * @type {VolumeManager}
+   * @type {import('../../../externs/volume_manager.js').VolumeManager}
    */
   get volumeManager() {
     return this.volumeManager_;
@@ -3034,7 +3037,8 @@ export class DirectoryTree extends Tree {
  * Decorates an element.
  * @param {HTMLElement} el Element to be DirectoryTree.
  * @param {!DirectoryModel} directoryModel Current DirectoryModel.
- * @param {!VolumeManager} volumeManager VolumeManager of the system.
+ * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+ *     volumeManager VolumeManager of the system.
  * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
  * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.
  */

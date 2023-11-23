@@ -9,7 +9,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfoList} from '../../externs/volume_info_list.js';
-import {ExternallyUnmountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
 import {ArrayDataModel} from './array_data_model.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
@@ -91,16 +90,15 @@ const MEDIA_STORE_VOLUME_TYPES = [
  * to VolumeManager. This class also filters some "disallowed" volumes;
  * for example, Drive volumes are dropped if Drive is disabled, and read-only
  * volumes are dropped in save-as dialogs.
- *
- * @implements {VolumeManager}
  */
 export class FilteredVolumeManager extends EventTarget {
   /**
    * @param {!AllowedPaths} allowedPaths Which paths are supported in the Files
    *     app dialog.
    * @param {boolean} writableOnly If true, only writable volumes are returned.
-   * @param {!Promise<!VolumeManager>} volumeManagerGetter Promise that resolves
-   *     when the VolumeManager has been initialized.
+   * @param {!Promise<!import('../../externs/volume_manager.js').VolumeManager>}
+   *     volumeManagerGetter Promise that resolves when the VolumeManager has
+   *     been initialized.
    * @param {!Array<string>} volumeFilter Array of Files app mode dependent
    *     volume filter names from Files app launch params, [] typically.
    * @param {!Array<!VolumeManagerCommon.VolumeType>} disabledVolumes List of
@@ -119,7 +117,9 @@ export class FilteredVolumeManager extends EventTarget {
     // Public VolumeManager.volumeInfoList property accessed by callers.
     this.volumeInfoList = new FilteredVolumeInfoList(this.list_);
 
-    /** @private @type {?VolumeManager} */
+    /**
+     * @private @type {?import('../../externs/volume_manager.js').VolumeManager}
+     */
     this.volumeManager_ = null;
 
     this.onEventBound_ = this.onEvent_.bind(this);
@@ -128,7 +128,9 @@ export class FilteredVolumeManager extends EventTarget {
 
     this.disposed_ = false;
 
-    /** @private @type {!Promise<!VolumeManager>} */
+    /**
+     * @private @type {!Promise<!import('../../externs/volume_manager.js').VolumeManager>}
+     */
     this.volumeManagerGetter_ = volumeManagerGetter;
 
     /**
@@ -351,7 +353,10 @@ export class FilteredVolumeManager extends EventTarget {
         }
         break;
       case 'externally-unmounted':
-        event = /** @type {!ExternallyUnmountedEvent} */ (event);
+        event = /**
+                   @type {!import('../../externs/volume_manager.js').ExternallyUnmountedEvent}
+                     */
+            (event);
         // @ts-ignore: error TS2339: Property 'detail' does not exist on type
         // 'Event'.
         if (this.isAllowedVolume(event.detail)) {

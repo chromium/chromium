@@ -22,7 +22,7 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {DialogType, State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';

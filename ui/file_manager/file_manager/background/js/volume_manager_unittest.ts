@@ -9,7 +9,7 @@ import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_ch
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {assertRejected, waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {VolumeInfoImpl} from './volume_info_impl.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';

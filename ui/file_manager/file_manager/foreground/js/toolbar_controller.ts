@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import type {Switch} from 'chrome://resources/cros_components/switch/switch.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-
+import type {Switch} from 'chrome://resources/cros_components/switch/switch.js';
+import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {isNonModifiable} from '../../common/js/entry_utils.js';
@@ -16,7 +15,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
@@ -74,8 +73,7 @@ export class ToolbarController {
       private listContainer_: ListContainer,
       private selectionHandler_: FileSelectionHandler,
       private directoryModel_: DirectoryModel,
-      private volumeManager_: VolumeManager,
-      private a11y_: A11yAnnounce) {
+      private volumeManager_: VolumeManager, private a11y_: A11yAnnounce) {
     // HTML elements.
     this.cancelSelectionButton_ =
         queryRequiredElement('#cancel-selection-button', this.toolbar_);
@@ -94,9 +92,12 @@ export class ToolbarController {
         queryRequiredElement('#pinned-toggle-wrapper', this.toolbar_);
     if (isCrosComponentsEnabled()) {
       this.pinnedToggle_ = null;
-      this.pinnedToggleJelly_ = queryRequiredElement('#pinned-toggle-jelly', this.toolbar_) as Switch;
+      this.pinnedToggleJelly_ =
+          queryRequiredElement('#pinned-toggle-jelly', this.toolbar_) as Switch;
     } else {
-      this.pinnedToggle_ = queryRequiredElement('#pinned-toggle', this.toolbar_) as CrToggleElement;
+      this.pinnedToggle_ =
+          queryRequiredElement('#pinned-toggle', this.toolbar_) as
+          CrToggleElement;
       this.pinnedToggleJelly_ = null;
     }
     this.cloudButton_ = queryRequiredElement('#cloud-button', this.toolbar_);

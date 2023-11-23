@@ -11,7 +11,6 @@ import {recordBoolean} from '../../common/js/metrics.js';
 import {strf} from '../../common/js/translations.js';
 import {visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {constants} from './constants.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
@@ -59,7 +58,8 @@ class DriveShareAction {
    * @param {!Entry} entry
    * @param {!MetadataModel} metadataModel
    * @param {!ActionModelUI} ui
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    */
   constructor(entry, metadataModel, volumeManager, ui) {
     /**
@@ -75,7 +75,7 @@ class DriveShareAction {
     this.metadataModel_ = metadataModel;
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
@@ -91,7 +91,8 @@ class DriveShareAction {
    * @param {!Array<!Entry>} entries
    * @param {!MetadataModel} metadataModel
    * @param {!ActionModelUI} ui
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @return {DriveShareAction}
    */
   static create(entries, metadataModel, volumeManager, ui) {
@@ -176,7 +177,8 @@ class DriveToggleOfflineAction {
    * @param {!Array<!Entry>} entries
    * @param {!MetadataModel} metadataModel
    * @param {!ActionModelUI} ui
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @param {boolean} value
    * @param {function():void} onExecute
    */
@@ -194,7 +196,7 @@ class DriveToggleOfflineAction {
     this.metadataModel_ = metadataModel;
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
@@ -222,7 +224,8 @@ class DriveToggleOfflineAction {
    * @param {!Array<!Entry>} entries
    * @param {!MetadataModel} metadataModel
    * @param {!ActionModelUI} ui
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @param {boolean} value
    * @param {function():void} onExecute
    * @return {DriveToggleOfflineAction}
@@ -402,7 +405,8 @@ class DriveCreateFolderShortcutAction {
 
   /**
    * @param {!Array<!Entry>} entries
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @param {!FolderShortcutsDataModel} shortcutsModel
    * @param {function():void} onExecute
    * @return {DriveCreateFolderShortcutAction}
@@ -563,7 +567,8 @@ class DriveManageAction {
   /**
    * @param {!Entry} entry The entry to open the 'Manage' page for.
    * @param {!ActionModelUI} ui
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    */
   constructor(entry, volumeManager, ui) {
     /**
@@ -575,7 +580,7 @@ class DriveManageAction {
     this.entry_ = entry;
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
@@ -593,7 +598,8 @@ class DriveManageAction {
    *
    * @param {!Array<!Entry>} entries
    * @param {!ActionModelUI} ui
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @return {DriveManageAction}
    */
   static create(entries, volumeManager, ui) {
@@ -761,7 +767,8 @@ class CustomAction {
  */
 export class ActionsModel extends EventTarget {
   /**
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @param {!MetadataModel} metadataModel
    * @param {!FolderShortcutsDataModel} shortcutsModel
    * @param {!ActionModelUI} ui
@@ -771,7 +778,7 @@ export class ActionsModel extends EventTarget {
     super();
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;

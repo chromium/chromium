@@ -14,7 +14,6 @@ import {TrashEntry} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {DialogType} from '../../externs/ts/state.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
@@ -43,7 +42,8 @@ export class MainWindowComponent {
   /**
    * @param {DialogType} dialogType
    * @param {!FileManagerUI} ui
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @param {!DirectoryModel} directoryModel
    * @param {!FileFilter} fileFilter
    * @param {!FileSelectionHandler} selectionHandler
@@ -69,7 +69,7 @@ export class MainWindowComponent {
     this.ui_ = ui;
 
     /**
-     * @type {!VolumeManager}
+     * @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      * @private
      */

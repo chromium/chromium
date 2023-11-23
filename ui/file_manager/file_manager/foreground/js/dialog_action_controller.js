@@ -11,7 +11,6 @@ import {str} from '../../common/js/translations.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../externs/ts/state.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
@@ -23,7 +22,7 @@ import {Command} from './ui/command.js';
 import {DialogFooter} from './ui/dialog_footer.js';
 
 /**
- * Controler for handling behaviors of the Files app opened as a file/folder
+ * Controller for handling behaviors of the Files app opened as a file/folder
  * selection dialog.
  */
 export class DialogActionController {
@@ -32,7 +31,8 @@ export class DialogActionController {
    * @param {!DialogFooter} dialogFooter Dialog footer.
    * @param {!DirectoryModel} directoryModel Directory model.
    * @param {!MetadataModel} metadataModel Metadata cache.
-   * @param {!VolumeManager} volumeManager Volume manager.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager Volume manager.
    * @param {!FileFilter} fileFilter File filter model.
    * @param {!NamingController} namingController Naming controller.
    * @param {!FileSelectionHandler} fileSelectionHandler Initial file selection.
@@ -54,7 +54,9 @@ export class DialogActionController {
     /** @private @const @type {!MetadataModel} */
     this.metadataModel_ = metadataModel;
 
-    /** @private @const @type {!VolumeManager} */
+    /**
+     * @private @const @type {!import('../../externs/volume_manager.js').VolumeManager}
+     */
     this.volumeManager_ = volumeManager;
 
     /** @private @const @type {!FileFilter} */

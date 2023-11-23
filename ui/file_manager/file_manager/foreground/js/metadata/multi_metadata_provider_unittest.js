@@ -6,7 +6,6 @@ import {assertArrayEquals, assertEquals, assertNotReached, assertTrue} from 'chr
 
 import {reportPromise} from '../../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
@@ -40,29 +39,31 @@ const entryD = /** @type {!Entry} */ ({
   },
 });
 
-const volumeManager = /** @type {!VolumeManager} */ ({
-  // @ts-ignore: error TS7030: Not all code paths return a value.
-  getVolumeInfo: function(entry) {
-    if (entry.toURL() === 'filesystem://A') {
-      return {
-        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
-      };
-    } else if (entry.toURL() === 'filesystem://B') {
-      return {
-        volumeType: VolumeManagerCommon.VolumeType.DRIVE,
-      };
-    } else if (entry.toURL() === 'filesystem://C') {
-      return {
-        volumeType: VolumeManagerCommon.VolumeType.DRIVE,
-      };
-    } else if (entry.toURL() === 'filesystem://D') {
-      return {
-        volumeType: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
-      };
-    }
-    assertNotReached();
-  },
-});
+const volumeManager =
+    /** @type {!import('../../../externs/volume_manager.js').VolumeManager} */ (
+        {
+          // @ts-ignore: error TS7030: Not all code paths return a value.
+          getVolumeInfo: function(entry) {
+            if (entry.toURL() === 'filesystem://A') {
+              return {
+                volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+              };
+            } else if (entry.toURL() === 'filesystem://B') {
+              return {
+                volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+              };
+            } else if (entry.toURL() === 'filesystem://C') {
+              return {
+                volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+              };
+            } else if (entry.toURL() === 'filesystem://D') {
+              return {
+                volumeType: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+              };
+            }
+            assertNotReached();
+          },
+        });
 
 /** @param {()=>void} callback */
 export function testMultiMetadataProviderBasic(callback) {

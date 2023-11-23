@@ -22,7 +22,6 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType, State} from '../../externs/ts/state.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {readSubDirectories} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {getFileData, getStore} from '../../state/store.js';
@@ -396,7 +395,8 @@ CommandUtil.getOnlyOneSelectedDirectory = selection => {
 
 /**
  * Returns true if the given entry is the root entry of the volume.
- * @param {!VolumeManager} volumeManager
+ * @param {!import('../../externs/volume_manager.js').VolumeManager}
+ *     volumeManager
  * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
  * @return {boolean} True if the entry is a root entry.
  */
@@ -423,7 +423,8 @@ CommandUtil.isFromSelectionMenu = event => {
 /**
  * If entry is fake/invalid/non-interactive/root, we don't show menu items
  * intended for regular entries.
- * @param {!VolumeManager} volumeManager
+ * @param {!import('../../externs/volume_manager.js').VolumeManager}
+ *     volumeManager
  * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
  * @return {boolean} True if we should show the menu items for regular entries.
  */
@@ -512,7 +513,8 @@ CommandUtil.shouldIgnoreEvents = function(doc) {
  * parts (Shared Drives, My Drive, Shared with me, etc).
  *
  * @param {!Array<!Entry|!FilesAppEntry>} entries
- * @param {!VolumeManager} volumeManager
+ * @param {!import('../../externs/volume_manager.js').VolumeManager}
+ *     volumeManager
  * @return {boolean}
  */
 CommandUtil.isDriveEntries = (entries, volumeManager) => {
@@ -1787,7 +1789,8 @@ CommandHandler
    * Check whether the parent exists from a supplied entry and return the folder
    * name (if it exists or doesn't).
    * @param {!Entry} entry The entry to identify the parent from.
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @returns {Promise<{exists: boolean, parentName: string}>}
    */
   async getParentName(entry, volumeManager) {

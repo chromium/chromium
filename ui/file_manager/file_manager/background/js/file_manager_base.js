@@ -13,7 +13,6 @@ import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {CrostiniImpl} from './crostini.js';
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
@@ -105,7 +104,7 @@ export class FileManagerBase {
   }
 
   /**
-   * @return {!Promise<!VolumeManager>}
+   * @return {!Promise<!import('../../externs/volume_manager.js').VolumeManager>}
    */
   async getVolumeManager() {
     return volumeManagerFactory.getInstance();
@@ -173,7 +172,8 @@ export class FileManagerBase {
         /**
          * Retrieves the root file entry of the volume on the requested
          * device.
-         * @param {!VolumeManager} volumeManager
+         * @param {!import('../../externs/volume_manager.js').VolumeManager}
+         *     volumeManager
          */
         volumeManager => {
           // @ts-ignore: error TS2339: Property 'devicePath' does not exist on
@@ -220,7 +220,8 @@ export class FileManagerBase {
     // assignable to type 'Promise<VolumeInfo>'.
     return volumeManagerFactory.getInstance().then(
         (/**
-          * @param {!VolumeManager} volumeManager
+          * @param {!import('../../externs/volume_manager.js').VolumeManager}
+          *     volumeManager
           */
          (volumeManager) => {
            return volumeManager.whenVolumeInfoReady(volumeId).catch((e) => {

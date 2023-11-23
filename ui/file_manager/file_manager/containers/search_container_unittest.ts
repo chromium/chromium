@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {EntryLocation} from '../externs/entry_location.js';
 import {PropStatus, State} from '../externs/ts/state.js';
-import {VolumeManager} from '../externs/volume_manager.js';
+import type {VolumeManager} from '../externs/volume_manager.js';
 import {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
 import {waitDeepEquals} from '../state/for_tests.js';

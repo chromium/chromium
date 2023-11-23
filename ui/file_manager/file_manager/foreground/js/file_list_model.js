@@ -10,7 +10,6 @@ import {FileExtensionType, getType, isImage, isRaw} from '../../common/js/file_t
 import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
 import {collator, str, strf} from '../../common/js/translations.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {MetadataModel} from './metadata/metadata_model.js';
 
@@ -119,7 +118,10 @@ export class FileListModel extends ArrayDataModel {
      */
     this.useModificationByMeTime_ = false;
 
-    /** @private @type {?VolumeManager} The volume manager. */
+    /**
+     * @private @type {?import('../../externs/volume_manager.js').VolumeManager}
+     *     The volume manager.
+     */
     this.volumeManager_ = null;
 
     /**
@@ -595,7 +597,8 @@ export class FileListModel extends ArrayDataModel {
   }
 
   /**
-   * @param {!VolumeManager} volumeManager The volume manager.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager The volume manager.
    */
   InitNewDirContents(volumeManager) {
     this.volumeManager_ = volumeManager;

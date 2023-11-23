@@ -4,7 +4,6 @@
 
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 
 import {Action, ActionsModel} from './actions_model.js';
@@ -20,7 +19,8 @@ import {FileManagerUI} from './ui/file_manager_ui.js';
  */
 export class ActionsController {
   /**
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @param {!MetadataModel} metadataModel
    * @param {!DirectoryModel} directoryModel
    * @param {!FolderShortcutsDataModel} shortcutsModel
@@ -30,7 +30,9 @@ export class ActionsController {
   constructor(
       volumeManager, metadataModel, directoryModel, shortcutsModel,
       selectionHandler, ui) {
-    /** @private @const @type {!VolumeManager} */
+    /**
+     * @private @const @type {!import('../../externs/volume_manager.js').VolumeManager}
+     */
     this.volumeManager_ = volumeManager;
 
     /** @private @const @type {!MetadataModel} */

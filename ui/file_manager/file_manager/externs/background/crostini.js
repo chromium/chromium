@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VolumeManager} from '../volume_manager.js';
-
 /**
  * Crostini shared path state handler.
  *
@@ -18,7 +16,7 @@ export class Crostini {
 
   /**
    * Initialize Volume Manager.
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../volume_manager.js').VolumeManager} volumeManager
    */
   // @ts-ignore: error TS6133: 'volumeManager' is declared but its value is
   // never read.

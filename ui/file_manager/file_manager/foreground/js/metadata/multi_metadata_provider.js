@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {isTrashEntry} from '../../../common/js/entry_utils.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
@@ -23,7 +22,8 @@ export class MultiMetadataProvider extends MetadataProvider {
    * @param {!ExternalMetadataProvider} externalMetadataProvider
    * @param {!ContentMetadataProvider} contentMetadataProvider
    * @param {!DlpMetadataProvider} dlpMetadataProvider
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    */
   constructor(
       fileSystemMetadataProvider, externalMetadataProvider,
@@ -45,7 +45,9 @@ export class MultiMetadataProvider extends MetadataProvider {
     /** @private @const @type {!DlpMetadataProvider} */
     this.dlpMetadataProvider_ = dlpMetadataProvider;
 
-    /** @private @const @type {!VolumeManager} */
+    /**
+     * @private @const @type {!import('../../../externs/volume_manager.js').VolumeManager}
+     */
     this.volumeManager_ = volumeManager;
   }
 

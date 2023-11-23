@@ -18,7 +18,6 @@ import {FileErrorToDomError} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {SearchLocation, SearchOptions} from '../../externs/ts/state.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
 import {getStore} from '../../state/store.js';
 
@@ -136,8 +135,8 @@ export class DirectoryContentScanner extends ContentScanner {
  */
 export class SearchV2ContentScanner extends ContentScanner {
   /**
-   * @param {!VolumeManager} volumeManager Manager of volumes available to the
-   *     files app.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager Manager of volumes available to the files app.
    * @param {!DirectoryEntry|!FilesAppEntry} entry The entry representing the
    *     selected location in the directory tree.
    * @param {!string} query The query of the search.
@@ -717,7 +716,8 @@ export class RecentContentScanner extends ContentScanner {
   /**
    * @param {string} query Search query.
    * @param {number} cutoffDays The time delta in days for the modified time.
-   * @param {VolumeManager} volumeManager Volume manager.
+   * @param {import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager Volume manager.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
    */
@@ -735,7 +735,7 @@ export class RecentContentScanner extends ContentScanner {
     this.cutoffDays_ = cutoffDays;
 
     /**
-     * @private @type {VolumeManager}
+     * @private @type {import('../../externs/volume_manager.js').VolumeManager}
      */
     this.volumeManager_ = volumeManager;
 
@@ -913,7 +913,8 @@ export class GuestOsMounter extends ContentScanner {
  */
 export class TrashContentScanner extends ContentScanner {
   /**
-   * @param {!VolumeManager} volumeManager Identifies the underlying filesystem.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager Identifies the underlying filesystem.
    */
   constructor(volumeManager) {
     super();
@@ -960,7 +961,10 @@ export class TrashContentScanner extends ContentScanner {
  * When filters are changed, a 'changed' event is fired.
  */
 export class FileFilter extends EventTarget {
-  /** @param {!VolumeManager} volumeManager */
+  /**
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
+   */
   constructor(volumeManager) {
     super();
 
@@ -971,7 +975,7 @@ export class FileFilter extends EventTarget {
     this.filters_ = {};
 
     /**
-     * @type {!VolumeManager}
+     * @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      * @private
      */
@@ -1133,7 +1137,8 @@ export class FileListContext {
   /**
    * @param {FileFilter} fileFilter The file-filter context.
    * @param {!MetadataModel} metadataModel
-   * @param {!VolumeManager} volumeManager The volume manager.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager The volume manager.
    */
   constructor(fileFilter, metadataModel, volumeManager) {
     /**
@@ -1163,7 +1168,9 @@ export class FileListContext {
       ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
     ]));
 
-    /** @public @type {!VolumeManager} */
+    /**
+     * @public @type {!import('../../externs/volume_manager.js').VolumeManager}
+     */
     this.volumeManager = volumeManager;
   }
 }

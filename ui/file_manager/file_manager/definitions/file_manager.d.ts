@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VolumeManager} from '../externs/volume_manager.js';
+import type {VolumeManager} from '../externs/volume_manager.js';
 import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 
 /**

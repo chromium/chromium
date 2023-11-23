@@ -10,7 +10,6 @@ import {str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {EntryLocationImpl} from './entry_location_impl.js';
 import {VolumeInfoImpl} from './volume_info_impl.js';
@@ -26,7 +25,6 @@ export const fakeDriveVolumeId =
 /**
  * Mock class for VolumeManager.
  * @final
- * @implements {VolumeManager}
  */
 export class MockVolumeManager {
   constructor() {
@@ -330,7 +328,7 @@ export class MockVolumeManager {
   }
 }
 
-/** @private @type {?VolumeManager} */
+/** @private @type {?import('../../externs/volume_manager.js').VolumeManager} */
 // @ts-ignore: error TS2341: Property 'instance_' is private and only accessible
 // within class 'MockVolumeManager'.
 MockVolumeManager.instance_ = null;
@@ -354,7 +352,8 @@ MockVolumeManager.prototype.whenVolumeInfoReady =
  * will look up the volume with ID 'downloads:test_mount_path' for
  * /dir/file.txt.
  *
- * @param {VolumeManager} volumeManager VolumeManager to resolve URLs with.
+ * @param {import('../../externs/volume_manager.js').VolumeManager}
+ *     volumeManager VolumeManager to resolve URLs with.
  * @param {string} url URL to resolve.
  * @param {function(!MockEntry):void} successCallback Success callback.
  * @param {function(!FileError):void=} errorCallback Error callback.

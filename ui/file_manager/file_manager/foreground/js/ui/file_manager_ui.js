@@ -17,7 +17,6 @@ import {DirectoryTreeContainer} from '../../../containers/directory_tree_contain
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
 import {DialogType} from '../../../externs/ts/state.js';
-import {VolumeManager} from '../../../externs/volume_manager.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
 import {XfPasswordDialog} from '../../../widgets/xf_password_dialog.js';
@@ -503,7 +502,8 @@ export class FileManagerUI {
    *
    * @param {!FileTable} table
    * @param {!FileGrid} grid
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    */
   initAdditionalUI(table, grid, volumeManager) {
     // List container.

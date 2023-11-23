@@ -10,7 +10,6 @@ import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_ch
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {ProvidersModel} from './providers_model.js';
 
@@ -115,11 +114,12 @@ const NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION = {
   multipleMounts: true,
 };
 
-/** @type {!VolumeManager} */
+/** @type {!import('../../externs/volume_manager.js').VolumeManager} */
 let volumeManager;
 
 /**
- * @param {VolumeManager} volumeManager
+ * @param {import('../../externs/volume_manager.js').VolumeManager}
+ *     volumeManager
  * @param {string} providerId
  * @param {string} volumeId
  */

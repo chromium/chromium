@@ -10,7 +10,6 @@ import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
 import {Store} from '../../externs/ts/store.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 import {updateSelection} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
@@ -26,7 +25,8 @@ export class FileSelection {
   /**
    * @param {!Array<number>} indexes
    * @param {!Array<!Entry>} entries
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    */
   constructor(indexes, entries, volumeManager) {
     /**
@@ -169,7 +169,8 @@ export class FileSelectionHandler extends EventTarget {
    * @param {!DirectoryModel} directoryModel
    * @param {!ListContainer} listContainer
    * @param {!MetadataModel} metadataModel
-   * @param {!VolumeManager} volumeManager
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager
    * @param {!AllowedPaths} allowedPaths
    */
   constructor(
@@ -196,7 +197,7 @@ export class FileSelectionHandler extends EventTarget {
     this.metadataModel_ = metadataModel;
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;

@@ -7,7 +7,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {LruCache} from '../../common/js/lru_cache.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
 // @ts-ignore: error TS6133: 'FileListModel' is declared but its value is never
@@ -19,7 +18,7 @@ import {ThumbnailLoader} from './thumbnail_loader.js';
 /**
  * A thumbnail loader for list style UI.
  *
- * ListThumbnailLoader is a thubmanil loader designed for list style ui. List
+ * ListThumbnailLoader is a thumbnail loader designed for list style ui. List
  * thumbnail loader loads thumbnail in a viewport of the UI. ListThumbnailLoader
  * is responsible to return dataUrls of thumbnails and fetch them with proper
  * priority.
@@ -28,7 +27,8 @@ export class ListThumbnailLoader extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel A directory model.
    * @param {!ThumbnailModel} thumbnailModel Thumbnail metadata model.
-   * @param {!VolumeManager} volumeManager Volume manager.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager Volume manager.
    * @param {Function=} opt_thumbnailLoaderConstructor A constructor of
    *     thumbnail loader. This argument is used for testing.
    */
@@ -47,7 +47,7 @@ export class ListThumbnailLoader extends EventTarget {
     this.thumbnailModel_ = thumbnailModel;
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      */
     this.volumeManager_ = volumeManager;
 
@@ -416,7 +416,8 @@ ListThumbnailLoader.Task = class {
   /**
    *
    * @param {!Entry} entry An entry.
-   * @param {!VolumeManager} volumeManager Volume manager.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager Volume manager.
    * @param {!ThumbnailModel} thumbnailModel Metadata cache.
    * @param {!Function} thumbnailLoaderConstructor A constructor of thumbnail
    *     loader.
