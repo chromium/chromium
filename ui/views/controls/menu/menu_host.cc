@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
@@ -56,10 +57,9 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
                               SubmenuView* submenu,
                               aura::Window* window)
       : menu_controller_(const_cast<MenuController*>(controller)),
-        submenu_(submenu),
-        window_(window) {
-    window_->AddPreTargetHandler(this);
-    window_->AddObserver(this);
+        submenu_(submenu) {
+    window_observation_.Observe(window);
+    window->AddPreTargetHandler(this);
   }
 
   PreMenuEventDispatchHandler(const PreMenuEventDispatchHandler&) = delete;
@@ -75,22 +75,24 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
 
   // aura::WindowObserver overrides.
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK(window_ == window);
+    DCHECK(window_observation_.IsObserving());
+    DCHECK_EQ(window_observation_.GetSource(), window);
     StopObserving();
   }
 
  private:
   void StopObserving() {
-    if (!window_)
+    if (!window_observation_.IsObserving()) {
       return;
-    window_->RemovePreTargetHandler(this);
-    window_->RemoveObserver(this);
-    window_ = nullptr;
+    }
+    window_observation_.GetSource()->RemovePreTargetHandler(this);
+    window_observation_.Reset();
   }
 
-  raw_ptr<MenuController, DanglingUntriaged> menu_controller_;
-  raw_ptr<SubmenuView, DanglingUntriaged> submenu_;
-  raw_ptr<aura::Window, DanglingUntriaged> window_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+  const raw_ptr<MenuController, DanglingUntriaged> menu_controller_;
+  const raw_ptr<SubmenuView> submenu_;
 };
 #endif  // USE_AURA
 
@@ -248,10 +250,10 @@ void MenuHost::DestroyMenuHost() {
   HideMenuHost();
   destroying_ = true;
   submenu_ = nullptr;
-  static_cast<MenuHostRootView*>(GetRootView())->ClearSubmenu();
 #if defined(USE_AURA)
   pre_dispatch_handler_.reset();
 #endif
+  static_cast<MenuHostRootView*>(GetRootView())->ClearSubmenu();
   Close();
 }
 
