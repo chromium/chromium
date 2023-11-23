@@ -1,0 +1,54 @@
+# This workflow will run headful selenium tests.
+
+name: Selenium tests
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches: 'main'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  selenium:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+      - name: Set up Node.js
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          node-version: lts/*
+          cache: npm
+      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Setup cache for browser binaries
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ~/.cache/chromium-bidi
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
+      - name: Install pinned browser
+        id: browser
+        run: node tools/install-browser.mjs --github
+      - name: Install chromedriver for the pinned browser
+        id: driver
+        run: node tools/install-browser.mjs --chromedriver --github
+      - name: Run Selenium test
+        timeout-minutes: 20
+        run: >
+          xvfb-run --auto-servernum
+          node tests_external/selenium.mjs
+        env:
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          CHROMEDRIVER_BIN: ${{ steps.driver.outputs.executablePath }}

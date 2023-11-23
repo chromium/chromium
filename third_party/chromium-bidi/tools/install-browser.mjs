@@ -19,14 +19,21 @@
  */
 
 /**
- * @fileoverview Installs a browser defined in `.browser` using
- * `@puppeteer/browsers` to the directory provided as the first argument
- * (default: cwd). The executable path is written to the `executablePath` output
- * param for GitHub actions.
+ * @fileoverview Installs a browser defined in `.browser` or corresponding
+ * ChromeDriver using `@puppeteer/browsers` to the directory provided as the
+ * first argument (default: $HOME/.cache/chromium-bidi).
+ *
+ * If `--chromedriver` is set, the ChromeDriver is installed instead of a
+ * browser.
+ *
+ * If `--github` is set, the executable path is written to the
+ * `executablePath` output param for GitHub actions. Otherwise, the executable
+ * is written to stdout.
  *
  * Examples:
  *  - `node tools/install-browser.mjs`
  *  - `node tools/install-browser.mjs /tmp/cache`
+ *  - `node tools/install-browser.mjs --chromedriver`
  */
 
 import {readFile} from 'fs/promises';
@@ -36,33 +43,44 @@ import {resolve} from 'path';
 import {setOutput, setFailed} from '@actions/core';
 import {install, computeExecutablePath} from '@puppeteer/browsers';
 
-const SHELL_ARG = '--shell';
+const GITHUB_SHELL_ARG = '--github';
+const CHROME_DRIVER_ARG = '--chromedriver';
 
 try {
   const browserSpec = (await readFile('.browser', 'utf-8')).trim();
 
   let cacheDir = resolve(homedir(), '.cache', 'chromium-bidi');
-  if (process.argv[2] && process.argv[2] !== SHELL_ARG) {
+  if (
+    process.argv[2] &&
+    process.argv[2] !== GITHUB_SHELL_ARG &&
+    process.argv[2] !== CHROME_DRIVER_ARG
+  ) {
     cacheDir = process.argv[2];
   }
 
   // See .browser for the format.
-  const browser = browserSpec.split('@')[0];
+  // Contains either a browser name or `chromedriver`.
+  const product = process.argv.includes(CHROME_DRIVER_ARG)
+    ? 'chromedriver'
+    : browserSpec.split('@')[0];
   const buildId = browserSpec.split('@')[1];
+
   await install({
-    browser,
+    browser: product,
     buildId,
     cacheDir,
   });
+
   const executablePath = computeExecutablePath({
     cacheDir,
-    browser,
+    browser: product,
     buildId,
   });
-  if (!process.argv.includes(SHELL_ARG)) {
+  if (process.argv.includes(GITHUB_SHELL_ARG)) {
     setOutput('executablePath', executablePath);
+  } else {
+    console.log(executablePath);
   }
-  console.log(executablePath);
 } catch (err) {
   setFailed(`Failed to download the browser: ${err.message}`);
 }

@@ -46,9 +46,7 @@ if (
 
 let BROWSER_BIN = process.env.BROWSER_BIN;
 if (!BROWSER_BIN) {
-  BROWSER_BIN = execSync(
-    `node ${join('tools', 'install-browser.mjs')} '--shell'`
-  )
+  BROWSER_BIN = execSync(`node ${join('tools', 'install-browser.mjs')}`)
     .toString()
     .trim();
 }

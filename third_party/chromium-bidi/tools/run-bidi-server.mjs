@@ -49,10 +49,7 @@ let BROWSER_BIN = process.env.BROWSER_BIN;
 let CHANNEL = process.env.CHANNEL || 'local';
 if (CHANNEL === 'local') {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  BROWSER_BIN = spawnSync('node', [
-    join('tools', 'install-browser.mjs'),
-    '--shell',
-  ])
+  BROWSER_BIN = spawnSync('node', [join('tools', 'install-browser.mjs')])
     .stdout.toString()
     .trim();
   // Need to pass valid CHANNEL to the command below

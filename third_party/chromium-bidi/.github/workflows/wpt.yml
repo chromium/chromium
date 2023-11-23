@@ -140,7 +140,7 @@ jobs:
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
       - name: Install pinned browser
         id: browser
-        run: node tools/install-browser.mjs
+        run: node tools/install-browser.mjs --github
       - name: Run WPT tests (mapper, headful)
         if: matrix.head == 'headful' && matrix.kind == 'mapper'
         timeout-minutes: 60

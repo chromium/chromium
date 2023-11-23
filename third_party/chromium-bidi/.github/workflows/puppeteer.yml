@@ -62,7 +62,7 @@ jobs:
       - name: Install pinned browser
         id: browser
         working-directory: bidi
-        run: node tools/install-browser.mjs
+        run: node tools/install-browser.mjs --github
       - name: Run tests
         working-directory: puppeteer
         env:
