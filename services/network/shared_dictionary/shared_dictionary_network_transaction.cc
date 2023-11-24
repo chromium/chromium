@@ -152,8 +152,8 @@ void SharedDictionaryNetworkTransaction::OnStartCompleted(
     base::UmaHistogramSparse(
         base::StrCat({"Net.SharedDictionaryTransaction.NetResultWithDict.",
                       cert_is_issued_by_known_root_
-                          ? ".KnownRootCert"
-                          : ".UnknownRootCertOrNoCert"}),
+                          ? "KnownRootCert"
+                          : "UnknownRootCertOrNoCert"}),
         -result);
   }
 
