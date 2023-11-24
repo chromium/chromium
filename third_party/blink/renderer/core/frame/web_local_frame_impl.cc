@@ -1164,7 +1164,8 @@ v8::Local<v8::Context> WebLocalFrameImpl::GetScriptContextFromWorldId(
   return ToScriptState(GetFrame(), *world)->GetContext();
 }
 
-v8::Local<v8::Object> WebLocalFrameImpl::GlobalProxy() const {
+v8::Local<v8::Object> WebLocalFrameImpl::GlobalProxy(
+    v8::Isolate* isolate) const {
   return MainWorldScriptContext()->Global();
 }
 

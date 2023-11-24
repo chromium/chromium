@@ -114,7 +114,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // WebFrame overrides:
   void Close() override;
   WebView* View() const override;
-  v8::Local<v8::Object> GlobalProxy() const override;
+  v8::Local<v8::Object> GlobalProxy(v8::Isolate* isolate) const override;
   bool IsLoading() const override;
 
   // WebLocalFrame overrides:

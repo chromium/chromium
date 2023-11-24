@@ -79,7 +79,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const WebSecurityOrigin&,
       bool is_potentially_trustworthy_opaque_origin) override;
   void DidStartLoading() override;
-  v8::Local<v8::Object> GlobalProxy() const override;
+  v8::Local<v8::Object> GlobalProxy(v8::Isolate*) const override;
   WebString UniqueName() const override;
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
       const override;

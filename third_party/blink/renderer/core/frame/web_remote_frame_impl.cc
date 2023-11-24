@@ -394,9 +394,10 @@ void WebRemoteFrameImpl::SetFrameOwnerProperties(
   GetFrame()->SetFrameOwnerProperties(std::move(owner_properties));
 }
 
-v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
+v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy(
+    v8::Isolate* isolate) const {
   return GetFrame()
-      ->GetWindowProxy(DOMWrapperWorld::MainWorld())
+      ->GetWindowProxy(DOMWrapperWorld::MainWorld(isolate))
       ->GlobalProxyIfNotDetached();
 }
 
