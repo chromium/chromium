@@ -151,7 +151,11 @@ export class FileOperationHandler {
                         chrome.fileManagerPrivate.PolicyDialogType.ERROR,
                         checkAPIError);
                   });
-            } else {
+            } else if (
+                event.policyError.type !==
+                PolicyErrorType.ENTERPRISE_CONNECTORS) {
+              // There is not a default learn more URL for EC, and when a custom
+              // one is set we show the review button defined above instead.
               item.setExtraButton(
                   ProgressItemState.ERROR, extraButtonText, () => {
                     visitURL(str('DLP_HELP_URL'));
