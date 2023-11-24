@@ -365,6 +365,24 @@ CSSRuleSourceData* StyleSheetHandler::PopRuleData() {
   return data;
 }
 
+wtf_size_t FindColonIndex(const String& property_string) {
+  wtf_size_t index = 0;
+  while (index != kNotFound && index < property_string.length()) {
+    index = std::min(property_string.Find("/*", index),
+                     property_string.Find(":", index));
+    if (index == kNotFound || property_string[index] == ':')
+      return index;
+    if (index >= property_string.length() - 2)
+      return kNotFound;
+    // We're in a comment inside the property name, skip past it.
+    index = property_string.Find("*/", index + 2);
+    if (index != kNotFound) {
+      index += 2;
+    }
+  }
+  return kNotFound;
+}
+
 void StyleSheetHandler::ObserveProperty(unsigned start_offset,
                                         unsigned end_offset,
                                         bool is_important,
@@ -391,7 +409,7 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
           .StripWhiteSpace();
   if (property_string.EndsWith(';'))
     property_string = property_string.Left(property_string.length() - 1);
-  wtf_size_t colon_index = property_string.find(':');
+  wtf_size_t colon_index = FindColonIndex(property_string);
   DCHECK_NE(colon_index, kNotFound);
 
   String name = property_string.Left(colon_index).StripWhiteSpace();

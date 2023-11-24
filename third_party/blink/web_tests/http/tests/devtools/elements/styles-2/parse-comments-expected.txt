@@ -7,13 +7,13 @@ element.style { ()
 [expanded] 
 #main { (<style>)
 /-- overloaded --/ /-- disabled --/     /* color: red; */
-    color/* color: red */:/* color: red */ green/* color: red */;
+    color/* color: red */: /* color: red */ green/* color: red */;
 /-- overloaded --/ /-- disabled --/     /* color: red; */
 
 [expanded] 
 #main { (<style>)
 /-- overloaded --/ /-- disabled --/     /* color: red; */
-    background /* color: red */ :/* color: red */blue/* color: red */;
+    background /* color: red */: /* color: red */blue/* color: red */;
 /-- overloaded --/ /-- disabled --/     /* color: red; */
 
 [expanded] 
