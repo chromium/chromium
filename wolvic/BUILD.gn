@@ -212,6 +212,7 @@ jinja_template("content_manifest") {
 generate_jni("jni_headers") {
   sources = [
     "java/org/chromium/wolvic/DownloadManagerBridge.java",
+    "java/org/chromium/wolvic/PermissionManagerBridge.java",
     "java/org/chromium/wolvic/SessionSettings.java",
     "java/org/chromium/wolvic/Tab.java",
     "java/org/chromium/wolvic/VRManager.java",
@@ -223,6 +224,7 @@ generate_jni("jni_headers") {
 android_library("wolvic_java") {
   sources = [
     "java/org/chromium/wolvic/DownloadManagerBridge.java",
+    "java/org/chromium/wolvic/PermissionManagerBridge.java",
     "java/org/chromium/wolvic/SessionSettings.java",
     "java/org/chromium/wolvic/Tab.java",
     "java/org/chromium/wolvic/TabCompositorView.java",

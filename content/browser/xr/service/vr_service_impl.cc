@@ -572,9 +572,6 @@ void VRServiceImpl::OnPermissionResultsForMode(
       permission_results.HasPermissionsFor(request.options->mode);
   DVLOG(2) << __func__ << ": is_consent_granted=" << is_consent_granted;
 
-  // TODO : Remove it after implementing Permission feature.
-  is_consent_granted = true;
-
   if (!is_consent_granted) {
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(

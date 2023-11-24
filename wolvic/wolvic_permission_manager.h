@@ -5,15 +5,30 @@
 #ifndef WOLVIC_WOLVIC_PERMISSION_MANAGER_H_
 #define WOLVIC_WOLVIC_PERMISSION_MANAGER_H_
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
 
 namespace wolvic {
+
+// Holds callbacks for in-progress permission requests.
+struct InProgressRequest {
+  explicit InProgressRequest(
+      base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
+          callback);
+
+  ~InProgressRequest();
+
+  base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
+      callback;
+};
 
 class WolvicPermissionManager : public content::PermissionControllerDelegate {
  public:
   explicit WolvicPermissionManager(content::BrowserContext* browser_context);
-  ~WolvicPermissionManager() override = default;
+  ~WolvicPermissionManager() override;
 
   // PermissionControllerDelegate overrides:
   void RequestPermissions(
@@ -58,8 +73,13 @@ class WolvicPermissionManager : public content::PermissionControllerDelegate {
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
 
+  void OnPermissionResult(InProgressRequest* in_progress_request,
+                          const std::vector<content::PermissionStatus>& result);
+
  private:
   raw_ptr<content::BrowserContext> browser_context_;
+
+  std::vector<std::unique_ptr<InProgressRequest>> in_progress_requests_;
 };
 
 }  // namespace wolvic
