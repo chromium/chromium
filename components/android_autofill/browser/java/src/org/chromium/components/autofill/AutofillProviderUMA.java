@@ -23,6 +23,12 @@ public class AutofillProviderUMA {
     // Records whether the Autofill service is enabled or not.
     public static final String UMA_AUTOFILL_ENABLED = "Autofill.WebView.Enabled";
 
+    // Records whether Autofill was enabled or disabled in a session where the
+    // ViewStructure was not
+    // disabled.
+    public static final String UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED =
+            "Autofill.WebView.AutofillState.NoVirtualStructureProvided";
+
     // Records whether the Autofill provider is created by activity context or not.
     public static final String UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT =
             "Autofill.WebView.CreatedByActivityContext";
@@ -35,7 +41,7 @@ public class AutofillProviderUMA {
     public static final String UMA_AUTOFILL_AUTOFILL_SESSION = "Autofill.WebView.AutofillSession";
     // The possible value of UMA_AUTOFILL_AUTOFILL_SESSION.
     public static final int SESSION_UNKNOWN = 0;
-    public static final int NO_CALLBACK_FORM_FRAMEWORK = 1;
+    public static final int NO_STRUCTURE_PROVIDED = 1;
     public static final int NO_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED = 2;
     public static final int NO_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED = 3;
     public static final int NO_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 4;
@@ -48,7 +54,13 @@ public class AutofillProviderUMA {
     public static final int USER_NOT_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED = 11;
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 12;
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED = 13;
-    public static final int AUTOFILL_SESSION_HISTOGRAM_COUNT = 14;
+    public static final int NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_NO_FORM_SUBMITTED = 14;
+    public static final int NO_STRUCTURE_PROVIDED_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 15;
+    public static final int NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_FORM_SUBMITTED = 16;
+    public static final int NO_STRUCTURE_PROVIDED_SUGGESTION_PROVIDED = 17; // Error state.
+    public static final int NO_STRUCTURE_PROVIDED_FORM_AUTOFILLED = 18; // Error state.
+    public static final int NO_SUGGESTION_FORM_AUTOFILLED = 19; // Error state.
+    public static final int AUTOFILL_SESSION_HISTOGRAM_COUNT = 20;
 
     // The possible values for the server prediction availability.
     public static final String UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY =
@@ -59,12 +71,12 @@ public class AutofillProviderUMA {
     public static final int SERVER_PREDICTION_AVAILABLE_COUNT = 3;
 
     // The possible values for the AwG suggestion availability.
-    public static final String UMA_AUTOFILL_AWG_SUGGSTION_AVAILABILITY =
+    public static final String UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY =
             "Autofill.WebView.ServerPrediction.AwGSuggestionAvailability";
     public static final int AWG_NO_SUGGESTION = 0;
     public static final int AWG_HAS_SUGGESTION_NO_AUTOFILL = 1;
     public static final int AWG_HAS_SUGGESTION_AUTOFILLED = 2;
-    public static final int AWG_SUGGSTION_AVAILABLE_COUNT = 3;
+    public static final int AWG_SUGGESTION_AVAILABLE_COUNT = 3;
 
     public static final String UMA_AUTOFILL_VALID_SERVER_PREDICTION =
             "Autofill.WebView.ServerPredicton.HasValidServerPrediction";
@@ -161,7 +173,7 @@ public class AutofillProviderUMA {
             }
         }
 
-        public void recordHistogram() {
+        public void recordHistogram(boolean autofillDisabled) {
             RecordHistogram.recordEnumeratedHistogram(
                     UMA_AUTOFILL_AUTOFILL_SESSION,
                     toUMAAutofillSessionValue(),
@@ -180,6 +192,10 @@ public class AutofillProviderUMA {
                         UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY,
                         SERVER_PREDICTION_NOT_AVAILABLE,
                         SERVER_PREDICTION_AVAILABLE_COUNT);
+            }
+            if ((mState & EVENT_VIRTUAL_STRUCTURE_PROVIDED) == 0) {
+                RecordHistogram.recordBooleanHistogram(
+                        UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED, !autofillDisabled);
             }
         }
 
@@ -214,65 +230,82 @@ public class AutofillProviderUMA {
                                     | EVENT_FORM_AUTOFILLED
                                     | EVENT_USER_CHANGED_FIELD_VALUE
                                     | EVENT_FORM_SUBMITTED);
-            if (state == 0) {
-                return NO_CALLBACK_FORM_FRAMEWORK;
-            } else if (state == EVENT_VIRTUAL_STRUCTURE_PROVIDED) {
-                return NO_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED | EVENT_USER_CHANGED_FIELD_VALUE)) {
-                return NO_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
-            } else if (state == (EVENT_VIRTUAL_STRUCTURE_PROVIDED | EVENT_FORM_SUBMITTED)) {
-                return NO_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_USER_CHANGED_FIELD_VALUE
-                            | EVENT_FORM_SUBMITTED)) {
-                return NO_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_SUGGESTION_DISPLAYED
-                            | EVENT_FORM_AUTOFILLED)) {
-                return USER_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_SUGGESTION_DISPLAYED
-                            | EVENT_FORM_AUTOFILLED
-                            | EVENT_FORM_SUBMITTED)) {
-                return USER_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_SUGGESTION_DISPLAYED
-                            | EVENT_FORM_AUTOFILLED
-                            | EVENT_USER_CHANGED_FIELD_VALUE
-                            | EVENT_FORM_SUBMITTED)) {
-                return USER_SELECT_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_SUGGESTION_DISPLAYED
-                            | EVENT_FORM_AUTOFILLED
-                            | EVENT_USER_CHANGED_FIELD_VALUE)) {
-                return USER_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
-            } else if (state == (EVENT_VIRTUAL_STRUCTURE_PROVIDED | EVENT_SUGGESTION_DISPLAYED)) {
-                return USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_SUGGESTION_DISPLAYED
-                            | EVENT_FORM_SUBMITTED)) {
-                return USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_SUGGESTION_DISPLAYED
-                            | EVENT_USER_CHANGED_FIELD_VALUE
-                            | EVENT_FORM_SUBMITTED)) {
-                return USER_NOT_SELECT_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED;
-            } else if (state
-                    == (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                            | EVENT_SUGGESTION_DISPLAYED
-                            | EVENT_USER_CHANGED_FIELD_VALUE)) {
-                return USER_NOT_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
-            } else {
-                return SESSION_UNKNOWN;
+            if ((state & EVENT_VIRTUAL_STRUCTURE_PROVIDED) == 0) {
+                // No suggestions can be shown if the structure was not provided, which also means
+                // one cannot autofill.
+                if ((state & EVENT_SUGGESTION_DISPLAYED) != 0) { // 8 states
+                    return NO_STRUCTURE_PROVIDED_SUGGESTION_PROVIDED; // Error state.
+                }
+                if ((state & EVENT_FORM_AUTOFILLED) != 0) { // 4 states
+                    return NO_STRUCTURE_PROVIDED_FORM_AUTOFILLED; // Error state.
+                }
+                if (state == 0) { // 1 state
+                    return NO_STRUCTURE_PROVIDED;
+                }
+                if (state == EVENT_USER_CHANGED_FIELD_VALUE) { // 1 state
+                    return NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
+                }
+                if (state == EVENT_FORM_SUBMITTED) { // 1 state
+                    return NO_STRUCTURE_PROVIDED_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
+                }
+                if (state == (EVENT_USER_CHANGED_FIELD_VALUE | EVENT_FORM_SUBMITTED)) { // 1 state
+                    return NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_FORM_SUBMITTED;
+                }
+                return SESSION_UNKNOWN; // Shouldn't reach this state.
             }
+            // We know that below the structure is provided.
+            state ^= EVENT_VIRTUAL_STRUCTURE_PROVIDED;
+            if ((state & EVENT_SUGGESTION_DISPLAYED) == 0) {
+                // No suggestions were shown and hence one cannot autofill.
+                if ((state & EVENT_FORM_AUTOFILLED) != 0) { // 4 states
+                    return NO_SUGGESTION_FORM_AUTOFILLED; // Error state.
+                }
+                if (state == 0) { // 1 state
+                    return NO_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
+                }
+                if (state == EVENT_USER_CHANGED_FIELD_VALUE) { // 1 state
+                    return NO_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
+                }
+                if (state == EVENT_FORM_SUBMITTED) { // 1 state
+                    return NO_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
+                }
+                if (state == (EVENT_USER_CHANGED_FIELD_VALUE | EVENT_FORM_SUBMITTED)) { // 1 state
+                    return NO_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED;
+                }
+                return SESSION_UNKNOWN; // Shouldn't reach this state.
+            }
+            // We know that below suggestions were shown.
+            state ^= EVENT_SUGGESTION_DISPLAYED;
+            if ((state & EVENT_FORM_AUTOFILLED) == 0) {
+                if (state == 0) { // 1 state
+                    return USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
+                }
+                if (state == EVENT_USER_CHANGED_FIELD_VALUE) { // 1 state
+                    return USER_NOT_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
+                }
+                if (state == EVENT_FORM_SUBMITTED) { // 1 state
+                    return USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
+                }
+                if (state == (EVENT_USER_CHANGED_FIELD_VALUE | EVENT_FORM_SUBMITTED)) { // 1 state
+                    return USER_NOT_SELECT_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED;
+                }
+                return SESSION_UNKNOWN; // Shouldn't reach this state.
+            }
+            // We know that below the form was autofilled.
+            state ^= EVENT_FORM_AUTOFILLED;
+            if (state == 0) { // 1 state
+                return USER_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
+            }
+            if (state == EVENT_USER_CHANGED_FIELD_VALUE) { // 1 state
+                return USER_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
+            }
+            if (state == EVENT_FORM_SUBMITTED) { // 1 state
+                return USER_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
+            }
+            if (state == (EVENT_USER_CHANGED_FIELD_VALUE | EVENT_FORM_SUBMITTED)) { // 1 state
+                return USER_SELECT_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED;
+            }
+            return SESSION_UNKNOWN; // Shouldn't reach this state.
         }
 
         private int mState;
@@ -284,8 +317,8 @@ public class AutofillProviderUMA {
 
     /**
      * The class to record Autofill.WebView.ServerPrediction.AwGSuggestion, is only instantiated
-     * when the Android platform AutofillServcie is AwG, This will give us more actual result in
-     * A/B experiment while only AwG supports the server prediction.
+     * when the Android platform AutofillService is AwG, This will give us more actual result in A/B
+     * experiment while only AwG supports the server prediction.
      */
     private static class ServerPredictionRecorder {
         private boolean mHasSuggestions;
@@ -311,12 +344,14 @@ public class AutofillProviderUMA {
                                 : AWG_HAS_SUGGESTION_NO_AUTOFILL;
             }
             RecordHistogram.recordEnumeratedHistogram(
-                    UMA_AUTOFILL_AWG_SUGGSTION_AVAILABILITY, sample, AWG_SUGGSTION_AVAILABLE_COUNT);
+                    UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY,
+                    sample,
+                    AWG_SUGGESTION_AVAILABLE_COUNT);
         }
     }
 
     private SessionRecorder mRecorder;
-    private Boolean mAutofillDisabled;
+    private Boolean mAutofillDisabledOnSessionStart;
 
     private final boolean mIsAwGCurrentAutofillService;
     private ServerPredictionRecorder mServerPredictionRecorder;
@@ -332,9 +367,9 @@ public class AutofillProviderUMA {
         mIsAwGCurrentAutofillService = isAwGCurrentAutofillService;
     }
 
-    public void onFormSubmitted(int submissionSource) {
+    public void onFormSubmitted(int submissionSource, boolean autofillDisabled) {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_SUBMITTED);
-        recordSession();
+        recordSession(autofillDisabled);
         // TODO(crbug.com/1484985): Consider moving the call to the ServerPredictionRecorder
         // into recordSession. Is it unclear why this is only recorded on form submission.
         if (mServerPredictionRecorder != null) mServerPredictionRecorder.recordHistograms();
@@ -347,12 +382,13 @@ public class AutofillProviderUMA {
 
     public void onSessionStarted(boolean autofillDisabled) {
         // Record autofill status once per instance and only if user triggers the autofill.
-        if (mAutofillDisabled == null || mAutofillDisabled.booleanValue() != autofillDisabled) {
+        if (mAutofillDisabledOnSessionStart == null
+                || mAutofillDisabledOnSessionStart.booleanValue() != autofillDisabled) {
             RecordHistogram.recordBooleanHistogram(UMA_AUTOFILL_ENABLED, !autofillDisabled);
-            mAutofillDisabled = Boolean.valueOf(autofillDisabled);
+            mAutofillDisabledOnSessionStart = Boolean.valueOf(autofillDisabled);
         }
 
-        if (mRecorder != null) recordSession();
+        if (mRecorder != null) recordSession(autofillDisabled);
         mRecorder = new SessionRecorder();
         if (mIsAwGCurrentAutofillService) {
             mServerPredictionRecorder = new ServerPredictionRecorder();
@@ -392,11 +428,11 @@ public class AutofillProviderUMA {
     }
 
     /**
-     * Invoked when the server query was done or has arrived when the autofill sension starts.
+     * Invoked when the server query was done or has arrived when the autofill session starts.
      *
      * @param formData the form of the current session, is null if the query failed.
      * @param afterSessionStarted true if the server type predication arrive after the session
-     *         starts.
+     *     starts.
      */
     public void onServerTypeAvailable(FormData formData, boolean afterSessionStarted) {
         mRecorder.onServerTypeAvailable(formData, afterSessionStarted);
@@ -429,15 +465,17 @@ public class AutofillProviderUMA {
     }
 
     /**
-     * Records the session-related Autofill metrics, i.e. the witnessed Autofill
-     * events and the AUTOFILL_SESSION UMA.
+     * Records the session-related Autofill metrics, i.e. the witnessed Autofill events and the
+     * AUTOFILL_SESSION UMA.
      *
-     * After recording, it resets the SessionRecorder. Calling it again is a
-     * no-op until a new session has been started.
+     * <p>After recording, it resets the SessionRecorder. Calling it again is a no-op until a new
+     * session has been started.
      */
-    public void recordSession() {
-        if (mAutofillDisabled != null && !mAutofillDisabled.booleanValue() && mRecorder != null) {
-            mRecorder.recordHistogram();
+    public void recordSession(boolean autofillDisabled) {
+        if (mAutofillDisabledOnSessionStart != null
+                && !mAutofillDisabledOnSessionStart.booleanValue()
+                && mRecorder != null) {
+            mRecorder.recordHistogram(autofillDisabled);
         }
         mRecorder = null;
     }

@@ -5353,6 +5353,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records the state of an autofill session.</summary>
 </histogram>
 
+<histogram name="Autofill.WebView.AutofillState.NoVirtualStructureProvided"
+    enum="BooleanEnabled" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether autofill was enabled or not when no virtual view structure
+    was provided during an autofill session. Emitted at form submission, or when
+    a new AutofillSession starts, or when the AutofillProvider is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.AwGIsCurrentService" enum="BooleanYesNo"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
