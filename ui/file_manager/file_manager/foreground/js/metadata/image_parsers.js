@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
-
 import {ByteOrder, ByteReader} from './byte_reader.js';
 import {ImageParser, MetadataParser} from './metadata_parser.js';
 
@@ -14,7 +12,8 @@ import {ImageParser, MetadataParser} from './metadata_parser.js';
  */
 export class SimpleImageParser extends ImageParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent object.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *     parent Parent object.
    * @param {string} type Image type.
    * @param {!RegExp} urlFilter RegExp to match URLs.
    * @param {number} headerSize Size of header.
@@ -62,7 +61,8 @@ export class SimpleImageParser extends ImageParser {
  */
 export class PngParser extends SimpleImageParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent object.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *    parent Parent object.
    */
   constructor(parent) {
     super(parent, 'png', /\.png$/i, 24);
@@ -97,7 +97,8 @@ export class PngParser extends SimpleImageParser {
  */
 export class BmpParser extends SimpleImageParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent object.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *    parent Parent object.
    */
   constructor(parent) {
     super(parent, 'bmp', /\.bmp$/i, 28);
@@ -127,7 +128,8 @@ export class BmpParser extends SimpleImageParser {
  */
 export class GifParser extends SimpleImageParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent object.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *    parent Parent object.
    */
   constructor(parent) {
     super(parent, 'gif', /\.Gif$/i, 10);
@@ -156,7 +158,8 @@ export class GifParser extends SimpleImageParser {
  */
 export class WebpParser extends SimpleImageParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent object.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *     parent Parent object.
    */
   constructor(parent) {
     super(parent, 'webp', /\.webp$/i, 30);
@@ -232,7 +235,8 @@ export class WebpParser extends SimpleImageParser {
  */
 export class IcoParser extends SimpleImageParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent metadata dispatcher object.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *    parent Parent metadata dispatcher object.
    */
   constructor(parent) {
     super(parent, 'ico', /\.ico$/i, 8);

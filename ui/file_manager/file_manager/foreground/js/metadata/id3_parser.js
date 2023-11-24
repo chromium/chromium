@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
-
 import {ByteReader, SeekOrigin} from './byte_reader.js';
 import {FunctionParallel} from './function_parallel.js';
 import {FunctionSequence} from './function_sequence.js';
@@ -16,7 +14,8 @@ import {MetadataParser} from './metadata_parser.js';
  */
 export class Id3Parser extends MetadataParser {
   /**
-   * @param {!MetadataParserLogger} parent A metadata dispatcher.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *     parent A metadata dispatcher.
    */
   constructor(parent) {
     super(parent, 'id3', /\.(mp3)$/i);

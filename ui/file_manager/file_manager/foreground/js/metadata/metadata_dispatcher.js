@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
-
 import {ExifParser} from './exif_parser.js';
 import {Id3Parser} from './id3_parser.js';
 import {BmpParser, GifParser, IcoParser, PngParser, WebpParser} from './image_parsers.js';
@@ -12,7 +10,7 @@ import {MpegParser} from './mpeg_parser.js';
 
 /**
  * Dispatches metadata requests to the correct parser.
- * @implements {MetadataParserLogger}
+ * TODO(TS): Implements MetadataParserLogger!
  */
 class MetadataDispatcher {
   /***
@@ -36,7 +34,10 @@ class MetadataDispatcher {
 
     this.parserInstances_ = [];
 
-    /** @type {!Array<function(new:MetadataParser, !MetadataParserLogger)>} */
+    /**
+     * @type {!Array<function(new:MetadataParser,
+     *     !import("./metadata_parser.js").MetadataParserLogger)>}
+     */
     const parserClasses = [
       BmpParser,
       ExifParser,

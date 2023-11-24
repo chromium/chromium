@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
-
 import {ByteReader, SeekOrigin} from './byte_reader.js';
 import {MetadataParser} from './metadata_parser.js';
 
 /** @final */
 export class MpegParser extends MetadataParser {
   /**
-   * @param {!MetadataParserLogger} parent Parent object.
+   * @param {!import("./metadata_parser.js").MetadataParserLogger}
+   *     parent Parent object.
    */
   constructor(parent) {
     super(parent, 'mpeg', /\.(mp4|m4v|m4a|mpe?g4?)$/i);

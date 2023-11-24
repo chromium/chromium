@@ -4,11 +4,12 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 import {ExifEntry} from '../../../externs/exif_entry.js';
+
 import {ByteOrder, ByteReader} from './byte_reader.js';
 import {ExifTag} from './exif_constants.js';
 import {ExifParser} from './exif_parser.js';
+import type {MetadataParserLogger} from './metadata_parser.js';
 
 class ByteWriter {
   private view_: DataView;
@@ -208,24 +209,18 @@ function writeDirectory(bytes: ArrayBufferView, tag: ExifEntry) {
   byteWriter.checkResolved();
 }
 
-/**
- * @final
- */
-class ConsoleLogger extends MetadataParserLogger{
-  constructor() {
-    super();
-    this.verbose = true;
-  }
+class ConsoleLogger implements MetadataParserLogger {
+  verbose = true;
 
-  override error(...args: unknown[]) {
+  error(...args: Array<Object|string>) {
     console.error(...args);
   }
 
-  override log(...args: unknown[]) {
+  log(...args: Array<Object|string>) {
     console.log(...args);
   }
 
-  override vlog(...args: unknown[]) {
+  vlog(...args: Array<Object|string>) {
     console.log(...args);
   }
 }

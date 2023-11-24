@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import {ExifEntry} from '../../../externs/exif_entry.js';
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
 import {ByteOrder, ByteReader, SeekOrigin} from './byte_reader.js';
 import {ExifAlign, ExifMark, ExifTag} from './exif_constants.js';
 import type {ImageTransformation, ParserMetadata} from './metadata_item.js';
-import {ImageParser} from './metadata_parser.js';
+import {ImageParser, type MetadataParserLogger} from './metadata_parser.js';
 
 
 /** @final */
