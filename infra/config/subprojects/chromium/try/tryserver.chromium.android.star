@@ -399,6 +399,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-mainline-clang-riscv64-dbg",
+    mirrors = ["ci/android-cronet-mainline-clang-riscv64-dbg"],
+    contact_team_email = "cronet-team@google.com",
+    gn_args = "ci/android-cronet-mainline-clang-riscv64-dbg",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-mainline-clang-riscv64-rel",
+    mirrors = ["ci/android-cronet-mainline-clang-riscv64-rel"],
+    contact_team_email = "cronet-team@google.com",
+    gn_args = "ci/android-cronet-mainline-clang-riscv64-rel",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-mainline-clang-x86-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/android-cronet-mainline-clang-x86-dbg"],
