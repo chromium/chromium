@@ -15,7 +15,6 @@
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "google_apis/gaia/gaia_auth_consumer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GoogleServiceAuthError;
@@ -32,7 +31,7 @@ namespace ash::quick_start {
 
 struct FidoAssertionInfo;
 
-class SecondDeviceAuthBroker : public GaiaAuthConsumer {
+class SecondDeviceAuthBroker {
  public:
   enum class AttestationErrorType {
     // The error was temporary / transient and the request can be tried again.
@@ -42,26 +41,26 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
     kPermanentError,
   };
 
-  // Fields which are common in most `RefreshTokenCallback` responses.
-  struct RefreshTokenBaseResponse {
+  // Fields which are common in most `AuthCodeCallback` responses.
+  struct AuthCodeBaseResponse {
     // User's email. May be empty.
     std::string email;
   };
 
-  // `RefreshTokenCallback` request failed with a parsing error.
-  struct RefreshTokenParsingErrorResponse {};
+  // `AuthCodeCallback` request failed with a parsing error.
+  struct AuthCodeParsingErrorResponse {};
 
-  // `RefreshTokenCallback` request failed with an unknown error.
-  struct RefreshTokenUnknownErrorResponse {};
+  // `AuthCodeCallback` request failed with an unknown error.
+  struct AuthCodeUnknownErrorResponse {};
 
-  // `RefreshTokenCallback` request completed successfully.
-  struct RefreshTokenSuccessResponse : public RefreshTokenBaseResponse {
-    // Login Scoped OAuth Refresh Token.
-    std::string refresh_token;
+  // `AuthCodeCallback` request completed successfully.
+  struct AuthCodeSuccessResponse : public AuthCodeBaseResponse {
+    // OAuth Authorization Code.
+    std::string auth_code;
   };
 
-  // `RefreshTokenCallback` request was rejected.
-  struct RefreshTokenRejectionResponse : public RefreshTokenBaseResponse {
+  // `AuthCodeCallback` request was rejected.
+  struct AuthCodeRejectionResponse : public AuthCodeBaseResponse {
     enum Reason {
       // Google's authentication server rejected the request but did not tell us
       // why. `email` field may be empty in this case.
@@ -87,18 +86,15 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
 
       // Credential ID mismatch thrown during FIDO assertion verification.
       kCredentialIdMismatch,
-
-      // OAuth authorization code to refresh token exchange request failed.
-      kInvalidAuthorizationCode,
     };
 
     Reason reason;
   };
 
   // The user needs to be presented with additional challenges on the target
-  // device, in response to `RefreshTokenCallback`.
-  struct RefreshTokenAdditionalChallengesOnSourceResponse
-      : public RefreshTokenBaseResponse {
+  // device, in response to `AuthCodeCallback`.
+  struct AuthCodeAdditionalChallengesOnSourceResponse
+      : public AuthCodeBaseResponse {
     // The url to be loaded in a webview to show additional challenges.
     std::string fallback_url;
 
@@ -108,9 +104,9 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   };
 
   // The user needs to be presented with additional challenges on the target
-  // device, in response to `RefreshTokenCallback`.
-  struct RefreshTokenAdditionalChallengesOnTargetResponse
-      : public RefreshTokenBaseResponse {
+  // device, in response to `AuthCodeCallback`.
+  struct AuthCodeAdditionalChallengesOnTargetResponse
+      : public AuthCodeBaseResponse {
     // The url to be loaded in a webview to show additional challenges.
     std::string fallback_url;
   };
@@ -123,21 +119,16 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
       const base::expected<PEMCertChain, AttestationErrorType>&;
   using AttestationCertificateCallback =
       base::OnceCallback<void(AttestationCertificateOrError)>;
-  using RefreshTokenOrError =
-      const base::expected<std::string, GoogleServiceAuthError>&;
-  using RefreshTokenOrErrorCallback =
-      base::OnceCallback<void(RefreshTokenOrError)>;
 
-  // Possible set of response types for `RefreshTokenCallback`.
-  using RefreshTokenResponse =
-      absl::variant<RefreshTokenUnknownErrorResponse,
-                    RefreshTokenSuccessResponse,
-                    RefreshTokenParsingErrorResponse,
-                    RefreshTokenRejectionResponse,
-                    RefreshTokenAdditionalChallengesOnSourceResponse,
-                    RefreshTokenAdditionalChallengesOnTargetResponse>;
-  using RefreshTokenCallback =
-      base::OnceCallback<void(const RefreshTokenResponse&)>;
+  // Possible set of response types for `AuthCodeCallback`.
+  using AuthCodeResponse =
+      absl::variant<AuthCodeUnknownErrorResponse,
+                    AuthCodeSuccessResponse,
+                    AuthCodeParsingErrorResponse,
+                    AuthCodeRejectionResponse,
+                    AuthCodeAdditionalChallengesOnSourceResponse,
+                    AuthCodeAdditionalChallengesOnTargetResponse>;
+  using AuthCodeCallback = base::OnceCallback<void(const AuthCodeResponse&)>;
 
   // Constructs an instance of `SecondDeviceAuthBroker`.
   // `device_id` must be between 0 (exclusive) and 64 (inclusive) characters.
@@ -147,7 +138,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
       std::unique_ptr<attestation::AttestationFlow> attestation_flow);
   SecondDeviceAuthBroker(const SecondDeviceAuthBroker&) = delete;
   SecondDeviceAuthBroker& operator=(const SecondDeviceAuthBroker&) = delete;
-  ~SecondDeviceAuthBroker() override;
+  virtual ~SecondDeviceAuthBroker();
 
   // Fetches Base64Url encoded nonce challenge bytes from Gaia SecondDeviceAuth
   // service.
@@ -166,15 +157,15 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
       const Base64String& fido_credential_id,
       AttestationCertificateCallback certificate_callback);
 
-  // Fetches a Login Scoped OAuth Refresh Token (LST).
+  // Fetches an OAuth authorization code.
   // `certificate` is a PEM encoded certificate chain retrieved earlier using
   // `FetchAttestationCertificate()`.
-  // `refresh_token_callback` is completed with one of a possible set of result
-  // types. See the type definition of `RefreshTokenResponse` for reference.
+  // `auth_code_callback` is completed with one of a possible set of result
+  // types. See the type definition of `AuthCodeResponse` for reference.
   // Virtual for testing.
-  virtual void FetchRefreshToken(const FidoAssertionInfo& fido_assertion_info,
-                                 const PEMCertChain& certificate,
-                                 RefreshTokenCallback refresh_token_callback);
+  virtual void FetchAuthCode(const FidoAssertionInfo& fido_assertion_info,
+                             const PEMCertChain& certificate,
+                             AuthCodeCallback auth_code_callback);
 
  private:
   // Callback for handling challenge bytes response from Gaia.
@@ -183,23 +174,12 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
 
   // Callback for handling the response from Gaia to our request for an OAuth
   // authorization code.
-  // If successful, the received OAuth authorization code is in turn exchanged
-  // for an LST, and `refresh_token_callback` is completed.
-  // Otherwise `refresh_token_callback` is completed with an appropriate
-  // `RefreshTokenResponse` type.
-  void OnAuthorizationCodeFetched(RefreshTokenCallback refresh_token_callback,
+  // If successful, the received OAuth authorization code is used to complete
+  // `auth_code_callback`.
+  // Otherwise `auth_code_callback` is completed with an appropriate
+  // `AuthCodeResponse` error type.
+  void OnAuthorizationCodeFetched(AuthCodeCallback auth_code_callback,
                                   std::unique_ptr<EndpointResponse> response);
-
-  // Exchanges an OAuth `authorization_code` for an OAuth login scoped refresh
-  // token.
-  // The callback is completed with a refresh token or an error reason.
-  void FetchRefreshTokenFromAuthorizationCode(
-      const std::string& authorization_code,
-      RefreshTokenOrErrorCallback callback);
-
-  // `GaiaAuthConsumer` overrides.
-  void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
-  void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
 
   // Same as `FetchAttestationCertificate` except that it is called with
   // `attestation_features`.
@@ -219,12 +199,6 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // Used for interacting with Google's Privacy CA, for getting a Remote
   // Attestation certificate.
   std::unique_ptr<attestation::AttestationFlow> attestation_;
-
-  // Used for fetching OAuth refresh tokens.
-  std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
-
-  // Pending callback for `FetchRefreshTokenFromAuthorizationCode()`.
-  RefreshTokenOrErrorCallback refresh_token_internal_callback_;
 
   base::WeakPtrFactory<SecondDeviceAuthBroker> weak_ptr_factory_;
 };

@@ -62,18 +62,17 @@ using ::testing::VariantWith;
 using ::testing::WithArg;
 
 using State = GoogleServiceAuthError::State;
-using RefreshTokenUnknownErrorResponse =
-    SecondDeviceAuthBroker::RefreshTokenUnknownErrorResponse;
-using RefreshTokenSuccessResponse =
-    SecondDeviceAuthBroker::RefreshTokenSuccessResponse;
-using RefreshTokenParsingErrorResponse =
-    SecondDeviceAuthBroker::RefreshTokenParsingErrorResponse;
-using RefreshTokenRejectionResponse =
-    SecondDeviceAuthBroker::RefreshTokenRejectionResponse;
-using RefreshTokenAdditionalChallengesOnSourceResponse =
-    SecondDeviceAuthBroker::RefreshTokenAdditionalChallengesOnSourceResponse;
-using RefreshTokenAdditionalChallengesOnTargetResponse =
-    SecondDeviceAuthBroker::RefreshTokenAdditionalChallengesOnTargetResponse;
+using AuthCodeUnknownErrorResponse =
+    SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse;
+using AuthCodeSuccessResponse = SecondDeviceAuthBroker::AuthCodeSuccessResponse;
+using AuthCodeParsingErrorResponse =
+    SecondDeviceAuthBroker::AuthCodeParsingErrorResponse;
+using AuthCodeRejectionResponse =
+    SecondDeviceAuthBroker::AuthCodeRejectionResponse;
+using AuthCodeAdditionalChallengesOnSourceResponse =
+    SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnSourceResponse;
+using AuthCodeAdditionalChallengesOnTargetResponse =
+    SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnTargetResponse;
 
 namespace {
 
@@ -90,11 +89,6 @@ constexpr char kInvalidBase64ChallengeDataResponse[] = R"({
       "challengeData": {
         "challenge": "Not-a-base64-character)("
       }
-    })";
-constexpr char kOAuthRefreshTokenSuccessBody[] = R"({
-      "refresh_token": "fake-refresh-token",
-      "access_token": "fake-access-token",
-      "expires_in": 99999
     })";
 constexpr char kPemCertificateString[] = R"({
 -----BEGIN CERTIFICATE-----
@@ -129,49 +123,44 @@ MATCHER_P(ProtoBufContentBindingEq, expected, "") {
   return arg.content_binding() == *expected;
 }
 
-MATCHER_P(RefreshTokenAdditionalChallengesOnTargetResponseEq, expected, "") {
+MATCHER_P(AuthCodeAdditionalChallengesOnTargetResponseEq, expected, "") {
+  return ExplainMatchResult(
+      AllOf(Field("email", &AuthCodeAdditionalChallengesOnTargetResponse::email,
+                  Eq(expected.email)),
+            Field("fallback_url",
+                  &AuthCodeAdditionalChallengesOnTargetResponse::fallback_url,
+                  Eq(expected.fallback_url))),
+      arg, result_listener);
+}
+
+MATCHER_P(AuthCodeAdditionalChallengesOnSourceResponseEq, expected, "") {
+  return ExplainMatchResult(
+      AllOf(Field("email", &AuthCodeAdditionalChallengesOnSourceResponse::email,
+                  Eq(expected.email)),
+            Field("fallback_url",
+                  &AuthCodeAdditionalChallengesOnSourceResponse::fallback_url,
+                  Eq(expected.fallback_url)),
+            Field("target_session_identifier",
+                  &AuthCodeAdditionalChallengesOnSourceResponse::
+                      target_session_identifier,
+                  Eq(expected.target_session_identifier))),
+      arg, result_listener);
+}
+
+MATCHER_P(AuthCodeSuccessResponseEq, expected, "") {
+  return ExplainMatchResult(
+      AllOf(Field("email", &AuthCodeSuccessResponse::email, Eq(expected.email)),
+            Field("auth_code", &AuthCodeSuccessResponse::auth_code,
+                  Eq(expected.auth_code))),
+      arg, result_listener);
+}
+
+MATCHER_P(AuthCodeRejectionResponseEq, expected, "") {
   return ExplainMatchResult(
       AllOf(
-          Field("email",
-                &RefreshTokenAdditionalChallengesOnTargetResponse::email,
-                Eq(expected.email)),
-          Field("fallback_url",
-                &RefreshTokenAdditionalChallengesOnTargetResponse::fallback_url,
-                Eq(expected.fallback_url))),
-      arg, result_listener);
-}
-
-MATCHER_P(RefreshTokenAdditionalChallengesOnSourceResponseEq, expected, "") {
-  return ExplainMatchResult(
-      AllOf(
-          Field("email",
-                &RefreshTokenAdditionalChallengesOnSourceResponse::email,
-                Eq(expected.email)),
-          Field("fallback_url",
-                &RefreshTokenAdditionalChallengesOnSourceResponse::fallback_url,
-                Eq(expected.fallback_url)),
-          Field("target_session_identifier",
-                &RefreshTokenAdditionalChallengesOnSourceResponse::
-                    target_session_identifier,
-                Eq(expected.target_session_identifier))),
-      arg, result_listener);
-}
-
-MATCHER_P(RefreshTokenSuccessResponseEq, expected, "") {
-  return ExplainMatchResult(
-      AllOf(Field("email", &RefreshTokenSuccessResponse::email,
-                  Eq(expected.email)),
-            Field("refresh_token", &RefreshTokenSuccessResponse::refresh_token,
-                  Eq(expected.refresh_token))),
-      arg, result_listener);
-}
-
-MATCHER_P(RefreshTokenRejectionResponseEq, expected, "") {
-  return ExplainMatchResult(
-      AllOf(Field("email", &RefreshTokenRejectionResponse::email,
-                  Eq(expected.email)),
-            Field("reason", &RefreshTokenRejectionResponse::reason,
-                  Eq(expected.reason))),
+          Field("email", &AuthCodeRejectionResponse::email, Eq(expected.email)),
+          Field("reason", &AuthCodeRejectionResponse::reason,
+                Eq(expected.reason))),
       arg, result_listener);
 }
 
@@ -245,13 +234,13 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
     return future.Get();
   }
 
-  SecondDeviceAuthBroker::RefreshTokenResponse FetchRefreshToken(
+  SecondDeviceAuthBroker::AuthCodeResponse FetchAuthCode(
       const FidoAssertionInfo& fido_assertion_info,
       const PEMCertChain& certificate) {
-    base::test::TestFuture<const SecondDeviceAuthBroker::RefreshTokenResponse&>
+    base::test::TestFuture<const SecondDeviceAuthBroker::AuthCodeResponse&>
         future;
-    second_device_auth_broker_.FetchRefreshToken(
-        fido_assertion_info, certificate, future.GetCallback());
+    second_device_auth_broker_.FetchAuthCode(fido_assertion_info, certificate,
+                                             future.GetCallback());
     return future.Get();
   }
 
@@ -276,12 +265,6 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
   void SimulateAuthError(const std::string& url) {
     test_factory_.AddResponse(url, /*content=*/std::string(),
                               net::HTTP_UNAUTHORIZED);
-  }
-
-  void SimulateOAuthTokenFetchSuccess() {
-    test_factory_.AddResponse(
-        GaiaUrls::GetInstance()->oauth2_token_url().spec(),
-        kOAuthRefreshTokenSuccessBody);
   }
 
   void SimulateOAuthTokenFetchFailure() {
@@ -596,30 +579,30 @@ TEST_F(
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
-       FetchRefreshTokenReturnsUnknownErrorResponseForUnknownErrors) {
+       FetchAuthCodeReturnsUnknownErrorResponseForUnknownErrors) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
         "sessionStatus": "UNKNOWN_SESSION_STATUS"
       }
     )"));
-  SecondDeviceAuthBroker::RefreshTokenResponse response =
-      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
-                        /*certificate=*/GetCertificate());
-  EXPECT_THAT(response, VariantWith<RefreshTokenUnknownErrorResponse>(_));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeUnknownErrorResponse>(_));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
-       FetchRefreshTokenReturnsRejectionResponseForRequestRejectionsByServer) {
+       FetchAuthCodeReturnsRejectionResponseForRequestRejectionsByServer) {
   SimulateAuthError(kStartSessionUrl);
-  SecondDeviceAuthBroker::RefreshTokenResponse response =
-      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
-                        /*certificate=*/GetCertificate());
-  EXPECT_THAT(response, VariantWith<RefreshTokenRejectionResponse>(_));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(_));
 }
 
 TEST_F(
     SecondDeviceAuthBrokerTest,
-    FetchRefreshTokenReturnsAdditionalChallengesOnSourceResponseForSourceChallenges) {
+    FetchAuthCodeReturnsAdditionalChallengesOnSourceResponseForSourceChallenges) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
         "sessionStatus": "PENDING",
@@ -629,22 +612,22 @@ TEST_F(
       }
     )"));
 
-  RefreshTokenAdditionalChallengesOnSourceResponse expected_response;
+  AuthCodeAdditionalChallengesOnSourceResponse expected_response;
   expected_response.email = "fake-user@example.com";
   expected_response.fallback_url = "https://example.com";
   expected_response.target_session_identifier = "fake-target-session";
-  SecondDeviceAuthBroker::RefreshTokenResponse response =
-      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
-                        /*certificate=*/GetCertificate());
-  EXPECT_THAT(response,
-              VariantWith<RefreshTokenAdditionalChallengesOnSourceResponse>(
-                  RefreshTokenAdditionalChallengesOnSourceResponseEq(
-                      expected_response)));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(
+      response,
+      VariantWith<AuthCodeAdditionalChallengesOnSourceResponse>(
+          AuthCodeAdditionalChallengesOnSourceResponseEq(expected_response)));
 }
 
 TEST_F(
     SecondDeviceAuthBrokerTest,
-    FetchRefreshTokenReturnsAdditionalChallengesOnTargetResponseForTargetChallenges) {
+    FetchAuthCodeReturnsAdditionalChallengesOnTargetResponseForTargetChallenges) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
         "sessionStatus": "CONTINUE_ON_TARGET",
@@ -653,19 +636,19 @@ TEST_F(
       }
     )"));
 
-  RefreshTokenAdditionalChallengesOnTargetResponse expected_response;
+  AuthCodeAdditionalChallengesOnTargetResponse expected_response;
   expected_response.email = "fake-user@example.com";
   expected_response.fallback_url = "https://example.com";
-  SecondDeviceAuthBroker::RefreshTokenResponse response =
-      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
-                        /*certificate=*/GetCertificate());
-  EXPECT_THAT(response,
-              VariantWith<RefreshTokenAdditionalChallengesOnTargetResponse>(
-                  RefreshTokenAdditionalChallengesOnTargetResponseEq(
-                      expected_response)));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(
+      response,
+      VariantWith<AuthCodeAdditionalChallengesOnTargetResponse>(
+          AuthCodeAdditionalChallengesOnTargetResponseEq(expected_response)));
 }
 
-TEST_F(SecondDeviceAuthBrokerTest, FetchRefreshTokenReturnsARefreshToken) {
+TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
         "sessionStatus": "AUTHENTICATED",
@@ -675,47 +658,21 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchRefreshTokenReturnsARefreshToken) {
         "email": "fake-user@example.com"
       }
     )"));
-  SimulateOAuthTokenFetchSuccess();
 
-  RefreshTokenSuccessResponse expected_response;
+  AuthCodeSuccessResponse expected_response;
   expected_response.email = "fake-user@example.com";
-  expected_response.refresh_token = "fake-refresh-token";
-  SecondDeviceAuthBroker::RefreshTokenResponse response =
-      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
-                        /*certificate=*/GetCertificate());
-  EXPECT_THAT(response, VariantWith<RefreshTokenSuccessResponse>(
-                            RefreshTokenSuccessResponseEq(expected_response)));
+  expected_response.auth_code = "fake-auth-code";
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeSuccessResponse>(
+                            AuthCodeSuccessResponseEq(expected_response)));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
-       FetchRefreshTokenReturnsAnErrorForInvalidAuthorizationCode) {
-  AddFakeResponse(kStartSessionUrl, std::string(R"(
-      {
-        "sessionStatus": "AUTHENTICATED",
-        "credentialData": {
-            "oauthToken": "fake-auth-code"
-        },
-        "email": "fake-user@example.com"
-      }
-    )"));
-  SimulateOAuthTokenFetchFailure();
-
-  RefreshTokenRejectionResponse expected_response;
-  expected_response.email = "fake-user@example.com";
-  expected_response.reason =
-      RefreshTokenRejectionResponse::Reason::kInvalidAuthorizationCode;
-  SecondDeviceAuthBroker::RefreshTokenResponse response =
-      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
-                        /*certificate=*/GetCertificate());
-  EXPECT_THAT(response,
-              VariantWith<RefreshTokenRejectionResponse>(
-                  RefreshTokenRejectionResponseEq(expected_response)));
-}
-
-TEST_F(SecondDeviceAuthBrokerTest,
-       FetchRefreshTokenSendsABase64EncodedCertChainToGaia) {
+       FetchAuthCodeSendsABase64EncodedCertChainToGaia) {
   // Set an interceptor that checks the validity of the incoming request for
-  // refresh token.
+  // auth code.
   SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         if (request.url != GURL(kStartSessionUrl)) {
@@ -777,13 +734,12 @@ TEST_F(SecondDeviceAuthBrokerTest,
             "email": "fake-user@example.com"
           }
         )"));
-        SimulateOAuthTokenFetchSuccess();
       }));
 
-  SecondDeviceAuthBroker::RefreshTokenResponse response =
-      FetchRefreshToken(/*fido_assertion_info=*/FidoAssertionInfo{},
-                        /*certificate=*/GetCertificate());
-  EXPECT_THAT(response, VariantWith<RefreshTokenSuccessResponse>(_));
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeSuccessResponse>(_));
 }
 
 }  //  namespace ash::quick_start

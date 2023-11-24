@@ -27,10 +27,8 @@ class MockSecondDeviceAuthBroker : public SecondDeviceAuthBroker {
 
   MOCK_METHOD(void, FetchChallengeBytes, (ChallengeBytesCallback), (override));
   MOCK_METHOD(void,
-              FetchRefreshToken,
-              (const FidoAssertionInfo&,
-               const PEMCertChain&,
-               RefreshTokenCallback),
+              FetchAuthCode,
+              (const FidoAssertionInfo&, const PEMCertChain&, AuthCodeCallback),
               (override));
   MOCK_METHOD(void,
               FetchAttestationCertificate,
