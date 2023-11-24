@@ -1037,11 +1037,8 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
       GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  // TODO(crbug.com/1294378): Remove reference to nested frames once
-  // EnablePasswordManagerWithinFencedFrame is launched.
-  CHECK(driver || rfh->IsNestedWithinFencedFrame());
-  if (!driver ||
-      !ShouldAcceptFocusEvent(web_contents(), driver,
+  CHECK(driver);
+  if (!ShouldAcceptFocusEvent(web_contents(), driver,
                               FocusedFieldType::kFillablePasswordField)) {
     return;
   }
@@ -1069,11 +1066,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
       GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  // TODO(crbug.com/1294378): Remove reference to nested frames once
-  // EnablePasswordManagerWithinFencedFrame is launched.
-  CHECK(driver || rfh->IsNestedWithinFencedFrame());
-  if (!driver)
-    return;
+  CHECK(driver);
 
   // Attempt to show the autofill dropdown UI first.
   gfx::RectF element_bounds_in_top_frame_space =
@@ -1118,11 +1111,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
   auto* driver = GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  // TODO(crbug.com/1294378): Remove reference to nested frames once
-  // EnablePasswordManagerWithinFencedFrame is launched.
-  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
-  if (!driver)
-    return;
+  CHECK(driver);
 
   gfx::RectF element_bounds_in_screen_space =
       GetBoundsInScreenSpace(TransformToRootCoordinates(
@@ -1161,17 +1150,13 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
   PasswordManagerDriver* driver = GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  // TODO(crbug.com/1294378): Remove reference to nested frames once
-  // EnablePasswordManagerWithinFencedFrame is launched.
-  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
-  if (driver) {
-    password_manager_.OnPresaveGeneratedPassword(
-        driver,
-        password_manager::GetFormWithFrameAndFormMetaData(
-            password_generation_driver_receivers_.GetCurrentTargetFrame(),
-            form_data),
-        password_value);
-  }
+  CHECK(driver);
+  password_manager_.OnPresaveGeneratedPassword(
+      driver,
+      password_manager::GetFormWithFrameAndFormMetaData(
+          password_generation_driver_receivers_.GetCurrentTargetFrame(),
+          form_data),
+      password_value);
 }
 
 void ChromePasswordManagerClient::PasswordNoLongerGenerated(
@@ -1181,11 +1166,7 @@ void ChromePasswordManagerClient::PasswordNoLongerGenerated(
   PasswordManagerDriver* driver = GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  // TODO(crbug.com/1294378): Remove reference to nested frames once
-  // EnablePasswordManagerWithinFencedFrame is launched.
-  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
-  if (!driver)
-    return;
+  CHECK(driver);
   password_manager_.OnPasswordNoLongerGenerated(
       driver, password_manager::GetFormWithFrameAndFormMetaData(
                   password_generation_driver_receivers_.GetCurrentTargetFrame(),
