@@ -84,21 +84,21 @@ class PPB_Graphics3D_Impl::ColorBuffer {
     // kPepper3DImageChromium is enabled on some CrOS devices, SkiaRenderer
     // don't support overlays for legacy mailboxes. To avoid any problems with
     // overlays, we don't introduce them here.
-    auto client_shared_image = sii_->CreateSharedImage(
+    client_shared_image_ = sii_->CreateSharedImage(
         has_alpha ? viz::SinglePlaneFormat::kRGBA_8888
                   : viz::SinglePlaneFormat::kRGBX_8888,
         shared_image_size, gfx::ColorSpace::CreateSRGB(),
         kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage,
         "PPBGraphics3DImpl", gpu::SurfaceHandle());
-    CHECK(client_shared_image);
-    mailbox_ = client_shared_image->mailbox();
+    CHECK(client_shared_image_);
 
     sync_token_ = sii_->GenVerifiedSyncToken();
   }
 
   ~ColorBuffer() {
     DCHECK_NE(state, State::kAttached);
-    sii_->DestroySharedImage(destruction_sync_token_, mailbox_);
+    sii_->DestroySharedImage(destruction_sync_token_,
+                             std::move(client_shared_image_));
   }
 
   void Attach(gpu::CommandBufferProxyImpl* command_buffer,
@@ -108,8 +108,8 @@ class PPB_Graphics3D_Impl::ColorBuffer {
               bool needs_stencil) {
     DCHECK_EQ(state, State::kDetached);
     command_buffer->SetDefaultFramebufferSharedImage(
-        mailbox_, sync_token_, samples_count, preserve, needs_depth,
-        needs_stencil);
+        client_shared_image_->mailbox(), sync_token_, samples_count, preserve,
+        needs_depth, needs_stencil);
     state = State::kAttached;
     sync_token_.Clear();
   }
@@ -121,14 +121,15 @@ class PPB_Graphics3D_Impl::ColorBuffer {
     state = State::kDetached;
   }
 
-  gpu::Mailbox Export() {
+  // Note that the pointer returned from Export() is never null.
+  const scoped_refptr<gpu::ClientSharedImage>& Export() {
     DCHECK_EQ(state, State::kDetached);
 
     // In single buffered mode we use same image regardless if it's in
     // compositor or not, so don't track here.
     if (!is_single_buffered_)
       state = State::kInCompositor;
-    return mailbox_;
+    return client_shared_image_;
   }
 
   void UpdateDestructionSyncToken(const gpu::SyncToken& token) {
@@ -150,15 +151,13 @@ class PPB_Graphics3D_Impl::ColorBuffer {
 
   bool IsAttached() { return state == State::kAttached; }
 
-  bool IsSame(const gpu::Mailbox& mailbox) { return mailbox == mailbox_; }
-
  private:
   enum class State { kDetached, kAttached, kInCompositor };
 
   State state = State::kDetached;
   const raw_ptr<gpu::SharedImageInterface, ExperimentalRenderer> sii_;
   const gfx::Size size_;
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
   // SyncToken to wait on before re-using this color buffer.
   gpu::SyncToken sync_token_;
   // SyncToken to wait before destroying the underlying shared image.
@@ -496,9 +495,9 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     // overlays, we don't introduce them here.
     constexpr bool is_overlay_candidate = false;
     constexpr uint32_t target = GL_TEXTURE_2D;
-    auto mailbox = current_color_buffer_->Export();
+    const auto& shared_image = current_color_buffer_->Export();
     viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
-        mailbox, target, sync_token, current_color_buffer_->size(),
+        shared_image, target, sync_token, current_color_buffer_->size(),
         viz::SinglePlaneFormat::kRGBA_8888, is_overlay_candidate,
         viz::TransferableResource::ResourceSource::kPPBGraphics3D);
     HostGlobals::Get()
@@ -507,7 +506,7 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     commit_pending_ = true;
 
     if (!is_single_buffered_) {
-      inflight_color_buffers_.emplace(mailbox,
+      inflight_color_buffers_.emplace(shared_image->mailbox(),
                                       std::move(current_color_buffer_));
       current_color_buffer_ = GetOrCreateColorBuffer();
     }
