@@ -404,8 +404,6 @@ android_library("content_full_java") {
   ]
 
   public_deps = [ ":identity_credentials_java" ]
-
-  proguard_configs = [ "proguard.flags" ]
 }
 
 # TODO(crbug.com/1475970) simplify these build targets once GMSCore publishes identity-credentials.
