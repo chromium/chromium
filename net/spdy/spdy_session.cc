@@ -380,6 +380,15 @@ const size_t kMaxConcurrentStreamLimit = 256;
 
 }  // namespace
 
+BASE_FEATURE(kH2InitialMaxConcurrentStreamsOverride,
+             "H2InitialMaxConcurrentStreamsOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kH2InitialMaxConcurrentStreams(
+    &kH2InitialMaxConcurrentStreamsOverride,
+    "initial_max_concurrent_streams",
+    kDefaultInitialMaxConcurrentStreams);
+
 SpdyProtocolErrorDetails MapFramerErrorToProtocolError(
     http2::Http2DecoderAdapter::SpdyFramerError err) {
   switch (err) {
@@ -802,7 +811,7 @@ SpdySession::SpdySession(
       greased_http2_frame_(greased_http2_frame),
       http2_end_stream_with_data_frame_(http2_end_stream_with_data_frame),
       enable_priority_update_(enable_priority_update),
-      max_concurrent_streams_(kInitialMaxConcurrentStreams),
+      max_concurrent_streams_(kH2InitialMaxConcurrentStreams.Get()),
       last_read_time_(time_func()),
       session_max_recv_window_size_(session_max_recv_window_size),
       session_max_queued_capped_frames_(session_max_queued_capped_frames),

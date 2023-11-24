@@ -419,7 +419,7 @@ class StreamRequestDestroyingCallback : public TestCompletionCallbackBase {
 
 }  // namespace
 
-// Request kInitialMaxConcurrentStreams streams.  Request two more
+// Request kH2InitialMaxConcurrentStreamsParam.Get() streams.  Request two more
 // streams, but have the callback for one destroy the second stream
 // request. Close the session. Nothing should blow up. This is a
 // regression test for http://crbug.com/250841 .
@@ -435,7 +435,7 @@ TEST_F(SpdySessionTest, PendingStreamCancellingAnother) {
   CreateSpdySession();
 
   // Create the maximum number of concurrent streams.
-  for (size_t i = 0; i < kInitialMaxConcurrentStreams; ++i) {
+  for (int i = 0; i < kH2InitialMaxConcurrentStreams.Get(); ++i) {
     base::WeakPtr<SpdyStream> spdy_stream =
         CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session_,
                                   test_url_, MEDIUM, NetLogWithSource());
@@ -1671,7 +1671,7 @@ TEST_F(SpdySessionTestWithMockTime, NoPingSentWhenCheckPingPending) {
   EXPECT_TRUE(data.AllReadDataConsumed());
 }
 
-// Request kInitialMaxConcurrentStreams + 1 streams.  Receive a
+// Request kH2InitialMaxConcurrentStreamsParam.Get() + 1 streams.  Receive a
 // settings frame increasing the max concurrent streams by 1.  Make
 // sure nothing blows up. This is a regression test for
 // http://crbug.com/57331 .
@@ -1680,7 +1680,8 @@ TEST_F(SpdySessionTest, OnSettings) {
       spdy::SETTINGS_MAX_CONCURRENT_STREAMS;
 
   spdy::SettingsMap new_settings;
-  const uint32_t max_concurrent_streams = kInitialMaxConcurrentStreams + 1;
+  const uint32_t max_concurrent_streams =
+      kH2InitialMaxConcurrentStreams.Get() + 1;
   new_settings[kSpdySettingsId] = max_concurrent_streams;
   spdy::SpdySerializedFrame settings_frame(
       spdy_util_.ConstructSpdySettings(new_settings));
@@ -1701,7 +1702,7 @@ TEST_F(SpdySessionTest, OnSettings) {
   CreateSpdySession();
 
   // Create the maximum number of concurrent streams.
-  for (size_t i = 0; i < kInitialMaxConcurrentStreams; ++i) {
+  for (int i = 0; i < kH2InitialMaxConcurrentStreams.Get(); ++i) {
     base::WeakPtr<SpdyStream> spdy_stream =
         CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session_,
                                   test_url_, MEDIUM, NetLogWithSource());
@@ -1746,7 +1747,7 @@ TEST_F(SpdySessionTest, CancelPendingCreateStream) {
   CreateSpdySession();
 
   // Leave room for only one more stream to be created.
-  for (size_t i = 0; i < kInitialMaxConcurrentStreams - 1; ++i) {
+  for (int i = 0; i < kH2InitialMaxConcurrentStreams.Get() - 1; ++i) {
     base::WeakPtr<SpdyStream> spdy_stream =
         CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session_,
                                   test_url_, MEDIUM, NetLogWithSource());
@@ -2678,7 +2679,7 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
   CreateSpdySession();
 
   // Leave room for only one more stream to be created.
-  for (size_t i = 0; i < kInitialMaxConcurrentStreams - 1; ++i) {
+  for (int i = 0; i < kH2InitialMaxConcurrentStreams.Get() - 1; ++i) {
     base::WeakPtr<SpdyStream> spdy_stream =
         CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session_,
                                   test_url_, MEDIUM, NetLogWithSource());
@@ -2708,7 +2709,8 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
   EXPECT_EQ(0u, num_active_streams());
-  EXPECT_EQ(kInitialMaxConcurrentStreams, num_created_streams());
+  EXPECT_EQ(static_cast<size_t>(kH2InitialMaxConcurrentStreams.Get()),
+            num_created_streams());
   EXPECT_EQ(2u, pending_create_stream_queue_size(LOWEST));
 
   // Cancel the first stream; this will allow the second stream to be created.
@@ -2718,7 +2720,8 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
 
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
   EXPECT_EQ(0u, num_active_streams());
-  EXPECT_EQ(kInitialMaxConcurrentStreams, num_created_streams());
+  EXPECT_EQ(static_cast<size_t>(kH2InitialMaxConcurrentStreams.Get()),
+            num_created_streams());
   EXPECT_EQ(1u, pending_create_stream_queue_size(LOWEST));
 
   // Cancel the second stream; this will allow the third stream to be created.
@@ -2728,7 +2731,8 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
 
   EXPECT_THAT(callback3.WaitForResult(), IsOk());
   EXPECT_EQ(0u, num_active_streams());
-  EXPECT_EQ(kInitialMaxConcurrentStreams, num_created_streams());
+  EXPECT_EQ(static_cast<size_t>(kH2InitialMaxConcurrentStreams.Get()),
+            num_created_streams());
   EXPECT_EQ(0u, pending_create_stream_queue_size(LOWEST));
 
   // Cancel the third stream.
@@ -2736,7 +2740,8 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
   spdy_stream3->Cancel(ERR_ABORTED);
   EXPECT_FALSE(spdy_stream3);
   EXPECT_EQ(0u, num_active_streams());
-  EXPECT_EQ(kInitialMaxConcurrentStreams - 1, num_created_streams());
+  EXPECT_EQ(static_cast<size_t>(kH2InitialMaxConcurrentStreams.Get()) - 1,
+            num_created_streams());
   EXPECT_EQ(0u, pending_create_stream_queue_size(LOWEST));
 }
 
