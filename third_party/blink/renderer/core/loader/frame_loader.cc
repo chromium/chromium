@@ -824,8 +824,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       Vector<String> argv;
       argv.push_back("Main resource");
       argv.push_back(url.GetString());
-      activity_logger->LogEvent("blinkRequestResource", argv.size(),
-                                argv.data());
+      activity_logger->LogEvent(frame_->DomWindow(), "blinkRequestResource",
+                                argv.size(), argv.data());
     }
   }
 

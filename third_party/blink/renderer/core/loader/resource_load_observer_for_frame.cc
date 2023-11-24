@@ -130,7 +130,8 @@ void ResourceLoadObserverForFrame::DidStartRequest(
       Vector<String> argv = {
           Resource::ResourceTypeToString(resource_type, initiator_name),
           params.Url()};
-      activity_logger->LogEvent("blinkRequestResource", argv.size(),
+      activity_logger->LogEvent(document_->GetExecutionContext(),
+                                "blinkRequestResource", argv.size(),
                                 argv.data());
     }
   }

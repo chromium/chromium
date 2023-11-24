@@ -28,30 +28,33 @@ class TestActivityLogger : public V8DOMActivityLogger {
  public:
   ~TestActivityLogger() override = default;
 
-  void LogGetter(const String& api_name) override {
+  void LogGetter(ScriptState* script_state, const String& api_name) override {
     logged_activities_.push_back(api_name);
   }
 
-  void LogSetter(const String& api_name,
+  void LogSetter(ScriptState* script_state,
+                 const String& api_name,
                  const v8::Local<v8::Value>& new_value) override {
     logged_activities_.push_back(api_name + " | " +
                                  ToCoreStringWithUndefinedOrNullCheck(
-                                     v8::Isolate::GetCurrent(), new_value));
+                                     script_state->GetIsolate(), new_value));
   }
 
-  void LogMethod(const String& api_name,
+  void LogMethod(ScriptState* script_state,
+                 const String& api_name,
                  int argc,
                  const v8::Local<v8::Value>* argv) override {
     String activity_string = api_name;
     for (int i = 0; i < argc; i++) {
       activity_string = activity_string + " | " +
                         ToCoreStringWithUndefinedOrNullCheck(
-                            v8::Isolate::GetCurrent(), argv[i]);
+                            script_state->GetIsolate(), argv[i]);
     }
     logged_activities_.push_back(activity_string);
   }
 
-  void LogEvent(const String& event_name,
+  void LogEvent(ExecutionContext* execution_context,
+                const String& event_name,
                 int argc,
                 const String* argv) override {
     String activity_string = event_name;
