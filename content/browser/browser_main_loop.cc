@@ -147,6 +147,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "sql/sql_memory_dump_provider.h"
@@ -1385,9 +1386,14 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   device_monitor_linux_ = std::make_unique<media::DeviceMonitorLinux>();
 #elif BUILDFLAG(IS_MAC)
-  device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_VISIBLE}));
+  // TODO(crbug.com/1448798): Clean up |device_monitor_mac_| in BrowserMainLoop
+  // once |kCameraMonitoringInVideoCaptureService| is fully launched.
+  if (!base::FeatureList::IsEnabled(
+          video_capture::features::kCameraMonitoringInVideoCaptureService)) {
+    device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
+        base::ThreadPool::CreateSingleThreadTaskRunner(
+            {base::TaskPriority::USER_VISIBLE}));
+  }
 #endif
 
   // Instantiated once using CreateSingletonInstance(), and accessed only using

@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/system_monitor.h"
@@ -24,8 +25,11 @@
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
+#include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
@@ -174,6 +178,39 @@ class CONTENT_EXPORT MediaDevicesManager
       GetMediaDeviceSaltAndOriginCallback callback) {
     get_salt_and_origin_cb_ = std::move(callback);
   }
+
+  // Implementation of video_capture::mojom::DevicesChangedObserver that
+  // forwards a devices changed event to the global (process-local) instance of
+  // base::DeviceMonitor.
+  // Defined in a separate file video_capture_devices_changed_observer.cc
+  class VideoCaptureDevicesChangedObserver
+      : public video_capture::mojom::DevicesChangedObserver {
+    friend class MockVideoCaptureDevicesChangedObserver;
+
+   public:
+    explicit VideoCaptureDevicesChangedObserver(
+        base::RepeatingClosure disconnect_cb,
+        base::RepeatingClosure listener_cb);
+    ~VideoCaptureDevicesChangedObserver() override;
+
+    void ConnectToService();
+
+   private:
+    // video_capture::mojom::DevicesChangedObserver implementation:
+    void OnDevicesChanged() override;
+
+    void OnConnectionError();
+
+    // |disconnect_cb_| is a callback used to invalidate the cache and do a
+    // fresh enumeration to avoid losing out on the changes that might happen
+    // when the video capture service is not active.
+    const base::RepeatingClosure disconnect_cb_;
+    const base::RepeatingClosure listener_cb_;
+    mojo::Receiver<video_capture::mojom::DevicesChangedObserver> receiver_{
+        this};
+    mojo::Remote<video_capture::mojom::VideoSourceProvider>
+        mojo_device_notifier_;
+  };
 
  private:
   friend class MediaDevicesManagerTest;
@@ -366,6 +403,8 @@ class CONTENT_EXPORT MediaDevicesManager
 
   class AudioServiceDeviceListener;
   std::unique_ptr<AudioServiceDeviceListener> audio_service_device_listener_;
+  std::unique_ptr<VideoCaptureDevicesChangedObserver>
+      video_capture_service_device_changed_observer_;
 
   std::map<uint32_t, EnumerationState> enumeration_states_;
   uint32_t next_enumeration_state_id_ = 0;

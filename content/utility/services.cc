@@ -166,7 +166,8 @@ class UtilityThreadVideoCaptureServiceImpl final
       mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
       : VideoCaptureServiceImpl(std::move(receiver),
-                                std::move(ui_task_runner)) {}
+                                std::move(ui_task_runner),
+                                /*create_system_monitor=*/true) {}
 
  private:
 #if BUILDFLAG(IS_WIN)
