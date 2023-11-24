@@ -134,14 +134,6 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   DCHECK(context_state_);
   DCHECK(gl_surface_);
 
-  if (gl_surface_->SupportsSwapTimestamps()) {
-    gl_surface_->SetEnableSwapTimestamps();
-
-    // Changes to swap timestamp queries are only picked up when making current.
-    context_state_->ReleaseCurrent(nullptr);
-    context_state_->MakeCurrent(gl_surface_.get());
-  }
-
   DCHECK(context_state_->gr_context());
   DCHECK(context_state_->context());
 

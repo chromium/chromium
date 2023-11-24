@@ -267,14 +267,6 @@ SkiaOutputDeviceDCompGLSurface::SkiaOutputDeviceDCompGLSurface(
   capabilities_.supports_delegated_ink = gl_surface_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps =
       gl_surface_->GetBufferCount() - 1;
-
-  if (gl_surface_->SupportsSwapTimestamps()) {
-    gl_surface_->SetEnableSwapTimestamps();
-
-    // Changes to swap timestamp queries are only picked up when making current.
-    context_state_->ReleaseCurrent(nullptr);
-    context_state_->MakeCurrent(gl_surface_.get());
-  }
 }
 
 SkiaOutputDeviceDCompGLSurface::~SkiaOutputDeviceDCompGLSurface() {

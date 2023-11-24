@@ -1985,6 +1985,10 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
       if (!gl_surface_) {
         return false;
       }
+
+      if (gl_surface_->SupportsSwapTimestamps()) {
+        gl_surface_->SetEnableSwapTimestamps();
+      }
     }
 
 #if BUILDFLAG(IS_MAC)
