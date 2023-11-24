@@ -1,0 +1,73 @@
+// This file is used by `generate_search_engine_icons.py` to locate the search
+// engine icons within https://www.gstatic.com/android_search/search_providers/.
+// These files are checked in at
+// `google3/googledata/html/external_content/gstatic/android_search/search_providers/`.
+// By default it will try to download an icon from
+// "[...]/{engine}/xxxhdpi.png" and from "[...]/{engine}/{engine}_xxxhdpi.png".
+// If the icon is located in a different subfolder, add the engine to
+// `engine_aliases` with the subfolder name. If the icon has a different
+// filename, add that filename to `non_default_icon_filenames`. If we don't need
+// an icon for the engine, add it to `ignored_engines`.
+{
+  // Engines for which we don't need to download icons, either because we
+  // already have them from another source or because they're not relevant to
+  // the default search engine choice screen.
+  "ignored_engines": [ "baidu", "coccoc", "daum", "google", "naver", "so_360", "sogou" ],
+  // The engine names in `prepopulated_engines.json` are not always the same as
+  // the subfolders with the correct icon. This dictionary associates the engine
+  // name with the subfolder name.
+  "engine_aliases": {
+    "info_com": "info",
+    "mail_ru": "mailru",
+    "metager_de": "metager",
+    "seznam_cz": "seznam",
+    "seznam_sk": "seznam",
+    "yahoo_ar": "yahoo",
+    "yahoo_at": "yahoo",
+    "yahoo_au": "yahoo",
+    "yahoo_br": "yahoo",
+    "yahoo_by": "yahoo",
+    "yahoo_ca": "yahoo",
+    "yahoo_ch": "yahoo",
+    "yahoo_cl": "yahoo",
+    "yahoo_co": "yahoo",
+    "yahoo_de": "yahoo",
+    "yahoo_dk": "yahoo",
+    "yahoo_es": "yahoo",
+    "yahoo_fi": "yahoo",
+    "yahoo_fr": "yahoo",
+    "yahoo_hk": "yahoo",
+    "yahoo_id": "yahoo",
+    "yahoo_in": "yahoo",
+    "yahoo_jp": "yahoo",
+    "yahoo_mx": "yahoo",
+    "yahoo_my": "yahoo",
+    "yahoo_nl": "yahoo",
+    "yahoo_nz": "yahoo",
+    "yahoo_pe": "yahoo",
+    "yahoo_ph": "yahoo",
+    "yahoo_se": "yahoo",
+    "yahoo_sg": "yahoo",
+    "yahoo_th": "yahoo",
+    "yahoo_tr": "yahoo",
+    "yahoo_tw": "yahoo",
+    "yahoo_uk": "yahoo",
+    "yandex_by": "yandex",
+    "yandex_com": "yandex",
+    "yandex_kz": "yandex",
+    "yandex_ru": "yandex",
+    "yandex_tr": "yandex"
+  },
+  // The default icon filenames are '{engine}_xxxhdpi.png' and 'xxxhdpi.png'.
+  "non_default_icon_filenames": {
+    "brave": "brave_logo_xxxhdpi.png",
+    "duckduckgo": "logo_xxxhdpi.png",
+    "ecosia": "logo_xxxhdpi.png",
+    "info": "ic_launcher_xxxhdpi.png",
+    "lilo": "ic_launcher_blue_round_xxxhdpi.png",
+    "metager": "ic_launcher_round_xxxhdpi.png",
+    "yahoo": "favicon_y19_xxxhdpi.png",
+    "yandex": "yandex_icon_xxxhdpi.png",
+    "yep": "yep-widget-icon-xxxhdpi.png"
+  }
+}

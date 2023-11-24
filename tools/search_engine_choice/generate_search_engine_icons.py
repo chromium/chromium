@@ -90,149 +90,87 @@ def delete_files_in_directory(directory_path):
     for file in files:
       file_path = os.path.join(directory_path, file)
 
-      # Only remove pngs and don't remove the default icon (globe)
+      # Only remove pngs.
       filename = os.path.basename(file_path)
-      if not filename.endswith('.png') or filename == 'default_favicon.png':
-        continue
-
-      if os.path.isfile(file_path):
+      if filename.endswith('.png') and os.path.isfile(file_path):
         os.remove(file_path)
     print('All files deleted successfully from ' + directory_path)
   except OSError:
     print('Error occurred while deleting files in ' + directory_path)
 
 
-def get_largest_icon_index_and_size(icon_path, name):
-  """Fetches the index and size of largest icon in the .ico file.
+def download_icons_from_android_search():
+  """Downloads icons from the android_search gstatic directory.
 
-  Some .ico files contain more than 1 icon. The function finds the largest icon
-  by comparing the icon dimensions and returns its index.
-  We get the index of the largest icon because scaling an image down is better
-  than scaling up.
+  Goes through all search engines in `prepopulated_engines.json` and downloads
+  the corresponding 96x96 icon from the appropriate subfolder of
+  https://www.gstatic.com/android_search/search_providers/. Because there is no
+  way to list the contents of a directory on gstatic and because some
+  subfolders are not named exactly the same as in `prepopulated_engines.json`,
+  this function loads a config file `generate_search_engine_icons_config.json`
+  with the extra information needed to locate the icons.
 
-  Returns:
-    A tuple with index of the largest icon in the .ico file and its size.
-
-  Args:
-    icon_path: The path to the .ico file.
-    name: Name/keyword of the search engine.
-  """
-  images_stream = os.popen('identify ' + icon_path).read()
-  images_stream_strings = images_stream.splitlines()
-
-  max_image_size = 0
-  max_image_size_index = 0
-  for index, string in enumerate(images_stream_strings):
-    # Search for the string dimension example 16x16
-    image_dimensions = re.search(r'[0-9]+x[0-9]+', string).group()
-    # The image size is the integer before the 'x' character.
-    sizes = image_dimensions.split('x')
-    if sizes[0] != sizes[1]:
-      print('Warning: Icon for %s is not square' % name)
-    image_size = int(sizes[0])
-    if image_size > max_image_size:
-      max_image_size = image_size
-      max_image_size_index = index
-
-  return (max_image_size_index, max_image_size)
-
-
-def create_icons_from_json_file():
-  """Downloads the icons that are referenced in the json file.
-
-  Reads the json file and downloads the icons that are referenced in the
-  "favicon_url" section of the search_engine.
-  Scales those icons down to 48x48 size and converts them to PNG format. After
-  finishing the previous step, the function moves the icons to the destination
-  directory and runs png optimization.
-  The function filters the search engines based on the search engines that are
-  used in `template_url_prepopulate_data.cc` so that icons that are never used
-  don't get downloaded.
   The Google Search icon is not downloaded because it already exists in the
-  repo.
-
-  Raises:
-    requests.exceptions.RequestException, FileNotFoundError: Error while loading
-      URL {favicon_url}
+  repo. Search engines not relevant to the to the default search engine choice
+  screen are ignored.
   """
-  print('Creating icons from json file...')
+  config_file_path = '../../tools/search_engine_choice/generate_search_engine_icons_config.json'
   prepopulated_engines_file_path = '../search_engines/prepopulated_engines.json'
   image_destination_path = './default_100_percent/search_engine_choice/'
-  icon_sizes = [48]
-  favicon_hash_to_icon_name = {}
 
-  # Delete the previously added search engine icons
   delete_files_in_directory(image_destination_path)
 
-  with open(prepopulated_engines_file_path, 'r',
-            encoding='utf-8') as engines_json:
-    # Use commentjson to ignore the comments in the json file.
-    data = commentjson.loads(engines_json.read())
-    for engine in data['elements']:
-      # We don't need to download an icon for an engine that's not used.
-      if engine not in used_engines:
+  with open(config_file_path, 'r', encoding='utf-8') as config_json, open(
+      prepopulated_engines_file_path, 'r', encoding='utf-8') as engines_json:
+    config_data = commentjson.loads(config_json.read())
+    engine_data = commentjson.loads(engines_json.read())
+
+    icon_hash_to_name = {}
+
+    for engine in engine_data['elements']:
+      if engine not in used_engines or engine in config_data['ignored_engines']:
         continue
 
-      # We don't want to download the google icon because we already have it
-      # in the internal repo.
-      if engine == 'google':
-        continue
+      search_engine_keyword = engine_data['elements'][engine]['keyword']
+      icon_name = keyword_to_identifer(search_engine_keyword)
+      icon_full_path = image_destination_path + f'{icon_name}.png'
+      if engine in config_data['engine_aliases']:
+        engine = config_data['engine_aliases'][engine]
 
-      favicon_url = data['elements'][engine]['favicon_url']
-      search_engine_keyword = data['elements'][engine]['keyword']
-
-      try:
-        # Download the icon and rename it as 'original.ico'
-        img_data = requests.get(
-            favicon_url,
-            headers={
-                # Some search engines 403 even requests for favicons if we don't
-                # look like a browser
-                "User-Agent":
-                ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, "
-                 "like Gecko) Chrome/117.0.0.0 Safari/537.36")
-            })
-        icon_name = keyword_to_identifer(search_engine_keyword)
-        with open('original.ico', 'wb') as original_icon:
-          original_icon.write(img_data.content)
-
-        icon_hash = get_image_hash('original.ico')
-        # We already have the icon stored in the repo.
-        if (icon_hash in favicon_hash_to_icon_name):
-          engine_keyword_to_icon_name[
-              search_engine_keyword] = favicon_hash_to_icon_name[icon_hash]
-          os.remove('original.ico')
+      directory_url = f'https://www.gstatic.com/android_search/search_providers/{engine}/'
+      try_filenames = [
+          config_data['non_default_icon_filenames'][engine]
+      ] if engine in config_data['non_default_icon_filenames'] else [
+          'xxxhdpi.png', f'{engine}_xxxhdpi.png'
+      ]
+      any_found = False
+      for filename in try_filenames:
+        icon_url = directory_url + filename
+        try:
+          img_data = requests.get(icon_url)
+        except requests.exceptions.RequestException as e:
+          print('Error when loading URL {icon_url}: {e}')
           continue
-
-        (largest_index, largest_size) = get_largest_icon_index_and_size(
-            'original.ico', icon_name)
-
-        # Using ImageMagick command line interface, scale the icons, convert
-        # them to PNG format and move them to their corresponding folders.
-        last_size = 0
-        for desired_size in icon_sizes:
-          if largest_size >= last_size:
-            last_size = desired_size
-            desired_size = min(desired_size, largest_size)
-            os.system('convert original.ico[' + str(largest_index) +
-                      '] -thumbnail ' + str(desired_size) + 'x' +
-                      str(desired_size) + ' ' + icon_name + '.png')
-
-            shutil.move(icon_name + '.png', image_destination_path)
-
-        engine_keyword_to_icon_name[search_engine_keyword] = icon_name
-        favicon_hash_to_icon_name[icon_hash] = icon_name
-        os.remove('original.ico')
-
-      # `FileNotFoundError` is thrown if we were not able to download the
-      #  favicon and we try to move it.
-      except (requests.exceptions.RequestException, FileNotFoundError):
-        # Favicon URL doesn't load.
-        print('Error while loading URL ' + favicon_url)
-        # Engine doesn't have a favicon loaded. We use the
-        # default icon in that case.
-        engine_keyword_to_icon_name[search_engine_keyword] = ''
+        if img_data.status_code == 200:
+          with open(icon_full_path, 'wb') as icon_file:
+            icon_file.write(img_data.content)
+          any_found = True
+          break
+      if not any_found:
+        print('WARNING: no icon found for search engine: %s' % engine)
         continue
+
+      icon_hash = get_image_hash(icon_full_path)
+      if icon_hash in icon_hash_to_name:
+        # We already have this icon.
+        engine_keyword_to_icon_name[search_engine_keyword] = icon_hash_to_name[
+            icon_hash]
+        os.remove(icon_full_path)
+        continue
+
+      engine_keyword_to_icon_name[search_engine_keyword] = icon_name
+      icon_hash_to_name[icon_hash] = icon_name
+  print('Finished downloading icons')
   os.system('../../tools/resources/optimize-png-files.sh ' +
             image_destination_path)
 
@@ -263,19 +201,12 @@ def generate_icon_resource_code():
     grdp_file.write('  </if>\n')
 
     # Add the remaining resource ids.
-    for engine_keyword in engine_keyword_to_icon_name:
-      icon_name = engine_keyword_to_icon_name[engine_keyword]
+    for engine_keyword, icon_name in engine_keyword_to_icon_name.items():
       resource_id = 'IDR_' + keyword_to_identifer(
           engine_keyword).upper() + '_PNG'
-      # No favicon loaded. Use default_favicon.png
-      if not icon_name:
-        grdp_file.write(
-            '  <structure type="chrome_scaled_image" name="' + resource_id +
-            '" file="search_engine_choice/default_favicon.png" />\n')
-      else:
-        grdp_file.write('  <structure type="chrome_scaled_image" name="' +
-                        resource_id + '" file="search_engine_choice/' +
-                        icon_name + '.png" />\n')
+      grdp_file.write('  <structure type="chrome_scaled_image" name="' +
+                      resource_id + '" file="search_engine_choice/' +
+                      icon_name + '.png" />\n')
 
     grdp_file.write('</grit-part>\n')
 
@@ -351,11 +282,11 @@ used_engines = set()
 
 # This is a dictionary of engine keyword to corresponding icon name. Have an
 # empty icon name would mean that we weren't able to download the favicon for
-# that engine. We use the default favicon in that case.
+# that engine.
 engine_keyword_to_icon_name = {}
 
 populate_used_engines()
-create_icons_from_json_file()
+download_icons_from_android_search()
 generate_icon_resource_code()
 create_adding_icons_to_source_function()
 # Format the generated code
