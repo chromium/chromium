@@ -8,8 +8,8 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 // Provides access to the contents of a preference hash store. The store
@@ -34,7 +34,7 @@ class HashStoreContents {
   // Returns the suffix to be appended to UMA histograms for this store type.
   // The returned value must either be an empty string or one of the values in
   // histograms.xml's TrackedPreferencesExternalValidators.
-  virtual base::StringPiece GetUMASuffix() const = 0;
+  virtual std::string_view GetUMASuffix() const = 0;
 
   // Discards all data related to this hash store.
   virtual void Reset() = 0;

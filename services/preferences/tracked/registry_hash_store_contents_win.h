@@ -6,6 +6,7 @@
 #define SERVICES_PREFERENCES_TRACKED_REGISTRY_HASH_STORE_CONTENTS_WIN_H_
 
 #include <string>
+#include <string_view>
 
 #include "services/preferences/tracked/hash_store_contents.h"
 #include "services/preferences/tracked/temp_scoped_dir_cleaner.h"
@@ -36,7 +37,7 @@ class RegistryHashStoreContentsWin : public HashStoreContents {
   // HashStoreContents overrides:
   bool IsCopyable() const override;
   std::unique_ptr<HashStoreContents> MakeCopy() const override;
-  base::StringPiece GetUMASuffix() const override;
+  std::string_view GetUMASuffix() const override;
   void Reset() override;
   bool GetMac(const std::string& path, std::string* out_value) override;
   bool GetSplitMacs(const std::string& path,

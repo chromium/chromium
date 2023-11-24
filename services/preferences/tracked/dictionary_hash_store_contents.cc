@@ -39,10 +39,10 @@ std::unique_ptr<HashStoreContents> DictionaryHashStoreContents::MakeCopy()
   return nullptr;
 }
 
-base::StringPiece DictionaryHashStoreContents::GetUMASuffix() const {
+std::string_view DictionaryHashStoreContents::GetUMASuffix() const {
   // To stay consistent with existing reported data, do not append a suffix
   // when reporting UMA stats for this content.
-  return base::StringPiece();
+  return std::string_view();
 }
 
 void DictionaryHashStoreContents::Reset() {
