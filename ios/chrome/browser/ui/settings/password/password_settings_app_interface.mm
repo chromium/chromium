@@ -26,6 +26,7 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/password_test_util.h"
+#import "ios/public/provider/chrome/browser/passcode_settings/passcode_settings_api.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
@@ -300,6 +301,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
           IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
               chrome_test_util::GetOriginalBrowserState()));
   fakeBulkLeakCheckService->SetBufferedState(state);
+}
+
++ (BOOL)isPasscodeSettingsAvailable {
+  return ios::provider::SupportsPasscodeSettings();
 }
 
 @end

@@ -85,6 +85,9 @@
 + (void)setFakeBulkLeakCheckBufferedState:
     (password_manager::BulkLeakCheckServiceInterface::State)state;
 
+// Returns YES if the Passcode Settings page can be opened from the app.
++ (BOOL)isPasscodeSettingsAvailable;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_APP_INTERFACE_H_
