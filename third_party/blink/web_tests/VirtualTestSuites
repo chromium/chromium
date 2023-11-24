@@ -2691,8 +2691,6 @@
       "http/tests/sendbeacon/beacon-detached-no-crash.html",
       "http/tests/xmlhttprequest/frame-load-cancelled-abort.html",
       "http/tests/xmlhttprequest/frame-unload-abort-crash.html",
-      "http/tests/xmlhttprequest/xmlhttprequest-unload-sync-handler-attached-from-parent.html",
-      "http/tests/xmlhttprequest/xmlhttprequest-unload-sync.html",
       "external/wpt/battery-status/no-leak-on-detached-use.https.html",
       "external/wpt/document-picture-in-picture/clears-session-on-close.https.html",
       "external/wpt/fetch/api/basic/keepalive.any.js",
