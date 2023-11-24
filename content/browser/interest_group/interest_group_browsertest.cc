@@ -17750,7 +17750,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1502296): Fails too often on ChromeOS bots.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug/1502155): times out on Android bots.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RunAdAuctionWithAdditionalBid \
   DISABLED_RunAdAuctionWithAdditionalBid
 #else
@@ -17922,7 +17923,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 // TODO(https://crbug.com/1502296): Fails too often on ChromeOS bots.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug/1502155): times out on Android bots.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RunAdAuctionWithWinningAdditionalBidFromTwoWithNT \
   DISABLED_RunAdAuctionWithWinningAdditionalBidFromTwoWithNT
 #else
