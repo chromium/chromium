@@ -476,7 +476,7 @@ BASE_FEATURE(kCrosPrivacyHubAppPermissions,
 // Enables Privacy Hub with only the camera and the microphone access control.
 BASE_FEATURE(kCrosPrivacyHubV0,
              "CrosPrivacyHubV0",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables syncing attestation certificates to cryptauth for use by Cross Device
 // features, including Eche and Phone Hub.
