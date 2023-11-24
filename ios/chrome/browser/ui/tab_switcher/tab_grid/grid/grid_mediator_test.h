@@ -25,11 +25,11 @@ class BrowserList;
 class GURL;
 class IOSChromeScopedTestingLocalState;
 class PlatformTest;
+@class SceneState;
 class TestChromeBrowserState;
 
 namespace web {
 class FakeWebState;
-class WebState;
 }  // namespace web
 
 class GridMediatorTestClass : public PlatformTest {
@@ -43,9 +43,6 @@ class GridMediatorTestClass : public PlatformTest {
   // Creates a FakeWebState with a navigation history containing exactly only
   // the given `url`.
   std::unique_ptr<web::FakeWebState> CreateFakeWebStateWithURL(const GURL& url);
-
-  // Adds a fake price drop to the given web state.
-  void SetFakePriceDrop(web::WebState* web_state);
 
   // Waits the consumer to be fully updated.
   bool WaitForConsumerUpdates(size_t expected_count);
@@ -61,6 +58,7 @@ class GridMediatorTestClass : public PlatformTest {
   FakeTabCollectionConsumer* consumer_;
   std::vector<web::WebStateID> original_identifiers_;
   web::WebStateID original_selected_identifier_;
+  __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
   BrowserList* browser_list_;
   base::UserActionTester user_action_tester_;
