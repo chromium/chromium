@@ -411,6 +411,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Chrome detecta temas de interese mentres navegas. As etiquetas dos temas están predefinidas e inclúen categorías como Arte e entretemento, Compras ou Deportes. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre algúns dos teus temas (non así o teu historial de navegación) para personalizar os anuncios que se che mostren.</translation>
 <translation id="1746113442205726301">Desprazamento da imaxe no eixe Y</translation>
 <translation id="1746531169546376413">0 graos</translation>
+<translation id="1751544761369730824">Eliminar o sitio <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Caixa de correo 8</translation>
 <translation id="1753068535428855445">Citas e anuncios persoais</translation>
 <translation id="1753706481035618306">Número de páxina</translation>
@@ -3818,6 +3819,7 @@ Detalles adicionais:
 <translation id="8576310925653847813">Sistemas de cine domésticos</translation>
 <translation id="8577192028579836704">Prezo habitual de todas as opcións: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">A tarxeta virtual non está dispoñible</translation>
+<translation id="8581064022803799721">Esta páxina está gardada en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Equipamento de squash e ráquetbol</translation>
 <translation id="858637041960032120">Engadir número de teléfono</translation>
 <translation id="8589998999637048520">Calidade máxima</translation>
@@ -4116,6 +4118,7 @@ Detalles adicionais:
 <translation id="9207861905230894330">Non se puido engadir o artigo.</translation>
 <translation id="9213433120051936369">Personalizar a aparencia</translation>
 <translation id="9215416866750762878">Unha aplicación está evitando que Chrome se conecte de forma segura a este sitio</translation>
+<translation id="92178312226016010">Estás facendo un seguimento deste produto.</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imaxes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>

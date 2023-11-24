@@ -411,6 +411,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> Chrome에서 내가 인터넷을 사용하는 동안 관심 주제를 파악합니다. 주제 라벨은 사전 정의되어 있으며 예술 및 엔터테인먼트, 쇼핑, 스포츠 등을 포함합니다. 나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심 주제 몇 가지를 Chrome에 요청할 수 있습니다(방문 기록 제외).</translation>
 <translation id="1746113442205726301">이미지 Y 시프트</translation>
 <translation id="1746531169546376413">0도</translation>
+<translation id="1751544761369730824"><ph name="SITE_NAME" /> 사이트 삭제</translation>
 <translation id="1752021286346845558">메일박스 8</translation>
 <translation id="1753068535428855445">데이트 및 결혼 정보</translation>
 <translation id="1753706481035618306">페이지 번호</translation>
@@ -3817,6 +3818,7 @@
 <translation id="8576310925653847813">홈시어터 시스템</translation>
 <translation id="8577192028579836704">모든 옵션은 일반적으로 <ph name="TYPICAL_PRICE" />입니다</translation>
 <translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
+<translation id="8581064022803799721">페이지가 <ph name="LAST_BOOKMARKS_FOLDER" />에 저장되어 있습니다.</translation>
 <translation id="8586082901536468629">스쿼시 및 라켓볼 장비</translation>
 <translation id="858637041960032120">번호 추가</translation>
 <translation id="8589998999637048520">고품질 순</translation>
@@ -4115,6 +4117,7 @@
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>
 <translation id="9215416866750762878">애플리케이션으로 인해 Chrome이 안전하게 이 사이트에 접속할 수 없음</translation>
+<translation id="92178312226016010">추적 중인 제품입니다.</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>

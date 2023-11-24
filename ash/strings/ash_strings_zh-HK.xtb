@@ -294,7 +294,7 @@
 <translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2248634276911611268">在新分頁中開啟連結並切換至此新分頁</translation>
-<translation id="2253808149208613283">安裝可自訂這部裝置的應用程式</translation>
+<translation id="2253808149208613283">安裝應用程式以自訂此裝置</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2257486738914982088">下載「<ph name="FILENAME" />」時發生錯誤</translation>
 <translation id="2258734398699965611">建議檔案</translation>
@@ -1441,7 +1441,7 @@
 <translation id="6827049576281411231">閂活動面板</translation>
 <translation id="6831561626108366035">去<ph name="ACTIVE_STATE" />嘅「<ph name="DESK_NAME" />」掣。</translation>
 <translation id="6836499262298959512">危險檔案</translation>
-<translation id="6837621009301897464">如要擷取螢幕截圖，請按下：</translation>
+<translation id="6837621009301897464">如要擷取螢幕截圖，請按下</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
 <translation id="6855029042976311970">剛剛編輯過</translation>
 <translation id="6856708615407876657">切換搜尋結果類別</translation>

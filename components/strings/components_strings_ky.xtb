@@ -411,6 +411,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Бул маалыматты кандайча колдонобуз:<ph name="END_BOLD" /> Cерептеп жатканыңызда Chrome сизди кызыктырган темаларды белгилеп турат. Темалардын аталыштары алдын ала аныкталат. Мисалы, "Искусство жана көңүл ачуу", "Сатып алуу" жана "Спорт". Кийинчерээк сиз кирген сайт жарнамаларды жекелештирүү үчүн, Chrome'дон бир нече темаңызды (көрүлгөн вебсайттардан тышкары) сурашы мүмкүн.</translation>
 <translation id="1746113442205726301">Y сүрөтүн жылдыруу</translation>
 <translation id="1746531169546376413">0 градус</translation>
+<translation id="1751544761369730824"><ph name="SITE_NAME" /> сайтын өчүрүү</translation>
 <translation id="1752021286346845558">8-электрондук каттар кутусу</translation>
 <translation id="1753068535428855445">Таанышуу жана жуп табуу</translation>
 <translation id="1753706481035618306">Беттин номери</translation>
@@ -3817,6 +3818,7 @@
 <translation id="8576310925653847813">Үй кинотеатрынын системалары</translation>
 <translation id="8577192028579836704">Бардык варианттар адатта <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуалдык карта жеткиликсиз</translation>
+<translation id="8581064022803799721">Бул бет <ph name="LAST_BOOKMARKS_FOLDER" /> папкасына сакталды.</translation>
 <translation id="8586082901536468629">Сквош жана ракетбол үчүн жабдуулар</translation>
 <translation id="858637041960032120">Телефон номерин кошуу</translation>
 <translation id="8589998999637048520">Мыкты сапат</translation>
@@ -4115,6 +4117,7 @@
 <translation id="9207861905230894330">Макала кошулбай койду.</translation>
 <translation id="9213433120051936369">Көрүнүшүн ыңгайлаштыруу</translation>
 <translation id="9215416866750762878">Иштеп жаткан колдонмо Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат</translation>
+<translation id="92178312226016010">Бул товарга көз салып жатасыз.</translation>
 <translation id="9218430445555521422">Демейки катары коюу</translation>
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>

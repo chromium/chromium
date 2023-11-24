@@ -294,6 +294,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2224075387478458881">L'enregistrement d'écran n'est pas autorisé lorsqu'un contenu protégé est affiché</translation>
 <translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2248634276911611268">Ouvrir le lien dans un nouvel onglet et basculer vers ce nouvel onglet</translation>
+<translation id="2253808149208613283">Installez l'appli pour personnaliser cet appareil</translation>
 <translation id="225680501294068881">Recherche d'appareils…</translation>
 <translation id="2257486738914982088">Une erreur s'est produite lors du téléchargement de <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fichiers suggérés</translation>
@@ -1442,6 +1443,7 @@ Nouvelle installation</translation>
 <translation id="6827049576281411231">Fermer le panneau d'événements</translation>
 <translation id="6831561626108366035">Accédez au bouton <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
+<translation id="6837621009301897464">Pour prendre une capture d'écran, appuyez sur</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6855029042976311970">Modifié à l'instant</translation>
 <translation id="6856708615407876657">Activer/Désactiver les catégories de résultats de recherche</translation>

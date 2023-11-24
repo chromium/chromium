@@ -410,6 +410,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />ನಾವು ಈ ಡೇಟಾವನ್ನು ಹೇಗೆ ಬಳಸುತ್ತೇವೆ:<ph name="END_BOLD" /> ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಆಸಕ್ತಿಯ ವಿಷಯಗಳನ್ನು Chrome ಗುರುತು ಹಾಕಿಕೊಳ್ಳುತ್ತದೆ. ವಿಷಯದ ಲೇಬಲ್‌ಗಳು ಪೂರ್ವನಿರ್ಧರಿತವಾಗಿವೆ ಮತ್ತು ಕಲೆ ಮತ್ತು ಮನರಂಜನೆ, ಶಾಪಿಂಗ್ ಮತ್ತು ಕ್ರೀಡೆಗಳಂತಹ ವಿಷಯಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತವೆ. ನಂತರ, ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ನೀವು ನೋಡುವ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಕೆಲವು ವಿಷಯಗಳಿಗಾಗಿ (ಆದರೆ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವಲ್ಲ) Chrome ಗೆ ಕೇಳಬಹುದು.</translation>
 <translation id="1746113442205726301">ಚಿತ್ರ Y ಶಿಫ್ಟ್</translation>
 <translation id="1746531169546376413">0 ಡಿಗ್ರಿಗಳು</translation>
+<translation id="1751544761369730824"><ph name="SITE_NAME" /> ಸೈಟ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1752021286346845558">ಮೇಲ್‌ಬಾಕ್ಸ್ 8</translation>
 <translation id="1753068535428855445">ಡೇಟಿಂಗ್ ಮತ್ತು ಪರ್ಸನಲ್ಸ್</translation>
 <translation id="1753706481035618306">ಪುಟ ಸಂಖ್ಯೆ</translation>
@@ -3814,6 +3815,7 @@
 <translation id="8576310925653847813">ಹೋಮ್ ಥಿಯೇಟರ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
 <translation id="8577192028579836704">ಎಲ್ಲಾ ಆಯ್ಕೆಗಳು ಸಾಮಾನ್ಯವಾಗಿ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="8581064022803799721">ಈ ಪುಟವನ್ನು <ph name="LAST_BOOKMARKS_FOLDER" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8586082901536468629">ಸ್ಕ್ವಾಷ್ ಮತ್ತು ರಾಕೆಟ್‌ಬಾಲ್ ಉಪಕರಣ</translation>
 <translation id="858637041960032120">ಫೋನ್ ಸಂ. ಸೇರಿಸಿ
 </translation>
@@ -4113,6 +4115,7 @@
 <translation id="9207861905230894330">ಲೇಖನವನ್ನು ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chromeನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>
+<translation id="92178312226016010">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
 <translation id="9218430445555521422">ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>

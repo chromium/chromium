@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1000498691615767391">Chọn thư mục để mở</translation>
+<translation id="1014208178561091457">Không sao chép được <ph name="FILE_NAME" /> vì tệp này đã được mã hoá.</translation>
 <translation id="1047956942837015229">Đang xóa <ph name="COUNT" /> mục...</translation>
 <translation id="1049926623896334335">Tài liệu Word</translation>
 <translation id="1056775291175587022">Không có mạng</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Chia sẻ thư mục với ứng dụng Parallels Desktop</translation>
 <translation id="1439919885608649279">Người với hoa</translation>
 <translation id="1458457385801829801">Ngắt kết nối <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Không sao chép được <ph name="NUMBER_OF_FILES" /> tệp vì các tệp này đã được mã hoá.</translation>
 <translation id="1471718551822868769">Tiếng Slovak</translation>
 <translation id="1482884275703521657">Tiếng Phần Lan</translation>
 <translation id="148466539719134488">Tiếng Thụy Sĩ</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Chưa có</translation>
 <translation id="3254434849914415189">Chọn ứng dụng mặc định cho các tệp <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Tiếng Ả Rập</translation>
+<translation id="326396468955264502">Không di chuyển được <ph name="NUMBER_OF_FILES" /> tệp vì các tệp này đã được mã hoá.</translation>
 <translation id="3264582393905923483">Ngữ cảnh</translation>
 <translation id="3272909651715601089">Không thể mở "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Đang chuẩn bị</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">Đã chia sẻ 1 thư mục với <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Lưu ý: Các tệp này chỉ được lưu trữ tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Thư mục</translation>
+<translation id="3529424493985988200">Hãy liên hệ với quản trị viên để biết chi tiết.</translation>
 <translation id="3548125359243647069">Bạn đã nhập sai mã PIN quá nhiều lần.</translation>
 <translation id="3549797760399244642">Truy cập drive.google.com...</translation>
 <translation id="3553048479571901246">Để mở tệp bằng <ph name="APP_NAME" />, trước tiên, hãy sao chép các tệp đó vào thư mục tệp Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Tệp này được mở trên máy tính khác. Chuyển sang <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp này.</translation>
 <translation id="6394388407447716302">Chỉ có thể đọc</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> mục</translation>
+<translation id="6407769893376380348">Không di chuyển được <ph name="FILE_NAME" /> vì tệp này đã được mã hoá.</translation>
 <translation id="642282551015776456">Không thể sử dụng tên này làm tên tệp trong thư mục</translation>
 <translation id="6423031066725912715">Tiếng Việt bằng bàn phím TCVN</translation>
 <translation id="6430271654280079150">Bạn còn 1 lần nhập.</translation>

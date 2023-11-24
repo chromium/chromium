@@ -122,7 +122,7 @@
 <translation id="3013291976881901233">MIDI cihazlar</translation>
 <translation id="301521992641321250">Otomatik olarak engellendi</translation>
 <translation id="3069226013421428034">Belirli bir sitede üçüncü taraf oturum açmaya izin verin.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # içinde dolacak}}</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # gün içinde dolacak}}</translation>
 <translation id="310297983047869047">Önceki slayt</translation>
 <translation id="3109724472072898302">Daraltılmış</translation>
 <translation id="3114012059975132928">Video oynatıcı</translation>
@@ -253,7 +253,7 @@
 <translation id="5335288049665977812">Sitelerin JavaScript çalıştırmasına izin ver (önerilir)</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
 <translation id="5344522958567249764">Reklam gizliliğini yönet</translation>
-<translation id="5389626883706033615">Sitelerin, hakkınızda kaydettikleri bilgileri kullanmak için izin istemesi engellendi</translation>
+<translation id="5389626883706033615">Sitelerin, hakkınızda kaydettikleri bilgileri kullanmak için izin istemesi engellenir</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tane daha)}other{(+ # tane daha)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
 <translation id="5438097262470833822">Bu tercih, <ph name="WEBSITE" /> izinlerini sıfırlar</translation>

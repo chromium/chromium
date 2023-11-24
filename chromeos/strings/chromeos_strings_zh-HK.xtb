@@ -343,7 +343,7 @@
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度較弱，請嘗試移近 Wi-Fi 訊號來源。</translation>
-<translation id="3594280220611906414">「<ph name="USER_FRIENDLY_APN_NAME" />」是「<ph name="APN_NAME" />」的易記名稱。</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> 係 <ph name="APN_NAME" /> 較多人認識嘅名稱。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>

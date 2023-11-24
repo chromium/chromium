@@ -294,6 +294,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2224075387478458881">Ekraanikuva jäädvustamine pole lubatud, kui kaitstud sisu on nähtaval</translation>
 <translation id="2227179592712503583">Eemalda soovitus</translation>
 <translation id="2248634276911611268">Lingi avamine uuel vahelehel ja sellele vahelehele lülitumine</translation>
+<translation id="2253808149208613283">Installige rakendus selle seadme kohandamiseks</translation>
 <translation id="225680501294068881">Seadmete skannimine ...</translation>
 <translation id="2257486738914982088">Midagi läks faili <ph name="FILENAME" /> allalaadimisel valesti</translation>
 <translation id="2258734398699965611">Soovitatud failid</translation>
@@ -1443,6 +1444,7 @@ Uus installimine</translation>
 <translation id="6827049576281411231">Sule sündmuste paneel</translation>
 <translation id="6831561626108366035">Valige nupp <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Ohtlik fail</translation>
+<translation id="6837621009301897464">Ekraanipildi jäädvustamiseks puudutage nuppu</translation>
 <translation id="6852052252232534364">Klõpsake aktiveerimiseks</translation>
 <translation id="6855029042976311970">Äsja muudetud</translation>
 <translation id="6856708615407876657">Lülitage otsingutulemuste kategooriad sisse/välja</translation>

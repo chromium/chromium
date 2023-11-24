@@ -411,6 +411,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />আমি এই ডেটা কেনেকৈ ব্যৱহাৰ কৰোঁ:<ph name="END_BOLD" /> আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ আপোনাৰ আগ্ৰহ থকা বিষয়বস্তুসমূহৰ হিচাপ ৰাখে। বিষয়বস্তুৰ লেবেলসমূহ পূৰ্বনিৰ্ধাৰিত আৰু ইয়াত কলা আৰু মনোৰঞ্জন, শ্বপিং আৰু ক্ৰীড়াৰ দৰে বস্তু অন্তৰ্ভুক্ত কৰা হয়। পাছত, আপুনি চোৱা কোনো ছাইটে আপুনি দেখা বিজ্ঞাপনসমূহ ব্যক্তিগতকৰণ কৰিবলৈ Chromeক আপোনাৰ বিষয়সমূহৰ কিছুমান (কিন্তু আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস নহয়)ৰ বিষয়ে সুধিব পাৰে।</translation>
 <translation id="1746113442205726301">প্ৰতিচ্ছবি Y শ্বিফ্ট</translation>
 <translation id="1746531169546376413">০ ডিগ্ৰী</translation>
+<translation id="1751544761369730824"><ph name="SITE_NAME" /> ছাইটটো মচক</translation>
 <translation id="1752021286346845558">মেইলবক্স ৮</translation>
 <translation id="1753068535428855445">ডেটিং আৰু ব্যক্তিগত সেৱা</translation>
 <translation id="1753706481035618306">পৃষ্ঠাৰ সংখ্যা</translation>
@@ -3813,6 +3814,7 @@
 <translation id="8576310925653847813">হ’ম থিয়েটাৰ ছিষ্টেম</translation>
 <translation id="8577192028579836704">আটাইবোৰ বিকল্প সচৰাচৰ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ভাৰ্চুৱেল কাৰ্ডখন উপলব্ধ নহয়</translation>
+<translation id="8581064022803799721">এই পৃষ্ঠাখন <ph name="LAST_BOOKMARKS_FOLDER" />ত ছেভ কৰা হৈছে।</translation>
 <translation id="8586082901536468629">স্কোৱাশ্ব আৰু ৰেকেটবলৰ সা-সৰঞ্জাম</translation>
 <translation id="858637041960032120">ফোন নম্বৰ যোগ কৰক</translation>
 <translation id="8589998999637048520">উত্তম গুণগত মান</translation>
@@ -4111,6 +4113,7 @@
 <translation id="9207861905230894330">লেখা যোগ কৰিব নোৱাৰিলে।</translation>
 <translation id="9213433120051936369">ৰূপ কাষ্টমাইজ কৰক</translation>
 <translation id="9215416866750762878">কোনো এপ্লিকেশ্বনে Chromeক এই ছাইটৰ সৈতে সুৰক্ষিত ভাৱে সংযুক্ত হোৱাত বাধা প্ৰদান কৰি আছে।</translation>
+<translation id="92178312226016010">আপুনি এই প্ৰ’ডাক্টটো ট্ৰেক কৰি আছে।</translation>
 <translation id="9218430445555521422">ডিফ'ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome কাষ্টমাইজ কৰক</translation>

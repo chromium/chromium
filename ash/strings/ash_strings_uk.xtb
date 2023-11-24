@@ -294,6 +294,7 @@
 <translation id="2224075387478458881">Запис екрана заборонено, якщо видно захищений контент</translation>
 <translation id="2227179592712503583">Видалити пропозицію</translation>
 <translation id="2248634276911611268">Відкрити посилання на новій вкладці й перейти на неї</translation>
+<translation id="2253808149208613283">Установіть додаток, щоб налаштувати цей пристрій</translation>
 <translation id="225680501294068881">Пошук пристроїв...</translation>
 <translation id="2257486738914982088">Під час завантаження файлу "<ph name="FILENAME" />" сталася помилка</translation>
 <translation id="2258734398699965611">Пропоновані файли</translation>
@@ -1442,6 +1443,7 @@
 <translation id="6827049576281411231">Закрити панель подій</translation>
 <translation id="6831561626108366035">Перейти до кнопки <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">Небезпечний файл</translation>
+<translation id="6837621009301897464">Щоб зробити знімок екрана, натисніть</translation>
 <translation id="6852052252232534364">Активувати</translation>
 <translation id="6855029042976311970">Змінено щойно</translation>
 <translation id="6856708615407876657">Перемикач результатів пошуку за категоріями</translation>

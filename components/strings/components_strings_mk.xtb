@@ -411,6 +411,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Како ги користиме податоциве:<ph name="END_BOLD" /> Chrome ги утврдува темите од интерес додека прелистувате. Етикетите за теми се дефинирани однапред и вклучуваат работи како уметност и забава, купување и спорт. Подоцна, сајтот што го посетувате може да побара од Chrome неколку од вашите теми (но не и вашата историја на прелистувањето) за да ги персонализира рекламите што ги гледате.</translation>
 <translation id="1746113442205726301">Промена на сликата Y</translation>
 <translation id="1746531169546376413">0 степени</translation>
+<translation id="1751544761369730824">Бришење на сајтот <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Поштенско сандаче 8</translation>
 <translation id="1753068535428855445">Услуги за состаноци и запознавање</translation>
 <translation id="1753706481035618306">Број на страница</translation>
@@ -3818,6 +3819,7 @@
 <translation id="8576310925653847813">Системи за домашно кино</translation>
 <translation id="8577192028579836704">Сите опции стандардно: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуелната картичка не е достапна</translation>
+<translation id="8581064022803799721">Страницава е зачувана во <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="8586082901536468629">Опрема за сквош и рекетбол</translation>
 <translation id="858637041960032120">Додајте телефонски број</translation>
 <translation id="8589998999637048520">Најдобар квалитет</translation>
@@ -4116,6 +4118,7 @@
 <translation id="9207861905230894330">Не успеа да се додаде напис.</translation>
 <translation id="9213433120051936369">Приспособете го изгледот</translation>
 <translation id="9215416866750762878">Дадена апликација го спречува Chrome безбедно да се поврзе на сајтов</translation>
+<translation id="92178312226016010">Го следите производов.</translation>
 <translation id="9218430445555521422">Постави како стандардно</translation>
 <translation id="9219103736887031265">Слики</translation>
 <translation id="922152298093051471">Приспособете го Chrome</translation>
