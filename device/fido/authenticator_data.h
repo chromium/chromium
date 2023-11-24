@@ -122,17 +122,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   }
 
  private:
+  void ValidateAuthenticatorDataStateOrCrash();
+
+  // See |AuthenticatorData::Flag| for the meaning of each bit.
+  // The value of |flags_| may depend on other move-only attributes declared
+  // below. Keep |flags_| before other attributes to guarantee it is initialized
+  // before them, preventing use-after-move during construction.
+  uint8_t flags_;
+
   // The application parameter: a SHA-256 hash of either the RP ID or the AppID
   // associated with the credential.
   std::array<uint8_t, kRpIdHashLength> application_parameter_;
-
-  // Flags (bit 0 is the least significant bit):
-  // [ED | AT | RFU | RFU | RFU | RFU | RFU | UP ]
-  //  * Bit 0: Test of User Presence (TUP) result.
-  //  * Bits 1-5: Reserved for future use (RFU).
-  //  * Bit 6: Attestation data included (AT).
-  //  * Bit 7: Extension data included (ED).
-  uint8_t flags_;
 
   // Signature counter, 32-bit unsigned big-endian integer.
   std::array<uint8_t, kSignCounterLength> counter_;

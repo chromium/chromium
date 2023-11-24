@@ -100,16 +100,12 @@ AuthenticatorData::AuthenticatorData(
     base::span<const uint8_t, kSignCounterLength> counter,
     absl::optional<AttestedCredentialData> data,
     absl::optional<cbor::Value> extensions)
-    : application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
-      flags_(flags),
+    : flags_(flags),
+      application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
       counter_(fido_parsing_utils::Materialize(counter)),
       attested_data_(std::move(data)),
       extensions_(std::move(extensions)) {
-  DCHECK(!extensions_ || extensions_->is_map());
-  DCHECK_EQ((flags_ & static_cast<uint8_t>(Flag::kExtensionDataIncluded)) != 0,
-            !!extensions_);
-  DCHECK_EQ(((flags_ & static_cast<uint8_t>(Flag::kAttestation)) != 0),
-            !!attested_data_);
+  ValidateAuthenticatorDataStateOrCrash();
 }
 
 AuthenticatorData::AuthenticatorData(
@@ -120,20 +116,21 @@ AuthenticatorData::AuthenticatorData(
     uint32_t sign_counter,
     absl::optional<AttestedCredentialData> attested_credential_data,
     absl::optional<cbor::Value> extensions)
-    : AuthenticatorData(
-          rp_id_hash,
-          AuthenticatorDataFlags(user_present,
-                                 user_verified,
-                                 backup_eligible,
-                                 attested_credential_data.has_value(),
-                                 extensions.has_value()),
-          std::array<uint8_t, kSignCounterLength>{
-              static_cast<uint8_t>(sign_counter >> 24),
-              static_cast<uint8_t>(sign_counter >> 16),
-              static_cast<uint8_t>(sign_counter >> 8),
-              static_cast<uint8_t>(sign_counter)},
-          std::move(attested_credential_data),
-          std::move(extensions)) {}
+    : flags_(AuthenticatorDataFlags(user_present,
+                                    user_verified,
+                                    backup_eligible,
+                                    attested_credential_data.has_value(),
+                                    extensions.has_value())),
+      application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
+      counter_(std::array<uint8_t, kSignCounterLength>{
+          static_cast<uint8_t>(sign_counter >> 24),
+          static_cast<uint8_t>(sign_counter >> 16),
+          static_cast<uint8_t>(sign_counter >> 8),
+          static_cast<uint8_t>(sign_counter)}),
+      attested_data_(std::move(attested_credential_data)),
+      extensions_(std::move(extensions)) {
+  ValidateAuthenticatorDataStateOrCrash();
+}
 
 AuthenticatorData::AuthenticatorData(AuthenticatorData&& other) = default;
 AuthenticatorData& AuthenticatorData::operator=(AuthenticatorData&& other) =
@@ -201,6 +198,14 @@ std::vector<uint8_t> AuthenticatorData::GetCredentialId() const {
     return std::vector<uint8_t>();
 
   return attested_data_->credential_id();
+}
+
+void AuthenticatorData::ValidateAuthenticatorDataStateOrCrash() {
+  CHECK(!extensions_ || extensions_->is_map());
+  CHECK_EQ((flags_ & static_cast<uint8_t>(Flag::kExtensionDataIncluded)) != 0,
+           !!extensions_);
+  CHECK_EQ(((flags_ & static_cast<uint8_t>(Flag::kAttestation)) != 0),
+           !!attested_data_);
 }
 
 }  // namespace device
