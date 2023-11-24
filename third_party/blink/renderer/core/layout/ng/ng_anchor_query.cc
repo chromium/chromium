@@ -69,17 +69,17 @@ CSSAnchorValue PhysicalAnchorValueFromLogicalOrAuto(
 
 }  // namespace
 
-NGPhysicalAnchorReference::NGPhysicalAnchorReference(
-    const NGLogicalAnchorReference& logical_reference,
+PhysicalAnchorReference::PhysicalAnchorReference(
+    const LogicalAnchorReference& logical_reference,
     const WritingModeConverter& converter)
     : rect(converter.ToPhysical(logical_reference.rect)),
       layout_object(logical_reference.layout_object),
       is_out_of_flow(logical_reference.is_out_of_flow) {}
 
-void NGLogicalAnchorReference::InsertInReverseTreeOrderInto(
-    Member<NGLogicalAnchorReference>* head_ptr) {
+void LogicalAnchorReference::InsertInReverseTreeOrderInto(
+    Member<LogicalAnchorReference>* head_ptr) {
   for (;;) {
-    NGLogicalAnchorReference* const head = *head_ptr;
+    LogicalAnchorReference* const head = *head_ptr;
     DCHECK(!head || head->layout_object);
     if (!head || head->layout_object->IsBeforeInPreOrder(*layout_object)) {
       // An in-flow reference has higher precedence than any other reference
@@ -103,17 +103,18 @@ void NGLogicalAnchorReference::InsertInReverseTreeOrderInto(
 }
 
 // static
-const NGLogicalAnchorQuery& NGLogicalAnchorQuery::Empty() {
-  DEFINE_STATIC_LOCAL(Persistent<NGLogicalAnchorQuery>, empty,
-                      (MakeGarbageCollected<NGLogicalAnchorQuery>()));
+const LogicalAnchorQuery& LogicalAnchorQuery::Empty() {
+  DEFINE_STATIC_LOCAL(Persistent<LogicalAnchorQuery>, empty,
+                      (MakeGarbageCollected<LogicalAnchorQuery>()));
   return *empty;
 }
 
-const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
+const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
     const LayoutObject& query_object,
-    const NGAnchorKey& key) const {
-  if (const NGPhysicalAnchorReference* reference = Base::AnchorReference(key)) {
-    for (const NGPhysicalAnchorReference* result = reference; result;
+    const AnchorKey& key) const {
+  if (const PhysicalAnchorReference* reference =
+          Base::GetAnchorReference(key)) {
+    for (const PhysicalAnchorReference* result = reference; result;
          result = result->next) {
       if (!result->is_out_of_flow ||
           result->layout_object->IsBeforeInPreOrder(query_object)) {
@@ -124,21 +125,21 @@ const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
   return nullptr;
 }
 
-const LayoutObject* NGPhysicalAnchorQuery::AnchorLayoutObject(
+const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
     const LayoutObject& query_object,
-    const NGAnchorKey& key) const {
-  if (const NGPhysicalAnchorReference* reference =
+    const AnchorKey& key) const {
+  if (const PhysicalAnchorReference* reference =
           AnchorReference(query_object, key)) {
     return reference->layout_object.Get();
   }
   return nullptr;
 }
 
-const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
+const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
     const LayoutObject& query_object,
-    const NGAnchorKey& key) const {
-  if (const NGLogicalAnchorReference* reference = Base::AnchorReference(key)) {
-    for (const NGLogicalAnchorReference* result = reference; result;
+    const AnchorKey& key) const {
+  if (const LogicalAnchorReference* reference = Base::GetAnchorReference(key)) {
+    for (const LogicalAnchorReference* result = reference; result;
          result = result->next) {
       if (!result->is_out_of_flow ||
           result->layout_object->IsBeforeInPreOrder(query_object)) {
@@ -149,16 +150,16 @@ const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
   return nullptr;
 }
 
-void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
-                               const LayoutObject& layout_object,
-                               const LogicalRect& rect,
-                               SetOptions options) {
-  Set(key, MakeGarbageCollected<NGLogicalAnchorReference>(
+void LogicalAnchorQuery::Set(const AnchorKey& key,
+                             const LayoutObject& layout_object,
+                             const LogicalRect& rect,
+                             SetOptions options) {
+  Set(key, MakeGarbageCollected<LogicalAnchorReference>(
                layout_object, rect, options == SetOptions::kOutOfFlow));
 }
 
-void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
-                               NGLogicalAnchorReference* reference) {
+void LogicalAnchorQuery::Set(const AnchorKey& key,
+                             LogicalAnchorReference* reference) {
   DCHECK(reference);
   DCHECK(!reference->next);
   const auto result = Base::insert(key, reference);
@@ -166,13 +167,12 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
     return;
 
   // If this is a fragment of the existing |LayoutObject|, unite the rect.
-  Member<NGLogicalAnchorReference>* const existing_head_ptr =
-      result.stored_value;
-  NGLogicalAnchorReference* const existing_head = *existing_head_ptr;
+  Member<LogicalAnchorReference>* const existing_head_ptr = result.stored_value;
+  LogicalAnchorReference* const existing_head = *existing_head_ptr;
   DCHECK(existing_head);
   const LayoutObject* new_object = reference->layout_object;
   DCHECK(new_object);
-  for (NGLogicalAnchorReference* existing = existing_head; existing;
+  for (LogicalAnchorReference* existing = existing_head; existing;
        existing = existing->next) {
     const LayoutObject* existing_object = existing->layout_object;
     DCHECK(existing_object);
@@ -187,21 +187,20 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
   reference->InsertInReverseTreeOrderInto(existing_head_ptr);
 }
 
-void NGPhysicalAnchorQuery::SetFromLogical(
-    const NGLogicalAnchorQuery& logical_query,
+void PhysicalAnchorQuery::SetFromLogical(
+    const LogicalAnchorQuery& logical_query,
     const WritingModeConverter& converter) {
   // This function assumes |this| is empty on the entry. Merging multiple
   // references is not supported.
   DCHECK(IsEmpty());
   for (const auto entry : logical_query) {
-    NGPhysicalAnchorReference* head =
-        MakeGarbageCollected<NGPhysicalAnchorReference>(*entry.value,
-                                                        converter);
-    NGPhysicalAnchorReference* tail = head;
-    for (NGLogicalAnchorReference* runner = entry.value->next; runner;
+    auto* head =
+        MakeGarbageCollected<PhysicalAnchorReference>(*entry.value, converter);
+    PhysicalAnchorReference* tail = head;
+    for (LogicalAnchorReference* runner = entry.value->next; runner;
          runner = runner->next) {
       tail->next =
-          MakeGarbageCollected<NGPhysicalAnchorReference>(*runner, converter);
+          MakeGarbageCollected<PhysicalAnchorReference>(*runner, converter);
       tail = tail->next;
     }
     const auto result = Base::insert(entry.key, head);
@@ -209,8 +208,8 @@ void NGPhysicalAnchorQuery::SetFromLogical(
   }
 }
 
-void NGLogicalAnchorQuery::SetFromPhysical(
-    const NGPhysicalAnchorQuery& physical_query,
+void LogicalAnchorQuery::SetFromPhysical(
+    const PhysicalAnchorQuery& physical_query,
     const WritingModeConverter& converter,
     const LogicalOffset& additional_offset,
     SetOptions options) {
@@ -220,14 +219,14 @@ void NGLogicalAnchorQuery::SetFromPhysical(
     // each containing block.
     LogicalRect rect = converter.ToLogical(entry.value->rect);
     rect.offset += additional_offset;
-    Set(entry.key, MakeGarbageCollected<NGLogicalAnchorReference>(
+    Set(entry.key, MakeGarbageCollected<LogicalAnchorReference>(
                        *entry.value->layout_object, rect,
                        options == SetOptions::kOutOfFlow));
   }
 }
 
-absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
-    const NGLogicalAnchorReference& reference,
+absl::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
+    const LogicalAnchorReference& reference,
     CSSAnchorValue anchor_value,
     float percentage,
     LayoutUnit available_size,
@@ -317,8 +316,8 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
   return value;
 }
 
-LayoutUnit NGLogicalAnchorQuery::EvaluateSize(
-    const NGLogicalAnchorReference& reference,
+LayoutUnit LogicalAnchorQuery::EvaluateSize(
+    const LogicalAnchorReference& reference,
     CSSAnchorSizeValue anchor_size_value,
     WritingMode container_writing_mode,
     WritingMode self_writing_mode) const {
@@ -351,7 +350,7 @@ LayoutUnit NGLogicalAnchorQuery::EvaluateSize(
   return LayoutUnit();
 }
 
-const NGLogicalAnchorQuery* NGAnchorEvaluatorImpl::AnchorQuery() const {
+const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
   if (anchor_query_)
     return anchor_query_;
   if (anchor_queries_) {
@@ -363,7 +362,7 @@ const NGLogicalAnchorQuery* NGAnchorEvaluatorImpl::AnchorQuery() const {
   return nullptr;
 }
 
-absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
+absl::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
     const CalculationExpressionNode& node) const {
   DCHECK(node.IsAnchorQuery());
   const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
@@ -378,13 +377,13 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
   }
 }
 
-const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
+const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     const AnchorSpecifierValue& anchor_specifier) const {
   if (!anchor_specifier.IsNamed() && !default_anchor_specifier_ &&
       !implicit_anchor_) {
     return nullptr;
   }
-  const NGLogicalAnchorQuery* anchor_query = AnchorQuery();
+  const LogicalAnchorQuery* anchor_query = AnchorQuery();
   if (!anchor_query) {
     return nullptr;
   }
@@ -399,14 +398,14 @@ const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
   return anchor_query->AnchorReference(*query_object_, implicit_anchor_);
 }
 
-const LayoutObject* NGAnchorEvaluatorImpl::DefaultAnchor() const {
+const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor() const {
   if (!default_anchor_.has_value()) {
-    const NGLogicalAnchorReference* reference =
+    const LogicalAnchorReference* reference =
         ResolveAnchorReference(*AnchorSpecifierValue::Default());
     default_anchor_ = reference ? reference->layout_object : nullptr;
   } else {
 #if DCHECK_IS_ON()
-    const NGLogicalAnchorReference* reference =
+    const LogicalAnchorReference* reference =
         ResolveAnchorReference(*AnchorSpecifierValue::Default());
     DCHECK_EQ(*default_anchor_, reference ? reference->layout_object : nullptr);
 #endif
@@ -414,7 +413,7 @@ const LayoutObject* NGAnchorEvaluatorImpl::DefaultAnchor() const {
   return *default_anchor_;
 }
 
-const PaintLayer* NGAnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer()
+const PaintLayer* AnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer()
     const {
   if (!default_anchor_scroll_container_layer_.has_value()) {
     // We won't reach here without a default anchor.
@@ -431,7 +430,7 @@ const PaintLayer* NGAnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer()
   return *default_anchor_scroll_container_layer_;
 }
 
-bool NGAnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
+bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
     const LayoutObject* anchor) const {
   if (!DefaultAnchor()) {
     return false;
@@ -444,12 +443,12 @@ bool NGAnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
          DefaultAnchorScrollContainerLayer();
 }
 
-absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
+absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorValue anchor_value,
     float percentage) const {
   has_anchor_functions_ = true;
-  const NGLogicalAnchorReference* anchor_reference =
+  const LogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
     return absl::nullopt;
@@ -471,11 +470,11 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
   return absl::nullopt;
 }
 
-absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
+absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
-  const NGLogicalAnchorReference* anchor_reference =
+  const LogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
     return absl::nullopt;
@@ -488,7 +487,7 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
 }
 
 absl::optional<LogicalRect>
-NGAnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
+AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
   if (!query_object_) {
     return absl::nullopt;
   }
@@ -497,7 +496,7 @@ NGAnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
   if (!position_fallback_bounds || !AnchorQuery()) {
     return absl::nullopt;
   }
-  const NGLogicalAnchorReference* reference =
+  const LogicalAnchorReference* reference =
       AnchorQuery()->AnchorReference(*query_object_, position_fallback_bounds);
   if (!reference) {
     return absl::nullopt;
@@ -510,12 +509,12 @@ NGAnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
       container_converter_.ToPhysical(reference->rect));
 }
 
-void NGLogicalAnchorReference::Trace(Visitor* visitor) const {
+void LogicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object);
   visitor->Trace(next);
 }
 
-void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
+void PhysicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object);
   visitor->Trace(next);
 }

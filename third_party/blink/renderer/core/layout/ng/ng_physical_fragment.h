@@ -676,7 +676,7 @@ class CORE_EXPORT NGPhysicalFragment
     virtual ~OofData() = default;
     virtual void Trace(Visitor* visitor) const;
     HeapVector<PhysicalOofPositionedNode> oof_positioned_descendants;
-    NGPhysicalAnchorQuery anchor_query;
+    PhysicalAnchorQuery anchor_query;
   };
 
   // Returns true if some child is OOF in the fragment tree. This happens if
@@ -705,7 +705,7 @@ class CORE_EXPORT NGPhysicalFragment
   bool HasAnchorQueryToPropagate() const {
     return HasAnchorQuery() || Style().AnchorName() || IsImplicitAnchor();
   }
-  const NGPhysicalAnchorQuery* AnchorQuery() const {
+  const PhysicalAnchorQuery* AnchorQuery() const {
     if (!HasAnchorQuery())
       return nullptr;
     return &oof_data_->anchor_query;

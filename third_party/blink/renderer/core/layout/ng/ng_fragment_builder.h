@@ -178,7 +178,7 @@ class CORE_EXPORT NGFragmentBuilder {
   void PropagateChildAnchors(const NGPhysicalFragment& child,
                              const LogicalOffset& child_offset);
 
-  const NGLogicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+  const LogicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
 
   // Builder has non-trivial OOF-positioned methods.
   // They are intended to be used by a layout algorithm like this:
@@ -520,7 +520,7 @@ class CORE_EXPORT NGFragmentBuilder {
 
   HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
   HeapHashSet<Member<LayoutBox>>& EnsureSnapAreas();
-  NGLogicalAnchorQuery& EnsureAnchorQuery();
+  LogicalAnchorQuery& EnsureAnchorQuery();
   ScrollStartTargetCandidates& EnsureScrollStartTargets();
 
   void PropagateFromLayoutResultAndFragment(
@@ -568,7 +568,7 @@ class CORE_EXPORT NGFragmentBuilder {
 
   HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
   HeapHashSet<Member<LayoutBox>>* snap_areas_ = nullptr;
-  NGLogicalAnchorQuery* anchor_query_ = nullptr;
+  LogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   absl::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;

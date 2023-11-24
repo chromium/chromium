@@ -405,7 +405,7 @@ NGPhysicalFragment::OofData* NGPhysicalFragment::OofDataFromBuilder(
     }
   }
 
-  if (const NGLogicalAnchorQuery* anchor_query = builder->AnchorQuery()) {
+  if (const LogicalAnchorQuery* anchor_query = builder->AnchorQuery()) {
     DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
     if (!oof_data)
       oof_data = MakeGarbageCollected<OofData>();

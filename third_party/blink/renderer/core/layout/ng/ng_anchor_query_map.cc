@@ -27,13 +27,13 @@ struct FragmentainerContext {
   WritingModeConverter converter;
 };
 
-// This struct is a variation of |NGAnchorReference|, using the stitched
+// This struct is a variation of |AnchorReference|, using the stitched
 // coordinate system for the block-fragmented out-of-flow positioned objects.
-struct NGStitchedAnchorReference
-    : public GarbageCollected<NGStitchedAnchorReference> {
-  NGStitchedAnchorReference(const LayoutObject& layout_object,
-                            const LogicalRect& rect,
-                            const FragmentainerContext& fragmentainer)
+struct StitchedAnchorReference
+    : public GarbageCollected<StitchedAnchorReference> {
+  StitchedAnchorReference(const LayoutObject& layout_object,
+                          const LogicalRect& rect,
+                          const FragmentainerContext& fragmentainer)
       : layout_object(&layout_object),
         rect_in_first_fragmentainer(rect),
         first_fragmentainer_offset(fragmentainer.offset),
@@ -45,9 +45,9 @@ struct NGStitchedAnchorReference
     return stitched_rect;
   }
 
-  NGLogicalAnchorReference* StitchedAnchorReference() const {
+  LogicalAnchorReference* GetStitchedAnchorReference() const {
     DCHECK(layout_object);
-    return MakeGarbageCollected<NGLogicalAnchorReference>(
+    return MakeGarbageCollected<LogicalAnchorReference>(
         *layout_object, StitchedRect(), /* is_out_of_flow */ false);
   }
 
@@ -75,19 +75,18 @@ struct NGStitchedAnchorReference
 };
 
 // This creates anchor queries in the stitched coordinate system. The result
-// can be converted to a |NGLogicalAnchorQuery|.
-struct NGStitchedAnchorQuery
-    : public GarbageCollected<NGStitchedAnchorQuery>,
-      public NGAnchorQueryBase<NGStitchedAnchorReference> {
-  using Base = NGAnchorQueryBase<NGStitchedAnchorReference>;
+// can be converted to a |LogicalAnchorQuery|.
+struct StitchedAnchorQuery : public GarbageCollected<StitchedAnchorQuery>,
+                             public AnchorQueryBase<StitchedAnchorReference> {
+  using Base = AnchorQueryBase<StitchedAnchorReference>;
 
-  // Convert |this| to a |NGLogicalAnchorQuery|. The result is a regular
-  // |NGLogicalAnchorQuery| except that its coordinate system is stitched
+  // Convert |this| to a |LogicalAnchorQuery|. The result is a regular
+  // |LogicalAnchorQuery| except that its coordinate system is stitched
   // (i.e., as if they weren't fragmented.)
-  NGLogicalAnchorQuery* StitchedAnchorQuery() const {
-    auto* anchor_query = MakeGarbageCollected<NGLogicalAnchorQuery>();
+  LogicalAnchorQuery* GetStitchedAnchorQuery() const {
+    auto* anchor_query = MakeGarbageCollected<LogicalAnchorQuery>();
     for (const auto entry : *this)
-      anchor_query->Set(entry.key, entry.value->StitchedAnchorReference());
+      anchor_query->Set(entry.key, entry.value->GetStitchedAnchorReference());
     return anchor_query;
   }
 
@@ -101,7 +100,7 @@ struct NGStitchedAnchorQuery
   void AddAnchorQuery(const NGPhysicalFragment& fragment,
                       const PhysicalOffset& offset_from_fragmentainer,
                       const FragmentainerContext& fragmentainer) {
-    const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
+    const PhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
     if (!anchor_query)
       return;
     for (auto entry : *anchor_query) {
@@ -112,21 +111,21 @@ struct NGStitchedAnchorQuery
     }
   }
 
-  void AddAnchorReference(const NGAnchorKey& key,
+  void AddAnchorReference(const AnchorKey& key,
                           const LayoutObject& new_object,
                           const PhysicalRect& physical_rect_in_fragmentainer,
                           const FragmentainerContext& fragmentainer,
                           Conflict conflict) {
     const LogicalRect rect_in_fragmentainer =
         fragmentainer.converter.ToLogical(physical_rect_in_fragmentainer);
-    auto* new_value = MakeGarbageCollected<NGStitchedAnchorReference>(
+    auto* new_value = MakeGarbageCollected<StitchedAnchorReference>(
         new_object, rect_in_fragmentainer, fragmentainer);
     const auto result = Base::insert(key, new_value);
     if (result.is_new_entry)
       return;
 
     // If this is a fragment of the existing box, unite it with other fragments.
-    NGStitchedAnchorReference* existing = *result.stored_value;
+    StitchedAnchorReference* existing = *result.stored_value;
     const LayoutObject* existing_object = existing->layout_object;
     DCHECK(existing_object);
     if (existing_object == &new_object) {
@@ -152,14 +151,14 @@ struct NGStitchedAnchorQuery
   }
 };
 
-// This collects |NGStitchedAnchorQuery| for each containing block.
-struct NGStitchedAnchorQueries {
+// This collects |StitchedAnchorQuery| for each containing block.
+struct StitchedAnchorQueries {
   STACK_ALLOCATED();
 
  public:
-  NGStitchedAnchorQueries(const LayoutBox& root,
-                          const HeapHashSet<Member<const LayoutObject>>&
-                              anchored_oof_containers_and_ancestors)
+  StitchedAnchorQueries(const LayoutBox& root,
+                        const HeapHashSet<Member<const LayoutObject>>&
+                            anchored_oof_containers_and_ancestors)
       : anchored_oof_containers_and_ancestors_(
             anchored_oof_containers_and_ancestors),
         root_(root) {}
@@ -230,11 +229,11 @@ struct NGStitchedAnchorQueries {
 
     // Return early if the |fragment| doesn't have any anchors. No need to
     // traverse descendants.
-    const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
+    const PhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
     if (!anchor_query)
       return;
 
-    // Create |NGStitchedAnchorQuery| if this is a containing block.
+    // Create |StitchedAnchorQuery| if this is a containing block.
     if (const LayoutObject* layout_object = fragment.GetLayoutObject()) {
       if (!anchored_oof_containers_and_ancestors_.Contains(layout_object))
         return;
@@ -320,37 +319,36 @@ struct NGStitchedAnchorQueries {
     containing_block = containing_block->Container(&skip_info);
     while (containing_block && containing_block != root_ &&
            !skip_info.AncestorSkipped()) {
-      NGStitchedAnchorQuery& query =
-          EnsureStitchedAnchorQuery(*containing_block);
+      StitchedAnchorQuery& query = EnsureStitchedAnchorQuery(*containing_block);
       if (fragment.Style().AnchorName()) {
         for (const ScopedCSSName* name :
              fragment.Style().AnchorName()->GetNames()) {
           query.AddAnchorReference(
               name, *fragment.GetLayoutObject(),
               {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
-              NGStitchedAnchorQuery::Conflict::kOverwriteIfAfter);
+              StitchedAnchorQuery::Conflict::kOverwriteIfAfter);
         }
       }
       if (fragment.IsImplicitAnchor()) {
         query.AddAnchorReference(
             layout_object, *fragment.GetLayoutObject(),
             {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
-            NGStitchedAnchorQuery::Conflict::kOverwriteIfAfter);
+            StitchedAnchorQuery::Conflict::kOverwriteIfAfter);
       }
       query.AddAnchorQuery(fragment, offset_from_fragmentainer, fragmentainer);
       containing_block = containing_block->Container(&skip_info);
     }
   }
 
-  NGStitchedAnchorQuery& EnsureStitchedAnchorQuery(
+  StitchedAnchorQuery& EnsureStitchedAnchorQuery(
       const LayoutObject& containing_block) {
     const auto result = anchor_queries_.insert(
-        &containing_block, MakeGarbageCollected<NGStitchedAnchorQuery>());
+        &containing_block, MakeGarbageCollected<StitchedAnchorQuery>());
     DCHECK(result.stored_value->value);
     return *result.stored_value->value;
   }
 
-  HeapHashMap<Member<const LayoutObject>, Member<NGStitchedAnchorQuery>>
+  HeapHashMap<Member<const LayoutObject>, Member<StitchedAnchorQuery>>
       anchor_queries_;
   // The set of |LayoutObject| to traverse. When adding children, children not
   // in this set are skipped.
@@ -361,7 +359,7 @@ struct NGStitchedAnchorQueries {
 
 }  // namespace
 
-NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
+LogicalAnchorQueryMap::LogicalAnchorQueryMap(
     const LayoutBox& root_box,
     const LogicalFragmentLinkVector& children,
     const FragmentItemsBuilder::ItemWithOffsetList* items,
@@ -373,7 +371,7 @@ NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
   SetChildren(children, items);
 }
 
-NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
+LogicalAnchorQueryMap::LogicalAnchorQueryMap(
     const LayoutBox& root_box,
     const LogicalFragmentLinkVector& children,
     WritingDirectionMode writing_direction)
@@ -382,7 +380,7 @@ NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
   SetChildren(children);
 }
 
-void NGLogicalAnchorQueryMap::SetChildren(
+void LogicalAnchorQueryMap::SetChildren(
     const LogicalFragmentLinkVector& children,
     const FragmentItemsBuilder::ItemWithOffsetList* items) {
   children_ = &children;
@@ -401,14 +399,14 @@ void NGLogicalAnchorQueryMap::SetChildren(
   }
 }
 
-const NGLogicalAnchorQuery& NGLogicalAnchorQueryMap::AnchorQuery(
+const LogicalAnchorQuery& LogicalAnchorQueryMap::AnchorQuery(
     const LayoutObject& containing_block) const {
   DCHECK(&containing_block);
   DCHECK(containing_block.CanContainAbsolutePositionObjects() ||
          containing_block.CanContainFixedPositionObjects());
 
   if (!has_anchor_queries_)
-    return NGLogicalAnchorQuery::Empty();
+    return LogicalAnchorQuery::Empty();
 
   // Update |queries_| if it hasn't computed for |containing_block|.
   if (!computed_for_ || !computed_for_->IsDescendantOf(&containing_block))
@@ -417,13 +415,13 @@ const NGLogicalAnchorQuery& NGLogicalAnchorQueryMap::AnchorQuery(
   const auto& it = queries_.find(&containing_block);
   if (it != queries_.end())
     return *it->value;
-  return NGLogicalAnchorQuery::Empty();
+  return LogicalAnchorQuery::Empty();
 }
 
 // Update |queries_| for the given |layout_object| and its ancestors. This is
 // `const`, modifies `mutable` caches only, so that other `const` functions such
 // as |AnchorQuery| can call.
-void NGLogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
+void LogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
   // Compute descendants to collect anchor queries from. This helps reducing the
   // number of descendants to traverse.
   HeapHashSet<Member<const LayoutObject>> anchored_oof_containers_and_ancestors;
@@ -435,7 +433,7 @@ void NGLogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
   }
 
   // Traverse descendants and collect anchor queries for each containing block.
-  NGStitchedAnchorQueries stitched_anchor_queries(
+  StitchedAnchorQueries stitched_anchor_queries(
       root_box_, anchored_oof_containers_and_ancestors);
   if (converter_) {
     stitched_anchor_queries.AddChildren(*children_, items_, *converter_);
@@ -450,7 +448,7 @@ void NGLogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
   queries_.clear();
   for (const auto& it : stitched_anchor_queries.anchor_queries_) {
     const auto result =
-        queries_.insert(it.key, it.value->StitchedAnchorQuery());
+        queries_.insert(it.key, it.value->GetStitchedAnchorQuery());
     DCHECK(result.is_new_entry);
   }
 

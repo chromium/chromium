@@ -22,26 +22,26 @@ bool IsInlineContainerForNode(const BlockNode& node,
              node.Style().GetPosition());
 }
 
-NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
+LogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
     const NGPhysicalFragment& fragment,
     const LayoutInputNode& container,
     bool maybe_out_of_order_if_oof) {
   // If the |fragment| is not absolutely positioned, it's an in-flow anchor.
   // https://drafts.csswg.org/css-anchor-1/#determining
   if (!fragment.IsOutOfFlowPositioned()) {
-    return NGLogicalAnchorQuery::SetOptions::kInFlow;
+    return LogicalAnchorQuery::SetOptions::kInFlow;
   }
 
   // If the OOF |fragment| is not in a block fragmentation context, it's a child
   // of its containing block. Make it out-of-flow.
   DCHECK(fragment.GetLayoutObject());
   if (!maybe_out_of_order_if_oof) {
-    return NGLogicalAnchorQuery::SetOptions::kOutOfFlow;
+    return LogicalAnchorQuery::SetOptions::kOutOfFlow;
   }
 
   // |container| is null if it's an inline box.
   if (!container.GetLayoutBox()) {
-    return NGLogicalAnchorQuery::SetOptions::kOutOfFlow;
+    return LogicalAnchorQuery::SetOptions::kOutOfFlow;
   }
 
   // If the OOF |fragment| is in a block fragmentation context, it's a child of
@@ -51,11 +51,11 @@ NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
   const LayoutObject* containing_block = layout_object->Container();
   DCHECK(containing_block);
   if (containing_block == container.GetLayoutBox()) {
-    return NGLogicalAnchorQuery::SetOptions::kOutOfFlow;
+    return LogicalAnchorQuery::SetOptions::kOutOfFlow;
   }
   // Otherwise its containing block is a descendant of the block fragmentation
   // context, so it's in-flow.
-  return NGLogicalAnchorQuery::SetOptions::kInFlow;
+  return LogicalAnchorQuery::SetOptions::kInFlow;
 }
 
 }  // namespace
@@ -146,16 +146,16 @@ void NGFragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
   }
 }
 
-NGLogicalAnchorQuery& NGFragmentBuilder::EnsureAnchorQuery() {
+LogicalAnchorQuery& NGFragmentBuilder::EnsureAnchorQuery() {
   if (!anchor_query_)
-    anchor_query_ = MakeGarbageCollected<NGLogicalAnchorQuery>();
+    anchor_query_ = MakeGarbageCollected<LogicalAnchorQuery>();
   return *anchor_query_;
 }
 
 void NGFragmentBuilder::PropagateChildAnchors(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset) {
-  absl::optional<NGLogicalAnchorQuery::SetOptions> options;
+  absl::optional<LogicalAnchorQuery::SetOptions> options;
   if (child.IsBox() &&
       (child.Style().AnchorName() || child.IsImplicitAnchor())) {
     // Set the child's `anchor-name` before propagating its descendants', so
@@ -177,7 +177,7 @@ void NGFragmentBuilder::PropagateChildAnchors(
   }
 
   // Propagate any descendants' anchor references.
-  if (const NGPhysicalAnchorQuery* anchor_query = child.AnchorQuery()) {
+  if (const PhysicalAnchorQuery* anchor_query = child.AnchorQuery()) {
     if (!options) {
       options = AnchorQuerySetOptions(
           child, node_, IsBlockFragmentationContextRoot() || HasItems());

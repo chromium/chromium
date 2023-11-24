@@ -106,8 +106,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         container_writing_direction,
         ToPhysicalSize(space.AvailableSize(),
                        container_writing_direction.GetWritingMode()));
-    NGLogicalAnchorQuery anchor_query;
-    NGAnchorEvaluatorImpl anchor_evaluator(
+    LogicalAnchorQuery anchor_query;
+    AnchorEvaluatorImpl anchor_evaluator(
         *node.GetLayoutBox(), anchor_query,
         /* default_anchor_specifier */ nullptr,
         /* implicit_anchor */ nullptr, container_converter,
@@ -142,8 +142,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         container_writing_direction,
         ToPhysicalSize(space.AvailableSize(),
                        container_writing_direction.GetWritingMode()));
-    NGLogicalAnchorQuery anchor_query;
-    NGAnchorEvaluatorImpl anchor_evaluator(
+    LogicalAnchorQuery anchor_query;
+    AnchorEvaluatorImpl anchor_evaluator(
         *node.GetLayoutBox(), anchor_query,
         /* default_anchor_specifier */ nullptr,
         /* implicit_anchor */ nullptr, container_converter,

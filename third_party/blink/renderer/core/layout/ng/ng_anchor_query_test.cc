@@ -13,12 +13,12 @@
 namespace blink {
 namespace {
 
-class NGAnchorQueryTest : public RenderingTest,
-                          private ScopedCSSAnchorPositioningForTest {
+class AnchorQueryTest : public RenderingTest,
+                        private ScopedCSSAnchorPositioningForTest {
  public:
-  NGAnchorQueryTest() : ScopedCSSAnchorPositioningForTest(true) {}
+  AnchorQueryTest() : ScopedCSSAnchorPositioningForTest(true) {}
 
-  const NGPhysicalAnchorQuery* AnchorQuery(const Element& element) const {
+  const PhysicalAnchorQuery* AnchorQuery(const Element& element) const {
     const LayoutBlockFlow* container =
         To<LayoutBlockFlow>(element.GetLayoutObject());
     if (!container->PhysicalFragmentCount())
@@ -28,7 +28,7 @@ class NGAnchorQueryTest : public RenderingTest,
     return fragment->AnchorQuery();
   }
 
-  const NGPhysicalAnchorQuery* AnchorQueryByElementId(const char* id) const {
+  const PhysicalAnchorQuery* AnchorQueryByElementId(const char* id) const {
     if (const Element* element = GetElementById(id))
       return AnchorQuery(*element);
     return nullptr;
@@ -37,7 +37,7 @@ class NGAnchorQueryTest : public RenderingTest,
 
 struct AnchorTestData {
   static Vector<AnchorTestData> ToList(
-      const NGPhysicalAnchorQuery& anchor_query) {
+      const PhysicalAnchorQuery& anchor_query) {
     Vector<AnchorTestData> items;
     for (auto entry : anchor_query) {
       if (auto** name = absl::get_if<const ScopedCSSName*>(&entry.key)) {
@@ -62,7 +62,7 @@ std::ostream& operator<<(std::ostream& os, const AnchorTestData& value) {
   return os << value.name << ": " << value.rect;
 }
 
-TEST_F(NGAnchorQueryTest, AnchorNameAdd) {
+TEST_F(AnchorQueryTest, AnchorNameAdd) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -82,7 +82,7 @@ TEST_F(NGAnchorQueryTest, AnchorNameAdd) {
     </div>
   )HTML");
   Element* container = GetElementById("container");
-  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  const PhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   EXPECT_FALSE(anchor_query);
 
   // Add the "after" class and test anchors are updated accordingly.
@@ -95,7 +95,7 @@ TEST_F(NGAnchorQueryTest, AnchorNameAdd) {
                                                   PhysicalRect(0, 0, 50, 20)}));
 }
 
-TEST_F(NGAnchorQueryTest, AnchorNameChange) {
+TEST_F(AnchorQueryTest, AnchorNameChange) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -116,7 +116,7 @@ TEST_F(NGAnchorQueryTest, AnchorNameChange) {
     </div>
   )HTML");
   Element* container = GetElementById("container");
-  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  const PhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
               testing::ElementsAre(AnchorTestData{AtomicString("--div1"),
@@ -132,7 +132,7 @@ TEST_F(NGAnchorQueryTest, AnchorNameChange) {
                                                   PhysicalRect(0, 0, 50, 20)}));
 }
 
-TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
+TEST_F(AnchorQueryTest, AnchorNameRemove) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -153,7 +153,7 @@ TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
     </div>
   )HTML");
   Element* container = GetElementById("container");
-  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  const PhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
               testing::ElementsAre(AnchorTestData{AtomicString("--div1"),
@@ -166,7 +166,7 @@ TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
   EXPECT_FALSE(anchor_query);
 }
 
-TEST_F(NGAnchorQueryTest, BlockFlow) {
+TEST_F(AnchorQueryTest, BlockFlow) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -190,7 +190,7 @@ TEST_F(NGAnchorQueryTest, BlockFlow) {
     </div>
   )HTML");
   Element* container = GetElementById("container");
-  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  const PhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(
       AnchorTestData::ToList(*anchor_query),
@@ -212,7 +212,7 @@ TEST_F(NGAnchorQueryTest, BlockFlow) {
           AnchorTestData{AtomicString("--div3"), PhysicalRect(0, 70, 800, 0)}));
 }
 
-TEST_F(NGAnchorQueryTest, Inline) {
+TEST_F(AnchorQueryTest, Inline) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -246,7 +246,7 @@ TEST_F(NGAnchorQueryTest, Inline) {
     </div>
   )HTML");
   Element* container = GetElementById("container");
-  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  const PhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(
       AnchorTestData::ToList(*anchor_query),
@@ -275,7 +275,7 @@ TEST_F(NGAnchorQueryTest, Inline) {
                          PhysicalRect(50, 0, 20, 10)}));
 }
 
-TEST_F(NGAnchorQueryTest, OutOfFlow) {
+TEST_F(AnchorQueryTest, OutOfFlow) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -289,8 +289,7 @@ TEST_F(NGAnchorQueryTest, OutOfFlow) {
       </div>
     </div>
   )HTML");
-  const NGPhysicalAnchorQuery* anchor_query =
-      AnchorQueryByElementId("container");
+  const PhysicalAnchorQuery* anchor_query = AnchorQueryByElementId("container");
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
               testing::ElementsAre(AnchorTestData{
@@ -302,7 +301,7 @@ TEST_F(NGAnchorQueryTest, OutOfFlow) {
 }
 
 // Relative-positioning should shift the rectangles.
-TEST_F(NGAnchorQueryTest, Relative) {
+TEST_F(AnchorQueryTest, Relative) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -314,8 +313,7 @@ TEST_F(NGAnchorQueryTest, Relative) {
       <div style="anchor-name: --relpos; position: relative; left: 20px; top: 10px"></div>
     </div>
   )HTML");
-  const NGPhysicalAnchorQuery* anchor_query =
-      AnchorQueryByElementId("container");
+  const PhysicalAnchorQuery* anchor_query = AnchorQueryByElementId("container");
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
               testing::ElementsAre(AnchorTestData{
@@ -323,7 +321,7 @@ TEST_F(NGAnchorQueryTest, Relative) {
 }
 
 // CSS Transform should not shift the rectangles.
-TEST_F(NGAnchorQueryTest, Transform) {
+TEST_F(AnchorQueryTest, Transform) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -335,8 +333,7 @@ TEST_F(NGAnchorQueryTest, Transform) {
       <div style="anchor-name: --transform; transform: translate(100px, 100px)"></div>
     </div>
   )HTML");
-  const NGPhysicalAnchorQuery* anchor_query =
-      AnchorQueryByElementId("container");
+  const PhysicalAnchorQuery* anchor_query = AnchorQueryByElementId("container");
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
               testing::ElementsAre(AnchorTestData{AtomicString("--transform"),
@@ -344,7 +341,7 @@ TEST_F(NGAnchorQueryTest, Transform) {
 }
 
 // Scroll positions should not shift the rectangles.
-TEST_F(NGAnchorQueryTest, Scroll) {
+TEST_F(AnchorQueryTest, Scroll) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -361,14 +358,14 @@ TEST_F(NGAnchorQueryTest, Scroll) {
   container->scrollTo(30, 20);
   UpdateAllLifecyclePhasesForTest();
 
-  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  const PhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
               testing::ElementsAre(AnchorTestData{
                   AtomicString("--inner"), PhysicalRect(0, 0, 400, 500)}));
 }
 
-TEST_F(NGAnchorQueryTest, FragmentedContainingBlock) {
+TEST_F(AnchorQueryTest, FragmentedContainingBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -402,26 +399,26 @@ TEST_F(NGAnchorQueryTest, FragmentedContainingBlock) {
   auto* cb = To<LayoutBox>(GetLayoutObjectByElementId("cb"));
   ASSERT_EQ(cb->PhysicalFragmentCount(), 3u);
   const NGPhysicalBoxFragment* cb_fragment1 = cb->GetPhysicalFragment(1);
-  const NGPhysicalAnchorQuery* cb_anchor_query1 = cb_fragment1->AnchorQuery();
+  const PhysicalAnchorQuery* cb_anchor_query1 = cb_fragment1->AnchorQuery();
   ASSERT_NE(cb_anchor_query1, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query1),
               testing::ElementsAre(AnchorTestData{
                   AtomicString("--a1"), PhysicalRect(0, 50, 100, 50)}));
   const NGPhysicalBoxFragment* cb_fragment2 = cb->GetPhysicalFragment(2);
-  const NGPhysicalAnchorQuery* cb_anchor_query2 = cb_fragment2->AnchorQuery();
+  const PhysicalAnchorQuery* cb_anchor_query2 = cb_fragment2->AnchorQuery();
   ASSERT_NE(cb_anchor_query2, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query2),
               testing::ElementsAre(AnchorTestData{
                   AtomicString("--a1"), PhysicalRect(0, 0, 100, 50)}));
 
-  const NGPhysicalAnchorQuery* columns_anchor_query =
+  const PhysicalAnchorQuery* columns_anchor_query =
       AnchorQueryByElementId("columns");
   ASSERT_NE(columns_anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*columns_anchor_query),
               testing::ElementsAre(AnchorTestData{
                   AtomicString("--a1"), PhysicalRect(110, 0, 210, 100)}));
 
-  const NGPhysicalAnchorQuery* container_anchor_query =
+  const PhysicalAnchorQuery* container_anchor_query =
       AnchorQueryByElementId("container");
   ASSERT_NE(container_anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*container_anchor_query),

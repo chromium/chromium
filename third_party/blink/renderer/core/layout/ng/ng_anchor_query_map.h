@@ -27,28 +27,28 @@ class LayoutObject;
 // 2. When the containing block is in block fragmentation context, all OOFs are
 // added to their fragmentainers.
 // In such cases, traversing descendants is needed to compute anchor queries.
-class CORE_EXPORT NGLogicalAnchorQueryMap {
+class CORE_EXPORT LogicalAnchorQueryMap {
   STACK_ALLOCATED();
 
  public:
-  NGLogicalAnchorQueryMap(const LayoutBox& root_box,
-                          const LogicalFragmentLinkVector& children,
-                          const FragmentItemsBuilder::ItemWithOffsetList* items,
-                          const WritingModeConverter& converter);
+  LogicalAnchorQueryMap(const LayoutBox& root_box,
+                        const LogicalFragmentLinkVector& children,
+                        const FragmentItemsBuilder::ItemWithOffsetList* items,
+                        const WritingModeConverter& converter);
 
   // This constructor is for when the size of the container is not known yet.
   // This happens when laying out OOFs in a block fragmentation context, and
   // assumes children are fragmentainers.
-  NGLogicalAnchorQueryMap(const LayoutBox& root_box,
-                          const LogicalFragmentLinkVector& children,
-                          WritingDirectionMode writing_direction);
+  LogicalAnchorQueryMap(const LayoutBox& root_box,
+                        const LogicalFragmentLinkVector& children,
+                        WritingDirectionMode writing_direction);
 
   bool IsEmpty() const { return !has_anchor_queries_; }
 
-  // Get |NGLogicalAnchorQuery| in the stitched coordinate system for the given
+  // Get |LogicalAnchorQuery| in the stitched coordinate system for the given
   // containing block. If there is no anchor query for the containing block,
   // returns an empty instance.
-  const NGLogicalAnchorQuery& AnchorQuery(
+  const LogicalAnchorQuery& AnchorQuery(
       const LayoutObject& containing_block) const;
 
   // Update |children| when their anchor queries are changed.
@@ -59,7 +59,7 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
  private:
   void Update(const LayoutObject& layout_object) const;
 
-  mutable HeapHashMap<Member<const LayoutObject>, Member<NGLogicalAnchorQuery>>
+  mutable HeapHashMap<Member<const LayoutObject>, Member<LogicalAnchorQuery>>
       queries_;
   mutable const LayoutObject* computed_for_ = nullptr;
   const LayoutBox& root_box_;

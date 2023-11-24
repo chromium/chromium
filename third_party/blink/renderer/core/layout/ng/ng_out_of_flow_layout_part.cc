@@ -887,7 +887,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
   const WritingModeConverter conainer_converter(
       container_builder_->GetWritingDirection(), container_builder_->Size());
   const FragmentItemsBuilder::ItemWithOffsetList* items = nullptr;
-  absl::optional<NGLogicalAnchorQueryMap> anchor_queries;
+  absl::optional<LogicalAnchorQueryMap> anchor_queries;
   while (candidates->size() > 0) {
     if (!has_block_fragmentation_ ||
         container_builder_->IsInitialColumnBalancingPass())
@@ -1304,7 +1304,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       }
     }
   }
-  NGLogicalAnchorQueryMap stitched_anchor_queries(
+  LogicalAnchorQueryMap stitched_anchor_queries(
       *builder_for_anchor_query->Node().GetLayoutBox(),
       builder_for_anchor_query->Children(),
       builder_for_anchor_query->GetWritingDirection());
@@ -1744,7 +1744,7 @@ const NGLayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
     bool is_first_run,
-    const NGLogicalAnchorQueryMap* anchor_queries) {
+    const LogicalAnchorQueryMap* anchor_queries) {
   const LayoutObject* implicit_anchor = nullptr;
   gfx::Vector2dF anchor_scroll_offset;
   gfx::Vector2dF additional_bounds_scroll_offset;
@@ -1818,7 +1818,7 @@ absl::optional<OutOfFlowLayoutPart::OffsetInfo>
 OutOfFlowLayoutPart::TryCalculateOffset(
     const NodeInfo& node_info,
     const ComputedStyle& candidate_style,
-    const NGLogicalAnchorQueryMap* anchor_queries,
+    const LogicalAnchorQueryMap* anchor_queries,
     const LayoutObject* implicit_anchor,
     bool try_fit_available_space,
     bool is_first_run,
@@ -1853,7 +1853,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
-  absl::optional<NGAnchorEvaluatorImpl> anchor_evaluator_storage;
+  absl::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   const WritingModeConverter container_converter(
       container_writing_direction, node_info.container_physical_content_size);
   if (anchor_queries) {
@@ -1868,7 +1868,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         candidate_style.AnchorDefault(), implicit_anchor, *css_containing_block,
         container_converter, candidate_writing_direction,
         container_converter.ToPhysical(node_info.container_info.rect).offset);
-  } else if (const NGLogicalAnchorQuery* anchor_query =
+  } else if (const LogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     anchor_evaluator_storage.emplace(
@@ -1879,7 +1879,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   } else {
     anchor_evaluator_storage.emplace();
   }
-  NGAnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
+  AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
 
   const LogicalOofInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),

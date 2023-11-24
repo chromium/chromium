@@ -276,7 +276,7 @@ bool CanComputeBlockSizeWithoutLayout(const BlockNode& node) {
 LogicalOofInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
-    NGAnchorEvaluatorImpl* anchor_evaluator) {
+    AnchorEvaluatorImpl* anchor_evaluator) {
   // Compute in physical, because anchors may be in different `writing-mode` or
   // `direction`.
   const WritingDirectionMode writing_direction = style.GetWritingDirection();

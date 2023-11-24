@@ -50,7 +50,7 @@ struct CORE_EXPORT LogicalOofInsets {
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
-                       NGAnchorEvaluatorImpl* anchor_evaluator);
+                       AnchorEvaluatorImpl* anchor_evaluator);
 
 struct CORE_EXPORT InsetModifiedContainingBlock {
   // The original containing block size that the insets refer to.

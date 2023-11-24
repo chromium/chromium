@@ -4258,7 +4258,7 @@ void ForEachAnchorQueryOnContainer(const LayoutBox& box, Function func) {
   if (container->IsLayoutBlock()) {
     for (const NGPhysicalBoxFragment& fragment :
          To<LayoutBlock>(container)->PhysicalFragments()) {
-      if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
+      if (const PhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
         func(*anchor_query);
       }
     }
@@ -4276,7 +4276,7 @@ void ForEachAnchorQueryOnContainer(const LayoutBox& box, Function func) {
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     if (const NGPhysicalBoxFragment* fragment =
             cursor.Current().BoxFragment()) {
-      if (const NGPhysicalAnchorQuery* anchor_query = fragment->AnchorQuery()) {
+      if (const PhysicalAnchorQuery* anchor_query = fragment->AnchorQuery()) {
         func(*anchor_query);
       }
     }
@@ -4305,9 +4305,9 @@ const LayoutObject* LayoutBox::FindTargetAnchor(
     return nullptr;
   }
 
-  // Go through the already built NGPhysicalAnchorQuery to avoid tree traversal.
+  // Go through the already built PhysicalAnchorQuery to avoid tree traversal.
   const LayoutObject* anchor = nullptr;
-  auto search_for_anchor = [&](const NGPhysicalAnchorQuery& anchor_query) {
+  auto search_for_anchor = [&](const PhysicalAnchorQuery& anchor_query) {
     if (const LayoutObject* current =
             anchor_query.AnchorLayoutObject(*this, &anchor_name)) {
       if (!anchor ||
@@ -4332,9 +4332,9 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
   if (!anchor_layout_object) {
     return nullptr;
   }
-  // Go through the already built NGPhysicalAnchorQuery to avoid tree traversal.
+  // Go through the already built PhysicalAnchorQuery to avoid tree traversal.
   bool is_acceptable_anchor = false;
-  auto validate_anchor = [&](const NGPhysicalAnchorQuery& anchor_query) {
+  auto validate_anchor = [&](const PhysicalAnchorQuery& anchor_query) {
     if (anchor_query.AnchorLayoutObject(*this, anchor_layout_object)) {
       is_acceptable_anchor = true;
     }
