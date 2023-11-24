@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -18,6 +19,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
@@ -611,9 +613,21 @@ enum class PresentedState {
       bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
           URL, _localOrSyncableBookmarkModel.get(),
           _accountBookmarkModel.get());
-  [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
-                                                  ->mobile_node()
-                            selectingBookmark:existingBookmark];
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
+                                                    ->mobile_node()
+                              selectingBookmark:existingBookmark];
+  } else if (existingBookmark) {
+    [self presentBookmarksAtDisplayedFolderNode:existingBookmark->parent()
+                              selectingBookmark:existingBookmark];
+  } else {
+    // Couldn't find the bookmark for the requested URL, just open mobile
+    // bookmarks.
+    [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
+                                                    ->mobile_node()
+                              selectingBookmark:nil];
+  }
 }
 
 #pragma mark - Private
