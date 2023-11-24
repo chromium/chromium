@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -653,6 +654,14 @@ String URLPattern::search() const {
 
 String URLPattern::hash() const {
   return hash_->GeneratePatternString();
+}
+
+bool URLPattern::hasRegExpGroups() const {
+  const url_pattern::Component* components[] = {protocol_, username_, password_,
+                                                hostname_, port_,     pathname_,
+                                                search_,   hash_};
+  return base::ranges::any_of(components,
+                              &url_pattern::Component::HasRegexpGroups);
 }
 
 // static

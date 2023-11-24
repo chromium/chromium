@@ -1596,6 +1596,7 @@ interface URL
 interface URLPattern
     static method compareComponent
     attribute @@toStringTag
+    getter hasRegExpGroups
     getter hash
     getter hostname
     getter password

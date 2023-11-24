@@ -2120,6 +2120,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface URLPattern
 [Worker]     static method compareComponent
 [Worker]     attribute @@toStringTag
+[Worker]     getter hasRegExpGroups
 [Worker]     getter hash
 [Worker]     getter hostname
 [Worker]     getter password

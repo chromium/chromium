@@ -85,6 +85,10 @@ class Component final : public GarbageCollected<Component> {
   // `data:foo`.  This should only be called for kProtocol components.
   bool ShouldTreatAsStandardURL() const;
 
+  // Returns if this component has at least one part that uses an ECMAScript
+  // regular expression.
+  bool HasRegexpGroups() const { return pattern_.HasRegexGroups(); }
+
   void Trace(Visitor* visitor) const;
 
  private:

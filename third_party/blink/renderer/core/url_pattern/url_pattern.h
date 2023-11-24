@@ -93,6 +93,8 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
   String search() const;
   String hash() const;
 
+  bool hasRegExpGroups() const;
+
   static int compareComponent(const V8URLPatternComponent& component,
                               const URLPattern* left,
                               const URLPattern* right);
