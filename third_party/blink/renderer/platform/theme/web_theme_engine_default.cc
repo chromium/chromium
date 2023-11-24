@@ -341,10 +341,6 @@ void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
       {ui::NativeTheme::SystemThemeColor::kWindow, 0xFFFFFFFF},
       {ui::NativeTheme::SystemThemeColor::kWindowText, 0xFF000000},
   };
-  AdjustForcedColorsProvider(ui::ColorProviderKey::ForcedColors::kEmulated,
-                             is_dark_theme
-                                 ? ui::ColorProviderKey::ColorMode::kDark
-                                 : ui::ColorProviderKey::ColorMode::kLight);
   EmulateForcedColors(is_dark_theme, /*is_web_test=*/false);
   ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
       false, true, is_dark_theme ? dark_theme : light_theme);
@@ -367,15 +363,6 @@ void WebThemeEngineDefault::ResetToSystemColors(
     SystemColorInfoState system_color_info_state) {
   base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> colors;
 
-  ui::ColorProviderKey::ForcedColors initial_forced_colors_state =
-      system_color_info_state.forced_colors
-          ? ui::ColorProviderKey::ForcedColors::kActive
-          : ui::ColorProviderKey::ForcedColors::kNone;
-  ui::ColorProviderKey::ColorMode initial_color_mode =
-      system_color_info_state.is_dark_mode
-          ? ui::ColorProviderKey::ColorMode::kDark
-          : ui::ColorProviderKey::ColorMode::kLight;
-  AdjustForcedColorsProvider(initial_forced_colors_state, initial_color_mode);
   for (const auto& color : system_color_info_state.colors) {
     colors.insert({NativeSystemThemeColor(color.first), color.second});
   }
@@ -438,25 +425,6 @@ bool WebThemeEngineDefault::UpdateColorProviders(
   }
 
   return did_color_provider_update;
-}
-
-void WebThemeEngineDefault::AdjustForcedColorsProvider(
-    ui::ColorProviderKey::ForcedColors forced_colors_state,
-    ui::ColorProviderKey::ColorMode color_mode) {
-  auto key = ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(
-      /*custom_theme=*/nullptr);
-  key.forced_colors = forced_colors_state;
-  key.color_mode = color_mode;
-  ui::ColorProvider* color_provider =
-      ui::ColorProviderManager::Get().GetColorProviderFor(key);
-  CHECK(color_provider);
-
-  const ui::RendererColorMap& emulated_forced_colors_map =
-      ui::CreateRendererColorMap(*color_provider);
-  if (!IsRendererColorMappingEquivalent(forced_colors_provider_,
-                                        emulated_forced_colors_map)) {
-    forced_colors_provider_ = std::move(*color_provider);
-  }
 }
 
 bool WebThemeEngineDefault::ShouldPartBeAffectedByAccentColor(
@@ -544,8 +512,11 @@ mojom::ColorScheme WebThemeEngineDefault::CalculateColorSchemeForAccentColor(
 
 const ui::ColorProvider* WebThemeEngineDefault::GetColorProviderForPainting(
     mojom::ColorScheme color_scheme) const {
-  if (emulate_forced_colors_ && GetForcedColors() == ForcedColors::kActive) {
-    return &emulated_forced_colors_provider_;
+  if (GetForcedColors() == ForcedColors::kActive) {
+    if (emulate_forced_colors_) {
+      return &emulated_forced_colors_provider_;
+    }
+    return &forced_colors_provider_;
   }
   return color_scheme == mojom::ColorScheme::kLight ? &light_color_provider_
                                                     : &dark_color_provider_;
