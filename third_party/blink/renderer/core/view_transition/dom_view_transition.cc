@@ -186,8 +186,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
     // It's ok to use the main world here since we're only using it to call
     // DOMChangeFinishedCallback which doesn't use the script state or execute
     // any script.
-    script_state =
-        ToScriptState(execution_context_, DOMWrapperWorld::MainWorld());
+    script_state = ToScriptStateForMainWorld(execution_context_);
 
     ScriptState::Scope scope(script_state);
 
@@ -247,7 +246,7 @@ void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
   // fulfilled using ScriptPromiseProperty which tracks requests from each
   // world and clones the passed value if needed.
   ScriptState* main_world_script_state =
-      ToScriptState(execution_context_, DOMWrapperWorld::MainWorld());
+      ToScriptStateForMainWorld(execution_context_);
 
   if (!main_world_script_state) {
     return;

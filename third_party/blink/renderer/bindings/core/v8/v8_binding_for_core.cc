@@ -785,6 +785,12 @@ ScriptState* ToScriptStateForMainWorld(LocalFrame* frame) {
   return ToScriptState(frame, DOMWrapperWorld::MainWorld());
 }
 
+ScriptState* ToScriptStateForMainWorld(ExecutionContext* context) {
+  DCHECK(context);
+  return ToScriptState(context,
+                       DOMWrapperWorld::MainWorld(context->GetIsolate()));
+}
+
 bool IsValidEnum(const String& value,
                  const char* const* valid_values,
                  size_t length,

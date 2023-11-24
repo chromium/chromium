@@ -268,8 +268,8 @@ void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
   auto* microtask_queue = agent->event_loop()->microtask_queue();
   if (microtask_queue) {
     v8::HandleScope handle_scope(GetIsolate());
-    v8::Local<v8::Context> main_world_context =
-        ToV8ContextMaybeEmpty(GetFrame(), DOMWrapperWorld::MainWorld());
+    v8::Local<v8::Context> main_world_context = ToV8ContextMaybeEmpty(
+        GetFrame(), DOMWrapperWorld::MainWorld(GetIsolate()));
     if (!main_world_context.IsEmpty())
       main_world_context->SetMicrotaskQueue(microtask_queue);
   }

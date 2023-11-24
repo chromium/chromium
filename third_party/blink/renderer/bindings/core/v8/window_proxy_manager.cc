@@ -100,7 +100,7 @@ WindowProxyManager::WindowProxyManager(v8::Isolate* isolate,
     : isolate_(isolate),
       frame_(&frame),
       frame_type_(frame_type),
-      window_proxy_(CreateWindowProxy(DOMWrapperWorld::MainWorld())) {
+      window_proxy_(CreateWindowProxy(DOMWrapperWorld::MainWorld(isolate))) {
   // All WindowProxyManagers must be created in the main thread.
   CHECK(IsMainThread());
 }

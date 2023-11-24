@@ -73,10 +73,10 @@ constexpr const size_t kNumOfWorlds = 2;
 
 inline scoped_refptr<DOMWrapperWorld> IndexToWorld(v8::Isolate* isolate,
                                                    size_t index) {
-  return index == 0
-             ? scoped_refptr<DOMWrapperWorld>(&DOMWrapperWorld::MainWorld())
-             : DOMWrapperWorld::EnsureIsolatedWorld(
-                   isolate, DOMWrapperWorld::WorldId::kMainWorldId + 1);
+  return index == 0 ? scoped_refptr<DOMWrapperWorld>(
+                          &DOMWrapperWorld::MainWorld(isolate))
+                    : DOMWrapperWorld::EnsureIsolatedWorld(
+                          isolate, DOMWrapperWorld::WorldId::kMainWorldId + 1);
 }
 
 inline int WorldToIndex(const DOMWrapperWorld& world) {

@@ -465,6 +465,7 @@ CORE_EXPORT ScriptState* ToScriptState(ExecutionContext*, DOMWrapperWorld&);
 CORE_EXPORT ScriptState* ToScriptState(LocalFrame*, DOMWrapperWorld&);
 // Do not use this method unless you are sure you should use the main world's
 // ScriptState
+CORE_EXPORT ScriptState* ToScriptStateForMainWorld(ExecutionContext*);
 CORE_EXPORT ScriptState* ToScriptStateForMainWorld(LocalFrame*);
 
 // Returns the frame object of the window object associated with
