@@ -292,6 +292,9 @@
       'blink_unit_tests': {
         'test': 'blink_unittests',
       },
+      'blink_unit_tests_v2': {
+        'test': 'blink_unittests_v2',
+      },
     },
 
     'cast_audio_specific_chromium_gtests': {
@@ -738,6 +741,9 @@
       'webkit_unit_tests': {
         'test': 'blink_unittests',
       },
+      'webkit_unit_tests_v2': {
+        'test': 'blink_unittests_v2',
+      },
     },
 
     'chromium_dev_android_gtests': {
@@ -890,6 +896,12 @@
       'url_unittests': {},
       'webkit_unit_tests': {
         'test': 'blink_unittests',
+        'android_swarming': {
+          'shards': 6,
+        },
+      },
+      'webkit_unit_tests_v2': {
+        'test': 'blink_unittests_v2',
         'android_swarming': {
           'shards': 6,
         },
@@ -2110,6 +2122,7 @@
       'blink_heap_unittests': {},
       'blink_platform_unittests': {},
       'blink_unittests': {},
+      'blink_unittests_v2': {},
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
       'capture_unittests': {},
@@ -3878,6 +3891,7 @@
       'blink_heap_unittests': {},
       'blink_platform_unittests': {},
       'blink_unittests': {},
+      'blink_unittests_v2': {},
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
       'capture_unittests': {},
@@ -4437,6 +4451,7 @@
       'blink_heap_unittests': {},
       'blink_platform_unittests': {},
       'blink_unittests': {},
+      'blink_unittests_v2': {},
       'cc_unittests': {},
       'components_unittests': {},
       'content_unittests': {},

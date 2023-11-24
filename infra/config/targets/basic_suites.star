@@ -366,6 +366,9 @@ targets.legacy_basic_suite(
         "blink_unit_tests": targets.legacy_test_config(
             test = "blink_unittests",
         ),
+        "blink_unit_tests_v2": targets.legacy_test_config(
+            test = "blink_unittests_v2",
+        ),
     },
 )
 
@@ -929,6 +932,9 @@ targets.legacy_basic_suite(
         "webkit_unit_tests": targets.legacy_test_config(
             test = "blink_unittests",
         ),
+        "webkit_unit_tests_v2": targets.legacy_test_config(
+            test = "blink_unittests_v2",
+        ),
     },
 )
 
@@ -1095,6 +1101,12 @@ targets.legacy_basic_suite(
         "url_unittests": None,
         "webkit_unit_tests": targets.legacy_test_config(
             test = "blink_unittests",
+            android_swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+        "webkit_unit_tests_v2": targets.legacy_test_config(
+            test = "blink_unittests_v2",
             android_swarming = targets.swarming(
                 shards = 6,
             ),
@@ -2493,6 +2505,7 @@ targets.legacy_basic_suite(
         "blink_heap_unittests": None,
         "blink_platform_unittests": None,
         "blink_unittests": None,
+        "blink_unittests_v2": None,
         "boringssl_crypto_tests": None,
         "boringssl_ssl_tests": None,
         "capture_unittests": None,
@@ -4532,6 +4545,7 @@ targets.legacy_basic_suite(
         "blink_heap_unittests": None,
         "blink_platform_unittests": None,
         "blink_unittests": None,
+        "blink_unittests_v2": None,
         "boringssl_crypto_tests": None,
         "boringssl_ssl_tests": None,
         "capture_unittests": None,
@@ -5231,6 +5245,7 @@ targets.legacy_basic_suite(
         "blink_heap_unittests": None,
         "blink_platform_unittests": None,
         "blink_unittests": None,
+        "blink_unittests_v2": None,
         "cc_unittests": None,
         "components_unittests": None,
         "content_unittests": None,

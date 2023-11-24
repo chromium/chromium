@@ -239,6 +239,11 @@ targets.console_test_launcher(
     label = "//third_party/blink/renderer/controller:blink_unittests",
 )
 
+targets.console_test_launcher(
+    name = "blink_unittests_v2",
+    label = "//third_party/blink/renderer/controller:blink_unittests_v2",
+)
+
 targets.generated_script(
     name = "blink_web_tests",
     label = "//:blink_web_tests",
