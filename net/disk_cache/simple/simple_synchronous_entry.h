@@ -28,6 +28,7 @@
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_file_tracker.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class GrowableIOBuffer;
@@ -194,7 +195,7 @@ class SimpleSynchronousEntry {
   NET_EXPORT_PRIVATE SimpleSynchronousEntry(
       net::CacheType cache_type,
       const base::FilePath& path,
-      const std::string& key,
+      const absl::optional<std::string>& key,
       uint64_t entry_hash,
       SimpleFileTracker* simple_file_tracker,
       std::unique_ptr<UnboundBackendFileOperations> file_operations,
@@ -209,7 +210,7 @@ class SimpleSynchronousEntry {
   static void OpenEntry(
       net::CacheType cache_type,
       const base::FilePath& path,
-      const std::string& key,
+      const absl::optional<std::string>& key,
       uint64_t entry_hash,
       SimpleFileTracker* file_tracker,
       std::unique_ptr<UnboundBackendFileOperations> file_operations,
@@ -308,7 +309,7 @@ class SimpleSynchronousEntry {
              SimpleEntryCloseResults* out_results);
 
   const base::FilePath& path() const { return path_; }
-  std::string key() const { return key_; }
+  absl::optional<std::string> key() const { return key_; }
   const SimpleFileTracker::EntryFileKey& entry_file_key() const {
     return entry_file_key_;
   }
@@ -500,7 +501,7 @@ class SimpleSynchronousEntry {
   const net::CacheType cache_type_;
   const base::FilePath path_;
   SimpleFileTracker::EntryFileKey entry_file_key_;
-  std::string key_;
+  absl::optional<std::string> key_;
 
   bool have_open_files_ = false;
   bool initialized_ = false;
