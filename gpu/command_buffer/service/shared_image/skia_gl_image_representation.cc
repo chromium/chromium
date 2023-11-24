@@ -44,16 +44,14 @@ std::unique_ptr<SkiaGLImageRepresentation> SkiaGLImageRepresentation::Create(
     MemoryTypeTracker* tracker) {
   std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
   auto format = backing->format();
-  bool angle_rgbx_internal_format =
-      context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
+  GLFormatCaps caps = context_state->GetGLFormatCaps();
 
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     GrBackendTexture backend_texture;
     GLFormatDesc gl_format_desc =
         format.PrefersExternalSampler()
-            ? ToGLFormatDescExternalSampler(format)
-            : ToGLFormatDesc(format, /*plane_index=*/0,
-                             angle_rgbx_internal_format);
+            ? caps.ToGLFormatDescExternalSampler(format)
+            : caps.ToGLFormatDesc(format, /*plane_index=*/0);
     if (!GetGrBackendTexture(
             context_state->feature_info(),
             gl_representation->GetTextureBase()->target(), backing->size(),
@@ -71,8 +69,7 @@ std::unique_ptr<SkiaGLImageRepresentation> SkiaGLImageRepresentation::Create(
          plane_index++) {
       GrBackendTexture backend_texture;
       // Use the format and size per plane for multiplanar formats.
-      GLFormatDesc format_desc =
-          ToGLFormatDesc(format, plane_index, angle_rgbx_internal_format);
+      GLFormatDesc format_desc = caps.ToGLFormatDesc(format, plane_index);
       gfx::Size plane_size = format.GetPlaneSize(plane_index, backing->size());
       if (!GetGrBackendTexture(
               context_state->feature_info(),

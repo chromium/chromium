@@ -137,15 +137,14 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
   bool enable_texture_storage =
       feature_info->feature_flags().ext_texture_storage;
   const gles2::Validators* validators = feature_info->validators();
+  GLFormatCaps caps = GLFormatCaps(feature_info);
   for (auto format : viz::SinglePlaneFormat::kAll) {
     // BG5_565 is not supported for historical reasons.
     if (format == viz::SinglePlaneFormat::kBGR_565) {
       continue;
     }
-    const GLFormatDesc format_desc = ToGLFormatDescOverrideHalfFloatType(
-        format, /*plane_index=*/0,
-        feature_info->feature_flags().angle_rgbx_internal_format,
-        feature_info->oes_texture_float_available());
+    const GLFormatDesc format_desc =
+        caps.ToGLFormatDescOverrideHalfFloatType(format, /*plane_index=*/0);
     const GLuint image_internal_format = format_desc.image_internal_format;
     const GLenum gl_format = format_desc.data_format;
     CHECK_NE(gl_format, static_cast<GLenum>(GL_ZERO));

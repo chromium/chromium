@@ -661,7 +661,7 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
     DCHECK(vulkan_image);
 
     auto format_desc =
-        ToGLFormatDesc(format(), plane, /*use_angle_rgbx_format=*/false);
+        context_state_->GetGLFormatCaps().ToGLFormatDesc(format(), plane);
     auto egl_image =
         CreateEGLImage(vulkan_image->image(), &vulkan_image->create_info(),
                        format_desc.image_internal_format);

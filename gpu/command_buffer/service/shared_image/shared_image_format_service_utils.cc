@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "build/buildflag.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/feature_info.h"
 
 namespace gpu {
 
@@ -243,7 +244,14 @@ SkColorType ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format) {
   }
 }
 
-GLFormatDesc ToGLFormatDescExternalSampler(viz::SharedImageFormat format) {
+GLFormatCaps::GLFormatCaps(const gles2::FeatureInfo* feature_info)
+    : angle_rgbx_internal_format_(
+          feature_info->feature_flags().angle_rgbx_internal_format),
+      oes_texture_float_available_(
+          feature_info->oes_texture_float_available()) {}
+
+GLFormatDesc GLFormatCaps::ToGLFormatDescExternalSampler(
+    viz::SharedImageFormat format) const {
   CHECK(format.PrefersExternalSampler());
   GLenum ext_format = format.HasAlpha() ? GL_RGBA : GL_RGB;
   GLFormatDesc gl_format;
@@ -269,9 +277,8 @@ GLFormatDesc ToGLFormatDescExternalSampler(viz::SharedImageFormat format) {
   return gl_format;
 }
 
-GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
-                            int plane_index,
-                            bool use_angle_rgbx_format) {
+GLFormatDesc GLFormatCaps::ToGLFormatDesc(viz::SharedImageFormat format,
+                                          int plane_index) const {
   GLFormatDesc gl_format;
   gl_format.data_type =
       SharedImageFormatRestrictedUtilsAccessor::GLDataType(format);
@@ -283,20 +290,19 @@ GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
                                                                  plane_index);
   gl_format.storage_internal_format =
       SharedImageFormatRestrictedUtilsAccessor::TextureStorageFormat(
-          format, use_angle_rgbx_format, plane_index);
+          format, angle_rgbx_internal_format_, plane_index);
   gl_format.target = GL_TEXTURE_2D;
   return gl_format;
 }
 
-GLFormatDesc ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
-                                                 int plane_index,
-                                                 bool use_angle_rgbx_format,
-                                                 bool use_half_float_oes) {
-  GLFormatDesc format_desc =
-      ToGLFormatDesc(format, plane_index, use_angle_rgbx_format);
+GLFormatDesc GLFormatCaps::ToGLFormatDescOverrideHalfFloatType(
+    viz::SharedImageFormat format,
+    int plane_index) const {
+  GLFormatDesc format_desc = ToGLFormatDesc(format, plane_index);
   // GL_HALF_FLOAT and GL_HALF_FLOAT_OES have different values so cannot be used
   // interchangeably.
-  if (format_desc.data_type == GL_HALF_FLOAT_OES && !use_half_float_oes) {
+  if (format_desc.data_type == GL_HALF_FLOAT_OES &&
+      !oes_texture_float_available_) {
     format_desc.data_type = GL_HALF_FLOAT;
   }
   // ES3 requires using sized internal format for GL_HALF_FLOAT.

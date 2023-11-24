@@ -1075,11 +1075,8 @@ IOSurfaceImageBacking::ProduceSkiaGanesh(
 
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
-    bool angle_rgbx_internal_format = context_state->feature_info()
-                                          ->feature_flags()
-                                          .angle_rgbx_internal_format;
     GLFormatDesc format_desc =
-        ToGLFormatDesc(format(), plane_index, angle_rgbx_internal_format);
+        context_state->GetGLFormatCaps().ToGLFormatDesc(format(), plane_index);
     GrBackendTexture backend_texture;
     auto plane_size = format().GetPlaneSize(plane_index, size());
     GetGrBackendTexture(context_state->feature_info(), egl_state->GetGLTarget(),

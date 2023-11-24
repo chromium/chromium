@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/service/gl_context_virtual_delegate.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -139,6 +140,8 @@ class GPU_GLES2_EXPORT SharedContextState
   void UseShaderCache(
       std::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
       int32_t client_id) const;
+
+  GLFormatCaps GetGLFormatCaps() { return GLFormatCaps(feature_info()); }
 
   gl::GLShareGroup* share_group() const { return share_group_.get(); }
   gl::GLContext* context() const { return context_.get(); }

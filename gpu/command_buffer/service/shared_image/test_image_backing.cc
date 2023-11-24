@@ -121,8 +121,8 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
 
  private:
   GrBackendTexture backend_tex() {
-    auto format_desc = ToGLFormatDesc(format(), /*plane_index=*/0,
-                                      /*use_angle_rgbx_format=*/false);
+    auto format_desc =
+        GLFormatCaps().ToGLFormatDesc(format(), /*plane_index=*/0);
     return GrBackendTextures::MakeGL(
         size().width(), size().height(), skgpu::Mipmapped::kNo,
         GrGLTextureInfo{
@@ -228,8 +228,8 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
   texture_->set_mag_filter(GL_LINEAR);
   texture_->set_wrap_t(GL_CLAMP_TO_EDGE);
   texture_->set_wrap_s(GL_CLAMP_TO_EDGE);
-  GLFormatDesc format_desc = ToGLFormatDesc(format, /*plane_index=*/0,
-                                            /*use_angle_rgbx_format=*/false);
+  GLFormatDesc format_desc =
+      GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/0);
   texture_->SetLevelInfo(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
                          size.width(), size.height(), 1, 0,
                          format_desc.data_format, format_desc.data_type,

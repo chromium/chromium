@@ -1528,13 +1528,10 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 #endif  // BUILDFLAG(ENABLE_VULKAN)
     CHECK_EQ(gr_context_type_, gpu::GrContextType::kGL);
     // Convert internal format from GLES2 to platform GL.
-    bool use_angle_rgbx_format = impl_on_gpu_->GetFeatureInfo()
-                                     ->feature_flags()
-                                     .angle_rgbx_internal_format;
+    gpu::GLFormatCaps caps(impl_on_gpu_->GetFeatureInfo());
     auto gl_format_desc = si_format.PrefersExternalSampler()
-                              ? gpu::ToGLFormatDescExternalSampler(si_format)
-                              : gpu::ToGLFormatDesc(si_format, plane_index,
-                                                    use_angle_rgbx_format);
+                              ? caps.ToGLFormatDescExternalSampler(si_format)
+                              : caps.ToGLFormatDesc(si_format, plane_index);
     auto gl_storage_internal_format = gl_format_desc.storage_internal_format;
     unsigned int texture_storage_format = gpu::GetGrGLBackendTextureFormat(
         impl_on_gpu_->GetFeatureInfo(), gl_storage_internal_format,

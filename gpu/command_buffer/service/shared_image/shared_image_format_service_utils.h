@@ -28,6 +28,10 @@ class TextureInfo;
 
 namespace gpu {
 
+namespace gles2 {
+class FeatureInfo;
+}  // namespace gles2
+
 // GLFormatDesc is a struct containing the GL data type, data format, internal
 // format used by the image, internal format used for storage and GL target.
 struct GLFormatDesc {
@@ -64,22 +68,32 @@ GPU_GLES2_EXPORT SkYUVAInfo::Subsampling ToSkYUVASubsampling(
 GPU_GLES2_EXPORT SkColorType
 ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format);
 
-// Following functions return the appropriate GL type/format for a
-// SharedImageFormat.
-// Return the GLFormatDesc when using external sampler for a given `format`.
-GPU_GLES2_EXPORT GLFormatDesc
-ToGLFormatDescExternalSampler(viz::SharedImageFormat format);
-// Return the GLFormatDesc for a given `format`.
-GPU_GLES2_EXPORT GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
-                                             int plane_index,
-                                             bool use_angle_rgbx_format);
-// Same as above with an additional param to control whether to use
-// HALF_FLOAT_OES extension types or core types for F16 format.
-GPU_GLES2_EXPORT GLFormatDesc
-ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
-                                    int plane_index,
-                                    bool use_angle_rgbx_format,
-                                    bool use_half_float_oes);
+// Holds capabilities and provides accessors for getting appropriate GL formats
+// for shared images.
+class GPU_GLES2_EXPORT GLFormatCaps {
+ public:
+  // For default values of feature info capabilities.
+  GLFormatCaps() = default;
+  explicit GLFormatCaps(const gles2::FeatureInfo* feature_info);
+
+  // Following functions return the appropriate GL type/format for a
+  // SharedImageFormat.
+  // Return the GLFormatDesc when using external sampler for a given `format`.
+  GLFormatDesc ToGLFormatDescExternalSampler(
+      viz::SharedImageFormat format) const;
+  // Return the GLFormatDesc for a given `format`.
+  GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
+                              int plane_index) const;
+  // Same as above with an additional param to control whether to use
+  // HALF_FLOAT_OES extension types or core types for F16 format.
+  GLFormatDesc ToGLFormatDescOverrideHalfFloatType(
+      viz::SharedImageFormat format,
+      int plane_index) const;
+
+ private:
+  bool angle_rgbx_internal_format_ = false;
+  bool oes_texture_float_available_ = false;
+};
 
 // Following functions return the appropriate Vulkan format for a
 // SharedImageFormat.

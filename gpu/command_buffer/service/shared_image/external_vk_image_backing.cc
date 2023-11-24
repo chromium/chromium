@@ -790,11 +790,8 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 #endif
   }
 
-  bool use_rgbx = context_state()
-                      ->feature_info()
-                      ->feature_flags()
-                      .angle_rgbx_internal_format;
-  GLFormatDesc format_desc = ToGLFormatDesc(format(), plane_index, use_rgbx);
+  GLFormatDesc format_desc =
+      context_state()->GetGLFormatCaps().ToGLFormatDesc(format(), plane_index);
 
   GLuint texture_service_id = 0;
   api->glGenTexturesFn(1, &texture_service_id);

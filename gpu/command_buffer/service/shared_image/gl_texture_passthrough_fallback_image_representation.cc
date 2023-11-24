@@ -16,14 +16,13 @@ namespace gpu {
 namespace {
 GLFormatDesc GetGLFormatDesc(viz::SharedImageFormat format, int plane_index) {
   GLFormatDesc gl_format_desc;
+  // TODO(hitawala): Pass GLFormatCaps here created from SharedContextState.
   if (format.is_multi_plane()) {
-    gl_format_desc =
-        ToGLFormatDesc(format, plane_index, /*use_angle_rgbx_format=*/false);
+    gl_format_desc = GLFormatCaps().ToGLFormatDesc(format, plane_index);
   } else {
     // For legacy multiplanar formats, `format` is already plane format (eg.
     // RED, RG), so we pass plane_index=0.
-    gl_format_desc = ToGLFormatDesc(format, /*plane_index=*/0,
-                                    /*use_angle_rgbx_format=*/false);
+    gl_format_desc = GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/0);
   }
   return gl_format_desc;
 }
