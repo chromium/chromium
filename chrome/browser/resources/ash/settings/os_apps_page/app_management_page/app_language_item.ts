@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../../common/app_language_selection_dialog/app_language_selection_dialog.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -31,12 +32,26 @@ export class AppManagementAppLanguageItemElement extends
         computed: 'isHidden_(app)',
         reflectToAttribute: true,
       },
+      showSelectLanguageDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   app?: App = undefined;
   // Polymer-overridden property to hide this component.
   override hidden: boolean;
+
+  private showSelectLanguageDialog_: boolean;
+
+  private onClick_(): void {
+    this.showSelectLanguageDialog_ = true;
+  }
+
+  private onSelectLanguageDialogClose_(): void {
+    this.showSelectLanguageDialog_ = false;
+  }
 
   /**
    * Returns true if the app does not support per-app-language settings.
