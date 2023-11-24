@@ -18,12 +18,9 @@ void AddGeneratedIconResources(content::WebUIDataSource* source,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(directory + "google_com.png", IDR_GOOGLE_COM_PNG);
 #endif
-  source->AddResourcePath(directory + "baidu_com.png", IDR_BAIDU_COM_PNG);
   source->AddResourcePath(directory + "bing_com.png", IDR_BING_COM_PNG);
   source->AddResourcePath(directory + "search_brave_com.png",
                           IDR_SEARCH_BRAVE_COM_PNG);
-  source->AddResourcePath(directory + "coccoc_com.png", IDR_COCCOC_COM_PNG);
-  source->AddResourcePath(directory + "daum_net.png", IDR_DAUM_NET_PNG);
   source->AddResourcePath(directory + "duckduckgo_com.png",
                           IDR_DUCKDUCKGO_COM_PNG);
   source->AddResourcePath(directory + "ecosia_org.png", IDR_ECOSIA_ORG_PNG);
@@ -32,7 +29,6 @@ void AddGeneratedIconResources(content::WebUIDataSource* source,
   source->AddResourcePath(directory + "lilo_org.png", IDR_LILO_ORG_PNG);
   source->AddResourcePath(directory + "mail_ru.png", IDR_MAIL_RU_PNG);
   source->AddResourcePath(directory + "mojeek_com.png", IDR_MOJEEK_COM_PNG);
-  source->AddResourcePath(directory + "naver_com.png", IDR_NAVER_COM_PNG);
   source->AddResourcePath(directory + "nona_de.png", IDR_NONA_DE_PNG);
   source->AddResourcePath(directory + "panda_search_org.png",
                           IDR_PANDA_SEARCH_ORG_PNG);
@@ -40,8 +36,6 @@ void AddGeneratedIconResources(content::WebUIDataSource* source,
   source->AddResourcePath(directory + "qwant_com.png", IDR_QWANT_COM_PNG);
   source->AddResourcePath(directory + "seznam_cz.png", IDR_SEZNAM_CZ_PNG);
   source->AddResourcePath(directory + "seznam_sk.png", IDR_SEZNAM_SK_PNG);
-  source->AddResourcePath(directory + "so_com.png", IDR_SO_COM_PNG);
-  source->AddResourcePath(directory + "sogou_com.png", IDR_SOGOU_COM_PNG);
   source->AddResourcePath(directory + "yahoo_com.png", IDR_YAHOO_COM_PNG);
   source->AddResourcePath(directory + "ar_yahoo_com.png", IDR_AR_YAHOO_COM_PNG);
   source->AddResourcePath(directory + "at_yahoo_com.png", IDR_AT_YAHOO_COM_PNG);
