@@ -96,29 +96,33 @@ class WeakCellFactory {
   DISALLOW_NEW();
 
  public:
-  explicit WeakCellFactory(T* ptr)
-      : weak_cell_(
-            MakeGarbageCollected<WeakCell<T>>(base::PassKey<WeakCellFactory>(),
-                                              ptr)) {}
+  explicit WeakCellFactory(T* ptr) : ptr_(ptr) {}
 
-  WeakCell<T>* GetWeakCell() const { return weak_cell_.Get(); }
+  WeakCell<T>* GetWeakCell() {
+    if (!weak_cell_) {
+      weak_cell_ = MakeGarbageCollected<WeakCell<T>>(
+          base::PassKey<WeakCellFactory>(), ptr_);
+    }
+    DCHECK(weak_cell_);
+    return weak_cell_.Get();
+  }
 
   // Invalidates the previous `WeakCell<T>` so that `previous_cell->Get()`
   // returns null. Future calls to `GetWeakCell()` will return a *new* and
   // *non-null* cell.
   void Invalidate() {
-    // A WeakCellFactory is strongly-referenced by its owner, so the internal
-    // weak cell should always have a non-null reference to its owner at this
-    // point.
-    T* ptr = weak_cell_->Get();
+    if (!weak_cell_) return;
     weak_cell_->Invalidate(base::PassKey<WeakCellFactory>());
-    weak_cell_ = MakeGarbageCollected<WeakCell<T>>(
-        base::PassKey<WeakCellFactory>(), ptr);
+    weak_cell_ = nullptr;
   }
 
-  void Trace(Visitor* v) const { v->Trace(weak_cell_); }
+  void Trace(Visitor* v) const {
+    v->Trace(ptr_);
+    v->Trace(weak_cell_);
+  }
 
  private:
+  const WeakMember<T> ptr_;
   Member<WeakCell<T>> weak_cell_;
 };
 

@@ -19,9 +19,7 @@ namespace {
 
 class TestClass : public GarbageCollected<TestClass> {
  public:
-  WeakCell<TestClass>* GetWeakCell() const {
-    return weak_factory_.GetWeakCell();
-  }
+  WeakCell<TestClass>* GetWeakCell() { return weak_factory_.GetWeakCell(); }
 
   void Method(base::FunctionRef<void()> fn) const { fn(); }
 
