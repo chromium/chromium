@@ -30,9 +30,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -78,9 +75,6 @@ void PassphraseTableViewControllerTest::SetUp() {
   test_cbs_builder.AddTestingFactory(
       AuthenticationServiceFactory::GetInstance(),
       AuthenticationServiceFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
-      SyncSetupServiceFactory::GetInstance(),
-      base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
   test_cbs_builder.AddTestingFactory(
       SyncServiceFactory::GetInstance(),
       base::BindRepeating(&CreateNiceMockSyncService));
