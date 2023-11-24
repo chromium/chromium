@@ -199,6 +199,33 @@ body.enable-scan-barcode .barcode-scan-box {
   }
 }
 
+#barcode-chip-wifi {
+  align-items: center;
+  background: var(--cros-sys-base_elevated);
+  border-radius: 16px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  display: flex;
+  font: var(--cros-body-2-font);
+  height: var(--chip-height);
+  justify-content: center;
+  padding: 8px 16px;
+}
+
+#barcode-chip-wifi > svg-wrapper {
+  color: var(--cros-sys-primary);
+  margin-inline-end: 10px;
+}
+
+#barcode-chip-wifi-content {
+  color: var(--cros-sys-primary);
+  line-height: var(--text-line-height);
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .snackbar {
   align-items: center;
   background: var(--cros-sys-inverse_surface);

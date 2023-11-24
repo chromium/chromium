@@ -27,6 +27,7 @@ export enum I18nString {
   BARCODE_COPY_TEXT_BUTTON = 'barcode_copy_text_button',
   BARCODE_LINK_DETECTED = 'barcode_link_detected',
   BARCODE_TEXT_DETECTED = 'barcode_text_detected',
+  BARCODE_WIFI_DETECTED = 'barcode_wifi_detected',
   CANCEL_REVIEW_BUTTON = 'cancel_review_button',
   CONFIRM_REVIEW_BUTTON = 'confirm_review_button',
   DELETE_PAGE_BUTTON = 'delete_page_button',

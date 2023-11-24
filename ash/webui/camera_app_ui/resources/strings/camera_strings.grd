@@ -292,6 +292,9 @@
       <message desc="Label for detected text on the barcode chip." name="IDS_BARCODE_TEXT_DETECTED">
         Text detected.
       </message>
+      <message desc="Label for detected wifi on the barcode chip." name="IDS_BARCODE_WIFI_DETECTED">
+        Join "<ph name="wifiname">$1<ex>wifi network name</ex></ph>" Network
+      </message>
       <message desc="Label for the button of expert mode options." name="IDS_EXPERT_MODE_BUTTON">
         Expert mode
       </message>

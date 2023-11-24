@@ -179,7 +179,6 @@ function showUrl(url: string) {
   const label =
       loadTimeData.getI18nMessage(I18nString.BARCODE_LINK_DETECTED, hostname);
   anchor.setAttribute('aria-label', label);
-  anchor.setAttribute('aria-description', url);
   anchor.focus();
 
   createCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
@@ -218,6 +217,27 @@ function showText(text: string) {
 }
 
 /**
+ * Shows an actionable wifi chip for connecting Wi-fi.
+ */
+function showWifi(wifiConfig: WifiConfig) {
+  const container = dom.get('#barcode-chip-wifi-container', HTMLDivElement);
+  activate(container);
+
+  const textEl = dom.get('#barcode-chip-wifi-content', HTMLDivElement);
+  const label = loadTimeData.getI18nMessage(
+      I18nString.BARCODE_WIFI_DETECTED, wifiConfig.ssid);
+  textEl.textContent = label;
+
+  const chip = dom.get('#barcode-chip-wifi', HTMLDivElement);
+  chip.onclick = () => {
+    // TODO(dorahkim): After is crrev/c/4964660 is landed, connect to the Wi-fi
+    // here.
+  };
+
+  chip.focus();
+}
+
+/**
  * Shows an actionable chip for the string detected from a barcode.
  */
 export function show(code: string): void {
@@ -240,12 +260,13 @@ export function show(code: string): void {
   if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
     sendBarcodeDetectedEvent(
         {contentType: BarcodeContentType.WIFI}, wifiConfig.securityType);
-    if (!['WPA', 'WEP', 'WPA2-EAP', 'nopass'].includes(
-            wifiConfig.securityType)) {
+    if (['WPA', 'nopass'].includes(wifiConfig.securityType)) {
+      showWifi(wifiConfig);
+    } else {
       // For unsupported security types, we show a raw string.
+      // We can support more if metrics proves the needs.
       showText(code);
     }
-    // TODO(dorahkim): If securityType is supported, showWifi().
   } else if (isSafeUrl(code)) {
     sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});
     showUrl(code);
