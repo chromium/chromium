@@ -18,6 +18,7 @@ class PasswordManagerShortcutPromo
  private:
   // PasswordPromoCardBase implementation.
   std::string GetPromoID() const override;
+  password_manager::PromoCardType GetPromoCardType() const override;
   bool ShouldShowPromo() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;

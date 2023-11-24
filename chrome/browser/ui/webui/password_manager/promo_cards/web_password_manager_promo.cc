@@ -32,6 +32,11 @@ std::string WebPasswordManagerPromo::GetPromoID() const {
   return kWebPasswordManagerPromoId;
 }
 
+password_manager::PromoCardType WebPasswordManagerPromo::GetPromoCardType()
+    const {
+  return password_manager::PromoCardType::kWebPasswordManager;
+}
+
 bool WebPasswordManagerPromo::ShouldShowPromo() const {
   if (!sync_enabled_) {
     return false;

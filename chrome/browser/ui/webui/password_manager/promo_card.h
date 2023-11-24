@@ -15,6 +15,22 @@ class PrefService;
 
 namespace password_manager {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PromoCardType {
+  // Password Checkup promo bubble.
+  kCheckup = 0,
+  // Password on the web promo bubble.
+  kWebPasswordManager = 1,
+  // Add shortcut promo bubble.
+  kAddShortcut = 2,
+  // Access passwords on iOS/Android promo bubble.
+  kAccessOnAnyDevice = 3,
+  // Relaunch Chrome to fix the keychain issue.
+  kRelauchChrome = 4,
+  kMaxValue = kRelauchChrome,
+};
+
 // This is the base class for all password manager promo cards. It has a basic
 // implementation to read/write to PrefService as well as basic properties
 // needed for each promo card. Each subclass must override GetPromoID() and the
@@ -32,6 +48,9 @@ class PasswordPromoCardBase {
   // Unique ID for a promo card. This is also used by the WebUI to display
   // banner image.
   virtual std::string GetPromoID() const = 0;
+
+  // Used to distinguish promo cards.
+  virtual PromoCardType GetPromoCardType() const = 0;
 
   // Whether promo can be shown. For most of the promos once it's dismissed it
   // can't be shown again.

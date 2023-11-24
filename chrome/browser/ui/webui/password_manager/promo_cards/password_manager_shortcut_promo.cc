@@ -29,6 +29,11 @@ std::string PasswordManagerShortcutPromo::GetPromoID() const {
   return kShortcutPromoId;
 }
 
+password_manager::PromoCardType PasswordManagerShortcutPromo::GetPromoCardType()
+    const {
+  return password_manager::PromoCardType::kAddShortcut;
+}
+
 bool PasswordManagerShortcutPromo::ShouldShowPromo() const {
   if (is_shortcut_installed_) {
     return false;
