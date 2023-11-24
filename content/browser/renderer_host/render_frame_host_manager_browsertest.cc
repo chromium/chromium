@@ -5610,13 +5610,13 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 }
 
 // Ensure that after a main frame with a cross-site iframe is itself navigated
-// cross-site, the unload handler in the iframe can use an image load to do a
+// cross-site, the pagehide handler in the iframe can use an image load to do a
 // termination ping. See https://crbug.com/852204, where this was broken with
 // site isolation if the iframe was in its own process.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        SubframeTerminationPing_Image) {
   // See BackForwardCache::DisableForTestingReason for explanation.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_USES_UNLOAD_EVENT);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -5626,11 +5626,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                             .root();
   RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
 
-  // Add a subframe unload handler to do a termination ping by loading an
+  // Add a subframe pagehide handler to do a termination ping by loading an
   // image.
   GURL ping_url(embedded_test_server()->GetURL("b.com", "/blank.jpg"));
   AddUnloadEventHandler(
-      child_rfh, "unload", "window",
+      child_rfh, "pagehide", "window",
       base::StringPrintf("var img = document.createElement('img');"
                          "img.src = '%s';"
                          "document.body.appendChild(img);",
@@ -5646,7 +5646,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 }
 
 // Ensure that when closing a window containing a page with a cross-site
-// iframe, the iframe still runs its unload handler and can do a sendBeacon
+// iframe, the iframe still runs its pagehide handler and can do a sendBeacon
 // termination ping.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        SubframeTerminationPingWhenWindowCloses) {
@@ -5669,11 +5669,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   RenderFrameHostImpl* child_rfh =
       popup_root->child_at(0)->current_frame_host();
 
-  // In the popup, add a subframe unload handler to do a termination ping via
+  // In the popup, add a subframe pagehide handler to do a termination ping via
   // sendBeacon.
   GURL ping_url(embedded_test_server()->GetURL("c.com", "/empty.html"));
   AddUnloadEventHandler(
-      child_rfh, "unload", "window",
+      child_rfh, "pagehide", "window",
       base::StringPrintf("navigator.sendBeacon('%s', 'ping');",
                          ping_url.spec().c_str()));
   ExtendSubframeUnloadTimeoutForTerminationPing(child_rfh);
@@ -5718,8 +5718,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   process_exit_observer.Wait();
 }
 
-// Verify that when an OOPIF with an unload handler navigates cross-process,
-// its unload handler is able to send a postMessage to the parent frame.
+// Verify that when an OOPIF with a pagehide handler navigates cross-process,
+// its pagehide handler is able to send a postMessage to the parent frame.
 // See https://crbug.com/857274.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        PostMessageToParentWhenSubframeNavigates) {
@@ -5741,9 +5741,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
       });
     })"));
 
-  // Add an unload handler in the child frame to send a postMessage to the
+  // Add a pagehide handler in the child frame to send a postMessage to the
   // parent frame.
-  AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
+  AddUnloadEventHandler(child->current_frame_host(), "pagehide", "window",
                         "parent.postMessage('foo', '*')");
   child->current_frame_host()->DisableUnloadTimerForTesting();
 
@@ -5758,7 +5758,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 
   // Now repeat the test with a remote-to-local navigation that brings the
   // subframe back to a.com.
-  AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
+  AddUnloadEventHandler(child->current_frame_host(), "pagehide", "window",
                         "parent.postMessage('bar', '*')");
   child->current_frame_host()->DisableUnloadTimerForTesting();
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
