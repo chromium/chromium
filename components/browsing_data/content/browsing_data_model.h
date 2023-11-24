@@ -163,6 +163,9 @@ class BrowsingDataModel {
     // Returns whether the delegate considers `storage_type` to be blocked by
     // third party cookie blocking, utilizing `data_key` to exclude partitioned
     // data. Returns nullopt if the delegate does not manage the storage type.
+    // This method isn't aware of the context in which the data key is being
+    // accessed and may return false positive in case it was called for a first
+    // party key in a first party context.
     virtual absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
         const DataKey& data_key,
         StorageType storage_type) const = 0;
@@ -276,6 +279,9 @@ class BrowsingDataModel {
 
   // Returns whether the provided `storage_type` is blocked when third party
   // cookies are blocked, utilizing `data_key` to exclude partitioned data.
+  // This method isn't aware of the context in which the data key is being
+  // accessed and may return false positive in case it was called for a first
+  // party key in a first party context.
   bool IsBlockedByThirdPartyCookieBlocking(const DataKey& data_key,
                                            StorageType storage_type) const;
 
