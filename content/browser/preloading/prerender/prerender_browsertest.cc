@@ -8641,35 +8641,18 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
 class PrerenderBackForwardCacheRestorationBrowserTest
     : public PrerenderEagernessBrowserTest,
       public BackForwardCacheMetricsTestMatcher,
-      public testing::WithParamInterface<
-          std::tuple<bool, blink::mojom::SpeculationEagerness>> {
+      public testing::WithParamInterface<blink::mojom::SpeculationEagerness> {
  public:
   PrerenderBackForwardCacheRestorationBrowserTest() {
-    auto enabled_features = GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-        /*ignore_outstanding_network_request=*/false);
-    auto disabled_features =
-        GetDefaultDisabledBackForwardCacheFeaturesForTesting();
-
-    if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
-      enabled_features.emplace_back(
-          blink::features::kRetriggerPreloadingOnBFCacheRestoration,
-          base::FieldTrialParams{});
-    } else {
-      disabled_features.emplace_back(
-          blink::features::kRetriggerPreloadingOnBFCacheRestoration);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
  protected:
-  bool IsRetriggerPreloadingOnBFCacheRestorationEnabled() const {
-    return std::get<bool>(GetParam());
-  }
-
   blink::mojom::SpeculationEagerness GetSpeculationEagerness() const {
-    return std::get<blink::mojom::SpeculationEagerness>(GetParam());
+    return GetParam();
   }
 
   // implementation for `BackForwardCacheMetricsTestMatcher`
@@ -8689,16 +8672,11 @@ class PrerenderBackForwardCacheRestorationBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrerenderBackForwardCacheRestorationBrowserTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Values(blink::mojom::SpeculationEagerness::kEager,
-                        blink::mojom::SpeculationEagerness::kModerate,
-                        blink::mojom::SpeculationEagerness::kConservative)),
-    [](const testing::TestParamInfo<
-        std::tuple<bool, blink::mojom::SpeculationEagerness>>& info) {
-      return base::ToString(std::get<bool>(info.param)) + "_" +
-             base::ToString(
-                 std::get<blink::mojom::SpeculationEagerness>(info.param));
+    testing::Values(blink::mojom::SpeculationEagerness::kEager,
+                    blink::mojom::SpeculationEagerness::kModerate,
+                    blink::mojom::SpeculationEagerness::kConservative),
+    [](const testing::TestParamInfo<blink::mojom::SpeculationEagerness>& info) {
+      return base::ToString(info.param);
     });
 
 // Test whether speculation rules prerendering is processed again on pages
@@ -8753,27 +8731,18 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
   ExpectRestored(FROM_HERE);
 
   if (GetSpeculationEagerness() == blink::mojom::SpeculationEagerness::kEager) {
-    if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
-      // Prerendering will be processed by retriggering.
-      WaitForPrerenderLoadCompletion(prerendering_url);
-      int host_id_retriggered = GetHostForUrl(prerendering_url);
+    // Prerendering will be processed by retriggering.
+    WaitForPrerenderLoadCompletion(prerendering_url);
+    int host_id_retriggered = GetHostForUrl(prerendering_url);
 
-      test::PrerenderHostObserver prerender_observer(*web_contents(),
-                                                     host_id_retriggered);
+    test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                   host_id_retriggered);
 
-      // Activate the prerendered page.
-      NavigatePrimaryPage(prerendering_url);
-      prerender_observer.WaitForActivation();
-      ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
-      EXPECT_TRUE(prerender_observer.was_activated());
-    } else {
-      // Grant a grace period for retriggering.
-      base::RunLoop().RunUntilIdle();
-
-      // The next page contains speculation rules for the prerendering page, but
-      // it's not processed on BFCache restoration.
-      EXPECT_FALSE(HasHostForUrl(prerendering_url));
-    }
+    // Activate the prerendered page.
+    NavigatePrimaryPage(prerendering_url);
+    prerender_observer.WaitForActivation();
+    ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+    EXPECT_TRUE(prerender_observer.was_activated());
   } else {
     ASSERT_FALSE(HasHostForUrl(prerendering_url));
 
@@ -8839,30 +8808,20 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
     ExpectRestored(FROM_HERE);
 
-    if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
-      // Prerendering for both the page A and the page B will be processed by
-      // retriggering.
-      WaitForPrerenderLoadCompletion(prerendering_url_a);
-      WaitForPrerenderLoadCompletion(prerendering_url_b);
-      int host_id_a_retriggered = GetHostForUrl(prerendering_url_a);
+    // Prerendering for both the page A and the page B will be processed by
+    // retriggering.
+    WaitForPrerenderLoadCompletion(prerendering_url_a);
+    WaitForPrerenderLoadCompletion(prerendering_url_b);
+    int host_id_a_retriggered = GetHostForUrl(prerendering_url_a);
 
-      test::PrerenderHostObserver prerender_observer_a_retriggered(
-          *web_contents(), host_id_a_retriggered);
+    test::PrerenderHostObserver prerender_observer_a_retriggered(
+        *web_contents(), host_id_a_retriggered);
 
-      // Activate the page A again.
-      NavigatePrimaryPage(prerendering_url_a);
-      prerender_observer_a_retriggered.WaitForActivation();
-      ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url_a);
-      EXPECT_TRUE(prerender_observer_a_retriggered.was_activated());
-    } else {
-      // Grant a grace period for retriggering.
-      base::RunLoop().RunUntilIdle();
-
-      // The initial page contains speculation rules for page A/B, but neither
-      // of them are processed on BFCache restoration.
-      EXPECT_FALSE(HasHostForUrl(prerendering_url_a));
-      EXPECT_FALSE(HasHostForUrl(prerendering_url_b));
-    }
+    // Activate the page A again.
+    NavigatePrimaryPage(prerendering_url_a);
+    prerender_observer_a_retriggered.WaitForActivation();
+    ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url_a);
+    EXPECT_TRUE(prerender_observer_a_retriggered.was_activated());
   } else {
     auto* preloading_decider =
         PreloadingDecider::GetOrCreateForCurrentDocument(rfh_initial);
@@ -8911,42 +8870,29 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
         prerendering_url_b, blink::mojom::SpeculationAction::kPrerender));
 
-    if (IsRetriggerPreloadingOnBFCacheRestorationEnabled()) {
-      // TODO(crbug.com/1457989): In the current implementation, non-eager
-      // candidates that are once processed by user interaction will no
-      // longer be stored in |on_standby_candidates_| when retriggered (more
-      // specifically, |UpdateSpeculationCandidates| is (re)invoked) and instead
-      // |PrerenderHost| will be created immediately, as with eager candidates.
-      // See crbug description for more details.
-      {
-        WaitForPrerenderLoadCompletion(prerendering_url_a);
-        EXPECT_TRUE(HasHostForUrl(prerendering_url_a));
-        EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
-            prerendering_url_a, blink::mojom::SpeculationAction::kPrerender));
-      }
-
-      ASSERT_FALSE(HasHostForUrl(prerendering_url_b));
-
-      // Trigger and activate the Page A again.
-      {
-        TestActivationManager activation_manager(web_contents(),
-                                                 prerendering_url_a);
-        ClickAnchor(prerendering_url_a);
-        activation_manager.WaitForNavigationFinished();
-        ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url_a);
-        ASSERT_TRUE(activation_manager.was_activated());
-      }
-    } else {
-      // Grant a grace period for retriggering.
-      base::RunLoop().RunUntilIdle();
-
-      ASSERT_FALSE(HasHostForUrl(prerendering_url_a));
-      ASSERT_FALSE(HasHostForUrl(prerendering_url_b));
-
-      // |on_standby_candidates_| doesn't have the candidate of the Page A
-      // because it was triggered and consumed before restored.
+    // TODO(crbug.com/1457989): In the current implementation, non-eager
+    // candidates that are once processed by user interaction will no
+    // longer be stored in |on_standby_candidates_| when retriggered (more
+    // specifically, |UpdateSpeculationCandidates| is (re)invoked) and instead
+    // |PrerenderHost| will be created immediately, as with eager candidates.
+    // See crbug description for more details.
+    {
+      WaitForPrerenderLoadCompletion(prerendering_url_a);
+      EXPECT_TRUE(HasHostForUrl(prerendering_url_a));
       EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
           prerendering_url_a, blink::mojom::SpeculationAction::kPrerender));
+    }
+
+    ASSERT_FALSE(HasHostForUrl(prerendering_url_b));
+
+    // Trigger and activate the Page A again.
+    {
+      TestActivationManager activation_manager(web_contents(),
+                                               prerendering_url_a);
+      ClickAnchor(prerendering_url_a);
+      activation_manager.WaitForNavigationFinished();
+      ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url_a);
+      ASSERT_TRUE(activation_manager.was_activated());
     }
   }
 }

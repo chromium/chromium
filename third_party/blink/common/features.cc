@@ -1631,10 +1631,6 @@ BASE_FEATURE(kResamplingScrollEvents,
              "ResamplingScrollEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRetriggerPreloadingOnBFCacheRestoration,
-             "RetriggerPreloadingOnBFCacheRestoration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
              "RunTextInputUpdatePostLifecycle",
              base::FEATURE_ENABLED_BY_DEFAULT);

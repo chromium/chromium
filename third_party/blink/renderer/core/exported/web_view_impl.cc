@@ -2532,14 +2532,11 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       LocalFrame* local_frame = To<LocalFrame>(page->MainFrame());
       probe::DidRestoreFromBackForwardCache(local_frame);
 
-      if (base::FeatureList::IsEnabled(
-              blink::features::kRetriggerPreloadingOnBFCacheRestoration)) {
-        if (local_frame->IsOutermostMainFrame()) {
-          Document* document = local_frame->GetDocument();
-          if (auto* document_rules =
-                  DocumentSpeculationRules::FromIfExists(*document)) {
-            document_rules->DocumentRestoredFromBFCache();
-          }
+      if (local_frame->IsOutermostMainFrame()) {
+        Document* document = local_frame->GetDocument();
+        if (auto* document_rules =
+                DocumentSpeculationRules::FromIfExists(*document)) {
+          document_rules->DocumentRestoredFromBFCache();
         }
       }
     }
