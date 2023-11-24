@@ -62,6 +62,9 @@ build_webui_tests("build") {
     "app_management/test_util.ts",
     "app_management/toggle_row_test.ts",
 
+    "common/app_language_selection_dialog/app_language_selection_dialog_test.ts",
+    "common/app_language_selection_dialog/app_language_selection_item_test.ts",
+
     "crostini_page/crostini_extra_containers_subpage_test.ts",
     "crostini_page/crostini_page_test.ts",
     "crostini_page/crostini_settings_card_test.ts",

@@ -43,7 +43,7 @@ export function replaceStore(): TestAppManagementStore {
   return store;
 }
 
-export function isHidden(element: Element): boolean {
+export function isHidden(element: Element|null): boolean {
   return !isVisible(element);
 }
 

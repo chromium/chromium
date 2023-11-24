@@ -472,8 +472,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableIsolatedWebAppsToggleLabel",
        IDS_SETTINGS_ENABLE_ISOLATED_WEB_APPS_LABEL},
       {"appManagementAppLanguageLabel", IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL},
-      {"appManagementAppLanguageDeviceLanguageLabel",
-       IDS_APP_MANAGEMENT_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -689,6 +687,17 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
       {"androidAppsEnableButtonRole",
        IDS_SETTINGS_ANDROID_APPS_ENABLE_BUTTON_ROLE},
       {"androidOpenGooglePlay", IDS_OS_SETTINGS_REVAMP_OPEN_GOOGLE_PLAY},
+      {"appLanguageDeviceLanguageLabel",
+       IDS_OS_SETTINGS_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL},
+      {"appLanguageDialogTitle", IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_TITLE},
+      {"appLanguageDialogSearchPlaceholderText",
+       IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SEARCH_PLACEHOLDER_TEXT},
+      {"appLanguageDialogSuggestedLabel",
+       IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SUGGESTED_LABEL},
+      {"appLanguageDialogAllLanguagesLabel",
+       IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_ALL_LANGUAGES_LABEL},
+      {"appLanguageDialogUpdateButtonText",
+       IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_UPDATE_BUTTON_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("androidAppsPageTitle",

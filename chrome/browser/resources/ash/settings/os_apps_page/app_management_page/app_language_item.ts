@@ -54,7 +54,7 @@ export class AppManagementAppLanguageItemElement extends
       return displayName === '' ? this.app.selectedLocale.localeTag :
                                   displayName;
     }
-    return this.i18n('appManagementAppLanguageDeviceLanguageLabel');
+    return this.i18n('appLanguageDeviceLanguageLabel');
   }
 }
 

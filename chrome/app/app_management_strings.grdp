@@ -157,9 +157,6 @@
   <message name="IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL" desc="The label for the settings row button to manage app language selection section of OS Settings which opens a dialog.">
     App language
   </message>
-  <message name="IDS_APP_MANAGEMENT_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL" desc="The label to select or display app language as system default in app language selection of OS Settings.">
-    Device language
-  </message>
   <message name="IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS" desc="Label for a link to manage permissions for an app.">
     Manage permissions
   </message>

@@ -6014,6 +6014,24 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_APP_DETAILS_TITLE" desc="The title of app details subpage, which displays details about a specific app.">
     App details
   </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL" desc="The label to select or display app language as system default in app language selection of OS Settings.">
+    Device language
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_TITLE" desc="The dialog title to display list of selected and selectable app language.">
+    Change app language
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SEARCH_PLACEHOLDER_TEXT" desc="The dialog search box placeholder indicating acceptable search query for app language.">
+    Search by countries, language, or input names
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_SUGGESTED_LABEL" desc="The dialog label to indicate suggested languages for app language selection.">
+    Suggested
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_ALL_LANGUAGES_LABEL" desc="The dialog label to indicate all available languages for app language selection.">
+    All languages
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_UPDATE_BUTTON_TEXT" desc="The dialog confirm button to update app language with selected locale.">
+    Update
+  </message>
 
    <!-- Apps > Manage your apps > Borealis -->
   <message name="IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT" desc="Description in Steam (name of app, manages other apps) settings page.">
