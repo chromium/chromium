@@ -73,6 +73,8 @@ extern v8::Local<v8::Object> RecordReplayGetBytecode(
 } // namespace internal
 } // namespace v8
 
+#define CDPERROR_MISSINGCONTEXT 1001
+
 namespace blink {
 // using RemoteObjectIdTypeRaw = v8_inspector::String16;
 // The actual type for RemoteObjectId
@@ -89,61 +91,30 @@ static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
 
 
-LocalFrame* gCurrentRootFrame = nullptr;
-
 static LocalFrame* GetLocalFrameRoot(v8::Isolate* isolate) {
-  LocalFrame* frame;
   LocalDOMWindow* currentWindow = CurrentDOMWindow(isolate);
+
   if (!currentWindow) {
-    // This should not happen if we call RecordReplaySetDefaultContext correctly.
-    std::string stack;
-    recordreplay::GetCurrentJSStack(&stack);
-    recordreplay::Warning("[RUN-2739] GetLocalFrameRoot A missing CurrentDOMWindow %d %s",
-                          isolate->GetCurrentContext().IsEmpty(),
-                          stack.c_str());
-    frame = gCurrentRootFrame;
-  } else { 
-    frame = currentWindow->GetFrame();
-    if (!frame || frame->IsDetached() || frame->IsProvisional()) {
-      // This should not happen if we call RecordReplaySetDefaultContext
-      // correctly.
-      // NOTE: The JS stack here is generally showing our internal command handler 
-      // code.
-      recordreplay::Warning(
-        "[RUN-2739] GetLocalFrameRoot B CurrentDOMWindow has no valid frame %d win=%d \"%s\" \"%s\" frame=%d %d %d %d \"%s\" ",
-          isolate->GetCurrentContext().IsEmpty(),
-          currentWindow->RecordReplayId(),
-          currentWindow->origin().Utf8().c_str(),
-          currentWindow->document() ? 
-            currentWindow->document()->Url().GetString().Utf8().c_str() : 
-            "",
-          frame ? frame->RecordReplayId() : 0,
-          frame ? frame->IsDetached() : -1,
-          (frame && !frame->IsDetached()) ? frame->IsProvisional() : -1,
-          (frame && !frame->IsDetached()) ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
-          (frame && !frame->IsDetached()) ? frame->GetDocument()->Url().GetString().Utf8().c_str() : ""
-      );
-      frame = gCurrentRootFrame;
-    }
+    recordreplay::Print("GetLocalFrameRoot has no window.");
+    return nullptr;
   }
-  frame = frame ? &frame->LocalFrameRoot() : nullptr;
-  if (!frame || frame->IsDetached() || frame->IsProvisional()) {
-    recordreplay::Crash(
-      "[RUN-2739] GetLocalFrameRoot: Invalid frame %d win=%d \"%s\" \"%s\" frame=%d %d %d %d \"%s\" ",
-        isolate->GetCurrentContext().IsEmpty(),
-        currentWindow ? currentWindow->RecordReplayId() : 0,
-        currentWindow ? currentWindow->origin().Utf8().c_str() : "",
-        (currentWindow && currentWindow->document()) ? 
-          currentWindow->document()->Url().GetString().Utf8().c_str() : 
-          "",
-        frame ? frame->RecordReplayId() : 0,
-        frame ? frame->IsDetached() : -1,
-        (frame && !frame->IsDetached()) ? frame->IsProvisional() : -1,
-        (frame && !frame->IsDetached()) ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
-        (frame && !frame->IsDetached()) ? frame->GetDocument()->Url().GetString().Utf8().c_str() : "");
+
+  LocalFrame *f = currentWindow->GetFrame();
+  if (!f || f->IsDetached() || f->IsProvisional()) {
+    recordreplay::Print("GetLocalFrameRoot has no frame.");
+    return nullptr;
   }
-  return frame;
+
+  LocalFrame& root = f->LocalFrameRoot();
+
+  if (root.IsDetached() || root.IsProvisional()) {
+    recordreplay::Print("GetLocalFrameRoot has no root frame.");
+    return nullptr;
+  }
+
+  return &root;
 }
+
 
 class InspectorData {
 public:
@@ -218,6 +189,7 @@ const {
   getCurrentNetworkStreamData,
 
   // constants
+  CDPERROR_MISSINGCONTEXT,
   REPLAY_CDT_PAUSE_OBJECT_GROUP
 } = __RECORD_REPLAY_ARGUMENTS__;
 
@@ -598,10 +570,22 @@ function Target_getCurrentNetworkStreamData(params) {
 }
 
 function Target_topFrameLocation() {
-  const { location } = sendMessage("Debugger.getTopFrameLocation");
-  if (!location) {
-    return {};
+  try {
+    const { location } = sendMessage("Debugger.getTopFrameLocation");
+    if (!location) {
+      return {};
+    }
+  } catch (e) {
+    if (e instanceof CDPMessageError) {
+      // No available context group; this can happen, so just return nothing.
+      if (e.code == CDPERROR_MISSINGCONTEXT) {
+        warning(`JS Target_topFrameLocation has no context.`);
+        return {};
+      }
+    }
+    throw e;
   }
+
   return { location: createProtocolLocation(location)[0] };
 }
 
@@ -614,10 +598,21 @@ function Target_topFrameLocation() {
  */
 function getStackFrames() {
   // NOTE: this is a custom command we added in `src/inspector/v8-debugger-agent-impl.cc`
-  const { callFrames } = sendMessage("Debugger.getCallFrames", {
-    objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
-  });
-  return callFrames;
+  try {
+    const { callFrames } = sendMessage("Debugger.getCallFrames", {
+      objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+    });
+    return callFrames;
+  } catch (e) {
+    if (e instanceof CDPMessageError) {
+      // No available context group; this can happen, so just return nothing.
+      if (e.code == CDPERROR_MISSINGCONTEXT) {
+        warning(`JS getStackFrames has no context.`);
+        return [];
+      }
+    }
+    throw e;
+  }
 }
 
 
@@ -1324,21 +1319,31 @@ ProtocolObjectPreview.prototype = {
       // WARNING: we manage possible divergences caused by `Runtime.getProperties` evaluating native getter
       //    in V8's |doesAttributeHaveObservableSideEffectOnGet|.
       //    see: https://github.com/replayio/chromium-v8/pull/115/files#diff-72ee0a91d32565577bd78ed94b034ae3b4bf51676c5d42165e9363cad18dccf9R1328
-      cdpProperties = sendMessage("Runtime.getProperties", {
-        objectId: this.cdpObj.objectId,
-        ownProperties: false,
-        generatePreview: false,
-        pageIndex: this.pageIndex,
-        pageSize: this.pageSize,
-        objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
-      });
+      try {
+        cdpProperties = sendMessage("Runtime.getProperties", {
+          objectId: this.cdpObj.objectId,
+          ownProperties: false,
+          generatePreview: false,
+          pageIndex: this.pageIndex,
+          pageSize: this.pageSize,
+          objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+        });
+      } catch (e) {
+        // No available context group; this can happen, so just return nothing.
+        if (e.code == CDPERROR_MISSINGCONTEXT) {
+          warning(`JS ProtocolObjectPreview.fill has no context.`);
+          cdpProperties = { result: [] };
+        } else {
+          throw e;
+        }
+      }
     } else {
       cdpProperties = { result: [] };
     }
 
     if (!cdpProperties.result) {
       return {
-        prototypeId: prototypeRrpId
+        prototypeId: undefined
       };
     }
 
@@ -3680,7 +3685,6 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   CHECK(v8::IsMainThread());
 
   CHECK(gCDPMessageCallback);
-  CHECK(!message.is8Bit());
 
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   if (!isolate->InContext() || ScriptForbiddenScope::IsScriptForbidden()) {
@@ -3691,9 +3695,16 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   v8::HandleScope scope(isolate);
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Value> arg = v8::String::NewFromTwoByte(isolate, message.characters16(),
+  v8::Local<v8::Value> arg;
+  if (message.is8Bit()) {
+    arg = v8::String::NewFromOneByte(isolate, message.characters8(),
                                                         v8::NewStringType::kNormal,
                                                         (int)message.length()).ToLocalChecked();
+  } else {
+    arg = v8::String::NewFromTwoByte(isolate, message.characters16(),
+                                                        v8::NewStringType::kNormal,
+                                                        (int)message.length()).ToLocalChecked();
+  }
   v8::Local<v8::Function> callback = gCDPMessageCallback->Get(isolate);
   v8::MaybeLocal<v8::Value> rv = callback->Call(context, v8::Undefined(isolate), 1, &arg);
   CHECK(!rv.IsEmpty());
@@ -3725,9 +3736,14 @@ struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
   void flushProtocolNotifications() final {}
 };
 
-int GetCurrentContextGroupIdForIsolate(v8::Isolate* isolate) {
-  LocalFrame& local_frame_root = *GetLocalFrameRoot(isolate);
-  return WeakIdentifierMap<LocalFrame>::Identifier(&local_frame_root);
+absl::optional<int> GetCurrentContextGroupIdForIsolate(v8::Isolate* isolate) {
+  LocalFrame* local_frame_root = GetLocalFrameRoot(isolate);
+
+  if (local_frame_root != nullptr) {
+    return WeakIdentifierMap<LocalFrame>::Identifier(local_frame_root);
+  }
+
+  return absl::optional<int>();
 }
 
 InspectorData* getInspectorFor(v8::Isolate* isolate, int contextGroupId) {
@@ -3826,13 +3842,42 @@ static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
         "must be called with a single string");
 
   v8::Isolate* isolate = args.GetIsolate();
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  absl::optional<int> contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+
+  // It can be the case that we simply don't have a context group id (a local frame) at this
+  // time; just log it and inform the client.
+  if (!contextGroupId.has_value()) {
+    if (gCDPMessageCallback != nullptr) {
+      // Ensure the message has an ID.
+      v8::String::Utf8Value inmessage(args.GetIsolate(), args[0]);
+      std::string nmessage(*inmessage);
+      absl::optional<base::Value> jsonMessage = base::JSONReader::Read(nmessage);
+      base::Value::Dict* messageDict = jsonMessage->GetIfDict();
+      CHECK(messageDict != nullptr);
+      CHECK(messageDict->FindInt("id").has_value());
+
+      // Construct our error result.
+      std::unique_ptr<base::DictionaryValue> error(new base::DictionaryValue);
+      error->SetStringKey("message", "No context group available for Isolate.");
+      error->SetIntKey("code", CDPERROR_MISSINGCONTEXT);
+
+      base::DictionaryValue result;
+      result.SetKey("error", base::Value::FromUniquePtrValue(std::move(error)));
+      result.SetIntKey("id", *(messageDict->FindInt("id")));
+
+      std::string json;
+      base::JSONWriter::Write(result, &json);
+      auto message = v8_inspector::StringView((const uint8_t*)json.c_str(), json.length());
+      SendMessageToFrontend(message);
+    }
+    return;
+  }
 
   v8::String::Utf8Value message(args.GetIsolate(), args[0]);
 
   std::string nmessage(*message);
   v8_inspector::StringView messageView((const uint8_t*)nmessage.c_str(), nmessage.length());
-  getInspectorSession(isolate, contextGroupId)->dispatchProtocolMessage(messageView);
+  getInspectorSession(isolate, *contextGroupId)->dispatchProtocolMessage(messageView);
 }
 
 static std::string GetRecordingDirectory() {
@@ -4109,29 +4154,38 @@ static InspectedFrames* getOrCreateInspectedFrames(v8::Isolate* isolate, int con
 // NOTE: we need to instantiate all inspectors indivudally because we
 //    are not fully hooked up with a `DevToolsSession` + `UberDispatcher`.
 //    We also cannot enable them for the same reason.
-InspectorDOMAgent* getOrCreateInspectorDOMAgent(v8::Isolate* isolate) {
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
-  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+absl::optional<InspectorDOMAgent*> getOrCreateInspectorDOMAgent(v8::Isolate* isolate) {
+  auto contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  if (!contextGroupId.has_value()) {
+    return absl::optional<InspectorDOMAgent*>();
+  }
+
+  InspectorData *data = getInspectorFor(isolate, *contextGroupId);
 
   if (!data->inspectorDomAgent) {
     // NOTE: based on WebDevToolsAgentImpl::AttachSession
-    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, contextGroupId);
+    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, *contextGroupId);
     data->inspectorDomAgent = MakeGarbageCollected<InspectorDOMAgent>(
-        isolate, inspectedFrames, getInspectorSession(isolate, contextGroupId));
+        isolate, inspectedFrames, getInspectorSession(isolate, *contextGroupId));
     data->inspectorDomAgent->FrameDocumentUpdated(data->GetLocalFrameRoot());
   }
   return data->inspectorDomAgent;
 }
 
-InspectorDOMDebuggerAgent* getOrCreateInspectorDOMDebuggerAgent(
+absl::optional<InspectorDOMDebuggerAgent*> getOrCreateInspectorDOMDebuggerAgent(
     v8::Isolate* isolate) {
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
-  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+  auto contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+
+  if (!contextGroupId.has_value()) {
+    return absl::optional<InspectorDOMDebuggerAgent*>();
+  }
+
+  InspectorData *data = getInspectorFor(isolate, *contextGroupId);
 
   if (!data->inspectorDomDebuggerAgent) {
     data->inspectorDomDebuggerAgent =
         MakeGarbageCollected<InspectorDOMDebuggerAgent>(
-            isolate, getOrCreateInspectorDOMAgent(isolate), getInspectorSession(isolate, contextGroupId));
+            isolate, *getOrCreateInspectorDOMAgent(isolate), getInspectorSession(isolate, *contextGroupId));
 
     // RUN-1061: registering the agent here allows it to receive `UserCallback`
     // events.
@@ -4140,34 +4194,43 @@ InspectorDOMDebuggerAgent* getOrCreateInspectorDOMDebuggerAgent(
   return data->inspectorDomDebuggerAgent;
 }
 
-InspectorNetworkAgent* getOrCreateInspectorNetworkAgent(v8::Isolate* isolate) {
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
-  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+absl::optional<InspectorNetworkAgent*> getOrCreateInspectorNetworkAgent(v8::Isolate* isolate) {
+  absl::optional<int> contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  if (!contextGroupId.has_value()) {
+    return absl::optional<InspectorNetworkAgent*>();
+  }
+
+  InspectorData *data = getInspectorFor(isolate, *contextGroupId);
   
   if (!data->inspectorNetworkAgent) {
-    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, contextGroupId);
+    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, *contextGroupId);
     data->inspectorNetworkAgent = MakeGarbageCollected<InspectorNetworkAgent>(
-        inspectedFrames, nullptr, getInspectorSession(isolate, contextGroupId));
+        inspectedFrames, nullptr, getInspectorSession(isolate, *contextGroupId));
   }
   return data->inspectorNetworkAgent;
 }
 
-InspectorCSSAgent* getOrCreateInspectorCSSAgent(v8::Isolate* isolate) {
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
-  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+absl::optional<InspectorCSSAgent*> getOrCreateInspectorCSSAgent(v8::Isolate* isolate) {
+  absl::optional<int> contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  if (!contextGroupId.has_value()) {
+    return absl::optional<InspectorCSSAgent*>();
+  }
+
+  InspectorData *data = getInspectorFor(isolate, *contextGroupId);
 
   if (!data->inspectorCssAgent) {
     // NOTE: based on WebDevToolsAgentImpl::AttachSession
-    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, contextGroupId);
+    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, *contextGroupId);
 
     auto* resource_content_loader =
         MakeGarbageCollected<InspectorResourceContentLoader>(data->GetLocalFrameRoot());
     auto* resource_container =
         MakeGarbageCollected<InspectorResourceContainer>(inspectedFrames);
-    auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
-    auto* networkAgent = getOrCreateInspectorNetworkAgent(isolate);
+    auto domAgent = getOrCreateInspectorDOMAgent(isolate);
+
+    auto* networkAgent = *getOrCreateInspectorNetworkAgent(isolate);
     data->inspectorCssAgent = MakeGarbageCollected<InspectorCSSAgent>(
-        domAgent, inspectedFrames, networkAgent, resource_content_loader,
+        *domAgent, inspectedFrames, networkAgent, resource_content_loader,
         resource_container);
 
     // NOTE: we cannot easily enable without a full session active,
@@ -4191,8 +4254,13 @@ getObjectByCdpId(v8::Isolate* isolate,
   std::unique_ptr<v8_inspector::StringBuffer> error;
   v8::Local<v8::Value> unwrapped;
 
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);  
-  if (!getInspectorSession(isolate, contextGroupId)->unwrapObject(&error, cdpIdV8, &unwrapped, &context,
+  absl::optional<int> contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  if (!contextGroupId.has_value()) {
+    recordreplay::Warning("getObjectByCdpId - Failed to find contextGroupId");
+    return false;
+  }
+
+  if (!getInspectorSession(isolate, *contextGroupId)->unwrapObject(&error, cdpIdV8, &unwrapped, &context,
                                        nullptr)) {
     recordreplay::Warning("getObjectByCdpId - Failed to look up cdpId: %s",
                         ToCoreString(error->string()).Ascii().c_str());
@@ -4234,7 +4302,13 @@ static void fromJsMakeDebuggeeValue(
   CHECK(args.Length() == 1 &&
         "must be called with a single value");
 
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  auto contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+
+  if (!contextGroupId.has_value()) {
+      recordreplay::Warning("fromJsMakeDebuggeeValue - no valid context id");
+      args.GetReturnValue().SetNull();
+      return;
+  }
 
   auto context = isolate->GetCurrentContext();
   auto value = args[0];
@@ -4244,7 +4318,7 @@ static void fromJsMakeDebuggeeValue(
 
   // NOTE: `wrapObject` always creates a new `RemoteObject` and binds it
   // to a new id.
-  auto remoteObjSerialized = getInspectorSession(isolate, contextGroupId)->wrapObject(
+  auto remoteObjSerialized = getInspectorSession(isolate, *contextGroupId)->wrapObject(
       context, value, ToV8InspectorStringView(object_group), generatePreview);
 
   if (remoteObjSerialized) {
@@ -4263,14 +4337,21 @@ static void fromJsGetArgumentsInFrame(
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single object");
   v8::Isolate* isolate = args.GetIsolate();
-  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  auto contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+
+  if (!contextGroupId.has_value()) {
+    recordreplay::Warning("fromJsGetArgumentsInFrame - no valid context id");
+    args.GetReturnValue().SetNull();
+    return;
+  }
+
   // convert v8::String → v8::String::Utf8Value → v8_inspector::StringView
   // future-work: can this be improved?
   v8::String::Utf8Value frameId(isolate, args[0]);
   const uint8_t* frameIdPtr = reinterpret_cast<const uint8_t*>(*frameId);
   v8_inspector::StringView frameIdV8(frameIdPtr, frameId.length());
 
-  auto result = getInspectorSession(isolate, contextGroupId)->getArgumentsOfCallFrame(frameIdV8);
+  auto result = getInspectorSession(isolate, *contextGroupId)->getArgumentsOfCallFrame(frameIdV8);
 
   if (result.IsEmpty()) {
     args.GetReturnValue().SetNull();
@@ -4795,8 +4876,14 @@ static void fromJsGetNodeIdByCpdId(const v8::FunctionCallbackInfo<v8::Value>& ar
     Node* node = V8Node::ToImplWithTypeCheck(isolate, nodeObj);
     if (node) {
       // Bind node and get nodeId.
-      auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
-      int nodeId = domAgent->BindDocumentNode(node);
+      auto domAgent = getOrCreateInspectorDOMAgent(isolate);
+      if (!domAgent.has_value()) {
+        recordreplay::CommandDiagnostic("fromJsGetNodeIdByCpdId no context id.");
+        args.GetReturnValue().SetNull();
+        return;
+      }
+
+      int nodeId = (*domAgent)->BindDocumentNode(node);
       args.GetReturnValue().Set(v8::Number::New(isolate, nodeId));
       return;
     } else {
@@ -4817,13 +4904,18 @@ static void fromJsGetBoxModel(
   v8::Isolate* isolate = args.GetIsolate();
   auto nodeId = (int)args[0].As<v8::Integer>()->Value();
 
-  auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
+  auto domAgent = getOrCreateInspectorDOMAgent(isolate);
+  if (!domAgent.has_value()) {
+    recordreplay::CommandDiagnostic("CDP InspectorDOMAgent.getBoxModel no context id.");
+    args.GetReturnValue().SetNull();
+    return;
+  }
 
   int backend_node_id = 0;
   String object_id;
   std::unique_ptr<protocol::DOM::BoxModel> boxModel;
   auto response =
-      domAgent->getBoxModel(nodeId, backend_node_id, object_id, &boxModel);
+      (*domAgent)->getBoxModel(nodeId, backend_node_id, object_id, &boxModel);
 
   if (!response.IsSuccess()) {
     // This can happen when querying nodes that don't have a box model.
@@ -4851,7 +4943,12 @@ static void fromJsGetMatchedStylesForElement(
   v8::Isolate* isolate = args.GetIsolate();
   auto nodeId = (int)args[0].As<v8::Integer>()->Value();
 
-  auto* cssAgent = getOrCreateInspectorCSSAgent(isolate);
+  auto cssAgent = getOrCreateInspectorCSSAgent(isolate);
+  if (!cssAgent.has_value()) {
+    recordreplay::Warning("CDP CSS.getMatchedStylesForNode failed no context id");
+    args.GetReturnValue().SetNull();
+    return;
+  }
 
   Maybe<protocol::CSS::CSSStyle> inlineStyle;
   Maybe<protocol::CSS::CSSStyle> attributesStyle;
@@ -4862,7 +4959,7 @@ static void fromJsGetMatchedStylesForElement(
   Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>> keyframesRules;
   Maybe<int> parentLayoutNodeId;
 
-  auto response = cssAgent->getMatchedStylesForNode(
+  auto response = (*cssAgent)->getMatchedStylesForNode(
     nodeId, &inlineStyle, &attributesStyle, &matchedRules, &pseudoIdMatches,
     &inheritedEntries, &inherited_pseudo_id_matches, &keyframesRules,
     &parentLayoutNodeId);
@@ -4913,9 +5010,14 @@ static void fromJsCssGetStylesheetByCpdId(
   v8::Isolate* isolate = args.GetIsolate();
 
   auto sheetId = ToCoreString(args[0].As<v8::String>());
-  auto* cssAgent = getOrCreateInspectorCSSAgent(isolate);
+  auto cssAgent = getOrCreateInspectorCSSAgent(isolate);
+  if (!cssAgent.has_value()) {
+    recordreplay::Warning("fromJsCssGetStylesheetByCpdId failed no context id");
+    args.GetReturnValue().SetNull();
+    return;
+  }
 
-  CSSStyleSheet* styleSheet = cssAgent->getStyleSheet(sheetId);
+  CSSStyleSheet* styleSheet = (*cssAgent)->getStyleSheet(sheetId);
   v8::Local<v8::Value> v8StyleSheet;
   if (styleSheet && getV8FromBlinkObject(isolate, styleSheet, v8StyleSheet)) {
     args.GetReturnValue().Set(v8StyleSheet);
@@ -4932,7 +5034,11 @@ static void fromJsDomPerformSearch(
   v8::Isolate* isolate = args.GetIsolate();
 
   auto query = ToCoreString(args[0].As<v8::String>());
-  auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
+  auto domAgent = getOrCreateInspectorDOMAgent(isolate);
+  if (!domAgent.has_value()) {
+    recordreplay::Warning("fromJsDomPerformSearch failed no context id");
+    return;
+  }
 
   bool includeUserAgentShadowDom = true;
   String searchId;
@@ -4940,7 +5046,7 @@ static void fromJsDomPerformSearch(
 
   // NOTE: We modified performSearch to work even though the agent is not
   // enabled.
-  auto response = domAgent->performSearch(query, includeUserAgentShadowDom,
+  auto response = (*domAgent)->performSearch(query, includeUserAgentShadowDom,
                                           &searchId, &resultCount);
   if (checkCDPResponse("DOM.performSearch", response, args)) {
     if (resultCount) {
@@ -4948,13 +5054,13 @@ static void fromJsDomPerformSearch(
       int toIndex = resultCount;
       std::unique_ptr<protocol::Array<int>> nodeIds;
       response =
-          domAgent->getSearchResults(searchId, fromIndex, toIndex, &nodeIds);
+          (*domAgent)->getSearchResults(searchId, fromIndex, toIndex, &nodeIds);
       if (checkCDPResponse("DOM.getSearchResults", response, args)) {
         v8::Local<v8::Array> result = v8::Array::New(isolate);
         uint32_t nWritten = 0;
         for (uint32_t i = 0; i < nodeIds->size(); ++i) {
           int nodeId = (*nodeIds)[i];
-          auto* node = domAgent->NodeForId(nodeId);
+          auto* node = (*domAgent)->NodeForId(nodeId);
           v8::Local<v8::Value> v8Node;
           if (node && getV8FromBlinkObject(isolate, node, v8Node)) {
             v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -4969,7 +5075,7 @@ static void fromJsDomPerformSearch(
     }
 
     // clean up
-    domAgent->discardSearchResults(searchId);
+    (*domAgent)->discardSearchResults(searchId);
   }
 }
 
@@ -5176,6 +5282,10 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
       v8::Boolean::New(isolate,
                        TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE")));
 
+
+  DefineProperty(isolate, args, "CDPERROR_MISSINGCONTEXT",
+                 v8::Number::New(isolate, (double)CDPERROR_MISSINGCONTEXT));
+
   SetFunctionProperty(isolate, args, "log", LogCallback);
   SetFunctionProperty(isolate, args, "logTrace", LogTraceCallback);
   SetFunctionProperty(isolate, args, "warning", LogWarningCallback);
@@ -5248,9 +5358,6 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
 
 static void RecordReplaySetDefaultContext(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
   V8RecordReplaySetDefaultContext(isolate, context);
-
-  // TODO: gCurrentRootFrame should not be necessary anymore. Verify and get rid of it.
-  gCurrentRootFrame = &localFrame->LocalFrameRoot();
 }
 
 void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
