@@ -167,6 +167,9 @@ id<GREYMatcher> mostlyNotVisible() {
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);
   }
+  if ([self isRunningTest:@selector(testMinimumHeight)]) {
+    config.features_enabled.push_back(kMagicStack);
+  }
   return config;
 }
 
@@ -997,11 +1000,6 @@ id<GREYMatcher> mostlyNotVisible() {
 }
 
 - (void)testMinimumHeight {
-  // TODO(crbug.com/1493412): Re-enable on iPad
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
@@ -1023,24 +1021,13 @@ id<GREYMatcher> mostlyNotVisible() {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  if (IsMagicStackEnabled()) {
-    // Just check for Magic Stack visibility since the top module shown may
-    // vary.
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kMagicStackViewAccessibilityIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
-    for (NSInteger index = 0; index < 4; index++) {
-      [[EarlGrey
-          selectElementWithMatcher:
-              grey_accessibilityID([NSString
-                  stringWithFormat:
-                      @"%@%li",
-                      kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
-                      index])] assertWithMatcher:grey_sufficientlyVisible()];
-    }
-  }
+
+  // Just check for Magic Stack visibility since the top module shown may
+  // vary.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kMagicStackViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Ensures that fake omnibox visibility is correct.
   // On iPads, fake omnibox disappears and becomes real omnibox. On other
