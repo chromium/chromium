@@ -14,6 +14,11 @@
 #include "base/test/test_trace_processor_impl.h"
 #include "base/test/trace_test_utils.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_WIN)
+#define TEST_TRACE_PROCESSOR_ENABLED
+#endif
 
 namespace base::test {
 
