@@ -82,7 +82,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnCommitString(base::StringPiece text) override;
   void OnCursorPosition(int32_t index, int32_t anchor) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
-  void OnKeysym(uint32_t keysym, uint32_t state, uint32_t modifiers) override;
+  void OnKeysym(uint32_t keysym,
+                uint32_t state,
+                uint32_t modifiers,
+                uint32_t time) override;
   void OnSetPreeditRegion(int32_t index,
                           uint32_t length,
                           const std::vector<SpanStyle>& spans) override;

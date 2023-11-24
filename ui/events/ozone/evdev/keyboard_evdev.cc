@@ -49,8 +49,8 @@ void KeyboardEvdev::OnKeyChange(unsigned int key,
 
   key_state_.set(key, down);
   any_keys_are_pressed_callback_.Run(key_state_.any());
-  auto_repeat_handler_.UpdateKeyRepeat(key, scan_code, down,
-                                       suppress_auto_repeat, device_id);
+  auto_repeat_handler_.UpdateKeyRepeat(
+      key, scan_code, down, suppress_auto_repeat, device_id, timestamp);
   DispatchKey(key, scan_code, down, is_repeat, timestamp, device_id, flags);
 }
 

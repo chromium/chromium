@@ -666,7 +666,8 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
 
 void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
                                          uint32_t state,
-                                         uint32_t modifiers_bits) {
+                                         uint32_t modifiers_bits,
+                                         uint32_t time) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto* layout_engine = KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
   if (!layout_engine)
@@ -704,9 +705,10 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
 
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
-  key_delegate_->OnKeyboardKeyEvent(type, dom_code, /*repeat=*/false,
-                                    absl::nullopt, EventTimeForNow(), device_id,
-                                    WaylandKeyboard::KeyEventKind::kKey);
+  key_delegate_->OnKeyboardKeyEvent(
+      type, dom_code, /*repeat=*/false, absl::nullopt,
+      wl::EventMillisecondsToTimeTicks(time), device_id,
+      WaylandKeyboard::KeyEventKind::kKey);
 #else
   NOTIMPLEMENTED();
 #endif

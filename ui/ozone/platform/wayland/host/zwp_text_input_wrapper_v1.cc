@@ -462,7 +462,7 @@ void ZWPTextInputWrapperV1::OnKeysym(void* data,
                                      uint32_t state,
                                      uint32_t modifiers) {
   auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
-  self->client_->OnKeysym(key, state, modifiers);
+  self->client_->OnKeysym(key, state, modifiers, time);
 }
 
 // static
