@@ -233,7 +233,14 @@ class EnterpriseWelcomeUIDialogPixelTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIDialogPixelTest, InvokeUi_default) {
+// TODO(https://crbug.com/1504935): Fails too often on Windows tester bot.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIDialogPixelTest,
+                       MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
