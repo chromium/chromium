@@ -95,10 +95,8 @@ chromium-metrics-reviews@google.com.
     are tracking the time and the type of fetch (synchronous or asynchronous)
     from the user's perspective.
 
-    Recorded in two situations. 1. When an extended account info is updated and
-    the account info has Capabilities. 2. When the following conditions hold: an
-    Activity is resumed, the user is signed in and not syncing, and the primary
-    account info has Capabilities.
+    Recorded when the following conditions hold: an Activity is resumed, and the
+    user is signed in and not syncing.
 
     Android only.
   </summary>

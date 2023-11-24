@@ -42,7 +42,7 @@ class AccountCapabilitiesLatencyTracker implements IdentityManager.Observer {
         }
 
         if (hasCapabilities(accountInfo)) {
-            recordAvailability();
+            recordFetchLatency();
             mIdentityManager.removeObserver(this);
         }
     }
@@ -67,6 +67,7 @@ class AccountCapabilitiesLatencyTracker implements IdentityManager.Observer {
             return;
         }
 
+        recordNoImmediateAvailability();
         identityManager.addObserver(
                 new AccountCapabilitiesLatencyTracker(identityManager, accountInfo));
     }
@@ -76,10 +77,13 @@ class AccountCapabilitiesLatencyTracker implements IdentityManager.Observer {
         RecordHistogram.recordBooleanHistogram(IMMEDIATELY_AVAILABLE_HISTOGRAM_NAME, true);
     }
 
-    private void recordAvailability() {
+    private static void recordNoImmediateAvailability() {
+        RecordHistogram.recordBooleanHistogram(IMMEDIATELY_AVAILABLE_HISTOGRAM_NAME, false);
+    }
+
+    private void recordFetchLatency() {
         long latency = SystemClock.elapsedRealtime() - mCreated;
         RecordHistogram.recordTimesHistogram(USER_LATENCY_HISTOGRAM_NAME, latency);
         RecordHistogram.recordTimesHistogram(FETCH_LATENCY_HISTOGRAM_NAME, latency);
-        RecordHistogram.recordBooleanHistogram(IMMEDIATELY_AVAILABLE_HISTOGRAM_NAME, false);
     }
 }
