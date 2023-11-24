@@ -207,4 +207,66 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that incognito tabs are destroyed after supervised users sign in.
+- (void)testIncognitoTabsDestroyedOnSignin {
+  // Sign out of supervised user.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGrey verifySignedOut];
+
+  // Create new incognito tabs.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey openNewIncognitoTab];
+  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 2");
+
+  // The latest incognito tab is displayed.
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"Should stay in incognito mode");
+
+  // Sign in with a supervised user.
+  [self signInWithSupervisedAccount];
+
+  // If the supervised user was previously on an incognito tab, the disabled
+  // incognito tab grid should be displayed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+                                          kTestSupervisedIncognitoMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // All incognito tabs should be destroyed.
+  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 0");
+}
+
+// Tests that incognito tabs are destroyed while supervised users stay in
+// a regular tab.
+- (void)testIncognitoTabsDestroyedOnSigninInBackground {
+  // Sign out of supervised user.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGrey verifySignedOut];
+
+  // Create new incognito tabs.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey openNewIncognitoTab];
+  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 2");
+
+  // Open a new regular tab.
+  [ChromeEarlGrey openNewTab];
+  GREYAssertFalse([ChromeEarlGrey isIncognitoMode],
+                  @"Should stay in regular tab.");
+
+  // Sign in with a supervised user.
+  [self signInWithSupervisedAccount];
+
+  // The user should stay on the new tab page.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // All incognito tabs should be destroyed.
+  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 0");
+}
+
 @end

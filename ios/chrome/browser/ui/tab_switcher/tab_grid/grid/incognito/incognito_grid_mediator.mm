@@ -165,6 +165,11 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
       _incognitoDisabled = isDisabled;
       [self.incognitoDelegate shouldDisableIncognito:_incognitoDisabled];
     }
+    if (isDisabled) {
+      // Close all incognito tabs for supervised users. If the user was on an
+      // incognito tab, the disabled tab grid will be displayed.
+      [self closeAllItems];
+    }
   }
 }
 
@@ -190,8 +195,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
           prefs::kSupervisedUserId, _prefChangeRegistrar.get());
     }
 
-    // Pretend the preference changed to force setting _incognitoDisabled.
-    [self onPreferenceChanged:prefs::kSupervisedUserId];
+    _incognitoDisabled = [self isIncognitoModeDisabled];
   }
 }
 
