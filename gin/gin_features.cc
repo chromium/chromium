@@ -273,13 +273,13 @@ BASE_FEATURE(kWebAssemblyMoreAggressiveCodeCaching,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingThreshold{
     &kWebAssemblyMoreAggressiveCodeCaching, "WebAssemblyCodeCachingThreshold",
-    1'000'000};
+    1'000};
 const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingTimeoutMs{
     &kWebAssemblyMoreAggressiveCodeCaching, "WebAssemblyCodeCachingTimeoutMs",
-    0};
+    5000};
 const base::FeatureParam<int>
     kWebAssemblyMoreAggressiveCodeCachingHardThreshold{
         &kWebAssemblyMoreAggressiveCodeCaching,
-        "WebAssemblyCodeCachingHardThreshold", 10'000'000};
+        "WebAssemblyCodeCachingHardThreshold", 100'000};
 
 }  // namespace features
