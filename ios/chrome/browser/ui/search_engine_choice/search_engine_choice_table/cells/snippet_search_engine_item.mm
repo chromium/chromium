@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -15,22 +15,22 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "url/gurl.h"
 
-#pragma mark - SearchEngineItem
+#pragma mark - SnippetSearchEngineItem
 
-@interface SearchEngineItem ()
+@interface SnippetSearchEngineItem ()
 
 // Redefined as read write.
 @property(nonatomic, readwrite, copy) NSString* uniqueIdentifier;
 
 @end
 
-@implementation SearchEngineItem
+@implementation SnippetSearchEngineItem
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
-      self.cellClass = TableViewURLCell.class;
-      _enabled = YES;
+    self.cellClass = TableViewURLCell.class;
+    _enabled = YES;
   }
   return self;
 }
@@ -66,7 +66,7 @@
   [cell configureUILayout];
 }
 
-- (BOOL)isEqual:(SearchEngineItem*)otherItem {
+- (BOOL)isEqual:(SnippetSearchEngineItem*)otherItem {
   return (self.text == otherItem.text) &&
          (self.detailText == otherItem.detailText) &&
          (self.URL == otherItem.URL);

@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_consumer.h"
-#import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -72,7 +72,7 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
     [mediator_ disconnect];
   }
 
-  TemplateURL* ConvertToTemplateUrl(SearchEngineItem* item) {
+  TemplateURL* ConvertToTemplateUrl(SnippetSearchEngineItem* item) {
     return template_url_service_->GetTemplateURLForKeyword(
         TemplateURL::GenerateKeyword(item.URL));
   }
@@ -116,7 +116,7 @@ TEST_F(SearchEngineChoiceTableMediatorTest, SearchEngineListCorrectlyCreated) {
   // The list is randomly shuffled every time it is generated so we just check
   // that all the elements are there.
   ASSERT_EQ([consumer_.searchEngines count], search_engines.size());
-  for (SearchEngineItem* item in consumer_.searchEngines) {
+  for (SnippetSearchEngineItem* item in consumer_.searchEngines) {
     ASSERT_TRUE(
         base::ranges::find(search_engines, base::SysNSStringToUTF16(item.text),
                            &TemplateURL::short_name) != search_engines.end());

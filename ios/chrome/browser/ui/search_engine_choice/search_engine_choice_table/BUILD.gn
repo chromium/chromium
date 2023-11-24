@@ -25,7 +25,7 @@ source_set("search_engine_choice_table") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
@@ -46,7 +46,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/list_model",
-    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

@@ -9,7 +9,7 @@
 
 class FaviconLoader;
 @protocol SearchEngineChoiceConsumer;
-@class SearchEngineItem;
+@class SnippetSearchEngineItem;
 
 // Mediator that handles the selection operations.
 @interface SearchEngineChoiceMediator : NSObject
@@ -18,7 +18,7 @@ class FaviconLoader;
 @property(nonatomic, weak) id<SearchEngineChoiceConsumer> consumer;
 // The item selected by the user. Set when the user taps on a row of the search
 // engines choice table.
-@property(nonatomic, weak) SearchEngineItem* selectedItem;
+@property(nonatomic, weak) SnippetSearchEngineItem* selectedItem;
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;

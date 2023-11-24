@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -99,7 +99,7 @@ UIImageView* CreateCheckedCircle() {
   if (_searchEngines.count > 0) {
     [model addSectionWithIdentifier:kSectionIdentifierEnumZero];
 
-    for (SearchEngineItem* item : _searchEngines) {
+    for (SnippetSearchEngineItem* item : _searchEngines) {
       [model addItem:item toSectionWithIdentifier:kSectionIdentifierEnumZero];
     }
   }
@@ -115,8 +115,8 @@ UIImageView* CreateCheckedCircle() {
   // Iterate through the engines and remove the checkmark from any that have it.
   for (TableViewItem* item in
        [model itemsInSectionWithIdentifier:kSectionIdentifierEnumZero]) {
-    SearchEngineItem* textItem =
-        base::apple::ObjCCastStrict<SearchEngineItem>(item);
+    SnippetSearchEngineItem* textItem =
+        base::apple::ObjCCastStrict<SnippetSearchEngineItem>(item);
     if (textItem.accessoryType == UITableViewCellAccessoryCheckmark) {
       textItem.accessoryType = UITableViewCellAccessoryNone;
       UITableViewCell* cell =
@@ -127,8 +127,8 @@ UIImageView* CreateCheckedCircle() {
   }
 
   // Show the checkmark on the new default engine.
-  SearchEngineItem* newDefaultEngine =
-      base::apple::ObjCCastStrict<SearchEngineItem>(
+  SnippetSearchEngineItem* newDefaultEngine =
+      base::apple::ObjCCastStrict<SnippetSearchEngineItem>(
           [model itemAtIndexPath:indexPath]);
   newDefaultEngine.accessoryType = UITableViewCellAccessoryCheckmark;
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -152,8 +152,8 @@ UIImageView* CreateCheckedCircle() {
   }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  SearchEngineItem* engineItem =
-      base::apple::ObjCCastStrict<SearchEngineItem>(item);
+  SnippetSearchEngineItem* engineItem =
+      base::apple::ObjCCastStrict<SnippetSearchEngineItem>(item);
   TableViewURLCell* urlCell =
       base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
