@@ -246,11 +246,6 @@ export interface SiteSettingsPrefsBrowserProxy {
   getCategoryList(origin: string): Promise<ContentSettingsTypes[]>;
 
   /**
-   * Get the string which describes the current effective cookie setting.
-   */
-  getCookieSettingDescription(): Promise<string>;
-
-  /**
    * Gets most recently changed permissions grouped by host and limited to
    * numSources different origin/profile (inconigto/regular) pairings.
    * This includes permissions adjusted by embargo, but excludes any set
@@ -531,10 +526,6 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getCategoryList(origin: string) {
     return sendWithPromise('getCategoryList', origin);
-  }
-
-  getCookieSettingDescription() {
-    return sendWithPromise('getCookieSettingDescription');
   }
 
   getRecentSitePermissions(numSources: number) {

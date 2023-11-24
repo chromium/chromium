@@ -59,9 +59,7 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <template is="dom-if"
-          if="[[isPrivacySandboxSettings4CookiesPageEnabled_(
-            isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
+        <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
           <cr-link-row id="thirdPartyCookiesLinkRow"
               start-icon="settings:cookie"
               class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
@@ -71,29 +69,17 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <template is="dom-if"
-          if="[[isPrivacySandboxSettings3CookiesPageEnabled_(
-            isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
-          <cr-link-row id="cookiesLinkRow" start-icon="settings:cookie"
-              class="hr" label="$i18n{cookiePageTitle}"
-              sub-label="[[cookieSettingDescription_]]"
-              on-click="onCookiesClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
         <template is="dom-if" if=
-            "[[isPrivacySandboxSettings4Enabled_(
+            "[[shouldShowAdPrivacy_(
                 isPrivacySandboxRestricted_,
-                isPrivacySandboxRestrictedNoticeEnabled_,
-                isPrivacySandboxSettings4_)]]">
+                isPrivacySandboxRestrictedNoticeEnabled_)]]">
           <cr-link-row id="privacySandboxLinkRow"
               start-icon="settings20:ads-click"
               class="hr"
               label="$i18n{adPrivacyLinkRowLabel}"
               sub-label="[[computeAdPrivacySublabel_(
                   isPrivacySandboxRestricted_,
-                  isPrivacySandboxRestrictedNoticeEnabled_,
-                  isPrivacySandboxSettings4_)]]"
+                  isPrivacySandboxRestrictedNoticeEnabled_)]]"
               on-click="onPrivacySandboxClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
@@ -313,9 +299,7 @@
           </settings-subpage>
         </template>
       </template>
-      <template is="dom-if"
-        if="[[isPrivacySandboxSettings4CookiesPageEnabled_(
-          isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
+      <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
         <template is="dom-if" route-path="/cookies">
           <settings-subpage id="cookies"
               page-title="$i18n{thirdPartyCookiesPageTitle}"
@@ -323,22 +307,6 @@
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}"
               associated-control="[[$$('#thirdPartyCookiesLinkRow')]]">
-            <settings-cookies-page prefs="{{prefs}}"
-                focus-config="[[focusConfig_]]"
-                search-term="[[searchFilter_]]">
-            </settings-cookies-page>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if"
-        if="[[isPrivacySandboxSettings3CookiesPageEnabled_(
-          isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
-        <template is="dom-if" route-path="/cookies">
-          <settings-subpage id="cookies" page-title="$i18n{cookiePageTitle}"
-              learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}"
-              associated-control="[[$$('#cookiesLinkRow')]]">
             <settings-cookies-page prefs="{{prefs}}"
                 focus-config="[[focusConfig_]]"
                 search-term="[[searchFilter_]]">
@@ -430,16 +398,14 @@
           </settings-subpage>
         </template>
       </template>
-      <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
-        <template is="dom-if" route-path="/content/siteData" no-search>
-          <settings-subpage page-title="$i18n{siteDataPageTitle}"
-                search-label="$i18n{siteSettingsAllSitesSearch}"
-                search-term="{{searchFilter_}}">
-            <settings-site-data prefs="{{prefs}}"
-                search-term="[[searchFilter_]]">
-            </settings-site-data>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/content/siteData" no-search>
+        <settings-subpage page-title="$i18n{siteDataPageTitle}"
+              search-label="$i18n{siteSettingsAllSitesSearch}"
+              search-term="{{searchFilter_}}">
+          <settings-site-data prefs="{{prefs}}"
+              search-term="[[searchFilter_]]">
+          </settings-site-data>
+        </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/location" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryLocation}"

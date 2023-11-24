@@ -144,9 +144,6 @@ class SiteSettingsHandler
   // the front end when fetching finished.
   void HandleGetAllSites(const base::Value::List& args);
 
-  // Returns a string for display describing the current cookie settings.
-  void HandleGetCookieSettingDescription(const base::Value::List& args);
-
   // Returns a list containing the most recent permission changes for the
   // content types that are visiblein settings, grouped by origin/profile
   // (incognito, regular) combinations, limited to N origin/profile pairings.
@@ -292,10 +289,6 @@ class SiteSettingsHandler
   // TODO(crbug.com/1271155): This function is a temporary hack while the
   // CookiesTreeModel is deprecated.
   void RemoveNonModelData(const std::vector<url::Origin>& origins);
-
-  // Notifies the JS side the effective cookies setting has changed and
-  // provides the updated description label for display.
-  void SendCookieSettingDescription();
 
   // Returns a dictionary containing the lists of the allowed permission
   // grant objects granted via the File System Access API, per origin.

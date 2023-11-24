@@ -56,7 +56,6 @@ interface BlockAutoplayStatus {
 export interface SettingsPrivacyPageElement {
   $: {
     clearBrowsingData: CrLinkRowElement,
-    cookiesLinkRow: CrLinkRowElement,
     permissionsLinkRow: CrLinkRowElement,
     securityLinkRow: CrLinkRowElement,
   };
@@ -101,8 +100,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
           return loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter');
         },
       },
-
-      cookieSettingDescription_: String,
 
       enableBlockAutoplayContentSetting_: {
         type: Boolean,
@@ -171,11 +168,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
-      isPrivacySandboxSettings4_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
-      },
-
       is3pcdRedesignEnabled_: {
         type: Boolean,
         value: () =>
@@ -225,12 +217,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
           }
 
           if (routes.COOKIES) {
-            const selector =
-                loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
-                '#thirdPartyCookiesLinkRow' :
-                '#cookiesLinkRow';
-            map.set(`${routes.COOKIES.path}_${routes.PRIVACY.path}`, selector);
-            map.set(`${routes.COOKIES.path}_${routes.BASIC.path}`, selector);
+            map.set(
+                `${routes.COOKIES.path}_${routes.PRIVACY.path}`,
+                '#thirdPartyCookiesLinkRow');
+            map.set(
+                `${routes.COOKIES.path}_${routes.BASIC.path}`,
+                '#thirdPartyCookiesLinkRow');
           }
 
           if (routes.TRACKING_PROTECTION) {
@@ -335,7 +327,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private showClearBrowsingDataDialog_: boolean;
   private showPrivacyGuideDialog_: boolean;
   private enableSafeBrowsingSubresourceFilter_: boolean;
-  private cookieSettingDescription_: string;
   private enableBlockAutoplayContentSetting_: boolean;
   private blockAutoplayStatus_: BlockAutoplayStatus;
   private blockMidiByDefault_: boolean;
@@ -347,7 +338,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
-  private isPrivacySandboxSettings4_: boolean;
   private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
@@ -387,13 +377,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         'onBlockAutoplayStatusChanged',
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
-
-    this.siteSettingsPrefsBrowserProxy_.getCookieSettingDescription().then(
-        (description: string) => this.cookieSettingDescription_ = description);
-
-    this.addWebUiListener(
-        'cookieSettingDescriptionChanged',
-        (description: string) => this.cookieSettingDescription_ = description);
 
     if (this.safetyCheckNotificationPermissionsEnabled_ && !this.isGuest_) {
       this.addWebUiListener(
@@ -594,23 +577,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     }
   }
 
-  private isPrivacySandboxSettings3Enabled_(): boolean {
-    return !this.isPrivacySandboxRestricted_ &&
-        !this.isPrivacySandboxSettings4_;
-  }
-
-  private isPrivacySandboxSettings4Enabled_(): boolean {
-    return (!this.isPrivacySandboxRestricted_ ||
-            this.isPrivacySandboxRestrictedNoticeEnabled_) &&
-        this.isPrivacySandboxSettings4_;
-  }
-
-  private isPrivacySandboxSettings4CookiesPageEnabled_(): boolean {
-    return this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
-  }
-
-  private isPrivacySandboxSettings3CookiesPageEnabled_(): boolean {
-    return !this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
+  private shouldShowAdPrivacy_(): boolean {
+    return !this.isPrivacySandboxRestricted_ ||
+        this.isPrivacySandboxRestrictedNoticeEnabled_;
   }
 
   private onSafetyHubButtonClick_() {

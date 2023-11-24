@@ -29,7 +29,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   private ignoredProtocols_: HandlerEntry[] = [];
   private isOriginValid_: boolean = true;
   private isPatternValidForType_: boolean = true;
-  private cookieSettingDesciption_: string = '';
   private recentSitePermissions_: RecentSitePermissions[] = [];
   private fileSystemGrantsList_: OriginFileSystemGrants[] = [];
   private storageAccessExceptionList_: StorageAccessSiteException[] = [];
@@ -68,7 +67,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'clearUnpartitionedOriginDataAndCookies',
       'clearPartitionedOriginDataAndCookies',
       'recordAction',
-      'getCookieSettingDescription',
       'getRecentSitePermissions',
       'getFpsMembershipLabel',
       'getNumCookiesString',
@@ -584,16 +582,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   /** @override */
   recordAction() {
     this.methodCalled('recordAction');
-  }
-
-  setCookieSettingDescription(label: string) {
-    this.cookieSettingDesciption_ = label;
-  }
-
-  /** @override */
-  getCookieSettingDescription() {
-    this.methodCalled('getCookieSettingDescription');
-    return Promise.resolve(this.cookieSettingDesciption_);
   }
 
   setRecentSitePermissions(permissions: RecentSitePermissions[]) {
