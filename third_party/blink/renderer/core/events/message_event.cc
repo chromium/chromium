@@ -153,9 +153,9 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       ports_(ports),
       user_activation_(user_activation) {
   recordreplay::Assert(
-    "[RUN-2037-2901] MessageEvent::MessageEvent A %d %zu %s",
-    source->RecordReplayId(),
-    data->DataLengthInBytes(),
+    "[RUN-2037-2901] MessageEvent::MessageEvent A %d %d %s",
+    source ? source->RecordReplayId() : -1,
+    data ? (int)data->DataLengthInBytes() : -1,
     last_event_id.Utf8().c_str());
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
@@ -180,9 +180,9 @@ MessageEvent::MessageEvent(
       user_activation_(user_activation),
       delegated_capability_(delegated_capability) {
   recordreplay::Assert(
-    "[RUN-2037-2901] MessageEvent::MessageEvent B %d %zu %s",
-    source->RecordReplayId(),
-    data->DataLengthInBytes(),
+    "[RUN-2037-2901] MessageEvent::MessageEvent B %d %d %s",
+    source ? source->RecordReplayId() : -1,
+    data ? (int)data->DataLengthInBytes() : -1,
     last_event_id.Utf8().c_str());
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
@@ -276,10 +276,10 @@ void MessageEvent::initMessageEvent(
     UserActivation* user_activation,
     mojom::blink::DelegatedCapability delegated_capability) {
 
-  recordreplay::Assert("[RUN-2037-2901] MessageEvent::initMessageEvent %d %d %zu %s %s",
+  recordreplay::Assert("[RUN-2037-2901] MessageEvent::initMessageEvent %d %d %d %s %s",
     source ? source->RecordReplayId() : -1,
     (int)eventPhase(),
-    data->DataLengthInBytes(),
+    data ? (int)data->DataLengthInBytes() : -1,
     last_event_id.Utf8().c_str(),
     type.Utf8().c_str());
 
