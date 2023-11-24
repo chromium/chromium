@@ -375,6 +375,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kPasswordGenerationBottomSheet,
     &password_manager::features::kPasswordEditDialogWithDetails,
     &password_manager::features::kRecoverFromNeverSaveAndroid,
+    &password_manager::features::kSharedPasswordNotificationUI,
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kPermissionsPromptSurvey,
