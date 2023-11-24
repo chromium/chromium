@@ -62,7 +62,7 @@ class LineBreakStrategy {
                     const InlineNode& node,
                     const ComputedStyle& block_style,
                     const InlineBreakToken* break_token,
-                    const NGColumnSpannerPath* column_spanner_path) {
+                    const ColumnSpannerPath* column_spanner_path) {
     if (!column_spanner_path) {
       const TextWrap text_wrap = block_style.GetTextWrap();
       if (UNLIKELY(text_wrap == TextWrap::kBalance)) {
@@ -234,7 +234,7 @@ InlineLayoutAlgorithm::InlineLayoutAlgorithm(
     InlineNode inline_node,
     const ConstraintSpace& space,
     const InlineBreakToken* break_token,
-    const NGColumnSpannerPath* column_spanner_path,
+    const ColumnSpannerPath* column_spanner_path,
     InlineChildLayoutContext* context)
     : LayoutAlgorithm(inline_node,
                       &inline_node.Style(),
@@ -1050,7 +1050,7 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
       PositionedFloat positioned_float =
           PositionFloat(origin_bfc_block_offset, child.unpositioned_float,
                         &GetExclusionSpace());
-      const NGBlockBreakToken* break_token = positioned_float.BreakToken();
+      const BlockBreakToken* break_token = positioned_float.BreakToken();
       if (break_token) {
         const auto* parallel_token =
             InlineBreakToken::CreateForParallelBlockFlow(
@@ -1659,13 +1659,13 @@ const NGLayoutResult* InlineLayoutAlgorithm::Layout() {
     }
 
     // Success!
-    container_builder_.SetBreakToken(line_info.BreakToken());
+    container_builder_.SetBreakToken(line_info.GetBreakToken());
     container_builder_.SetBaseDirection(line_info.BaseDirection());
 
     // Propagate any break tokens for floats that we fragmented before or inside
     // to the block container in 3 steps: 1) in `PositionLeadingFloats`, 2) from
     // `LineInfo` here, 3) then `CreateLine` may propagate more.
-    for (const NGBreakToken* parallel_token :
+    for (const BreakToken* parallel_token :
          line_info.ParallelFlowBreakTokens()) {
       DCHECK(parallel_token->IsInlineType());
       DCHECK(To<InlineBreakToken>(parallel_token)->IsInParallelBlockFlow());

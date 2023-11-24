@@ -13,7 +13,7 @@ namespace blink {
 // breakpoint with the highest appeal (first priority) that has progressed the
 // furthest through the content (second priority). The list here is sorted by
 // rule violation severity, i.e. reverse appeal.
-enum NGBreakAppeal {
+enum BreakAppeal {
   // We're attempting to break at a really undesirable place. This is not a
   // valid class A, B or C breakpoint [1]. The only requirement we're satisfying
   // is to not slice monolithic content.
@@ -34,7 +34,7 @@ enum NGBreakAppeal {
 };
 
 // Keep this one in sync with the above enum.
-const int kNGBreakAppealBitsNeeded = 2;
+const int kBreakAppealBitsNeeded = 2;
 
 }  // namespace blink
 

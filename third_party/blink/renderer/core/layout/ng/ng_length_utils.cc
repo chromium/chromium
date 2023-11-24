@@ -1299,7 +1299,7 @@ LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
 // Returns |kIndefiniteSize| in all other cases.
 LayoutUnit CalculateDefaultBlockSize(const ConstraintSpace& space,
                                      const BlockNode& node,
-                                     const NGBlockBreakToken* break_token,
+                                     const BlockBreakToken* break_token,
                                      const BoxStrut& border_scrollbar_padding) {
   // In quirks mode, html and body elements will completely fill the ICB, block
   // percentages should resolve against this size.
@@ -1315,7 +1315,7 @@ LayoutUnit CalculateDefaultBlockSize(const ConstraintSpace& space,
 FragmentGeometry CalculateInitialFragmentGeometry(
     const ConstraintSpace& space,
     const BlockNode& node,
-    const NGBlockBreakToken* break_token,
+    const BlockBreakToken* break_token,
     bool is_intrinsic) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     return node.ComputeMinMaxSizes(space.GetWritingMode(), type, space);
@@ -1435,7 +1435,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
 LayoutUnit ClampIntrinsicBlockSize(
     const ConstraintSpace& space,
     const BlockNode& node,
-    const NGBlockBreakToken* break_token,
+    const BlockBreakToken* break_token,
     const BoxStrut& border_scrollbar_padding,
     LayoutUnit current_intrinsic_block_size,
     absl::optional<LayoutUnit> body_margin_block_sum) {

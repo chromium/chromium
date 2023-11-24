@@ -27,7 +27,7 @@ struct CORE_EXPORT UnpositionedFloat final {
 
  public:
   UnpositionedFloat(BlockNode node,
-                    const NGBlockBreakToken* token,
+                    const BlockBreakToken* token,
                     const LogicalSize available_size,
                     const LogicalSize percentage_size,
                     const LogicalSize replaced_percentage_size,
@@ -44,7 +44,7 @@ struct CORE_EXPORT UnpositionedFloat final {
         parent_style(parent_style) {}
 
   BlockNode node;
-  const NGBlockBreakToken* token = nullptr;
+  const BlockBreakToken* token = nullptr;
 
   const LogicalSize available_size;
   const LogicalSize percentage_size;

@@ -1611,8 +1611,8 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
 
 const NGLayoutResult* InlineNode::Layout(
     const ConstraintSpace& constraint_space,
-    const NGBreakToken* break_token,
-    const NGColumnSpannerPath* column_spanner_path,
+    const BreakToken* break_token,
+    const ColumnSpannerPath* column_spanner_path,
     InlineChildLayoutContext* context) const {
   PrepareLayoutIfNeeded();
 

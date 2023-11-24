@@ -62,12 +62,11 @@ class CORE_EXPORT InlineChildLayoutContext {
     item_index_ = item_index;
   }
 
-  const HeapVector<Member<const NGBreakToken>>& ParallelFlowBreakTokens()
-      const {
+  const HeapVector<Member<const BreakToken>>& ParallelFlowBreakTokens() const {
     return parallel_flow_break_tokens_;
   }
   void ClearParallelFlowBreakTokens();
-  void PropagateParallelFlowBreakToken(const NGBreakToken*);
+  void PropagateParallelFlowBreakToken(const BreakToken*);
 
   const absl::optional<LayoutUnit>& BalancedAvailableWidth() const {
     return balanced_available_width_;
@@ -99,7 +98,7 @@ class CORE_EXPORT InlineChildLayoutContext {
   const HeapVector<InlineItem>* items_ = nullptr;
   unsigned item_index_ = 0;
 
-  HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;
+  HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 
   // Used by `ParagraphLineBreaker`.
   absl::optional<LayoutUnit> balanced_available_width_;

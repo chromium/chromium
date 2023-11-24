@@ -990,8 +990,8 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
   ClearCollectionScope<HeapVector<MulticolChildInfo>> multicol_scope(
       &multicol_children);
 
-  const NGBlockBreakToken* current_column_break_token = nullptr;
-  const NGBlockBreakToken* previous_multicol_break_token = nullptr;
+  const BlockBreakToken* current_column_break_token = nullptr;
+  const BlockBreakToken* previous_multicol_break_token = nullptr;
 
   LayoutUnit column_inline_progression = kIndefiniteSize;
   LogicalOffset multicol_offset = multicol_info->multicol_offset;
@@ -1051,7 +1051,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
           converter.ToLogical(child.Offset(), fragment->Size());
       if (fragment->IsFragmentainerBox()) {
         current_column_break_token =
-            To<NGBlockBreakToken>(fragment->GetBreakToken());
+            To<BlockBreakToken>(fragment->GetBreakToken());
         current_column_index = multicol_children.size();
         last_fragment_with_fragmentainer = multicol_box_fragment;
       }
@@ -1066,15 +1066,14 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // (representing the last column laid out in that fragment). Thus, search
     // for |current_column_break_token| in |multicol_box_fragment|'s list of
     // child break tokens and update the stored MulticolChildInfo if found.
-    const NGBlockBreakToken* break_token =
-        multicol_box_fragment->GetBreakToken();
+    const BlockBreakToken* break_token = multicol_box_fragment->GetBreakToken();
     if (current_column_index != kNotFound && break_token &&
         break_token->ChildBreakTokens().size()) {
       // If there is a column break token, it will be the last item in its
       // parent's list of break tokens.
       const auto children = break_token->ChildBreakTokens();
-      const NGBlockBreakToken* child_token =
-          To<NGBlockBreakToken>(children[children.size() - 1].Get());
+      const BlockBreakToken* child_token =
+          To<BlockBreakToken>(children[children.size() - 1].Get());
       if (child_token == current_column_break_token) {
         MulticolChildInfo& child_info = multicol_children[current_column_index];
         child_info.parent_break_token = break_token;
@@ -2148,7 +2147,7 @@ const NGLayoutResult* OutOfFlowLayoutPart::GenerateFragment(
     bool is_last_fragmentainer_so_far) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
-  const NGBlockBreakToken* break_token = oof_node_to_layout.break_token;
+  const BlockBreakToken* break_token = oof_node_to_layout.break_token;
   const BlockNode& node = node_info.node;
   const auto& style = node.Style();
   const LayoutUnit block_offset = offset_info.offset.block_offset;
@@ -2280,7 +2279,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
       fragmentainer.offset, index, fragmentainer_progression, is_new_fragment);
 
-  const NGBlockBreakToken* previous_break_token = nullptr;
+  const BlockBreakToken* previous_break_token = nullptr;
   if (!column_balancing_info_) {
     // Note: We don't fetch this when column balancing because we don't actually
     // create and add new fragments to the builder until a later layout pass.
@@ -2382,7 +2381,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
 
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-  const NGBlockBreakToken* break_token = physical_fragment.GetBreakToken();
+  const BlockBreakToken* break_token = physical_fragment.GetBreakToken();
   if (break_token) {
     // We must continue layout in the next fragmentainer. Update any information
     // in NodeToLayout, and add the node to |fragmented_descendants|.
@@ -2570,7 +2569,7 @@ ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   // outer fragmentainer anyway (we'll always stay in the current outer
   // fragmentainer and just create overflowing columns in the current row,
   // rather than moving to the next one).
-  NGBreakAppeal min_break_appeal = kBreakAppealLastResort;
+  BreakAppeal min_break_appeal = kBreakAppealLastResort;
 
   return CreateConstraintSpaceForFragmentainer(
       GetConstraintSpace(), GetFragmentainerType(), column_size,

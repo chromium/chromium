@@ -2140,7 +2140,7 @@ TEST_F(BlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
   // float2 should only have one fragment.
   EXPECT_EQ(PhysicalSize(60, 200), float2->Size());
   ASSERT_TRUE(float2->IsBox());
-  const NGBreakToken* break_token =
+  const BreakToken* break_token =
       To<NGPhysicalBoxFragment>(float2)->GetBreakToken();
   EXPECT_FALSE(break_token);
 }

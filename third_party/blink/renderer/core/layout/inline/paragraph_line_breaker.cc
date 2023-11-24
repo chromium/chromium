@@ -74,7 +74,7 @@ struct LineBreakResults {
       if (line_breaker.ShouldDisableBisectLineBreak()) {
         return Status::kNotApplicable;
       }
-      break_token_ = line_info.BreakToken();
+      break_token_ = line_info.GetBreakToken();
       lines_.push_back(LineBreakResult{line_info.Width()});
       DCHECK_LE(lines_.size(), MaxLinesToBisectForBalance());
       if (!break_token_ ||

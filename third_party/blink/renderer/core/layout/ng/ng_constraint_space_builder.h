@@ -260,7 +260,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
         true;
   }
 
-  void SetMinBreakAppeal(NGBreakAppeal min_break_appeal) {
+  void SetMinBreakAppeal(BreakAppeal min_break_appeal) {
     if (!space_.HasRareData() && min_break_appeal == kBreakAppealLastResort)
       return;
     space_.EnsureRareData()->min_break_appeal = min_break_appeal;

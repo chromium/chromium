@@ -325,7 +325,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   PhysicalRect OverflowClipRect(
       const PhysicalOffset& location,
-      const NGBlockBreakToken* incoming_break_token,
+      const BlockBreakToken* incoming_break_token,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   gfx::Vector2d PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;
@@ -392,8 +392,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                             IncludeBorderBottom(), IncludeBorderLeft());
   }
 
-  const NGBlockBreakToken* GetBreakToken() const {
-    return To<NGBlockBreakToken>(NGPhysicalFragment::GetBreakToken());
+  const BlockBreakToken* GetBreakToken() const {
+    return To<BlockBreakToken>(NGPhysicalFragment::GetBreakToken());
   }
 
   // Return true if this is the first fragment generated from a node.
@@ -497,7 +497,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       fragment_.bit_field_.set<IsFirstForNodeFlag>(false);
     }
     void ClearPropagatedOOFs() { fragment_.ClearOofData(); }
-    void SetBreakToken(const NGBlockBreakToken* token) {
+    void SetBreakToken(const BlockBreakToken* token) {
       fragment_.break_token_ = token;
     }
     base::span<PhysicalFragmentLink> Children() const {

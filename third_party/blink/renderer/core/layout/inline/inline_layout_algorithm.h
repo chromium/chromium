@@ -19,6 +19,7 @@
 
 namespace blink {
 
+class ColumnSpannerPath;
 class ConstraintSpace;
 class ExclusionSpace;
 class InlineBreakToken;
@@ -27,7 +28,6 @@ class InlineItem;
 class InlineLayoutStateStack;
 class InlineNode;
 class LineInfo;
-class NGColumnSpannerPath;
 struct InlineBoxState;
 struct InlineItemResult;
 struct LeadingFloats;
@@ -46,7 +46,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   InlineLayoutAlgorithm(InlineNode,
                         const ConstraintSpace&,
                         const InlineBreakToken*,
-                        const NGColumnSpannerPath*,
+                        const ColumnSpannerPath*,
                         InlineChildLayoutContext* context);
   ~InlineLayoutAlgorithm() override;
 
@@ -140,7 +140,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   InlineLayoutStateStack* box_states_;
   InlineChildLayoutContext* context_;
 
-  const NGColumnSpannerPath* column_spanner_path_;
+  const ColumnSpannerPath* column_spanner_path_;
 
   MarginStrut end_margin_strut_;
   absl::optional<int> lines_until_clamp_;

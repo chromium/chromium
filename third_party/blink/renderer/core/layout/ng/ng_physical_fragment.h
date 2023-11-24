@@ -615,7 +615,7 @@ class CORE_EXPORT NGPhysicalFragment
     const PhysicalFragmentLink* buffer_;
   };
 
-  const NGBreakToken* GetBreakToken() const { return break_token_.Get(); }
+  const BreakToken* GetBreakToken() const { return break_token_.Get(); }
 
   base::span<const PhysicalFragmentLink> Children() const;
 
@@ -805,7 +805,7 @@ class CORE_EXPORT NGPhysicalFragment
   uint8_t base_direction_ : 1;  // NOLINT, TextDirection
 
   Member<const PropagatedData> propagated_data_;
-  Member<const NGBreakToken> break_token_;
+  Member<const BreakToken> break_token_;
   Member<OofData> oof_data_;
 };
 

@@ -69,9 +69,9 @@ bool LayoutBox::IsUserScrollable() const {
 
 const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const ConstraintSpace& new_space,
-    const NGBlockBreakToken* break_token,
-    const NGEarlyBreak* early_break,
-    const NGColumnSpannerPath* column_spanner_path,
+    const BlockBreakToken* break_token,
+    const EarlyBreak* early_break,
+    const ColumnSpannerPath* column_spanner_path,
     absl::optional<FragmentGeometry>* initial_fragment_geometry,
     NGLayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
@@ -289,8 +289,9 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (physical_fragment.HasOutOfFlowFragmentChild())
         return nullptr;
 
-      if (column_spanner_path || cached_layout_result->ColumnSpannerPath())
+      if (column_spanner_path || cached_layout_result->GetColumnSpannerPath()) {
         return nullptr;
+      }
 
       // Break appeal may have been reduced because the fragment crosses the
       // fragmentation line, to send a strong signal to break before it

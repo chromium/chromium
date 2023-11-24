@@ -78,7 +78,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   void AdjustBorderScrollbarPaddingForFragmentation(
-      const NGBlockBreakToken* break_token) {
+      const BlockBreakToken* break_token) {
     if (LIKELY(!break_token))
       return;
     if (break_token->IsBreakBefore())
@@ -198,7 +198,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   // children it may be omitted, if the break shouldn't affect the appeal of
   // breaking inside this container.
   void AddBreakBeforeChild(LayoutInputNode child,
-                           absl::optional<NGBreakAppeal> appeal,
+                           absl::optional<BreakAppeal> appeal,
                            bool is_forced_break);
 
   // Add a layout result and propagate info from it. This involves appending the
@@ -232,7 +232,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
-  void AddBreakToken(const NGBreakToken*, bool is_in_parallel_flow = false);
+  void AddBreakToken(const BreakToken*, bool is_in_parallel_flow = false);
 
   // Before layout we'll determine whether we can tell for sure that the node
   // (or what's left of it to lay out, in case we've already broken) will fit in
@@ -278,7 +278,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   // Set how much to adjust |consumed_block_size_| for legacy write-back. See
-  // NGBlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
+  // BlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
   void SetConsumedBlockSizeLegacyAdjustment(LayoutUnit adjustment) {
     EnsureBreakTokenData()->consumed_block_size_legacy_adjustment = adjustment;
   }
@@ -307,7 +307,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   // During regular layout a break token is created at the end of layout, if
   // required. When re-using a previous fragment and its children, though, we
   // may want to just re-use the break token as well.
-  void PresetNextBreakToken(const NGBreakToken* break_token) {
+  void PresetNextBreakToken(const BreakToken* break_token) {
     // We should either do block fragmentation as part of normal layout, or
     // pre-set a break token.
     DCHECK(!did_break_self_);
@@ -331,7 +331,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
       return false;
     for (auto& child_token : child_break_tokens_) {
       const auto* block_child_token =
-          DynamicTo<NGBlockBreakToken>(child_token.Get());
+          DynamicTo<BlockBreakToken>(child_token.Get());
       if (!block_child_token || !block_child_token->IsRepeated())
         return true;
     }
@@ -422,11 +422,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     inflow_bounds_ = inflow_bounds;
   }
 
-  void SetEarlyBreak(const NGEarlyBreak* breakpoint) {
+  void SetEarlyBreak(const EarlyBreak* breakpoint) {
     early_break_ = breakpoint;
   }
   bool HasEarlyBreak() const { return early_break_; }
-  const NGEarlyBreak& GetEarlyBreak() const {
+  const EarlyBreak& GetEarlyBreak() const {
     DCHECK(early_break_);
     return *early_break_;
   }
@@ -575,15 +575,15 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
   bool HasBreakTokenData() const { return break_token_data_; }
 
-  NGBlockBreakTokenData* EnsureBreakTokenData() {
+  BlockBreakTokenData* EnsureBreakTokenData() {
     if (!HasBreakTokenData())
-      break_token_data_ = MakeGarbageCollected<NGBlockBreakTokenData>();
+      break_token_data_ = MakeGarbageCollected<BlockBreakTokenData>();
     return break_token_data_;
   }
 
-  NGBlockBreakTokenData* GetBreakTokenData() { return break_token_data_; }
+  BlockBreakTokenData* GetBreakTokenData() { return break_token_data_; }
 
-  void SetBreakTokenData(NGBlockBreakTokenData* break_token_data) {
+  void SetBreakTokenData(BlockBreakTokenData* break_token_data) {
     break_token_data_ = break_token_data;
   }
 
@@ -618,7 +618,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
   bool HasForcedBreak() const { return has_forced_break_; }
 
-  const NGBreakToken* LastChildBreakToken() const {
+  const BreakToken* LastChildBreakToken() const {
     DCHECK(!child_break_tokens_.empty());
     return child_break_tokens_.back().Get();
   }
@@ -693,7 +693,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   wtf_size_t table_section_start_row_index_;
   Vector<LayoutUnit> table_section_row_offsets_;
 
-  NGBlockBreakTokenData* break_token_data_ = nullptr;
+  BlockBreakTokenData* break_token_data_ = nullptr;
 
   // Grid specific types.
   std::unique_ptr<GridLayoutData> grid_layout_data_;
@@ -719,7 +719,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   bool is_inflow_bounds_explicitly_set_ = false;
 #endif
 
-  friend class NGBlockBreakToken;
+  friend class BlockBreakToken;
   friend class NGPhysicalBoxFragment;
   friend class NGLayoutResult;
   friend class PhysicalFragmentRareData;

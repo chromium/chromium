@@ -41,7 +41,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
 
   auto CreateCellConstraintSpace =
       [this, &table_data](
-          BlockNode cell, const NGBlockBreakToken* cell_break_token,
+          BlockNode cell, const BlockBreakToken* cell_break_token,
           const TableConstraintSpaceData::Cell& cell_data,
           LayoutUnit row_block_size, absl::optional<LayoutUnit> row_baseline,
           bool min_block_size_should_encompass_intrinsic_size) {
@@ -143,7 +143,7 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
     for (auto entry = child_iterator.NextChild();
          BlockNode cell = To<BlockNode>(entry.node);
          entry = child_iterator.NextChild()) {
-      const auto* cell_break_token = To<NGBlockBreakToken>(entry.token);
+      const auto* cell_break_token = To<BlockBreakToken>(entry.token);
       const auto& cell_style = cell.Style();
       const wtf_size_t cell_index = row.start_cell_index + *entry.index;
       const TableConstraintSpaceData::Cell& cell_data =
@@ -259,13 +259,13 @@ const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
   }
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    NGBreakStatus status = FinishFragmentation(
+    BreakStatus status = FinishFragmentation(
         Node(), GetConstraintSpace(),
         /* trailing_border_padding */ LayoutUnit(),
         FragmentainerSpaceLeft(GetConstraintSpace()), &container_builder_);
 
     // TODO(mstensho): Deal with early-breaks.
-    DCHECK_EQ(status, NGBreakStatus::kContinue);
+    DCHECK_EQ(status, BreakStatus::kContinue);
 
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<TableRowBreakTokenData>(

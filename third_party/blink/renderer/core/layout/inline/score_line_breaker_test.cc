@@ -27,7 +27,7 @@ LayoutUnit FragmentWidth(const InlineNode& node) {
 void TestLinesAreContiguous(const LineInfoList& line_info_list) {
   for (wtf_size_t i = 1; i < line_info_list.Size(); ++i) {
     EXPECT_EQ(line_info_list[i].Start(),
-              line_info_list[i - 1].BreakToken()->Start());
+              line_info_list[i - 1].GetBreakToken()->Start());
   }
 }
 
@@ -121,14 +121,14 @@ TEST_F(ScoreLineBreakerTest, LastLines) {
     const LineInfo& line_info0 = line_info_list.Get(break_token, is_cached);
     EXPECT_TRUE(is_cached);
     EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines() - 1);
-    break_token = line_info0.BreakToken();
+    break_token = line_info0.GetBreakToken();
     // Running again should cache one more line.
     optimizer.OptimalBreakPoints(empty_leading_floats, context);
     EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines());
     TestLinesAreContiguous(line_info_list);
   }
   // All is done. The `BreakToken` should be null, and there should be 6 lines.
-  EXPECT_FALSE(line_info_list.Back().BreakToken());
+  EXPECT_FALSE(line_info_list.Back().GetBreakToken());
   constexpr wtf_size_t target_num_lines = 6;
   EXPECT_EQ(count, target_num_lines - optimizer.MaxLines());
 }

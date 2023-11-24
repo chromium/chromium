@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class NGBlockBreakToken;
+class BlockBreakToken;
 class NGPhysicalFragment;
 struct PhysicalFragmentLink;
 
@@ -37,9 +37,7 @@ struct PhysicalFragmentLink;
 //       "simplified" layout on its children).
 //  3. Run the |OutOfFlowLayoutPart|.
 class CORE_EXPORT SimplifiedLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   SimplifiedLayoutAlgorithm(const LayoutAlgorithmParams&,
                             const NGLayoutResult&,

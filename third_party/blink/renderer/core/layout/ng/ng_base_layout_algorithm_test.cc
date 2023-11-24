@@ -33,7 +33,7 @@ void BaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {
 const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
     BlockNode node,
     const ConstraintSpace& space,
-    const NGBreakToken* break_token) {
+    const BreakToken* break_token) {
   AdvanceToLayoutPhase();
 
   FragmentGeometry fragment_geometry =
@@ -41,7 +41,7 @@ const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
 
   const NGLayoutResult* result =
       BlockLayoutAlgorithm(
-          {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
+          {node, fragment_geometry, space, To<BlockBreakToken>(break_token)})
           .Layout();
 
   return To<NGPhysicalBoxFragment>(&result->PhysicalFragment());
@@ -51,7 +51,7 @@ const NGPhysicalBoxFragment*
 BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
     BlockNode node,
     const ConstraintSpace& space,
-    const NGBreakToken* break_token) {
+    const BreakToken* break_token) {
   AdvanceToLayoutPhase();
 
   FragmentGeometry fragment_geometry =
@@ -59,7 +59,7 @@ BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
 
   const NGLayoutResult* result =
       FieldsetLayoutAlgorithm(
-          {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
+          {node, fragment_geometry, space, To<BlockBreakToken>(break_token)})
           .Layout();
 
   return To<NGPhysicalBoxFragment>(&result->PhysicalFragment());

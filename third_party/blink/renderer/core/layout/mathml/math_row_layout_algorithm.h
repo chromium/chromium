@@ -16,9 +16,7 @@ namespace blink {
 class LayoutUnit;
 
 class CORE_EXPORT MathRowLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit MathRowLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

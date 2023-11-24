@@ -15,9 +15,9 @@
 
 namespace blink {
 
+class ColumnSpannerPath;
 class ComputedStyle;
-class NGColumnSpannerPath;
-class NGEarlyBreak;
+class EarlyBreak;
 class NGLayoutResult;
 
 // Operations provided by a layout algorithm.
@@ -45,9 +45,9 @@ struct LayoutAlgorithmParams {
       BlockNode node,
       const FragmentGeometry& fragment_geometry,
       const ConstraintSpace& space,
-      const NGBlockBreakToken* break_token = nullptr,
-      const NGEarlyBreak* early_break = nullptr,
-      const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks = nullptr)
+      const BlockBreakToken* break_token = nullptr,
+      const EarlyBreak* early_break = nullptr,
+      const HeapVector<Member<EarlyBreak>>* additional_early_breaks = nullptr)
       : node(node),
         fragment_geometry(fragment_geometry),
         space(space),
@@ -58,17 +58,17 @@ struct LayoutAlgorithmParams {
   BlockNode node;
   const FragmentGeometry& fragment_geometry;
   const ConstraintSpace& space;
-  const NGBlockBreakToken* break_token;
-  const NGEarlyBreak* early_break;
-  const NGColumnSpannerPath* column_spanner_path = nullptr;
+  const BlockBreakToken* break_token;
+  const EarlyBreak* early_break;
+  const ColumnSpannerPath* column_spanner_path = nullptr;
   const NGLayoutResult* previous_result = nullptr;
-  const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks;
+  const HeapVector<Member<EarlyBreak>>* additional_early_breaks;
 };
 
 // Base class for all LayoutNG algorithms.
 template <typename NGInputNodeType,
           typename NGBoxFragmentBuilderType,
-          typename NGBreakTokenType>
+          typename BreakTokenType>
 class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   STACK_ALLOCATED();
  public:
@@ -76,7 +76,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
                   const ComputedStyle* style,
                   const ConstraintSpace& space,
                   TextDirection direction,
-                  const NGBreakTokenType* break_token)
+                  const BreakTokenType* break_token)
       : node_(node),
         break_token_(break_token),
         container_builder_(node,
@@ -85,7 +85,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
                            {space.GetWritingMode(), direction}) {}
 
   // Constructor for algorithms that use NGBoxFragmentBuilder and
-  // NGBlockBreakToken.
+  // BlockBreakToken.
   explicit LayoutAlgorithm(const LayoutAlgorithmParams& params)
       : node_(To<NGInputNodeType>(params.node)),
         early_break_(params.early_break),
@@ -123,7 +123,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
 
   const NGInputNodeType& Node() const { return node_; }
 
-  const NGBreakTokenType* GetBreakToken() const { return break_token_; }
+  const BreakTokenType* GetBreakToken() const { return break_token_; }
 
   const BoxStrut& Borders() const { return container_builder_.Borders(); }
   const BoxStrut& Padding() const { return container_builder_.Padding(); }
@@ -150,9 +150,8 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   // such as orphans, widows, break-before:avoid or break-after:avoid.
   template <typename Algorithm>
   const NGLayoutResult* RelayoutAndBreakEarlier(
-      const NGEarlyBreak& breakpoint,
-      const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks =
-          nullptr) {
+      const EarlyBreak& breakpoint,
+      const HeapVector<Member<EarlyBreak>>* additional_early_breaks = nullptr) {
     // Not allowed to recurse!
     DCHECK(!early_break_);
     DCHECK(!additional_early_breaks_ || additional_early_breaks_->empty());
@@ -208,17 +207,17 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
 
   // When set, this will specify where to break before or inside. If not set,
   // the algorithm will need to figure out where to break on its own.
-  const NGEarlyBreak* early_break_ = nullptr;
+  const EarlyBreak* early_break_ = nullptr;
 
   // The break token from which we are currently resuming layout.
-  const NGBreakTokenType* break_token_;
+  const BreakTokenType* break_token_;
 
   NGBoxFragmentBuilderType container_builder_;
 
   // There are cases where we may need more than one early break per fragment.
   // For example, there may be an early break within multiple flex columns. This
   // can be used to pass additional early breaks to the next layout pass.
-  const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks_ = nullptr;
+  const HeapVector<Member<EarlyBreak>>* additional_early_breaks_ = nullptr;
 };
 
 }  // namespace blink

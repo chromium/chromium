@@ -20,7 +20,7 @@ struct SameSizeAsInlineChildLayoutContext {
   absl::optional<LayoutUnit> optional_layout_unit;
   void* pointers[5];
   unsigned number;
-  HeapVector<Member<const NGBlockBreakToken>> tokens_;
+  HeapVector<Member<const BlockBreakToken>> tokens_;
 };
 
 static_assert(
@@ -84,7 +84,7 @@ void InlineChildLayoutContext::ClearParallelFlowBreakTokens() {
 }
 
 void InlineChildLayoutContext::PropagateParallelFlowBreakToken(
-    const NGBreakToken* token) {
+    const BreakToken* token) {
   parallel_flow_break_tokens_.push_back(token);
 }
 

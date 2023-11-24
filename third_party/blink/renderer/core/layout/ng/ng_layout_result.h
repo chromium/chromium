@@ -31,10 +31,10 @@
 
 namespace blink {
 
+class ColumnSpannerPath;
 class ExclusionSpace;
 class LineBoxFragmentBuilder;
 class NGBoxFragmentBuilder;
-class NGColumnSpannerPath;
 class NGFragmentBuilder;
 
 // The NGLayoutResult stores the resulting data from layout. This includes
@@ -197,7 +197,7 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   // Get the path to the column spanner (if any) that interrupted column layout.
-  const NGColumnSpannerPath* ColumnSpannerPath() const {
+  const ColumnSpannerPath* GetColumnSpannerPath() const {
     if (rare_data_) {
       if (const RareData::BlockData* data = rare_data_->GetBlockData())
         return data->column_spanner_path.Get();
@@ -217,7 +217,7 @@ class CORE_EXPORT NGLayoutResult final
     return bitfields_.is_empty_spanner_parent;
   }
 
-  const NGEarlyBreak* GetEarlyBreak() const {
+  const EarlyBreak* GetEarlyBreak() const {
     if (!rare_data_) {
       return nullptr;
     }
@@ -375,8 +375,8 @@ class CORE_EXPORT NGLayoutResult final
   // context). If there are any suboptimal breaks, we may want to push the
   // entire multicol container to the next outer fragmentainer, if it's likely
   // that we'll avoid suboptimal column breaks inside that way.
-  NGBreakAppeal GetBreakAppeal() const {
-    return static_cast<NGBreakAppeal>(bitfields_.break_appeal);
+  BreakAppeal GetBreakAppeal() const {
+    return static_cast<BreakAppeal>(bitfields_.break_appeal);
   }
 
   SerializedScriptValue* CustomLayoutData() const {
@@ -640,7 +640,7 @@ class CORE_EXPORT NGLayoutResult final
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
-      Member<const NGColumnSpannerPath> column_spanner_path;
+      Member<const ColumnSpannerPath> column_spanner_path;
     };
 
     struct FlexData {
@@ -891,7 +891,7 @@ class CORE_EXPORT NGLayoutResult final
 
     void Trace(Visitor* visitor) const;
 
-    Member<const NGEarlyBreak> early_break;
+    Member<const EarlyBreak> early_break;
     MarginStrut end_margin_strut;
     union {
       // Only set in the initial column balancing layout pass, when we have no
@@ -988,7 +988,7 @@ class CORE_EXPORT NGLayoutResult final
     unsigned is_bfc_block_offset_nullopt : 1;
 
     unsigned has_forced_break : 1;
-    unsigned break_appeal : kNGBreakAppealBitsNeeded;
+    unsigned break_appeal : kBreakAppealBitsNeeded;
     unsigned is_empty_spanner_parent : 1;
     unsigned is_block_size_for_fragmentation_clamped : 1;
     unsigned should_force_same_fragmentation_flow : 1;

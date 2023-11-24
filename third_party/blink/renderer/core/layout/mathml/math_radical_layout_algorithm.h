@@ -12,9 +12,7 @@ namespace blink {
 
 // This algorithm handles msqrt and mroot elements.
 class CORE_EXPORT MathRadicalLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit MathRadicalLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

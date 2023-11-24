@@ -13,17 +13,17 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGBreakToken : GarbageCollected<NGBreakToken> {
+struct SameSizeAsBreakToken : GarbageCollected<BreakToken> {
   Member<void*> member;
   unsigned flags;
 };
 
-ASSERT_SIZE(NGBreakToken, SameSizeAsNGBreakToken);
+ASSERT_SIZE(BreakToken, SameSizeAsBreakToken);
 
 }  // namespace
 
-bool NGBreakToken::IsInParallelFlow() const {
-  if (const auto* block_break_token = DynamicTo<NGBlockBreakToken>(this)) {
+bool BreakToken::IsInParallelFlow() const {
+  if (const auto* block_break_token = DynamicTo<BlockBreakToken>(this)) {
     return block_break_token->IsAtBlockEnd();
   }
   if (const auto* inline_break_token = DynamicTo<InlineBreakToken>(this)) {
@@ -36,7 +36,7 @@ bool NGBreakToken::IsInParallelFlow() const {
 
 namespace {
 
-void AppendBreakTokenToString(const NGBreakToken* token,
+void AppendBreakTokenToString(const BreakToken* token,
                               StringBuilder* string_builder,
                               unsigned indent = 2) {
   if (!token)
@@ -48,7 +48,7 @@ void AppendBreakTokenToString(const NGBreakToken* token,
   string_builder->Append(token->ToString());
   string_builder->Append("\n");
 
-  if (auto* block_break_token = DynamicTo<NGBlockBreakToken>(token)) {
+  if (auto* block_break_token = DynamicTo<BlockBreakToken>(token)) {
     const auto children = block_break_token->ChildBreakTokens();
     for (const auto& child : children)
       AppendBreakTokenToString(child, string_builder, indent + 2);
@@ -62,17 +62,17 @@ void AppendBreakTokenToString(const NGBreakToken* token,
 }
 }  // namespace
 
-String NGBreakToken::ToString() const {
+String BreakToken::ToString() const {
   switch (Type()) {
     case kBlockBreakToken:
-      return To<NGBlockBreakToken>(this)->ToString();
+      return To<BlockBreakToken>(this)->ToString();
     case kInlineBreakToken:
       return To<InlineBreakToken>(this)->ToString();
   }
   NOTREACHED();
 }
 
-void NGBreakToken::ShowBreakTokenTree() const {
+void BreakToken::ShowBreakTokenTree() const {
   StringBuilder string_builder;
   string_builder.Append(".:: LayoutNG Break Token Tree ::.\n");
   AppendBreakTokenToString(this, &string_builder);
@@ -80,10 +80,10 @@ void NGBreakToken::ShowBreakTokenTree() const {
 }
 #endif  // DCHECK_IS_ON()
 
-void NGBreakToken::Trace(Visitor* visitor) const {
+void BreakToken::Trace(Visitor* visitor) const {
   switch (Type()) {
     case kBlockBreakToken:
-      To<NGBlockBreakToken>(this)->TraceAfterDispatch(visitor);
+      To<BlockBreakToken>(this)->TraceAfterDispatch(visitor);
       return;
     case kInlineBreakToken:
       To<InlineBreakToken>(this)->TraceAfterDispatch(visitor);
@@ -92,7 +92,7 @@ void NGBreakToken::Trace(Visitor* visitor) const {
   NOTREACHED();
 }
 
-void NGBreakToken::TraceAfterDispatch(Visitor* visitor) const {
+void BreakToken::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(box_);
 }
 

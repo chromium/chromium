@@ -21,12 +21,12 @@
 
 namespace blink {
 
+class ColumnSpannerPath;
 class Hyphenation;
 class InlineBreakToken;
 class InlineItem;
 class LineBreakCandidateContext;
 class LineInfo;
-class NGColumnSpannerPath;
 class ResolvedTextLayoutAttributesIterator;
 class ShapingLineBreaker;
 
@@ -47,7 +47,7 @@ class CORE_EXPORT LineBreaker {
               const LineLayoutOpportunity&,
               const LeadingFloats& leading_floats,
               const InlineBreakToken*,
-              const NGColumnSpannerPath*,
+              const ColumnSpannerPath*,
               ExclusionSpace*);
   ~LineBreaker();
 
@@ -204,7 +204,7 @@ class CORE_EXPORT LineBreaker {
   void HandleBidiControlItem(const InlineItem&, LineInfo*);
   void HandleAtomicInline(const InlineItem&, LineInfo*);
   void HandleBlockInInline(const InlineItem&,
-                           const NGBlockBreakToken*,
+                           const BlockBreakToken*,
                            LineInfo*);
   void ComputeMinMaxContentSizeForBlockChild(const InlineItem&,
                                              InlineItemResult*);
@@ -219,7 +219,7 @@ class CORE_EXPORT LineBreaker {
 
   bool ShouldPushFloatAfterLine(UnpositionedFloat*, LineInfo*);
   void HandleFloat(const InlineItem&,
-                   const NGBlockBreakToken* float_break_token,
+                   const BlockBreakToken* float_break_token,
                    LineInfo*);
 
   void HandleInitialLetter(const InlineItem&, LineInfo*);
@@ -360,7 +360,7 @@ class CORE_EXPORT LineBreaker {
   const ConstraintSpace& constraint_space_;
   ExclusionSpace* exclusion_space_;
   const InlineBreakToken* break_token_;
-  const NGColumnSpannerPath* column_spanner_path_;
+  const ColumnSpannerPath* column_spanner_path_;
   const ComputedStyle* current_style_ = nullptr;
 
   LazyLineBreakIterator break_iterator_;

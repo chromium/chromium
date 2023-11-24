@@ -39,7 +39,7 @@ class LineBreakCandidateTest : public RenderingTest {
       if (!context.AppendLine(line_info, line_breaker)) {
         return false;
       }
-      break_token = line_info.BreakToken();
+      break_token = line_info.GetBreakToken();
     } while (break_token);
     context.EnsureLastSentinel(line_info);
     return true;

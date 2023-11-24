@@ -96,8 +96,8 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
     const ConstraintSpace& caption_constraint_space,
     const BlockNode& caption,
     BoxStrut margins,
-    const NGBlockBreakToken* break_token = nullptr,
-    const NGEarlyBreak* early_break = nullptr) {
+    const BlockBreakToken* break_token = nullptr,
+    const EarlyBreak* early_break = nullptr) {
   const NGLayoutResult* layout_result =
       caption.Layout(caption_constraint_space, break_token, early_break);
   DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
@@ -119,7 +119,7 @@ BoxStrut ComputeCaptionMargins(
     const ConstraintSpace& table_constraint_space,
     const BlockNode& caption,
     LayoutUnit table_border_box_inline_size,
-    const NGBlockBreakToken* caption_break_token = nullptr) {
+    const BlockBreakToken* caption_break_token = nullptr) {
   BoxStrut margins =
       ComputeMarginsFor(caption.Style(), table_border_box_inline_size,
                         table_constraint_space.GetWritingDirection());
@@ -1080,7 +1080,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       if (child != grouped_children.header && child != grouped_children.footer)
         continue;
 
-      const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
+      const BlockBreakToken* child_break_token = entry.GetBreakToken();
       // If we've already broken inside the section, it's not going to repeat,
       // but rather perform regular fragmentation.
       if (IsBreakInside(child_break_token))
@@ -1160,7 +1160,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
        BlockNode child = entry.GetNode(); entry = child_iterator.NextChild()) {
     DCHECK(child.IsTableCaption() || child.IsTableSection());
 
-    const NGEarlyBreak* early_break_in_child = nullptr;
+    const EarlyBreak* early_break_in_child = nullptr;
     if (UNLIKELY(early_break_)) {
       if (IsEarlyBreakTarget(*early_break_, container_builder_, child)) {
         container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
@@ -1175,7 +1175,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       early_break_in_child = EnterEarlyBreakInChild(child, *early_break_);
     }
 
-    const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
+    const BlockBreakToken* child_break_token = entry.GetBreakToken();
     const NGLayoutResult* child_result;
     absl::optional<LayoutUnit> offset_before_repeated_header;
     LayoutUnit child_inline_offset;
@@ -1356,16 +1356,17 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       LayoutUnit fragmentainer_block_offset =
           constraint_space.FragmentainerOffset() + child_block_start_margin +
           child_block_offset - repeated_header_block_size;
-      NGBreakStatus break_status = BreakBeforeChildIfNeeded(
+      BreakStatus break_status = BreakBeforeChildIfNeeded(
           constraint_space, child, *child_result, fragmentainer_block_offset,
           has_container_separation, &container_builder_);
-      if (break_status == NGBreakStatus::kNeedsEarlierBreak)
+      if (break_status == BreakStatus::kNeedsEarlierBreak) {
         return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
-      if (break_status == NGBreakStatus::kBrokeBefore) {
+      }
+      if (break_status == BreakStatus::kBrokeBefore) {
         broke_inside = true;
         break;
       }
-      DCHECK_EQ(break_status, NGBreakStatus::kContinue);
+      DCHECK_EQ(break_status, BreakStatus::kContinue);
     }
 
     const auto& physical_fragment =
@@ -1456,7 +1457,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       if (child == grouped_children.footer)
         break;
 
-      auto* token = NGBlockBreakToken::CreateBreakBefore(
+      auto* token = BlockBreakToken::CreateBreakBefore(
           child, /* is_forced_break */ false);
       container_builder_.AddBreakToken(token);
     }
@@ -1487,7 +1488,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     const NGLayoutResult* result = grouped_children.footer.LayoutRepeatableRoot(
         child_space, entry.GetBreakToken());
 
-    NGBreakStatus break_status = NGBreakStatus::kContinue;
+    BreakStatus break_status = BreakStatus::kContinue;
     if (!entry.GetBreakToken() || entry.GetBreakToken()->IsBreakBefore()) {
       // Although there are rules that make sure that a footer normally fits (it
       // should only be a quarter of the fragmentainer's block-size), if the
@@ -1501,10 +1502,10 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
           fragmentainer_block_offset, has_container_separation,
           &container_builder_);
     }
-    if (break_status == NGBreakStatus::kContinue) {
+    if (break_status == BreakStatus::kContinue) {
       container_builder_.AddResult(*result, offset);
     } else {
-      DCHECK_EQ(break_status, NGBreakStatus::kBrokeBefore);
+      DCHECK_EQ(break_status, BreakStatus::kBrokeBefore);
     }
   }
 
@@ -1609,13 +1610,14 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
   container_builder_.SetIsTablePart();
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    NGBreakStatus status =
+    BreakStatus status =
         FinishFragmentation(Node(), constraint_space, border_padding.block_end,
                             fragmentainer_space_at_start, &container_builder_);
-    if (status == NGBreakStatus::kNeedsEarlierBreak)
+    if (status == BreakStatus::kNeedsEarlierBreak) {
       return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
+    }
 
-    DCHECK_EQ(status, NGBreakStatus::kContinue);
+    DCHECK_EQ(status, BreakStatus::kContinue);
 
     // Which side to include is normally handled by FinishFragmentation(), but
     // that function doesn't know about table weirdness (table captions flow

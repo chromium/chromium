@@ -10,9 +10,9 @@
 
 namespace blink {
 
-struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
+struct BlockBreakTokenData : public GarbageCollected<BlockBreakTokenData> {
  public:
-  enum NGBreakTokenDataType {
+  enum BreakTokenDataType {
     kBlockBreakTokenData,
     kFieldsetBreakTokenData,
     kFlexBreakTokenData,
@@ -21,13 +21,12 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
     kTableRowBreakTokenData
     // When adding new values, ensure |type| below has enough bits.
   };
-  NGBreakTokenDataType Type() const {
-    return static_cast<NGBreakTokenDataType>(type);
+  BreakTokenDataType Type() const {
+    return static_cast<BreakTokenDataType>(type);
   }
 
-  explicit NGBlockBreakTokenData(
-      NGBreakTokenDataType type = kBlockBreakTokenData,
-      const NGBlockBreakTokenData* other_data = nullptr)
+  explicit BlockBreakTokenData(BreakTokenDataType type = kBlockBreakTokenData,
+                               const BlockBreakTokenData* other_data = nullptr)
       : type(type) {
     if (other_data) {
       consumed_block_size = other_data->consumed_block_size;
@@ -38,7 +37,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
     }
   }
 
-  virtual ~NGBlockBreakTokenData() = default;
+  virtual ~BlockBreakTokenData() = default;
 
   // One note about type checking and downcasting: It's generally not safe to
   // assume that a node has a specific break token data type. Break tokens

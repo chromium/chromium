@@ -67,7 +67,7 @@ LayoutPoint LayoutBoxUtils::ComputeLocation(
     const NGPhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
     const NGPhysicalBoxFragment& container_fragment,
-    const NGBlockBreakToken* previous_container_break_token) {
+    const BlockBreakToken* previous_container_break_token) {
   if (UNLIKELY(container_fragment.Style().IsFlippedBlocksWritingMode())) {
     // Move the physical offset to the right side of the child fragment,
     // relative to the right edge of the container fragment. This is the

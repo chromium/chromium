@@ -14,15 +14,13 @@
 
 namespace blink {
 
+class BlockBreakToken;
 class BlockNode;
-class NGBlockBreakToken;
 struct DevtoolsFlexInfo;
 struct NGFlexItem;
 
 class CORE_EXPORT FlexLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit FlexLayoutAlgorithm(
       const LayoutAlgorithmParams& params,
@@ -128,7 +126,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void ConsumeRemainingFragmentainerSpace(
       LayoutUnit previously_consumed_block_size,
       NGFlexLine* flex_line,
-      const NGFlexColumnBreakInfo* column_break_info = nullptr);
+      const FlexColumnBreakInfo* column_break_info = nullptr);
 
   // Insert a fragmentainer break before a row if necessary. Rows do not produce
   // a layout result, so when breaking before a row, we will insert a
@@ -138,20 +136,20 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // |has_container_separation| and |is_first_for_row| are specific to the row
   // itself. See
   // |::blink::BreakBeforeChildIfNeeded()| for more documentation.
-  NGBreakStatus BreakBeforeRowIfNeeded(const NGFlexLine& row,
-                                       LayoutUnit row_block_offset,
-                                       EBreakBetween row_break_between,
-                                       wtf_size_t row_index,
-                                       LayoutInputNode child,
-                                       bool has_container_separation,
-                                       bool is_first_for_row);
+  BreakStatus BreakBeforeRowIfNeeded(const NGFlexLine& row,
+                                     LayoutUnit row_block_offset,
+                                     EBreakBetween row_break_between,
+                                     wtf_size_t row_index,
+                                     LayoutInputNode child,
+                                     bool has_container_separation,
+                                     bool is_first_for_row);
 
   // Move past the breakpoint before the row, if possible, and return true. Also
   // update the appeal of breaking before the row (if we're not going
   // to break before it). If false is returned, it means that we need to break
   // before the row (or even earlier). See |::blink::MovePastBreakpoint()| for
   // more documentation.
-  bool MovePastRowBreakPoint(NGBreakAppeal appeal_before,
+  bool MovePastRowBreakPoint(BreakAppeal appeal_before,
                              LayoutUnit fragmentainer_block_offset,
                              LayoutUnit row_block_size,
                              wtf_size_t row_index,
@@ -159,7 +157,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
                              bool breakable_at_start_of_container);
 
   // Add an early break for the column at the provided |index|.
-  void AddColumnEarlyBreak(NGEarlyBreak* breakpoint, wtf_size_t index);
+  void AddColumnEarlyBreak(EarlyBreak* breakpoint, wtf_size_t index);
 
   // Add the amount an item expanded by to the item offset adjustment of the
   // flex line at the index directly after |flex_line_idx|, if there is one.
@@ -218,7 +216,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // Only one early break is supported per container. However, we may need to
   // return to an early break within multiple flex columns. This stores the
   // early breaks per column to be used when aborting layout.
-  HeapVector<Member<NGEarlyBreak>> column_early_breaks_;
+  HeapVector<Member<EarlyBreak>> column_early_breaks_;
 
   // If an item expands past the row block-end, we will re-run layout with the
   // new cross size. Keep track of each such flex line index mapped to how much

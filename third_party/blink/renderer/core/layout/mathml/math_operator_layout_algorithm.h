@@ -14,9 +14,7 @@
 namespace blink {
 
 class CORE_EXPORT MathOperatorLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit MathOperatorLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

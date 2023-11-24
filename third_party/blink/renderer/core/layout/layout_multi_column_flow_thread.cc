@@ -1171,7 +1171,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
   const auto* first_fragment = container->GetPhysicalFragment(0);
   WritingModeConverter converter(first_fragment->Style().GetWritingDirection());
   bool has_processed_first_column_in_flow_thread = false;
-  const NGBlockBreakToken* break_token = nullptr;
+  const BlockBreakToken* break_token = nullptr;
   for (const auto& container_fragment : container->PhysicalFragments()) {
     for (const auto& link : container_fragment.Children()) {
       const auto& child_fragment = To<NGPhysicalBoxFragment>(*link);

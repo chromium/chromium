@@ -608,10 +608,10 @@ class CORE_EXPORT ConstraintSpace final {
   // appeal will be allowed (as usual), or we might get stuck in an infinite
   // loop, pushing the same content ahead of us, while creating columns with
   // nothing in them.
-  NGBreakAppeal MinBreakAppeal() const {
+  BreakAppeal MinBreakAppeal() const {
     if (!HasRareData())
       return kBreakAppealLastResort;
-    return static_cast<NGBreakAppeal>(rare_data_->min_break_appeal);
+    return static_cast<BreakAppeal>(rare_data_->min_break_appeal);
   }
 
   // In some cases, we may want to calculate the intial-break-before and
@@ -1325,7 +1325,7 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned min_block_size_should_encompass_intrinsic_size : 1;
     unsigned has_override_min_max_block_sizes : 1;
     unsigned uses_orthogonal_fallback_inline_size : 1;
-    unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
+    unsigned min_break_appeal : kBreakAppealBitsNeeded;
     unsigned propagate_child_break_values : 1;
     unsigned is_at_fragmentainer_start : 1;
     unsigned should_repeat : 1;

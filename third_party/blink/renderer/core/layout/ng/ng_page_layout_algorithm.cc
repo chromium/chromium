@@ -22,7 +22,7 @@ PageLayoutAlgorithm::PageLayoutAlgorithm(const LayoutAlgorithmParams& params)
 const NGLayoutResult* PageLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
   auto writing_direction = GetConstraintSpace().GetWritingDirection();
-  const NGBlockBreakToken* break_token = nullptr;
+  const BlockBreakToken* break_token = nullptr;
   LayoutUnit intrinsic_block_size;
   LogicalOffset page_offset;
   uint32_t page_index = 0;
@@ -85,7 +85,7 @@ MinMaxSizesResult PageLayoutAlgorithm::ComputeMinMaxSizes(
 const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
     uint32_t page_index,
     const AtomicString& page_name,
-    const NGBlockBreakToken* break_token) const {
+    const BlockBreakToken* break_token) const {
   const LayoutView* view = Node().GetDocument().GetLayoutView();
   WritingMode writing_mode = GetConstraintSpace().GetWritingMode();
   LogicalSize page_size =

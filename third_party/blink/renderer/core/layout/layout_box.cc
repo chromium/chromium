@@ -2801,7 +2801,7 @@ void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
 }
 
 const NGLayoutResult* LayoutBox::GetCachedLayoutResult(
-    const NGBlockBreakToken* break_token) const {
+    const BlockBreakToken* break_token) const {
   NOT_DESTROYED();
   wtf_size_t index = FragmentIndex(break_token);
   if (index >= layout_results_.size())
@@ -3613,7 +3613,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     // writing mode, or to the right in vertical. Flipped blocks is handled
     // later, after the loop.
     if (last_fragment) {
-      const NGBlockBreakToken* break_token = last_fragment->GetBreakToken();
+      const BlockBreakToken* break_token = last_fragment->GetBreakToken();
       DCHECK(break_token);
       const LayoutUnit block_offset = break_token->ConsumedBlockSize();
       if (blink::IsHorizontalWritingMode(writing_mode)) {
@@ -3805,7 +3805,7 @@ PhysicalSize LayoutBox::ComputeSize() const {
     return first_fragment.Size();
   }
   WritingModeConverter converter(first_fragment.Style().GetWritingDirection());
-  const NGBlockBreakToken* previous_break_token = nullptr;
+  const BlockBreakToken* previous_break_token = nullptr;
   LogicalSize size;
   for (const auto& result : results) {
     const auto& physical_fragment =

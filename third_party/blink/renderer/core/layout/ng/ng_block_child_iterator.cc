@@ -12,7 +12,7 @@
 namespace blink {
 
 NGBlockChildIterator::NGBlockChildIterator(LayoutInputNode first_child,
-                                           const NGBlockBreakToken* break_token,
+                                           const BlockBreakToken* break_token,
                                            bool calculate_child_idx)
     : next_unstarted_child_(first_child),
       break_token_(break_token),
@@ -64,7 +64,7 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
     did_handle_first_child_ = true;
   }
 
-  const NGBreakToken* current_child_break_token = nullptr;
+  const BreakToken* current_child_break_token = nullptr;
   absl::optional<wtf_size_t> current_child_idx;
   LayoutInputNode current_child = next_unstarted_child_;
   if (break_token_) {

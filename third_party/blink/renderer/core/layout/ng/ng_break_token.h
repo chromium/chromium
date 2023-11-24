@@ -30,13 +30,13 @@ namespace blink {
 //     node->Layout(space, fragment->GetBreakToken());
 //
 // The break token should encapsulate enough information to "resume" the layout.
-class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
+class CORE_EXPORT BreakToken : public GarbageCollected<BreakToken> {
  public:
-  enum NGBreakTokenType {
+  enum BreakTokenType {
     kBlockBreakToken = LayoutInputNode::kBlock,
     kInlineBreakToken = LayoutInputNode::kInline
   };
-  NGBreakTokenType Type() const { return static_cast<NGBreakTokenType>(type_); }
+  BreakTokenType Type() const { return static_cast<BreakTokenType>(type_); }
 
   bool IsBlockType() const { return Type() == kBlockBreakToken; }
   bool IsInlineType() const { return Type() == kInlineBreakToken; }
@@ -61,7 +61,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   void TraceAfterDispatch(Visitor*) const;
 
  protected:
-  NGBreakToken(NGBreakTokenType type, LayoutInputNode node, unsigned flags = 0)
+  BreakToken(BreakTokenType type, LayoutInputNode node, unsigned flags = 0)
       : box_(node.GetLayoutBox()),
         type_(type),
 #if DCHECK_IS_ON()
@@ -74,7 +74,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
         is_caused_by_column_spanner_(false),
         is_at_block_end_(false),
         has_seen_all_children_(false) {
-    DCHECK_EQ(type, static_cast<NGBreakTokenType>(node.Type()));
+    DCHECK_EQ(type, static_cast<BreakTokenType>(node.Type()));
   }
 
  private:
@@ -98,7 +98,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
 
   const unsigned flags_ : 5;  // InlineBreakTokenFlags
 
-  // The following bitfields are only to be used by NGBlockBreakToken (it's
+  // The following bitfields are only to be used by BlockBreakToken (it's
   // defined here to save memory, since that class has no bitfields).
 
   unsigned is_break_before_ : 1;
@@ -119,11 +119,11 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   // children left to discover.
   unsigned has_seen_all_children_ : 1;
 
-  // See |NGBlockBreakToken::HasUnpositionedListMarker|.
+  // See |BlockBreakToken::HasUnpositionedListMarker|.
   unsigned has_unpositioned_list_marker_ : 1;
 };
 
-typedef HeapVector<Member<const NGBreakToken>> NGBreakTokenVector;
+typedef HeapVector<Member<const BreakToken>> BreakTokenVector;
 
 }  // namespace blink
 

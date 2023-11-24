@@ -11,18 +11,16 @@
 
 namespace blink {
 
+class BlockBreakToken;
 class BlockNode;
+class ColumnSpannerPath;
 class ConstraintSpace;
-class NGBlockBreakToken;
-class NGColumnSpannerPath;
-enum class NGBreakStatus;
+enum class BreakStatus;
 struct LogicalSize;
 struct MarginStrut;
 
 class CORE_EXPORT ColumnLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit ColumnLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
@@ -39,23 +37,23 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // relayout and break earlier (because we have a better breakpoint there). If
   // |kBrokeBefore| is returned, it means that we need to break before the
   // multicol container, and retry in the next fragmentainer.
-  NGBreakStatus LayoutChildren();
+  BreakStatus LayoutChildren();
 
   // Lay out one row of columns. The layout result returned is for the last
   // column that was laid out. The rows themselves don't create fragments. If
   // we're in a nested fragmentation context, and a break is inserted before the
   // row, nullptr is returned.
-  const NGLayoutResult* LayoutRow(const NGBlockBreakToken* next_column_token,
+  const NGLayoutResult* LayoutRow(const BlockBreakToken* next_column_token,
                                   LayoutUnit miminum_column_block_size,
                                   MarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
-  // before the spanner or not. If |NGBreakStatus::kContinue| is returned, and
+  // before the spanner or not. If |BreakStatus::kContinue| is returned, and
   // no break token was set, it means that we can proceed to the next row of
   // columns.
-  NGBreakStatus LayoutSpanner(BlockNode spanner_node,
-                              const NGBlockBreakToken* break_token,
-                              MarginStrut*);
+  BreakStatus LayoutSpanner(BlockNode spanner_node,
+                            const BlockBreakToken* break_token,
+                            MarginStrut*);
 
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,
@@ -86,14 +84,14 @@ class CORE_EXPORT ColumnLayoutAlgorithm
       const LogicalSize& column_size,
       LayoutUnit row_offset,
       LayoutUnit available_outer_space,
-      const NGBlockBreakToken* child_break_token,
+      const BlockBreakToken* child_break_token,
       bool balance_columns);
 
   LayoutUnit ResolveColumnAutoBlockSizeInternal(
       const LogicalSize& column_size,
       LayoutUnit row_offset,
       LayoutUnit available_outer_space,
-      const NGBlockBreakToken* child_break_token,
+      const BlockBreakToken* child_break_token,
       bool balance_columns);
 
   LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
@@ -124,7 +122,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // ClampedToValidFragmentainerCapacity().
   LayoutUnit TotalColumnBlockSize() const;
 
-  const NGColumnSpannerPath* spanner_path_ = nullptr;
+  const ColumnSpannerPath* spanner_path_ = nullptr;
 
   int used_column_count_;
   LayoutUnit column_inline_size_;

@@ -317,9 +317,9 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
 
 const NGLayoutResult* BlockNode::Layout(
     const ConstraintSpace& constraint_space,
-    const NGBlockBreakToken* break_token,
-    const NGEarlyBreak* early_break,
-    const NGColumnSpannerPath* column_spanner_path) const {
+    const BlockBreakToken* break_token,
+    const EarlyBreak* early_break,
+    const ColumnSpannerPath* column_spanner_path) const {
   // The exclusion space internally is a pointer to a shared vector, and
   // equality of exclusion spaces is performed using pointer comparison on this
   // internal shared vector.
@@ -625,7 +625,7 @@ const NGLayoutResult* BlockNode::SimplifiedLayout(
 
 const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
     const ConstraintSpace& constraint_space,
-    const NGBlockBreakToken* break_token) const {
+    const BlockBreakToken* break_token) const {
   // We read and write the physical fragments vector in LayoutBox here, which
   // isn't allowed if side-effects are disabled. Call-sites must make sure that
   // we don't attempt to repeat content if side-effects are disabled.
@@ -657,8 +657,8 @@ const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
   // incoming break token when generating the next fragment. This is needed in
   // order to get the sequence numbers right, which is important when adding the
   // result to the LayoutBox, and it's also needed by pre-paint / paint.
-  const NGBlockBreakToken* outgoing_break_token =
-      NGBlockBreakToken::CreateRepeated(*this, index);
+  const BlockBreakToken* outgoing_break_token =
+      BlockBreakToken::CreateRepeated(*this, index);
   auto mutator = fragment.GetMutableForCloning();
   mutator.SetBreakToken(outgoing_break_token);
   if (!is_first) {
@@ -772,7 +772,7 @@ void BlockNode::PrepareForLayout() const {
 void BlockNode::FinishLayout(
     LayoutBlockFlow* block_flow,
     const ConstraintSpace& constraint_space,
-    const NGBlockBreakToken* break_token,
+    const BlockBreakToken* break_token,
     const NGLayoutResult* layout_result,
     const absl::optional<PhysicalSize>& old_box_size) const {
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
@@ -862,7 +862,7 @@ void BlockNode::FinishLayout(
 }
 
 void BlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
-                                       const NGBlockBreakToken* break_token,
+                                       const BlockBreakToken* break_token,
                                        bool clear_trailing_results) const {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   wtf_size_t fragment_idx = 0;
@@ -1128,7 +1128,7 @@ BlockNode BlockNode::GetFieldsetContent() const {
 }
 
 LayoutUnit BlockNode::EmptyLineBlockSize(
-    const NGBlockBreakToken* incoming_break_token) const {
+    const BlockBreakToken* incoming_break_token) const {
   // Only return a line-height for the first fragment.
   if (IsBreakInside(incoming_break_token))
     return LayoutUnit();
@@ -1143,7 +1143,7 @@ String BlockNode::ToString() const {
 void BlockNode::CopyFragmentDataToLayoutBox(
     const ConstraintSpace& constraint_space,
     const NGLayoutResult& layout_result,
-    const NGBlockBreakToken* previous_break_token) const {
+    const BlockBreakToken* previous_break_token) const {
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
   bool is_last_fragment = !physical_fragment.GetBreakToken();
@@ -1169,7 +1169,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
       // wouldn't always update column sets or establish fragmentainer groups
       // correctly.
       if (is_last_fragment) {
-        const NGBlockBreakToken* incoming_break_token = nullptr;
+        const BlockBreakToken* incoming_break_token = nullptr;
         for (const NGPhysicalBoxFragment& multicol_fragment :
              box_->PhysicalFragments()) {
           PlaceChildrenInFlowThread(flow_thread, constraint_space,
@@ -1216,7 +1216,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
 
 void BlockNode::PlaceChildrenInLayoutBox(
     const NGPhysicalBoxFragment& physical_fragment,
-    const NGBlockBreakToken* previous_break_token,
+    const BlockBreakToken* previous_break_token,
     bool needs_invalidation_check) const {
   for (const auto& child_fragment : physical_fragment.Children()) {
     // Skip any line-boxes we have as children, this is handled within
@@ -1245,7 +1245,7 @@ void BlockNode::PlaceChildrenInFlowThread(
     LayoutMultiColumnFlowThread* flow_thread,
     const ConstraintSpace& space,
     const NGPhysicalBoxFragment& physical_fragment,
-    const NGBlockBreakToken* previous_container_break_token) const {
+    const BlockBreakToken* previous_container_break_token) const {
   // Stitch the contents of the columns together in the legacy flow thread, and
   // update the position and size of column sets, spanners and spanner
   // placeholders. Create fragmentainer groups as needed. When in a nested
@@ -1262,7 +1262,7 @@ void BlockNode::PlaceChildrenInFlowThread(
   WritingModeConverter converter(space.GetWritingDirection(),
                                  physical_fragment.Size());
 
-  const NGBlockBreakToken* previous_column_break_token = nullptr;
+  const BlockBreakToken* previous_column_break_token = nullptr;
   LayoutUnit flow_thread_offset;
 
   if (IsBreakInside(previous_container_break_token)) {
@@ -1274,8 +1274,7 @@ void BlockNode::PlaceChildrenInFlowThread(
     const auto& child_break_tokens =
         previous_container_break_token->ChildBreakTokens();
     if (!child_break_tokens.empty()) {
-      const auto* token =
-          To<NGBlockBreakToken>(child_break_tokens.back().Get());
+      const auto* token = To<BlockBreakToken>(child_break_tokens.back().Get());
       // We also create break tokens for spanners, so we need to check.
       if (token->InputNode() == *this) {
         previous_column_break_token = token;
@@ -1334,7 +1333,7 @@ void BlockNode::CopyChildFragmentPosition(
     const NGPhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
     const NGPhysicalBoxFragment& container_fragment,
-    const NGBlockBreakToken* previous_container_break_token,
+    const BlockBreakToken* previous_container_break_token,
     bool needs_invalidation_check) const {
   auto* layout_box = To<LayoutBox>(child_fragment.GetMutableLayoutObject());
   if (!layout_box)
@@ -1364,7 +1363,7 @@ void BlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
 void BlockNode::CopyFragmentItemsToLayoutBox(
     const NGPhysicalBoxFragment& container,
     const FragmentItems& items,
-    const NGBlockBreakToken* previous_break_token) const {
+    const BlockBreakToken* previous_break_token) const {
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token) {
     previously_consumed_block_size =

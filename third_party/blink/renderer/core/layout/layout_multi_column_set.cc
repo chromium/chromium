@@ -126,7 +126,7 @@ LayoutPoint ComputeLocation(const NGPhysicalBoxFragment& column_box,
       set_inline_size, converter.ToLogical(column_box.Size()).block_size);
   PhysicalOffset physical_offset = converter.ToPhysical(
       logical_offset, converter.ToPhysical(column_set_logical_size));
-  const NGBlockBreakToken* previous_container_break_token = nullptr;
+  const BlockBreakToken* previous_container_break_token = nullptr;
   if (fragment_index > 0) {
     previous_container_break_token =
         container.GetPhysicalFragment(fragment_index - 1)->GetBreakToken();

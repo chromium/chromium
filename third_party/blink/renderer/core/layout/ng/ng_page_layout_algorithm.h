@@ -12,15 +12,13 @@
 
 namespace blink {
 
+class BlockBreakToken;
 class BlockNode;
 class ConstraintSpace;
-class NGBlockBreakToken;
 struct LogicalSize;
 
 class CORE_EXPORT PageLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit PageLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
@@ -32,7 +30,7 @@ class CORE_EXPORT PageLayoutAlgorithm
   const NGPhysicalBoxFragment* LayoutPage(
       uint32_t page_index,
       const AtomicString& page_name,
-      const NGBlockBreakToken* break_token) const;
+      const BlockBreakToken* break_token) const;
   ConstraintSpace CreateConstraintSpaceForPages(const LogicalSize& size) const;
 };
 

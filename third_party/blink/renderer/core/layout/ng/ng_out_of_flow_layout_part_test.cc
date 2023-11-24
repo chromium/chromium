@@ -1619,7 +1619,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   ASSERT_EQ(children.size(), 5u);
 
   const auto& column1 = To<NGPhysicalBoxFragment>(*children[0]);
-  const NGBlockBreakToken* break_token = column1.GetBreakToken();
+  const BlockBreakToken* break_token = column1.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 0u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 100);
@@ -1679,7 +1679,7 @@ TEST_F(OutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   ASSERT_EQ(children.size(), 5u);
 
   const auto& column1 = To<NGPhysicalBoxFragment>(*children[0]);
-  const NGBlockBreakToken* break_token = column1.GetBreakToken();
+  const BlockBreakToken* break_token = column1.GetBreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 0u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 100);

@@ -45,12 +45,12 @@
 
 namespace blink {
 
+class BlockBreakToken;
+class ColumnSpannerPath;
 class ConstraintSpace;
 class CustomLayoutChild;
+class EarlyBreak;
 class LayoutMultiColumnSpannerPlaceholder;
-class NGBlockBreakToken;
-class NGColumnSpannerPath;
-class NGEarlyBreak;
 class NGLayoutResult;
 class ShapeOutsideInfo;
 class WritingModeConverter;
@@ -671,7 +671,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     SetShouldDoFullPaintInvalidation();
   }
 
-  const NGLayoutResult* GetCachedLayoutResult(const NGBlockBreakToken*) const;
+  const NGLayoutResult* GetCachedLayoutResult(const BlockBreakToken*) const;
   const NGLayoutResult* GetCachedMeasureResult() const;
 
   // Call in situations where we know that there's at most one fragment. A
@@ -690,9 +690,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(ikilpatrick): Move this function into BlockNode.
   const NGLayoutResult* CachedLayoutResult(
       const ConstraintSpace&,
-      const NGBlockBreakToken*,
-      const NGEarlyBreak*,
-      const NGColumnSpannerPath*,
+      const BlockBreakToken*,
+      const EarlyBreak*,
+      const ColumnSpannerPath*,
       absl::optional<FragmentGeometry>* initial_fragment_geometry,
       NGLayoutCacheStatus* out_cache_status);
 

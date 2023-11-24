@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class NGBlockBreakToken;
+class BlockBreakToken;
 
 // A utility class for table layout which given the first child and a break
 // token will iterate through unfinished children.
@@ -25,19 +25,19 @@ class CORE_EXPORT TableChildIterator {
   STACK_ALLOCATED();
 
  public:
-  TableChildIterator(const TableGroupedChildren&, const NGBlockBreakToken*);
+  TableChildIterator(const TableGroupedChildren&, const BlockBreakToken*);
 
   class Entry {
     STACK_ALLOCATED();
 
    public:
     Entry(BlockNode node,
-          const NGBlockBreakToken* token,
+          const BlockBreakToken* token,
           wtf_size_t section_index)
         : node(node), token(token), section_index(section_index) {}
 
     const BlockNode GetNode() const { return node; }
-    const NGBlockBreakToken* GetBreakToken() const { return token; }
+    const BlockBreakToken* GetBreakToken() const { return token; }
     wtf_size_t GetSectionIndex() const {
       DCHECK(!node.IsTableCaption());
       return section_index;
@@ -46,7 +46,7 @@ class CORE_EXPORT TableChildIterator {
 
    private:
     BlockNode node;
-    const NGBlockBreakToken* token;
+    const BlockBreakToken* token;
     wtf_size_t section_index;
   };
 
@@ -59,7 +59,7 @@ class CORE_EXPORT TableChildIterator {
   void AdvanceChild();
 
   const TableGroupedChildren* grouped_children_;
-  const NGBlockBreakToken* break_token_;
+  const BlockBreakToken* break_token_;
 
   // The sections iterator is used to walk through the table sections in layout
   // order, i.e. table header, table bodies, table footer. If it is unset, it

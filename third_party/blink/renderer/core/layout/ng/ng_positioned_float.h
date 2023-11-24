@@ -21,7 +21,7 @@ struct CORE_EXPORT PositionedFloat {
  public:
   PositionedFloat() = default;
   PositionedFloat(const NGLayoutResult* layout_result,
-                  const NGBlockBreakToken* break_before_token,
+                  const BlockBreakToken* break_before_token,
                   const BfcOffset& bfc_offset,
                   LayoutUnit minimum_space_shortage)
       : layout_result(layout_result),
@@ -35,10 +35,10 @@ struct CORE_EXPORT PositionedFloat {
 
   void Trace(Visitor*) const;
 
-  const NGBlockBreakToken* BreakToken() const;
+  const BlockBreakToken* BreakToken() const;
 
   Member<const NGLayoutResult> layout_result;
-  Member<const NGBlockBreakToken> break_before_token;
+  Member<const BlockBreakToken> break_before_token;
   BfcOffset bfc_offset;
   LayoutUnit minimum_space_shortage;
 };

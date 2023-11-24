@@ -25,11 +25,11 @@
 
 namespace blink {
 
+class ColumnSpannerPath;
+class EarlyBreak;
 class FragmentItemsBuilder;
 class InlineBreakToken;
 class LayoutObject;
-class NGColumnSpannerPath;
-class NGEarlyBreak;
 
 class CORE_EXPORT NGFragmentBuilder {
   STACK_ALLOCATED();
@@ -68,10 +68,10 @@ class CORE_EXPORT NGFragmentBuilder {
   TextDirection Direction() const { return writing_direction_.Direction(); }
 
   // Store the previous break token, if one exists.
-  void SetPreviousBreakToken(const NGBlockBreakToken* break_token) {
+  void SetPreviousBreakToken(const BlockBreakToken* break_token) {
     previous_break_token_ = break_token;
   }
-  const NGBlockBreakToken* PreviousBreakToken() const {
+  const BlockBreakToken* PreviousBreakToken() const {
     return previous_break_token_;
   }
 
@@ -405,7 +405,7 @@ class CORE_EXPORT NGFragmentBuilder {
   void SetHasColumnSpanner(bool has_column_spanner) {
     has_column_spanner_ = has_column_spanner;
   }
-  void SetColumnSpannerPath(const NGColumnSpannerPath* spanner_path) {
+  void SetColumnSpannerPath(const ColumnSpannerPath* spanner_path) {
     column_spanner_path_ = spanner_path;
     SetHasColumnSpanner(!!spanner_path);
   }
@@ -439,7 +439,7 @@ class CORE_EXPORT NGFragmentBuilder {
 
   // Downgrade the break appeal if the specified break appeal is lower than any
   // found so far.
-  void ClampBreakAppeal(NGBreakAppeal appeal) {
+  void ClampBreakAppeal(BreakAppeal appeal) {
     break_appeal_ = std::min(break_appeal_, appeal);
   }
 
@@ -561,10 +561,10 @@ class CORE_EXPORT NGFragmentBuilder {
   LayoutObject* layout_object_ = nullptr;
 
   // The break token from the previous fragment, that serves as input now.
-  const NGBlockBreakToken* previous_break_token_ = nullptr;
+  const BlockBreakToken* previous_break_token_ = nullptr;
 
   // The break token to store in the resulting fragment.
-  const NGBreakToken* break_token_ = nullptr;
+  const BreakToken* break_token_ = nullptr;
 
   HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
   HeapHashSet<Member<LayoutBox>>* snap_areas_ = nullptr;
@@ -583,7 +583,7 @@ class CORE_EXPORT NGFragmentBuilder {
 
   // Only used by the NGBoxFragmentBuilder subclass, but defined here to avoid
   // a virtual function call.
-  NGBreakTokenVector child_break_tokens_;
+  BreakTokenVector child_break_tokens_;
   const InlineBreakToken* last_inline_break_token_ = nullptr;
 
   HeapVector<LogicalOofPositionedNode> oof_positioned_candidates_;
@@ -594,12 +594,12 @@ class CORE_EXPORT NGFragmentBuilder {
 
   UnpositionedListMarker unpositioned_list_marker_;
 
-  const NGColumnSpannerPath* column_spanner_path_ = nullptr;
+  const ColumnSpannerPath* column_spanner_path_ = nullptr;
 
-  const NGEarlyBreak* early_break_ = nullptr;
+  const EarlyBreak* early_break_ = nullptr;
 
   // The appeal of breaking inside this container.
-  NGBreakAppeal break_appeal_ = kBreakAppealPerfect;
+  BreakAppeal break_appeal_ = kBreakAppealPerfect;
 
   // See NGLayoutResult::AnnotationOverflow().
   LayoutUnit annotation_overflow_;

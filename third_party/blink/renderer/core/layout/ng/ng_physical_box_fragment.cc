@@ -706,7 +706,7 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
 
 PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
     const PhysicalOffset& location,
-    const NGBlockBreakToken* incoming_break_token,
+    const BlockBreakToken* incoming_break_token,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   PhysicalRect clip_rect =
       OverflowClipRect(location, overlay_scrollbar_clip_behavior);

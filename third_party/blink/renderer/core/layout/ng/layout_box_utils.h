@@ -9,10 +9,10 @@
 
 namespace blink {
 
+class BlockBreakToken;
 class LayoutBox;
 class LayoutBlock;
 class LayoutPoint;
-class NGBlockBreakToken;
 class NGPhysicalBoxFragment;
 struct PhysicalOffset;
 
@@ -38,7 +38,7 @@ class LayoutBoxUtils {
       const NGPhysicalBoxFragment& child_fragment,
       PhysicalOffset offset,
       const NGPhysicalBoxFragment& container_fragment,
-      const NGBlockBreakToken* previous_container_break_token);
+      const BlockBreakToken* previous_container_break_token);
 };
 
 }  // namespace blink

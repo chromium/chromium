@@ -138,12 +138,12 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
 }
 
 InlineItemTextIndex LineInfo::End() const {
-  return BreakToken() ? BreakToken()->Start() : ItemsData().End();
+  return GetBreakToken() ? GetBreakToken()->Start() : ItemsData().End();
 }
 
 unsigned LineInfo::EndTextOffset() const {
-  return BreakToken() ? BreakToken()->StartTextOffset()
-                      : ItemsData().text_content.length();
+  return GetBreakToken() ? GetBreakToken()->StartTextOffset()
+                         : ItemsData().text_content.length();
 }
 
 unsigned LineInfo::InflowEndOffset() const {

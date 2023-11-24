@@ -15,14 +15,14 @@ namespace blink {
 // generated during the initial layout (column balancing) pass, and then sent
 // into the layout algorithms in the next pass(es), so that we can tell whether
 // a node is on the path between the multicol container and the spanner.
-class NGColumnSpannerPath : public GarbageCollected<NGColumnSpannerPath> {
+class ColumnSpannerPath : public GarbageCollected<ColumnSpannerPath> {
  public:
-  explicit NGColumnSpannerPath(BlockNode block,
-                               const NGColumnSpannerPath* child = nullptr)
+  explicit ColumnSpannerPath(BlockNode block,
+                             const ColumnSpannerPath* child = nullptr)
       : box_(block.GetLayoutBox()), child_(child) {}
 
   BlockNode GetBlockNode() const { return BlockNode(box_); }
-  const NGColumnSpannerPath* Child() const { return child_.Get(); }
+  const ColumnSpannerPath* Child() const { return child_.Get(); }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(box_);
@@ -31,7 +31,7 @@ class NGColumnSpannerPath : public GarbageCollected<NGColumnSpannerPath> {
 
  private:
   Member<LayoutBox> box_;
-  Member<const NGColumnSpannerPath> child_;
+  Member<const ColumnSpannerPath> child_;
 };
 
 }  // namespace blink

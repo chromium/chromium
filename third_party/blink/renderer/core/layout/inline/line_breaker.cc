@@ -371,7 +371,7 @@ LineBreaker::LineBreaker(InlineNode node,
                          const LineLayoutOpportunity& line_opportunity,
                          const LeadingFloats& leading_floats,
                          const InlineBreakToken* break_token,
-                         const NGColumnSpannerPath* column_spanner_path,
+                         const ColumnSpannerPath* column_spanner_path,
                          ExclusionSpace* exclusion_space)
     : line_opportunity_(line_opportunity),
       node_(node),
@@ -878,7 +878,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       continue;
     }
     if (item.Type() == InlineItem::kBlockInInline) {
-      const NGBlockBreakToken* block_break_token =
+      const BlockBreakToken* block_break_token =
           break_token_ ? break_token_->GetBlockBreakToken() : nullptr;
       HandleBlockInInline(item, block_break_token, line_info);
       continue;
@@ -2694,10 +2694,9 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   item_result->inline_size = result.sizes.max_size + inline_margins;
 }
 
-void LineBreaker::HandleBlockInInline(
-    const InlineItem& item,
-    const NGBlockBreakToken* block_break_token,
-    LineInfo* line_info) {
+void LineBreaker::HandleBlockInInline(const InlineItem& item,
+                                      const BlockBreakToken* block_break_token,
+                                      LineInfo* line_info) {
   DCHECK_EQ(item.Type(), InlineItem::kBlockInInline);
   DCHECK(!block_break_token || block_break_token->InputNode().GetLayoutBox() ==
                                    item.GetLayoutObject());
@@ -2720,7 +2719,7 @@ void LineBreaker::HandleBlockInInline(
         *exclusion_space_);
 
     BlockNode block_node(To<LayoutBox>(item.GetLayoutObject()));
-    const NGColumnSpannerPath* spanner_path_for_child =
+    const ColumnSpannerPath* spanner_path_for_child =
         FollowColumnSpannerPath(column_spanner_path_, block_node);
     const NGLayoutResult* layout_result =
         block_node.Layout(constraint_space_, block_break_token,
@@ -2741,7 +2740,7 @@ void LineBreaker::HandleBlockInInline(
     item_result->should_create_line_box = !layout_result->IsSelfCollapsing();
     item_result->layout_result = layout_result;
 
-    if (const auto* outgoing_block_break_token = To<NGBlockBreakToken>(
+    if (const auto* outgoing_block_break_token = To<BlockBreakToken>(
             layout_result->PhysicalFragment().GetBreakToken())) {
       // The block broke inside. If the block itself fits, but some content
       // inside overflowed, we now need to enter a parallel flow, i.e. resume
@@ -2838,7 +2837,7 @@ bool LineBreaker::ShouldPushFloatAfterLine(
 // allowed to position a float "above" another float which has come before us
 // in the document.
 void LineBreaker::HandleFloat(const InlineItem& item,
-                              const NGBlockBreakToken* float_break_token,
+                              const BlockBreakToken* float_break_token,
                               LineInfo* line_info) {
   // When rewind occurs, an item may be handled multiple times.
   // Since floats are put into a separate list, avoid handling same floats
@@ -3656,7 +3655,7 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
     return nullptr;
   }
 
-  const NGBlockBreakToken* sub_break_token = nullptr;
+  const BlockBreakToken* sub_break_token = nullptr;
   if (resume_block_in_inline_in_same_flow_) {
     const auto* block_in_inline = line_info.BlockInInlineLayoutResult();
     DCHECK(block_in_inline);

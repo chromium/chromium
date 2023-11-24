@@ -319,9 +319,10 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     auto status = FinishFragmentation(
         node, constraint_space, border_padding.block_end,
         FragmentainerSpaceLeft(constraint_space), &container_builder_);
-    if (status == NGBreakStatus::kDisableFragmentation)
+    if (status == BreakStatus::kDisableFragmentation) {
       return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
-    DCHECK_EQ(status, NGBreakStatus::kContinue);
+    }
+    DCHECK_EQ(status, BreakStatus::kContinue);
   } else {
 #if DCHECK_IS_ON()
     // If we're not participating in a fragmentation context, no block
@@ -3768,7 +3769,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   };
 
   LayoutUnit fragmentainer_space = FragmentainerSpaceLeft(constraint_space);
-  base::span<const Member<const NGBreakToken>> child_break_tokens;
+  base::span<const Member<const BreakToken>> child_break_tokens;
   if (GetBreakToken()) {
     child_break_tokens = GetBreakToken()->ChildBreakTokens();
   }
@@ -3794,10 +3795,10 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     for (const auto& grid_item : grid_items) {
       // Grab the offsets and break-token (if present) for this child.
       auto& item_placement_data = *(placement_data_it++);
-      const NGBlockBreakToken* break_token = nullptr;
+      const BlockBreakToken* break_token = nullptr;
       if (child_break_token_it != child_break_tokens.end()) {
         if ((*child_break_token_it)->InputNode() == grid_item.node)
-          break_token = To<NGBlockBreakToken>((child_break_token_it++)->Get());
+          break_token = To<BlockBreakToken>((child_break_token_it++)->Get());
       }
 
       const LayoutUnit fragment_relative_block_offset =
@@ -3907,7 +3908,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         }
 
         container_builder_.SetPreviousBreakAfter(break_between);
-        const NGBreakAppeal appeal_before = CalculateBreakAppealBefore(
+        const BreakAppeal appeal_before = CalculateBreakAppealBefore(
             constraint_space, grid_item.node, *result, container_builder_,
             row_has_container_separation);
 

@@ -12,8 +12,8 @@
 namespace blink {
 
 class InlineBreakToken;
-class NGBreakToken;
-class NGBlockBreakToken;
+class BreakToken;
+class BlockBreakToken;
 
 // A utility class for block-flow layout which given the first child and a
 // break token will iterate through unfinished children.
@@ -33,7 +33,7 @@ class CORE_EXPORT NGBlockChildIterator {
 
  public:
   NGBlockChildIterator(LayoutInputNode first_child,
-                       const NGBlockBreakToken* break_token,
+                       const BlockBreakToken* break_token,
                        bool calculate_child_idx = false);
 
   // Returns the next input node which should be laid out, along with its
@@ -50,7 +50,7 @@ class CORE_EXPORT NGBlockChildIterator {
 
   LayoutInputNode next_unstarted_child_;
   LayoutInputNode tracked_child_ = nullptr;
-  const NGBlockBreakToken* break_token_;
+  const BlockBreakToken* break_token_;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
   // track of the next child break token to inspect.
@@ -67,12 +67,12 @@ struct NGBlockChildIterator::Entry {
  public:
   Entry() : node(nullptr), token(nullptr) {}
   Entry(LayoutInputNode node,
-        const NGBreakToken* token,
+        const BreakToken* token,
         absl::optional<wtf_size_t> index = absl::nullopt)
       : node(node), token(token), index(index) {}
 
   LayoutInputNode node;
-  const NGBreakToken* token;
+  const BreakToken* token;
   absl::optional<wtf_size_t> index;
 
   bool operator==(const NGBlockChildIterator::Entry& other) const {

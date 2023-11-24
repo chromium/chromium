@@ -39,7 +39,7 @@ LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
 
 FrameSetLayoutAlgorithm::FrameSetLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
-    : LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, NGBlockBreakToken>(
+    : LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken>(
           params) {}
 
 const NGLayoutResult* FrameSetLayoutAlgorithm::Layout() {

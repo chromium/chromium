@@ -203,7 +203,7 @@ TEST_F(FragmentationTest, HasSeenAllChildrenIfc) {
   const LayoutBox* ifc = GetLayoutBoxByElementId("ifc");
   ASSERT_EQ(ifc->PhysicalFragmentCount(), 6u);
   const NGPhysicalBoxFragment* fragment = ifc->GetPhysicalFragment(0);
-  const NGBlockBreakToken* break_token = fragment->GetBreakToken();
+  const BlockBreakToken* break_token = fragment->GetBreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_FALSE(break_token->HasSeenAllChildren());
 

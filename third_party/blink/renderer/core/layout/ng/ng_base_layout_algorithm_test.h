@@ -16,8 +16,8 @@
 namespace blink {
 
 class BlockNode;
+class BreakToken;
 class LayoutNGBlockFlow;
-class NGBreakToken;
 class NGPhysicalBoxFragment;
 
 // Base class for all LayoutNG Algorithms unit test classes.
@@ -33,12 +33,12 @@ class BaseLayoutAlgorithmTest
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(
       BlockNode node,
       const ConstraintSpace& space,
-      const NGBreakToken* break_token = nullptr);
+      const BreakToken* break_token = nullptr);
 
   const NGPhysicalBoxFragment* RunFieldsetLayoutAlgorithm(
       BlockNode node,
       const ConstraintSpace& space,
-      const NGBreakToken* break_token = nullptr);
+      const BreakToken* break_token = nullptr);
 
   const NGPhysicalBoxFragment* GetBoxFragmentByElementId(const char*);
 

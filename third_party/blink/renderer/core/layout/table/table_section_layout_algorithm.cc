@@ -53,7 +53,7 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
   for (auto entry = child_iterator.NextChild();
        BlockNode row = To<BlockNode>(entry.node);
        entry = child_iterator.NextChild()) {
-    const auto* row_break_token = To<NGBlockBreakToken>(entry.token);
+    const auto* row_break_token = To<BlockBreakToken>(entry.token);
     wtf_size_t row_index = start_row_index + *entry.index;
     DCHECK_LT(row_index, start_row_index + section.row_count);
     bool is_row_collapsed = table_data.rows[row_index].is_collapsed;
@@ -92,16 +92,17 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
     if (constraint_space.HasBlockFragmentation()) {
       LayoutUnit fragmentainer_block_offset =
           constraint_space.FragmentainerOffset() + offset.block_offset;
-      NGBreakStatus break_status = BreakBeforeChildIfNeeded(
+      BreakStatus break_status = BreakBeforeChildIfNeeded(
           constraint_space, row, *row_result, fragmentainer_block_offset,
           !is_first_non_collapsed_row, &container_builder_);
-      if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
+      if (break_status == BreakStatus::kNeedsEarlierBreak) {
         return RelayoutAndBreakEarlier<TableSectionLayoutAlgorithm>(
             container_builder_.GetEarlyBreak());
       }
-      if (break_status == NGBreakStatus::kBrokeBefore)
+      if (break_status == BreakStatus::kBrokeBefore) {
         break;
-      DCHECK_EQ(break_status, NGBreakStatus::kContinue);
+      }
+      DCHECK_EQ(break_status, BreakStatus::kContinue);
     }
 
     const auto& physical_fragment =
@@ -162,10 +163,10 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
   }
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    NGBreakStatus status = FinishFragmentation(
+    BreakStatus status = FinishFragmentation(
         Node(), constraint_space, /* trailing_border_padding */ LayoutUnit(),
         FragmentainerSpaceLeft(constraint_space), &container_builder_);
-    DCHECK_EQ(status, NGBreakStatus::kContinue);
+    DCHECK_EQ(status, BreakStatus::kContinue);
   }
 
   OutOfFlowLayoutPart(Node(), constraint_space, &container_builder_).Run();

@@ -334,7 +334,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
           FragmentainerOffsetAtBfc(parent_space) +
           opportunity.rect.start_offset.block_offset +
           fragment_margins.block_start;
-      const auto* break_token = To<NGBlockBreakToken>(
+      const auto* break_token = To<BlockBreakToken>(
           layout_result->PhysicalFragment().GetBreakToken());
       bool is_at_block_end = !break_token || break_token->IsAtBlockEnd();
       if (!is_at_block_end) {
@@ -411,7 +411,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
     // If the float broke inside and will continue to take up layout space in
     // the next fragmentainer, it means that we cannot fit any subsequent
     // content that wants clearance past this float.
-    if (const NGBlockBreakToken* break_token =
+    if (const BlockBreakToken* break_token =
             physical_fragment.GetBreakToken()) {
       if (!break_token->IsAtBlockEnd())
         exclusion_space->SetHasBreakInsideFloat(float_type);
@@ -424,10 +424,10 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
           fragment_margins.LineLeft(parent_space.Direction()),
       float_margin_bfc_offset.block_offset + fragment_margins.block_start);
 
-  const NGBlockBreakToken* break_before_token = nullptr;
+  const BlockBreakToken* break_before_token = nullptr;
   if (need_break_before) {
     break_before_token =
-        NGBlockBreakToken::CreateBreakBefore(node, /* is_forced_break */ false);
+        BlockBreakToken::CreateBreakBefore(node, /* is_forced_break */ false);
   }
 
   LayoutUnit minimum_space_shortage;

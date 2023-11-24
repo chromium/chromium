@@ -14,20 +14,19 @@
 
 namespace blink {
 
+class BlockBreakToken;
+class ColumnSpannerPath;
 class ConstraintSpace;
+class EarlyBreak;
 class FragmentItems;
 class InlineNode;
 class LayoutBox;
-class NGBlockBreakToken;
-class NGColumnSpannerPath;
-class NGEarlyBreak;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
 enum class BaselineAlgorithmType;
-struct LayoutAlgorithmParams;
-
 enum class MathScriptType;
+struct LayoutAlgorithmParams;
 
 // Represents a node to be laid out.
 class CORE_EXPORT BlockNode : public LayoutInputNode {
@@ -39,9 +38,9 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   BlockNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   const NGLayoutResult* Layout(const ConstraintSpace& constraint_space,
-                               const NGBlockBreakToken* break_token = nullptr,
-                               const NGEarlyBreak* = nullptr,
-                               const NGColumnSpannerPath* = nullptr) const;
+                               const BlockBreakToken* break_token = nullptr,
+                               const EarlyBreak* = nullptr,
+                               const ColumnSpannerPath* = nullptr) const;
 
   // This method is just for use within the |SimplifiedLayoutAlgorithm|.
   //
@@ -77,7 +76,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // also need to make sure that the break tokens are reasonably intact -
   // including the sequence numbers. This is why we need this.
   const NGLayoutResult* LayoutRepeatableRoot(const ConstraintSpace&,
-                                             const NGBlockBreakToken*) const;
+                                             const BlockBreakToken*) const;
 
   // Finalize the cloned layout results of a repeatable root. This will
   // deep-clone and set the correct break token sequence numbers, and make sure
@@ -224,7 +223,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
     return false;
   }
   LayoutUnit EmptyLineBlockSize(
-      const NGBlockBreakToken* incoming_break_token) const;
+      const BlockBreakToken* incoming_break_token) const;
 
   // After we run the layout algorithm, this function copies back the fragment
   // position to the layout box.
@@ -232,7 +231,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       const NGPhysicalBoxFragment& child_fragment,
       PhysicalOffset,
       const NGPhysicalBoxFragment& container_fragment,
-      const NGBlockBreakToken* previous_container_break_token = nullptr,
+      const BlockBreakToken* previous_container_break_token = nullptr,
       bool needs_invalidation_check = false) const;
 
   // If extra columns are added after a multicol has been written back to
@@ -257,13 +256,13 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // this node cast to a LayoutBlockFlow as the first argument.
   void FinishLayout(LayoutBlockFlow*,
                     const ConstraintSpace&,
-                    const NGBlockBreakToken*,
+                    const BlockBreakToken*,
                     const NGLayoutResult*,
                     const absl::optional<PhysicalSize>& old_box_size) const;
 
   // Update the layout results vector in LayoutBox with the new result.
   void StoreResultInLayoutBox(const NGLayoutResult*,
-                              const NGBlockBreakToken*,
+                              const BlockBreakToken*,
                               bool clear_trailing_results = false) const;
 
   // After we run the layout algorithm, this function copies back the geometry
@@ -271,19 +270,19 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   void CopyFragmentDataToLayoutBox(
       const ConstraintSpace&,
       const NGLayoutResult&,
-      const NGBlockBreakToken* previous_break_token) const;
+      const BlockBreakToken* previous_break_token) const;
   void CopyFragmentItemsToLayoutBox(
       const NGPhysicalBoxFragment& container,
       const FragmentItems& items,
-      const NGBlockBreakToken* previous_break_token) const;
+      const BlockBreakToken* previous_break_token) const;
   void PlaceChildrenInLayoutBox(const NGPhysicalBoxFragment&,
-                                const NGBlockBreakToken* previous_break_token,
+                                const BlockBreakToken* previous_break_token,
                                 bool needs_invalidation_check = false) const;
   void PlaceChildrenInFlowThread(
       LayoutMultiColumnFlowThread*,
       const ConstraintSpace&,
       const NGPhysicalBoxFragment&,
-      const NGBlockBreakToken* previous_container_break_token) const;
+      const BlockBreakToken* previous_container_break_token) const;
 
   void UpdateMarginPaddingInfoIfNeeded(
       const ConstraintSpace&,

@@ -9,10 +9,10 @@
 
 namespace blink {
 
-struct TableRowBreakTokenData final : NGBlockBreakTokenData {
-  TableRowBreakTokenData(const NGBlockBreakTokenData* break_token_data,
+struct TableRowBreakTokenData final : BlockBreakTokenData {
+  TableRowBreakTokenData(const BlockBreakTokenData* break_token_data,
                          LayoutUnit previous_consumed_row_block_size)
-      : NGBlockBreakTokenData(kTableRowBreakTokenData, break_token_data),
+      : BlockBreakTokenData(kTableRowBreakTokenData, break_token_data),
         previous_consumed_row_block_size(previous_consumed_row_block_size) {}
 
   // Similar to |consumed_block_size| however it will stop increasing once it
@@ -23,7 +23,7 @@ struct TableRowBreakTokenData final : NGBlockBreakTokenData {
 
 template <>
 struct DowncastTraits<TableRowBreakTokenData> {
-  static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
+  static bool AllowFrom(const BlockBreakTokenData& token_data) {
     return token_data.IsTableRowType();
   }
 };

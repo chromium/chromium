@@ -12,9 +12,7 @@
 namespace blink {
 
 class CORE_EXPORT MathUnderOverLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit MathUnderOverLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

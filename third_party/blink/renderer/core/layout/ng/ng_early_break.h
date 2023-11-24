@@ -16,21 +16,21 @@ namespace blink {
 // Possible early unforced breakpoint. This represents a possible (and good)
 // location to break. In cases where we run out of space at an unideal location,
 // we may want to go back and break here instead.
-class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
+class EarlyBreak : public GarbageCollected<EarlyBreak> {
  public:
   enum BreakType {
     kLine,  // Break before a specified line number.
     kBlock  // Break before or inside a specified child block.
   };
 
-  explicit NGEarlyBreak(BlockNode block,
-                        NGBreakAppeal break_appeal,
-                        const NGEarlyBreak* break_inside_child = nullptr)
+  explicit EarlyBreak(BlockNode block,
+                      BreakAppeal break_appeal,
+                      const EarlyBreak* break_inside_child = nullptr)
       : box_(block.GetLayoutBox()),
         break_inside_child_(break_inside_child),
         const_type_(kBlock),
         break_appeal_(break_appeal) {}
-  explicit NGEarlyBreak(int line_number, NGBreakAppeal break_appeal)
+  explicit EarlyBreak(int line_number, BreakAppeal break_appeal)
       : line_number_(line_number),
         const_type_(kLine),
         break_appeal_(break_appeal) {}
@@ -45,10 +45,10 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
     DCHECK_EQ(const_type_, kLine);
     return line_number_;
   }
-  const NGEarlyBreak* BreakInside() const { return break_inside_child_.Get(); }
+  const EarlyBreak* BreakInside() const { return break_inside_child_.Get(); }
 
-  NGBreakAppeal GetBreakAppeal() const {
-    return static_cast<NGBreakAppeal>(break_appeal_);
+  BreakAppeal GetBreakAppeal() const {
+    return static_cast<BreakAppeal>(break_appeal_);
   }
 
   void Trace(Visitor* visitor) const {
@@ -65,9 +65,9 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
 
     int line_number_;  // Set if const_type_ == kLine
   };
-  Member<const NGEarlyBreak> break_inside_child_;
+  Member<const EarlyBreak> break_inside_child_;
   const unsigned const_type_ : 1;                     // BreakType
-  unsigned break_appeal_ : kNGBreakAppealBitsNeeded;  // NGBreakAppeal
+  unsigned break_appeal_ : kBreakAppealBitsNeeded;    // BreakAppeal
 };
 
 }  // namespace blink

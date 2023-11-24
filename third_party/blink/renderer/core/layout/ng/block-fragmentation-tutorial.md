@@ -12,7 +12,7 @@ Main spec: https://www.w3.org/TR/css-break-3/
 ## Overview ##
 
 Any layout algorithm for block nodes takes ConstraintSpace, BlockNode and
-NGBlockBreakToken as input, and writes output to NGBoxFragmentBuilder, which
+BlockBreakToken as input, and writes output to NGBoxFragmentBuilder, which
 will eventually generate an NGPhysicalBoxFragment wrapped inside an
 NGLayoutResult. This will serve as input to the parent algorithm, which will
 eventually add the child fragment to their output, i.e. NGBoxFragmentBuilder (or
@@ -23,7 +23,7 @@ machinery, which mainly consists of utility functions in
 algorithm can easily hook up with the various stages or aspects of block
 fragmentation of a node. The utility functions will perform the relevant
 operations on these core NG structures (ConstraintSpace, BlockNode,
-NGBlockBreakToken, NGLayoutResult, and so on).
+BlockBreakToken, NGLayoutResult, and so on).
 
 The purpose of the fragmentation machinery is to find the ideal (most appealing)
 places to break in one
@@ -156,7 +156,7 @@ is that all the layout algorithm needs to do when laying out children, is:
   the node that was passed to the layout algorithm, by calling
   [GetBreakToken()](ng_layout_algorithm.h). There will be a child break token
   for each unfinished child. Block break tokens form a tree. Children are found
-  in [NGBlockBreakToken::ChildBreakTokens()](ng_block_break_token.h). These will
+  in [BlockBreakToken::ChildBreakTokens()](ng_block_break_token.h). These will
   need to be resumed and laid out by passing the corresponding child break token
   to [LayoutInputNode::Layout()](ng_layout_input_node.h). When done with all
   the incoming child break tokens, and as long as we didn't break again, proceed
@@ -249,7 +249,7 @@ layout and retry without fragmentation.
 Some breakpoints are more appealing, while others violate certain breaking
 rules. We'll always break at the breakpoint with the highest appeal that's
 closer to the end of the fragmentainer (remember the golden rule mentioned
-earlier). [NGBreakAppeal](ng_break_appeal.h) defines the appeal values, ranging
+earlier). [BreakAppeal](ng_break_appeal.h) defines the appeal values, ranging
 from kBreakAppealPerfect, which is used when no breaking rules are violated at
 all, to kBreakAppealLastResort, which means an invalid breakpoint, that we'll
 sometimes end up breaking at nevertheless (if there are no valid breakpoints
@@ -271,12 +271,12 @@ Note that the mere existence of a break token for a node doesn't imply that any
 fragment has been generated for a node, since we also create break tokens
 *before* nodes, not just inside them. If we want to know if we're actually
 resuming layout of a node, we also need to check that it's not a break-before
-break token (NGBlockBreakToken::IsBreakBefore()). There's a utility function for
+break token (BlockBreakToken::IsBreakBefore()). There's a utility function for
 this: [IsBreakInside()](ng_fragmentation_utils.h).
 
 Break tokens are attached to each fragment that breaks inside. Child fragments
 that broke inside have an entry in the child list
-([NGBlockBreakToken::ChildBreakTokens()](ng_block_break_token.h)). There is also
+([BlockBreakToken::ChildBreakTokens()](ng_block_break_token.h)). There is also
 a child break token for each child node that we need to break *before*.
 
 For multicol layout, a break token tree is built all the way up to the
@@ -305,7 +305,7 @@ Example:
 
 We'll run out of space in the first column before #block3 (it's monolithic due
 to contain:size). We'll create a break token for #block3
-([NGBlockBreakToken::IsBreakBefore()](ng_block_break_token.h) will return true
+([BlockBreakToken::IsBreakBefore()](ng_block_break_token.h) will return true
 for that one). We'll finish the fragment for #wrapper2, create a break token for
 it, and put the break token for #block3 inside. We'll finish the fragment for
 #wrapper1, create a break token for it, and put the break token for #wrapper2
@@ -367,7 +367,7 @@ We'll resume inside #container. It has no child break tokens. What does this
 mean? Start from scratch? No. We finished #child in the first column. Laying it
 out again here would be bad (infinite loop generating an infinite amount of
 columns not getting anywhere, proabably). This is where
-[NGBlockBreakToken::HasSeenAllChildren()](ng_block_break_token.h) comes into
+[BlockBreakToken::HasSeenAllChildren()](ng_block_break_token.h) comes into
 play. No child break tokens either means that we're done with the children, or
 that we haven't started yet. HasSeenAllChildren() will tell us what to do. In
 this case it returns true, so we'll just finish layout.
@@ -390,7 +390,7 @@ means that we have actually found a better earlier breakpoint (further up in the
 fragmentainer). When this happens, we need to abort and rerun layout, but this
 time with a parameter that says exactly where to stop and break. Early breaks
 are stored in NGLayoutResult when found. See NGLayoutResult::GetEarlyBreak() and
-the [NGEarlyBreak](ng_early_break.h) structure.
+the [EarlyBreak](ng_early_break.h) structure.
 
 An algorithm can be rerun to break at the appealing early breakpoint by passing
 said early breakpoint to the algorithm's constructor. This can be done in the
@@ -400,7 +400,7 @@ set the early_break_ member and relayout. Any compliant algorithm needs to
 check if an early break has been set, and, if so, break when reaching that
 node.
 
-NGEarlyBreak forms a container chain, so that we know where to enter, and where
+EarlyBreak forms a container chain, so that we know where to enter, and where
 to stop in the second layout pass. If there's an early break set, before
 entering every child, [IsEarlyBreakTarget()](ng_fragmentation_utils.h) may be
 called (as long as the algorithm only deals with block nodes). If it returns
@@ -543,7 +543,7 @@ Details:
   previously found "best" break point, store this breakpoint as the current
   early break candidate (in the fragment builder). This may end up becoming the
   actual place to break, if we don't find anything better. This is stored as an
-  [NGEarlyBreak](ng_early_break.h) structure, which forms a container chain,
+  [EarlyBreak](ng_early_break.h) structure, which forms a container chain,
   which we will have to enter if we need an early break. Return kContinue for
   now.
 
@@ -624,15 +624,15 @@ When laying out this multicol container, the following will happen:
    we could have done just that, and finished #problem and then the first column
    entirely, but the place to break is before #b inside #wrapper2 inside
    #wrapper1.
-1. Restart layout of #problem, and provide the NGEarlyBreak pointing at #b
+1. Restart layout of #problem, and provide the EarlyBreak pointing at #b
    inside #wrapper2 inside #wrapper1.
 1. Lay out #herring normally, and just add it to the fragment builder, since
    it's not the early break we're looking for.
 1. Enter #wrapper1. Our early break is inside it. Peel off one layer of the
-   NGEarlyBreak onion. Lay out #wrapper1 with an NGEarlyBreak pointing before #b
+   EarlyBreak onion. Lay out #wrapper1 with an EarlyBreak pointing before #b
    inside #wrapper2.
 1. Enter #wrapper2. Our early break is inside it. Peel off one layer of the
-   NGEarlyBreak onion. Lay out #wrapper2 with an NGEarlyBreak pointing before
+   EarlyBreak onion. Lay out #wrapper2 with an EarlyBreak pointing before
    #b.
 1. Lay out #a, and just add it to the fragment builder, since it's not the early
    break we're looking for.

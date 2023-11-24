@@ -19,7 +19,7 @@ namespace {
 // Remove all cloned results, but keep the first original one(s).
 void RemoveClonedResults(LayoutBox& layout_box) {
   for (wtf_size_t idx = 0; idx < layout_box.PhysicalFragmentCount(); idx++) {
-    const NGBlockBreakToken* break_token =
+    const BlockBreakToken* break_token =
         layout_box.GetPhysicalFragment(idx)->GetBreakToken();
     if (!break_token || break_token->IsRepeated()) {
       layout_box.ShrinkLayoutResults(idx + 1);
@@ -42,7 +42,7 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
 
   for (wtf_size_t idx = 0; idx < fragment_count; idx++, sequence_number++) {
     const auto& fragment = *layout_box.GetPhysicalFragment(idx);
-    const NGBlockBreakToken* break_token = fragment.GetBreakToken();
+    const BlockBreakToken* break_token = fragment.GetBreakToken();
     if (break_token && break_token->IsRepeated())
       break_token = nullptr;
     if (break_token) {
@@ -51,13 +51,13 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
       // number, unless we're inside the very first fragment generated for the
       // repeated root.
       if (break_token->SequenceNumber() != sequence_number) {
-        break_token = NGBlockBreakToken::CreateForBreakInRepeatedFragment(
+        break_token = BlockBreakToken::CreateForBreakInRepeatedFragment(
             node, sequence_number, break_token->ConsumedBlockSize(),
             break_token->IsAtBlockEnd());
       }
     } else if (idx + 1 < fragment_count) {
       // Unless it's the very last fragment, it needs a break token.
-      break_token = NGBlockBreakToken::CreateRepeated(node, sequence_number);
+      break_token = BlockBreakToken::CreateRepeated(node, sequence_number);
     }
     fragment.GetMutableForCloning().SetBreakToken(break_token);
 
@@ -74,7 +74,7 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
         continue;
       const auto& fragmentainer =
           *To<NGPhysicalBoxFragment>(child_link.fragment.Get());
-      const NGBlockBreakToken* fragmentainer_break_token =
+      const BlockBreakToken* fragmentainer_break_token =
           fragmentainer.GetBreakToken();
       if (fragmentainer_break_token && fragmentainer_break_token->IsRepeated())
         fragmentainer_break_token = nullptr;
@@ -82,7 +82,7 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
         if (fragmentainer_break_token->SequenceNumber() !=
             fragmentainer_sequence_number) {
           fragmentainer_break_token =
-              NGBlockBreakToken::CreateForBreakInRepeatedFragment(
+              BlockBreakToken::CreateForBreakInRepeatedFragment(
                   node, fragmentainer_sequence_number,
                   fragmentainer_break_token->ConsumedBlockSize(),
                   /* is_at_block_end */ false);
@@ -90,7 +90,7 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
               fragmentainer_break_token);
         }
       } else {
-        fragmentainer_break_token = NGBlockBreakToken::CreateRepeated(
+        fragmentainer_break_token = BlockBreakToken::CreateRepeated(
             node, fragmentainer_sequence_number);
         fragmentainer.GetMutableForCloning().SetBreakToken(
             fragmentainer_break_token);
@@ -197,7 +197,7 @@ const NGLayoutResult* NGFragmentRepeater::Repeat(const NGLayoutResult& other) {
 const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
     const LayoutBox& layout_box,
     const NGPhysicalBoxFragment& fragment) const {
-  if (const NGBlockBreakToken* break_token = fragment.GetBreakToken()) {
+  if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
     if (!break_token->IsRepeated())
       return layout_box.GetLayoutResult(break_token->SequenceNumber());
   }
@@ -209,7 +209,7 @@ const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
   // actually be the very first result, unless there's a fragmentation context
   // established inside the repeated root.
   for (const NGLayoutResult* result : layout_box.GetLayoutResults()) {
-    const NGBlockBreakToken* break_token =
+    const BlockBreakToken* break_token =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()).GetBreakToken();
     if (!break_token || break_token->IsRepeated())
       return result;

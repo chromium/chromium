@@ -24,7 +24,7 @@ class NGLayoutResultCachingTest : public RenderingTest {
   const NGLayoutResult* TestCachedLayoutResultWithBreakToken(
       LayoutBox* box,
       const ConstraintSpace& constraint_space,
-      const NGBlockBreakToken* break_token) {
+      const BlockBreakToken* break_token) {
     absl::optional<FragmentGeometry> fragment_geometry;
     NGLayoutCacheStatus cache_status;
     return box->CachedLayoutResult(constraint_space, break_token, nullptr,
@@ -2005,7 +2005,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const ConstraintSpace& test_space1 =
       test_result1->GetConstraintSpaceForCaching();
   const auto* test_break_token1 =
-      To<NGBlockBreakToken>(test_result1->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(test_result1->PhysicalFragment().GetBreakToken());
   ASSERT_TRUE(test_break_token1);
   const NGLayoutResult* test_result2 =
       test->GetCachedLayoutResult(test_break_token1);
@@ -2013,7 +2013,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const ConstraintSpace& test_space2 =
       test_result2->GetConstraintSpaceForCaching();
   const auto* test_break_token2 =
-      To<NGBlockBreakToken>(test_result2->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(test_result2->PhysicalFragment().GetBreakToken());
   ASSERT_TRUE(test_break_token2);
   const NGLayoutResult* test_result3 =
       test->GetCachedLayoutResult(test_break_token2);
@@ -2027,7 +2027,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const ConstraintSpace& src_space1 =
       src_result1->GetConstraintSpaceForCaching();
   const auto* src_break_token1 =
-      To<NGBlockBreakToken>(src_result1->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(src_result1->PhysicalFragment().GetBreakToken());
   ASSERT_TRUE(src_break_token1);
   const NGLayoutResult* src_result2 =
       src->GetCachedLayoutResult(src_break_token1);
@@ -2035,7 +2035,7 @@ TEST_F(NGLayoutResultCachingTest, FragmentainerSizeChange) {
   const ConstraintSpace& src_space2 =
       src_result2->GetConstraintSpaceForCaching();
   const auto* src_break_token2 =
-      To<NGBlockBreakToken>(src_result2->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(src_result2->PhysicalFragment().GetBreakToken());
   ASSERT_TRUE(src_break_token2);
   const NGLayoutResult* src_result3 =
       src->GetCachedLayoutResult(src_break_token2);

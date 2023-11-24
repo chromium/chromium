@@ -12,13 +12,11 @@
 
 namespace blink {
 
+class BlockBreakToken;
 class BlockNode;
-class NGBlockBreakToken;
 
 class CORE_EXPORT ReplacedLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode,
-                             NGBoxFragmentBuilder,
-                             NGBlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit ReplacedLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

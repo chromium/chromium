@@ -13,12 +13,11 @@ void PositionedFloat::Trace(Visitor* visitor) const {
   visitor->Trace(break_before_token);
 }
 
-const NGBlockBreakToken* PositionedFloat::BreakToken() const {
+const BlockBreakToken* PositionedFloat::BreakToken() const {
   if (break_before_token) {
     return break_before_token.Get();
   }
-  return To<NGBlockBreakToken>(
-      layout_result->PhysicalFragment().GetBreakToken());
+  return To<BlockBreakToken>(layout_result->PhysicalFragment().GetBreakToken());
 }
 
 }  // namespace blink

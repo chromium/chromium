@@ -10,7 +10,7 @@ namespace blink {
 
 TableChildIterator::TableChildIterator(
     const TableGroupedChildren& grouped_children,
-    const NGBlockBreakToken* break_token)
+    const BlockBreakToken* break_token)
     : grouped_children_(&grouped_children), break_token_(break_token) {
   if (break_token_) {
     const auto& child_break_tokens = break_token_->ChildBreakTokens();
@@ -47,14 +47,14 @@ TableChildIterator::TableChildIterator(
 }
 
 TableChildIterator::Entry TableChildIterator::NextChild() {
-  const NGBlockBreakToken* current_child_break_token = nullptr;
+  const BlockBreakToken* current_child_break_token = nullptr;
   BlockNode current_child(nullptr);
 
   if (break_token_) {
     const auto& child_break_tokens = break_token_->ChildBreakTokens();
     if (child_token_idx_ < child_break_tokens.size()) {
       current_child_break_token =
-          To<NGBlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
+          To<BlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
       current_child = To<BlockNode>(current_child_break_token->InputNode());
 
       // Normally (for non-tables), when we're out of break tokens, we can

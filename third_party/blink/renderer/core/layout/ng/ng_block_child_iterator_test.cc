@@ -15,22 +15,23 @@
 
 namespace blink {
 
-const NGBlockBreakToken* CreateBreakToken(
+const BlockBreakToken* CreateBreakToken(
     LayoutInputNode node,
-    const NGBreakTokenVector* child_break_tokens = nullptr,
+    const BreakTokenVector* child_break_tokens = nullptr,
     bool has_seen_all_children = false) {
   NGBoxFragmentBuilder builder(
       node, &node.Style(), ConstraintSpace(),
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr));
   DCHECK(!builder.HasBreakTokenData());
-  builder.SetBreakTokenData(MakeGarbageCollected<NGBlockBreakTokenData>());
+  builder.SetBreakTokenData(MakeGarbageCollected<BlockBreakTokenData>());
   if (has_seen_all_children)
     builder.SetHasSeenAllChildren();
   if (child_break_tokens) {
-    for (const NGBreakToken* token : *child_break_tokens)
+    for (const BreakToken* token : *child_break_tokens) {
       builder.AddBreakToken(token);
+    }
   }
-  return NGBlockBreakToken::Create(&builder);
+  return BlockBreakToken::Create(&builder);
 }
 
 using NGBlockChildIteratorTest = RenderingTest;
@@ -75,14 +76,14 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
   LayoutInputNode node3 = node2.NextSibling();
   LayoutInputNode node4 = node3.NextSibling();
 
-  NGBreakTokenVector empty_tokens_list;
-  const NGBreakToken* child_token1 = CreateBreakToken(node1);
-  const NGBreakToken* child_token2 = CreateBreakToken(node2);
-  const NGBreakToken* child_token3 = CreateBreakToken(node3);
+  BreakTokenVector empty_tokens_list;
+  const BreakToken* child_token1 = CreateBreakToken(node1);
+  const BreakToken* child_token2 = CreateBreakToken(node2);
+  const BreakToken* child_token3 = CreateBreakToken(node3);
 
-  NGBreakTokenVector child_break_tokens;
+  BreakTokenVector child_break_tokens;
   child_break_tokens.push_back(child_token1);
-  const NGBlockBreakToken* parent_token =
+  const BlockBreakToken* parent_token =
       CreateBreakToken(container, &child_break_tokens);
 
   NGBlockChildIterator iterator(node1, parent_token);
@@ -148,11 +149,11 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
   BlockNode container = BlockNode(GetLayoutBoxByElementId("container"));
   LayoutInputNode node1 = container.FirstChild();
 
-  const NGBlockBreakToken* child_token1 = CreateBreakToken(node1);
+  const BlockBreakToken* child_token1 = CreateBreakToken(node1);
 
-  NGBreakTokenVector child_break_tokens;
+  BreakTokenVector child_break_tokens;
   child_break_tokens.push_back(child_token1);
-  const NGBlockBreakToken* parent_token = CreateBreakToken(
+  const BlockBreakToken* parent_token = CreateBreakToken(
       container, &child_break_tokens, /* has_seen_all_children*/ true);
 
   // We have a break token for #child1, but have seen all children. This happens

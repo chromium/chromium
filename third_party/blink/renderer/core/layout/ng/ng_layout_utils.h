@@ -37,7 +37,7 @@ enum class NGLayoutCacheStatus {
 // May pre-compute the |fragment_geometry| while calculating this status.
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockNode& node,
-    const NGBlockBreakToken* break_token,
+    const BlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
     absl::optional<FragmentGeometry>* fragment_geometry);

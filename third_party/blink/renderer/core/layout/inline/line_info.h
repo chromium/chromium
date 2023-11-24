@@ -83,18 +83,18 @@ class CORE_EXPORT LineInfo {
   InlineItemResults* MutableResults() { return &results_; }
   const InlineItemResults& Results() const { return results_; }
 
-  const InlineBreakToken* BreakToken() const { return break_token_; }
+  const InlineBreakToken* GetBreakToken() const { return break_token_; }
   void SetBreakToken(const InlineBreakToken* break_token) {
     break_token_ = break_token;
   }
   // True if this line ends a paragraph; i.e., ends a block or has a forced
   // break.
-  bool IsEndParagraph() const { return !BreakToken() || HasForcedBreak(); }
+  bool IsEndParagraph() const { return !GetBreakToken() || HasForcedBreak(); }
 
-  HeapVector<Member<const NGBreakToken>>& ParallelFlowBreakTokens() {
+  HeapVector<Member<const BreakToken>>& ParallelFlowBreakTokens() {
     return parallel_flow_break_tokens_;
   }
-  void PropagateParallelFlowBreakToken(const NGBreakToken* token) {
+  void PropagateParallelFlowBreakToken(const BreakToken* token) {
     parallel_flow_break_tokens_.push_back(token);
   }
 
@@ -260,7 +260,7 @@ class CORE_EXPORT LineInfo {
   BfcOffset bfc_offset_;
 
   const InlineBreakToken* break_token_ = nullptr;
-  HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;
+  HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 
   const NGLayoutResult* block_in_inline_layout_result_ = nullptr;
 

@@ -23,9 +23,9 @@
 
 namespace blink {
 
+class BlockBreakToken;
 class LayoutBox;
 class LayoutObject;
-class NGBlockBreakToken;
 class NGLayoutResult;
 template <typename OffsetType>
 class OofContainingBlock;
@@ -135,10 +135,10 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
     // The multicol break token that stores a reference to |mutable_link|'s
     // break token in its list of child break tokens.
-    Member<const NGBlockBreakToken> parent_break_token;
+    Member<const BlockBreakToken> parent_break_token;
 
     explicit MulticolChildInfo(PhysicalFragmentLink* mutable_link,
-                               NGBlockBreakToken* parent_break_token = nullptr)
+                               BlockBreakToken* parent_break_token = nullptr)
         : mutable_link(mutable_link), parent_break_token(parent_break_token) {}
 
     void Trace(Visitor* visitor) const;
@@ -244,7 +244,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
    public:
     NodeInfo node_info;
     OffsetInfo offset_info;
-    Member<const NGBlockBreakToken> break_token;
+    Member<const BlockBreakToken> break_token;
 
     // The physical fragment of the containing block used when laying out a
     // fragmentainer descendant. This is the containing block as defined by the

@@ -15,41 +15,41 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGBlockBreakToken : NGBreakToken {
+struct SameSizeAsBlockBreakToken : BreakToken {
   Member<LayoutBox> data;
   unsigned numbers[1];
 };
 
-ASSERT_SIZE(NGBlockBreakToken, SameSizeAsNGBlockBreakToken);
+ASSERT_SIZE(BlockBreakToken, SameSizeAsBlockBreakToken);
 
 }  // namespace
 
-NGBlockBreakToken* NGBlockBreakToken::Create(NGBoxFragmentBuilder* builder) {
+BlockBreakToken* BlockBreakToken::Create(NGBoxFragmentBuilder* builder) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
-  return MakeGarbageCollected<NGBlockBreakToken>(
+  return MakeGarbageCollected<BlockBreakToken>(
       AdditionalBytes(builder->child_break_tokens_.size() *
-                      sizeof(Member<NGBreakToken>)),
+                      sizeof(Member<BreakToken>)),
       PassKey(), builder);
 }
 
-NGBlockBreakToken* NGBlockBreakToken::CreateRepeated(const BlockNode& node,
-                                                     unsigned sequence_number) {
-  auto* token = MakeGarbageCollected<NGBlockBreakToken>(PassKey(), node);
-  token->data_ = MakeGarbageCollected<NGBlockBreakTokenData>();
+BlockBreakToken* BlockBreakToken::CreateRepeated(const BlockNode& node,
+                                                 unsigned sequence_number) {
+  auto* token = MakeGarbageCollected<BlockBreakToken>(PassKey(), node);
+  token->data_ = MakeGarbageCollected<BlockBreakTokenData>();
   token->data_->sequence_number = sequence_number;
   token->is_repeated_ = true;
   return token;
 }
 
-NGBlockBreakToken* NGBlockBreakToken::CreateForBreakInRepeatedFragment(
+BlockBreakToken* BlockBreakToken::CreateForBreakInRepeatedFragment(
     const BlockNode& node,
     unsigned sequence_number,
     LayoutUnit consumed_block_size,
     bool is_at_block_end) {
-  auto* token = MakeGarbageCollected<NGBlockBreakToken>(PassKey(), node);
-  token->data_ = MakeGarbageCollected<NGBlockBreakTokenData>();
+  auto* token = MakeGarbageCollected<BlockBreakToken>(PassKey(), node);
+  token->data_ = MakeGarbageCollected<BlockBreakTokenData>();
   token->data_->sequence_number = sequence_number;
   token->data_->consumed_block_size = consumed_block_size;
   token->is_at_block_end_ = is_at_block_end;
@@ -59,8 +59,8 @@ NGBlockBreakToken* NGBlockBreakToken::CreateForBreakInRepeatedFragment(
   return token;
 }
 
-NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
-    : NGBreakToken(kBlockBreakToken, builder->node_),
+BlockBreakToken::BlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
+    : BreakToken(kBlockBreakToken, builder->node_),
       const_num_children_(builder->child_break_tokens_.size()) {
   has_seen_all_children_ = builder->has_seen_all_children_;
   is_caused_by_column_spanner_ = builder->FoundColumnSpanner();
@@ -74,27 +74,26 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
     child_break_tokens_[i] = builder->child_break_tokens_[i];
 }
 
-NGBlockBreakToken::NGBlockBreakToken(PassKey key, LayoutInputNode node)
-    : NGBreakToken(kBlockBreakToken, node),
-      data_(MakeGarbageCollected<NGBlockBreakTokenData>()),
+BlockBreakToken::BlockBreakToken(PassKey key, LayoutInputNode node)
+    : BreakToken(kBlockBreakToken, node),
+      data_(MakeGarbageCollected<BlockBreakTokenData>()),
       const_num_children_(0) {}
 
-const InlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
+const InlineBreakToken* BlockBreakToken::InlineBreakTokenFor(
     const LayoutInputNode& node) const {
   DCHECK(node.GetLayoutBox());
   return InlineBreakTokenFor(*node.GetLayoutBox());
 }
 
-const InlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
+const InlineBreakToken* BlockBreakToken::InlineBreakTokenFor(
     const LayoutBox& layout_object) const {
   DCHECK(&layout_object);
-  for (const NGBreakToken* child : ChildBreakTokens()) {
+  for (const BreakToken* child : ChildBreakTokens()) {
     switch (child->Type()) {
       case kBlockBreakToken:
         // Currently there are no cases where InlineBreakToken is stored in
         // non-direct child descendants.
-        DCHECK(
-            !To<NGBlockBreakToken>(child)->InlineBreakTokenFor(layout_object));
+        DCHECK(!To<BlockBreakToken>(child)->InlineBreakTokenFor(layout_object));
         break;
       case kInlineBreakToken:
         if (child->InputNode().GetLayoutBox() == &layout_object)
@@ -107,7 +106,7 @@ const InlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
 
 #if DCHECK_IS_ON()
 
-String NGBlockBreakToken::ToString() const {
+String BlockBreakToken::ToString() const {
   StringBuilder string_builder;
   string_builder.Append(InputNode().ToString());
   if (is_break_before_) {
@@ -151,13 +150,13 @@ String NGBlockBreakToken::ToString() const {
 
 #endif  // DCHECK_IS_ON()
 
-void NGBlockBreakToken::TraceAfterDispatch(Visitor* visitor) const {
+void BlockBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(data_);
   // Looking up |ChildBreakTokensInternal()| in Trace() here is safe because
   // |const_num_children_| is const.
   for (auto& child : ChildBreakTokensInternal())
     visitor->Trace(child);
-  NGBreakToken::TraceAfterDispatch(visitor);
+  BreakToken::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink
