@@ -70,6 +70,11 @@ class BrowserSwitcherNavigationThrottleTest
     service->SetSitelistForTesting(std::move(sitelist));
   }
 
+  void TearDown() override {
+    sitelist_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   std::unique_ptr<MockNavigationHandle> CreateMockNavigationHandle(
       const GURL& url) {
     return std::make_unique<NiceMock<MockNavigationHandle>>(url, main_rfh());
@@ -87,12 +92,11 @@ class BrowserSwitcherNavigationThrottleTest
   Decision go() { return {kGo, kSitelist, bogus_rule_.get()}; }
 
  private:
-  raw_ptr<MockBrowserSwitcherSitelist, DanglingUntriaged> sitelist_;
+  raw_ptr<MockBrowserSwitcherSitelist> sitelist_ = nullptr;
 
   std::unique_ptr<Rule> bogus_rule_ =
       CanonicalizeRule("//example.com/", ParsingMode::kDefault);
 };
-
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
   EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(stay()));
