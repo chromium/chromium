@@ -11,7 +11,7 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentRestriction, DataTransferEndpoint, DlpEvent, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination, Level, PageHandler, PageHandlerInterface, ReportingObserverReceiver, WebContentsInfo} from './dlp_internals.mojom-webui.js';
+import {ContentRestriction, DataTransferEndpoint, DlpEvent, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination, FileDatabaseEntry, Level, PageHandler, PageHandlerInterface, ReportingObserverReceiver, WebContentsInfo} from './dlp_internals.mojom-webui.js';
 import {getTemplate} from './dlp_internals_ui.html.js';
 import {ContentRestrictionMap, DestinationComponentMap, EndpointTypeMap, EventModeMap, EventRestrictionMap, EventUserTypeMap, LevelMap, WebContentsElement} from './dlp_utils.js';
 
@@ -44,12 +44,14 @@ class DlpInternalsUi extends PolymerElement {
 
     this.fetchClipboardSourceInfo();
     this.fetchContentRestrictionsInfo();
+    this.fetchFilesDatabaseEntries();
   }
 
   // Names of the top level page tabs.
   private tabNames_: string[] = [
     'Clipboard',
     'OnScreen',
+    'Files',
     'Reporting',
   ];
 
@@ -76,6 +78,9 @@ class DlpInternalsUi extends PolymerElement {
 
   // Web Contents Info.
   private webContentsElements_: WebContentsElement[] = [];
+
+  // Files Database Entries.
+  private filesEntries_: FileDatabaseEntry[] = [];
 
   private readonly pageHandler_: PageHandlerInterface;
   private readonly reportingObserver_: ReportingObserverReceiver;
@@ -125,6 +130,10 @@ class DlpInternalsUi extends PolymerElement {
     }
   }
 
+  private endpointTypeToString(type: EndpointType): string {
+    return EndpointTypeMap[type] || 'invalid';
+  }
+
   private async fetchContentRestrictionsInfo(): Promise<void> {
     this.pageHandler_.getContentRestrictionsInfo()
         .then((value: {webContentsInfo: WebContentsInfo[]}) => {
@@ -152,8 +161,27 @@ class DlpInternalsUi extends PolymerElement {
     }
   }
 
-  private endpointTypeToString(type: EndpointType): string {
-    return EndpointTypeMap[type] || 'invalid';
+  private async fetchFilesDatabaseEntries(): Promise<void> {
+    this.pageHandler_.getFilesDatabaseEntries()
+        .then((value: {dbEntries: FileDatabaseEntry[]}) => {
+          this.setFilesDatabaseEntries(value.dbEntries);
+        })
+        .catch((e: object) => {
+          console.warn(`getFilesDatabaseEntries failed: ${JSON.stringify(e)}`);
+        });
+  }
+
+  private setFilesDatabaseEntries(entries: FileDatabaseEntry[]) {
+    this.filesEntries_ = entries;
+    if (entries.length) {
+      this.notifySplices('filesEntries_', [{
+                           index: 0,
+                           addedCount: this.filesEntries_.length,
+                           object: this.filesEntries_,
+                           type: 'splice',
+                           removed: [],
+                         }]);
+    }
   }
 
   /** Implements ReportingObserverInterface */
@@ -217,6 +245,15 @@ class DlpInternalsUi extends PolymerElement {
 
   levelToString(level: Level): string {
     return LevelMap[level];
+  }
+
+  creationTimeToString(timestampSeconds: bigint): string {
+    if (timestampSeconds) {
+      const timestampMilli: number = Number(timestampSeconds) * 1000;
+      const timestamp: Date = new Date(timestampMilli);
+      return timestamp.toLocaleString();
+    }
+    return 'undefined';
   }
 }
 

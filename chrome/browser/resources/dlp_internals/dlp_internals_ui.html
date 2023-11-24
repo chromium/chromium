@@ -110,6 +110,25 @@
       </ol>
     </div>
 
+    <div class="tabpanel" id="files">
+      <table>
+        <tr>
+          <th>inode</th>
+          <th>Creation Time</th>
+          <th>Source URL</th>
+          <th>Referrer URL</th>
+        </tr>
+        <template is="dom-repeat" items="[[filesEntries_]]">
+          <tr>
+            <td>[[item.inode]]</td>
+            <td>[[creationTimeToString(item.crtime)]]</td>
+            <td>[[item.sourceUrl]]</td>
+            <td>[[item.referrerUrl]]</td>
+          </tr>
+        </template>
+      </table>
+    </div>
+
     <div class="tabpanel" id="reporting">
       <table>
         <tr>
