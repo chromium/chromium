@@ -39,6 +39,10 @@ class SmartPrivacyProtectionScreen : public BaseScreen {
 
   ~SmartPrivacyProtectionScreen() override;
 
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
   void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
     exit_callback_ = callback;
   }
