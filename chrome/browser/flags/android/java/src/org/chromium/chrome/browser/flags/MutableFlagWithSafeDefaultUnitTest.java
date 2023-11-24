@@ -16,12 +16,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 
 /** Unit Tests for {@link MutableFlagWithSafeDefault}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MutableFlagWithSafeDefaultUnitTest {
     @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
+    @DisabledTest(message = "Temporary while landing 3-side patch, crbug.com/1504869")
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {
         new MutableFlagWithSafeDefault(FEATURE_A, true);

@@ -26,8 +26,10 @@ public abstract class Flag {
     protected Boolean mValue;
 
     protected Flag(String featureName) {
-        assert !sFlagsCreated.containsKey(featureName)
-                : "Duplicate flag creation for feature: " + featureName;
+        // TODO(crbug.com/1504869) Temporarily disable while landing three-sided patch to move
+        // instances from internal.
+        // assert !sFlagsCreated.containsKey(featureName)
+        //         : "Duplicate flag creation for feature: " + featureName;
         mFeatureName = featureName;
         sFlagsCreated.put(mFeatureName, this);
     }

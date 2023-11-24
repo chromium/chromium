@@ -18,12 +18,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 
 /** Unit Tests for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFlagUnitTest {
     @Rule public final BaseFlagTestRule baseFlagTestRule = new BaseFlagTestRule();
 
+    @DisabledTest(message = "Temporary while landing 3-side patch, crbug.com/1504869")
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {
         new CachedFlag(FEATURE_A, true);

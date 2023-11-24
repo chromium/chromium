@@ -12,12 +12,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Flag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 
 /** Unit Tests for {@link Flag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FlagUnitTest {
     @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
+    @DisabledTest(message = "Temporary while landing 3-side patch, crbug.com/1504869")
     @Test
     public void testDuplicateFeatureFlags_throwsAssertionError() {
         new PostNativeFlag(FEATURE_A);

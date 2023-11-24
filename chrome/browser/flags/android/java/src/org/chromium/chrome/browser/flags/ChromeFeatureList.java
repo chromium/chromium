@@ -736,4 +736,9 @@ public abstract class ChromeFeatureList {
                             sFlagsCachedFullBrowser,
                             sFlagsCachedInMinimalBrowser,
                             sTestCachedFlags));
+
+    // MutableFlagWithSafeDefault instances
+    /* Alphabetical: */
+    public static final MutableFlagWithSafeDefault sCctTextFragmentLookupApiEnabled =
+            new MutableFlagWithSafeDefault(CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED, false);
 }
