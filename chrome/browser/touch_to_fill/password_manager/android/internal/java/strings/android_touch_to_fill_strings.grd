@@ -181,6 +181,11 @@ found in the LICENSE file.
       <message name="IDS_TOUCH_TO_FILL_SHEET_UNIFORM_TITLE" desc="Header for Touch To Fill sheet where users can pick a password credential to fill into a form. Will replace SHEET_TITLE_SINGLE and SHEET_TITLE.">
         Use saved password?
       </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_SHARED_PASSWORDS_TITLE" desc="Header for Touch To Fill sheet where users can pick a password credential to fill into a form when one or more of the credentials has been received via the password sharing feature.">
+        {NUM_PASSWORDS, plural,
+        =1 {New password for this site}
+        other {New passwords for this site}}
+      </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_NOT_SECURE" desc="Subtitle for Touch To Fill sheet when the website is not secure. Note that similarly to the omnibox 'not secure' in this case primarily refers to HTTPS connection security. So prefer translations with a connotation of 'not private' (someone can intercept your communication with the site) rather than 'not trustworthy' (which would be a judgment of site reputation).">
         <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex> (not secure)</ph>
       </message>

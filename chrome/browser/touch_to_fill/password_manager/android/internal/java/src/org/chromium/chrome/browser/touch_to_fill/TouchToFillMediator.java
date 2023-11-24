@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
@@ -30,6 +31,7 @@ import android.content.Context;
 import androidx.annotation.Px;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
@@ -191,6 +193,14 @@ class TouchToFillMediator {
 
     private String getTitle(
             List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials) {
+        int sharedPasswordsRequireNotificationCount =
+                numberOfSharedPasswordsThatRequireNotification(credentials);
+        if (sharedPasswordsRequireNotificationCount > 0) {
+            return mContext.getResources()
+                    .getQuantityString(
+                            R.plurals.touch_to_fill_sheet_shared_passwords_title,
+                            sharedPasswordsRequireNotificationCount);
+        }
         if (webAuthnCredentials.size() > 0) {
             return (credentials.size() > 0)
                     ? mContext.getString(R.string.touch_to_fill_sheet_title_password_or_passkey)
@@ -378,5 +388,22 @@ class TouchToFillMediator {
                 .with(SHOW_WEBAUTHN_SUBMIT_BUTTON, false)
                 .with(WEBAUTHN_ITEM_COLLECTION_INFO, itemCollectionInfo)
                 .build();
+    }
+
+    // Returns whether the bottom sheet UI should be adapted to inform the user that one of the
+    // credentials has been received via the password sharing feature.
+    private static int numberOfSharedPasswordsThatRequireNotification(
+            List<Credential> credentials) {
+        // TODO(http://crbug.com/1504098) : Add render test for a bottom sheet with shared passwords
+        // after the UI is complete.
+        int count = 0;
+        for (Credential credential : credentials) {
+            if (credential.isShared()
+                    && !credential.isSharingNotificationDisplayed()
+                    && ChromeFeatureList.isEnabled(SHARED_PASSWORD_NOTIFICATION_UI)) {
+                count++;
+            }
+        }
+        return count;
     }
 }
