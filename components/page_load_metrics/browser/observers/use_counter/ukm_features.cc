@@ -370,6 +370,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kThirdPartyCookieDeprecation_AllowByStorageAccess,
           WebFeature::kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess,
           WebFeature::kAutoSpeculationRulesOptedOut,
+          WebFeature::kOverrideFlashEmbedwithHTML,
       }));
   return *opt_in_features;
 }
