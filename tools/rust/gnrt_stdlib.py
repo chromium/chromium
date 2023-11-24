@@ -65,9 +65,9 @@ def run_gnrt(cargo, rustc, out_dir):
     RunCommand([
         cargo, '--quiet', '--locked', 'run', '--release', '--manifest-path',
         GNRT_CARGO_TOML_PATH, f'--target-dir={target_dir}', '--config',
-        f'build.rustc="{rustc}"', '--', 'gen',
-        f'--for-std={os.path.relpath(RUST_SRC_DIR, CHROMIUM_DIR)}',
-        f'--cargo-path={cargo}', f'--rustc-path={rustc}'
+        f'build.rustc="{rustc}"', '--', f'--cargo-path={cargo}',
+        f'--rustc-path={rustc}', 'gen',
+        f'--for-std={os.path.relpath(RUST_SRC_DIR, CHROMIUM_DIR)}'
     ])
 
 
