@@ -4,6 +4,7 @@
 
 #include "components/sync_user_events/user_event_sync_bridge.h"
 
+#include <map>
 #include <set>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/big_endian.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -109,7 +109,7 @@ absl::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
   // Because we receive ApplyIncrementalSyncChanges with deletions when our
   // commits are confirmed, this is the perfect time to cleanup our in flight
   // objects which are no longer in flight.
-  base::EraseIf(in_flight_nav_linked_events_,
+  std::erase_if(in_flight_nav_linked_events_,
                 [&deleted_event_times](
                     const std::pair<int64_t, sync_pb::UserEventSpecifics> kv) {
                   return base::Contains(deleted_event_times,

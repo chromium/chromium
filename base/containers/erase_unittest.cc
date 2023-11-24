@@ -84,10 +84,5 @@ TEST(Erase, Map) {
   RunEraseIfTest<std::map<int, int, std::greater<>>>();
 }
 
-TEST(Erase, Multimap) {
-  RunEraseIfTest<std::multimap<int, int>>();
-  RunEraseIfTest<std::multimap<int, int, std::greater<>>>();
-}
-
 }  // namespace
 }  // namespace base

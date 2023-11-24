@@ -4,7 +4,8 @@
 
 #include "ui/events/ozone/evdev/keyboard_imposter_checker_evdev.h"
 
-#include "base/containers/cxx20_erase_map.h"
+#include <map>
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -81,7 +82,7 @@ std::vector<int> KeyboardImposterCheckerEvdev::OnDeviceRemoved(
   if (!base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic))
     return std::vector<int>();
 
-  base::EraseIf(devices_on_phys_path_,
+  std::erase_if(devices_on_phys_path_,
                 [&](const auto& devices_on_phys_path_entry) {
                   return devices_on_phys_path_entry.second == converter->id();
                 });

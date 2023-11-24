@@ -26,12 +26,6 @@ size_t EraseIf(std::map<Key, T, Compare, Allocator>& container,
   return internal::IterateAndEraseIf(container, pred);
 }
 
-template <class Key, class T, class Compare, class Allocator, class Predicate>
-size_t EraseIf(std::multimap<Key, T, Compare, Allocator>& container,
-               Predicate pred) {
-  return internal::IterateAndEraseIf(container, pred);
-}
-
 }  // namespace base
 
 #endif  // BASE_CONTAINERS_CXX20_ERASE_MAP_H_
