@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -63,7 +65,12 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
 
 bool IsProfileEligibleForChoiceScreen(Profile& profile) {
   auto eligibility_conditions = ComputeProfileEligibility(profile);
+  // TODO(b/312755450): Move metrics recording outside of this function or
+  // rename it to not appear like a simple getter.
   RecordChoiceScreenProfileInitCondition(eligibility_conditions);
+  DVLOG(1) << "Choice screen eligibility condition for profile "
+           << profile.GetBaseName() << ": "
+           << static_cast<int>(eligibility_conditions);
   return eligibility_conditions ==
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }
@@ -129,6 +136,9 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
 
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
   if (!IsProfileEligibleForChoiceScreen(profile)) {
+    DVLOG(1) << "Profile not eligible, removing tag for profile "
+             << profile.GetBaseName();
+    profile.GetPrefs()->ClearPref(prefs::kDefaultSearchProviderChoicePending);
     return nullptr;
   }
 

@@ -23,4 +23,11 @@ const char kDisableSearchEngineChoiceScreen[] =
 const char kForceSearchEngineChoiceScreen[] =
     "force-search-engine-choice-screen";
 
+BASE_FEATURE(kSearchEngineChoiceTrigger,
+             "SearchEngineChoiceTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kSearchEngineChoiceTriggerForTaggedProfilesOnly{
+    &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", false};
+
 }  // namespace switches

@@ -24,6 +24,15 @@ const char kDefaultSearchProviderGUID[] = "default_search_provider.guid";
 const char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+// Whether this profile should potentially show the search engine choice
+// dialog before the user can proceed. Actual eligiblity is still determined
+// by the `SearchEngineChoiceService`.
+// Note that this has effect only if the `kSearchEngineChoiceTrigger` feature
+// is enabled and if its `kSearchEngineChoiceTriggerForTaggedProfilesOnly`
+// param is set to `true`.
+const char kDefaultSearchProviderChoicePending[] =
+    "default_search_provider.choice_pending";
+
 // Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
 const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =

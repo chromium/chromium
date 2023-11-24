@@ -2648,6 +2648,8 @@ static_library("browser") {
 
   if (enable_search_engine_choice) {
     sources += [
+      "search_engine_choice/search_engine_choice_profile_tagger.cc",
+      "search_engine_choice/search_engine_choice_profile_tagger.h",
       "search_engine_choice/search_engine_choice_service.cc",
       "search_engine_choice/search_engine_choice_service.h",
       "search_engine_choice/search_engine_choice_service_factory.cc",

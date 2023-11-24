@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+
 namespace switches {
 
 extern const char kExtraSearchQueryParams[];
@@ -14,6 +17,11 @@ extern const char kSearchEngineChoiceCountry[];
 extern const char kDisableSearchEngineChoiceScreen[];
 
 extern const char kForceSearchEngineChoiceScreen[];
+
+BASE_DECLARE_FEATURE(kSearchEngineChoiceTrigger);
+extern const base::FeatureParam<bool>
+    kSearchEngineChoiceTriggerForTaggedProfilesOnly;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_

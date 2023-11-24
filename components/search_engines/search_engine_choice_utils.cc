@@ -132,6 +132,13 @@ const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
+    // This flag is a coordinating flag, which supersedes the flags below that
+    // are guarding individual screens making up the feature.
+    // TODO(b/310593464): Remove checks for the other flags.
+    return true;
+  }
+
   switch (promo) {
     case ChoicePromo::kAny:
       return base::FeatureList::IsEnabled(switches::kSearchEngineChoice) ||
@@ -171,6 +178,13 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
+  PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
+  if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
+      !prefs.GetBoolean(prefs::kDefaultSearchProviderChoicePending)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kProfileOutOfScope;
+  }
+
   if (!profile_properties.is_regular_profile) {
     // Naming not exactly accurate, but still reflect the fact that incognito,
     // kiosk, etc. are not supported and belongs in this bucked more than in
@@ -191,8 +205,6 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kEligible;
   }
 
-  PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
-
   // The timestamp indicates that the user has already made a search engine
   // choice in the choice screen.
   if (prefs.HasPrefPath(
@@ -200,7 +212,10 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
-  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&prefs))) {
+  int country_id = GetSearchEngineChoiceCountryId(&prefs);
+  DVLOG(1) << "Checking country for choice screen, found: "
+           << country_codes::CountryIDToCountryString(country_id);
+  if (!IsEeaChoiceCountry(country_id)) {
     return SearchEngineChoiceScreenConditions::kNotInRegionalScope;
   }
 
@@ -317,6 +332,11 @@ void RecordChoiceMade(PrefService* profile_prefs,
   profile_prefs->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+
+  if (profile_prefs->HasPrefPath(prefs::kDefaultSearchProviderChoicePending)) {
+    DVLOG(1) << "Choice made, removing profile tag.";
+    profile_prefs->ClearPref(prefs::kDefaultSearchProviderChoicePending);
+  }
 }
 
 }  // namespace search_engines

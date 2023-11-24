@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
@@ -34,6 +35,8 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
     pref_service_.registry()->RegisterInt64Pref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
     pref_service_.registry()->RegisterListPref(prefs::kSearchProviderOverrides);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kDefaultSearchProviderChoicePending, false);
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -272,6 +275,40 @@ TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
   feature_list()->InitWithFeatures(
       {}, {switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
   VerifyNotEligibleAndWillNotShowChoiceScreen(
+      policy_service(), /*profile_properties=*/
+      {.is_regular_profile = true, .pref_service = pref_service()},
+      template_url_service());
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithTriggerFeature) {
+  // SearchEngineChoiceTrigger is enabled and not set to trigger only for
+  // tagged profiles: the dialog should trigger, regardless of the state of
+  // the other feature flags.
+  feature_list()->Reset();
+  feature_list()->InitWithFeatures(
+      {switches::kSearchEngineChoiceTrigger},
+      {switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
+  VerifyWillShowChoiceScreen(
+      policy_service(), /*profile_properties=*/
+      {.is_regular_profile = true, .pref_service = pref_service()},
+      template_url_service());
+
+  // When the param is set and the profile untagged, the dialog will not be
+  // displayed.
+  base::FieldTrialParams tagged_only_params{
+      {switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name, "true"}};
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      {{switches::kSearchEngineChoiceTrigger, tagged_only_params}},
+      {switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
+  VerifyEligibleButWillNotShowChoiceScreen(
+      policy_service(), /*profile_properties=*/
+      {.is_regular_profile = true, .pref_service = pref_service()},
+      template_url_service());
+
+  // When the profile is tagged, the dialog can also be displayed.
+  pref_service()->SetBoolean(prefs::kDefaultSearchProviderChoicePending, true);
+  VerifyWillShowChoiceScreen(
       policy_service(), /*profile_properties=*/
       {.is_regular_profile = true, .pref_service = pref_service()},
       template_url_service());

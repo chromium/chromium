@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/files/file_path.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -24,11 +29,14 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -40,6 +48,7 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_utils.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -62,7 +71,9 @@ using EntryPoint = SearchEngineChoiceService::EntryPoint;
 
 namespace {
 
-const std::string kCustomSearchEngineDomain = "bar.com";
+constexpr char kCustomSearchEngineDomain[] = "bar.com";
+constexpr char16_t kCustomSearchEngineKeyword[] = u"bar.com";
+
 // Class that mocks `SearchEngineChoiceService`.
 class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  public:
@@ -116,12 +127,14 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
 void SetUserSelectedDefaultSearchProvider(
     TemplateURLService* template_url_service) {
   TemplateURLData data;
-  data.SetShortName(base::UTF8ToUTF16(kCustomSearchEngineDomain));
-  data.SetKeyword(base::UTF8ToUTF16(kCustomSearchEngineDomain));
-  data.SetURL("https://" + kCustomSearchEngineDomain + "url?bar={searchTerms}");
-  data.new_tab_url = "https://" + kCustomSearchEngineDomain + "newtab";
-  data.alternate_urls.push_back("https://" + kCustomSearchEngineDomain +
-                                "alt#quux={searchTerms}");
+  data.SetShortName(kCustomSearchEngineKeyword);
+  data.SetKeyword(kCustomSearchEngineKeyword);
+  data.SetURL(base::StringPrintf("https://%s/url?bar={searchTerms}",
+                                 kCustomSearchEngineDomain));
+  data.new_tab_url =
+      base::StringPrintf("https://%s/newtab", kCustomSearchEngineDomain);
+  data.alternate_urls.push_back(base::StringPrintf(
+      "https://%s/alt#quux={searchTerms}", kCustomSearchEngineDomain));
 
   TemplateURL* template_url =
       template_url_service->Add(std::make_unique<TemplateURL>(data));
@@ -142,7 +155,8 @@ webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
 
 class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
  public:
-  SearchEngineChoiceBrowserTest() = default;
+  explicit SearchEngineChoiceBrowserTest(bool use_spy_service = true)
+      : use_spy_service_(use_spy_service) {}
 
   SearchEngineChoiceBrowserTest(const SearchEngineChoiceBrowserTest&) = delete;
   SearchEngineChoiceBrowserTest& operator=(
@@ -157,15 +171,18 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
 
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating([](content::BrowserContext* context) {
-                  SearchEngineChoiceServiceFactory::GetInstance()
-                      ->SetTestingFactoryAndUse(
-                          context, base::BindRepeating(
-                                       &MockSearchEngineChoiceService::Create));
-                }));
+    if (use_spy_service_) {
+      create_services_subscription_ =
+          BrowserContextDependencyManager::GetInstance()
+              ->RegisterCreateServicesCallbackForTesting(
+                  base::BindRepeating([](content::BrowserContext* context) {
+                    SearchEngineChoiceServiceFactory::GetInstance()
+                        ->SetTestingFactoryAndUse(
+                            context,
+                            base::BindRepeating(
+                                &MockSearchEngineChoiceService::Create));
+                  }));
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -260,6 +277,7 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
       SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
           /*force_chrome_build=*/true);
   base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
+  bool use_spy_service_;
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
 };
@@ -572,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Navigate to a URL to display the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      browser(), GURL(kCustomSearchEngineDomain),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -580,8 +598,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       /*prepopulate_id=*/0, EntryPoint::kDialog);
   const TemplateURL* default_search_provider =
       template_url_service->GetDefaultSearchProvider();
-  EXPECT_EQ(default_search_provider->short_name(),
-            base::UTF8ToUTF16(kCustomSearchEngineDomain));
+  EXPECT_EQ(default_search_provider->short_name(), kCustomSearchEngineKeyword);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
@@ -756,3 +773,152 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
           kBrowserWindowTooSmall,
       1);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+class TaggedOnlySearchEngineChoiceBrowserTest
+    : public SearchEngineChoiceBrowserTest {
+ public:
+  static constexpr base::FilePath::CharType kSecondProfileBaseName[] =
+      FILE_PATH_LITERAL("second_test_profile");
+  static constexpr base::FilePath::CharType kThirdProfileBaseName[] =
+      FILE_PATH_LITERAL("third_test_profile");
+
+  TaggedOnlySearchEngineChoiceBrowserTest()
+      : SearchEngineChoiceBrowserTest(
+            // The testing factory instantiates the service too early in the
+            // initialization flow.
+            /*use_spy_service=*/false) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoiceTrigger,
+        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+          "true"}});
+  }
+
+  Browser* CreateBrowserAndLoadNtp(Profile* profile) {
+    Browser* browser = CreateBrowser(profile);
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser, GURL(chrome::kChromeUINewTabPageURL),
+        WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    return browser;
+  }
+
+  Profile* CreateOrLoadProfile(base::FilePath profile_base_name) {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath third_profile_path =
+        profile_manager->user_data_dir().Append(profile_base_name);
+    return &profiles::testing::CreateProfileSync(profile_manager,
+                                                 third_profile_path);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// For a first run, all profiles should be tagged, and the dialog should
+// trigger.
+IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceBrowserTest,
+                       PRE_DialogTriggers) {
+  // -- First profile ---------------------------------------------------------
+
+  Profile* profile = browser()->profile();
+  ASSERT_TRUE(profile->IsNewProfile());
+  EXPECT_TRUE(profile->GetPrefs()->GetBoolean(
+      prefs::kDefaultSearchProviderChoicePending));
+
+  auto* service = SearchEngineChoiceServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->CanShowDialog(*browser()));
+
+  // Navigate to a URL. The first load happened while the dialog was
+  // force-disabled for testing.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(service->IsShowingDialog(browser()));
+
+  // -- Second profile --------------------------------------------------------
+
+  // Create another profile, it should be tagged and show the dialog like the
+  // first one
+  Profile* second_profile =
+      CreateOrLoadProfile(base::FilePath(kSecondProfileBaseName));
+  EXPECT_TRUE(second_profile->IsNewProfile());
+  EXPECT_TRUE(second_profile->GetPrefs()->GetBoolean(
+      prefs::kDefaultSearchProviderChoicePending));
+  auto* second_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(second_profile);
+  ASSERT_TRUE(second_service);
+
+  Browser* second_browser = CreateBrowserAndLoadNtp(second_profile);
+  EXPECT_TRUE(second_service->IsShowingDialog(second_browser));
+
+  // Remove the tag and exit here without making a choice.
+  second_profile->GetPrefs()->ClearPref(
+      prefs::kDefaultSearchProviderChoicePending);
+}
+
+IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceBrowserTest,
+                       DialogTriggers) {
+  // -- First profile ---------------------------------------------------------
+
+  // Due to having more than one profile from the PRE_test, we explicitly load
+  // the first profile instead of relying on the default opened one, to avoid
+  // potential issues related to showing the profile picker or the last used
+  // profile being the second one.
+  Profile* first_profile =
+      CreateOrLoadProfile(base::FilePath::FromASCII(chrome::kInitialProfile));
+  ASSERT_TRUE(first_profile);
+  Browser* first_browser = CreateBrowserAndLoadNtp(first_profile);
+  ASSERT_TRUE(first_browser);
+
+  // The profile is not new but still tagged.
+  EXPECT_FALSE(first_profile->IsNewProfile());
+  EXPECT_TRUE(first_profile->GetPrefs()->GetBoolean(
+      prefs::kDefaultSearchProviderChoicePending));
+
+  auto* first_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(first_profile);
+  ASSERT_TRUE(first_service);
+  EXPECT_TRUE(first_service->IsShowingDialog(first_browser));
+
+  // Make a choice by grabbing the ID for one of the search engines in the
+  // displayed list.
+  int prepopulate_id =
+      first_service->GetSearchEngines().at(0)->prepopulate_id();
+  first_service->NotifyChoiceMade(prepopulate_id, EntryPoint::kDialog);
+
+  // The tag should have been cleared.
+  EXPECT_FALSE(first_profile->GetPrefs()->GetBoolean(
+      prefs::kDefaultSearchProviderChoicePending));
+
+  // -- Second profile --------------------------------------------------------
+  // This profile is not new either. Is was not tagged on startup, so the
+  // service will not even be created for it.
+  Profile* second_profile =
+      CreateOrLoadProfile(base::FilePath(kSecondProfileBaseName));
+
+  EXPECT_FALSE(second_profile->IsNewProfile());
+  EXPECT_FALSE(second_profile->GetPrefs()->GetBoolean(
+      prefs::kDefaultSearchProviderChoicePending));
+
+  auto* second_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(second_profile);
+  ASSERT_FALSE(second_service);
+
+  // -- Third profile ---------------------------------------------------------
+  // The third is new, even if not at first run, and it should be tagged.
+  Profile* third_profile =
+      CreateOrLoadProfile(base::FilePath(kThirdProfileBaseName));
+  EXPECT_TRUE(third_profile->IsNewProfile());
+  EXPECT_TRUE(third_profile->GetPrefs()->GetBoolean(
+      prefs::kDefaultSearchProviderChoicePending));
+  auto* third_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(third_profile);
+  ASSERT_TRUE(third_service);
+
+  Browser* third_browser = CreateBrowserAndLoadNtp(third_profile);
+  EXPECT_TRUE(third_service->IsShowingDialog(third_browser));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
