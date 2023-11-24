@@ -17749,8 +17749,15 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+// TODO(https://crbug.com/1502296): Fails too often on ChromeOS bots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RunAdAuctionWithAdditionalBid \
+  DISABLED_RunAdAuctionWithAdditionalBid
+#else
+#define MAYBE_RunAdAuctionWithAdditionalBid RunAdAuctionWithAdditionalBid
+#endif
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionWithAdditionalBid) {
+                       MAYBE_RunAdAuctionWithAdditionalBid) {
   URLLoaderMonitor url_loader_monitor;
 
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
@@ -17914,10 +17921,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       https_server_->GetURL("a.test", "/echoall?report_bidder")));
 }
 
+// TODO(https://crbug.com/1502296): Fails too often on ChromeOS bots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RunAdAuctionWithWinningAdditionalBidFromTwoWithNT \
+  DISABLED_RunAdAuctionWithWinningAdditionalBidFromTwoWithNT
+#else
+#define MAYBE_RunAdAuctionWithWinningAdditionalBidFromTwoWithNT \
+  RunAdAuctionWithWinningAdditionalBidFromTwoWithNT
+#endif
 // Two additional bids, the lower one of which wins since the upper one is
 // disabled by negative targeting.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionWithWinningAdditionalBidFromTwoWithNT) {
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    MAYBE_RunAdAuctionWithWinningAdditionalBidFromTwoWithNT) {
   URLLoaderMonitor url_loader_monitor;
 
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
