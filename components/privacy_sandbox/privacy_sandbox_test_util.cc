@@ -212,35 +212,35 @@ void ApplyTestState(
                                         base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1ConsentDecisionMade): {
+    case (StateKey::kM1ConsentDecisionPreviouslyMade): {
       SCOPED_TRACE("State Setup: M1 consent decision made");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1ConsentDecisionMade,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1EEANoticeAcknowledged): {
+    case (StateKey::kM1EEANoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 eea notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1EEANoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1RowNoticeAcknowledged): {
+    case (StateKey::kM1RowNoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 row notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1RowNoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1RestrictedNoticeAcknowledged): {
+    case (StateKey::kM1RestrictedNoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 restricted notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1PromptSuppressedReason): {
+    case (StateKey::kM1PromptPreviouslySuppressedReason): {
       SCOPED_TRACE("State Setup: M1 prompt suppressed value");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1PromptSuppressed,
