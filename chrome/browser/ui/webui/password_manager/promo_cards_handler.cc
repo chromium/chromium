@@ -130,12 +130,6 @@ PasswordPromoCardBase* PromoCardsHandler::GetPromoToShowAndUpdatePref() {
   std::vector<PasswordPromoCardBase*> promo_card_to_show_candidates;
   for (const auto& promo_card : promo_cards_) {
     if (promo_card->ShouldShowPromo()) {
-      // If there's a reason to show relaunch Chrome bubble, it should take the
-      // highest priority.
-      if (promo_card->GetPromoCardType() == PromoCardType::kRelauchChrome) {
-        promo_card->OnPromoCardShown();
-        return promo_card.get();
-      }
       promo_card_to_show_candidates.push_back(promo_card.get());
     }
   }

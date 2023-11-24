@@ -80,10 +80,6 @@ class FakePromoCard : public PasswordPromoCardBase {
   // PasswordPromoCardBase implementation.
   std::string GetPromoID() const override { return kId; }
 
-  PromoCardType GetPromoCardType() const override {
-    return PromoCardType::kCheckup;
-  }
-
   bool ShouldShowPromo() const override { return true; }
 
   std::u16string GetTitle() const override { return u"Fake title"; }
@@ -523,14 +519,13 @@ class PromoCardRelaunchChromeTest : public PromoCardBaseTest {
 };
 
 TEST_F(PromoCardRelaunchChromeTest, ShouldShow) {
-  std::unique_ptr<PasswordPromoCardBase> promo =
-      std::make_unique<RelaunchChromePromo>(pref_service());
+  PasswordPromoCardBase promo = RelaunchChromePromo(pref_service());
 
   OSCryptMocker::SetBackendLocked(true);
-  EXPECT_FALSE(promo->ShouldShowPromo());
+  EXPECT_FALSE(promo.ShouldShowPromo());
 
   OSCryptMocker::SetBackendLocked(false);
-  EXPECT_TRUE(promo->ShouldShowPromo());
+  EXPECT_TRUE(promo.ShouldShowPromo());
 }
 
 TEST_F(PromoCardRelaunchChromeTest, ShouldShowAfterDismiss) {
@@ -538,8 +533,7 @@ TEST_F(PromoCardRelaunchChromeTest, ShouldShowAfterDismiss) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
 
-  std::unique_ptr<PasswordPromoCardBase> promo =
-      std::make_unique<RelaunchChromePromo>(pref_service());
+  PasswordPromoCardBase promo = RelaunchChromePromo(pref_service());
   EXPECT_TRUE(promo->ShouldShowPromo());
 
   promo->OnPromoCardDismissed();
