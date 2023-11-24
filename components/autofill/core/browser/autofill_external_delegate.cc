@@ -157,6 +157,49 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
   NOTREACHED_NORETURN();
 }
 
+// Returns the `PopupType` that would be shown if `field` inside `form` is
+// clicked.
+PopupType GetPopupTypeForField(BrowserAutofillManager& manager,
+                               const FormData& form,
+                               const FormFieldData& field) {
+  const AutofillField* const autofill_field =
+      manager.GetAutofillField(form, field);
+  if (!autofill_field) {
+    return PopupType::kUnspecified;
+  }
+
+  switch (autofill_field->Type().group()) {
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kUnfillable:
+      return PopupType::kUnspecified;
+
+    case FieldTypeGroup::kCreditCard:
+      return PopupType::kCreditCards;
+
+    case FieldTypeGroup::kIban:
+      return PopupType::kIbans;
+
+    case FieldTypeGroup::kAddress:
+      return PopupType::kAddresses;
+
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kPhone:
+    case FieldTypeGroup::kBirthdateField:
+      const bool has_address_field =
+          base::ranges::any_of(form.fields, [&](const FormFieldData& f) {
+            const AutofillField* const af = manager.GetAutofillField(form, f);
+            return af && af->Type().group() == FieldTypeGroup::kAddress;
+          });
+      return has_address_field ? PopupType::kAddresses
+                               : PopupType::kPersonalInformation;
+  }
+}
+
 }  // namespace
 
 AutofillExternalDelegate::AutofillExternalDelegate(
@@ -176,7 +219,7 @@ void AutofillExternalDelegate::OnQuery(const FormData& form,
   element_bounds_ = element_bounds;
   should_show_scan_credit_card_ =
       manager_->ShouldShowScanCreditCard(query_form_, query_field_);
-  popup_type_ = manager_->GetPopupType(query_form_, query_field_);
+  popup_type_ = GetPopupTypeForField(*manager_, query_form_, query_field_);
   should_show_cards_from_account_option_ =
       manager_->ShouldShowCardsFromAccountOption(query_form_, query_field_);
 }

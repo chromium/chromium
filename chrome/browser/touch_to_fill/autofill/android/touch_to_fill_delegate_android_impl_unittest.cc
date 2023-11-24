@@ -80,10 +80,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
       delete;
   ~MockBrowserAutofillManager() override = default;
 
-  MOCK_METHOD(PopupType,
-              GetPopupType,
-              (const FormData& form, const FormFieldData& field),
-              (override));
   MOCK_METHOD(void,
               FillCreditCardForm,
               (const FormData& form,
@@ -152,8 +148,6 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     // Default setup for successful `TryToShowTouchToFill`.
     autofill_client_.GetPersonalDataManager()->AddCreditCard(
         test::GetCreditCard());
-    ON_CALL(*browser_autofill_manager_, GetPopupType(_, _))
-        .WillByDefault(Return(PopupType::kCreditCards));
     ON_CALL(autofill_client_, IsTouchToFillCreditCardSupported)
         .WillByDefault(Return(true));
     ON_CALL(*browser_autofill_manager_, CanShowAutofillUi)

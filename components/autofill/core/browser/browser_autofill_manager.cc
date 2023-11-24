@@ -664,39 +664,6 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
   return field.value.size() <= kShowScanCreditCardMaxValueLength;
 }
 
-PopupType BrowserAutofillManager::GetPopupType(const FormData& form,
-                                               const FormFieldData& field) {
-  const AutofillField* autofill_field = GetAutofillField(form, field);
-  if (!autofill_field)
-    return PopupType::kUnspecified;
-
-  switch (autofill_field->Type().group()) {
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kUnfillable:
-      return PopupType::kUnspecified;
-
-    case FieldTypeGroup::kCreditCard:
-      return PopupType::kCreditCards;
-
-    case FieldTypeGroup::kIban:
-      return PopupType::kIbans;
-
-    case FieldTypeGroup::kAddress:
-      return PopupType::kAddresses;
-
-    case FieldTypeGroup::kName:
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
-      return FormHasAddressField(form) ? PopupType::kAddresses
-                                       : PopupType::kPersonalInformation;
-  }
-}
-
 bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     const FormData& form,
     const FormFieldData& field) {
@@ -2722,18 +2689,6 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
     return nullptr;
 
   return autofill_field;
-}
-
-bool BrowserAutofillManager::FormHasAddressField(const FormData& form) {
-  for (const FormFieldData& field : form.fields) {
-    const AutofillField* autofill_field = GetAutofillField(form, field);
-    if (autofill_field &&
-        autofill_field->Type().group() == FieldTypeGroup::kAddress) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(

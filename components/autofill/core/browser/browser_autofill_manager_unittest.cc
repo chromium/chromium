@@ -8415,39 +8415,6 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
-TEST_F(BrowserAutofillManagerTest, GetPopupType_CreditCardForm) {
-  // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
-  FormsSeen({form});
-
-  for (const FormFieldData& field : form.fields) {
-    EXPECT_EQ(PopupType::kCreditCards,
-              browser_autofill_manager_->GetPopupType(form, field));
-  }
-}
-
-TEST_F(BrowserAutofillManagerTest, GetPopupType_AddressForm) {
-  // Set up our form data.
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-
-  for (const FormFieldData& field : form.fields) {
-    EXPECT_EQ(PopupType::kAddresses,
-              browser_autofill_manager_->GetPopupType(form, field));
-  }
-}
-
-TEST_F(BrowserAutofillManagerTest, GetPopupType_PersonalInformationForm) {
-  // Set up our form data.
-  FormData form = CreateTestPersonalInformationFormData();
-  FormsSeen({form});
-
-  for (const FormFieldData& field : form.fields) {
-    EXPECT_EQ(PopupType::kPersonalInformation,
-              browser_autofill_manager_->GetPopupType(form, field));
-  }
-}
-
 TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   // Note: The enforcement of a minimum number of required fields for upload
   // is disabled by default. This tests validates both the disabled and enabled

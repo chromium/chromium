@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -61,6 +62,9 @@ namespace autofill {
 
 namespace {
 
+using test::CreateTestAddressFormData;
+using test::CreateTestCreditCardFormData;
+using test::CreateTestPersonalInformationFormData;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
@@ -229,18 +233,13 @@ class MockAutofillClient : public TestAutofillClient {
 #endif
 };
 
-class MockBrowserAutofillManager : public BrowserAutofillManager {
+class MockBrowserAutofillManager : public TestBrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {}
+      : TestBrowserAutofillManager(driver, client) {}
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
-
-  PopupType GetPopupType(const FormData& form,
-                         const FormFieldData& field) override {
-    return PopupType::kPersonalInformation;
-  }
 
   MOCK_METHOD(bool,
               ShouldShowScanCreditCard,
@@ -378,6 +377,39 @@ class AutofillExternalDelegateCardsFromAccountTest
     browser_autofill_manager_->ShowCardsFromAccountOption();
   }
 };
+
+TEST_F(AutofillExternalDelegateUnitTest, GetPopupTypeForCreditCardForm) {
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  browser_autofill_manager_->OnFormsSeen({form}, {});
+
+  for (const FormFieldData& field : form.fields) {
+    external_delegate_->OnQuery(form, field, gfx::RectF());
+    EXPECT_EQ(PopupType::kCreditCards, external_delegate_->GetPopupType());
+  }
+}
+
+TEST_F(AutofillExternalDelegateUnitTest, GetPopupTypeForAddressForm) {
+  FormData form = CreateTestAddressFormData();
+  browser_autofill_manager_->OnFormsSeen({form}, {});
+
+  for (const FormFieldData& field : form.fields) {
+    external_delegate_->OnQuery(form, field, gfx::RectF());
+    EXPECT_EQ(PopupType::kAddresses, external_delegate_->GetPopupType());
+  }
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       GetPopupTypeForPersonalInformationForm) {
+  FormData form = CreateTestPersonalInformationFormData();
+  browser_autofill_manager_->OnFormsSeen({form}, {});
+
+  for (const FormFieldData& field : form.fields) {
+    external_delegate_->OnQuery(form, field, gfx::RectF());
+    EXPECT_EQ(PopupType::kPersonalInformation,
+              external_delegate_->GetPopupType());
+  }
+}
 
 // Test that the address editor is not shown if there's no Autofill profile with
 // the provided GUID.
@@ -1143,10 +1175,7 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
       params.popup_item_id == PopupItemId::kFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid())
           : test::CreateAutofillSuggestion(params.popup_item_id);
-  // Wait until form is parsed. We only perform field by field filling if the
-  // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
-  task_environment_.RunUntilIdle();
   base::HistogramTester histogram_tester;
   external_delegate_->DidAcceptSuggestion(
       suggestion, SuggestionPosition{.row = 0}, kDefaultTriggerSource);
@@ -1365,8 +1394,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
   IssueOnQuery();
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
-  // Wait until form is parsed.
-  task_environment_.RunUntilIdle();
   base::HistogramTester histogram_tester;
 
   external_delegate_->DidAcceptSuggestion(
@@ -1384,8 +1411,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
   IssueOnQuery();
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
-  // Wait until form is parsed.
-  task_environment_.RunUntilIdle();
   base::HistogramTester histogram_tester;
 
   external_delegate_->DidAcceptSuggestion(
@@ -1459,8 +1484,6 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   personal_data().AddProfile(profile);
   IssueOnQuery();
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
-  // Wait until form is parsed.
-  task_environment_.RunUntilIdle();
   ON_CALL(personal_data(), IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
   const Suggestion suggestion =
@@ -1865,10 +1888,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
   IssueOnQuery();
-  // Wait until form is parsed. We only perform field by field filling if the
-  // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
-  task_environment_.RunUntilIdle();
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(profile.guid());
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
@@ -1892,10 +1912,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   IssueOnQuery();
-  // Wait until form is parsed. We only perform field by field filling if the
-  // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
-  task_environment_.RunUntilIdle();
   external_delegate_->DidAcceptSuggestion(
       CreateFieldByFieldFillingSuggestion(profile.guid()),
       SuggestionPosition{.row = 0}, kDefaultTriggerSource);

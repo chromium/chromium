@@ -117,10 +117,6 @@ class BrowserAutofillManager
   virtual bool ShouldShowScanCreditCard(const FormData& form,
                                         const FormFieldData& field);
 
-  // Returns the type of the popup being shown.
-  virtual PopupType GetPopupType(const FormData& form,
-                                 const FormFieldData& field);
-
   // Handlers for the "Show Cards From Account" row. This row should be shown to
   // users who have cards in their account and can use Sync Transport. Clicking
   // the row records the user's consent to see these cards on this device, and
@@ -500,11 +496,6 @@ class BrowserAutofillManager
   // return an empty scoped_ptr if the data should not be processed for upload
   // or personal data.
   std::unique_ptr<FormStructure> ValidateSubmittedForm(const FormData& form);
-
-  // Returns true if any field in the form corresponds to an address
-  // |FieldTypeGroup|.
-  // TODO(crbug.com/1411352): Consider moving to form_types.h.
-  [[nodiscard]] bool FormHasAddressField(const FormData& form);
 
   // Returns suggestions for the `form`, if suggestions were triggered using
   // the `trigger_source` on the `field`. The field's type is `field_type`.
