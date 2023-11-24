@@ -18,7 +18,7 @@
 
 namespace blink {
 
-class NGInlineLayoutTest : public SimTest {
+class InlineLayoutTest : public SimTest {
  public:
   ConstraintSpace ConstraintSpaceForElement(LayoutBlockFlow* block_flow) {
     ConstraintSpaceBuilder builder(block_flow->Style()->GetWritingMode(),
@@ -31,7 +31,7 @@ class NGInlineLayoutTest : public SimTest {
   }
 };
 
-TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
+TEST_F(InlineLayoutTest, BlockWithSingleTextNode) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(
@@ -58,7 +58,7 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
             StringView(first_child.ItemsData(false).text_content, 0, 12));
 }
 
-TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
+TEST_F(InlineLayoutTest, BlockWithTextAndAtomicInline) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete("<div id=\"target\">Hello <img>.</div>");

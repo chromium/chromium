@@ -19,7 +19,7 @@ const LayoutUnit kBottom{9};
 const LayoutUnit kAuto{-1};
 const LayoutUnit kZero{0};
 
-class NGRelativeUtilsTest : public testing::Test {
+class RelativeUtilsTest : public testing::Test {
  protected:
   void SetUp() override {
     initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
@@ -45,7 +45,7 @@ class NGRelativeUtilsTest : public testing::Test {
   LogicalSize container_size_;
 };
 
-TEST_F(NGRelativeUtilsTest, HorizontalTB) {
+TEST_F(RelativeUtilsTest, HorizontalTB) {
   LogicalOffset offset;
 
   // Everything auto defaults to kZero,kZero
@@ -82,7 +82,7 @@ TEST_F(NGRelativeUtilsTest, HorizontalTB) {
   EXPECT_EQ(offset.block_offset, -kBottom);
 }
 
-TEST_F(NGRelativeUtilsTest, VerticalRightLeft) {
+TEST_F(RelativeUtilsTest, VerticalRightLeft) {
   LogicalOffset offset;
 
   // Set all sides
@@ -108,7 +108,7 @@ TEST_F(NGRelativeUtilsTest, VerticalRightLeft) {
   EXPECT_EQ(offset.block_offset, -kLeft);
 }
 
-TEST_F(NGRelativeUtilsTest, VerticalLeftRight) {
+TEST_F(RelativeUtilsTest, VerticalLeftRight) {
   LogicalOffset offset;
 
   // Set all sides

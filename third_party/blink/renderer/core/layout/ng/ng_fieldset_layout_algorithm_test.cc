@@ -13,7 +13,7 @@
 namespace blink {
 namespace {
 
-class NGFieldsetLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
+class FieldsetLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     BlockNode container(element->GetLayoutBox());
@@ -56,7 +56,7 @@ class NGFieldsetLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 };
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, Empty) {
+TEST_F(FieldsetLayoutAlgorithmTest, Empty) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { margin:0; border:3px solid; padding:10px; width:100px; }
@@ -75,7 +75,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, Empty) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, NoLegend) {
+TEST_F(FieldsetLayoutAlgorithmTest, NoLegend) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { margin:0; border:3px solid; padding:10px; width:100px; }
@@ -97,7 +97,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, NoLegend) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, Legend) {
+TEST_F(FieldsetLayoutAlgorithmTest, Legend) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { margin:0; border:3px solid; padding:10px; width:100px; }
@@ -121,7 +121,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, Legend) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorder) {
+TEST_F(FieldsetLayoutAlgorithmTest, SmallLegendLargeBorder) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { margin:0; border:40px solid; padding:10px; width:100px; }
@@ -147,7 +147,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorder) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendOrthogonalWritingMode) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendOrthogonalWritingMode) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { margin:0; border:3px solid; padding:10px; width:100px; }
@@ -173,7 +173,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendOrthogonalWritingMode) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, VerticalLr) {
+TEST_F(FieldsetLayoutAlgorithmTest, VerticalLr) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { writing-mode:vertical-lr; margin:0; border:3px solid;
@@ -199,7 +199,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, VerticalLr) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, VerticalRl) {
+TEST_F(FieldsetLayoutAlgorithmTest, VerticalRl) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { writing-mode:vertical-rl; margin:0; border:3px solid;
@@ -225,7 +225,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, VerticalRl) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAutoSize) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendAutoSize) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { margin:0; border:3px solid; padding:10px; width:100px; }
@@ -254,7 +254,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAutoSize) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, PercentageHeightChild) {
+TEST_F(FieldsetLayoutAlgorithmTest, PercentageHeightChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset {
@@ -280,7 +280,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, PercentageHeightChild) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, AbsposChild) {
+TEST_F(FieldsetLayoutAlgorithmTest, AbsposChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset {
@@ -309,7 +309,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, AbsposChild) {
 
 // Used height needs to be adjusted to encompass the legend, if specified height
 // requests a lower height than that.
-TEST_F(NGFieldsetLayoutAlgorithmTest, ZeroHeight) {
+TEST_F(FieldsetLayoutAlgorithmTest, ZeroHeight) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset {
@@ -337,7 +337,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, ZeroHeight) {
 
 // Used height needs to be adjusted to encompass the legend, if specified height
 // requests a lower max-height than that.
-TEST_F(NGFieldsetLayoutAlgorithmTest, ZeroMaxHeight) {
+TEST_F(FieldsetLayoutAlgorithmTest, ZeroMaxHeight) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset {
@@ -369,7 +369,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, ZeroMaxHeight) {
 
 // Things inside legends and fieldsets are treated as if there was no fieldsets
 // and legends involved, as far as the percentage height quirk is concerned.
-TEST_F(NGFieldsetLayoutAlgorithmTest, PercentHeightQuirks) {
+TEST_F(FieldsetLayoutAlgorithmTest, PercentHeightQuirks) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -401,7 +401,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, PercentHeightQuirks) {
 
 // Legends are treated as regular elements, as far as the percentage height
 // quirk is concerned.
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendPercentHeightQuirks) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendPercentHeightQuirks) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -430,7 +430,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendPercentHeightQuirks) {
 
 // This test makes sure that the fieldset content handles fieldset padding
 // when the fieldset is expanded to encompass the legend.
-TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetPaddingWithLegend) {
+TEST_F(FieldsetLayoutAlgorithmTest, FieldsetPaddingWithLegend) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -469,7 +469,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetPaddingWithLegend) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, MinMax) {
+TEST_F(FieldsetLayoutAlgorithmTest, MinMax) {
   SetBodyInnerHTML(R"HTML(
     <style>
       fieldset { margin:123px; border:3px solid; padding:10px; width:100px; }
@@ -537,7 +537,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, MinMax) {
 
 // Tests that a fieldset won't fragment if it doesn't reach the fragmentation
 // line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, NoFragmentation) {
+TEST_F(FieldsetLayoutAlgorithmTest, NoFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <style>
         fieldset {
@@ -564,7 +564,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, NoFragmentation) {
 }
 
 // Tests that a fieldset will fragment if it reaches the fragmentation line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, SimpleFragmentation) {
+TEST_F(FieldsetLayoutAlgorithmTest, SimpleFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -601,7 +601,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SimpleFragmentation) {
 
 // Tests that a fieldset with no content or padding will fragment if it reaches
 // the fragmentation line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
+TEST_F(FieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset { margin:0; border:10px solid; padding:0px; width:100px; }
@@ -642,7 +642,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
 
 // Tests that a fieldset with auto height will fragment when its content reaches
 // the fragmentation line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
+TEST_F(FieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -705,7 +705,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
 
 // Tests that a fieldset with a set height will fragment when its content
 // reaches the fragmentation line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
+TEST_F(FieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -768,7 +768,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
 
 // Tests that a fieldset with auto height will not fragment when its legend
 // reaches the fragmentation line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -818,7 +818,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
 // Tests that a fieldset with a set height will not fragment when its legend
 // reaches the fragmentation line. The used height should also be extended to
 // encompass the legend.
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -868,7 +868,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
 // Tests that a fieldset with auto height will not fragment when its legend
 // reaches the fragmentation line. The content of the fieldset should fragment
 // when it reaches the fragmentation line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -934,7 +934,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
 // Tests that a fieldset with a set height will fragment when its legend reaches
 // the fragmentation line. The content of the fieldset should fragment when it
 // reaches the fragmentation line.
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
   SetBodyInnerHTML(R"HTML(
       <style>
         #fieldset {
@@ -998,7 +998,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
 }
 
 // Tests fragmentation when a legend's child content overflows.
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
   SetBodyInnerHTML(R"HTML(
       <style>
         fieldset, legend { margin:0; border:none; padding:0; }
@@ -1049,7 +1049,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
 
 // Tests that fragmentation works as expected when the fieldset content has a
 // negative margin block start.
-TEST_F(NGFieldsetLayoutAlgorithmTest,
+TEST_F(FieldsetLayoutAlgorithmTest,
        LegendAndContentFragmentationNegativeMargin) {
   SetBodyInnerHTML(R"HTML(
       <style>
@@ -1104,7 +1104,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest,
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedLegend) {
+TEST_F(FieldsetLayoutAlgorithmTest, OverflowedLegend) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset {
@@ -1148,7 +1148,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedLegend) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
+TEST_F(FieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset {
@@ -1221,7 +1221,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
+TEST_F(FieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset {
@@ -1268,7 +1268,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
+TEST_F(FieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
   // The block that has break-inside:avoid is too tall to fit in one
   // fragmentainer. So a break is unavoidable. Let's check that:
   // 1. The block is still shifted to the start of the next fragmentainer
@@ -1331,7 +1331,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset {
@@ -1384,7 +1384,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
+TEST_F(FieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset {
@@ -1439,7 +1439,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset {
@@ -1491,7 +1491,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, BreakAfterAvoid) {
+TEST_F(FieldsetLayoutAlgorithmTest, BreakAfterAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #multicol {
@@ -1537,7 +1537,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakAfterAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
+TEST_F(FieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset {
@@ -1591,7 +1591,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGFieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
+TEST_F(FieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
   // A block whose border box would start past the end of the current
   // fragmentainer should start exactly at the start of the next fragmentainer,
   // discarding what's left of the margin.
@@ -1647,7 +1647,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
 // Tests that a fieldset with a large border and a small legend fragment
 // correctly. Since we don't allow breaking inside borders, they will overflow
 // fragmentainers.
-TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
+TEST_F(FieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset { margin:0; border:60px solid; padding:0px; width:100px;
@@ -1704,7 +1704,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
 // Tests that a fieldset with a large border and a small legend fragment
 // correctly. In this case, the legend block offset is adjusted because the
 // legend fits inside the first fragment.
-TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
+TEST_F(FieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset { margin:0; border:60px solid; padding:0px; width:100px;
@@ -1763,7 +1763,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
 // border, there's no class C breakpoint before the fieldset contents.
 // Therefore, prefer breaking before the fieldset to breaking before the child
 // DIV.
-TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
+TEST_F(FieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset { margin:0; border:30px solid; padding:0px; width:100px; }
@@ -1815,7 +1815,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
 
 // Tests that a fieldset with a large border and a small legend fragment
 // correctly.
-TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
+TEST_F(FieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #fieldset { margin:0; border:60px solid; padding:0px; width:100px;

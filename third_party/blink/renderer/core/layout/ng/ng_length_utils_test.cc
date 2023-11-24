@@ -37,7 +37,7 @@ static ConstraintSpace ConstructConstraintSpace(
   return builder.ToConstraintSpace();
 }
 
-class NGLengthUtilsTest : public testing::Test {
+class LengthUtilsTest : public testing::Test {
  protected:
   void SetUp() override {
     initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
@@ -90,7 +90,7 @@ class NGLengthUtilsTest : public testing::Test {
   Persistent<const ComputedStyle> initial_style_;
 };
 
-class NGLengthUtilsTestWithNode : public RenderingTest {
+class LengthUtilsTestWithNode : public RenderingTest {
  public:
   LayoutUnit ComputeInlineSizeForFragment(
       const BlockNode& node,
@@ -115,7 +115,7 @@ class NGLengthUtilsTestWithNode : public RenderingTest {
   }
 };
 
-TEST_F(NGLengthUtilsTest, TestResolveInlineLength) {
+TEST_F(LengthUtilsTest, TestResolveInlineLength) {
   EXPECT_EQ(LayoutUnit(60), ResolveMainInlineLength(Length::Percent(30)));
   EXPECT_EQ(LayoutUnit(150), ResolveMainInlineLength(Length::Fixed(150)));
   EXPECT_EQ(LayoutUnit(200), ResolveMainInlineLength(Length::FillAvailable()));
@@ -139,7 +139,7 @@ TEST_F(NGLengthUtilsTest, TestResolveInlineLength) {
 #endif
 }
 
-TEST_F(NGLengthUtilsTest, TestIndefiniteResolveInlineLength) {
+TEST_F(LengthUtilsTest, TestIndefiniteResolveInlineLength) {
   const ConstraintSpace space = ConstructConstraintSpace(-1, -1);
 
   EXPECT_EQ(LayoutUnit(0),
@@ -150,13 +150,13 @@ TEST_F(NGLengthUtilsTest, TestIndefiniteResolveInlineLength) {
                                                       absl::nullopt, space));
 }
 
-TEST_F(NGLengthUtilsTest, TestResolveBlockLength) {
+TEST_F(LengthUtilsTest, TestResolveBlockLength) {
   EXPECT_EQ(LayoutUnit(90), ResolveMainBlockLength(Length::Percent(30)));
   EXPECT_EQ(LayoutUnit(150), ResolveMainBlockLength(Length::Fixed(150)));
   EXPECT_EQ(LayoutUnit(300), ResolveMainBlockLength(Length::FillAvailable()));
 }
 
-TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
+TEST_F(LengthUtilsTestWithNode, TestComputeContentContribution) {
   SetBodyInnerHTML(R"HTML(
     <div id="test1" style="width:30%;"></div>
     <div id="test2" style="width:-webkit-fill-available;"></div>
@@ -265,7 +265,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
                           WritingMode::kHorizontalTb, node, space, sizes));
 }
 
-TEST_F(NGLengthUtilsTestWithNode, TestComputeInlineSizeForFragment) {
+TEST_F(LengthUtilsTestWithNode, TestComputeInlineSizeForFragment) {
   SetBodyInnerHTML(R"HTML(
     <div id="test1" style="width:30%;"></div>
     <div id="test2" style="width:-webkit-fill-available;"></div>
@@ -350,7 +350,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeInlineSizeForFragment) {
             ComputeInlineSizeForFragment(node, constraint_space, sizes));
 }
 
-TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
+TEST_F(LengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
   SetBodyInnerHTML(R"HTML(
     <div id="test1" style="height:30%;"></div>
     <div id="test2" style="height:-webkit-fill-available;"></div>
@@ -438,7 +438,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
                                 LayoutUnit(20), LayoutUnit(100)));
 }
 
-TEST_F(NGLengthUtilsTestWithNode, TestIndefinitePercentages) {
+TEST_F(LengthUtilsTestWithNode, TestIndefinitePercentages) {
   SetBodyInnerHTML(R"HTML(
     <div id="test" style="min-height:20px; height:20%;"></div>
   )HTML");
@@ -455,7 +455,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestIndefinitePercentages) {
                                         LayoutUnit(120)));
 }
 
-TEST_F(NGLengthUtilsTestWithNode, ComputeReplacedSizeSvgNoScaling) {
+TEST_F(LengthUtilsTestWithNode, ComputeReplacedSizeSvgNoScaling) {
   SetBodyInnerHTML(R"HTML(
 <style>
 svg {
@@ -470,7 +470,7 @@ span {
   // Pass if no DCHECK failures in BlockNode::FinishLayout().
 }
 
-TEST_F(NGLengthUtilsTest, TestMargins) {
+TEST_F(LengthUtilsTest, TestMargins) {
   ComputedStyleBuilder builder(*initial_style_);
   builder.SetMarginTop(Length::Percent(10));
   builder.SetMarginRight(Length::Fixed(52));
@@ -488,7 +488,7 @@ TEST_F(NGLengthUtilsTest, TestMargins) {
   EXPECT_EQ(LayoutUnit(22), margins.left);
 }
 
-TEST_F(NGLengthUtilsTest, TestBorders) {
+TEST_F(LengthUtilsTest, TestBorders) {
   ComputedStyleBuilder builder(*initial_style_);
   builder.SetBorderTopWidth(LayoutUnit(1));
   builder.SetBorderRightWidth(LayoutUnit(2));
@@ -509,7 +509,7 @@ TEST_F(NGLengthUtilsTest, TestBorders) {
   EXPECT_EQ(LayoutUnit(1), borders.inline_start);
 }
 
-TEST_F(NGLengthUtilsTest, TestPadding) {
+TEST_F(LengthUtilsTest, TestPadding) {
   ComputedStyleBuilder builder(*initial_style_);
   builder.SetPaddingTop(Length::Percent(10));
   builder.SetPaddingRight(Length::Fixed(52));
@@ -529,7 +529,7 @@ TEST_F(NGLengthUtilsTest, TestPadding) {
   EXPECT_EQ(LayoutUnit(20), padding.inline_start);
 }
 
-TEST_F(NGLengthUtilsTest, TestAutoMargins) {
+TEST_F(LengthUtilsTest, TestAutoMargins) {
   ComputedStyleBuilder builder(*initial_style_);
   builder.SetMarginRight(Length::Auto());
   builder.SetMarginLeft(Length::Auto());
@@ -607,7 +607,7 @@ int GetUsedColumnCount(int computed_column_count,
                                 LayoutUnit(available_inline_size));
 }
 
-TEST_F(NGLengthUtilsTest, TestColumnWidthAndCount) {
+TEST_F(LengthUtilsTest, TestColumnWidthAndCount) {
   EXPECT_EQ(100, GetUsedColumnWidth(0, 100, 0, 300));
   EXPECT_EQ(3, GetUsedColumnCount(0, 100, 0, 300));
   EXPECT_EQ(150, GetUsedColumnWidth(0, 101, 0, 300));
@@ -652,7 +652,7 @@ LayoutUnit ComputeInlineSize(LogicalSize aspect_ratio, LayoutUnit block_size) {
   return InlineSizeFromAspectRatio(BoxStrut(), aspect_ratio,
                                    EBoxSizing::kBorderBox, block_size);
 }
-TEST_F(NGLengthUtilsTest, AspectRatio) {
+TEST_F(LengthUtilsTest, AspectRatio) {
   EXPECT_EQ(LayoutUnit(8000),
             ComputeInlineSize(LogicalSize(8000, 8000), LayoutUnit(8000)));
   EXPECT_EQ(LayoutUnit(1),

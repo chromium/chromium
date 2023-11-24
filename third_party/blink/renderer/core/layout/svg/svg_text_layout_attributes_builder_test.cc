@@ -8,9 +8,9 @@
 
 namespace blink {
 
-class NGSvgTextLayoutAttributesBuilderTest : public RenderingTest {};
+class SvgTextLayoutAttributesBuilderTest : public RenderingTest {};
 
-TEST_F(NGSvgTextLayoutAttributesBuilderTest, TextPathCrash) {
+TEST_F(SvgTextLayoutAttributesBuilderTest, TextPathCrash) {
   SetBodyInnerHTML(R"HTML(
 <svg>
 <text>
