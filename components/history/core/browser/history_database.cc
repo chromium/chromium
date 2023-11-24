@@ -133,9 +133,6 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   }
   CreateMainURLIndex();
 
-  // TODO(benjhayden) Remove at some point.
-  meta_table_.DeleteKey("next_download_id");
-
   // Version check.
   sql::InitStatus version_status = EnsureCurrentVersion();
   if (version_status != sql::INIT_OK) {
