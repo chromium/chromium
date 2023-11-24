@@ -20,6 +20,7 @@ struct FidoAssertionInfo {
   ~FidoAssertionInfo();
   FidoAssertionInfo(const FidoAssertionInfo& other);
   FidoAssertionInfo& operator=(const FidoAssertionInfo& other);
+  bool operator==(const FidoAssertionInfo& rhs) const;
 
   // User's email.
   std::string email;

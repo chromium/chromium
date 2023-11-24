@@ -723,4 +723,53 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
                      std::move(certificate_callback)));
 }
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    const SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason& reason) {
+  using Reason = SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason;
+  switch (reason) {
+    case Reason::kInvalidOAuthToken:
+      stream << "[Invalid OAuth Token]";
+      break;
+    case Reason::kAccountNotSupported:
+      stream << "[Account not supported]";
+      break;
+    case Reason::kAlreadyAuthenticated:
+      stream << "[Already authenticated]";
+      break;
+    case Reason::kChallengeExpired:
+      stream << "[Challenge expired]";
+      break;
+    case Reason::kCredentialIdMismatch:
+      stream << "[Credential ID mismatch]";
+      break;
+    case Reason::kSessionExpired:
+      stream << "[Session expired]";
+      break;
+    case Reason::kLessSecureDevice:
+      stream << "[Less secure device]";
+      break;
+    case Reason::kUnknownReason:
+      stream << "[Unknown reason]";
+      break;
+    default:
+      stream << "[Unknown Enum Value]";
+  }
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const SecondDeviceAuthBroker::AttestationErrorType& attestation_error) {
+  switch (attestation_error) {
+    case SecondDeviceAuthBroker::AttestationErrorType::kPermanentError:
+      stream << "[Permanent error]";
+      break;
+    case SecondDeviceAuthBroker::AttestationErrorType::kTransientError:
+      stream << "[Transient error]";
+      break;
+  }
+  return stream;
+}
+
 }  //  namespace ash::quick_start

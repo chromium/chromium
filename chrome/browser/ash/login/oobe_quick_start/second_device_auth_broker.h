@@ -203,6 +203,14 @@ class SecondDeviceAuthBroker {
   base::WeakPtrFactory<SecondDeviceAuthBroker> weak_ptr_factory_;
 };
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    const SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason& reason);
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const SecondDeviceAuthBroker::AttestationErrorType& attestation_error);
+
 }  //  namespace ash::quick_start
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_SECOND_DEVICE_AUTH_BROKER_H_

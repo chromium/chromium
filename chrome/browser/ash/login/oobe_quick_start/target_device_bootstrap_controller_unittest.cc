@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -77,6 +78,24 @@ class FakeObserver : public Observer {
 constexpr char kFakeChallengeBytesBase64[] =
     "ABz12ClFhY8/D89zWFB+KTHgUwJ5T3Avco/1IQuu+K/"
     "65KlsmB7o0+UyPde8ZW+b33aeJ9uyST8EMzS6WhK60e/VDjug+7LLK4YzDz1nNw==";
+constexpr char kTestCredentialId[] = "TEST_CREDENTIAL_ID";
+constexpr char kPemCertificateString[] = R"({
+-----BEGIN CERTIFICATE-----
+MIICUTCCAfugAwIBAgIBADANBgkqhkiG9w0BAQQFADBXMQswCQYDVQQGEwJDTjEL
+MAkGA1UECBMCUE4xCzAJBgNVBAcTAkNOMQswCQYDVQQKEwJPTjELMAkGA1UECxMC
+VU4xFDASBgNVBAMTC0hlcm9uZyBZYW5nMB4XDTA1MDcxNTIxMTk0N1oXDTA1MDgx
+NDIxMTk0N1owVzELMAkGA1UEBhMCQ04xCzAJBgNVBAgTAlBOMQswCQYDVQQHEwJD
+TjELMAkGA1UEChMCT04xCzAJBgNVBAsTAlVOMRQwEgYDVQQDEwtIZXJvbmcgWWFu
+ZzBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQCp5hnG7ogBhtlynpOS21cBewKE/B7j
+V14qeyslnr26xZUsSVko36ZnhiaO/zbMOoRcKK9vEcgMtcLFuQTWDl3RAgMBAAGj
+gbEwga4wHQYDVR0OBBYEFFXI70krXeQDxZgbaCQoR4jUDncEMH8GA1UdIwR4MHaA
+FFXI70krXeQDxZgbaCQoR4jUDncEoVukWTBXMQswCQYDVQQGEwJDTjELMAkGA1UE
+CBMCUE4xCzAJBgNVBAcTAkNOMQswCQYDVQQKEwJPTjELMAkGA1UECxMCVU4xFDAS
+BgNVBAMTC0hlcm9uZyBZYW5nggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEE
+BQADQQA/ugzBrjjK9jcWnDVfGHlk3icNRq0oV7Ri32z/+HQX67aRfgZu7KWdI+Ju
+Wm7DCfrPNGVwFWUQOmsPue9rZBgO
+-----END CERTIFICATE-----
+    })";
 
 class FakeAccessibilityManagerWrapper
     : public TargetDeviceBootstrapController::AccessibilityManagerWrapper {
@@ -593,7 +612,19 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId, Connection::AuthenticationMethod::kQR);
 
+  // Objects that will be used for verifying the data flow between the
+  // components.
+  FidoAssertionInfo fido_assertion;
+  fido_assertion.credential_id =
+      Base64String(base::Base64Encode(kTestCredentialId));
+  PEMCertChain pem_cert_chain{kPemCertificateString};
+
+  // TODO(b/287006890) - Expand test to include failure modes as well.
   auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes_);
+  auth_broker_->SetupAttestationCertificateResponse(pem_cert_chain);
+  auth_broker_->SetupAuthCodeResponse(
+      SecondDeviceAuthBroker::AuthCodeSuccessResponse());
+
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 
   EXPECT_EQ(fake_observer_->last_status.step,
@@ -601,8 +632,28 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
 
+  // Expect that the credential_id of the FidoAssertion coming from
+  // TargetDeviceConnectionBroker is correctly propagated into
+  // SecondDeviceAuthBroker.
+  EXPECT_CALL(*auth_broker_, FetchAttestationCertificate(
+                                 fido_assertion.credential_id, testing::_))
+      .Times(1);
+
+  // Expect that TargetDeviceBootstrapController passes the certificate it
+  // received from SecondDeviceAuthBroker back to it, and also the original
+  // FidoAssertion, but with a modified client_data field based on the challenge
+  // bytes.
+  FidoAssertionInfo modified_fido_assertion = fido_assertion;
+  auto client_data =
+      quick_start::AccountTransferClientData(kFakeChallengeBytes_).CreateJson();
+  modified_fido_assertion.client_data =
+      std::vector<uint8_t>(client_data.begin(), client_data.end());
+  EXPECT_CALL(*auth_broker_, FetchAuthCode(modified_fido_assertion,
+                                           pem_cert_chain, testing::_))
+      .Times(1);
+
   fake_target_device_connection_broker_->GetFakeConnection()
-      ->SendAccountTransferAssertionInfo(FidoAssertionInfo());
+      ->SendAccountTransferAssertionInfo(fido_assertion);
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS);

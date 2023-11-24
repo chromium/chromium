@@ -55,6 +55,8 @@ class TargetDeviceBootstrapController
     USER_VERIFICATION_FAILED,
     GAIA_ASSERTION_NOT_RECEIVED,
     FETCHING_CHALLENGE_BYTES_FAILED,
+    FETCHING_ATTESTATION_CERTIFICATE_FAILED,
+    FETCHING_REFRESH_TOKEN_FAILED,
   };
 
   using ConnectionClosedReason =
@@ -189,6 +191,12 @@ class TargetDeviceBootstrapController
   // If we're not advertising, connecting, or connected, perform cleanup.
   void CleanupIfNeeded();
 
+  void OnAttestationCertificateReceived(
+      quick_start::SecondDeviceAuthBroker::AttestationCertificateOrError);
+
+  void OnAuthCodeReceived(
+      const quick_start::SecondDeviceAuthBroker::AuthCodeResponse&);
+
   void set_connection_broker_for_testing(
       std::unique_ptr<TargetDeviceConnectionBroker> connection_broker) {
     connection_broker_ = std::move(connection_broker);
@@ -206,6 +214,7 @@ class TargetDeviceBootstrapController
 
   // Challenge bytes to be sent to the Android device for the FIDO assertion.
   Base64UrlString challenge_bytes_;
+  FidoAssertionInfo fido_assertion_;
 
   std::unique_ptr<quick_start::SecondDeviceAuthBroker> auth_broker_;
   // During this instantiation of SessionContext, if resuming Quick Start after
