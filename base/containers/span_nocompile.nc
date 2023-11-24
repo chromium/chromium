@@ -23,7 +23,7 @@ class Derived : Base {
 
 // A default constructed span must have an extent of 0 or dynamic_extent.
 void DefaultSpanWithNonZeroStaticExtentDisallowed() {
-  span<int, 1u> span;  // expected-error@*:* {{Invalid Extent}}
+  span<int, 1u> span;  // expected-error {{no matching constructor for initialization of 'span<int, 1U>'}}
 }
 
 // A span with static extent constructed from an array must match the size of
@@ -44,7 +44,7 @@ void SpanFromOtherSpanWithMismatchingExtentDisallowed() {
 // Converting a dynamic span to a static span should not be allowed.
 void DynamicSpanToStaticSpanDisallowed() {
   span<int> dynamic_span;
-  span<int, 3u> static_span(dynamic_span);  // expected-error {{no matching constructor for initialization of 'span<int, 3U>'}}
+  span<int, 3u> static_span = dynamic_span;  // expected-error-re {{no viable conversion from 'span<[...], (default) dynamic_extent aka {{.*}}>' to 'span<[...], 3>'}}
 }
 
 // Internally, this is represented as a pointer to pointers to Derived. An
@@ -90,8 +90,8 @@ void StdSetConversionDisallowed() {
   span<int> span1(set.begin(), 0u);                // expected-error {{no matching constructor for initialization of 'span<int>'}}
   span<int> span2(set.begin(), set.end());         // expected-error {{no matching constructor for initialization of 'span<int>'}}
   span<int> span3(set);                            // expected-error {{no matching constructor for initialization of 'span<int>'}}
-  auto span4 = make_span(set.begin(), 0u);         // expected-error@*:* {{no matching constructor for initialization of 'span<T>'}}
-  auto span5 = make_span(set.begin(), set.end());  // expected-error@*:* {{no matching constructor for initialization of 'span<T>'}}
+  auto span4 = make_span(set.begin(), 0u);         // expected-error@*:* {{no matching constructor for initialization of 'span<T>' (aka 'span<const int>')}}
+  auto span5 = make_span(set.begin(), set.end());  // expected-error@*:* {{no matching constructor for initialization of 'span<T>' (aka 'span<const int>')}}
   auto span6 = make_span(set);                     // expected-error@*:* {{no matching function for call to 'data'}}
 }
 
@@ -99,10 +99,10 @@ void StdSetConversionDisallowed() {
 void OutOfRangeSubviewsOnStaticSpan() {
   std::array<int, 3> array = {1, 2, 3};
   span<int, 3u> span(array);
-  auto first = span.first<4>();          // expected-error@*:* {{Count must not exceed Extent}}
-  auto last = span.last<4>();            // expected-error@*:* {{Count must not exceed Extent}}
-  auto subspan1 = span.subspan<4>();     // expected-error@*:* {{Offset must not exceed Extent}}
-  auto subspan2 = span.subspan<0, 4>();  // expected-error@*:* {{Count must not exceed Extent - Offset}}
+  auto first = span.first<4>();          // expected-error@*:* {{no matching member function for call to 'first'}}
+  auto last = span.last<4>();            // expected-error@*:* {{no matching member function for call to 'last'}}
+  auto subspan1 = span.subspan<4>();     // expected-error@*:* {{no matching member function for call to 'subspan'}}
+  auto subspan2 = span.subspan<0, 4>();  // expected-error@*:* {{no matching member function for call to 'subspan'}}
 }
 
 // Discarding the return value of empty() is not allowed.
@@ -114,8 +114,8 @@ void DiscardReturnOfEmptyDisallowed() {
 // Getting elements of an empty span with static extent is not allowed.
 void RefsOnEmptyStaticSpanDisallowed() {
   span<int, 0u> s;
-  s.front();  // expected-error@*:* {{Extent must not be 0}}
-  s.back();   // expected-error@*:* {{Extent must not be 0}}
+  s.front();  // expected-error@*:* {{invalid reference to function 'front': constraints not satisfied}}
+  s.back();   // expected-error@*:* {{invalid reference to function 'back': constraints not satisfied}}
 }
 
 // Calling swap on spans with different extents is not allowed.
@@ -134,7 +134,7 @@ void AsWritableBytesWithConstContainerDisallowed() {
 
 void ConstVectorDeducesAsConstSpan() {
   const std::vector<int> v;
-  span<int> s = make_span(v);  // expected-error@*:* {{no viable conversion from 'span<T, [...]>' to 'span<int, [...]>'}}
+  span<int> s = make_span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
 }
 
 // make_span<N>() should CHECK whether N matches the actual size.
