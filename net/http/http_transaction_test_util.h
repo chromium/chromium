@@ -271,12 +271,6 @@ class MockNetworkTransaction
   }
 
   RequestPriority priority() const { return priority_; }
-  const HttpRequestInfo* request() const { return request_; }
-
-  base::RepeatingCallback<void(net::HttpRequestHeaders*)>&
-  modify_request_headers_callback() {
-    return modify_request_headers_callback_;
-  }
 
   // Bogus value that will be returned by GetTotalReceivedBytes() if the
   // MockNetworkTransaction was started.
@@ -286,20 +280,55 @@ class MockNetworkTransaction
   static const int64_t kTotalSentBytes;
 
  private:
-  int StartInternal(const HttpRequestInfo* request,
-                    CompletionOnceCallback callback,
-                    const NetLogWithSource& net_log);
+  enum class State {
+    NOTIFY_BEFORE_CREATE_STREAM,
+    CREATE_STREAM,
+    CREATE_STREAM_COMPLETE,
+    CONNECTED_CALLBACK,
+    CONNECTED_CALLBACK_COMPLETE,
+    BUILD_REQUEST,
+    BUILD_REQUEST_COMPLETE,
+    SEND_REQUEST,
+    SEND_REQUEST_COMPLETE,
+    READ_HEADERS,
+    READ_HEADERS_COMPLETE,
+    NONE
+  };
+
+  int StartInternal(HttpRequestInfo request, CompletionOnceCallback callback);
+  int DoNotifyBeforeCreateStream();
+  int DoCreateStream();
+  int DoCreateStreamComplete(int result);
+  int DoConnectedCallback();
+  int DoConnectedCallbackComplete(int result);
+  int DoBuildRequest();
+  int DoBuildRequestComplete(int result);
+  int DoSendRequest();
+  int DoSendRequestComplete(int result);
+  int DoReadHeaders();
+  int DoReadHeadersComplete(int result);
+
+  // Runs the state transition loop.
+  int DoLoop(int result);
+
+  void OnIOComplete(int result);
+
   void CallbackLater(CompletionOnceCallback callback, int result);
   void RunCallback(CompletionOnceCallback callback, int result);
 
-  raw_ptr<const HttpRequestInfo> request_ = nullptr;
+  raw_ptr<const HttpRequestInfo> original_request_ptr_ = nullptr;
+  HttpRequestInfo current_request_;
+  State next_state_ = State::NONE;
+  NetLogWithSource net_log_;
+
+  CompletionOnceCallback callback_;
+
   HttpResponseInfo response_;
   std::string data_;
   int64_t data_cursor_ = 0;
   int64_t content_length_ = 0;
   int test_mode_;
   RequestPriority priority_;
-  MockTransactionReadHandler read_handler_;
   raw_ptr<CreateHelper> websocket_handshake_stream_create_helper_ = nullptr;
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;

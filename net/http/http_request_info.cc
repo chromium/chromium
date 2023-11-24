@@ -12,6 +12,10 @@ namespace net {
 HttpRequestInfo::HttpRequestInfo() = default;
 
 HttpRequestInfo::HttpRequestInfo(const HttpRequestInfo& other) = default;
+HttpRequestInfo& HttpRequestInfo::operator=(const HttpRequestInfo& other) =
+    default;
+HttpRequestInfo::HttpRequestInfo(HttpRequestInfo&& other) = default;
+HttpRequestInfo& HttpRequestInfo::operator=(HttpRequestInfo&& other) = default;
 
 HttpRequestInfo::~HttpRequestInfo() = default;
 
