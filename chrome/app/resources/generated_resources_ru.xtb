@@ -1033,7 +1033,7 @@
     <ph name="LINE_BREAKS2" />
     Контент и приложения на других устройствах сохранятся.</translation>
 <translation id="1809734401532861917">Добавить мои закладки, историю, пароли и другие настройки в <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Чтобы использовать сохраненные пароли на телефоне, отсканируйте QR-код, скачайте Chrome для iOS и войдите в свой аккаунт Google.</translation>
+<translation id="1810070166657251157">Чтобы использовать сохраненные пароли на телефоне, перейдите по ссылке в QR-коде, установите Chrome для iOS и войдите в свой аккаунт Google.</translation>
 <translation id="1810366086647840386">Сервер с образом</translation>
 <translation id="1811908311154949291">Элемент Fenced Frame в режиме инкогнито: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812284620455788548">Транслируется: <ph name="TAB_NAME" /></translation>
@@ -4676,7 +4676,7 @@
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4730492586225682674">Последняя заметка, созданная на заблокированном экране с помощью стилуса</translation>
 <translation id="4730888769809690665">Сайту <ph name="SITE" /> разрешено отправлять уведомления</translation>
-<translation id="4731306954230393087">Сайтам разрешено использовать сохраненную информацию о вас.</translation>
+<translation id="4731306954230393087">Сайтам разрешено использовать сохраненную информацию о вас</translation>
 <translation id="473140019006744096">На устройстве недостаточно места для установки обновления. Освободите <ph name="NECESSARY_SPACE" /> и повторите попытку.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (левый)</translation>
 <translation id="4733793249294335256">Папка</translation>
@@ -9370,7 +9370,7 @@
 <translation id="858451212965845553">Отправить на &amp;свои устройства</translation>
 <translation id="8584843865238667486">HID-устройства с использованием <ph name="USAGE" /> на странице <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Удалить Crostini</translation>
-<translation id="8585841788766257444">Для указанных ниже сайтов действуют специальные настройки</translation>
+<translation id="8585841788766257444">Для указанных ниже сайтов действуют специальные настройки.</translation>
 <translation id="8588866096426746242">Показать статистику профиля</translation>
 <translation id="8588868914509452556">VR-контент с вкладки "<ph name="WINDOW_TITLE" />" сейчас транслируется на очки</translation>
 <translation id="8590375307970699841">Настройка автоматических обновлений</translation>

@@ -118,7 +118,7 @@
 <translation id="3008272652534848354">İzinleri sıfırla</translation>
 <translation id="301521992641321250">Otomatik olarak engellendi</translation>
 <translation id="3069226013421428034">Belirli bir sitede üçüncü taraf oturum açmaya izin verin.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # içinde dolacak}}</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # gün içinde dolacak}}</translation>
 <translation id="310297983047869047">Önceki slayt</translation>
 <translation id="3109724472072898302">Daraltılmış</translation>
 <translation id="3114012059975132928">Video oynatıcı</translation>
