@@ -541,10 +541,6 @@ bool VotesUploader::UploadPasswordVote(
       {{form_to_upload.username_element_renderer_id, username_vote_type}},
       &form_structure, &available_field_types);
 
-  // Force uploading as these events are relatively rare and we want to make
-  // sure to receive them.
-  form_structure.set_upload_required(UPLOAD_REQUIRED);
-
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
     logger.LogFormStructure(Logger::STRING_PASSWORD_FORM_VOTE, form_structure);
@@ -600,10 +596,6 @@ void VotesUploader::UploadFirstLoginVotes(
   LabelFields(field_types, field_name_collision, vote_types, &form_structure,
               &available_field_types);
   SetKnownValueFlag(pending_credentials, best_matches, &form_structure);
-
-  // Force uploading as these events are relatively rare and we want to make
-  // sure to receive them.
-  form_structure.set_upload_required(UPLOAD_REQUIRED);
 
   // Annotate the form with the source language of the page.
   form_structure.set_current_page_language(client_->GetPageLanguage());
@@ -920,10 +912,6 @@ bool VotesUploader::StartUploadRequest(
       client_->GetAutofillDownloadManager();
   if (!download_manager)
     return false;
-
-  // Force uploading as these events are relatively rare and we want to make
-  // sure to receive them.
-  form_to_upload->set_upload_required(UPLOAD_REQUIRED);
 
   // Attach the Randomized Encoder.
   form_to_upload->set_randomized_encoder(

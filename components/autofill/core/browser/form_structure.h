@@ -35,8 +35,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-enum UploadRequired { UPLOAD_NOT_REQUIRED, UPLOAD_REQUIRED, USE_UPLOAD_RATES };
-
 namespace base {
 class TimeTicks;
 }
@@ -348,11 +346,6 @@ class FormStructure {
     submission_event_ = submission_event;
   }
 
-  void set_upload_required(UploadRequired required) {
-    upload_required_ = required;
-  }
-  UploadRequired upload_required() const { return upload_required_; }
-
   base::TimeTicks form_parsed_timestamp() const {
     return form_parsed_timestamp_;
   }
@@ -604,10 +597,6 @@ class FormStructure {
   // The number of fields that are part of the form signature and that are
   // included in queries to the Autofill server.
   size_t active_field_count_ = 0;
-
-  // Whether the server expects us to always upload, never upload, or default
-  // to the stored upload rates.
-  UploadRequired upload_required_ = USE_UPLOAD_RATES;
 
   // Whether the form includes any field types explicitly specified by the site
   // author, via the |autocompletetype| attribute.

@@ -686,11 +686,6 @@ bool AutofillDownloadManager::StartUploadRequest(
       return false;
     }
 
-    // If we ever need notification that upload was skipped, add it here.
-    if (form.upload_required() == UPLOAD_NOT_REQUIRED) {
-      return false;
-    }
-
     FormRequestData request_data = {
         .observer = observer,
         .form_signatures = {form.form_signature()},
