@@ -711,6 +711,13 @@ chromium-metrics-reviews@google.com.
     pressing &quot;Turn off&quot; in the &quot;Sync and Google services&quot;
     section.
   </int>
+  <int value="30"
+      label="User cancelled sync confirmation on web only signed in">
+    User was in the web-only signed in state in the UNO model and clicked to
+    turn on sync, but cancelled the sync confirmation dialog so they are
+    reverted to the initial state: signed out in the profile but keeping the
+    account on the web only.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

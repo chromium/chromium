@@ -541,6 +541,13 @@ void PrimaryAccountManager::ClearPrimaryAccount(
                RemoveAccountsOption::kRemoveAllAccounts);
 }
 
+void PrimaryAccountManager::RemovePrimaryAccountButKeepTokens(
+    signin_metrics::ProfileSignout signout_source_metric,
+    signin_metrics::SignoutDelete signout_delete_metric) {
+  StartSignOut(signout_source_metric, signout_delete_metric,
+               RemoveAccountsOption::kKeepAllAccountsAndClearPrimary);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PrimaryAccountManager::RevokeSyncConsent(
@@ -620,6 +627,10 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
       }
       SetPrimaryAccountInternal(GetPrimaryAccount().account_info,
                                 /*consented_to_sync=*/false,
+                                scoped_pref_commit);
+      break;
+    case RemoveAccountsOption::kKeepAllAccountsAndClearPrimary:
+      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
                                 scoped_pref_commit);
       break;
   }

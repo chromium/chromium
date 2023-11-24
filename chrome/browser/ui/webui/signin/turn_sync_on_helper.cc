@@ -46,6 +46,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -729,7 +730,8 @@ void TurnSyncOnHelper::AbortAndDelete() {
   }
 #endif
 
-  if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
+  if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT ||
+      signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
         ->ShutdownCloudPolicyManager();
 
@@ -738,13 +740,30 @@ void TurnSyncOnHelper::AbortAndDelete() {
     // account with no token. See https://crbug.com/1404961
     account_change_blocker_.reset();
 
-    // Revoke the token, and the `AccountReconcilor` and/or the Gaia server will
-    // take care of invalidating the cookies.
-    auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-    accounts_mutator->RemoveAccount(
-        account_info_.account_id,
-        signin_metrics::SourceForRefreshTokenOperation::
-            kTurnOnSyncHelper_Abort);
+    switch (signin_aborted_mode_) {
+      case SigninAbortedMode::REMOVE_ACCOUNT: {
+        // Revoke the token, and the `AccountReconcilor` and/or the Gaia server
+        // will take care of invalidating the cookies.
+        auto* accounts_mutator = identity_manager_->GetAccountsMutator();
+        accounts_mutator->RemoveAccount(
+            account_info_.account_id,
+            signin_metrics::SourceForRefreshTokenOperation::
+                kTurnOnSyncHelper_Abort);
+        break;
+      }
+      case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY: {
+        CHECK(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+        auto* primary_account_mutator =
+            identity_manager_->GetPrimaryAccountMutator();
+        primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+            signin_metrics::ProfileSignout::
+                kCancelSyncConfirmationOnWebOnlySignedIn,
+            signin_metrics::SignoutDelete::kIgnoreMetric);
+        break;
+      }
+      case SigninAbortedMode::KEEP_ACCOUNT:
+        NOTREACHED_NORETURN();
+    }
   }
 
   delete this;

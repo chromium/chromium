@@ -128,6 +128,10 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // kAlwaysAllowedSignoutSources for coherence.
     signin_metrics::ProfileSignout::
         kUserClickedSignoutFromUserPolicyNotificationDialog,
+    // Allowed, because the profile was signed out and the account was signed in
+    // to the web only before showing the sync confirmation dialog. The account
+    // was signed in to the profile in order to show the sync confirmation.
+    signin_metrics::ProfileSignout::kCancelSyncConfirmationOnWebOnlySignedIn,
 };
 
 // Returns the histogram suffix name per group of `signin_metrics::AccessPoint`.
@@ -299,7 +303,9 @@ void ChromeSigninClient::PreSignOut(
   bool user_declines_sync_after_consenting_to_management =
       (signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
        signout_source_metric ==
-           signin_metrics::ProfileSignout::kRevokeSyncFromSettings) &&
+           signin_metrics::ProfileSignout::kRevokeSyncFromSettings ||
+       signout_source_metric == signin_metrics::ProfileSignout::
+                                    kCancelSyncConfirmationOnWebOnlySignedIn) &&
       chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   // These sign out won't remove the policy cache, keep the window opened.
   bool keep_window_opened =
@@ -321,7 +327,10 @@ void ChromeSigninClient::PreSignOut(
                             base::Unretained(this)),
         signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
             signout_source_metric == signin_metrics::ProfileSignout::
-                                         kAuthenticationFailedWithForceSignin);
+                                         kAuthenticationFailedWithForceSignin ||
+            signout_source_metric ==
+                signin_metrics::ProfileSignout::
+                    kCancelSyncConfirmationOnWebOnlySignedIn);
   } else {
 #else
   {

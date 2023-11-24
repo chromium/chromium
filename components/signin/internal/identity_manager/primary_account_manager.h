@@ -58,6 +58,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     kKeepAllAccounts = 0,
     // Remove all the accounts.
     kRemoveAllAccounts,
+    // Remove the primary account, but keep the accounts in the
+    // `IdentityManager`.
+    kKeepAllAccountsAndClearPrimary,
   };
 
   // Enum for histogram 'Signin.PAMInitialize.PrimaryAccountInfoState'.
@@ -130,6 +133,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // tokens.
   void ClearPrimaryAccount(signin_metrics::ProfileSignout signout_source_metric,
                            signin_metrics::SignoutDelete signout_delete_metric);
+  // Clears the primary account, erasing all keys associated with the primary
+  // account (also cancels all auth in progress).
+  // It keeps all accounts in the identity manager.
+  void RemovePrimaryAccountButKeepTokens(
+      signin_metrics::ProfileSignout signout_source_metric,
+      signin_metrics::SignoutDelete signout_delete_metric);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

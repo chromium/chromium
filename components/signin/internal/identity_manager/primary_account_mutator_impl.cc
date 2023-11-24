@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -122,6 +123,21 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     return false;
 
   primary_account_manager_->ClearPrimaryAccount(source_metric, delete_metric);
+  return true;
+}
+
+bool PrimaryAccountMutatorImpl::RemovePrimaryAccountButKeepTokens(
+    signin_metrics::ProfileSignout source_metric,
+    signin_metrics::SignoutDelete delete_metric) {
+  CHECK_EQ(
+      source_metric,
+      signin_metrics::ProfileSignout::kCancelSyncConfirmationOnWebOnlySignedIn);
+  if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin)) {
+    return false;
+  }
+
+  primary_account_manager_->RemovePrimaryAccountButKeepTokens(source_metric,
+                                                              delete_metric);
   return true;
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

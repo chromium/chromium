@@ -58,8 +58,10 @@ class TurnSyncOnHelper {
   enum class SigninAbortedMode {
     // The token is revoked and the account is signed out of the web.
     REMOVE_ACCOUNT,
-    // The account is kept.
-    KEEP_ACCOUNT
+    // The account is kept as primary account in Chrome and on the web.
+    KEEP_ACCOUNT,
+    // The primary account is cleared, but the account is kept on the web only.
+    KEEP_ACCOUNT_ON_WEB_ONLY,
   };
 
   // Delegate implementing the UI prompts.

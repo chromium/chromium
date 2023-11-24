@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -301,6 +303,12 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
                                         signin::ConsentLevel::kSignin));
       }
       break;
+    case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
+      // This case is handled in the TurnSyncOnHelperBrowserTestWithUnoDesktop
+      // test suite, since this mode is used only when Uno Desktop is enabled.
+      // TODO(b/312935856): Add test for this case in the Uno Desktop test suite
+      // when implemented.
+      NOTREACHED();
   }
 }
 
@@ -372,3 +380,60 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   ASSERT_EQ(reconcilor->GetState(),
             signin_metrics::AccountReconcilorState::kRunning);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+class TurnSyncOnHelperBrowserTestWithUnoDesktop
+    : public TurnSyncOnHelperBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
+};
+
+// Tests that aborting a Sync opt-in flow started with a web only signed in
+// account reverts the account to the initial web only signed in state.
+IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTestWithUnoDesktop,
+                       WebOnlyAccountResetAfterSyncOptInFlowAborted) {
+  Profile* profile = GetProfile();
+  // Set up first account.
+  AccountInfo first_account_info =
+      identity_test_env()->MakeAccountAvailable("first@gmail.com");
+  identity_test_env()->UpdateAccountInfoForAccount(first_account_info);
+  CoreAccountId first_account_id = first_account_info.account_id;
+
+  ASSERT_NE(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  base::RunLoop run_loop;
+  Delegate::Choices choices = {.sync_optin_choice = absl::nullopt};
+  auto owned_delegate = std::make_unique<Delegate>(choices);
+  base::WeakPtr<Delegate> delegate = owned_delegate->GetWeakPtr();
+  new TurnSyncOnHelper(
+      profile, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+      signin_metrics::Reason::kUnknownReason, first_account_id,
+      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
+      std::move(owned_delegate), run_loop.QuitClosure());
+
+  delegate->WaitUntilBlock();
+  EXPECT_EQ(Delegate::BlockingStep::kSyncConfirmation,
+            delegate->blocking_step());
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(identity_manager()));
+  EXPECT_EQ(first_account_id, identity_manager()->GetPrimaryAccountId(
+                                  signin::ConsentLevel::kSignin));
+
+  choices.sync_optin_choice = LoginUIService::ABORT_SYNC;
+  delegate->UpdateChoicesAndAdvanceFlow(choices);
+
+  // The flow should complete and destroy the delegate and TurnSyncOnHelper.
+  run_loop.Run();
+  EXPECT_FALSE(delegate);
+
+  // Check expectations.
+  EXPECT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
+              UnorderedElementsAre(first_account_info));
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
