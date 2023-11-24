@@ -349,7 +349,6 @@ try_.orchestrator_builder(
         configs = [
             "ci/Linux Builder (Wayland)",
             "release_try_builder",
-            "use_dummy_lastchange",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
         ],
@@ -600,9 +599,8 @@ try_.builder(
     ],
     gn_args = gn_args.config(
         configs = [
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -666,9 +664,8 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",

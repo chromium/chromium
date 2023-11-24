@@ -400,6 +400,14 @@ gn_args.config(
 )
 
 gn_args.config(
+    "debug_try_builder",
+    configs = [
+        "debug_builder",
+        "use_dummy_lastchange",
+    ],
+)
+
+gn_args.config(
     "debug_static_builder",
     configs = [
         "debug",

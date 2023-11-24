@@ -70,8 +70,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Android x64 Builder (dbg)",
-            "debug_builder",
-            "use_dummy_lastchange",
+            "debug_try_builder",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -123,8 +122,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Android x64 Builder (dbg)",
-            "debug_builder",
-            "use_dummy_lastchange",
+            "debug_try_builder",
         ],
     ),
 )
@@ -629,10 +627,9 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
             "arm64",
-            "use_dummy_lastchange",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -674,10 +671,9 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
             "arm64",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -772,8 +768,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Android x64 Builder (dbg)",
-            "debug_builder",
-            "use_dummy_lastchange",
+            "debug_try_builder",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -788,8 +783,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Android x64 Builder (dbg)",
-            "debug_builder",
-            "use_dummy_lastchange",
+            "debug_try_builder",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -889,12 +883,11 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
             "compile_only",
             "arm64",
             "android_fastbuild",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -907,12 +900,11 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
             "compile_only",
             "arm64",
             "android_fastbuild",
-            "use_dummy_lastchange",
         ],
     ),
 )
@@ -975,11 +967,10 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
             "compile_only",
             "arm64",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -1029,11 +1020,10 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
             "compile_only",
             "x64",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
@@ -1079,11 +1069,10 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "debug_builder",
+            "debug_try_builder",
             "reclient",
             "compile_only",
             "x86",
-            "use_dummy_lastchange",
         ],
     ),
     main_list_view = "try",
