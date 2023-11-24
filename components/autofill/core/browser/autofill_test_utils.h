@@ -105,9 +105,6 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 [[nodiscard]] FormData CreateTestAddressFormData(
     const char* unique_id = nullptr);
 void CreateTestAddressFormData(FormData* form, const char* unique_id = nullptr);
-void CreateTestAddressFormData(FormData* form,
-                               std::vector<ServerFieldTypeSet>* types,
-                               const char* unique_id = nullptr);
 
 // Returns a full profile with valid info according to rules for Canada.
 AutofillProfile GetFullValidProfileForCanada();

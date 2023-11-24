@@ -139,13 +139,7 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
   return form;
 }
 
-void CreateTestAddressFormData(FormData* form, const char* unique_id) {
-  std::vector<ServerFieldTypeSet> types;
-  CreateTestAddressFormData(form, &types, unique_id);
-}
-
 void CreateTestAddressFormData(FormData* form,
-                               std::vector<ServerFieldTypeSet>* types,
                                const char* unique_id) {
   form->host_frame = MakeLocalFrameToken();
   form->unique_renderer_id = MakeFormRendererId();
@@ -157,43 +151,31 @@ void CreateTestAddressFormData(FormData* form,
   form->is_action_empty = true;
   form->main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  types->clear();
   form->submission_event =
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
   form->fields.push_back(CreateTestFormField("First Name", "firstname", "",
                                              FormControlType::kInputText));
-  types->push_back({NAME_FIRST});
   form->fields.push_back(CreateTestFormField("Middle Name", "middlename", "",
                                              FormControlType::kInputText));
-  types->push_back({NAME_MIDDLE});
   form->fields.push_back(CreateTestFormField("Last Name", "lastname", "",
                                              FormControlType::kInputText));
-  types->push_back({NAME_LAST, NAME_LAST_SECOND});
   form->fields.push_back(CreateTestFormField("Address Line 1", "addr1", "",
                                              FormControlType::kInputText));
-  types->push_back({ADDRESS_HOME_LINE1});
   form->fields.push_back(CreateTestFormField("Address Line 2", "addr2", "",
                                              FormControlType::kInputText));
-  types->push_back({ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_LINE2});
   form->fields.push_back(
       CreateTestFormField("City", "city", "", FormControlType::kInputText));
-  types->push_back({ADDRESS_HOME_CITY});
   form->fields.push_back(
       CreateTestFormField("State", "state", "", FormControlType::kInputText));
-  types->push_back({ADDRESS_HOME_STATE});
   form->fields.push_back(CreateTestFormField("Postal Code", "zipcode", "",
                                              FormControlType::kInputText));
-  types->push_back({ADDRESS_HOME_ZIP});
   form->fields.push_back(CreateTestFormField("Country", "country", "",
                                              FormControlType::kInputText));
-  types->push_back({ADDRESS_HOME_COUNTRY});
   form->fields.push_back(CreateTestFormField("Phone Number", "phonenumber", "",
                                              FormControlType::kInputTelephone));
-  types->push_back({PHONE_HOME_WHOLE_NUMBER});
   form->fields.push_back(
       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail));
-  types->push_back({EMAIL_ADDRESS});
 }
 
 inline void check_and_set(
