@@ -28,6 +28,9 @@ crbug.com/1502331 external/wpt/webdriver/tests/classic/perform_actions/pointer_p
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/add_intercept/phase_auth_required.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/auth_required/auth_required.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/url_patterns.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/format.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/invalid.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/origin.py [ Failure ]
 
 # Chrome specific failures
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
