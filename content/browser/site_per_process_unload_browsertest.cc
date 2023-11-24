@@ -1469,8 +1469,10 @@ class SitePerProcessSSLBrowserTest : public SitePerProcessBrowserTest {
 //
 // This test is similar to PagehideHandlersArePowerfulGrandChild, but with a
 // different frame hierarchy.
+//
+// TODO(crbug/1488371): investigate test flakes and re-enable test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
-                       PagehideHandlersArePowerful) {
+                       DISABLED_PagehideHandlersArePowerful) {
   // The test expects the previous document to be deleted on navigation.
   DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
@@ -1572,8 +1574,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
 //
 // This test is similar to PagehideHandlersArePowerful, but with a different
 // frame hierarchy.
+//
+// TODO(crbug/1488371): investigate test flakes and re-enable test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
-                       PagehideHandlersArePowerfulGrandChild) {
+                       DISABLED_PagehideHandlersArePowerfulGrandChild) {
   // The test expects the previous document to be deleted on navigation.
   DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
