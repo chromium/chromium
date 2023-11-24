@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -17,6 +19,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/transport_info.h"
 #include "net/cert/x509_certificate.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/filter/brotli_source_stream.h"
@@ -88,7 +91,11 @@ SharedDictionaryNetworkTransaction::SharedDictionaryNetworkTransaction(
     SharedDictionaryManager& shared_dictionary_manager,
     std::unique_ptr<net::HttpTransaction> network_transaction)
     : shared_dictionary_manager_(shared_dictionary_manager),
-      network_transaction_(std::move(network_transaction)) {}
+      network_transaction_(std::move(network_transaction)) {
+  network_transaction_->SetConnectedCallback(
+      base::BindRepeating(&SharedDictionaryNetworkTransaction::OnConnected,
+                          base::Unretained(this)));
+}
 
 SharedDictionaryNetworkTransaction::~SharedDictionaryNetworkTransaction() =
     default;
@@ -141,6 +148,15 @@ SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
 void SharedDictionaryNetworkTransaction::OnStartCompleted(
     net::CompletionOnceCallback callback,
     int result) {
+  if (shared_dictionary_) {
+    base::UmaHistogramSparse(
+        base::StrCat({"Net.SharedDictionaryTransaction.NetResultWithDict.",
+                      cert_is_issued_by_known_root_
+                          ? ".KnownRootCert"
+                          : ".UnknownRootCertOrNoCert"}),
+        -result);
+  }
+
   if (result == net::OK && shared_dictionary_) {
     shared_dictionary_encoding_type_ = ParseSharedDictionaryEncodingType(
         *network_transaction_->GetResponseInfo()->headers);
@@ -400,7 +416,7 @@ void SharedDictionaryNetworkTransaction::SetEarlyResponseHeadersCallback(
 
 void SharedDictionaryNetworkTransaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
-  network_transaction_->SetConnectedCallback(callback);
+  connected_callback_ = callback;
 }
 
 int SharedDictionaryNetworkTransaction::ResumeNetworkStart() {
@@ -426,6 +442,17 @@ SharedDictionaryNetworkTransaction::GetConnectionAttempts() const {
 
 void SharedDictionaryNetworkTransaction::CloseConnectionOnDestruction() {
   network_transaction_->CloseConnectionOnDestruction();
+}
+
+int SharedDictionaryNetworkTransaction::OnConnected(
+    const net::TransportInfo& info,
+    net::CompletionOnceCallback callback) {
+  cert_is_issued_by_known_root_ = info.cert_is_issued_by_known_root;
+
+  if (connected_callback_) {
+    return connected_callback_.Run(info, std::move(callback));
+  }
+  return net::OK;
 }
 
 }  // namespace network

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "net/base/completion_once_callback.h"
 #include "net/http/http_transaction.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,6 +20,7 @@ class GURL;
 
 namespace net {
 class SourceStream;
+struct TransportInfo;
 }  // namespace net
 
 namespace network {
@@ -141,6 +143,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
 
   void OnReadSharedDictionary(base::Time read_start_time, int result);
 
+  int OnConnected(const net::TransportInfo& info,
+                  net::CompletionOnceCallback callback);
+
   raw_ref<SharedDictionaryManager> shared_dictionary_manager_;
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
   std::unique_ptr<SharedDictionary> shared_dictionary_;
@@ -161,6 +166,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
 
   // This is set only when a shared dictionary is used for decoding the body.
   std::unique_ptr<net::HttpResponseInfo> shared_dictionary_used_response_info_;
+
+  ConnectedCallback connected_callback_;
+
+  bool cert_is_issued_by_known_root_ = false;
 
   base::WeakPtrFactory<SharedDictionaryNetworkTransaction> weak_factory_{this};
 };

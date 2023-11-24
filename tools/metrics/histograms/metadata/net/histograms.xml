@@ -4905,6 +4905,22 @@ chromium-metrics-reviews@google.com.
   <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
 
+<histogram name="Net.SharedDictionaryTransaction.NetResultWithDict.{CertState}"
+    enum="NetErrorCodes" expires_after="2024-02-15">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Positive net error codes returned from the network layer for requests with
+    Sec-Available-Dictionary header. Recorded when a
+    SharedDictionaryNetworkTransaction received the result from the network
+    layer.
+  </summary>
+  <token key="CertState">
+    <variant name="KnownRootCert"/>
+    <variant name="UnknownRootCertOrNoCert"/>
+  </token>
+</histogram>
+
 <histogram
     name="Net.SharedDictionaryUsedByResponseWhenAvailable.MainFrame.{ConnectionType}.{CertState}"
     enum="Boolean" expires_after="2024-02-15">
