@@ -49,6 +49,18 @@ class UiCredential {
 
   base::Time last_used() const { return last_used_; }
 
+  bool is_shared() const { return is_shared_; }
+
+  const std::u16string& sender_name() const { return sender_name_; }
+
+  const GURL& sender_profile_image_url() const {
+    return sender_profile_image_url_;
+  }
+
+  bool sharing_notification_displayed() const {
+    return sharing_notification_displayed_;
+  }
+
  private:
   std::u16string username_;
   std::u16string password_;
@@ -56,6 +68,10 @@ class UiCredential {
   std::string display_name_;
   password_manager_util::GetLoginMatchType match_type_;
   base::Time last_used_;
+  bool is_shared_ = false;
+  std::u16string sender_name_;
+  GURL sender_profile_image_url_;
+  bool sharing_notification_displayed_ = false;
 };
 
 bool operator==(const UiCredential& lhs, const UiCredential& rhs);

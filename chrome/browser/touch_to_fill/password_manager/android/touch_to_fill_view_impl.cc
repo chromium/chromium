@@ -117,7 +117,12 @@ bool TouchToFillViewImpl::Show(
         ConvertUTF8ToJavaString(env, credential.origin().Serialize()),
         ConvertUTF8ToJavaString(env, credential.display_name()),
         static_cast<int>(credential.match_type()),
-        credential.last_used().InMillisecondsSinceUnixEpoch());
+        credential.last_used().InMillisecondsSinceUnixEpoch(),
+        credential.is_shared(),
+        ConvertUTF16ToJavaString(env, credential.sender_name()),
+        url::GURLAndroid::FromNativeGURL(env,
+                                         credential.sender_profile_image_url()),
+        credential.sharing_notification_displayed());
   }
 
   base::android::ScopedJavaLocalRef<jobjectArray> passkey_array =

@@ -70,7 +70,11 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             String originUrl,
             String displayName,
             @GetLoginMatchType int mMatchType,
-            long lastUsedMsSinceEpoch) {
+            long lastUsedMsSinceEpoch,
+            boolean isShared,
+            String senderName,
+            GURL senderProfileImageUrl,
+            boolean sharingNotificationDisplayed) {
         credentials[index] =
                 new Credential(
                         username,
@@ -79,7 +83,11 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
                         originUrl,
                         displayName,
                         mMatchType,
-                        lastUsedMsSinceEpoch);
+                        lastUsedMsSinceEpoch,
+                        isShared,
+                        senderName,
+                        senderProfileImageUrl,
+                        sharingNotificationDisplayed);
     }
 
     @CalledByNative
