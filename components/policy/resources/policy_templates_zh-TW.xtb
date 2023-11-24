@@ -748,7 +748,7 @@
 <translation id="1692325295652827195">如果將這項政策設為 True，系統會將政策觸發的主要 Android 應用程式安裝事件報告傳送給 Google。
 
 如果將這項政策設為 False 或不設定，系統就不會擷取任何事件。</translation>
-<translation id="1692990221685273468">判斷內建憑證驗證器是否會對從平台信任商店載入的信任錨點強制執行已編碼的限制。</translation>
+<translation id="1692990221685273468">判斷內建憑證驗證器是否會對從平台信任存放區載入的信任錨點強制執行已編碼的限制。</translation>
 <translation id="169467210981344373">停用全域範圍的 HTTP 驗證快取</translation>
 <translation id="1696501581280568361">建議區隔設定檔</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 列印光柵化 PDF 時的列印圖片解析度。
@@ -4009,9 +4009,9 @@
 
 如果企業私密根憑證中已編碼的限制發生問題，可以使用這項政策暫時停止限制。在上述情況下，這項政策可能會在修正憑證問題期間用於暫時停止強制執行限制。
 
-如果這項政策未設定或設為啟用，<ph name="PRODUCT_NAME" /> 將對從平台信任商店載入的信任錨點強制執行已編碼的限制。
+如果這項政策未設定或設為啟用，<ph name="PRODUCT_NAME" /> 將對從平台信任存放區載入的信任錨點強制執行已編碼的限制。
 
-如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 就不會對從平台信任商店載入的信任錨點強制執行已編碼的限制。
+如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 就不會對從平台信任存放區載入的信任錨點強制執行已編碼的限制。
 
 在 <ph name="PRODUCT_NAME" /> 112 版中，如果將 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 政策停用，這項政策就不會有任何作用。
 
@@ -5527,7 +5527,7 @@
 <translation id="5901427587865226597">僅限雙面列印</translation>
 <translation id="5905114360004248993">允許這些網站的彈出式視窗</translation>
 <translation id="5905473632148429217">啟用線上 OCSP/CRL 檢查</translation>
-<translation id="5908808391744484238">如果將這項政策設為啟用或不設定，當使用者在內容選單中選取「在無痕式視窗中開啟連結」時，網址參數篩選器可能會移除一些參數。
+<translation id="5908808391744484238">如果將這項政策設為啟用或不設定，當使用者在內容選單中選取「在無痕視窗中開啟連結」時，網址參數篩選器可能會移除一些參數。
       如果停用這項政策，則不會執行任何篩選作業。
       這項政策僅是暫時性措施，可能會在未來版本中予以移除。</translation>
 <translation id="5910810837616572201">如果在 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLACKLIST" />，系統會根據 <ph name="NATIVE_PRINTERS_BULK_BLACKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="BULK_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。

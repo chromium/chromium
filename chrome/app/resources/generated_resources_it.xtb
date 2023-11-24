@@ -3790,7 +3790,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3971764089670057203">Impronte registrate con questo token di sicurezza</translation>
 <translation id="3973005893595042880">L'utente non è consentito</translation>
 <translation id="3973660817924297510">Verifica delle password (<ph name="CHECKED_PASSWORDS" /> di <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">I siti possono chiedere l'autorizzazione a usare le informazioni su di te che hanno salvato</translation>
+<translation id="3974105241379491420">I siti possono chiedere l'autorizzazione a usare le informazioni salvate su di te</translation>
 <translation id="3974514184580396500">Usa "Avanti" per spostare lo stato attivo in avanti sullo schermo</translation>
 <translation id="3975201861340929143">Spiegazione</translation>
 <translation id="3975565978598857337">Tentativo di contatto del server per area di autenticazione non riuscito</translation>
@@ -5469,7 +5469,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5383740867328871413">Gruppo senza nome - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="538822246583124912">Criterio aziendale modificato. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
 <translation id="5388885445722491159">Accoppiato</translation>
-<translation id="5389626883706033615">I siti non possono chiederti l'autorizzazione a usare le informazioni su di te che hanno salvato</translation>
+<translation id="5389626883706033615">I siti non possono chiederti l'autorizzazione a usare le informazioni salvate su di te</translation>
 <translation id="5390112241331447203">Includi il file system_logs.txt inviato nei rapporti di feedback.</translation>
 <translation id="5390677308841849479">Rosso scuro e arancione</translation>
 <translation id="5390743329570580756">Invia per</translation>

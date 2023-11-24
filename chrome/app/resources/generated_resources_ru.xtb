@@ -4702,7 +4702,7 @@
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4730492586225682674">Последняя заметка, созданная на заблокированном экране с помощью стилуса</translation>
 <translation id="4730888769809690665">Сайту <ph name="SITE" /> разрешено отправлять уведомления</translation>
-<translation id="4731306954230393087">Сайтам разрешено использовать сохраненную информацию о вас.</translation>
+<translation id="4731306954230393087">Сайтам разрешено использовать сохраненную информацию о вас</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (левый)</translation>
 <translation id="4733793249294335256">Папка</translation>
 <translation id="473546211690256853">Этот аккаунт находится в домене <ph name="DOMAIN" /></translation>
@@ -9425,7 +9425,7 @@
 <translation id="858451212965845553">Отправить на &amp;свои устройства</translation>
 <translation id="8584843865238667486">HID-устройства с использованием <ph name="USAGE" /> на странице <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Удалить Crostini</translation>
-<translation id="8585841788766257444">Для указанных ниже сайтов действуют специальные настройки</translation>
+<translation id="8585841788766257444">Для указанных ниже сайтов действуют специальные настройки.</translation>
 <translation id="8585878117541674680">{NUM_SITES,plural, =1{Разрешения отозваны у 1 неиспользуемого сайта}one{Разрешения отозваны у {NUM_SITES} сайта}few{Разрешения отозваны у {NUM_SITES} сайтов}many{Разрешения отозваны у {NUM_SITES} сайтов}other{Разрешения отозваны у {NUM_SITES} сайта}}</translation>
 <translation id="8588866096426746242">Показать статистику профиля</translation>
 <translation id="8588868914509452556">VR-контент с вкладки "<ph name="WINDOW_TITLE" />" сейчас транслируется на очки</translation>
