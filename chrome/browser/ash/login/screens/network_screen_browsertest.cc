@@ -41,13 +41,9 @@ constexpr char kWifiNetworkName[] = "wifi-test-network";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kConnectingDialog[] = "connectingDialog";
-constexpr char kQuickStartButton[] = "quick-start-network-button";
 constexpr char kNextButton[] = "nextButton";
 constexpr test::UIPath kCancelButtonLoadingDialog = {
     QuickStartView::kScreenId.name, kLoadingDialog, kCancelButton};
-constexpr test::UIPath kQuickStartNetworkButtonPath = {
-    NetworkScreenView::kScreenId.name /*"network-selection"*/,
-    kQuickStartButton};
 constexpr test::UIPath kNextNetworkButtonPath = {
     NetworkScreenView::kScreenId.name /*"network-selection"*/, kNextButton};
 const test::UIPath kNetworkScreenErrorSubtitile = {
@@ -202,10 +198,17 @@ class NetworkScreenQuickStartEnabled : public NetworkScreenTest {
   }
 
   void EnterQuickStartFlowFromNetworkScreen() {
+    auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
+        IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+
     // Open network screen
     ShowNetworkScreen();
     OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-    test::OobeJS().ExpectHiddenPath(kQuickStartNetworkButtonPath);
+
+    // Check that QuickStart button is missing from network_selector since
+    // QuickStart feature is not enabled
+    test::OobeJS().ExpectTrue(
+        NetworkElementSelector(kQuickStartEntryPointName) + " == null");
 
     connection_broker_factory_.instances().front()->set_feature_support_status(
         quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
@@ -214,11 +217,11 @@ class NetworkScreenQuickStartEnabled : public NetworkScreenTest {
     // Check that QuickStart button is visible since QuickStart feature is
     // enabled
     test::OobeJS()
-        .CreateVisibilityWaiter(/*visibility=*/true,
-                                kQuickStartNetworkButtonPath)
+        .CreateWaiter(NetworkElementSelector(kQuickStartEntryPointName) +
+                      " != null")
         ->Wait();
 
-    test::OobeJS().ClickOnPath(kQuickStartNetworkButtonPath);
+    ClickOnWifiNetwork(kQuickStartEntryPointName);
 
     EXPECT_EQ(WaitForScreenExitResult(), NetworkScreen::Result::QUICK_START);
   }
@@ -238,9 +241,12 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
 
   test::OobeJS().CreateVisibilityWaiter(true, kNextNetworkButtonPath)->Wait();
 
-  // Check that QuickStart button is hidden since QuickStart feature is not
-  // enabled
-  test::OobeJS().ExpectHiddenPath(kQuickStartNetworkButtonPath);
+  // Check that QuickStart button is missing from network_selector since
+  // QuickStart feature is not enabled
+  auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
+      IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+  test::OobeJS().ExpectTrue(NetworkElementSelector(kQuickStartEntryPointName) +
+                            " == null");
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,

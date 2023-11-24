@@ -102,8 +102,6 @@ const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 const test::UIPath kNetworkScreen = {kNetworkId};
 const test::UIPath kNetworkNextButton = {kNetworkId, "nextButton"};
 const test::UIPath kNetworkBackButton = {kNetworkId, "backButton"};
-const test::UIPath kNetworkQuickStartButton = {kNetworkId,
-                                               "quick-start-network-button"};
 
 const test::UIPath kDemoSetupProgressDialog = {kDemoSetupId,
                                                "demoSetupProgressDialog"};
@@ -1156,7 +1154,18 @@ IN_PROC_BROWSER_TEST_F(DemoSetupQuickStartEnabledTest, QuickStartButton) {
 
   TriggerDemoModeOnWelcomeScreen();
 
-  test::OobeJS().ExpectHiddenPath(kNetworkQuickStartButton);
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+
+  // Check that QuickStart button is missing from network_selector
+  auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
+      IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+
+  std::string networkElementSelector =
+      test::GetOobeElementPath(
+          {kNetworkId, "networkSelectLogin", "networkSelect"}) +
+      ".getNetworkListItemByNameForTest('" + kQuickStartEntryPointName + "')";
+
+  test::OobeJS().ExpectTrue(networkElementSelector + " == null");
 }
 
 }  // namespace

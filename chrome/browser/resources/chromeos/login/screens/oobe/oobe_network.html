@@ -18,7 +18,9 @@
     <network-select-login id="networkSelectLogin"
         enable-wifi-scans="[[enableWifiScans_]]"
         on-selected-network-connected="onContinue_"
-        is-network-connected="{{isConnected_}}">
+        is-network-connected="{{isConnected_}}"
+        on-quick-start-clicked="onQuickStartClicked_"
+        is-quick-start-visible="[[isQuickStartVisible_]]">
     </network-select-login>
   </div>
   <div slot="back-navigation">
@@ -26,12 +28,6 @@
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons" class="flex layout horizontal end-justified">
-    <quick-start-entry-point
-      id="quick-start-network-button"
-      on-click="onQuickStartClicked_"
-      hidden="[[!isQuickStartEnabled_]]"
-      quick-start-text-key="networkScreenQuickStart">
-    </quick-start-entry-point>
     <oobe-next-button
       id="nextButton"
       disabled="[[!isConnected_]]"

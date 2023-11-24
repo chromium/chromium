@@ -62,7 +62,7 @@ void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 }
 
 void NetworkScreenHandler::SetQuickStartEnabled() {
-  CallExternalAPI("setQuickStartEnabled");
+  CallExternalAPI("setQuickStartVisible");
 }
 
 }  // namespace ash

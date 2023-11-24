@@ -48,6 +48,15 @@ export class NetworkSelectLogin extends PolymerElement {
       },
 
       /**
+       * True when quick start is enabled.
+       * @private
+       */
+      isQuickStartVisible: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * If true, when a connected network is selected the configure UI will be
        * requested instead of sending 'userActed' + 'continue'.
        * @private
@@ -128,6 +137,17 @@ export class NetworkSelectLogin extends PolymerElement {
    */
   getNetworkCustomItems_() {
     const items = [];
+    if (this.isQuickStartVisible) {
+      items.push({
+        customItemType: NetworkList.CustomItemType.OOBE,
+        customItemName: 'networkScreenQuickStart',
+        polymerIcon: 'oobe-20:quick-start-android-device',
+        showBeforeNetworksList: true,
+        customData: {
+          onTap: () => this.quickStartClicked_(),
+        },
+      });
+    }
     if (this.isNetworkConnected) {
       items.push({
         customItemType: NetworkList.CustomItemType.OOBE,
@@ -149,6 +169,16 @@ export class NetworkSelectLogin extends PolymerElement {
       },
     });
     return items;
+  }
+
+  /**
+   * Handle Network Setup screen "Quick Setup" button.
+   *
+   * @private
+   */
+  quickStartClicked_() {
+    this.dispatchEvent(new CustomEvent(
+        'quick-start-clicked', {bubbles: true, composed: true}));
   }
 
   /**
