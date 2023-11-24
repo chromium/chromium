@@ -286,7 +286,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // TODO(crbug/903579): Consider putting WebWorkerFetchContext-originated
   // things at a single place. Currently they are placed here and subclasses of
   // WebWorkerFetchContext.
-  scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context_;
+  const scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context_;
   Member<SubresourceFilter> subresource_filter_;
 
   Member<WorkerOrWorkletScriptController> script_controller_;
