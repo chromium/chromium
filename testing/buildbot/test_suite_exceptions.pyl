@@ -1417,6 +1417,9 @@
         'swarming': {
           'shards': 15,
         },
+        'args': [
+          '--tast-shard-method=hash',
+        ],
       },
       'chromeos-eve-chrome': {
         'swarming': {
