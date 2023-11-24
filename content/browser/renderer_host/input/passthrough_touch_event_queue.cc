@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/input/touch_timeout_handler.h"
 #include "content/common/input/web_touch_event_traits.h"
@@ -88,13 +87,8 @@ void PassthroughTouchEventQueue::SendTouchCancelEventForTouchEvent(
 void PassthroughTouchEventQueue::QueueEvent(
     const TouchEventWithLatencyInfo& event) {
   TRACE_EVENT0("input", "PassthroughTouchEventQueue::QueueEvent");
-  PreFilterResult filter_result = FilterBeforeForwarding(event.event);
-  bool should_forward_touch_event =
-      filter_result == PreFilterResult::kUnfiltered;
-  UMA_HISTOGRAM_ENUMERATION("Event.Touch.FilteredAtPassthroughQueue",
-                            filter_result);
 
-  if (!should_forward_touch_event) {
+  if (FilterBeforeForwarding(event.event) != PreFilterResult::kUnfiltered) {
     client_->OnFilteringTouchEvent(event.event);
 
     TouchEventWithLatencyInfoAndAckState event_with_ack_state = event;

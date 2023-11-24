@@ -16836,14 +16836,6 @@ Called by update_document_policy_enum.py.-->
   <int value="11" label="Yes in browser while RenderView was not live"/>
 </enum>
 
-<enum name="EventPreFilterResult">
-  <int value="0" label="Unfiltered"/>
-  <int value="1" label="Filtered due to no page handlers"/>
-  <int value="2" label="Filtered due to timeout"/>
-  <int value="3" label="Filtered due to no nonstationary pointers"/>
-  <int value="4" label="Filtered due to no handler for sequence"/>
-</enum>
-
 <enum name="EventResultType">
   <int value="0" label="Passive"/>
   <int value="1" label="Uncancelable"/>

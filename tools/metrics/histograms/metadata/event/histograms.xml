@@ -1130,20 +1130,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Touch.FilteredAtPassthroughQueue"
-    enum="EventPreFilterResult" expires_after="2020-03-22">
-  <owner>charliea@chromium.org</owner>
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Whether a given touch event is filtered by the passthrough touch event queue
-    or not. If the event was filtered, a reason is given. Potential reasons for
-    filtering include the page not having any registered touch handlers and the
-    renderer process not responding to previous touch events.
-
-    Team: input-dev@chromium.org
-  </summary>
-</histogram>
-
 <histogram name="Event.Touch.GestureTarget" enum="BrowserGestureActionType"
     expires_after="2020-06-28">
   <owner>kuscher@google.com</owner>
