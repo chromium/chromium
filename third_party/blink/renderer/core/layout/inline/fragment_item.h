@@ -232,8 +232,8 @@ class CORE_EXPORT FragmentItem final {
   PhysicalRect LocalRect() const { return {PhysicalOffset(), Size()}; }
   void SetOffset(const PhysicalOffset& offset) { rect_.offset = offset; }
 
-  PhysicalRect InkOverflow() const;
-  PhysicalRect SelfInkOverflow() const;
+  PhysicalRect InkOverflowRect() const;
+  PhysicalRect SelfInkOverflowRect() const;
 
   // Count of following items that are descendants of this item in the box tree,
   // including this item. 1 means this is a box (box or line box) without
@@ -547,15 +547,15 @@ class CORE_EXPORT FragmentItem final {
                const PhysicalSize& size,
                bool is_hidden_for_paint);
 
-  NGInkOverflow::Type InkOverflowType() const {
-    return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
+  InkOverflow::Type InkOverflowType() const {
+    return static_cast<InkOverflow::Type>(ink_overflow_type_);
   }
   bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::Type::kNotSet &&
-           InkOverflowType() != NGInkOverflow::Type::kInvalidated;
+    return InkOverflowType() != InkOverflow::Type::kNotSet &&
+           InkOverflowType() != InkOverflow::Type::kInvalidated;
   }
   bool HasInkOverflow() const {
-    return InkOverflowType() != NGInkOverflow::Type::kNone;
+    return InkOverflowType() != InkOverflow::Type::kNone;
   }
   const LayoutBox* InkOverflowOwnerBox() const;
   LayoutBox* MutableInkOverflowOwnerBox();
@@ -595,7 +595,7 @@ class CORE_EXPORT FragmentItem final {
 
   PhysicalRect rect_;
 
-  NGInkOverflow ink_overflow_;
+  InkOverflow ink_overflow_;
 
   Member<const LayoutObject> layout_object_;
 
@@ -614,7 +614,7 @@ class CORE_EXPORT FragmentItem final {
   // |ShapeResult::Direction()|.
   unsigned text_direction_ : 1;  // TextDirection.
 
-  unsigned ink_overflow_type_ : NGInkOverflow::kTypeBits;
+  unsigned ink_overflow_type_ : InkOverflow::kTypeBits;
 
   mutable unsigned is_dirty_ : 1;
 

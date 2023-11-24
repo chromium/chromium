@@ -28,10 +28,10 @@ class LayoutTextCombineTest : public RenderingTest {
       ostream << cursor.CurrentItem() << std::endl;
       ostream << "                 Rect "
               << cursor.CurrentItem()->RectInContainerFragment() << std::endl;
-      ostream << "          InkOverflow " << cursor.CurrentItem()->InkOverflow()
-              << std::endl;
+      ostream << "          InkOverflow "
+              << cursor.CurrentItem()->InkOverflowRect() << std::endl;
       ostream << "      SelfInkOverflow "
-              << cursor.CurrentItem()->SelfInkOverflow() << std::endl;
+              << cursor.CurrentItem()->SelfInkOverflowRect() << std::endl;
       ostream << "  ContentsInkOverflow "
               << ContentsInkOverflow(*cursor.CurrentItem()) << std::endl;
     }
@@ -40,7 +40,7 @@ class LayoutTextCombineTest : public RenderingTest {
 
   static PhysicalRect ContentsInkOverflow(const FragmentItem& item) {
     if (const NGPhysicalBoxFragment* box_fragment = item.BoxFragment()) {
-      return box_fragment->ContentsInkOverflow();
+      return box_fragment->ContentsInkOverflowRect();
     }
     if (!item.HasInkOverflow()) {
       return PhysicalRect();

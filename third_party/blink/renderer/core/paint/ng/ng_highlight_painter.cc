@@ -50,7 +50,7 @@ LineRelativeRect LineRelativeLocalRect(const FragmentItem& text_fragment,
   std::tie(start_position, end_position) =
       text_fragment.LineLeftAndRightForOffsets(text, start_offset, end_offset);
 
-  const LayoutUnit height = text_fragment.InkOverflow().Height();
+  const LayoutUnit height = text_fragment.InkOverflowRect().Height();
   return {{start_position, LayoutUnit()},
           {end_position - start_position, height}};
 }
@@ -1057,7 +1057,7 @@ LineRelativeRect NGHighlightPainter::LocalRectInWritingModeSpace(
   DCHECK_NE(from_info, edges_info_.end());
   DCHECK_NE(to_info, edges_info_.end());
 
-  const LayoutUnit height = fragment_item_.InkOverflow().Height();
+  const LayoutUnit height = fragment_item_.InkOverflowRect().Height();
   if (from_info->x > to_info->x) {
     return {{to_info->x, LayoutUnit{}}, {from_info->x - to_info->x, height}};
   }

@@ -681,7 +681,7 @@ TEST_F(InlineLayoutAlgorithmTest, InkOverflow) {
   EXPECT_EQ(LayoutUnit(10), box_fragment.Size().height);
 
   InlineCursor cursor(*block_flow);
-  PhysicalRect ink_overflow = cursor.Current().InkOverflow();
+  PhysicalRect ink_overflow = cursor.Current().InkOverflowRect();
   EXPECT_EQ(LayoutUnit(-5), ink_overflow.offset.top);
   EXPECT_EQ(LayoutUnit(20), ink_overflow.size.height);
 }

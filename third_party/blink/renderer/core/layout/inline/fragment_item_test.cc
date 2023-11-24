@@ -108,10 +108,10 @@ TEST_F(FragmentItemTest, CopyMove) {
       static_cast<int>(move_of_line.ink_overflow_.SetContents(
           move_of_line.InkOverflowType(), not_small_ink_overflow_rect,
           line_item->Size()));
-  EXPECT_EQ(move_of_line.InkOverflowType(), NGInkOverflow::Type::kContents);
+  EXPECT_EQ(move_of_line.InkOverflowType(), InkOverflow::Type::kContents);
   FragmentItem move_of_line2(std::move(move_of_line));
-  EXPECT_EQ(move_of_line2.InkOverflowType(), NGInkOverflow::Type::kContents);
-  EXPECT_EQ(move_of_line2.InkOverflow(), not_small_ink_overflow_rect);
+  EXPECT_EQ(move_of_line2.InkOverflowType(), InkOverflow::Type::kContents);
+  EXPECT_EQ(move_of_line2.InkOverflowRect(), not_small_ink_overflow_rect);
 
   // Test copying a text item.
   cursor.MoveToFirstChild();
@@ -274,12 +274,12 @@ TEST_F(FragmentItemTest, BasicInlineBox) {
   EXPECT_FALSE(items_for_span1[0]->IsLastForNode());
   EXPECT_EQ(PhysicalOffset(40, 0),
             items_for_span1[0]->OffsetInContainerFragment());
-  EXPECT_EQ(PhysicalRect(0, 0, 40, 10), items_for_span1[0]->InkOverflow());
+  EXPECT_EQ(PhysicalRect(0, 0, 40, 10), items_for_span1[0]->InkOverflowRect());
   EXPECT_FALSE(items_for_span1[1]->IsFirstForNode());
   EXPECT_TRUE(items_for_span1[1]->IsLastForNode());
   EXPECT_EQ(PhysicalOffset(0, 10),
             items_for_span1[1]->OffsetInContainerFragment());
-  EXPECT_EQ(PhysicalRect(0, 0, 40, 10), items_for_span1[1]->InkOverflow());
+  EXPECT_EQ(PhysicalRect(0, 0, 40, 10), items_for_span1[1]->InkOverflowRect());
 
   // "span2" doesn't wrap, produces only one fragment.
   const LayoutObject* span2 = GetLayoutObjectByElementId("span2");
@@ -290,7 +290,7 @@ TEST_F(FragmentItemTest, BasicInlineBox) {
   EXPECT_TRUE(items_for_span2[0]->IsLastForNode());
   EXPECT_EQ(PhysicalOffset(0, 20),
             items_for_span2[0]->OffsetInContainerFragment());
-  EXPECT_EQ(PhysicalRect(0, 0, 80, 10), items_for_span2[0]->InkOverflow());
+  EXPECT_EQ(PhysicalRect(0, 0, 80, 10), items_for_span2[0]->InkOverflowRect());
 }
 
 // Same as |BasicInlineBox| but `<span>`s do not have background.

@@ -643,7 +643,7 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   EXPECT_EQ(PhysicalRect(0, 0, 110, 55), clip3->VisualOverflowRect());
 }
 
-// |NGInkOverflow| stopped storing visual overflow contained by |BorderBoxRect|
+// |InkOverflow| stopped storing visual overflow contained by |BorderBoxRect|
 // because they are not useful, and they are inconsistent when fully contained
 // and partially contained.
 // TODO(crbug.com/1144203): Change this to "if (NG)" when NG always use

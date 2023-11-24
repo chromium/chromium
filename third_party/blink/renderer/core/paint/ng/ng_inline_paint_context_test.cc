@@ -65,18 +65,18 @@ TEST_F(NGInlinePaintContextTest, MultiLine) {
   ASSERT_TRUE(cursor.Current());
   EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kBox);
   const FragmentItem& span0_item = *cursor.Current();
-  EXPECT_EQ(span0_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+  EXPECT_EQ(span0_item.InkOverflowRect(), PhysicalRect(0, 0, 10, 10));
 
   // Test the text "0".
   cursor.MoveToNext();
   EXPECT_EQ(StringFromTextItem(cursor), "0");
   const FragmentItem& text0_item = *cursor.Current();
-  EXPECT_EQ(text0_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+  EXPECT_EQ(text0_item.InkOverflowRect(), PhysicalRect(0, 0, 10, 10));
 
   cursor.MoveToNext();
   EXPECT_TRUE(cursor.Current().IsLineBreak());
   const FragmentItem& br_item = *cursor.Current();
-  EXPECT_EQ(br_item.InkOverflow(), PhysicalRect(0, 0, 0, 10));
+  EXPECT_EQ(br_item.InkOverflowRect(), PhysicalRect(0, 0, 0, 10));
 
   // Test the `#span` fragment in the second line.
   cursor.MoveToNext();
@@ -84,17 +84,17 @@ TEST_F(NGInlinePaintContextTest, MultiLine) {
   cursor.MoveToNext();
   EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kBox);
   const FragmentItem& span1_item = *cursor.Current();
-  EXPECT_EQ(span1_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+  EXPECT_EQ(span1_item.InkOverflowRect(), PhysicalRect(0, 0, 10, 10));
 
   // Test the text "1".
   cursor.MoveToNext();
   EXPECT_EQ(StringFromTextItem(cursor), "1");
   const FragmentItem& text1_item = *cursor.Current();
-  EXPECT_EQ(text1_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
+  EXPECT_EQ(text1_item.InkOverflowRect(), PhysicalRect(0, 0, 10, 10));
 
   // Test the containing block.
   const NGPhysicalBoxFragment& container_fragment = cursor.ContainerFragment();
-  EXPECT_EQ(container_fragment.InkOverflow(), PhysicalRect(0, 0, 800, 40));
+  EXPECT_EQ(container_fragment.InkOverflowRect(), PhysicalRect(0, 0, 800, 40));
 }
 
 TEST_F(NGInlinePaintContextTest, VerticalAlign) {
@@ -143,13 +143,13 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
 
   // The bottom of ink overflows of `span1`, `span2`, and `span3` should match,
   // because underlines are drawn at the decorating box; i.e., `span1`.
-  EXPECT_EQ(span1_item.InkOverflow().Bottom() +
+  EXPECT_EQ(span1_item.InkOverflowRect().Bottom() +
                 span1_item.OffsetInContainerFragment().top,
-            span2_item.InkOverflow().Bottom() +
+            span2_item.InkOverflowRect().Bottom() +
                 span2_item.OffsetInContainerFragment().top);
-  EXPECT_EQ(span1_item.InkOverflow().Bottom() +
+  EXPECT_EQ(span1_item.InkOverflowRect().Bottom() +
                 span1_item.OffsetInContainerFragment().top,
-            span3_item.InkOverflow().Bottom() +
+            span3_item.InkOverflowRect().Bottom() +
                 span3_item.OffsetInContainerFragment().top);
 }
 

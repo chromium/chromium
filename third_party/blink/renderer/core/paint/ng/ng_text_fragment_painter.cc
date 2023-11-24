@@ -334,7 +334,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
         svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
     DCHECK_NE(text_item.Type(), FragmentItem::kSvgText);
-    PhysicalRect ink_overflow = text_item.SelfInkOverflow();
+    PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
     ink_overflow.Move(physical_box.offset);
     visual_rect = ToEnclosingRect(ink_overflow);
   }

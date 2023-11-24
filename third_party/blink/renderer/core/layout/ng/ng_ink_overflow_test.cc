@@ -21,16 +21,16 @@ PhysicalRect FromFloatRound(const gfx::RectF& rect) {
 
 using testing::ElementsAre;
 
-class NGInkOverflowTest : public testing::Test {};
+class InkOverflowTest : public testing::Test {};
 
-TEST_F(NGInkOverflowTest, Empty) {
-  NGInkOverflow overflow;
-  NGInkOverflow::Type type =
-      overflow.Set(NGInkOverflow::Type::kNotSet, {0, 0, 100, 117},
+TEST_F(InkOverflowTest, Empty) {
+  InkOverflow overflow;
+  InkOverflow::Type type =
+      overflow.Set(InkOverflow::Type::kNotSet, {0, 0, 100, 117},
                    // This does not affect the visual rect even if the offset is
                    // outside, because the size is empty.
                    {-24, 50, 0, 0}, {100, 117});
-  EXPECT_EQ(type, NGInkOverflow::Type::kNone);
+  EXPECT_EQ(type, InkOverflow::Type::kNone);
 }
 
 #define MIN_LARGE32 4
@@ -46,74 +46,76 @@ struct RectData {
   PhysicalSize size;
   gfx::RectF rect;
   gfx::RectF expect;
-  NGInkOverflow::Type type;
+  InkOverflow::Type type;
 
-  NGInkOverflow::Type ExpectedTypeForContents() const {
-    if (type == NGInkOverflow::Type::kSelf)
-      return NGInkOverflow::Type::kContents;
-    if (type == NGInkOverflow::Type::kSmallSelf)
-      return NGInkOverflow::Type::kSmallContents;
+  InkOverflow::Type ExpectedTypeForContents() const {
+    if (type == InkOverflow::Type::kSelf) {
+      return InkOverflow::Type::kContents;
+    }
+    if (type == InkOverflow::Type::kSmallSelf) {
+      return InkOverflow::Type::kSmallContents;
+    }
     return type;
   }
 } rect_data[] = {
-    {{20, 10}, {0, 0, 0, 0}, {0, 0, 20, 10}, NGInkOverflow::Type::kNone},
-    {{20, 10}, {0, 0, 20, 10}, {0, 0, 20, 10}, NGInkOverflow::Type::kNone},
+    {{20, 10}, {0, 0, 0, 0}, {0, 0, 20, 10}, InkOverflow::Type::kNone},
+    {{20, 10}, {0, 0, 20, 10}, {0, 0, 20, 10}, InkOverflow::Type::kNone},
 
     // 2: One of values is max small, all others are 0.
     {{20, 10},
      {0, 0, MAX_SMALL + 20, 10},
      {0, 0, MAX_SMALL + 20, 10},
-     NGInkOverflow::Type::kSmallSelf},
+     InkOverflow::Type::kSmallSelf},
     {{20, 10},
      {0, 0, 20, MAX_SMALL + 10},
      {0, 0, 20, MAX_SMALL + 10},
-     NGInkOverflow::Type::kSmallSelf},
+     InkOverflow::Type::kSmallSelf},
     {{20, 10},
      {-MAX_SMALL, 0, MAX_SMALL + 20, 10},
      {-MAX_SMALL, 0, MAX_SMALL + 20, 10},
-     NGInkOverflow::Type::kSmallSelf},
+     InkOverflow::Type::kSmallSelf},
     {{20, 10},
      {0, -MAX_SMALL, 20, MAX_SMALL + 10},
      {0, -MAX_SMALL, 20, MAX_SMALL + 10},
-     NGInkOverflow::Type::kSmallSelf},
+     InkOverflow::Type::kSmallSelf},
 
     // 6: One of values is large, all others are 0.
     {{20, 10},
      {0, 0, MIN_LARGE + 20, 10},
      {0, 0, MIN_LARGE + 20, 10},
-     NGInkOverflow::Type::kSelf},
+     InkOverflow::Type::kSelf},
     {{20, 10},
      {0, 0, 20, MIN_LARGE + 10},
      {0, 0, 20, MIN_LARGE + 10},
-     NGInkOverflow::Type::kSelf},
+     InkOverflow::Type::kSelf},
     {{20, 10},
      {-MIN_LARGE, 0, MIN_LARGE + 20, 10},
      {-MIN_LARGE, 0, MIN_LARGE + 20, 10},
-     NGInkOverflow::Type::kSelf},
+     InkOverflow::Type::kSelf},
     {{20, 10},
      {0, -MIN_LARGE, 20, MIN_LARGE + 10},
      {0, -MIN_LARGE, 20, MIN_LARGE + 10},
-     NGInkOverflow::Type::kSelf},
+     InkOverflow::Type::kSelf},
 
     // 10: All values are the max small values.
     {{20, 10},
      {-MAX_SMALL, -MAX_SMALL, MAX_SMALL * 2 + 20, MAX_SMALL * 2 + 10},
      {-MAX_SMALL, -MAX_SMALL, MAX_SMALL * 2 + 20, MAX_SMALL * 2 + 10},
-     NGInkOverflow::Type::kSmallSelf},
+     InkOverflow::Type::kSmallSelf},
 };
 
-class RectDataTest : public NGInkOverflowTest,
+class RectDataTest : public InkOverflowTest,
                      public testing::WithParamInterface<RectData> {};
 
-INSTANTIATE_TEST_SUITE_P(NGInkOverflowTest,
+INSTANTIATE_TEST_SUITE_P(InkOverflowTest,
                          RectDataTest,
                          testing::ValuesIn(rect_data));
 
 TEST_P(RectDataTest, Self) {
   const RectData data = GetParam();
-  NGInkOverflow ink_overflow;
-  NGInkOverflow::Type type = ink_overflow.SetSelf(
-      NGInkOverflow::Type::kNotSet, FromFloatRound(data.rect), data.size);
+  InkOverflow ink_overflow;
+  InkOverflow::Type type = ink_overflow.SetSelf(
+      InkOverflow::Type::kNotSet, FromFloatRound(data.rect), data.size);
   EXPECT_EQ(type, data.type);
   PhysicalRect result = ink_overflow.Self(type, data.size);
   EXPECT_EQ(result, FromFloatRound(data.expect));
@@ -122,9 +124,9 @@ TEST_P(RectDataTest, Self) {
 
 TEST_P(RectDataTest, Contents) {
   const RectData data = GetParam();
-  NGInkOverflow ink_overflow;
-  NGInkOverflow::Type type = ink_overflow.Set(
-      NGInkOverflow::Type::kNotSet, {}, FromFloatRound(data.rect), data.size);
+  InkOverflow ink_overflow;
+  InkOverflow::Type type = ink_overflow.Set(
+      InkOverflow::Type::kNotSet, {}, FromFloatRound(data.rect), data.size);
   EXPECT_EQ(type, data.ExpectedTypeForContents());
   PhysicalRect result = ink_overflow.SelfAndContents(type, data.size);
   EXPECT_EQ(result, FromFloatRound(data.expect));
@@ -133,10 +135,10 @@ TEST_P(RectDataTest, Contents) {
 
 TEST_P(RectDataTest, Copy) {
   const RectData data = GetParam();
-  NGInkOverflow original;
-  NGInkOverflow::Type type = original.SetSelf(
-      NGInkOverflow::Type::kNotSet, FromFloatRound(data.rect), data.size);
-  NGInkOverflow copy(type, original);
+  InkOverflow original;
+  InkOverflow::Type type = original.SetSelf(
+      InkOverflow::Type::kNotSet, FromFloatRound(data.rect), data.size);
+  InkOverflow copy(type, original);
   EXPECT_EQ(copy.Self(type, data.size), original.Self(type, data.size));
   original.Reset(type);
   copy.Reset(type);
@@ -146,28 +148,28 @@ struct SelfAndContentsData {
   PhysicalSize size;
   PhysicalRect self;
   PhysicalRect contents;
-  NGInkOverflow::Type type;
+  InkOverflow::Type type;
 } self_and_contents_data[] = {
-    {{10, 10}, {0, 0, 10, 10}, {0, 0, 10, 10}, NGInkOverflow::Type::kNone},
+    {{10, 10}, {0, 0, 10, 10}, {0, 0, 10, 10}, InkOverflow::Type::kNone},
     {{10, 10},
      {-1, -1, 12, 12},
      {0, 0, 20, 20},
-     NGInkOverflow::Type::kSelfAndContents},
+     InkOverflow::Type::kSelfAndContents},
 };
 
 class SelfAndContentsDataTest
-    : public NGInkOverflowTest,
+    : public InkOverflowTest,
       public testing::WithParamInterface<SelfAndContentsData> {};
 
-INSTANTIATE_TEST_SUITE_P(NGInkOverflowTest,
+INSTANTIATE_TEST_SUITE_P(InkOverflowTest,
                          SelfAndContentsDataTest,
                          testing::ValuesIn(self_and_contents_data));
 
 TEST_P(SelfAndContentsDataTest, SelfAndContents) {
   const SelfAndContentsData data = GetParam();
-  NGInkOverflow ink_overflow;
-  NGInkOverflow::Type type = ink_overflow.Set(
-      NGInkOverflow::Type::kNotSet, data.self, data.contents, data.size);
+  InkOverflow ink_overflow;
+  InkOverflow::Type type = ink_overflow.Set(
+      InkOverflow::Type::kNotSet, data.self, data.contents, data.size);
   EXPECT_EQ(type, data.type);
   EXPECT_EQ(ink_overflow.Self(type, data.size), data.self);
   EXPECT_EQ(ink_overflow.SelfAndContents(type, data.size),

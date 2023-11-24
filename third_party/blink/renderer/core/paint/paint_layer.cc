@@ -140,7 +140,7 @@ ASSERT_SIZE(PaintLayer, SameSizeAsPaintLayer);
 inline PhysicalRect PhysicalVisualOverflowRectAllowingUnset(
     const LayoutBoxModelObject& layout_object) {
 #if DCHECK_IS_ON()
-  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+  InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
   return layout_object.VisualOverflowRect();
 }

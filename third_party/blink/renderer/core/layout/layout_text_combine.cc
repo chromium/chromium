@@ -149,7 +149,7 @@ PhysicalRect LayoutTextCombine::ComputeTextBoundsRectForHitTest(
     const FragmentItem& text_item,
     const PhysicalOffset& inline_root_offset) const {
   DCHECK(text_item.IsText()) << text_item;
-  PhysicalRect rect = text_item.SelfInkOverflow();
+  PhysicalRect rect = text_item.SelfInkOverflowRect();
   rect.Move(text_item.OffsetInContainerFragment());
   rect = AdjustRectForBoundingBox(rect);
   rect.Move(inline_root_offset);
@@ -241,16 +241,15 @@ PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
   if (style.HasAppliedTextDecorations()) {
     // |LayoutTextCombine| does not support decorating box, as it is not
     // supported in vertical flow and text-combine is only for vertical flow.
-    const LogicalRect decoration_rect =
-        NGInkOverflow::ComputeDecorationOverflow(
-            cursor, style, style.GetFont(),
-            /* offset_in_container */ PhysicalOffset(), ink_overflow,
-            /* inline_context */ nullptr);
+    const LogicalRect decoration_rect = InkOverflow::ComputeDecorationOverflow(
+        cursor, style, style.GetFont(),
+        /* offset_in_container */ PhysicalOffset(), ink_overflow,
+        /* inline_context */ nullptr);
     ink_overflow.Unite(decoration_rect);
   }
 
   if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
-    ink_overflow = NGInkOverflow::ComputeEmphasisMarkOverflow(
+    ink_overflow = InkOverflow::ComputeEmphasisMarkOverflow(
         style, text_rect.size, ink_overflow);
   }
 
@@ -265,7 +264,7 @@ PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
 gfx::Rect LayoutTextCombine::VisualRectForPaint(
     const PhysicalOffset& paint_offset) const {
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
-  PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
+  PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflowRect();
   ink_overflow.Move(paint_offset);
   return ToEnclosingRect(ink_overflow);
 }

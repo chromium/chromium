@@ -3585,8 +3585,8 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
       ClearVisualOverflow();
       return;
     }
-    SetVisualOverflow(fragment.SelfInkOverflow(),
-                      fragment.ContentsInkOverflow());
+    SetVisualOverflow(fragment.SelfInkOverflowRect(),
+                      fragment.ContentsInkOverflowRect());
     return;
   }
 
@@ -3606,8 +3606,8 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     }
     has_overflow = true;
 
-    PhysicalRect fragment_self_rect = fragment.SelfInkOverflow();
-    PhysicalRect fragment_contents_rect = fragment.ContentsInkOverflow();
+    PhysicalRect fragment_self_rect = fragment.SelfInkOverflowRect();
+    PhysicalRect fragment_contents_rect = fragment.ContentsInkOverflowRect();
 
     // Stitch this fragment to the bottom of the last one in horizontal
     // writing mode, or to the right in vertical. Flipped blocks is handled
@@ -3747,7 +3747,7 @@ PhysicalRect LayoutBox::VisualOverflowRect() const {
 #if DCHECK_IS_ON()
 PhysicalRect LayoutBox::VisualOverflowRectAllowingUnset() const {
   NOT_DESTROYED();
-  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+  InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
   return VisualOverflowRect();
 }
 
@@ -3756,7 +3756,7 @@ void LayoutBox::CheckIsVisualOverflowComputed() const {
   // the check for now. Need to investigate the reason.
   return;
   /*
-  if (NGInkOverflow::ReadUnsetAsNoneScope::IsActive())
+  if (InkOverflow::ReadUnsetAsNoneScope::IsActive())
     return;
   if (!CanUseFragmentsForVisualOverflow())
     return;

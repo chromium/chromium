@@ -45,7 +45,7 @@ struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
   LayoutUnit baseline;
   LayoutUnit last_baseline;
   Member<void*> rare;
-  NGInkOverflow ink_overflow;
+  InkOverflow ink_overflow;
   HeapVector<PhysicalFragmentLink> children;
 };
 
@@ -341,7 +341,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       size_ = *new_size;
   }
 
-  SetInkOverflowType(NGInkOverflow::Type::kNotSet);
+  SetInkOverflowType(InkOverflow::Type::kNotSet);
 
   wtf_size_t rare_fields_size =
       has_scrollable_overflow + !!builder->frame_set_layout_data_ +
@@ -635,7 +635,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   return post_layout;
 }
 
-PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {
+PhysicalRect NGPhysicalBoxFragment::SelfInkOverflowRect() const {
   if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->SelfVisualOverflowRect();
@@ -645,7 +645,7 @@ PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {
   return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
-PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
+PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflowRect() const {
   if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->ContentsVisualOverflowRect();
@@ -655,7 +655,7 @@ PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
   return ink_overflow_.Contents(InkOverflowType(), Size());
 }
 
-PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
+PhysicalRect NGPhysicalBoxFragment::InkOverflowRect() const {
   if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->VisualOverflowRect();
@@ -1157,7 +1157,7 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
     PhysicalRect child_rect;
     if (child_fragment->CanUseFragmentsForInkOverflow()) {
       child_fragment->GetMutableForPainting().RecalcInkOverflow();
-      child_rect = child_fragment->InkOverflow();
+      child_rect = child_fragment->InkOverflowRect();
     } else {
       LayoutBox* child_layout_object = child_fragment->MutableOwnerLayoutBox();
       DCHECK(child_layout_object);
@@ -1197,7 +1197,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
         continue;
       PhysicalRect child_rect;
       if (child_fragment.CanUseFragmentsForInkOverflow())
-        child_rect = child_fragment.InkOverflow();
+        child_rect = child_fragment.InkOverflowRect();
       else
         child_rect = child_layout_object->VisualOverflowRect();
       child_rect.offset += child.offset;

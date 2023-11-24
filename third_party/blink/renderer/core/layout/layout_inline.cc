@@ -719,7 +719,7 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
     InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      PhysicalRect child_rect = cursor.Current().InkOverflow();
+      PhysicalRect child_rect = cursor.Current().InkOverflowRect();
       child_rect.offset += cursor.Current().OffsetInContainerFragment();
       result.Unite(child_rect);
     }

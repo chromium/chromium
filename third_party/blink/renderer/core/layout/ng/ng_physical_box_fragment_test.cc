@@ -278,10 +278,10 @@ TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
   const PhysicalOffset zero_offset;
 
   EXPECT_EQ(
-      layout_box->GetPhysicalFragment(0)->InkOverflow(),
+      layout_box->GetPhysicalFragment(0)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(75), LayoutUnit(35))));
   EXPECT_EQ(
-      layout_box->GetPhysicalFragment(1)->InkOverflow(),
+      layout_box->GetPhysicalFragment(1)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(75), LayoutUnit(40))));
 
   GetDocument()
@@ -290,10 +290,10 @@ TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
                                "padding-box 15px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
-      layout_box->GetPhysicalFragment(0)->InkOverflow(),
+      layout_box->GetPhysicalFragment(0)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(80), LayoutUnit(35))));
   EXPECT_EQ(
-      layout_box->GetPhysicalFragment(1)->InkOverflow(),
+      layout_box->GetPhysicalFragment(1)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(80), LayoutUnit(45))));
 
   GetDocument()
@@ -302,10 +302,10 @@ TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
                                "border-box 15px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
-      layout_box->GetPhysicalFragment(0)->InkOverflow(),
+      layout_box->GetPhysicalFragment(0)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(85), LayoutUnit(35))));
   EXPECT_EQ(
-      layout_box->GetPhysicalFragment(1)->InkOverflow(),
+      layout_box->GetPhysicalFragment(1)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(85), LayoutUnit(50))));
 }
 

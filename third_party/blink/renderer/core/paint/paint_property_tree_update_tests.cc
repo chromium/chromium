@@ -1667,7 +1667,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
 #if DCHECK_IS_ON()
     // TODO(crbug.com/1201670): This should not be needed, but DCHECK hits.
     // Needs more investigations.
-    NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+    InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
     UpdateAllLifecyclePhasesExceptPaint();
   }

@@ -32,7 +32,7 @@ struct SameSizeAsFragmentItem {
     FragmentItem::BoxItem box_;
   };
   PhysicalRect rect;
-  NGInkOverflow ink_overflow;
+  InkOverflow ink_overflow;
   Member<void*> member;
   wtf_size_t sizes[2];
   unsigned flags;
@@ -56,7 +56,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
       style_variant_(static_cast<unsigned>(inline_item.GetStyleVariant())),
       is_hidden_for_paint_(is_hidden_for_paint),
       text_direction_(static_cast<unsigned>(inline_item.Direction())),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
 #if DCHECK_IS_ON()
@@ -86,7 +86,7 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
       style_variant_(static_cast<unsigned>(style_variant)),
       is_hidden_for_paint_(is_hidden_for_paint),
       text_direction_(static_cast<unsigned>(direction)),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(layout_object_);
@@ -119,7 +119,7 @@ FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
       style_variant_(static_cast<unsigned>(line.GetStyleVariant())),
       is_hidden_for_paint_(false),
       text_direction_(static_cast<unsigned>(line.BaseDirection())),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(!IsFormattingContextRoot());
@@ -135,7 +135,7 @@ FragmentItem::FragmentItem(const NGPhysicalBoxFragment& box,
       style_variant_(static_cast<unsigned>(box.GetStyleVariant())),
       is_hidden_for_paint_(box.IsHiddenForPaint()),
       text_direction_(static_cast<unsigned>(resolved_direction)),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK_EQ(IsFormattingContextRoot(), box.IsFormattingContextRoot());
@@ -201,7 +201,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
       text_direction_(source.text_direction_),
-      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
+      ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
@@ -229,7 +229,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
   if (source.IsInkOverflowComputed()) {
     ink_overflow_type_ = static_cast<unsigned>(source.InkOverflowType());
     new (&ink_overflow_)
-        NGInkOverflow(source.InkOverflowType(), source.ink_overflow_);
+        InkOverflow(source.InkOverflowType(), source.ink_overflow_);
   }
 }
 
@@ -507,17 +507,17 @@ inline LayoutBox* FragmentItem::MutableInkOverflowOwnerBox() {
   return nullptr;
 }
 
-PhysicalRect FragmentItem::SelfInkOverflow() const {
+PhysicalRect FragmentItem::SelfInkOverflowRect() const {
   if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
-    return box_fragment->SelfInkOverflow();
+    return box_fragment->SelfInkOverflowRect();
   if (!HasInkOverflow())
     return LocalRect();
   return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
-PhysicalRect FragmentItem::InkOverflow() const {
+PhysicalRect FragmentItem::InkOverflowRect() const {
   if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
-    return box_fragment->InkOverflow();
+    return box_fragment->InkOverflowRect();
   if (!HasInkOverflow())
     return LocalRect();
   if (!IsContainer() || HasNonVisibleOverflow())
@@ -797,7 +797,7 @@ PhysicalRect FragmentItem::LocalVisualRectFor(
     const FragmentItem& item = *cursor.Current().Item();
     if (UNLIKELY(item.IsHiddenForPaint()))
       continue;
-    PhysicalRect child_visual_rect = item.SelfInkOverflow();
+    PhysicalRect child_visual_rect = item.SelfInkOverflowRect();
     child_visual_rect.offset += item.OffsetInContainerFragment();
     visual_rect.Unite(child_visual_rect);
   }
@@ -855,7 +855,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     // text decorations and outlines that are invalidated before this point in
     // the code.
     if (IsInkOverflowComputed()) {
-      *self_and_contents_rect_out = SelfInkOverflow();
+      *self_and_contents_rect_out = SelfInkOverflowRect();
       return;
     }
 
@@ -896,7 +896,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
       DCHECK(!HasChildren());
       if (box_fragment->CanUseFragmentsForInkOverflow()) {
         box_fragment->GetMutableForPainting().RecalcInkOverflow();
-        *self_and_contents_rect_out = box_fragment->InkOverflow();
+        *self_and_contents_rect_out = box_fragment->InkOverflowRect();
         return;
       }
       LayoutBox* owner_box = MutableInkOverflowOwnerBox();
@@ -914,7 +914,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     DCHECK(box_fragment->Children().empty());
     DCHECK_EQ(box_fragment->Size(), Size());
     box_fragment->GetMutableForPainting().RecalcInkOverflow(contents_rect);
-    *self_and_contents_rect_out = box_fragment->InkOverflow();
+    *self_and_contents_rect_out = box_fragment->InkOverflowRect();
     return;
   }
 
@@ -1058,7 +1058,7 @@ PhysicalRect FragmentItem::ComputeTextBoundsRectForHitTest(
       inline_root_offset + OffsetInContainerFragment();
   const PhysicalRect border_rect(offset, Size());
   if (UNLIKELY(is_occlusion_test)) {
-    PhysicalRect ink_overflow = SelfInkOverflow();
+    PhysicalRect ink_overflow = SelfInkOverflowRect();
     ink_overflow.Move(border_rect.offset);
     return ink_overflow;
   }

@@ -152,9 +152,11 @@ class CORE_EXPORT InlineCursorPosition {
 
   // InkOverflow of itself, including contents if they contribute to the ink
   // overflow of this object (e.g. when not clipped,) in the local coordinate.
-  const PhysicalRect InkOverflow() const { return item_->InkOverflow(); }
-  const PhysicalRect SelfInkOverflow() const {
-    return item_->SelfInkOverflow();
+  const PhysicalRect InkOverflowRect() const {
+    return item_->InkOverflowRect();
+  }
+  const PhysicalRect SelfInkOverflowRect() const {
+    return item_->SelfInkOverflowRect();
   }
 
   void RecalcInkOverflow(const InlineCursor& cursor,

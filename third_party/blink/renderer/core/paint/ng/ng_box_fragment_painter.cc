@@ -389,7 +389,7 @@ void PaintFragment(const NGPhysicalBoxFragment& fragment,
 
 PhysicalRect NGBoxFragmentPainter::InkOverflowIncludingFilters() const {
   if (box_item_)
-    return box_item_->SelfInkOverflow();
+    return box_item_->SelfInkOverflowRect();
   const NGPhysicalFragment& fragment = PhysicalFragment();
   DCHECK(!fragment.IsInlineBox());
   return To<LayoutBox>(fragment.GetLayoutObject())
@@ -745,7 +745,7 @@ void NGBoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   // Otherwise, if we're ok with the perf, we can remove this TODO.
   if (box_fragment_.IsCSSBox()) {
     PhysicalRect content_ink_rect = box_fragment_.LocalRect();
-    content_ink_rect.Unite(box_fragment_.ContentsInkOverflow());
+    content_ink_rect.Unite(box_fragment_.ContentsInkOverflowRect());
     if (!paint_info.IntersectsCullRect(content_ink_rect, paint_offset))
       return;
   }
@@ -1607,7 +1607,7 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
     // inline direction.
     const PhysicalOffset& child_offset =
         paint_offset + child_item->OffsetInContainerFragment();
-    const PhysicalRect child_rect = child_item->InkOverflow();
+    const PhysicalRect child_rect = child_item->InkOverflowRect();
     if (is_horizontal) {
       LayoutUnit y = child_rect.offset.top + child_offset.top;
       if (!paint_info.GetCullRect().IntersectsVerticalRange(
@@ -1700,11 +1700,12 @@ void NGBoxFragmentPainter::PaintTextItem(const InlineCursor& cursor,
 
   // Skip if this child does not intersect with CullRect.
   if (!paint_info.IntersectsCullRect(
-          item.InkOverflow(),
+          item.InkOverflowRect(),
           paint_offset + item.OffsetInContainerFragment()) &&
       // Don't skip <br>, it doesn't have ink but need to paint selection.
-      !(item.IsLineBreak() && HasSelection(item.GetLayoutObject())))
+      !(item.IsLineBreak() && HasSelection(item.GetLayoutObject()))) {
     return;
+  }
 
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   item.FragmentId());
@@ -1730,9 +1731,10 @@ void NGBoxFragmentPainter::PaintBoxItem(
 
   // Skip if this child does not intersect with CullRect.
   if (!paint_info.IntersectsCullRect(
-          child_fragment.InkOverflow(),
-          paint_offset + item.OffsetInContainerFragment()))
+          child_fragment.InkOverflowRect(),
+          paint_offset + item.OffsetInContainerFragment())) {
     return;
+  }
 
   if (child_fragment.IsAtomicInline() || child_fragment.IsListMarker()) {
     PaintFragment(child_fragment, paint_info);
@@ -1770,8 +1772,10 @@ void NGBoxFragmentPainter::PaintBoxItem(const FragmentItem& item,
 
   // Skip if this child does not intersect with CullRect.
   if (!paint_info.IntersectsCullRect(
-          item.InkOverflow(), paint_offset + item.OffsetInContainerFragment()))
+          item.InkOverflowRect(),
+          paint_offset + item.OffsetInContainerFragment())) {
     return;
+  }
 
   // This |item| is a culled inline box.
   DCHECK(item.GetLayoutObject()->IsLayoutInline());
@@ -1790,7 +1794,8 @@ bool NGBoxFragmentPainter::ShouldPaint(
   // rectangle.
   if (box_fragment_.IsPaginatedRoot())
     return true;
-  return paint_state.LocalRectIntersectsCullRect(box_fragment_.InkOverflow());
+  return paint_state.LocalRectIntersectsCullRect(
+      box_fragment_.InkOverflowRect());
 }
 
 void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
@@ -2158,7 +2163,7 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
     const InlineBackwardCursor& cursor,
     const PhysicalOffset& physical_offset) {
   DCHECK_EQ(cursor.Current()->LineBoxFragment(), &fragment);
-  PhysicalRect overflow_rect = cursor.Current().InkOverflow();
+  PhysicalRect overflow_rect = cursor.Current().InkOverflowRect();
   overflow_rect.Move(physical_offset);
   if (!hit_test.location.Intersects(overflow_rect))
     return false;
@@ -2174,7 +2179,7 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
     return false;
 
   const PhysicalOffset overflow_location =
-      cursor.Current().SelfInkOverflow().offset + physical_offset;
+      cursor.Current().SelfInkOverflowRect().offset + physical_offset;
   if (HitTestClippedOutByBorder(hit_test.location, overflow_location))
     return false;
 
@@ -2629,7 +2634,7 @@ gfx::Rect NGBoxFragmentPainter::VisualRect(const PhysicalOffset& paint_offset) {
     return BoxPainter(*layout_box).VisualRect(paint_offset);
 
   DCHECK(box_item_);
-  PhysicalRect ink_overflow = box_item_->InkOverflow();
+  PhysicalRect ink_overflow = box_item_->InkOverflowRect();
   ink_overflow.Move(paint_offset);
   return ToEnclosingRect(ink_overflow);
 }

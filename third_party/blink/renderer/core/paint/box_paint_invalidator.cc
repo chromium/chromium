@@ -152,7 +152,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
 
 #if DCHECK_IS_ON()
   // TODO(crbug.com/1205708): Audit this.
-  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+  InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
   if (box_.PreviousSize() == box_.Size() &&
       box_.PreviousSelfVisualOverflowRect() == box_.SelfVisualOverflowRect()) {
@@ -448,7 +448,7 @@ void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
 
 #if DCHECK_IS_ON()
   // TODO(crbug.com/1205708): Audit this.
-  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+  InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
   if (NeedsToSavePreviousOverflowData())
     mutable_box.SavePreviousOverflowData();

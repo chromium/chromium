@@ -29,11 +29,11 @@ struct NGTextFragmentPaintInfo;
 // Represents an ink-overflow rectangle. Used for:
 // - Objects without children, such as text runs.
 // - Objects that has only self or contents ink-overflow.
-struct NGSingleInkOverflow {
-  USING_FAST_MALLOC(NGSingleInkOverflow);
+struct SingleInkOverflow {
+  USING_FAST_MALLOC(SingleInkOverflow);
 
  public:
-  explicit NGSingleInkOverflow(const PhysicalRect& ink_overflow)
+  explicit SingleInkOverflow(const PhysicalRect& ink_overflow)
       : ink_overflow(ink_overflow) {}
 
   PhysicalRect ink_overflow;
@@ -41,12 +41,12 @@ struct NGSingleInkOverflow {
 
 // Represents two ink-overflow rectangles, to keep self and contents ink
 // overflow separately. Used for objects with children, such as boxes.
-struct NGContainerInkOverflow : NGSingleInkOverflow {
-  USING_FAST_MALLOC(NGContainerInkOverflow);
+struct ContainerInkOverflow : SingleInkOverflow {
+  USING_FAST_MALLOC(ContainerInkOverflow);
 
  public:
-  NGContainerInkOverflow(const PhysicalRect& self, const PhysicalRect& contents)
-      : NGSingleInkOverflow(self), contents_ink_overflow(contents) {}
+  ContainerInkOverflow(const PhysicalRect& self, const PhysicalRect& contents)
+      : SingleInkOverflow(self), contents_ink_overflow(contents) {}
 
   PhysicalRect SelfAndContentsInkOverflow() const {
     return UnionRect(ink_overflow, contents_ink_overflow);
@@ -64,7 +64,7 @@ struct NGContainerInkOverflow : NGSingleInkOverflow {
 // |Set*| functions return |Type|, which callers must keep and pass to following
 // function calls. Functions have DCHECKs to ensure callers pass the correct
 // |Type|.
-class CORE_EXPORT NGInkOverflow {
+class CORE_EXPORT InkOverflow {
  public:
   enum class Type {
     kNotSet,
@@ -79,19 +79,19 @@ class CORE_EXPORT NGInkOverflow {
   };
   constexpr static int kTypeBits = 3;
 
-  NGInkOverflow() = default;
+  InkOverflow() = default;
 #if DCHECK_IS_ON()
-  ~NGInkOverflow();
+  ~InkOverflow();
 #endif
 
   // Regular copy is prohibited because |Type| is outside of the instance. Use
   // functions with |Type| below instead.
-  NGInkOverflow(const NGInkOverflow&) = delete;
-  NGInkOverflow& operator=(const NGInkOverflow&) = delete;
+  InkOverflow(const InkOverflow&) = delete;
+  InkOverflow& operator=(const InkOverflow&) = delete;
 
   // To copy/move, |Type| is required.
-  NGInkOverflow(Type source_type, const NGInkOverflow& source);
-  NGInkOverflow(Type source_type, NGInkOverflow&& source);
+  InkOverflow(Type source_type, const InkOverflow& source);
+  InkOverflow(Type source_type, InkOverflow&& source);
 
   // Get ink overflow of various types.
   PhysicalRect Self(Type type, const PhysicalSize& size) const;
@@ -248,9 +248,9 @@ class CORE_EXPORT NGInkOverflow {
 
   union {
     // When only self or contents overflow.
-    NGSingleInkOverflow* single_;
+    SingleInkOverflow* single_;
     // When both self and contents overflow.
-    NGContainerInkOverflow* container_;
+    ContainerInkOverflow* container_;
     // Outsets in small |LayoutUnit|s when overflow is small.
     SmallRawValue outsets_[4];
     static_assert(sizeof(outsets_) == sizeof(single_),
@@ -265,16 +265,16 @@ class CORE_EXPORT NGInkOverflow {
 };
 
 #if DCHECK_IS_ON()
-inline void NGInkOverflow::CheckType(Type type) const {
+inline void InkOverflow::CheckType(Type type) const {
   DCHECK_EQ(type, type_);
 }
-inline NGInkOverflow::Type NGInkOverflow::SetType(Type type) {
+inline InkOverflow::Type InkOverflow::SetType(Type type) {
   type_ = type;
   return type;
 }
 #else
-inline void NGInkOverflow::CheckType(Type type) const {}
-inline NGInkOverflow::Type NGInkOverflow::SetType(Type type) {
+inline void InkOverflow::CheckType(Type type) const {}
+inline InkOverflow::Type InkOverflow::SetType(Type type) {
   return type;
 }
 #endif

@@ -29,11 +29,11 @@ namespace {
 struct SameSizeAsNGInkOverflow {
   void* pointer;
 #if DCHECK_IS_ON()
-  NGInkOverflow::Type type;
+  InkOverflow::Type type;
 #endif
 };
 
-ASSERT_SIZE(NGInkOverflow, SameSizeAsNGInkOverflow);
+ASSERT_SIZE(InkOverflow, SameSizeAsNGInkOverflow);
 
 inline bool HasOverflow(const PhysicalRect& rect, const PhysicalSize& size) {
   if (rect.IsEmpty())
@@ -51,9 +51,9 @@ inline bool HasOverflow(const PhysicalRect& rect, const PhysicalSize& size) {
 //
 // #define DISALLOW_READING_UNSET
 
-unsigned NGInkOverflow::read_unset_as_none_ = 0;
+unsigned InkOverflow::read_unset_as_none_ = 0;
 
-NGInkOverflow::~NGInkOverflow() {
+InkOverflow::~InkOverflow() {
   // Because |Type| is kept outside of the instance, callers must call |Reset|
   // before destructing.
   DCHECK(type_ == Type::kNotSet || type_ == Type::kNone ||
@@ -62,9 +62,9 @@ NGInkOverflow::~NGInkOverflow() {
 }
 #endif
 
-NGInkOverflow::NGInkOverflow(Type source_type, const NGInkOverflow& source) {
+InkOverflow::InkOverflow(Type source_type, const InkOverflow& source) {
   source.CheckType(source_type);
-  new (this) NGInkOverflow();
+  new (this) InkOverflow();
   switch (source_type) {
     case Type::kNotSet:
     case Type::kInvalidated:
@@ -82,18 +82,18 @@ NGInkOverflow::NGInkOverflow(Type source_type, const NGInkOverflow& source) {
       break;
     case Type::kSelf:
     case Type::kContents:
-      single_ = new NGSingleInkOverflow(*source.single_);
+      single_ = new SingleInkOverflow(*source.single_);
       break;
     case Type::kSelfAndContents:
-      container_ = new NGContainerInkOverflow(*source.container_);
+      container_ = new ContainerInkOverflow(*source.container_);
       break;
   }
   SetType(source_type);
 }
 
-NGInkOverflow::NGInkOverflow(Type source_type, NGInkOverflow&& source) {
+InkOverflow::InkOverflow(Type source_type, InkOverflow&& source) {
   source.CheckType(source_type);
-  new (this) NGInkOverflow();
+  new (this) InkOverflow();
   switch (source_type) {
     case Type::kNotSet:
     case Type::kInvalidated:
@@ -122,7 +122,7 @@ NGInkOverflow::NGInkOverflow(Type source_type, NGInkOverflow&& source) {
   SetType(source_type);
 }
 
-NGInkOverflow::Type NGInkOverflow::Reset(Type type, Type new_type) {
+InkOverflow::Type InkOverflow::Reset(Type type, Type new_type) {
   CheckType(type);
   DCHECK(new_type == Type::kNotSet || new_type == Type::kNone ||
          new_type == Type::kInvalidated);
@@ -144,7 +144,7 @@ NGInkOverflow::Type NGInkOverflow::Reset(Type type, Type new_type) {
   return SetType(new_type);
 }
 
-PhysicalRect NGInkOverflow::FromOutsets(const PhysicalSize& size) const {
+PhysicalRect InkOverflow::FromOutsets(const PhysicalSize& size) const {
   const LayoutUnit left_outset(LayoutUnit::FromRawValue(outsets_[0]));
   const LayoutUnit top_outset(LayoutUnit::FromRawValue(outsets_[1]));
   return {-left_outset, -top_outset,
@@ -152,7 +152,7 @@ PhysicalRect NGInkOverflow::FromOutsets(const PhysicalSize& size) const {
           top_outset + size.height + LayoutUnit::FromRawValue(outsets_[3])};
 }
 
-PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
+PhysicalRect InkOverflow::Self(Type type, const PhysicalSize& size) const {
   CheckType(type);
   switch (type) {
     case Type::kNotSet:
@@ -177,8 +177,7 @@ PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   return {PhysicalOffset(), size};
 }
 
-PhysicalRect NGInkOverflow::Contents(Type type,
-                                     const PhysicalSize& size) const {
+PhysicalRect InkOverflow::Contents(Type type, const PhysicalSize& size) const {
   CheckType(type);
   switch (type) {
     case Type::kNotSet:
@@ -205,8 +204,8 @@ PhysicalRect NGInkOverflow::Contents(Type type,
   return PhysicalRect();
 }
 
-PhysicalRect NGInkOverflow::SelfAndContents(Type type,
-                                            const PhysicalSize& size) const {
+PhysicalRect InkOverflow::SelfAndContents(Type type,
+                                          const PhysicalSize& size) const {
   CheckType(type);
   switch (type) {
     case Type::kNotSet:
@@ -235,11 +234,11 @@ PhysicalRect NGInkOverflow::SelfAndContents(Type type,
 
 // Store |ink_overflow| as |SmallRawValue| if possible and returns |true|.
 // Returns |false| if |ink_overflow| is too large for |SmallRawValue|.
-bool NGInkOverflow::TrySetOutsets(Type type,
-                                  LayoutUnit left_outset,
-                                  LayoutUnit top_outset,
-                                  LayoutUnit right_outset,
-                                  LayoutUnit bottom_outset) {
+bool InkOverflow::TrySetOutsets(Type type,
+                                LayoutUnit left_outset,
+                                LayoutUnit top_outset,
+                                LayoutUnit right_outset,
+                                LayoutUnit bottom_outset) {
   CheckType(type);
   const LayoutUnit max_small_value(
       LayoutUnit::FromRawValue(std::numeric_limits<SmallRawValue>::max()));
@@ -259,11 +258,11 @@ bool NGInkOverflow::TrySetOutsets(Type type,
   return true;
 }
 
-NGInkOverflow::Type NGInkOverflow::SetSingle(Type type,
-                                             const PhysicalRect& ink_overflow,
-                                             const PhysicalSize& size,
-                                             Type new_type,
-                                             Type new_small_type) {
+InkOverflow::Type InkOverflow::SetSingle(Type type,
+                                         const PhysicalRect& ink_overflow,
+                                         const PhysicalSize& size,
+                                         Type new_type,
+                                         Type new_small_type) {
   CheckType(type);
   DCHECK(HasOverflow(ink_overflow, size));
 
@@ -290,7 +289,7 @@ NGInkOverflow::Type NGInkOverflow::SetSingle(Type type,
     case Type::kNone:
     case Type::kSmallSelf:
     case Type::kSmallContents:
-      single_ = new NGSingleInkOverflow(adjusted_ink_overflow);
+      single_ = new SingleInkOverflow(adjusted_ink_overflow);
       return SetType(new_type);
     case Type::kSelf:
     case Type::kContents:
@@ -301,18 +300,18 @@ NGInkOverflow::Type NGInkOverflow::SetSingle(Type type,
   NOTREACHED();
 }
 
-NGInkOverflow::Type NGInkOverflow::SetSelf(Type type,
-                                           const PhysicalRect& ink_overflow,
-                                           const PhysicalSize& size) {
+InkOverflow::Type InkOverflow::SetSelf(Type type,
+                                       const PhysicalRect& ink_overflow,
+                                       const PhysicalSize& size) {
   CheckType(type);
   if (!HasOverflow(ink_overflow, size))
     return Reset(type);
   return SetSingle(type, ink_overflow, size, Type::kSelf, Type::kSmallSelf);
 }
 
-NGInkOverflow::Type NGInkOverflow::SetContents(Type type,
-                                               const PhysicalRect& ink_overflow,
-                                               const PhysicalSize& size) {
+InkOverflow::Type InkOverflow::SetContents(Type type,
+                                           const PhysicalRect& ink_overflow,
+                                           const PhysicalSize& size) {
   CheckType(type);
   if (!HasOverflow(ink_overflow, size))
     return Reset(type);
@@ -320,10 +319,10 @@ NGInkOverflow::Type NGInkOverflow::SetContents(Type type,
                    Type::kSmallContents);
 }
 
-NGInkOverflow::Type NGInkOverflow::Set(Type type,
-                                       const PhysicalRect& self,
-                                       const PhysicalRect& contents,
-                                       const PhysicalSize& size) {
+InkOverflow::Type InkOverflow::Set(Type type,
+                                   const PhysicalRect& self,
+                                   const PhysicalRect& contents,
+                                   const PhysicalSize& size) {
   CheckType(type);
 
   if (!HasOverflow(self, size)) {
@@ -345,7 +344,7 @@ NGInkOverflow::Type NGInkOverflow::Set(Type type,
     case Type::kNone:
     case Type::kSmallSelf:
     case Type::kSmallContents:
-      container_ = new NGContainerInkOverflow(self, contents);
+      container_ = new ContainerInkOverflow(self, contents);
       return SetType(Type::kSelfAndContents);
     case Type::kSelfAndContents:
       DCHECK(container_);
@@ -356,7 +355,7 @@ NGInkOverflow::Type NGInkOverflow::Set(Type type,
   NOTREACHED();
 }
 
-NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
+InkOverflow::Type InkOverflow::SetTextInkOverflow(
     Type type,
     const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
@@ -378,7 +377,7 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
   return SetSelf(type, *ink_overflow, rect_in_container.size);
 }
 
-NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
+InkOverflow::Type InkOverflow::SetSvgTextInkOverflow(
     Type type,
     const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
@@ -447,7 +446,7 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
 }
 
 // static
-absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
+absl::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
     const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
@@ -507,7 +506,7 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
 }
 
 // static
-LogicalRect NGInkOverflow::ComputeEmphasisMarkOverflow(
+LogicalRect InkOverflow::ComputeEmphasisMarkOverflow(
     const ComputedStyle& style,
     const PhysicalSize& size,
     const LogicalRect& ink_overflow_in) {
@@ -531,7 +530,7 @@ LogicalRect NGInkOverflow::ComputeEmphasisMarkOverflow(
 }
 
 // static
-LogicalRect NGInkOverflow::ComputeDecorationOverflow(
+LogicalRect InkOverflow::ComputeDecorationOverflow(
     const InlineCursor& cursor,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -615,7 +614,7 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
   return accumulated_bound;
 }
 
-LogicalRect NGInkOverflow::ComputeAppliedDecorationOverflow(
+LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
     const ComputedStyle& style,
     const Font& scaled_font,
     const PhysicalOffset& offset_in_container,
@@ -658,7 +657,7 @@ LogicalRect NGInkOverflow::ComputeAppliedDecorationOverflow(
   return LogicalRect::EnclosingRect(accumulated_bound);
 }
 
-LogicalRect NGInkOverflow::ComputeMarkerOverflow(
+LogicalRect InkOverflow::ComputeMarkerOverflow(
     const DocumentMarkerVector& markers,
     const DocumentMarker::MarkerType type,
     const FragmentItem* fragment_item,
@@ -706,7 +705,7 @@ LogicalRect NGInkOverflow::ComputeMarkerOverflow(
   return accumulated_bound;
 }
 
-LogicalRect NGInkOverflow::ComputeCustomHighlightOverflow(
+LogicalRect InkOverflow::ComputeCustomHighlightOverflow(
     const DocumentMarkerVector& markers,
     const FragmentItem* fragment_item,
     Text* text_node,

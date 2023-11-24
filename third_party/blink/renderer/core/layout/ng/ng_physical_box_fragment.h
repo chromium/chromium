@@ -330,32 +330,32 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   gfx::Vector2d PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;
 
-  NGInkOverflow::Type InkOverflowType() const {
-    return static_cast<NGInkOverflow::Type>(
+  InkOverflow::Type InkOverflowType() const {
+    return static_cast<InkOverflow::Type>(
         bit_field_.get<InkOverflowTypeValue>());
   }
   bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::Type::kNotSet &&
-           InkOverflowType() != NGInkOverflow::Type::kInvalidated;
+    return InkOverflowType() != InkOverflow::Type::kNotSet &&
+           InkOverflowType() != InkOverflow::Type::kInvalidated;
   }
   bool HasInkOverflow() const {
-    return InkOverflowType() != NGInkOverflow::Type::kNone;
+    return InkOverflowType() != InkOverflow::Type::kNone;
   }
 
   // 3 types of ink overflows:
-  // * |SelfInkOverflow| includes box decorations that are outside of the
+  // * |SelfInkOverflowRect| includes box decorations that are outside of the
   //   border box.
   //   Returns |LocalRect| when there are no overflow.
-  // * |ContentsInkOverflow| includes anything that would bleed out of the box
-  //   and would be clipped by the overflow clip ('overflow' != visible). This
-  //   corresponds to children that overflows their parent.
+  // * |ContentsInkOverflowRect| includes anything that would bleed out of the
+  //   box and would be clipped by the overflow clip ('overflow' != visible).
+  //   This corresponds to children that overflows their parent.
   //   Returns an empty rect when there are no overflow.
-  // * |InkOverflow| includes self and contents ink overflow, unless it has
+  // * |InkOverflowRect| includes self and contents ink overflow, unless it has
   //   clipping, in that case it includes self ink overflow only.
   //   Returns |LocalRect| when there are no overflow.
-  PhysicalRect InkOverflow() const;
-  PhysicalRect SelfInkOverflow() const;
-  PhysicalRect ContentsInkOverflow() const;
+  PhysicalRect InkOverflowRect() const;
+  PhysicalRect SelfInkOverflowRect() const;
+  PhysicalRect ContentsInkOverflowRect() const;
 
   // Fast check if |NodeAtPoint| may find a hit.
   bool MayIntersect(const HitTestResult& result,
@@ -549,7 +549,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   using IncludeBorderLeftFlag =
       IncludeBorderBottomFlag::DefineNextValue<bool, 1>;
   using InkOverflowTypeValue =
-      IncludeBorderLeftFlag::DefineNextValue<uint8_t, NGInkOverflow::kTypeBits>;
+      IncludeBorderLeftFlag::DefineNextValue<uint8_t, InkOverflow::kTypeBits>;
   using IsFirstForNodeFlag = InkOverflowTypeValue::DefineNextValue<bool, 1>;
   using HasDescendantsForTablePartFlag =
       IsFirstForNodeFlag::DefineNextValue<bool, 1>;
@@ -595,7 +595,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);
-  void SetInkOverflowType(NGInkOverflow::Type type) {
+  void SetInkOverflowType(InkOverflow::Type type) {
     bit_field_.set<InkOverflowTypeValue>(static_cast<uint8_t>(type));
   }
   PhysicalRect RecalcContentsInkOverflow();
@@ -632,7 +632,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   LayoutUnit first_baseline_;
   LayoutUnit last_baseline_;
   Member<PhysicalFragmentRareData> rare_data_;
-  NGInkOverflow ink_overflow_;
+  InkOverflow ink_overflow_;
   HeapVector<PhysicalFragmentLink> children_;
   // fragment_items is after |children_| if they are not empty/initial.
 };
