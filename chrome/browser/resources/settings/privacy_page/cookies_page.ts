@@ -124,11 +124,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
       },
 
-      isPrivacySandboxSettings4_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
-      },
-
       showPreloadingSubpage_: {
         type: Boolean,
         value: () => !loadTimeData.getBoolean(
@@ -161,7 +156,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private blockAllPref_: chrome.settingsPrivate.PrefObject;
   focusConfig: FocusConfig;
   private enableFirstPartySetsUI_: boolean;
-  private isPrivacySandboxSettings4_: boolean;
   private showPreloadingSubpage_: boolean;
   private is3pcdRedesignEnabled_: boolean;
 
@@ -224,57 +218,18 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             'cookiePageBlockThirdIncognitoBulTwo');
   }
 
-  // <if expr="not chromeos_ash">
-  private getClearOnExitSubLabel_(): string {
-    // <if expr="chromeos_lacros">
-    if (loadTimeData.getBoolean('isSecondaryUser')) {
-      return '';
-    }
-    // </if>
-
-    return this.i18n('cookiePageClearOnExitDesc');
-  }
-  // </if>
-
   private onSiteDataClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
   }
 
   private onGeneratedPrefsUpdated_() {
-    if (this.isPrivacySandboxSettings4_) {
-      // If the default cookie content setting is managed, the exception lists
-      // should be disabled. `profile.cookie_controls_mode` doesn't control the
-      // ability to create exceptions but the content setting does.
-      const defaultContentSettingPref =
-          this.getPref('generated.cookie_default_content_setting');
-      this.exceptionListsReadOnly_ = defaultContentSettingPref.enforcement ===
-          chrome.settingsPrivate.Enforcement.ENFORCED;
-      return;
-    }
-
-    // TODO(crbug.com/1378703): Clean up after the feature is launched and these
-    // generated preferences are deprecated. New page won't have 'session only'
-    // controls.
-    const sessionOnlyPref = this.getPref('generated.cookie_session_only');
-
-    // If the clear on exit toggle is managed this implies a content setting
-    // policy is present and the exception lists should be disabled.
-    this.exceptionListsReadOnly_ = sessionOnlyPref.enforcement ===
+    // If the default cookie content setting is managed, the exception lists
+    // should be disabled. `profile.cookie_controls_mode` doesn't control the
+    // ability to create exceptions but the content setting does.
+    const defaultContentSettingPref =
+        this.getPref('generated.cookie_default_content_setting');
+    this.exceptionListsReadOnly_ = defaultContentSettingPref.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED;
-
-    // It is not currently possible to represent multiple management
-    // sources for a single a preference. In all management scenarios,
-    // the blockAll setting shares the same controlledBy as the
-    // cookie_session_only pref. To support this, the controlledBy
-    // fields for the |cookie_primary_setting| pref provided to the
-    // blockAll control are overwritten with values from the session_only
-    // preference.
-    this.set(
-        'blockAllPref_',
-        Object.assign(this.getPref('generated.cookie_primary_setting'), {
-          controlledBy: sessionOnlyPref.controlledBy,
-          controlledByName: sessionOnlyPref.controlledByName,
-        }));
   }
 
   private onBlockAll3pcToggleChanged_(event: Event) {
@@ -418,21 +373,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
 
   private firstPartySetsToggleDisabled_() {
-    if (this.isPrivacySandboxSettings4_) {
-      return this.getPref('profile.cookie_controls_mode').value !==
-          CookieControlsMode.BLOCK_THIRD_PARTY;
-    }
-
-    return this.getPref('generated.cookie_primary_setting').value !==
-        CookiePrimarySetting.BLOCK_THIRD_PARTY;
-  }
-
-  private isPrivacySandboxSettings4CookieSettingsEnabled_(): boolean {
-    return this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
-  }
-
-  private isPrivacySandboxSettings3CookieSettingsEnabled_(): boolean {
-    return !this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
+    return this.getPref('profile.cookie_controls_mode').value !==
+        CookieControlsMode.BLOCK_THIRD_PARTY;
   }
 }
 

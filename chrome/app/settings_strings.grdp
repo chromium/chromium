@@ -3053,62 +3053,8 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_BULLET_2" desc="2 of 2 bullets that describe the 'Block third-party cookies' option">
     Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work
   </message>
-  <message name="IDS_SETTINGS_COOKIES_CONTROLS" desc="Title of the general cookies control section.">
-    General settings
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL" desc="Label for allow all cookies radio toggle">
-    Allow all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of allowing all cookies. Only visible by screen reader software.">
-    Show details about allowing all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_ONE" desc="Description for the first bullet of allow all cookies radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_TWO" desc="Description for the first bullet of allow all cookies radio toggle">
-    Sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO" desc="Label for block third party cookies in Incognito radio toggle">
-    Block third-party cookies in Incognito
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies in Incognito. Only visible by screen reader software.">
-    Show details about blocking third-party cookies in Incognito
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_ONE" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
-    While in Incognito, sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO_FPS" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
     While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY" desc="Label for block third party cookies radio toggle">
-    Block third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies. Only visible by screen reader software.">
-    Show details about blocking third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_ONE" desc="Description for the first bullet of block third party cookies radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_TWO" desc="Description for the first bullet of block third party cookies radio toggle">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL" desc="Label for block all cookies radio toggle">
-    Block all cookies (not recommended)
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking all cookies. Only visible by screen reader software.">
-    Show details about blocking all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_ONE" desc="Description for the first bullet of block all cookies radio toggle">
-    Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_TWO" desc="Description for the first bullet of block all cookies radio toggle">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_THREE" desc="Description for the third bullet of block all cookies radio toggle">
-    Features on many sites may not work
   </message>
   <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_LABEL" desc="Label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
     Allow related sites to see your activity in the group
@@ -3116,25 +3062,8 @@
   <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_SUB_LABEL" desc="Sub-label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
     A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
   </message>
-  <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT" desc="Label for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows.">
-    Clear cookies and site data when you close all windows
-  </message>
-  <if expr="chromeos_lacros">
-    <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT_DESC" desc="Secondary text for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows. This sublabel clarifies that when the toggle is enabled the user won't be signed out of Chrome each time they close all Chrome windows.">
-      Signs you out of most sites. You won't be signed out of your Google Account.
-    </message>
-  </if>
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_EXCEPTIONS" desc="Title of the list containing site exceptions always allowing them to use cookies">
-    Sites that can always use cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_SESSION_ONLY_EXCEPTIONS" desc="Title of the list containing site exceptions so that cookies for those site are always cleared when closing the browser">
-    Always clear cookies when windows are closed
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_EXCEPTIONS" desc="Title of the list containing site exceptions always blocking them from using cookies">
-    Sites that can never use cookies
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the Tracking Protection page entry point.">
     Tracking Protection

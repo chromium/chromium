@@ -352,7 +352,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:visibility-off',
       enabledLabel: 'siteSettingsCookiesAllowed',
       disabledLabel: 'siteSettingsBlocked',
-      otherLabel: 'cookiePageClearOnExit',
     });
   } else {
     categoryList.push({
