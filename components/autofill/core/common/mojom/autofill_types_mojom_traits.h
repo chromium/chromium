@@ -441,6 +441,11 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.server_type;
   }
 
+  static const std::string& html_type(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.html_type;
+  }
+
   static const std::string& overall_type(
       const autofill::FormFieldDataPredictions& r) {
     return r.overall_type;

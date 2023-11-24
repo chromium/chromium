@@ -317,6 +317,9 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return false;
   if (!data.ReadServerType(&out->server_type))
     return false;
+  if (!data.ReadHtmlType(&out->html_type)) {
+    return false;
+  }
   if (!data.ReadOverallType(&out->overall_type))
     return false;
   if (!data.ReadParseableName(&out->parseable_name))

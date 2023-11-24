@@ -42,6 +42,7 @@ void CreateTestFieldDataPredictions(const std::string& signature,
   field_predict->signature = signature;
   field_predict->heuristic_type = "TestHeuristicType";
   field_predict->server_type = "TestServerType";
+  field_predict->html_type = "TestHtmlType";
   field_predict->overall_type = "TestOverallType";
   field_predict->parseable_name = "TestParseableName";
   field_predict->section = "TestSection";

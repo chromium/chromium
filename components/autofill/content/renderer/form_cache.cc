@@ -398,6 +398,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       std::string title = base::StrCat({
           "overall type: ",
           field.overall_type,
+          "\nhtml type: ",
+          field.html_type,
           "\nserver type: ",
           field.server_type,
           "\nheuristic type: ",

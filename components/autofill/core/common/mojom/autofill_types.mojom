@@ -416,6 +416,7 @@ struct FormFieldDataPredictions {
   string signature;
   string heuristic_type;
   string server_type;
+  string html_type;
   string overall_type;
   string parseable_name;
   string section;

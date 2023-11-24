@@ -965,6 +965,7 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
       annotated_field.heuristic_type =
           FieldTypeToStringView(field->heuristic_type());
       annotated_field.server_type = FieldTypeToStringView(field->server_type());
+      annotated_field.html_type = FieldTypeToStringView(field->html_type());
       annotated_field.overall_type = field->Type().ToString();
       annotated_field.parseable_name =
           base::UTF16ToUTF8(field->parseable_name());
