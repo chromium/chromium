@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
@@ -129,6 +130,7 @@ const ComputedStyle* CreateFlippedAutoAnchorStyle(
     const ComputedStyle& base_style,
     bool flip_block,
     bool flip_inline) {
+  CHECK(!RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
   const bool is_horizontal = base_style.IsHorizontalWritingMode();
   const bool flip_x = is_horizontal ? flip_inline : flip_block;
   const bool flip_y = is_horizontal ? flip_block : flip_inline;
@@ -142,6 +144,40 @@ const ComputedStyle* CreateFlippedAutoAnchorStyle(
     builder.SetBottom(base_style.UsedTop());
   }
   return builder.TakeStyle();
+}
+
+const CSSPropertyValueSet* CreateFlippedAutoAnchorDeclarations(
+    const ComputedStyle& base_style,
+    bool flip_block,
+    bool flip_inline) {
+  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
+  const bool is_horizontal = base_style.IsHorizontalWritingMode();
+  const bool flip_x = is_horizontal ? flip_inline : flip_block;
+  const bool flip_y = is_horizontal ? flip_block : flip_inline;
+  auto* set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  float zoom = base_style.EffectiveZoom();
+  set->SetProperty(CSSPropertyID::kLeft,
+                   *CSSValue::Create(base_style.UsedLeft(), zoom));
+  set->SetProperty(CSSPropertyID::kRight,
+                   *CSSValue::Create(base_style.UsedRight(), zoom));
+  set->SetProperty(CSSPropertyID::kTop,
+                   *CSSValue::Create(base_style.UsedTop(), zoom));
+  set->SetProperty(CSSPropertyID::kBottom,
+                   *CSSValue::Create(base_style.UsedBottom(), zoom));
+  if (flip_x) {
+    set->SetProperty(CSSPropertyID::kLeft,
+                     *CSSValue::Create(base_style.UsedRight(), zoom));
+    set->SetProperty(CSSPropertyID::kRight,
+                     *CSSValue::Create(base_style.UsedLeft(), zoom));
+  }
+  if (flip_y) {
+    set->SetProperty(CSSPropertyID::kTop,
+                     *CSSValue::Create(base_style.UsedBottom(), zoom));
+    set->SetProperty(CSSPropertyID::kBottom,
+                     *CSSValue::Create(base_style.UsedTop(), zoom));
+  }
+  return set;
 }
 
 // Helper class to enumerate all the candidate styles to be passed to
@@ -196,8 +232,14 @@ class OOFCandidateStyleIterator {
           auto_anchor_flip_block_ = false;
         }
       }
-      auto_anchor_style_ = CreateFlippedAutoAnchorStyle(
-          *style_, auto_anchor_flip_block_, auto_anchor_flip_inline_);
+      if (RuntimeEnabledFeatures::
+              CSSAnchorPositioningCascadeFallbackEnabled()) {
+        auto_anchor_style_ = UpdateStyle(CreateFlippedAutoAnchorDeclarations(
+            *style_, auto_anchor_flip_block_, auto_anchor_flip_inline_));
+      } else {
+        auto_anchor_style_ = CreateFlippedAutoAnchorStyle(
+            *style_, auto_anchor_flip_block_, auto_anchor_flip_inline_);
+      }
       return;
     }
 
