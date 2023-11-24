@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] document.open in beforeunload with link
+  assert_equals: expected "0123456789" but got "01234568"
+Harness: the test ran to completion.
+

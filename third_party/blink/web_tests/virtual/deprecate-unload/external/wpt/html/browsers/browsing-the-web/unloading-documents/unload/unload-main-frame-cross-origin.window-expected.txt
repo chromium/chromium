@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Unload runs in main frame when navigating cross-origin.
+  assert_equals: expected "ran" but got "not yet"
+Harness: the test ran to completion.
+
