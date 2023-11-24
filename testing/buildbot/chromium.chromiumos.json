@@ -2526,7 +2526,7 @@
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R121-15688.0.0",
+        "cros_img": "jacuzzi-public/R121-15673.0.0",
         "name": "chromeos_integration_tests JACUZZI_PUBLIC_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -2536,7 +2536,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R121-15688.0.0",
+        "cros_img": "jacuzzi-public/R121-15673.0.0",
         "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -2566,7 +2566,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R121-15688.0.0",
+        "cros_img": "trogdor-public/R121-15684.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
