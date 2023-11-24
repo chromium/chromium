@@ -34,6 +34,9 @@ void LegacySessionRestorationService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browsers_.empty()) << "Disconnect() must be called for all Browser";
   tab_restore_service_ = nullptr;
+
+  [session_service_ios_ shutdown];
+  session_service_ios_ = nil;
 }
 
 void LegacySessionRestorationService::AddObserver(

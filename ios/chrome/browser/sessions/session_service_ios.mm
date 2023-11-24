@@ -89,6 +89,9 @@ using SaveSessionCallback =
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Called before destroying the task runner.
+- (void)shutdown;
+
 // Schedules a new requests to save data at `path` after `delay` using
 // `factory`. Ignored if a request scheduled for `path` with a closer
 // deadline is already scheduled.
@@ -120,6 +123,11 @@ using SaveSessionCallback =
     DCHECK(!_callback.is_null());
   }
   return self;
+}
+
+- (void)shutdown {
+  _callback = base::NullCallback();
+  _timer.Stop();
 }
 
 - (void)scheduleRequestForPath:(NSString*)path
@@ -237,6 +245,12 @@ using SaveSessionCallback =
         initWithCallback:base::BindRepeating(savingBlock)];
   }
   return self;
+}
+
+- (void)shutdown {
+  [_pendingRequests shutdown];
+  _pendingRequests = nil;
+  _taskRunner.reset();
 }
 
 - (void)shutdownWithClosure:(base::OnceClosure)closure {
