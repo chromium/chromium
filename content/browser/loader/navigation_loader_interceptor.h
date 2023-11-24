@@ -26,6 +26,7 @@ namespace content {
 class BrowserContext;
 struct ResourceRequest;
 struct SubresourceLoaderParams;
+struct ResponseHeadUpdateParams;
 
 // NavigationLoaderInterceptor is given a chance to create a URLLoader and
 // intercept a navigation request before the request is handed off to the
@@ -42,7 +43,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
       base::OnceCallback<void(scoped_refptr<network::SharedURLLoaderFactory>)>;
   using FallbackCallback =
       base::OnceCallback<void(bool /* reset_subresource_loader_params */,
-                              const net::LoadTimingInfo& load_timing_info)>;
+                              const ResponseHeadUpdateParams&)>;
 
   // Asks this interceptor to handle this resource load request.
   // The interceptor must invoke `callback` eventually with either a non-null

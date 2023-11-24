@@ -31,6 +31,7 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_interceptor.h"
@@ -685,17 +686,19 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
   }
 
   // No interceptors wanted to handle this request.
-  FallbackToNonInterceptedRequest(false);
+  FallbackToNonInterceptedRequest(false, ResponseHeadUpdateParams());
 }
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
     bool reset_subresource_loader_params,
-    const net::LoadTimingInfo& timing_info) {
+    const ResponseHeadUpdateParams& head_update_params) {
   if (reset_subresource_loader_params)
     subresource_loader_params_.reset();
 
-  intercepting_worker_start_time_ = timing_info.service_worker_start_time;
-  intercepting_worker_ready_time_ = timing_info.service_worker_ready_time;
+  intercepting_worker_start_time_ =
+      head_update_params.load_timing_info.service_worker_start_time;
+  intercepting_worker_ready_time_ =
+      head_update_params.load_timing_info.service_worker_ready_time;
 
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest();

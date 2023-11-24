@@ -10,11 +10,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
@@ -450,6 +452,10 @@ class PrefetchURLLoaderInterceptorTest
   }
 };
 
+void UnreachableFallback(bool, const ResponseHeadUpdateParams&) {
+  NOTREACHED();
+}
+
 TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(InterceptNavigationCookieCopyCompleted)) {
   const GURL kTestUrl("https://example.com");
@@ -511,7 +517,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -588,7 +594,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
 
   // A decision on whether the navigation should be intercepted shouldn't be
   // made until after the cookie copy process is completed.
@@ -669,7 +675,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -708,7 +714,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -764,7 +770,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -822,7 +828,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -882,7 +888,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -958,7 +964,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -1014,7 +1020,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -1112,7 +1118,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
       request, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
 
   // A decision on whether the navigation should be intercepted shouldn't be
   // made until after the cookie copy process is completed.
@@ -1282,7 +1288,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
       request1, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -1303,7 +1309,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
       request2, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kRedirectUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
 
   on_start_cookie_copy_run_loop.Run();
   task_environment()->FastForwardBy(base::Milliseconds(20));
@@ -1393,7 +1399,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request1, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kTestUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
   WaitForCallback(kTestUrl);
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
@@ -1414,7 +1420,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       request2, browser_context(),
       base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
                      base::Unretained(this), kRedirectUrl),
-      base::BindOnce([](bool, const net::LoadTimingInfo&) { NOTREACHED(); }));
+      base::BindOnce(UnreachableFallback));
 
   auto reader = prefetch_container->CreateReader();
   on_start_cookie_copy_run_loop.Run();

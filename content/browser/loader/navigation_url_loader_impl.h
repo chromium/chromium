@@ -154,7 +154,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // and signed exchange (SXG) fallback redirect.
   void FallbackToNonInterceptedRequest(
       bool reset_subresource_loader_params,
-      const net::LoadTimingInfo& timing_info = net::LoadTimingInfo());
+      const ResponseHeadUpdateParams& head_update_params);
 
   scoped_refptr<network::SharedURLLoaderFactory>
   PrepareForNonInterceptedRequest();

@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
@@ -63,7 +64,7 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
     std::move(fallback_callback)
         .Run(false /* reset_subresource_loader_params */,
              // TODO(crbug.com/1441384) test workerStart in SXG scenarios
-             net::LoadTimingInfo());
+             ResponseHeadUpdateParams());
     return;
   }
 

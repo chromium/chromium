@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
@@ -526,7 +527,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   // The |fallback_callback| passed to the ServiceWorkerMainResourceLoader in
   // StartRequest().
   void Fallback(bool reset_subresource_loader_params,
-                const net::LoadTimingInfo& timing_info) {
+                const ResponseHeadUpdateParams& head_update_params) {
     did_call_fallback_callback_ = true;
     reset_subresource_loader_params_ = reset_subresource_loader_params;
     if (quit_closure_for_fallback_callback_)

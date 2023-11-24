@@ -93,7 +93,7 @@ void WorkerScriptLoader::Start() {
         base::BindOnce(
             [](base::WeakPtr<WorkerScriptLoader> self,
                bool /*reset_subresource_loader_params*/,
-               const net::LoadTimingInfo&) {
+               const ResponseHeadUpdateParams&) {
               if (self) {
                 self->LoadFromNetwork();
               }

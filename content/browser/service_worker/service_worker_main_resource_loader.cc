@@ -21,6 +21,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -315,7 +316,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                      scoped_refptr<ServiceWorkerVersion> active_worker) {
                     std::move(fallback_callback)
                         .Run(false /* reset_subresource_loader_params */,
-                             net::LoadTimingInfo());
+                             ResponseHeadUpdateParams());
                     if (active_worker->running_status() !=
                             blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
@@ -809,7 +810,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     if (fallback_callback_) {
       std::move(fallback_callback_)
           .Run(true /* reset_subresource_loader_params */,
-               net::LoadTimingInfo());
+               ResponseHeadUpdateParams());
     }
     return;
   }
@@ -837,9 +838,10 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     TransitionToStatus(Status::kCompleted);
     RecordTimingMetricsForNetworkFallbackCase();
     if (fallback_callback_) {
+      ResponseHeadUpdateParams head_update_params;
+      head_update_params.load_timing_info = response_head_->load_timing;
       std::move(fallback_callback_)
-          .Run(false /* reset_subresource_loader_params */,
-               response_head_->load_timing);
+          .Run(false /* reset_subresource_loader_params */, head_update_params);
     }
     return;
   }
