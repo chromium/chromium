@@ -1,5 +1,0 @@
-Tests streaming CPU profile within trace log.
-
-JSFrame: 111.000 / 6.500 foo
-JSFrame: 114.500 / 2.500 bar
-
