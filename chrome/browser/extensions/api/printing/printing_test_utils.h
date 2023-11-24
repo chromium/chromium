@@ -9,11 +9,11 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/callback_list.h"
-#include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -52,6 +52,31 @@ enum class ExtensionType {
   kExtensionMV3,
 };
 
+// Manages various printing-related test infra classes. This class is supposed
+// to be used on the main thread.
+class PrintingBackendInfrastructureHelper {
+ public:
+  PrintingBackendInfrastructureHelper();
+  ~PrintingBackendInfrastructureHelper();
+
+  printing::TestPrintBackend& test_print_backend() {
+    return *test_print_backend_;
+  }
+  printing::BrowserPrintingContextFactoryForTest&
+  test_printing_context_factory() {
+    return test_printing_context_factory_;
+  }
+
+ private:
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  mojo::Remote<printing::mojom::PrintBackendService> test_remote_;
+  std::unique_ptr<printing::PrintBackendServiceTestImpl> print_backend_service_;
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
+  scoped_refptr<printing::TestPrintBackend> test_print_backend_;
+  printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class PrintingTestHelper {
  public:
@@ -80,15 +105,9 @@ class PrintingTestHelper {
 
   raw_ptr<Profile> profile_ = nullptr;
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  mojo::Remote<printing::mojom::PrintBackendService> test_remote_;
-  std::unique_ptr<printing::PrintBackendServiceTestImpl> print_backend_service_;
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-
   base::CallbackListSubscription create_services_subscription_;
 
-  scoped_refptr<printing::TestPrintBackend> test_print_backend_;
-  printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+  std::unique_ptr<PrintingBackendInfrastructureHelper> printing_infra_helper_;
 };
 #endif
 

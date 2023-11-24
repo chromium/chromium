@@ -101,9 +101,8 @@ class PrintingApiTest : public PrintingApiTestBase {
  public:
   void SetUpOnMainThread() override {
     PrintingApiTestBase::SetUpOnMainThread();
-    PrintingAPIHandler::Get(browser()->profile())
-        ->SetPrintJobControllerForTesting(
-            std::make_unique<FakePrintJobController>());
+    printing_infra_helper_ =
+        std::make_unique<PrintingBackendInfrastructureHelper>();
   }
 
   void CreatedBrowserMainParts(
@@ -128,12 +127,17 @@ class PrintingApiTest : public PrintingApiTestBase {
   crosapi::mojom::PrintJobObserver* observer_remote() {
     return observer_remote_.get();
   }
+  PrintingBackendInfrastructureHelper& printing_infra_helper() {
+    return *printing_infra_helper_;
+  }
 
  private:
   NiceMock<MockLocalPrinter> local_printer_;
   mojo::Receiver<crosapi::mojom::LocalPrinter> local_printer_receiver_{
       &local_printer_};
   mojo::Remote<crosapi::mojom::PrintJobObserver> observer_remote_;
+
+  std::unique_ptr<PrintingBackendInfrastructureHelper> printing_infra_helper_;
 };
 #endif
 
@@ -187,6 +191,10 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
       .WillOnce(base::test::RunOnceCallback<1>());
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
 #endif
 
   RunTest("submit_job.html");
@@ -209,6 +217,10 @@ IN_PROC_BROWSER_TEST_P(PrintingPromiseApiTest, SubmitJob) {
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
       .WillOnce(base::test::RunOnceCallback<1>());
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
 #endif
 
   RunTest("submit_job_promise.html");
@@ -261,6 +273,10 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
                             crosapi::mojom::PrintJobStatus::kCancelled);
                       }),
                       base::test::RunOnceCallback<2>(/*canceled=*/true)));
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
 #endif
 
   RunTest("cancel_job.html");

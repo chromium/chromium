@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -29,7 +30,6 @@
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "content/public/browser/browser_thread.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/printing_context.h"
 #endif
@@ -105,39 +105,15 @@ std::unique_ptr<KeyedService> BuildFakeCupsPrintersManager(
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-PrintingTestHelper::PrintingTestHelper()
+PrintingBackendInfrastructureHelper::PrintingBackendInfrastructureHelper()
     : test_print_backend_(base::MakeRefCounted<printing::TestPrintBackend>()) {
-  create_services_subscription_ =
-      BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-              &PrintingTestHelper::OnWillCreateBrowserContextServices,
-              base::Unretained(this)));
-}
-
-PrintingTestHelper::~PrintingTestHelper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
-  printing::PrintBackend::SetPrintBackendForTesting(nullptr);
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (base::FeatureList::IsEnabled(
-          printing::features::kEnableOopPrintDrivers)) {
-    printing::PrintBackendServiceManager::GetInstance().ResetForTesting();
-  }
-#endif
-}
-
-void PrintingTestHelper::Init(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  profile_ = profile;
 
   printing::PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
   printing::PrintingContext::SetPrintingContextFactoryForTest(
       &test_printing_context_factory_);
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Note that this test service is not launched in the constructor due to the
-  // mojo subsystem not having been initialized yet.
   if (base::FeatureList::IsEnabled(
           printing::features::kEnableOopPrintDrivers)) {
     print_backend_service_ =
@@ -149,11 +125,44 @@ void PrintingTestHelper::Init(Profile* profile) {
 #endif
 }
 
+PrintingBackendInfrastructureHelper::~PrintingBackendInfrastructureHelper() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  printing::PrintingContext::SetPrintingContextFactoryForTest(nullptr);
+  printing::PrintBackend::SetPrintBackendForTesting(nullptr);
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (base::FeatureList::IsEnabled(
+          printing::features::kEnableOopPrintDrivers)) {
+    printing::PrintBackendServiceManager::GetInstance().ResetForTesting();
+  }
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+PrintingTestHelper::PrintingTestHelper() {
+  create_services_subscription_ =
+      BrowserContextDependencyManager::GetInstance()
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &PrintingTestHelper::OnWillCreateBrowserContextServices,
+              base::Unretained(this)));
+}
+
+PrintingTestHelper::~PrintingTestHelper() = default;
+
+void PrintingTestHelper::Init(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  profile_ = profile;
+  printing_infra_helper_ =
+      std::make_unique<PrintingBackendInfrastructureHelper>();
+}
+
 void PrintingTestHelper::AddAvailablePrinter(
     const std::string& printer_id,
     const std::string& printer_display_name,
     std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities) {
   CHECK(profile_);
+  CHECK(printing_infra_helper_);
 
   chromeos::Printer printer;
   printer.set_id(printer_id);
@@ -169,12 +178,12 @@ void PrintingTestHelper::AddAvailablePrinter(
           kPrinterUnreachable,
       chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
   printers_manager->SetPrinterStatus(status);
-  test_print_backend_->AddValidPrinter(printer_id, std::move(capabilities),
-                                       nullptr);
+  printing_infra_helper_->test_print_backend().AddValidPrinter(
+      printer_id, std::move(capabilities), nullptr);
 
   // Printers in the test context are identified by `printer_id`.
-  test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
-      printer_id);
+  printing_infra_helper_->test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(printer_id);
 }
 
 void PrintingTestHelper::OnWillCreateBrowserContextServices(
