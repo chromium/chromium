@@ -184,15 +184,6 @@ reviewer.
     This histogram is only recorded {RegularProfileFiltered}.
   </summary>
   <token key="RegularProfileFiltered">
-    <variant name=""
-        summary="prior to version M-109. It is recorded for both regular and
-                 irregular profiles">
-      <obsolete>
-        Deprecated in M109. Used to include data from both regular and irregular
-        profiles, such as incognito profiles. Consult the new histograms with
-        the RegularProfile tag instead.
-      </obsolete>
-    </variant>
     <variant name=".RegularProfile"
         summary="from version M-109. It is recorded only for regular profiles"/>
   </token>
@@ -429,15 +420,6 @@ reviewer.
     This histogram is only recorded {RegularProfileFiltered}.
   </summary>
   <token key="RegularProfileFiltered">
-    <variant name=""
-        summary="prior to version M-109. It is recorded for both regular and
-                 irregular profiles">
-      <obsolete>
-        Deprecated in M109. Used to include data from both regular and irregular
-        profiles, such as incognito profiles. Consult the new histograms with
-        the RegularProfile tag instead.
-      </obsolete>
-    </variant>
     <variant name=".RegularProfile"
         summary="from version M-109. It is recorded only for regular profiles"/>
   </token>

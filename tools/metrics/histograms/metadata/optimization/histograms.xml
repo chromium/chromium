@@ -25,11 +25,6 @@ chromium-metrics-reviews@google.com.
 <variants name="AnnotationType">
   <variant name="ContentVisibility" summary="Content Visibility"/>
   <variant name="PageEntities" summary="Page Entities"/>
-  <variant name="PageTopics" summary="Page Topics">
-    <obsolete>
-      Removed in M115.
-    </obsolete>
-  </variant>
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 

@@ -166,11 +166,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="OOBENetworkError">
-  <variant name="AuthExtTimeout">
-    <obsolete>
-      This histogram is replaced by `LoadingTimeout` histogram.
-    </obsolete>
-  </variant>
   <variant name="LoadingTimeout"/>
   <variant name="None"/>
   <variant name="Offline"/>
@@ -311,33 +306,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Terms-of-service.Declined"/>
   <variant name="Theme-selection.Proceed"/>
   <variant name="User-creation.Cancel"/>
-  <variant name="User-creation.CreateChildAccount">
-    <obsolete>
-      This histogram was available before introducing software update sreen
-      which requiered split the add child step into it is own screen this
-      changes is implemented in M-117. Add-child.CreateChildAccount is replacing
-      this one.
-    </obsolete>
-  </variant>
-  <variant name="User-creation.EnterpriseEnroll">
-    <obsolete>
-      This histogram was available before introducing software update sreen.
-      This is replaced by `User-creation.EnterpriseEnrollTriage` and
-      `User-creation.EnterpriseEnrollShortcut` starting from M-117.
-    </obsolete>
-  </variant>
   <variant name="User-creation.EnterpriseEnrollShortcut"/>
   <variant name="User-creation.EnterpriseEnrollTriage"/>
   <variant name="User-creation.KioskEnterpriseEnroll"/>
   <variant name="User-creation.SignIn"/>
-  <variant name="User-creation.SignInAsChild">
-    <obsolete>
-      This histogram was available before introducing software update sreen
-      which requiered split the add child step into it is own screen this
-      changes is implemented in M-117. Add-child.SignInAsChild histogram is
-      replacing this one.
-    </obsolete>
-  </variant>
   <variant name="User-creation.SignInSchool"/>
   <variant name="User-creation.SignInTriage"/>
   <variant name="Wrong-hwid.Next"/>

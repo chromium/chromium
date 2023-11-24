@@ -259,29 +259,7 @@ chromium-metrics-reviews@google.com.
     closed.
   </summary>
   <token key="ProfileType">
-    <variant name="Original">
-      <obsolete>
-        This histogram considered a KeyedService as active even if NULL. This
-        was fixed in M-106 in commit 903912cd. Non-NULL KeyedServices were no
-        longer counted. However, that change forgot to revise the histogram
-        names. The meaning of values in his histogram changed. In order to avoid
-        having a histogram with a meaning that differs by Chrome version, this
-        histogram was renamed in M-107 to Original-M-107. Original-M-107 counts
-        only non-NULL KeyedServices.
-      </obsolete>
-    </variant>
     <variant name="Original-M-107"/>
-    <variant name="OTR" summary="off the record">
-      <obsolete>
-        This histogram considered a KeyedService as active even if NULL. This
-        was fixed in M-106 in commit 903912cd. Non-NULL KeyedServices were no
-        longer counted. However, that change forgot to revise the histogram
-        names. The meaning of values in his histogram changed. In order to avoid
-        having a histogram with a meaning that differs by Chrome version, this
-        histogram was renamed in M-107 to OTR-M-107. OTR-M-107 counts only
-        non-NULL KeyedServices.
-      </obsolete>
-    </variant>
     <variant name="OTR-M-107" summary="off the record"/>
   </token>
 </histogram>

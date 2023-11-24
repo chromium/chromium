@@ -83,12 +83,6 @@ chromium-metrics-reviews@google.com.
   <variant name="GPUProcess" summary=""/>
   <variant name="NetworkProcess" summary=""/>
   <variant name="PluginProcess" summary=""/>
-  <variant name="PPAPIFlashProcess" summary="">
-    <obsolete>
-      Ported over from previous suffix based definition where it was removed on
-      2021-03 now that support for Flash has been removed.
-    </obsolete>
-  </variant>
   <variant name="PPAPIProcess" summary=""/>
   <variant name="RendererExtensionEventProcess" summary=""/>
   <variant name="RendererExtensionPersistentProcess" summary=""/>
@@ -107,13 +101,6 @@ chromium-metrics-reviews@google.com.
 -->
 
   <variant name="" summary="all intervals no matter the usage scenario"/>
-  <variant name=".AllTabsHidden"
-      summary="intervals during which there were tabs, but none visible">
-    <obsolete>
-      01/2022: Replaced with AllTabsHidden_VideoCapture, AllTabsHidden_Audio and
-      AllTabsHidden_NoVideoCaptureOrAudio.
-    </obsolete>
-  </variant>
   <variant name=".AllTabsHidden_Audio"
       summary="intervals during which there was no visible tab and no video
                capture, but there was audio"/>
