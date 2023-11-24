@@ -747,7 +747,7 @@ TEST_F(PopupViewViewsTest, RemoveAutofillRecordsNoAutocompleteDeletionMetrics) {
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
   histogram_tester.ExpectTotalCount(
       "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
-  histogram_tester.ExpectTotalCount("Autocomplete.Events", 0);
+  histogram_tester.ExpectTotalCount("Autocomplete.Events2", 0);
 }
 
 TEST_F(PopupViewViewsTest, RemoveAutocompleteSuggestionRecordsMetrics) {
@@ -763,7 +763,7 @@ TEST_F(PopupViewViewsTest, RemoveAutocompleteSuggestionRecordsMetrics) {
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
   histogram_tester.ExpectTotalCount(
       "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
-  histogram_tester.ExpectTotalCount("Autocomplete.Events", 0);
+  histogram_tester.ExpectTotalCount("Autocomplete.Events2", 0);
 
   EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
@@ -773,7 +773,7 @@ TEST_F(PopupViewViewsTest, RemoveAutocompleteSuggestionRecordsMetrics) {
           kKeyboardShiftDeletePressed,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events",
+      "Autocomplete.Events2",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
 }
 

@@ -436,13 +436,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autocomplete.Events" enum="AutocompleteEvents"
+<histogram name="Autocomplete.Events2" enum="AutocompleteEvents"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     Autocomplete events which are recorded when the user interacts with
-    suggestions served from Autocomplete.
+    suggestions served from Autocomplete. The histogram is recorded when an
+    autocomplete suggestion is shown, selected or deleted.
   </summary>
 </histogram>
 

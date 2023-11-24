@@ -7551,7 +7551,7 @@ TEST_F(AutofillMetricsTest, LogAutocompleteSuggestionAcceptedIndex_WithIndex) {
       "Autofill.SuggestionAcceptedIndex.Autocomplete", test_index,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events", AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
+      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
       /*expected_count=*/1);
 }
 
@@ -7563,7 +7563,7 @@ TEST_F(AutofillMetricsTest, LogAutocompleteSuggestionAcceptedIndex_IndexCap) {
       "Autofill.SuggestionAcceptedIndex.Autocomplete", kMaxBucketsCount,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events", AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
+      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
       /*expected_count=*/1);
 }
 
@@ -7571,7 +7571,7 @@ TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::OnAutocompleteSuggestionsShown();
   histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       /*expected_count=*/1);
 }
 

@@ -8775,7 +8775,7 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->DidShowSuggestions(
       /*has_autofill_suggestions=*/false, form, form.fields.back());
   histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       1);
 
   // No Autofill logs.
@@ -8812,7 +8812,7 @@ TEST_F(BrowserAutofillManagerTest,
   // No Autocomplete or credit cards logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
-              Not(AnyOf(HasSubstr("Autocomplete.Events"),
+              Not(AnyOf(HasSubstr("Autocomplete.Events2"),
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
@@ -9393,7 +9393,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // No Autocomplete or address logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms, Not(AnyOf(HasSubstr("Autocomplete.Events"),
+  EXPECT_THAT(histograms, Not(AnyOf(HasSubstr("Autocomplete.Events2"),
                                     HasSubstr("Autofill.FormEvents.Address"))));
 }
 

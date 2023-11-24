@@ -122,7 +122,7 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
           kDeleteButtonClicked,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events",
+      "Autocomplete.Events2",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
 }
 
@@ -147,7 +147,7 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
           kDeleteButtonClicked,
       0);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events",
+      "Autocomplete.Events2",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
