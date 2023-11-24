@@ -578,13 +578,6 @@ XRRuntimeManagerImpl::GetXrFrameSinkClientFactory() {
   return base::BindRepeating(&FrameSinkClientFactory);
 }
 
-void XRRuntimeManagerImpl::ForEachRuntime(
-    base::RepeatingCallback<void(BrowserXRRuntime*)> fn) {
-  for (auto& runtime : runtimes_) {
-    fn.Run(runtime.second.get());
-  }
-}
-
 std::vector<webxr::mojom::RuntimeInfoPtr>
 XRRuntimeManagerImpl::GetActiveRuntimes() {
   std::vector<webxr::mojom::RuntimeInfoPtr> active_runtimes;

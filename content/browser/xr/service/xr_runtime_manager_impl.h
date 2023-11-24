@@ -97,8 +97,6 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
 
   // XRRuntimeManager implementation
   BrowserXRRuntimeImpl* GetRuntime(device::mojom::XRDeviceId id) override;
-  void ForEachRuntime(
-      base::RepeatingCallback<void(BrowserXRRuntime*)> fn) override;
 
   content::WebXrLoggerManager& GetLoggerManager();
 
