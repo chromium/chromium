@@ -2698,7 +2698,6 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac12 ] external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-nesting/has-nesting.html [ Failure ]
 crbug.com/626703 external/wpt/png/apng/acTL-plays-one.html [ Failure ]
 crbug.com/626703 external/wpt/png/apng/fcTL-blend-source-nearly-transparent.html [ Timeout ]
@@ -7103,7 +7102,6 @@ crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fe
 crbug.com/1503067 [ Linux ] virtual/plz-dedicated-worker-disabled/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
 crbug.com/1503067 [ Linux ] virtual/pna-iframes-warning/external/wpt/fetch/private-network-access/window-open.tentative.https.window.html [ Failure Pass ]
 crbug.com/1503067 [ Linux ] virtual/pna-iframes-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Failure Pass ]
-crbug.com/1503086 [ Linux ] external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Failure Pass ]
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
 
 # Gardener 2023-11-21
@@ -7118,3 +7116,4 @@ crbug.com/1495671 [ Win ] external/wpt/webmessaging/with-ports/020.html [ Failur
 
 # Gardener 2023-11-24
 crbug.com/1504652 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-iframe.html [ Timeout Pass ]
+crbug.com/1503086 external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Failure Pass Timeout ]
