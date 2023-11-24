@@ -632,7 +632,7 @@ export function isNonModifiable(
 
   const volumeType = volumeInfo.volumeType;
 
-  if (volumeType === VolumeManagerCommon.RootType.DOWNLOADS) {
+  if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
     if (!entry.isDirectory) {
       return false;
     }
@@ -654,7 +654,7 @@ export function isNonModifiable(
     return false;
   }
 
-  if (volumeType === VolumeManagerCommon.RootType.ANDROID_FILES) {
+  if (volumeType === VolumeManagerCommon.VolumeType.ANDROID_FILES) {
     if (!entry.isDirectory) {
       return false;
     }
@@ -677,11 +677,11 @@ export function isNonModifiable(
     return false;
   }
 
-  if (volumeType === VolumeManagerCommon.RootType.CROSTINI) {
+  if (volumeType === VolumeManagerCommon.VolumeType.CROSTINI) {
     return entry.fullPath === '/';
   }
 
-  if (volumeType === VolumeManagerCommon.RootType.GUEST_OS) {
+  if (volumeType === VolumeManagerCommon.VolumeType.GUEST_OS) {
     return entry.fullPath === '/';
   }
 

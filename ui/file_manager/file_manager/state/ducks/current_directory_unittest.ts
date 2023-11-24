@@ -25,9 +25,9 @@ export function setUp() {
   setUpFileManagerOnWindow();
   window.fileManager.selectionHandler = new FakeFileSelectionHandler();
 
-  fileSystem =
-      window.fileManager.volumeManager.getCurrentProfileVolumeInfo(
-                                          'downloads')!.fileSystem as
+  fileSystem = window.fileManager.volumeManager
+                   .getCurrentProfileVolumeInfo(
+                       VolumeManagerCommon.VolumeType.DOWNLOADS)!.fileSystem as
       MockFileSystem;
   fileSystem.populate([
     '/dir-1/',

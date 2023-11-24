@@ -113,16 +113,18 @@ export async function createVolumeInfo(
       .then(rootDirectoryEntry => {
         console.debug(`Got file system '${volumeMetadata.volumeId}'`);
         return new VolumeInfoImpl(
-            volumeMetadata.volumeType, volumeMetadata.volumeId,
-            rootDirectoryEntry.filesystem, volumeMetadata.mountCondition,
-            volumeMetadata.deviceType, volumeMetadata.devicePath,
-            volumeMetadata.isReadOnly, volumeMetadata.isReadOnlyRemovableDevice,
-            volumeMetadata.profile, localizedLabel, volumeMetadata.providerId,
-            volumeMetadata.hasMedia, volumeMetadata.configurable,
-            volumeMetadata.watchable, volumeMetadata.source,
-            volumeMetadata.diskFileSystemType || '', volumeMetadata.iconSet,
-            volumeMetadata.driveLabel, volumeMetadata.remoteMountPath,
-            volumeMetadata.vmType);
+            volumeMetadata.volumeType as VolumeManagerCommon.VolumeType,
+            volumeMetadata.volumeId, rootDirectoryEntry.filesystem,
+            volumeMetadata.mountCondition, volumeMetadata.deviceType,
+            volumeMetadata.devicePath, volumeMetadata.isReadOnly,
+            volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
+            localizedLabel, volumeMetadata.providerId, volumeMetadata.hasMedia,
+            volumeMetadata.configurable, volumeMetadata.watchable,
+            volumeMetadata.source as VolumeManagerCommon.Source,
+            volumeMetadata.diskFileSystemType as
+                VolumeManagerCommon.FileSystemType,
+            volumeMetadata.iconSet, volumeMetadata.driveLabel,
+            volumeMetadata.remoteMountPath, volumeMetadata.vmType);
       })
       .then(async (volumeInfo) => {
         // resolveDisplayRoot() is a promise, but instead of using await here,
@@ -140,14 +142,17 @@ export async function createVolumeInfo(
         // TODO(crbug/847729): Report a mount error via UMA.
 
         return new VolumeInfoImpl(
-            volumeMetadata.volumeType, volumeMetadata.volumeId,
+            volumeMetadata.volumeType as VolumeManagerCommon.VolumeType,
+            volumeMetadata.volumeId,
             null,  // File system is not found.
             volumeMetadata.mountCondition, volumeMetadata.deviceType,
             volumeMetadata.devicePath, volumeMetadata.isReadOnly,
             volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
             localizedLabel, volumeMetadata.providerId, volumeMetadata.hasMedia,
             volumeMetadata.configurable, volumeMetadata.watchable,
-            volumeMetadata.source, volumeMetadata.diskFileSystemType || '',
+            volumeMetadata.source as VolumeManagerCommon.Source,
+            volumeMetadata.diskFileSystemType as
+                VolumeManagerCommon.FileSystemType,
             volumeMetadata.iconSet, volumeMetadata.driveLabel,
             volumeMetadata.remoteMountPath, volumeMetadata.vmType);
       });
@@ -244,7 +249,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
    * volume info has already been added, the volumeMetadata is ignored.
    */
   private addVolumeInfo_(volumeInfo: VolumeInfo): VolumeInfo {
-    const volumeType = volumeInfo.volumeType;
+    const volumeType = volumeInfo.volumeType as VolumeManagerCommon.VolumeType;
 
     // We don't show Downloads and Drive on volume list if they have
     // mount error, since users can do nothing in this situation. We
@@ -374,19 +379,20 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
 
     const {eventType, status, volumeMetadata} = event;
     const {sourcePath = '', volumeId} = volumeMetadata;
+    const volumeError = status as string as VolumeManagerCommon.VolumeError;
 
     switch (eventType) {
       case 'mount': {
         const requestKey = this.makeRequestKey_('mount', sourcePath);
 
-        switch (status) {
-          case 'success':
+        switch (volumeError) {
+          case VolumeManagerCommon.VolumeError.SUCCESS:
           case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
           case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
             console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
             if (volumeMetadata.hidden) {
               console.debug(`Mount discarded for hidden volume: '${volumeId}'`);
-              this.finishRequest_(requestKey, status);
+              this.finishRequest_(requestKey, volumeError);
               return;
             }
 
@@ -397,12 +403,13 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
               console.warn(
                   'Unable to create volumeInfo for ' +
                   `${volumeId} mounted on ${sourcePath}.` +
-                  `Mount status: ${status}. Error: ${error.stack || error}.`);
-              this.finishRequest_(requestKey, status);
+                  `Mount status: ${volumeError}. Error: ${
+                      error.stack || error}.`);
+              this.finishRequest_(requestKey, volumeError);
               throw (error);
             }
             this.addVolumeInfo_(volumeInfo);
-            this.finishRequest_(requestKey, status, volumeInfo);
+            this.finishRequest_(requestKey, volumeError, volumeInfo);
             return;
           }
 
@@ -416,16 +423,16 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
                 VolumeAlreadyMountedEvent;
             navigationEvent.volumeId = volumeId;
             this.dispatchEvent(navigationEvent);
-            this.finishRequest_(requestKey, status);
+            this.finishRequest_(requestKey, volumeError);
             return;
           }
 
           case VolumeManagerCommon.VolumeError.NEED_PASSWORD:
           case VolumeManagerCommon.VolumeError.CANCELLED:
           default:
-            console.warn('Cannot mount (redacted):', status);
-            console.debug(`Cannot mount '${sourcePath}':`, status);
-            this.finishRequest_(requestKey, status);
+            console.warn('Cannot mount (redacted):', volumeError);
+            console.debug(`Cannot mount '${sourcePath}':`, volumeError);
+            this.finishRequest_(requestKey, volumeError);
             return;
         }
       }
@@ -437,8 +444,8 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
             this.volumeInfoList.item(volumeInfoIndex) :
             null;
 
-        switch (status) {
-          case 'success': {
+        switch (volumeError) {
+          case VolumeManagerCommon.VolumeError.SUCCESS: {
             const requested = requestKey in this.requests_;
             if (!requested && volumeInfo) {
               console.debug(`Unmounted '${volumeId}' without request`);
@@ -449,14 +456,14 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
             }
             getStore().dispatch(removeVolume({volumeId}));
             this.volumeInfoList.remove(volumeId);
-            this.finishRequest_(requestKey, status);
+            this.finishRequest_(requestKey, volumeError);
             return;
           }
 
           default:
-            console.warn('Cannot unmount (redacted):', status);
-            console.debug(`Cannot unmount '${volumeId}':`, status);
-            this.finishRequest_(requestKey, status);
+            console.warn('Cannot unmount (redacted):', volumeError);
+            console.debug(`Cannot unmount '${volumeId}':`, volumeError);
+            this.finishRequest_(requestKey, volumeError);
             return;
         }
       }
@@ -735,7 +742,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
    * @param volumeInfo Volume info of the mounted volume.
    */
   private finishRequest_(
-      key: string, status: VolumeManagerCommon.VolumeError|string,
+      key: string, status: VolumeManagerCommon.VolumeError,
       volumeInfo?: VolumeInfo) {
     const request = this.requests_[key];
     if (!request) {
@@ -755,7 +762,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
   private invokeRequestCallbacks_(
       request: Request, status: VolumeManagerCommon.VolumeError,
       volumeInfo?: VolumeInfo) {
-    if (status === 'success') {
+    if (status === VolumeManagerCommon.VolumeError.SUCCESS) {
       request.successCallbacks.map(cb => cb(volumeInfo));
 
     } else {

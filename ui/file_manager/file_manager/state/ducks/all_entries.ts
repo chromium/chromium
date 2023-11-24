@@ -153,7 +153,7 @@ function getEntryIcon(
   const url = entry.toURL();
 
   // Pre-defined icons based on the URL.
-  const urlToIconPath = {
+  const urlToIconPath: Record<FileKey, string> = {
     [recentRootKey]: constants.ICON_TYPES.RECENT,
     [myFilesEntryListKey]: constants.ICON_TYPES.MY_FILES,
     [driveRootEntryListKey]: constants.ICON_TYPES.SERVICE_DRIVE,
@@ -181,7 +181,7 @@ function getEntryIcon(
   // For grouped removable devices, its parent folder is an entry list, we
   // should use USB icon for it.
   if ('rootType' in entry &&
-      entry.rootType === VolumeManagerCommon.VolumeType.REMOVABLE) {
+      entry.rootType === VolumeManagerCommon.RootType.REMOVABLE) {
     return constants.ICON_TYPES.USB;
   }
 

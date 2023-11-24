@@ -40,7 +40,7 @@ export class LocalDiskLowSpaceBanner extends WarningBanner {
    */
   override diskThreshold() {
     return {
-      type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+      type: VolumeManagerCommon.RootType.DOWNLOADS,
       minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
     };
   }

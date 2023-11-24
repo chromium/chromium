@@ -590,7 +590,7 @@ export async function testNullGetSizeStatsDoesntTriggerThreshold() {
   controller.setWarningBannersInOrder([testWarningBanners[0]!.tagName]);
   testWarningBanners[0]!.setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
 
@@ -608,7 +608,7 @@ export async function testVolumeSizeChangeShowsBanner() {
   controller.setWarningBannersInOrder([testWarningBanners[0]!.tagName]);
   testWarningBanners[0]!.setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
 
@@ -640,7 +640,7 @@ export async function testVolumeSizeChangeIsDebounced() {
   controller.setWarningBannersInOrder([testWarningBanners[0]!.tagName]);
   testWarningBanners[0]!.setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
 
@@ -693,7 +693,7 @@ export async function testVolumeSizeBelowShowsBannerAndAboveHidesBanner() {
   controller.setWarningBannersInOrder([testWarningBanners[0]!.tagName]);
   testWarningBanners[0]!.setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
 
@@ -736,7 +736,7 @@ export async function testTwoVolumeBannersShowOnWatchedVolumeTypes() {
   // Banner should show on Downloads when volume goes below 1GB remaining size.
   testWarningBanners[0]!.setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
 
@@ -744,7 +744,7 @@ export async function testTwoVolumeBannersShowOnWatchedVolumeTypes() {
   // space.
   testWarningBanners[1]!.setAllowedVolumes([driveAllowedVolumeType]);
   testWarningBanners[1]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DRIVE,
+    type: VolumeManagerCommon.RootType.DRIVE,
     minRatio: 0.2,
   });
 
@@ -807,12 +807,12 @@ export async function testChangingDirectoryMidSizeUpdateHidesBanner() {
       [testWarningBanners[0]!.tagName, testWarningBanners[1]!.tagName]);
   testWarningBanners[0]!.setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
   testWarningBanners[1]!.setAllowedVolumes([driveAllowedVolumeType]);
   testWarningBanners[1]!.setDiskThreshold({
-    type: VolumeManagerCommon.VolumeType.DRIVE,
+    type: VolumeManagerCommon.RootType.DRIVE,
     minRatio: 0.2,
   });
 

@@ -12,7 +12,7 @@ import {VolumeInfoList} from '../../externs/volume_info_list.js';
 
 import {ArrayDataModel} from './array_data_model.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
-import {AllowedPaths, isNative, VolumeManagerCommon} from './volume_manager_types.js';
+import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Implementation of VolumeInfoList for FilteredVolumeManager.
@@ -205,9 +205,8 @@ export class FilteredVolumeManager extends EventTarget {
       case AllowedPaths.ANY_PATH_OR_URL:
         return true;
       case AllowedPaths.NATIVE_PATH:
-        return isNative(assert(volumeType));
+        return VolumeManagerCommon.isNative(assert(volumeType));
     }
-    return false;
   }
 
   /**
@@ -261,7 +260,7 @@ export class FilteredVolumeManager extends EventTarget {
     } else if (this.isFuseBoxOnly_) {
       // SelectFileAsh requires fusebox volumes or native volumes.
       return this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType) ||
-          isNative(volumeInfo.volumeType);
+          VolumeManagerCommon.isNative(volumeInfo.volumeType);
     } else if (this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType)) {
       // Normal Files app: remove fusebox volumes.
       return false;

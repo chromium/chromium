@@ -25,7 +25,8 @@ export class VolumeInfoImpl implements VolumeInfo {
    * > Downloads", "My Files" is a prefixEntry on "Downloads" VolumeInfo.
    */
   private prefixEntry_: FilesAppEntry|null = null;
-  private fakeEntries_: Record<VolumeManagerCommon.RootType, FakeEntry> = {};
+  private fakeEntries_:
+      Partial<Record<VolumeManagerCommon.RootType, FakeEntry>> = {};
   private displayRootPromise_: Promise<DirectoryEntry>;
   /**
    * `volumeType` is the type of the volume.
@@ -139,7 +140,7 @@ export class VolumeInfoImpl implements VolumeInfo {
     return this.computersDisplayRoot_!;
   }
 
-  get fakeEntries(): Record<VolumeManagerCommon.RootType, FakeEntry> {
+  get fakeEntries(): Partial<Record<VolumeManagerCommon.RootType, FakeEntry>> {
     return this.fakeEntries_;
   }
 

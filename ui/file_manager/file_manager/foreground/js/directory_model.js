@@ -14,7 +14,7 @@ import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.j
 import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
-import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
@@ -412,7 +412,9 @@ export class DirectoryModel extends EventTarget {
    */
   isOnFuseBox() {
     const info = this.getCurrentVolumeInfo();
-    return info ? info.diskFileSystemType === 'fusebox' : false;
+    return info ?
+        /** @type {string} */ (info.diskFileSystemType) === 'fusebox' :
+        false;
   }
 
   /**
@@ -421,7 +423,8 @@ export class DirectoryModel extends EventTarget {
   isOnNative() {
     const rootType = this.getCurrentRootType();
     return rootType != null && !isRecentRootType(rootType) &&
-        isNative(VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
+        VolumeManagerCommon.isNative(
+            VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
   }
 
   /**

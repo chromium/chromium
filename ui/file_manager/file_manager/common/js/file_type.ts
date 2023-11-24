@@ -232,7 +232,7 @@ export function getIconOverrides(
 
   // Overrides per RootType and defined by fullPath.
   const overrides:
-      Record<VolumeManagerCommon.RootType, Record<string, string>> = {
+      Partial<Record<VolumeManagerCommon.RootType, Record<string, string>>> = {
         [VolumeManagerCommon.RootType.DOWNLOADS]: {
           '/Camera': 'camera-folder',
           '/Downloads': VolumeManagerCommon.VolumeType.DOWNLOADS,

@@ -11,10 +11,10 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -24,6 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {validateExternalDriveName} from '../js/file_rename.js';
@@ -98,7 +99,8 @@ export class FilesFormatDialog extends PolymerElement {
 
   format() {
     try {
-      validateExternalDriveName(this.label_, this.formatType_);
+      validateExternalDriveName(
+          this.label_, this.formatType_ as VolumeManagerCommon.FileSystemType);
     } catch (error: any) {
       this.$.label.setAttribute('error-message', error.message);
       this.$.label.invalid = true;

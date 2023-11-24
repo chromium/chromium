@@ -39,7 +39,7 @@ export class DriveLowSharedDriveSpaceBanner extends WarningBanner {
    */
   override diskThreshold() {
     return {
-      type: VolumeManagerCommon.VolumeType.DRIVE,
+      type: VolumeManagerCommon.RootType.DRIVE,
       minRatio: 0.2,
     };
   }

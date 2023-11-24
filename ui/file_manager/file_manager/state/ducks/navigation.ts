@@ -152,17 +152,18 @@ function refreshNavigationRootsReducer(currentState: State): State {
 
 
   // 5/6/7/8 Other volumes.
-  const volumesOrder = {
-    // ODFS is a PROVIDED volume type but is a special case to be directly below
-    // Drive.
-    // ODFS : 0
-    [VolumeType.SMB]: 1,
-    [VolumeType.PROVIDED]: 2,  // FSP.
-    [VolumeType.DOCUMENTS_PROVIDER]: 3,
-    [VolumeType.REMOVABLE]: 4,
-    [VolumeType.ARCHIVE]: 5,
-    [VolumeType.MTP]: 6,
-  };
+  const volumesOrder:
+      Partial<Record<VolumeManagerCommon.VolumeType, number>> = {
+        // ODFS is a PROVIDED volume type but is a special case to be directly
+        // below Drive.
+        // ODFS : 0
+        [VolumeType.SMB]: 1,
+        [VolumeType.PROVIDED]: 2,  // FSP.
+        [VolumeType.DOCUMENTS_PROVIDER]: 3,
+        [VolumeType.REMOVABLE]: 4,
+        [VolumeType.ARCHIVE]: 5,
+        [VolumeType.MTP]: 6,
+      };
   // Filter volumes based on the volumeInfoList in volumeManager.
   const {volumeManager} = window.fileManager;
   const filteredVolumes =

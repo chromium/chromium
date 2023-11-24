@@ -323,11 +323,11 @@ export function testMultipleDifferentIdsSameVolumeTypeAndRootTypeNoneMatches() {
  */
 export function testUndefinedThresholdAndSizeStats() {
   const testMinSizeThreshold = {
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   };
   const testMinRatioThreshold = {
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize: 0.1,
   };
   const testSizeStats = {
@@ -354,7 +354,7 @@ export function testUndefinedThresholdAndSizeStats() {
  */
 export function testMinSizeReturnsCorrectly() {
   const createMinSizeThreshold = (minSize: number) => ({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minSize,
   });
 
@@ -380,7 +380,7 @@ export function testMinSizeReturnsCorrectly() {
  */
 export function testMinRatioReturnsCorrectly() {
   const createMinRatioThreshold = (minRatio: number) => ({
-    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    type: VolumeManagerCommon.RootType.DOWNLOADS,
     minRatio,
   });
 

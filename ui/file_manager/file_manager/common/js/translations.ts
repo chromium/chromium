@@ -170,9 +170,12 @@ export function getRootTypeLabel(locationInfo: EntryLocation) {
           return str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
         case VolumeManagerCommon.MediaViewRootType.DOCUMENTS:
           return str('MEDIA_VIEW_DOCUMENTS_ROOT_LABEL');
+        default:
+          console.error(
+              'Unsupported media view root type: ' + mediaViewRootType);
+          return volumeInfoLabel;
       }
-      console.error('Unsupported media view root type: ' + mediaViewRootType);
-      return volumeInfoLabel;
+
     case VolumeManagerCommon.RootType.ARCHIVE:
     case VolumeManagerCommon.RootType.REMOVABLE:
     case VolumeManagerCommon.RootType.MTP:

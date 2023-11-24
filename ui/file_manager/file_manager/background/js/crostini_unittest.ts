@@ -48,7 +48,7 @@ export function setUp() {
   } as VolumeManager;
 
   // Reset initial root type.
-  volumeManagerRootType = 'testroot';
+  volumeManagerRootType = 'testroot' as VolumeManagerCommon.RootType;
 
   // Create and initialize Crostini.
   crostini = new CrostiniImpl();
@@ -185,20 +185,23 @@ export function testCanSharePath() {
   // enforces allowed write paths.
 
   const allowed = [
-    'downloads',
-    'removable',
-    'android_files',
-    'drive',
-    'shared_drives_grand_root',
-    'team_drive',
-    'drive_shared_with_me',
+    VolumeManagerCommon.RootType.DOWNLOADS,
+    VolumeManagerCommon.RootType.REMOVABLE,
+    VolumeManagerCommon.RootType.ANDROID_FILES,
+    VolumeManagerCommon.RootType.DRIVE,
+    VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT,
+    VolumeManagerCommon.RootType.SHARED_DRIVE,
+    VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
   ];
   for (const type of allowed) {
     volumeManagerRootType = type;
     // TODO(crbug.com/958840): Sharing Play files root is disallowed until
     // we can ensure it will not also share Downloads.
     // We don't share 'Shared with me' root since it is fake.
-    if (['android_files', 'drive_shared_with_me'].includes(type)) {
+    if ([
+          VolumeManagerCommon.RootType.ANDROID_FILES,
+          VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
+        ].includes(type)) {
       assertFalse(crostini.canSharePath('vm', root, true));
       assertFalse(crostini.canSharePath('vm', root, false));
     } else {

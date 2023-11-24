@@ -30,7 +30,6 @@ static_js_files = [
   "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
   "file_manager/common/js/ui.js",
-  "file_manager/common/js/volume_manager_types.js",
 
   # Externs:
   "file_manager/externs/background/crostini.js",
@@ -172,6 +171,7 @@ ts_files = [
   "file_manager/common/js/tslib_shim.ts",
   "file_manager/common/js/url_constants.ts",
   "file_manager/common/js/util.ts",
+  "file_manager/common/js/volume_manager_types.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
@@ -568,8 +568,6 @@ ts_generated_templates += [
 
 # d.ts. files that are automatically generated from the JS file.
 generate_definitions_js_files = [
-  "file_manager/common/js/volume_manager_types.js",
-  "file_manager/externs/files_app_entry_interfaces.js",
   "file_manager/externs/search_item.js",
   "file_manager/externs/quick_view.js",
 ]

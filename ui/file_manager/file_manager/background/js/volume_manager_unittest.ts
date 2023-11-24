@@ -669,7 +669,8 @@ export async function testDriveWithNullFilesystem(done: VoidCallback) {
   // Create a VolumeInfo with null filesystem, in the same way that happens on
   // createVolumeInfo().
   const volumeInfo = new VolumeInfoImpl(
-      driveVolumeMetadata.volumeType, driveVolumeMetadata.volumeId,
+      driveVolumeMetadata.volumeType as VolumeManagerCommon.VolumeType,
+      driveVolumeMetadata.volumeId,
       null,  // File system is not found.
       expectedError, driveVolumeMetadata.deviceType,
       driveVolumeMetadata.devicePath, driveVolumeMetadata.isReadOnly,
@@ -677,7 +678,9 @@ export async function testDriveWithNullFilesystem(done: VoidCallback) {
       driveVolumeMetadata.profile, localizedLabel,
       driveVolumeMetadata.providerId, driveVolumeMetadata.hasMedia,
       driveVolumeMetadata.configurable, driveVolumeMetadata.watchable,
-      driveVolumeMetadata.source, driveVolumeMetadata.diskFileSystemType || '',
+      driveVolumeMetadata.source as VolumeManagerCommon.Source,
+      driveVolumeMetadata.diskFileSystemType as
+          VolumeManagerCommon.FileSystemType,
       driveVolumeMetadata.iconSet, driveVolumeMetadata.driveLabel,
       driveVolumeMetadata.remoteMountPath, driveVolumeMetadata.vmType);
 

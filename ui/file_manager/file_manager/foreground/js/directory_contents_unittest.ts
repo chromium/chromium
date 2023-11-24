@@ -84,7 +84,7 @@ export function testHiddenFiles() {
   assertEquals(0, hidden.length);
 
   // $RECYCLE.BIN is not hidden in other volumes.
-  volumeManagerRootType = 'testroot';
+  volumeManagerRootType = 'testroot' as VolumeManagerCommon.RootType;
   filter.setHiddenFilesVisible(false);
   hidden = entries.filter(entry => !filter.filter(entry));
   assertEquals(2, hidden.length);

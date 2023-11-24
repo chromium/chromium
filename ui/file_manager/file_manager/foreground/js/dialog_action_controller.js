@@ -75,7 +75,8 @@ export class DialogActionController {
     this.fileTypes_ = launchParam.typeList || [];
 
     /** @private @const @type {!AllowedPaths} */
-    this.allowedPaths_ = launchParam.allowedPaths;
+    this.allowedPaths_ =
+        /** @type {!AllowedPaths} */ (launchParam.allowedPaths);
 
     /**
      * Bound function for onCancel_.

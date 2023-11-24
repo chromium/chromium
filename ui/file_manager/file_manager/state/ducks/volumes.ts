@@ -75,7 +75,7 @@ export function convertVolumeInfoAndMetadataToVolume(
   const volumeRootKey = volumeInfo.displayRoot.toURL();
   return {
     volumeId: volumeMetadata.volumeId,
-    volumeType: volumeMetadata.volumeType,
+    volumeType: volumeMetadata.volumeType as VolumeManagerCommon.VolumeType,
     rootKey: volumeRootKey,
     status: PropStatus.SUCCESS,
     label: volumeInfo.label,

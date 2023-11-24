@@ -206,7 +206,7 @@ export class MockVolumeManager implements VolumeManager {
 
     let diskFileSystemType = VolumeManagerCommon.FileSystemType.UNKNOWN;
     if (devicePath && devicePath.startsWith('fusebox')) {
-      diskFileSystemType = 'fusebox';
+      diskFileSystemType = 'fusebox' as VolumeManagerCommon.FileSystemType;
     }
 
     let source = VolumeManagerCommon.Source.NETWORK;
@@ -322,7 +322,7 @@ export class MockVolumeManager implements VolumeManager {
       errorCallback?: (arg0: FileError) => void) {
     const match = url.match(/^filesystem:(\w+):\w+(\/.*)/);
     if (match) {
-      const volumeType = match[1]!;
+      const volumeType = match[1]! as VolumeManagerCommon.VolumeType;
       let path = match[2]!;
       const volume = volumeManager.getCurrentProfileVolumeInfo(volumeType);
       if (volume) {

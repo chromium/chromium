@@ -1924,8 +1924,9 @@ export class FileManager extends EventTarget {
    * @returns {AllowedPaths}
    */
   getAllowedPaths_() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    let allowedPaths = this.launchParams_.allowedPaths;
+    let allowedPaths =
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
+        /** @type {AllowedPaths} */ (this.launchParams_.allowedPaths);
     // The native implementation of the Files app creates snapshot files for
     // non-native files. But it does not work for folders (e.g., dialog for
     // loading unpacked extensions).
@@ -1939,6 +1940,7 @@ export class FileManager extends EventTarget {
         allowedPaths = AllowedPaths.ANY_PATH;
       }
     }
+
     return allowedPaths;
   }
 

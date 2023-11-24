@@ -27,21 +27,22 @@ const PLUGIN_VM = 'PvmDefault';
 /**
  * Valid root types to their share location.
  */
-const VALID_ROOT_TYPES_FOR_SHARE = new Map([
-  [VolumeManagerCommon.RootType.DOWNLOADS, 'Downloads'],
-  [VolumeManagerCommon.RootType.REMOVABLE, 'Removable'],
-  [VolumeManagerCommon.RootType.ANDROID_FILES, 'AndroidFiles'],
-  [VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT, 'DriveComputers'],
-  [VolumeManagerCommon.RootType.COMPUTER, 'DriveComputers'],
-  [VolumeManagerCommon.RootType.DRIVE, 'MyDrive'],
-  [VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT, 'TeamDrive'],
-  [VolumeManagerCommon.RootType.SHARED_DRIVE, 'TeamDrive'],
-  [VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME, 'SharedWithMe'],
-  [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
-  [VolumeManagerCommon.RootType.GUEST_OS, 'GuestOs'],
-  [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
-  [VolumeManagerCommon.RootType.SMB, 'SMB'],
-]);
+const VALID_ROOT_TYPES_FOR_SHARE =
+    new Map<VolumeManagerCommon.RootType, string>([
+      [VolumeManagerCommon.RootType.DOWNLOADS, 'Downloads'],
+      [VolumeManagerCommon.RootType.REMOVABLE, 'Removable'],
+      [VolumeManagerCommon.RootType.ANDROID_FILES, 'AndroidFiles'],
+      [VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT, 'DriveComputers'],
+      [VolumeManagerCommon.RootType.COMPUTER, 'DriveComputers'],
+      [VolumeManagerCommon.RootType.DRIVE, 'MyDrive'],
+      [VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT, 'TeamDrive'],
+      [VolumeManagerCommon.RootType.SHARED_DRIVE, 'TeamDrive'],
+      [VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME, 'SharedWithMe'],
+      [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
+      [VolumeManagerCommon.RootType.GUEST_OS, 'GuestOs'],
+      [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
+      [VolumeManagerCommon.RootType.SMB, 'SMB'],
+    ]);
 
 /**
  * Implementation of Crostini shared path state handler.
@@ -204,7 +205,7 @@ export class CrostiniImpl {
   /**
    * Returns true if entry can be shared with the specified VM.
    */
-  canSharePath(vmName: string, entry: Entry, persist: boolean) {
+  canSharePath(vmName: string, entry: Entry, persist: boolean): boolean {
     if (!this.isEnabled(vmName)) {
       return false;
     }
@@ -252,6 +253,6 @@ export class CrostiniImpl {
       return false;
     }
 
-    return VALID_ROOT_TYPES_FOR_SHARE.has(root || '');
+    return !!root && VALID_ROOT_TYPES_FOR_SHARE.has(root);
   }
 }
