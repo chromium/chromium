@@ -33,7 +33,8 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
 };
 
 const tests = [
-  ['AllInputsDisabledTest', 'all_inputs_disabled_test.js'],
+  // Disable. Suspect for flakes. See b/313002665.
+  // ['AllInputsDisabledTest', 'all_inputs_disabled_test.js'],
   ['HardwareErrorPageTest', 'hardware_error_page_test.js'],
   ['CriticalErrorPageTest', 'critical_error_page_test.js'],
   ['FakeShimlessRmaServiceTestSuite', 'fake_shimless_rma_service_test.js'],
