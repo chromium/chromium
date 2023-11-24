@@ -165,6 +165,7 @@ enum class ContainerVersion {
   STRETCH,
   BUSTER,
   BULLSEYE,
+  BOOKWORM,
 };
 
 struct VmInfo {

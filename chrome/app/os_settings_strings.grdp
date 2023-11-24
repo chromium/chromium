@@ -2458,6 +2458,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE" desc="Message shown when an upgrade to Debian 11 (codenamed Bullseye) is available.">
     An upgrade to Debian 11 (Bullseye) is available
   </message>
+  <message name="IDS_OS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BOOKWORM_MESSAGE" desc="Message shown when an upgrade to Debian 12 (codenamed Bookworm) is available.">
+    An upgrade to Debian 12 (Bookworm) is available
+  </message>
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_SUBTEXT" desc="The current version the user has.">
     Current version is <ph name="CURRENT_VERSION">$1<ex>Debian GNU/Linux 9 (stretch)</ex></ph>
   </message>
