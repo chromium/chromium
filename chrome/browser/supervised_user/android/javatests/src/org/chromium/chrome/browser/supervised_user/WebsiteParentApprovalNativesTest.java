@@ -28,7 +28,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -100,7 +99,8 @@ public class WebsiteParentApprovalNativesTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserSettingsTestBridge.setFilteringBehavior(
-                            Profile.getLastUsedRegularProfile(), FilteringBehavior.BLOCK);
+                            mTabbedActivityTestRule.getProfile(/* incognito= */ false),
+                            FilteringBehavior.BLOCK);
                 });
         mWebContents = mTabbedActivityTestRule.getWebContents();
 
