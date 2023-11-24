@@ -17,6 +17,7 @@ source_set("browser") {
 
   if (!is_ios && !is_android) {
     sources += [
+      "passkey_model.cc",
       "passkey_model.h",
       "passkey_model_change.cc",
       "passkey_model_change.h",
@@ -43,6 +44,7 @@ source_set("unit_tests") {
       ":browser",
       "//base/test:test_support",
       "//components/sync/protocol",
+      "//crypto",
     ]
   }
 }

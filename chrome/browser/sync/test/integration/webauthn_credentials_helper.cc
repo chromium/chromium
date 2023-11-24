@@ -26,8 +26,6 @@ using sync_datatype_helper::test;
 
 namespace {
 
-constexpr char kTestRpId[] = "example.com";
-
 class WebAuthnCredentialsSyncIdEqualsChecker
     : public MultiClientStatusChangeChecker {
  public:
@@ -188,6 +186,9 @@ sync_pb::WebauthnCredentialSpecifics NewPasskey() {
   specifics.set_user_id(base::RandBytesAsString(16));
   specifics.set_creation_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  // Set some random encrypted_data to ensure the model accepts the specifics as
+  // valid.
+  specifics.set_encrypted("a");
   return specifics;
 }
 
@@ -201,6 +202,9 @@ sync_pb::WebauthnCredentialSpecifics NewShadowingPasskey(
   specifics.set_creation_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   specifics.add_newly_shadowed_credential_ids(shadowed.credential_id());
+  // Set some random encrypted_data to ensure the model accepts the specifics as
+  // valid.
+  specifics.set_encrypted("a");
   return specifics;
 }
 

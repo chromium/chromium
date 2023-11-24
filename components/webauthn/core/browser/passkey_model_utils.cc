@@ -16,12 +16,21 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "crypto/aead.h"
+#include "crypto/ec_private_key.h"
+#include "crypto/random.h"
 
 namespace webauthn::passkey_model_utils {
 
 namespace {
+
+// The byte length of the WebauthnCredentialSpecifics `sync_id` field.
+constexpr size_t kSyncIdLength = 16u;
+
+// The byte length of the WebauthnCredentialSpecifics `credential_id` field.
+constexpr size_t kCredentialIdLength = 16u;
 
 // The length of the nonce prefix used for AES-256-GCM encryption of
 // `WebAuthnCredentialSpecifics.encrypted_data` (both `private_key` and
@@ -90,6 +99,37 @@ std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
   return std::vector<sync_pb::WebauthnCredentialSpecifics>(
       std::make_move_iterator(grouped.begin()),
       std::make_move_iterator(grouped.end()));
+}
+
+std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
+GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
+                                 const PasskeyModel::UserEntity& user_entity,
+                                 base::span<const uint8_t> trusted_vault_key,
+                                 int32_t trusted_vault_key_version) {
+  sync_pb::WebauthnCredentialSpecifics specifics;
+  specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
+  specifics.set_credential_id(base::RandBytesAsString(kCredentialIdLength));
+  specifics.set_rp_id(std::string(rp_id));
+  specifics.set_user_id(user_entity.id.data(), user_entity.id.size());
+  specifics.set_user_name(user_entity.name);
+  specifics.set_user_display_name(user_entity.display_name);
+  specifics.set_creation_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
+  auto ec_key = crypto::ECPrivateKey::Create();
+  std::vector<uint8_t> private_key_pkcs8;
+  CHECK(ec_key->ExportPrivateKey(&private_key_pkcs8));
+  encrypted.set_private_key(
+      {private_key_pkcs8.begin(), private_key_pkcs8.end()});
+  CHECK(EncryptWebauthnCredentialSpecificsData(trusted_vault_key, encrypted,
+                                               &specifics));
+  CHECK(specifics.has_encrypted());
+  specifics.set_key_version(trusted_vault_key_version);
+
+  std::vector<uint8_t> public_key_spki;
+  CHECK(ec_key->ExportPublicKey(&public_key_spki));
+  return {std::move(specifics), std::move(public_key_spki)};
 }
 
 bool DecryptWebauthnCredentialSpecificsData(
