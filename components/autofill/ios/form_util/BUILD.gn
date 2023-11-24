@@ -57,6 +57,7 @@ source_set("form_handler_feature") {
     ":form_util",
     ":form_util_feature",
     "//base",
+    "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
     "//components/password_manager/ios:password_manager_feature_header",
     "//ios/web/public/js_messaging",
@@ -83,6 +84,27 @@ optimize_js("autofill_form_features") {
   sources = _script
 }
 
+compile_ts("child_frame_registration_ts_lib") {
+  sources = [ "resources/child_frame_registration_lib.ts" ]
+  deps = [
+    ":autofill_form_features_ts",
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+optimize_ts("child_frame_registration_test_ts") {
+  sources = [ "resources/child_frame_registration_test.ts" ]
+  deps = [
+    ":autofill_form_features_ts",
+    ":child_frame_registration_ts_lib",
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
 compile_ts("fill_js_dependencies") {
   allow_js = true
   sources = [
@@ -93,7 +115,10 @@ compile_ts("fill_js_dependencies") {
     "resources/fill_util.js",
   ]
 
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [
+    ":autofill_form_features_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
 
 optimize_js("fill_js") {
@@ -101,8 +126,11 @@ optimize_js("fill_js") {
   sources = [ "resources/fill.js" ]
 
   deps = [
+    ":child_frame_registration_ts_lib",
     ":fill_js_dependencies",
+    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -119,6 +147,13 @@ optimize_ts("form_js") {
 optimize_js("form_handlers_js") {
   primary_script = "resources/form_handlers.js"
   sources = [ "resources/form_handlers.js" ]
+  deps = [
+    ":autofill_form_features_ts",
+    ":child_frame_registration_ts_lib",
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("test_support") {

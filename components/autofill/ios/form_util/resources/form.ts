@@ -77,6 +77,33 @@ function getFormControlElements(form: HTMLFormElement|null): Element[] {
 }
 
 /**
+ * Returns an array of iframe elements that are descendents of `root`.
+ *
+ * @param root The node under which to search for iframe elements.
+ * @return An array of iframe elements.
+ */
+function getIframeElements(root: Node|null): HTMLIFrameElement[] {
+  if (!root) {
+    return [];
+  }
+  const iter: NodeIterator =
+      document.createNodeIterator(root, NodeFilter.SHOW_ELEMENT, {
+        acceptNode(node: Node): number {
+          // Safe cast because of NodeFilter.SHOW_ELEMENT
+          const elt: Element = node as Element;
+          return elt.tagName == 'IFRAME' ? NodeFilter.FILTER_ACCEPT :
+                                           NodeFilter.FILTER_SKIP;
+        },
+      });
+  let node: HTMLIFrameElement|null = null;
+  const accumulator: HTMLIFrameElement[] = [];
+  while (node = iter.nextNode() as HTMLIFrameElement) {
+    accumulator.push(node);
+  }
+  return accumulator;
+}
+
+/**
  * Returns the field's `id` attribute if not space only; otherwise the
  * form's |name| attribute if the field is part of a form. Otherwise,
  * generate a technical identifier
@@ -298,6 +325,7 @@ gCrWeb.form = {
   wasEditedByUser,
   isFormControlElement,
   getFormControlElements,
+  getIframeElements,
   getFieldIdentifier,
   getFieldName,
   getFormIdentifier,
