@@ -67,9 +67,7 @@ std::string GetTemporaryIdentifier(Browser* original_browser) {
 
 class TabsCloser::UndoStorage {
  public:
-  // Closes tabs in range [start; start+count( from `browser` and stores
-  // state to allow undoing the operation if needed.
-  UndoStorage(Browser* browser, int start, int count);
+  UndoStorage(Browser* browser);
 
   UndoStorage(const UndoStorage&) = delete;
   UndoStorage& operator=(const UndoStorage&) = delete;
@@ -78,6 +76,10 @@ class TabsCloser::UndoStorage {
 
   // Returns the number of tabs that have been closed.
   int count() const { return temporary_browser_->GetWebStateList()->count(); }
+
+  // Closes tabs in range [start; start+count( from `original_browser_` and
+  // stores state to allow undoing the operation if needed.
+  void CloseTabs(int start, int count);
 
   // Undo the close operation performed in the constructor.
   void Undo();
@@ -100,14 +102,25 @@ class TabsCloser::UndoStorage {
   const std::string identifier_;
 };
 
-TabsCloser::UndoStorage::UndoStorage(Browser* browser, int start, int count)
+TabsCloser::UndoStorage::UndoStorage(Browser* browser)
     : original_browser_(browser),
       temporary_browser_(Browser::CreateTemporary(browser->GetBrowserState())),
       identifier_(GetTemporaryIdentifier(browser)) {
   SessionRestorationServiceFactory::GetForBrowserState(
       temporary_browser_->GetBrowserState())
       ->SetSessionID(temporary_browser_.get(), identifier_);
+}
 
+TabsCloser::UndoStorage::~UndoStorage() {
+  SessionRestorationService* service =
+      SessionRestorationServiceFactory::GetForBrowserState(
+          temporary_browser_->GetBrowserState());
+
+  service->Disconnect(temporary_browser_.get());
+  service->DeleteDataForDiscardedSessions({identifier_}, base::DoNothing());
+}
+
+void TabsCloser::UndoStorage::CloseTabs(int start, int count) {
   WebStateList* web_state_list = original_browser_->GetWebStateList();
   std::map<web::WebState*, int> web_state_map;
   for (int index = 0; index < web_state_list->count(); ++index) {
@@ -138,15 +151,6 @@ TabsCloser::UndoStorage::UndoStorage(Browser* browser, int start, int count)
   WebStateList::ScopedBatchOperation lock_target =
       target->StartBatchOperation();
   MoveWebStatesInRangeBetweenLists(source, target, start, count);
-}
-
-TabsCloser::UndoStorage::~UndoStorage() {
-  SessionRestorationService* service =
-      SessionRestorationServiceFactory::GetForBrowserState(
-          temporary_browser_->GetBrowserState());
-
-  service->Disconnect(temporary_browser_.get());
-  service->DeleteDataForDiscardedSessions({identifier_}, base::DoNothing());
 }
 
 void TabsCloser::UndoStorage::Undo() {
@@ -206,7 +210,8 @@ int TabsCloser::CloseTabs() {
       break;
   }
 
-  state_ = std::make_unique<UndoStorage>(browser_, start, count);
+  state_ = std::make_unique<UndoStorage>(browser_);
+  state_->CloseTabs(start, count);
   return state_->count();
 }
 
