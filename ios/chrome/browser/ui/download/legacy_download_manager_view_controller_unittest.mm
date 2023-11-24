@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
+#import "ios/chrome/browser/ui/download/legacy_download_manager_view_controller.h"
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
 #import "ios/chrome/browser/ui/download/features.h"
@@ -17,22 +18,22 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-// Test fixture for testing DownloadManagerViewController class.
-class DownloadManagerViewControllerTest : public PlatformTest {
+// Test fixture for testing LegacyDownloadManagerViewController class.
+class LegacyDownloadManagerViewControllerTest : public PlatformTest {
  protected:
-  DownloadManagerViewControllerTest()
-      : view_controller_([[DownloadManagerViewController alloc] init]) {
+  LegacyDownloadManagerViewControllerTest()
+      : view_controller_([[LegacyDownloadManagerViewController alloc] init]) {
     state_symbol_partial_mock_ = OCMPartialMock(view_controller_.stateSymbol);
     feature_list_.InitAndEnableFeature(kIOSIncognitoDownloadsWarning);
   }
-  DownloadManagerViewController* view_controller_;
+  LegacyDownloadManagerViewController* view_controller_;
   id state_symbol_partial_mock_;
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests label and button titles with kDownloadManagerStateNotStarted state
 // and long file name.
-TEST_F(DownloadManagerViewControllerTest, NotStartedWithLongFileName) {
+TEST_F(LegacyDownloadManagerViewControllerTest, NotStartedWithLongFileName) {
   view_controller_.state = kDownloadManagerStateNotStarted;
   view_controller_.fileName = @"longfilenamesolongthatitbarelyfitwidthlimit";
   view_controller_.countOfBytesExpectedToReceive = 1024;
@@ -46,7 +47,7 @@ TEST_F(DownloadManagerViewControllerTest, NotStartedWithLongFileName) {
 
 // Tests label and button titles with kDownloadManagerStateNotStarted state
 // and large file size.
-TEST_F(DownloadManagerViewControllerTest,
+TEST_F(LegacyDownloadManagerViewControllerTest,
        NotStartedWithLongCountOfExpectedBytes) {
   view_controller_.state = kDownloadManagerStateNotStarted;
   view_controller_.fileName = @"file.zip";
@@ -60,7 +61,7 @@ TEST_F(DownloadManagerViewControllerTest,
 
 // Tests Incognito warning with kDownloadManagerStateNotStarted state
 // and incognito mode.
-TEST_F(DownloadManagerViewControllerTest, NotStartedWithIncognitoWarning) {
+TEST_F(LegacyDownloadManagerViewControllerTest, NotStartedWithIncognitoWarning) {
   view_controller_.incognito = YES;
   view_controller_.state = kDownloadManagerStateNotStarted;
   view_controller_.fileName = @"file.zip";
@@ -76,7 +77,7 @@ TEST_F(DownloadManagerViewControllerTest, NotStartedWithIncognitoWarning) {
 
 // Tests label and button hidden state with kDownloadManagerStateInProgress
 // state and long file name.
-TEST_F(DownloadManagerViewControllerTest, InProgressWithLongFileName) {
+TEST_F(LegacyDownloadManagerViewControllerTest, InProgressWithLongFileName) {
   OCMExpect(
       [state_symbol_partial_mock_ setState:kDownloadManagerStateInProgress]);
 
@@ -94,7 +95,7 @@ TEST_F(DownloadManagerViewControllerTest, InProgressWithLongFileName) {
 
 // Tests label and button hidden state with kDownloadManagerStateInProgress
 // state and unknown download size.
-TEST_F(DownloadManagerViewControllerTest,
+TEST_F(LegacyDownloadManagerViewControllerTest,
        InProgressWithUnknownCountOfExpectedBytes) {
   OCMExpect(
       [state_symbol_partial_mock_ setState:kDownloadManagerStateInProgress]);
@@ -113,7 +114,7 @@ TEST_F(DownloadManagerViewControllerTest,
 }
 
 // Tests label and button titles with kDownloadManagerStateSucceeded state.
-TEST_F(DownloadManagerViewControllerTest, SuceededWithWithLongFileName) {
+TEST_F(LegacyDownloadManagerViewControllerTest, SuceededWithWithLongFileName) {
   OCMExpect(
       [state_symbol_partial_mock_ setState:kDownloadManagerStateSucceeded]);
 
@@ -129,7 +130,7 @@ TEST_F(DownloadManagerViewControllerTest, SuceededWithWithLongFileName) {
 }
 
 // Tests label and button titles with kDownloadManagerStateFailed state.
-TEST_F(DownloadManagerViewControllerTest, Failed) {
+TEST_F(LegacyDownloadManagerViewControllerTest, Failed) {
   OCMExpect([state_symbol_partial_mock_ setState:kDownloadManagerStateFailed]);
 
   view_controller_.state = kDownloadManagerStateFailed;
@@ -144,7 +145,7 @@ TEST_F(DownloadManagerViewControllerTest, Failed) {
 }
 
 // Tests that tapping close button calls downloadManagerViewControllerDidClose:.
-TEST_F(DownloadManagerViewControllerTest, Close) {
+TEST_F(LegacyDownloadManagerViewControllerTest, Close) {
   id delegate =
       OCMStrictProtocolMock(@protocol(DownloadManagerViewControllerDelegate));
   OCMExpect([delegate downloadManagerViewControllerDidClose:view_controller_]);
@@ -159,7 +160,7 @@ TEST_F(DownloadManagerViewControllerTest, Close) {
 
 // Tests that tapping Download button calls
 // downloadManagerViewControllerDidStartDownload:.
-TEST_F(DownloadManagerViewControllerTest, Start) {
+TEST_F(LegacyDownloadManagerViewControllerTest, Start) {
   id delegate =
       OCMStrictProtocolMock(@protocol(DownloadManagerViewControllerDelegate));
   OCMExpect([delegate
@@ -175,7 +176,7 @@ TEST_F(DownloadManagerViewControllerTest, Start) {
 
 // Tests that tapping Open In... button calls
 // presentOpenInForDownloadManagerViewController:.
-TEST_F(DownloadManagerViewControllerTest, OpenIn) {
+TEST_F(LegacyDownloadManagerViewControllerTest, OpenIn) {
   id delegate =
       OCMStrictProtocolMock(@protocol(DownloadManagerViewControllerDelegate));
   OCMExpect([delegate
@@ -191,7 +192,7 @@ TEST_F(DownloadManagerViewControllerTest, OpenIn) {
 
 // Tests that tapping Restart button calls
 // downloadManagerViewControllerDidStartDownload:.
-TEST_F(DownloadManagerViewControllerTest, Restart) {
+TEST_F(LegacyDownloadManagerViewControllerTest, Restart) {
   id delegate =
       OCMStrictProtocolMock(@protocol(DownloadManagerViewControllerDelegate));
   OCMExpect([delegate
@@ -206,7 +207,7 @@ TEST_F(DownloadManagerViewControllerTest, Restart) {
 }
 
 // Tests making Install Google drive button visible and hidden.
-TEST_F(DownloadManagerViewControllerTest, InstallDriveButton) {
+TEST_F(LegacyDownloadManagerViewControllerTest, InstallDriveButton) {
   // The button itself is not hidden, but the superview which contains the
   // button is transparent.
   ASSERT_EQ(0.0f, view_controller_.installDriveButton.superview.alpha);

@@ -41,7 +41,8 @@
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
 #import "ios/chrome/browser/ui/download/download_manager_mediator.h"
-#import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
+#import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/download/legacy_download_manager_view_controller.h"
 #import "ios/chrome/browser/ui/download/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
@@ -56,7 +57,7 @@
                                           DownloadManagerViewControllerDelegate,
                                           StoreKitCoordinatorDelegate> {
   // View controller for presenting Download Manager UI.
-  DownloadManagerViewController* _viewController;
+  LegacyDownloadManagerViewController* _viewController;
   // View controller for presenting "Open In.." dialog.
   UIActivityViewController* _openInController;
   DownloadManagerMediator _mediator;
@@ -84,7 +85,7 @@
                       object:nil];
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  _viewController = [[DownloadManagerViewController alloc] init];
+  _viewController = [[LegacyDownloadManagerViewController alloc] init];
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _viewController.incognito = isIncognito;
@@ -215,8 +216,7 @@
 
 #pragma mark - DownloadManagerViewControllerDelegate
 
-- (void)downloadManagerViewControllerDidClose:
-    (DownloadManagerViewController*)controller {
+- (void)downloadManagerViewControllerDidClose:(UIViewController*)controller {
   if (_downloadTask->GetState() != web::DownloadTask::State::kInProgress) {
     base::UmaHistogramEnumeration("Download.IOSDownloadFileResult",
                                   DownloadFileResult::NotStarted,
@@ -249,13 +249,13 @@
 }
 
 - (void)installDriveForDownloadManagerViewController:
-    (DownloadManagerViewController*)controller {
+    (UIViewController*)controller {
   base::RecordAction(base::UserMetricsAction("IOSDownloadInstallGoogleDrive"));
   [self presentStoreKitForGoogleDriveApp];
 }
 
 - (void)downloadManagerViewControllerDidStartDownload:
-    (DownloadManagerViewController*)controller {
+    (UIViewController*)controller {
   if (_downloadTask->GetErrorCode() != net::OK) {
     base::RecordAction(base::UserMetricsAction("MobileDownloadRetryDownload"));
   } else {
@@ -266,7 +266,7 @@
 }
 
 - (void)presentOpenInForDownloadManagerViewController:
-    (DownloadManagerViewController*)controller {
+    (UIViewController*)controller {
   base::RecordAction(base::UserMetricsAction("IOSDownloadOpenIn"));
   base::FilePath path = _mediator.GetDownloadPath();
   NSURL* URL = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];

@@ -2,42 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_LEGACY_DOWNLOAD_MANAGER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_DOWNLOAD_LEGACY_DOWNLOAD_MANAGER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/download/download_manager_consumer.h"
 
 @class DownloadManagerStateView;
-@class DownloadManagerViewController;
+@protocol DownloadManagerViewControllerDelegate;
 @class LayoutGuideCenter;
 @class RadialProgressView;
 
-@protocol DownloadManagerViewControllerDelegate<NSObject>
-@optional
-// Called when close button was tapped. Delegate may dismiss presentation.
-- (void)downloadManagerViewControllerDidClose:
-    (DownloadManagerViewController*)controller;
-
-// Called when Download or Restart button was tapped. Delegate should start the
-// download.
-- (void)downloadManagerViewControllerDidStartDownload:
-    (DownloadManagerViewController*)controller;
-
-// Called when "Open In.." button was tapped. Delegate should present system's
-// OpenIn dialog.
-- (void)presentOpenInForDownloadManagerViewController:
-    (DownloadManagerViewController*)controller;
-
-// Called when install google drive button was tapped.
-- (void)installDriveForDownloadManagerViewController:
-    (DownloadManagerViewController*)controller;
-
-@end
-
 // Presents bottom bar UI for a single download task.
-@interface DownloadManagerViewController
+@interface LegacyDownloadManagerViewController
     : UIViewController<DownloadManagerConsumer>
 
 @property(nonatomic, weak) id<DownloadManagerViewControllerDelegate> delegate;
@@ -51,7 +29,7 @@
 @end
 
 // All UI elements presend in view controller's view.
-@interface DownloadManagerViewController (UIElements)
+@interface LegacyDownloadManagerViewController (UIElements)
 
 // Button to dismiss the download toolbar.
 @property(nonatomic, readonly) UIButton* closeButton;
@@ -81,8 +59,8 @@
 @end
 
 // Method exposed for testing only.
-@interface DownloadManagerViewController (Testing)
+@interface LegacyDownloadManagerViewController (Testing)
 - (DownloadManagerStateView*)stateSymbol;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_LEGACY_DOWNLOAD_MANAGER_VIEW_CONTROLLER_H_

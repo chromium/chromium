@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
+#import "ios/chrome/browser/ui/download/legacy_download_manager_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
+#import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -47,7 +48,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 
 }  // namespace
 
-@interface DownloadManagerViewController () {
+@interface LegacyDownloadManagerViewController () {
   UIButton* _closeButton;
   UILabel* _statusLabel;
   UIButton* _actionButton;
@@ -113,7 +114,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 
 @end
 
-@implementation DownloadManagerViewController
+@implementation LegacyDownloadManagerViewController
 
 @synthesize delegate = _delegate;
 @synthesize background = _background;
@@ -378,14 +379,15 @@ NSString* GetSizeString(long long size_in_bytes) {
 }
 
 - (void)setInstallDriveButtonVisible:(BOOL)visible animated:(BOOL)animated {
-  if (visible == _installDriveButtonVisible)
+  if (visible == _installDriveButtonVisible) {
     return;
+  }
 
   _installDriveButtonVisible = visible;
-  __weak DownloadManagerViewController* weakSelf = self;
+  __weak LegacyDownloadManagerViewController* weakSelf = self;
   [UIView animateWithDuration:animated ? kDownloadManagerAnimationDuration : 0.0
                    animations:^{
-                     DownloadManagerViewController* strongSelf = weakSelf;
+                     LegacyDownloadManagerViewController* strongSelf = weakSelf;
                      [strongSelf updateInstallDriveControlsRow];
                      [strongSelf updateBottomMarginGuideTopConstraint];
                      [strongSelf.view.superview layoutIfNeeded];
