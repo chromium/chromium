@@ -765,7 +765,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   void DidShowAutofillSuggestions(const FormData& form,
                                   size_t field_index = 0) {
     browser_autofill_manager_->DidShowSuggestions(
-        /*has_autofill_suggestions=*/true, form, form.fields[field_index]);
+        std::vector<PopupItemId>({PopupItemId::kAddressEntry}), form,
+        form.fields[field_index]);
   }
 
   void TryToShowTouchToFill(const FormData& form,
@@ -8773,7 +8774,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
-      /*has_autofill_suggestions=*/false, form, form.fields.back());
+      std::vector<PopupItemId>({PopupItemId::kAutocompleteEntry}), form,
+      form.fields.back());
   histogram_tester.ExpectBucketCount(
       "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       1);
@@ -8784,6 +8786,21 @@ TEST_F(BrowserAutofillManagerTest,
               Not(AnyOf(HasSubstr("Autofill.UserHappiness"),
                         HasSubstr("Autofill.FormEvents.Address"),
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       DidShowSuggestions_NoAutocompleteEntry_DontLogAutocompleteShownMetric) {
+  FormData form = test::GetFormData(
+      {.fields = {{.label = u"Something", .name = u"something"}}});
+
+  FormsSeen({form});
+  base::HistogramTester histogram_tester;
+  browser_autofill_manager_->DidShowSuggestions(
+      std::vector<PopupItemId>({PopupItemId::kPasswordEntry}), form,
+      form.fields.back());
+
+  EXPECT_THAT(histogram_tester.GetAllHistogramsRecorded(),
+              Not(HasSubstr("Autocomplete.Events")));
 }
 
 TEST_F(BrowserAutofillManagerTest,

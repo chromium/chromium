@@ -1572,15 +1572,23 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
   UpdateInitialInteractionTimestamp(timestamp);
 }
 
-void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
-                                                const FormData& form,
-                                                const FormFieldData& field) {
+void BrowserAutofillManager::DidShowSuggestions(
+    base::span<const PopupItemId> shown_suggestions_types,
+    const FormData& form,
+    const FormFieldData& field) {
   NotifyObservers(&Observer::OnSuggestionsShown);
 
+  bool has_autofill_suggestions = base::ranges::any_of(
+      shown_suggestions_types,
+      AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId);
   if (!has_autofill_suggestions) {
-    // If suggestions are not from Autofill, then it means they are from
-    // Autocomplete.
-    AutofillMetrics::OnAutocompleteSuggestionsShown();
+    bool has_autocomplete_suggestions = base::ranges::any_of(
+        shown_suggestions_types, [&](PopupItemId popup_item_id) {
+          return popup_item_id == PopupItemId::kAutocompleteEntry;
+        });
+    if (has_autocomplete_suggestions) {
+      AutofillMetrics::OnAutocompleteSuggestionsShown();
+    }
     return;
   }
 

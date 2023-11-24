@@ -170,10 +170,13 @@ class AutofillMetricsBaseTest {
     return form;
   }
 
-  void DidShowAutofillSuggestions(const FormData& form,
-                                  size_t field_index = 0) {
+  void DidShowAutofillSuggestions(
+      const FormData& form,
+      size_t field_index = 0,
+      PopupItemId suggestion_type = PopupItemId::kAddressEntry) {
     autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/true, form, form.fields[field_index]);
+        std::vector<PopupItemId>({suggestion_type}), form,
+        form.fields[field_index]);
   }
 
   void FillTestProfile(const FormData& form) {

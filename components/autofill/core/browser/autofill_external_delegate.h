@@ -49,6 +49,10 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
   ~AutofillExternalDelegate() override;
 
+  // Returns true if `item_id` identifies a suggestion which can appear on the
+  // first layer of the Autofill popup and can fill form fields.
+  static bool IsAutofillAndFirstLayerSuggestionId(PopupItemId item_id);
+
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;
   void OnPopupHidden() override;
@@ -218,13 +222,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // The bounds of the form field that user is interacting with.
   gfx::RectF element_bounds_;
 
-  // Does the popup include any Autofill profile or credit card suggestions?
-  bool has_autofill_suggestions_ = false;
-
   bool should_show_scan_credit_card_ = false;
   PopupType popup_type_ = PopupType::kUnspecified;
 
   bool should_show_cards_from_account_option_ = false;
+
+  std::vector<PopupItemId> shown_suggestions_types_;
 
   // The current data list values.
   std::vector<SelectOption> datalist_;

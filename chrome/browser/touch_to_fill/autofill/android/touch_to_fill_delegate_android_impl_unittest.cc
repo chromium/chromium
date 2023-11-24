@@ -97,7 +97,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const AutofillTriggerDetails& trigger_details));
   MOCK_METHOD(void,
               DidShowSuggestions,
-              (bool has_autofill_suggestions,
+              (base::span<const PopupItemId> shown_suggestions_types,
                const FormData& form,
                const FormFieldData& field),
               (override));

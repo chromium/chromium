@@ -120,8 +120,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
 
   // Verify that:
   // 1. if the card suggestion shown had metadata,
@@ -160,8 +160,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
 
   // Show the popup again.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -188,8 +188,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
 
   // Simulate selecting the card.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
       personal_data().GetCreditCardByGUID(kCardGuid),
@@ -460,8 +460,8 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  autofill_manager().DidShowSuggestions(
-      /*has_autofill_suggestions=*/true, form(), form().fields.back());
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
+                             PopupItemId::kCreditCardEntry);
   test_clock.SetNowTicks(now + base::Seconds(2));
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),

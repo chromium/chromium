@@ -2386,9 +2386,11 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
 
   {
     // Simulating same popup being refreshed.
+    // Suggestions not related to credit cards/addresses should not affect the
+    // histograms.
     base::HistogramTester histogram_tester;
-    autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/false, form, form.fields[0]);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kAutocompleteEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsAre(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
@@ -2479,10 +2481,13 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
 
   {
     // Simulating same popup being refreshed.
+    // Suggestions not related to credit cards/addresses should not affect the
+    // histograms.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/false, form, form.fields.back());
+    DidShowAutofillSuggestions(form,
+                               /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kAutocompleteEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -4743,9 +4748,11 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
 
   {
     // Simulating same popup being refreshed.
+    // Suggestions not related to credit cards/addresses should not affect the
+    // histograms.
     base::HistogramTester histogram_tester;
-    autofill_manager().DidShowSuggestions(
-        /*has_autofill_suggestions=*/false, form, form.fields[0]);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kAutocompleteEntry);
     EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
                 BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
                                Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0)));
@@ -5790,14 +5797,14 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
     SCOPED_TRACE("Multiple keystrokes");
     base::HistogramTester histogram_tester;
     DidShowAutofillSuggestions(form);
-    autofill_manager().DidShowSuggestions(false, form, form.fields[0]);
+    DidShowAutofillSuggestions(form);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness"),
-        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 1),
+        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 2),
                        Bucket(AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, 1)));
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness.CreditCard"),
-        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 1),
+        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 2),
                        Bucket(AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, 1)));
   }
 
@@ -5929,14 +5936,15 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
         "(i.e. multiple keystrokes in a single field).");
     base::HistogramTester histogram_tester;
     DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
-    autofill_manager().DidShowSuggestions(false, form, form.fields.back());
+    DidShowAutofillSuggestions(form,
+                               /*field_index=*/form.fields.size() - 1);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness"),
-        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 1),
+        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 2),
                        Bucket(AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, 1)));
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness.Address"),
-        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 1),
+        BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 2),
                        Bucket(AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, 1)));
   }
 
@@ -6015,6 +6023,17 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
   VerifyUkm(
       &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
       {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+        {UkmTextFieldDidChangeType::kHeuristicTypeName,
+         default_to_city_and_number ? PHONE_HOME_CITY_AND_NUMBER
+                                    : PHONE_HOME_WHOLE_NUMBER},
+        {UkmTextFieldDidChangeType::kHtmlFieldTypeName,
+         HtmlFieldType::kUnspecified},
+        {UkmTextFieldDidChangeType::kServerTypeName, NO_SERVER_DATA},
+        {UkmSuggestionsShownType::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields[2])).value()},
+        {UkmSuggestionsShownType::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()}},
+       {{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
         {UkmTextFieldDidChangeType::kHeuristicTypeName,
          default_to_city_and_number ? PHONE_HOME_CITY_AND_NUMBER
                                     : PHONE_HOME_WHOLE_NUMBER},

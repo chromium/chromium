@@ -150,9 +150,10 @@ class BrowserAutofillManager
                             FormData form,
                             const FormFieldData& trigger_field);
   // Virtual for testing
-  virtual void DidShowSuggestions(bool has_autofill_suggestions,
-                                  const FormData& form,
-                                  const FormFieldData& field);
+  virtual void DidShowSuggestions(
+      base::span<const PopupItemId> shown_suggestions_types,
+      const FormData& form,
+      const FormFieldData& field);
 
   // Fills or previews the profile form.
   // Assumes the form and field are valid.

@@ -62,60 +62,6 @@ bool IsAutofillWarningEntry(PopupItemId popup_item_id) {
          popup_item_id == PopupItemId::kMixedFormMessage;
 }
 
-// Returns true if `item_id` identifies a suggestion which can appear on the
-// first layer of the Autofill popup and can fill form fields.
-bool IsFirstLayerFormFillingSuggestionId(PopupItemId item_id) {
-  switch (item_id) {
-    case PopupItemId::kAddressEntry:
-    case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFieldByFieldFilling:
-    case PopupItemId::kFillFullName:
-    case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kFillFullEmail:
-    case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kDevtoolsTestAddresses:
-      // Virtual cards can appear on their own when filling the CVC for a card
-      // that a merchant has saved. This indicates there could be Autofill
-      // suggestions related to standalone CVC fields.
-    case PopupItemId::kVirtualCreditCardEntry:
-      return true;
-    case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kAutocompleteEntry:
-    case PopupItemId::kAutofillOptions:
-    case PopupItemId::kClearForm:
-    case PopupItemId::kCompose:
-    case PopupItemId::kCreateNewPlusAddress:
-    case PopupItemId::kDatalistEntry:
-    case PopupItemId::kDeleteAddressProfile:
-    case PopupItemId::kDevtoolsTestAddressEntry:
-    case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kFillEverythingFromAddressProfile:
-    case PopupItemId::kFillExistingPlusAddress:
-    case PopupItemId::kGeneratePasswordEntry:
-    case PopupItemId::kIbanEntry:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
-    case PopupItemId::kMerchantPromoCodeEntry:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kPasswordAccountStorageEmpty:
-    case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
-    case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kScanCreditCard:
-    case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kEntryNotSelectable:
-    case PopupItemId::kSeparator:
-    case PopupItemId::kShowAccountCards:
-    case PopupItemId::kTitle:
-    case PopupItemId::kUsernameEntry:
-    case PopupItemId::kWebauthnCredential:
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
-      return false;
-  }
-}
-
 // The `AutofillTriggerSource` indicates what caused an Autofill fill or preview
 // to happen. This can happen by selecting a suggestion, but also through a
 // dynamic change (refills) or through a surface that doesn't use suggestions,
@@ -211,6 +157,60 @@ AutofillExternalDelegate::~AutofillExternalDelegate() {
     std::move(deletion_callback_).Run();
 }
 
+// static
+bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
+    PopupItemId item_id) {
+  switch (item_id) {
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
+      // Virtual cards can appear on their own when filling the CVC for a card
+      // that a merchant has saved. This indicates there could be Autofill
+      // suggestions related to standalone CVC fields.
+    case PopupItemId::kVirtualCreditCardEntry:
+      return true;
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kAutocompleteEntry:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kCompose:
+    case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kFillEverythingFromAddressProfile:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kEntryNotSelectable:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kTitle:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+      return false;
+  }
+}
+
 void AutofillExternalDelegate::OnQuery(const FormData& form,
                                        const FormFieldData& field,
                                        const gfx::RectF& element_bounds) {
@@ -235,8 +235,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     bool is_all_server_suggestions) {
   // Only include "Autofill Options" special menu item if we have Autofill
   // suggestions.
-  has_autofill_suggestions_ = base::ranges::any_of(
-      input_suggestions, IsFirstLayerFormFillingSuggestionId,
+  bool has_autofill_suggestions = base::ranges::any_of(
+      input_suggestions, IsAutofillAndFirstLayerSuggestionId,
       &Suggestion::popup_item_id);
 
   if (field_id != query_field_.global_id()) {
@@ -244,7 +244,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed &&
-      !has_autofill_suggestions_) {
+      !has_autofill_suggestions) {
     // User changed or delete the only Autofill profile shown in the popup,
     // avoid showing any other suggestions in this case.
     return;
@@ -275,8 +275,9 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     suggestions.back().icon = Suggestion::Icon::kGoogle;
   }
 
-  if (has_autofill_suggestions_)
+  if (has_autofill_suggestions) {
     ApplyAutofillOptions(&suggestions, is_all_server_suggestions);
+  }
 
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
@@ -296,6 +297,11 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     AutofillClient::PopupOpenArgs open_args(element_bounds_,
                                             query_field_.text_direction,
                                             suggestions, trigger_source);
+
+    shown_suggestions_types_.clear();
+    for (const Suggestion& suggestion : input_suggestions) {
+      shown_suggestions_types_.push_back(suggestion.popup_item_id);
+    }
     manager_->client().ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }
@@ -336,11 +342,14 @@ void AutofillExternalDelegate::OnPopupShown() {
   // Popups are expected to be Autofill or Autocomplete.
   DCHECK_NE(GetPopupType(), PopupType::kPasswords);
 
+  bool has_autofill_suggestions = base::ranges::any_of(
+      shown_suggestions_types_, IsAutofillAndFirstLayerSuggestionId);
+
   OnAutofillAvailabilityEvent(
-      has_autofill_suggestions_
+      has_autofill_suggestions
           ? mojom::AutofillSuggestionAvailability::kAutofillAvailable
           : mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
-  manager_->DidShowSuggestions(has_autofill_suggestions_, query_form_,
+  manager_->DidShowSuggestions(shown_suggestions_types_, query_form_,
                                query_field_);
 
   if (should_show_scan_credit_card_) {
