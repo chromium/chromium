@@ -913,7 +913,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsNewMaskedIban) {
 TEST_F(AutofillWalletSyncBridgeTest,
        MergeFullSyncData_UpdateAndRemoveMaskedIban) {
   Iban server_iban1 = test::GetServerIban();
-  table()->SetServerIbans({server_iban1});
+  table()->SetServerIbansForTesting({server_iban1});
 
   // Create a `server_iban2` which has the same data as `server_iban1` but with
   // a different nickname.

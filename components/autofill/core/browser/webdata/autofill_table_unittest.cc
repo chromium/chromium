@@ -1159,7 +1159,7 @@ TEST_F(AutofillTableTest, MaskedServerIban) {
   Iban iban_2 = test::GetServerIban3();
   std::vector<Iban> ibans = {iban_0, iban_1, iban_2};
 
-  EXPECT_TRUE(table_->SetServerIbans(ibans));
+  table_->SetServerIbansForTesting(ibans);
 
   std::vector<std::unique_ptr<Iban>> masked_server_ibans;
   EXPECT_TRUE(table_->GetServerIbans(masked_server_ibans));
@@ -1167,6 +1167,20 @@ TEST_F(AutofillTableTest, MaskedServerIban) {
   EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0],
                                           *masked_server_ibans[1],
                                           *masked_server_ibans[2]));
+  EXPECT_FALSE(table_->GetServerIbansMetadata().empty());
+}
+
+// Test that masked IBANs can be added and loaded successfully without updating
+// their metadata.
+TEST_F(AutofillTableTest, MaskedServerIbanMetadataNotUpdated) {
+  std::vector<Iban> ibans = {test::GetServerIban()};
+
+  table_->SetServerIbansData(ibans);
+
+  std::vector<std::unique_ptr<Iban>> masked_server_ibans;
+  EXPECT_TRUE(table_->GetServerIbans(masked_server_ibans));
+  EXPECT_EQ(1U, masked_server_ibans.size());
+  EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0]));
 }
 
 TEST_F(AutofillTableTest, CreditCard) {
@@ -2302,9 +2316,9 @@ TEST_F(AutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
 }
 
 // Test that updating masked IBAN metadata won't affect IBAN data.
-TEST_F(AutofillTableTest, UpdateServerIbanMetadataDoesNotChangeData) {
+TEST_F(AutofillTableTest, UpdateServerIbanMetadata) {
   std::vector<Iban> inputs = {test::GetServerIban()};
-  table_->SetServerIbans(inputs);
+  table_->SetServerIbansForTesting(inputs);
 
   std::vector<std::unique_ptr<Iban>> outputs;
   EXPECT_TRUE(table_->GetServerIbans(outputs));

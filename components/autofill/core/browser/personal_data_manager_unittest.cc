@@ -1053,7 +1053,7 @@ TEST_F(PersonalDataManagerTest, AddAndReloadServerIbans) {
   Iban server_iban1 = test::GetServerIban();
   Iban server_iban2 = test::GetServerIban2();
 
-  GetServerDataTable()->SetServerIbans({server_iban1, server_iban2});
+  GetServerDataTable()->SetServerIbansForTesting({server_iban1, server_iban2});
   std::vector<const Iban*> expected_ibans = {&server_iban1, &server_iban2};
   personal_data_->Refresh();
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
@@ -1081,7 +1081,7 @@ TEST_F(PersonalDataManagerTest, GetIbans) {
   AddLocalIban(local_iban1);
   AddLocalIban(local_iban2);
 
-  GetServerDataTable()->SetServerIbans({server_iban1, server_iban2});
+  GetServerDataTable()->SetServerIbansForTesting({server_iban1, server_iban2});
   personal_data_->Refresh();
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
@@ -1112,7 +1112,7 @@ TEST_F(PersonalDataManagerTest, GetIbansToSuggest) {
   AddLocalIban(local_iban1);
   AddLocalIban(local_iban2);
 
-  GetServerDataTable()->SetServerIbans({server_iban1, server_iban2});
+  GetServerDataTable()->SetServerIbansForTesting({server_iban1, server_iban2});
   personal_data_->Refresh();
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 

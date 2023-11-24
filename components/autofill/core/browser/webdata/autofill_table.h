@@ -824,7 +824,10 @@ class AutofillTable : public WebDatabaseTable,
   bool ClearLocalCvcs();
 
   // Methods to add, update, remove and get the metadata for server cards and
-  // IBANs. Return true if the operations succeeded.
+  // IBANs.
+  // For get method, return true if the operations succeeded.
+  // For add/update/remove methods, return true if any changes actually
+  // occurred.
   bool AddServerCardMetadata(const AutofillMetadata& card_metadata);
   bool UpdateServerCardMetadata(const CreditCard& credit_card);
   bool UpdateServerCardMetadata(const AutofillMetadata& card_metadata);
@@ -849,8 +852,17 @@ class AutofillTable : public WebDatabaseTable,
   // Returns true if server IBANs are successfully returned via `ibans` from
   // the database.
   bool GetServerIbans(std::vector<std::unique_ptr<Iban>>& ibans);
+
   // Overwrite the IBANs in the database with the given `ibans`.
-  bool SetServerIbans(const std::vector<Iban>& ibans);
+  // Note that this method will not update IBAN metadata because that happens in
+  // separate flows.
+  bool SetServerIbansData(const std::vector<Iban>& ibans);
+
+  // Overwrite the server IBANs and server IBAN metadata with the given `ibans`.
+  // This distinction is necessary compared with above method, because metadata
+  // and data are synced through separate model types in prod code, while this
+  // method is an easy way to set up during tests.
+  void SetServerIbansForTesting(const std::vector<Iban>& ibans);
 
   // Setters and getters related to the Google Payments customer data.
   // Passing null to the setter will clear the data.

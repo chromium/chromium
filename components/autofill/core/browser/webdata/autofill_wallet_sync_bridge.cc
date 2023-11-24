@@ -383,7 +383,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
     return false;
   }
 
-  GetAutofillTable()->SetServerIbans(wallet_ibans);
+  GetAutofillTable()->SetServerIbansData(wallet_ibans);
   bool found_diff = false;
     for (const std::unique_ptr<Iban>& existing_iban : existing_ibans) {
       bool has_orphan_iban = base::ranges::none_of(

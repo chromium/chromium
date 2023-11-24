@@ -2651,8 +2651,9 @@ bool AutofillTable::AddOrUpdateServerIbanMetadata(
 }
 
 bool AutofillTable::RemoveServerIbanMetadata(const std::string& instrument_id) {
-  return DeleteWhereColumnEq(db_, kMaskedIbansMetadataTable, kInstrumentId,
-                             instrument_id);
+  DeleteWhereColumnEq(db_, kMaskedIbansMetadataTable, kInstrumentId,
+                      instrument_id);
+  return db_->GetLastChangeCount() > 0;
 }
 
 std::vector<AutofillMetadata> AutofillTable::GetServerIbansMetadata() const {
@@ -2805,7 +2806,7 @@ bool AutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& ibans) {
   return s.Succeeded();
 }
 
-bool AutofillTable::SetServerIbans(const std::vector<Iban>& ibans) {
+bool AutofillTable::SetServerIbansData(const std::vector<Iban>& ibans) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin()) {
     return false;
@@ -2813,7 +2814,7 @@ bool AutofillTable::SetServerIbans(const std::vector<Iban>& ibans) {
 
   // Delete all old ones first.
   Delete(db_, kMaskedIbansTable);
-  Delete(db_, kMaskedIbansMetadataTable);
+
   sql::Statement s;
   InsertBuilder(db_, s, kMaskedIbansTable,
                 {kInstrumentId, kNickname, kPrefix, kSuffix, kLength});
@@ -2829,11 +2830,16 @@ bool AutofillTable::SetServerIbans(const std::vector<Iban>& ibans) {
       return false;
     }
     s.Reset(/*clear_bound_vars=*/true);
-
-    // Save the use count and use date of the IBAN.
-    AddOrUpdateServerIbanMetadata(iban.GetMetadata());
   }
   return transaction.Commit();
+}
+
+void AutofillTable::SetServerIbansForTesting(const std::vector<Iban>& ibans) {
+  Delete(db_, kMaskedIbansMetadataTable);
+  SetServerIbansData(ibans);
+  for (const Iban& iban : ibans) {
+    AddOrUpdateServerIbanMetadata(iban.GetMetadata());
+  }
 }
 
 void AutofillTable::SetPaymentsCustomerData(
