@@ -32,6 +32,7 @@
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -126,6 +127,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   static void EnableIdleTasks(v8::Isolate*,
                               std::unique_ptr<gin::V8IdleTaskRunner>);
+
+  // No hash-map / tree-map look-up when it's the main world.
+  DOMWrapperWorld& GetMainWorld() { return *main_world_; }
 
   v8::Isolate* GetIsolate() { return isolate_holder_.isolate(); }
 
@@ -270,6 +274,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   v8::Isolate::GCCallback prologue_callback_;
   v8::Isolate::GCCallback epilogue_callback_;
   size_t gc_callback_depth_ = 0;
+
+  scoped_refptr<DOMWrapperWorld> main_world_;
 };
 
 // Creates a histogram for V8. The returned value is a base::Histogram, but

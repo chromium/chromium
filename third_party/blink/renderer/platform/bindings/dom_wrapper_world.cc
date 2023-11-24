@@ -106,12 +106,25 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
   }
 }
 
+DOMWrapperWorld& DOMWrapperWorld::MainWorld(v8::Isolate* isolate) {
+  DCHECK(IsMainThread());
+  return V8PerIsolateData::From(isolate)->GetMainWorld();
+}
+
+// TODO(dtapuska): Progressively remove this static by moving callees
+// to use MainWorld with an isolate.
+static DOMWrapperWorld* g_main_world = nullptr;
+
 DOMWrapperWorld& DOMWrapperWorld::MainWorld() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_REF(
-      DOMWrapperWorld, cached_main_world,
-      (DOMWrapperWorld::Create(v8::Isolate::GetCurrent(), WorldType::kMain)));
-  return *cached_main_world;
+  return *g_main_world;
+}
+
+void DOMWrapperWorld::InitMainWorldOnMainThread(DOMWrapperWorld& main_world) {
+  DCHECK(IsMainThread());
+  DCHECK(!g_main_world);
+  DEFINE_STATIC_REF(DOMWrapperWorld, s_main_world, &main_world);
+  g_main_world = s_main_world;
 }
 
 void DOMWrapperWorld::AllWorldsInCurrentThread(

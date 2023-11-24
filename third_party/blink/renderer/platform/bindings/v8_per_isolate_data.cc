@@ -150,6 +150,9 @@ V8PerIsolateData::V8PerIsolateData(
   if (IsMainThread()) {
     g_main_thread_per_isolate_data = this;
     GetIsolate()->SetAddCrashKeyCallback(AddCrashKey);
+    main_world_ = DOMWrapperWorld::Create(GetIsolate(),
+                                          DOMWrapperWorld::WorldType::kMain);
+    DOMWrapperWorld::InitMainWorldOnMainThread(*main_world_);
   }
 }
 
