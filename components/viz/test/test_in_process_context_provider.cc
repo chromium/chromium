@@ -16,7 +16,6 @@
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
-#include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/config/skia_limits.h"
@@ -66,11 +65,9 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
   gpu::ContextCreationAttribs attribs;
   attribs.bind_generates_resource = false;
 
-  if (type_ == TestContextType::kGLES2 ||
-      type_ == TestContextType::kGLES2WithRaster) {
+  if (type_ == TestContextType::kGLES2) {
     attribs.enable_gles2_interface = true;
-    attribs.enable_raster_interface =
-        type_ == TestContextType::kGLES2WithRaster;
+    attribs.enable_raster_interface = false;
     attribs.enable_oop_rasterization = false;
 
     gles2_context_ = std::make_unique<gpu::GLInProcessContext>();
@@ -101,12 +98,6 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
       ContextSupport(), base::SingleThreadTaskRunner::GetCurrentDefault());
   cache_controller_->SetLock(GetLock());
 
-  if (type_ == TestContextType::kGLES2WithRaster) {
-    gles2_raster_impl_ =
-        std::make_unique<gpu::raster::RasterImplementationGLES>(
-            ContextGL(), ContextSupport(), ContextCapabilities());
-  }
-
   is_bound_ = true;
   return gpu::ContextResult::kSuccess;
 }
@@ -119,9 +110,8 @@ gpu::gles2::GLES2Interface* TestInProcessContextProvider::ContextGL() {
 
 gpu::raster::RasterInterface* TestInProcessContextProvider::RasterInterface() {
   CheckValidThreadOrLockAcquired();
-  CHECK_NE(type_, TestContextType::kGLES2);
-  return raster_context_ ? raster_context_->GetImplementation()
-                         : gles2_raster_impl_.get();
+  CHECK(raster_context_);
+  return raster_context_->GetImplementation();
 }
 
 gpu::ContextSupport* TestInProcessContextProvider::ContextSupport() {

@@ -38,7 +38,6 @@ namespace viz {
 
 enum TestContextType {
   kGLES2,            // Provides GLES2Interface.
-  kGLES2WithRaster,  // Provides GLES2Interface and RasterInterface.
   kSoftwareRaster,   // Provides RasterInterface for software raster.
   kGpuRaster         // Provides RasterInterface for GPU raster.
 };
@@ -96,7 +95,6 @@ class TestInProcessContextProvider
   // Used for GLES2 contexts only.
   std::unique_ptr<gpu::GLInProcessContext> gles2_context_;
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
-  std::unique_ptr<gpu::raster::RasterInterface> gles2_raster_impl_;
 
   // Used for raster contexts only.
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;
