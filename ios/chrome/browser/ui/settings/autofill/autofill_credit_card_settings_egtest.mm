@@ -7,8 +7,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
@@ -41,6 +43,8 @@ struct DisplayStringIDToExpectedResult {
   NSString* expected_result;
 };
 
+using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
+
 const DisplayStringIDToExpectedResult kExpectedFields[] = {
     {IDS_IOS_AUTOFILL_CARDHOLDER, @"Test User"},
     {IDS_IOS_AUTOFILL_CARD_NUMBER, @"4111111111111111"},
@@ -50,6 +54,13 @@ const DisplayStringIDToExpectedResult kExpectedFields[] = {
      base::SysUTF8ToNSString(autofill::test::NextYear())}};
 
 NSString* const kCreditCardLabelTemplate = @"Test User, %@";
+
+NSString* const kMandatoryReauthOptOutHistogramName =
+    @"Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage."
+    @"OptOut";
+NSString* const kMandatoryReauthOptInHistogramName =
+    @"Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage."
+    @"OptIn";
 
 // Return the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
@@ -92,11 +103,20 @@ id<GREYMatcher> SettingToolbarDoneButton() {
   [AutofillAppInterface setUpMockReauthenticationModule];
   [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
   [AutofillAppInterface setMandatoryReauthEnabled:YES];
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearMockReauthenticationModule];
+
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+
   [super tearDown];
 }
 
@@ -206,12 +226,12 @@ id<GREYMatcher> SettingToolbarDoneButton() {
 
   [self openCreditCardsSettings];
 
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
   // Switch on edit mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
-
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
 
   // Check the Autofill credit card switch is disabled.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
@@ -407,47 +427,141 @@ id<GREYMatcher> SettingToolbarDoneButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Checks that toggling the mandatory reauth toggle triggers the reauth, and if
+// Checks that switching the mandatory reauth toggle triggers the reauth. If
 // reauth succeeded, reauth preference and the toggle state are updated.
 - (void)testUpdateReauthToggle {
-  // Start from switched-off state.
-  [AutofillAppInterface setMandatoryReauthEnabled:NO];
+  [AutofillAppInterface setMandatoryReauthEnabled:YES];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
 
   [self openCreditCardsSettings];
 
-  // Check the reauth is there.
+  // Check the reauth switch is there.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillMandatoryReauthSwitchViewId,
-                                          NO, YES)]
+                                          YES, YES)]
       assertWithMatcher:grey_notNil()];
 
-  // Config the next reauth attempt to fail.
+  // Config the next reauth attempt's result to failure.
   [AutofillAppInterface mockReauthenticationModuleExpectedResult:
                             ReauthenticationResult::kFailure];
 
-  // Switch on reauth toggle.
+  // Switch off the reauth toggle.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillMandatoryReauthSwitchViewId,
-                                          NO, YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+                                          YES, YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
-  // Upon reauth failure, the toggle is not updated.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          YES, YES)]
+      assertWithMatcher:grey_notNil()];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:2
+                        forHistogram:kMandatoryReauthOptOutHistogramName],
+                @"Mandatory reauth toggle event count incorrect");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           MandatoryReauthAuthenticationFlowEvent::kFlowStarted)
+          forHistogram:kMandatoryReauthOptOutHistogramName],
+      @"Mandatory reauth toggle flow started event count incorrect");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           MandatoryReauthAuthenticationFlowEvent::kFlowFailed)
+          forHistogram:kMandatoryReauthOptOutHistogramName],
+      @"Mandatory reauth toggle flow result event count incorrect");
+
+  // Config the next reauth attempt's result to success.
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
+  // Switch off the reauth toggle.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          YES, YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillMandatoryReauthSwitchViewId,
                                           NO, YES)]
       assertWithMatcher:grey_notNil()];
 
-  // Config the next reauth attempt to succeed.
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:4
+                        forHistogram:kMandatoryReauthOptOutHistogramName],
+                @"Mandatory reauth toggle event count incorrect");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:2
+             forBucket:static_cast<int>(
+                           MandatoryReauthAuthenticationFlowEvent::kFlowStarted)
+          forHistogram:kMandatoryReauthOptOutHistogramName],
+      @"Mandatory reauth toggle flow started event count incorrect");
 
-  // Switch on reauth toggle again.
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           MandatoryReauthAuthenticationFlowEvent::kFlowFailed)
+          forHistogram:kMandatoryReauthOptOutHistogramName],
+      @"Mandatory reauth toggle flow result event count incorrect");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(MandatoryReauthAuthenticationFlowEvent::
+                                            kFlowSucceeded)
+          forHistogram:kMandatoryReauthOptOutHistogramName],
+      @"Mandatory reauth toggle flow result event count incorrect");
+
+  // Switch on the reauth toggle. Reauth will be skipped due to previous
+  // success.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillMandatoryReauthSwitchViewId,
                                           NO, YES)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
-  // Upon reauth success, the toggle updated.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kAutofillMandatoryReauthSwitchViewId,
+                                          YES, YES)]
+      assertWithMatcher:grey_notNil()];
+
+  GREYAssertNil(
+      [MetricsAppInterface expectTotalCount:2
+                               forHistogram:kMandatoryReauthOptInHistogramName],
+      @"Mandatory reauth toggle event count incorrect");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           MandatoryReauthAuthenticationFlowEvent::kFlowStarted)
+          forHistogram:kMandatoryReauthOptInHistogramName],
+      @"Mandatory reauth toggle flow started event count incorrect");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(MandatoryReauthAuthenticationFlowEvent::
+                                            kFlowSucceeded)
+          forHistogram:kMandatoryReauthOptInHistogramName],
+      @"Mandatory reauth toggle flow result event count incorrect");
+
+  [self exitSettingsMenu];
+}
+
+// Checks that switching the mandatory reauth toggle when reauth is not
+// available will disable the toggle and set it to switched-off state.
+- (void)testDisableReauthToggle {
+  [AutofillAppInterface setMandatoryReauthEnabled:YES];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [self openCreditCardsSettings];
+
+  // Check the reauth switch is there.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillMandatoryReauthSwitchViewId,
                                           YES, YES)]
@@ -456,7 +570,7 @@ id<GREYMatcher> SettingToolbarDoneButton() {
   // Mock that reauth is disabled.
   [AutofillAppInterface mockReauthenticationModuleCanAttempt:NO];
 
-  // Try to switch off reauth toggle again.
+  // Try to switch off reauth toggle.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillMandatoryReauthSwitchViewId,
                                           YES, YES)]
@@ -468,7 +582,14 @@ id<GREYMatcher> SettingToolbarDoneButton() {
                                           NO, NO)]
       assertWithMatcher:grey_notNil()];
 
-  [self exitSettingsMenu];
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:kMandatoryReauthOptOutHistogramName],
+                @"Mandatory reauth toggle event count incorrect");
+  GREYAssertNil(
+      [MetricsAppInterface expectTotalCount:0
+                               forHistogram:kMandatoryReauthOptInHistogramName],
+      @"Mandatory reauth toggle event count incorrect");
 }
 
 @end

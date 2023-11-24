@@ -9,6 +9,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -65,6 +66,10 @@ enum ItemType : NSInteger {
 };
 
 }  // namespace
+
+using autofill::autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent;
+using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
+using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 #pragma mark - AutofillCreditCardTableViewController
 
@@ -486,6 +491,15 @@ enum ItemType : NSInteger {
 
 - (void)mandatoryReauthSwitchChanged:(UISwitch*)switchView {
   if ([self.reauthenticationModule canAttemptReauth]) {
+    // Get the original value.
+    BOOL mandatoryReauthEnabled =
+        _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
+    CHECK_NE(mandatoryReauthEnabled, switchView.isOn);
+    LogMandatoryReauthOptInOrOutUpdateEvent(
+        MandatoryReauthOptInOrOutSource::kSettingsPage,
+        /*opt_in=*/!mandatoryReauthEnabled,
+        MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
+
     __weak __typeof(self) weakSelf = self;
     [self.reauthenticationModule
         attemptReauthWithLocalizedReason:
@@ -764,11 +778,14 @@ enum ItemType : NSInteger {
   BOOL mandatoryReauthEnabled =
       _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
 
+  MandatoryReauthAuthenticationFlowEvent flow_event;
   if (result == ReauthenticationResult::kFailure) {
     // If authentication fails, restore the switch to its original state.
     [self setSwitchItemOn:mandatoryReauthEnabled
                  itemType:ItemTypeMandatoryReauthSwitch
         sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
+    flow_event = MandatoryReauthAuthenticationFlowEvent::kFlowFailed;
+
   } else {
     // Upon success, update the mandatory reauth pref and the switch.
     _personalDataManager->SetPaymentMethodsMandatoryReauthEnabled(
@@ -776,7 +793,11 @@ enum ItemType : NSInteger {
     [self setSwitchItemOn:!mandatoryReauthEnabled
                  itemType:ItemTypeMandatoryReauthSwitch
         sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
+    flow_event = MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded;
   }
+  LogMandatoryReauthOptInOrOutUpdateEvent(
+      MandatoryReauthOptInOrOutSource::kSettingsPage,
+      /*opt_in=*/!mandatoryReauthEnabled, flow_event);
 }
 
 #pragma mark - AutofillAddCreditCardCoordinatorDelegate
