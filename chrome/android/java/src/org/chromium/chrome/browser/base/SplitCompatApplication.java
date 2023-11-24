@@ -65,6 +65,7 @@ public class SplitCompatApplication extends Application {
     private static final String ATTACH_BASE_CONTEXT_EVENT = "ChromeApplication.attachBaseContext";
     // Public to allow use in ChromeBackupAgent
     public static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "chrome";
+
     @VisibleForTesting
     public static final String LAUNCH_FAILED_ACTIVITY_CLASS_NAME =
             "org.chromium.chrome.browser.init.LaunchFailedActivity";
@@ -96,6 +97,7 @@ public class SplitCompatApplication extends Application {
         public void onCreate() {}
 
         public void onTrimMemory(int level) {}
+
         public void onConfigurationChanged(Configuration newConfig) {}
     }
 
@@ -128,11 +130,17 @@ public class SplitCompatApplication extends Application {
         boolean isIsolatedProcess = ContextUtils.isIsolatedProcess();
         boolean isBrowserProcess = isBrowserProcess();
         // Using concatenation rather than %s to allow values to be inlined by R8.
-        Log.i(TAG,
-                "Launched version=" + VersionConstants.PRODUCT_VERSION
-                        + " minSdkVersion=" + BuildConfig.MIN_SDK_VERSION
-                        + " isBundle=" + ProductConfig.IS_BUNDLE + " processName=%s isIsolated=%s",
-                ContextUtils.getProcessName(), isIsolatedProcess);
+        Log.i(
+                TAG,
+                "Launched version="
+                        + VersionConstants.PRODUCT_VERSION
+                        + " minSdkVersion="
+                        + BuildConfig.MIN_SDK_VERSION
+                        + " isBundle="
+                        + ProductConfig.IS_BUNDLE
+                        + " processName=%s isIsolated=%s",
+                ContextUtils.getProcessName(),
+                isIsolatedProcess);
 
         if (isBrowserProcess) {
             UmaUtils.recordMainEntryPointTime();
@@ -158,25 +166,29 @@ public class SplitCompatApplication extends Application {
         if (isBrowserProcess) {
             // This must come as early as possible to avoid early loading of the native library from
             // failing unnoticed.
-            LibraryLoader.sLoadFailedCallback = unsatisfiedLinkError -> {
-                Intent newIntent = new Intent();
-                newIntent.setComponent(new ComponentName(
-                        ContextUtils.getApplicationContext(), LAUNCH_FAILED_ACTIVITY_CLASS_NAME));
-                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);
-                if (cannotLoadIn64Bit()) {
-                    throw new RuntimeException(
-                            "Starting in 64-bit mode requires the 64-bit native library. If "
-                                    + "the device is 64-bit only, see alternatives here: "
-                                    + "https://crbug.com/1303857#c7.",
-                            unsatisfiedLinkError);
-                } else if (cannotLoadIn32Bit()) {
-                    throw new RuntimeException(
-                            "Starting in 32-bit mode requires the 32-bit native library.",
-                            unsatisfiedLinkError);
-                }
-                throw unsatisfiedLinkError;
-            };
+            LibraryLoader.sLoadFailedCallback =
+                    unsatisfiedLinkError -> {
+                        Intent newIntent = new Intent();
+                        newIntent.setComponent(
+                                new ComponentName(
+                                        ContextUtils.getApplicationContext(),
+                                        LAUNCH_FAILED_ACTIVITY_CLASS_NAME));
+                        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        IntentUtils.safeStartActivity(
+                                ContextUtils.getApplicationContext(), newIntent);
+                        if (cannotLoadIn64Bit()) {
+                            throw new RuntimeException(
+                                    "Starting in 64-bit mode requires the 64-bit native library. If "
+                                            + "the device is 64-bit only, see alternatives here: "
+                                            + "https://crbug.com/1303857#c7.",
+                                    unsatisfiedLinkError);
+                        } else if (cannotLoadIn32Bit()) {
+                            throw new RuntimeException(
+                                    "Starting in 32-bit mode requires the 32-bit native library.",
+                                    unsatisfiedLinkError);
+                        }
+                        throw unsatisfiedLinkError;
+                    };
         }
 
         maybeInitProcessType();
@@ -211,7 +223,7 @@ public class SplitCompatApplication extends Application {
             CommandLineInitUtil.initCommandLine(
                     COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
 
-            TraceEvent.maybeEnableEarlyTracing(/*readCommandLine=*/true);
+            TraceEvent.maybeEnableEarlyTracing(/* readCommandLine= */ true);
             TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
 
             // Register for activity lifecycle callbacks. Must be done before any activities are
@@ -240,16 +252,19 @@ public class SplitCompatApplication extends Application {
         // Incremental install disables process isolation, so things in this block will
         // actually be run for incremental apks, but not normal apks.
         if (!isIsolatedProcess && !isWebViewProcess()) {
-            JavaExceptionReporterFactory factory = new JavaExceptionReporterFactory() {
-                @Override
-                public JavaExceptionReporter createJavaExceptionReporter() {
-                    // ChromePureJavaExceptionReporter may be in the chrome module, so load by
-                    // reflection from there.
-                    return (JavaExceptionReporter) BundleUtils.newInstance(
-                            createChromeContext(ContextUtils.getApplicationContext()),
-                            "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
-                }
-            };
+            JavaExceptionReporterFactory factory =
+                    new JavaExceptionReporterFactory() {
+                        @Override
+                        public JavaExceptionReporter createJavaExceptionReporter() {
+                            // ChromePureJavaExceptionReporter may be in the chrome module, so load
+                            // by reflection from there.
+                            return (JavaExceptionReporter)
+                                    BundleUtils.newInstance(
+                                            createChromeContext(
+                                                    ContextUtils.getApplicationContext()),
+                                            "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
+                        }
+                    };
             PureJavaExceptionHandler.installHandler(factory);
             CustomAssertionHandler.installPreNativeHandler(factory);
         }

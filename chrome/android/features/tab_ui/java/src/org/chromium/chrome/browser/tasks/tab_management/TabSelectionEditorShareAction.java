@@ -38,13 +38,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Share action for the {@link TabSelectionEditorMenu}.
- */
+/** Share action for the {@link TabSelectionEditorMenu}. */
 public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private static final List<String> UNSUPPORTED_SCHEMES =
-            new ArrayList<>(Arrays.asList(UrlConstants.CHROME_SCHEME,
-                    UrlConstants.CHROME_NATIVE_SCHEME, ContentUrlConstants.ABOUT_SCHEME));
+            new ArrayList<>(
+                    Arrays.asList(
+                            UrlConstants.CHROME_SCHEME,
+                            UrlConstants.CHROME_NATIVE_SCHEME,
+                            ContentUrlConstants.ABOUT_SCHEME));
     private static Callback<Intent> sIntentCallbackForTesting;
     private Context mContext;
     private boolean mSkipUrlCheckForTesting;
@@ -52,9 +53,12 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({TabSelectionEditorShareActionState.UNKNOWN, TabSelectionEditorShareActionState.SUCCESS,
-            TabSelectionEditorShareActionState.ALL_TABS_FILTERED,
-            TabSelectionEditorShareActionState.NUM_ENTRIES})
+    @IntDef({
+        TabSelectionEditorShareActionState.UNKNOWN,
+        TabSelectionEditorShareActionState.SUCCESS,
+        TabSelectionEditorShareActionState.ALL_TABS_FILTERED,
+        TabSelectionEditorShareActionState.NUM_ENTRIES
+    })
     public @interface TabSelectionEditorShareActionState {
         int UNKNOWN = 0;
         int SUCCESS = 1;
@@ -71,29 +75,43 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition) {
+    public static TabSelectionEditorAction createAction(
+            Context context,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition) {
         Drawable drawable =
                 AppCompatResources.getDrawable(context, R.drawable.tab_selection_editor_share_icon);
         return new TabSelectionEditorShareAction(
                 context, showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabSelectionEditorShareAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition, Drawable drawable) {
-        super(R.id.tab_selection_editor_share_menu_item, showMode, buttonType, iconPosition,
+    private TabSelectionEditorShareAction(
+            Context context,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition,
+            Drawable drawable) {
+        super(
+                R.id.tab_selection_editor_share_menu_item,
+                showMode,
+                buttonType,
+                iconPosition,
                 R.plurals.tab_selection_editor_share_tabs_action_button,
-                R.plurals.accessibility_tab_selection_editor_share_tabs_action_button, drawable);
+                R.plurals.accessibility_tab_selection_editor_share_tabs_action_button,
+                drawable);
         mContext = context;
-        mBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                context.unregisterReceiver(mBroadcastReceiver);
-                // Hide the selection editor if the custom share intent is sent and received by
-                // another app, indicating that the user has completed the share tabs workflow.
-                getActionDelegate().hideByAction();
-            }
-        };
+        mBroadcastReceiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        context.unregisterReceiver(mBroadcastReceiver);
+                        // Hide the selection editor if the custom share intent is sent and received
+                        // by another app, indicating that the user has completed the share tabs
+                        // workflow.
+                        getActionDelegate().hideByAction();
+                    }
+                };
     }
 
     @Override
@@ -133,29 +151,39 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         String tabUrl =
                 isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getUrl().getSpec() : "";
         @TabSelectionEditorActionMetricGroups
-        int actionId = isOnlyOneTab ? TabSelectionEditorActionMetricGroups.SHARE_TAB
-                                    : TabSelectionEditorActionMetricGroups.SHARE_TABS;
+        int actionId =
+                isOnlyOneTab
+                        ? TabSelectionEditorActionMetricGroups.SHARE_TAB
+                        : TabSelectionEditorActionMetricGroups.SHARE_TABS;
 
         ShareParams shareParams =
-                new ShareParams
-                        .Builder(tabList.getTabAt(sortedTabIndexList.get(0)).getWindowAndroid(),
-                                tabTitle, tabUrl)
+                new ShareParams.Builder(
+                                tabList.getTabAt(sortedTabIndexList.get(0)).getWindowAndroid(),
+                                tabTitle,
+                                tabUrl)
                         .setText(tabText)
                         .build();
 
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareParams.getTextAndUrl());
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TITLE,
-                mContext.getResources().getQuantityString(
-                        R.plurals.tab_selection_editor_share_sheet_preview_message,
-                        sortedTabIndexList.size(), sortedTabIndexList.size()));
+        shareIntent.putExtra(
+                Intent.EXTRA_TITLE,
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.tab_selection_editor_share_sheet_preview_message,
+                                sortedTabIndexList.size(),
+                                sortedTabIndexList.size()));
         shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        Drawable drawable = new InsetDrawable(
-                AppCompatResources.getDrawable(mContext, R.drawable.chrome_sync_logo),
-                (int) mContext.getResources().getDimension(
-                        R.dimen.tab_selection_editor_share_sheet_preview_thumbnail_padding));
+        Drawable drawable =
+                new InsetDrawable(
+                        AppCompatResources.getDrawable(mContext, R.drawable.chrome_sync_logo),
+                        (int)
+                                mContext.getResources()
+                                        .getDimension(
+                                                R.dimen
+                                                        .tab_selection_editor_share_sheet_preview_thumbnail_padding));
 
         // Create a custom share intent and receiver to assess if another app receives the share
         // intent sent from the tab selection editor.
@@ -175,36 +203,53 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         return false;
     }
 
-    private void createShareableImageAndSendIntent(Intent shareIntent, Drawable drawable,
-            @TabSelectionEditorActionMetricGroups int actionId, PendingIntent pendingIntent) {
-        PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
-            // Allotted thumbnail size is approx. 72 dp, with the icon left at default size.
-            // The padding is adjusted accordingly, taking into account the scaling factor.
-            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
+    private void createShareableImageAndSendIntent(
+            Intent shareIntent,
+            Drawable drawable,
+            @TabSelectionEditorActionMetricGroups int actionId,
+            PendingIntent pendingIntent) {
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING_MAY_BLOCK,
+                () -> {
+                    // Allotted thumbnail size is approx. 72 dp, with the icon left at default size.
+                    // The padding is adjusted accordingly, taking into account the scaling factor.
+                    Bitmap bitmap =
+                            Bitmap.createBitmap(
+                                    drawable.getIntrinsicWidth(),
+                                    drawable.getIntrinsicHeight(),
+                                    Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                    drawable.draw(canvas);
 
-            ShareImageFileUtils.generateTemporaryUriFromBitmap(
-                    mContext.getResources().getString(
-                            R.string.tab_selection_editor_share_sheet_preview_thumbnail),
-                    bitmap, uri -> {
-                        bitmap.recycle();
-                        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                            shareIntent.setClipData(ClipData.newRawUri("", uri));
-                            mContext.startActivity(Intent.createChooser(
-                                    shareIntent, null, pendingIntent.getIntentSender()));
-                            TabUiMetricsHelper.recordSelectionEditorActionMetrics(actionId);
-                            TabUiMetricsHelper.recordShareStateHistogram(
-                                    TabSelectionEditorShareActionState.SUCCESS);
-                        });
+                    ShareImageFileUtils.generateTemporaryUriFromBitmap(
+                            mContext.getResources()
+                                    .getString(
+                                            R.string
+                                                    .tab_selection_editor_share_sheet_preview_thumbnail),
+                            bitmap,
+                            uri -> {
+                                bitmap.recycle();
+                                PostTask.postTask(
+                                        TaskTraits.UI_DEFAULT,
+                                        () -> {
+                                            shareIntent.setClipData(ClipData.newRawUri("", uri));
+                                            mContext.startActivity(
+                                                    Intent.createChooser(
+                                                            shareIntent,
+                                                            null,
+                                                            pendingIntent.getIntentSender()));
+                                            TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                                                    actionId);
+                                            TabUiMetricsHelper.recordShareStateHistogram(
+                                                    TabSelectionEditorShareActionState.SUCCESS);
+                                        });
 
-                        if (sIntentCallbackForTesting != null) {
-                            sIntentCallbackForTesting.onResult(shareIntent);
-                        }
-                    });
-        });
+                                if (sIntentCallbackForTesting != null) {
+                                    sIntentCallbackForTesting.onResult(shareIntent);
+                                }
+                            });
+                });
     }
 
     // TODO(crbug.com/1373579): Current filtering does not remove duplicates or show a "Toast" if
@@ -242,7 +287,9 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private boolean shouldFilterUrl(GURL url) {
         if (mSkipUrlCheckForTesting) return false;
 
-        return url == null || !url.isValid() || url.isEmpty()
+        return url == null
+                || !url.isValid()
+                || url.isEmpty()
                 || UNSUPPORTED_SCHEMES.contains(url.getScheme());
     }
 

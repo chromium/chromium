@@ -45,13 +45,11 @@ public class CookieControlsServiceBridge {
                 CookieControlsServiceBridgeJni.get().init(CookieControlsServiceBridge.this);
     }
 
-    /**
-     * Destroys the native counterpart of this class.
-     */
+    /** Destroys the native counterpart of this class. */
     public void destroy() {
         if (mNativeCookieControlsServiceBridge != 0) {
-            CookieControlsServiceBridgeJni.get().destroy(
-                    mNativeCookieControlsServiceBridge, CookieControlsServiceBridge.this);
+            CookieControlsServiceBridgeJni.get()
+                    .destroy(mNativeCookieControlsServiceBridge, CookieControlsServiceBridge.this);
             mNativeCookieControlsServiceBridge = 0;
         }
     }
@@ -62,16 +60,14 @@ public class CookieControlsServiceBridge {
      * @param enable A boolean indicating whether the toggle has been switched on or off.
      */
     public void handleCookieControlsToggleChanged(boolean enable) {
-        CookieControlsServiceBridgeJni.get().handleCookieControlsToggleChanged(
-                mNativeCookieControlsServiceBridge, enable);
+        CookieControlsServiceBridgeJni.get()
+                .handleCookieControlsToggleChanged(mNativeCookieControlsServiceBridge, enable);
     }
 
-    /**
-     * Starts a service to observe current profile.
-     */
+    /** Starts a service to observe current profile. */
     public void updateServiceIfNecessary() {
-        CookieControlsServiceBridgeJni.get().updateServiceIfNecessary(
-                mNativeCookieControlsServiceBridge);
+        CookieControlsServiceBridgeJni.get()
+                .updateServiceIfNecessary(mNativeCookieControlsServiceBridge);
     }
 
     @CalledByNative
@@ -84,9 +80,12 @@ public class CookieControlsServiceBridge {
     @NativeMethods
     public interface Natives {
         long init(CookieControlsServiceBridge caller);
+
         void destroy(long nativeCookieControlsServiceBridge, CookieControlsServiceBridge caller);
+
         void handleCookieControlsToggleChanged(
                 long nativeCookieControlsServiceBridge, boolean enable);
+
         void updateServiceIfNecessary(long nativeCookieControlsServiceBridge);
     }
 }

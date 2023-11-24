@@ -10,16 +10,13 @@ import android.view.View;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * {@link PropertyKey} list for TabSelectionEditor.
- */
+/** {@link PropertyKey} list for TabSelectionEditor. */
 public class TabSelectionEditorProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<View.OnClickListener> TOOLBAR_NAVIGATION_LISTENER =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            TOOLBAR_NAVIGATION_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableIntPropertyKey PRIMARY_COLOR =
             new PropertyModel.WritableIntPropertyKey();
@@ -30,15 +27,21 @@ public class TabSelectionEditorProperties {
     public static final PropertyModel.WritableObjectPropertyKey<ColorStateList> TOOLBAR_TEXT_TINT =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<ColorStateList> TOOLBAR_BUTTON_TINT =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList>
+            TOOLBAR_BUTTON_TINT = new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<TabSelectionEditorToolbar.RelatedTabCountProvider>
-                    RELATED_TAB_COUNT_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<
+                    TabSelectionEditorToolbar.RelatedTabCountProvider>
+            RELATED_TAB_COUNT_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_VISIBLE,
-            TOOLBAR_NAVIGATION_LISTENER, PRIMARY_COLOR, TOOLBAR_BACKGROUND_COLOR, TOOLBAR_TEXT_TINT,
-            TOOLBAR_BUTTON_TINT, RELATED_TAB_COUNT_PROVIDER};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                IS_VISIBLE,
+                TOOLBAR_NAVIGATION_LISTENER,
+                PRIMARY_COLOR,
+                TOOLBAR_BACKGROUND_COLOR,
+                TOOLBAR_TEXT_TINT,
+                TOOLBAR_BUTTON_TINT,
+                RELATED_TAB_COUNT_PROVIDER
+            };
 }

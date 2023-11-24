@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * Native page for managing downloads handled through Chrome.
- */
+/** Native page for managing downloads handled through Chrome. */
 public class DownloadPage extends BasicNativePage implements DownloadManagerCoordinator.Observer {
     private ActivityStateListener mActivityStateListener;
 
@@ -38,8 +36,12 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
      * @param otrProfileId The {@link OTRProfileID} for the profile. Null for regular profile.
      * @param host A NativePageHost to load urls.
      */
-    public DownloadPage(Activity activity, SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager, OTRProfileID otrProfileId, NativePageHost host) {
+    public DownloadPage(
+            Activity activity,
+            SnackbarManager snackbarManager,
+            ModalDialogManager modalDialogManager,
+            OTRProfileID otrProfileId,
+            NativePageHost host) {
         super(host);
 
         ThreadUtils.assertOnUiThread();
@@ -51,8 +53,9 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
                         .build();
 
-        mDownloadCoordinator = DownloadManagerCoordinatorFactoryHelper.create(
-                activity, config, snackbarManager, modalDialogManager);
+        mDownloadCoordinator =
+                DownloadManagerCoordinatorFactoryHelper.create(
+                        activity, config, snackbarManager, modalDialogManager);
 
         mDownloadCoordinator.addObserver(this);
         mTitle = activity.getString(R.string.menu_downloads);

@@ -23,12 +23,10 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
-/**
- * Fragment that allows the user to configure homepage related preferences.
- */
+/** Fragment that allows the user to configure homepage related preferences. */
 public class HomepageSettings extends ChromeBaseSettingsFragment {
-    @VisibleForTesting
-    public static final String PREF_HOMEPAGE_SWITCH = "homepage_switch";
+    @VisibleForTesting public static final String PREF_HOMEPAGE_SWITCH = "homepage_switch";
+
     @VisibleForTesting
     public static final String PREF_HOMEPAGE_RADIO_GROUP = "homepage_radio_group";
 
@@ -59,10 +57,11 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         // Set up listeners and update the page.
         boolean isHomepageEnabled = HomepageManager.isHomepageEnabled();
         homepageSwitch.setChecked(isHomepageEnabled);
-        homepageSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            onSwitchPreferenceChange((boolean) newValue);
-            return true;
-        });
+        homepageSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    onSwitchPreferenceChange((boolean) newValue);
+                    return true;
+                });
         mRadioButtons.setupPreferenceValues(createPreferenceValuesForRadioGroup());
 
         RecordUserAction.record("Settings.Homepage.Opened");
@@ -147,9 +146,11 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         if (isPolicyEnabled) {
             shouldCheckNTP = UrlUtilities.isNTPUrl(HomepagePolicyManager.getHomepageUrl());
         } else {
-            shouldCheckNTP = mHomepageManager.getPrefHomepageUseChromeNTP()
-                    || (mHomepageManager.getPrefHomepageUseDefaultUri()
-                            && UrlUtilities.isNTPUrl(HomepageManager.getDefaultHomepageGurl()));
+            shouldCheckNTP =
+                    mHomepageManager.getPrefHomepageUseChromeNTP()
+                            || (mHomepageManager.getPrefHomepageUseDefaultUri()
+                                    && UrlUtilities.isNTPUrl(
+                                            HomepageManager.getDefaultHomepageGurl()));
         }
 
         @HomepageOption
@@ -165,7 +166,11 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         // Customized option should be visible when policy is not enforced or the option is checked.
         boolean isCustomizedOptionVisible = !isPolicyEnabled || !shouldCheckNTP;
 
-        return new PreferenceValues(checkedOption, getHomepageForEditText().getSpec(),
-                isRadioButtonPreferenceEnabled, isNTPOptionVisible, isCustomizedOptionVisible);
+        return new PreferenceValues(
+                checkedOption,
+                getHomepageForEditText().getSpec(),
+                isRadioButtonPreferenceEnabled,
+                isNTPOptionVisible,
+                isCustomizedOptionVisible);
     }
 }

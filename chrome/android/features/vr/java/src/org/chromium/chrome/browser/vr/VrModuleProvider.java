@@ -55,16 +55,17 @@ public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
     }
 
     /* package */ static void installModule(InstallListener listener) {
-        VrModule.install((success) -> {
-            if (success) {
-                // Re-create delegate provider.
-                sDelegateProvider = null;
-                VrDelegate delegate = getDelegate();
-                assert !(delegate instanceof VrDelegateFallback);
-                delegate.initAfterModuleInstall();
-            }
-            listener.onComplete(success);
-        });
+        VrModule.install(
+                (success) -> {
+                    if (success) {
+                        // Re-create delegate provider.
+                        sDelegateProvider = null;
+                        VrDelegate delegate = getDelegate();
+                        assert !(delegate instanceof VrDelegateFallback);
+                        delegate.initAfterModuleInstall();
+                    }
+                    listener.onComplete(success);
+                });
     }
 
     // TODO(crbug.com/870055): JNI should be registered in the shared VR library's JNI_OnLoad
@@ -100,8 +101,8 @@ public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
         if (retry) {
             installModule(mTab);
         } else {
-            VrModuleProviderJni.get().onInstalledModule(
-                    mNativeVrModuleProvider, VrModuleProvider.this, false);
+            VrModuleProviderJni.get()
+                    .onInstalledModule(mNativeVrModuleProvider, VrModuleProvider.this, false);
         }
     }
 
@@ -117,37 +118,42 @@ public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
     @CalledByNative
     private void installModule(Tab tab) {
         mTab = tab;
-        ModuleInstallUi.Delegate moduleInstallUiDelegate = new ModuleInstallUi.Delegate() {
-            @Override
-            public WindowAndroid getWindowAndroid() {
-                return mTab.getWindowAndroid();
-            }
+        ModuleInstallUi.Delegate moduleInstallUiDelegate =
+                new ModuleInstallUi.Delegate() {
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        return mTab.getWindowAndroid();
+                    }
 
-            @Override
-            public Context getContext() {
-                return mTab.getWindowAndroid() != null ? mTab.getWindowAndroid().getActivity().get()
-                                                       : null;
-            }
-        };
+                    @Override
+                    public Context getContext() {
+                        return mTab.getWindowAndroid() != null
+                                ? mTab.getWindowAndroid().getActivity().get()
+                                : null;
+                    }
+                };
         ModuleInstallUi ui =
                 new ModuleInstallUi(moduleInstallUiDelegate, R.string.vr_module_title, this);
         ui.showInstallStartUi();
-        installModule((success) -> {
-            if (mNativeVrModuleProvider != 0) {
-                if (!success) {
-                    ui.showInstallFailureUi();
-                    return;
-                }
-                ui.showInstallSuccessUi();
-                VrModuleProviderJni.get().onInstalledModule(
-                        mNativeVrModuleProvider, VrModuleProvider.this, success);
-            }
-        });
+        installModule(
+                (success) -> {
+                    if (mNativeVrModuleProvider != 0) {
+                        if (!success) {
+                            ui.showInstallFailureUi();
+                            return;
+                        }
+                        ui.showInstallSuccessUi();
+                        VrModuleProviderJni.get()
+                                .onInstalledModule(
+                                        mNativeVrModuleProvider, VrModuleProvider.this, success);
+                    }
+                });
     }
 
     @NativeMethods
     interface Natives {
         void registerJni();
+
         void onInstalledModule(
                 long nativeVrModuleProvider, VrModuleProvider caller, boolean success);
     }

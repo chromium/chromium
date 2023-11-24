@@ -28,32 +28,35 @@ class TrackingProvider {
     public Promise<Tracking> get() {
         final Promise<Tracking> promise = new Promise<>();
 
-        mTaskRunner.postTask(() -> {
-            Tracking state = null;
+        mTaskRunner.postTask(
+                () -> {
+                    Tracking state = null;
 
-            String serialized =
-                    OmahaBase.getSharedPreferences().getString(TRACKING_PERSISTENT_KEY, null);
-            if (serialized != null) {
-                try {
-                    state = Tracking.parseFrom(Base64.decode(serialized, Base64.DEFAULT));
-                } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-                }
-            }
+                    String serialized =
+                            OmahaBase.getSharedPreferences()
+                                    .getString(TRACKING_PERSISTENT_KEY, null);
+                    if (serialized != null) {
+                        try {
+                            state = Tracking.parseFrom(Base64.decode(serialized, Base64.DEFAULT));
+                        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                        }
+                    }
 
-            final Tracking finalState = state;
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> promise.fulfill(finalState));
-        });
+                    final Tracking finalState = state;
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> promise.fulfill(finalState));
+                });
 
         return promise;
     }
 
     /** Clears any persisted instance of {@link Tracking}. */
     public void clear() {
-        mTaskRunner.postTask(()
-                                     -> OmahaBase.getSharedPreferences()
-                                                .edit()
-                                                .remove(TRACKING_PERSISTENT_KEY)
-                                                .apply());
+        mTaskRunner.postTask(
+                () ->
+                        OmahaBase.getSharedPreferences()
+                                .edit()
+                                .remove(TRACKING_PERSISTENT_KEY)
+                                .apply());
     }
 
     /**
@@ -61,12 +64,13 @@ class TrackingProvider {
      * @param state The new instance of {@link Tracking} to persist.
      */
     public void put(Tracking state) {
-        mTaskRunner.postTask(() -> {
-            String serialized = Base64.encodeToString(state.toByteArray(), Base64.DEFAULT);
-            OmahaBase.getSharedPreferences()
-                    .edit()
-                    .putString(TRACKING_PERSISTENT_KEY, serialized)
-                    .apply();
-        });
+        mTaskRunner.postTask(
+                () -> {
+                    String serialized = Base64.encodeToString(state.toByteArray(), Base64.DEFAULT);
+                    OmahaBase.getSharedPreferences()
+                            .edit()
+                            .putString(TRACKING_PERSISTENT_KEY, serialized)
+                            .apply();
+                });
     }
 }

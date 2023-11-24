@@ -10,11 +10,10 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * View binder that binds the target view with the property model.
- */
-class TargetViewBinder implements PropertyModelChangeProcessor
-                                          .ViewBinder<PropertyModel, FrameLayout, PropertyKey> {
+/** View binder that binds the target view with the property model. */
+class TargetViewBinder
+        implements PropertyModelChangeProcessor.ViewBinder<
+                PropertyModel, FrameLayout, PropertyKey> {
     @Override
     public void bind(PropertyModel model, FrameLayout view, PropertyKey propertyKey) {
         if (propertyKey == TargetViewProperties.TARGET_VIEW_VISIBLE) {

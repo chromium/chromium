@@ -32,19 +32,29 @@ class DownloadManagerCoordinatorFactoryHelper {
      * @param modalDialogManager The {@link ModalDialogManager} that should be used to show dialog.
      * @return                   A new {@link DownloadManagerCoordinator} instance.
      */
-    public static DownloadManagerCoordinator create(Activity activity,
-            DownloadManagerUiConfig config, SnackbarManager snackbarManager,
+    public static DownloadManagerCoordinator create(
+            Activity activity,
+            DownloadManagerUiConfig config,
+            SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager) {
-        Profile profile = OTRProfileID.isOffTheRecord(config.otrProfileID)
-                ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
-                        config.otrProfileID, /*createIfNeeded=*/true)
-                : Profile.getLastUsedRegularProfile();
+        Profile profile =
+                OTRProfileID.isOffTheRecord(config.otrProfileID)
+                        ? Profile.getLastUsedRegularProfile()
+                                .getOffTheRecordProfile(
+                                        config.otrProfileID, /* createIfNeeded= */ true)
+                        : Profile.getLastUsedRegularProfile();
         Callback<Context> settingsLaunchHelper =
                 DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper;
-        return DownloadManagerCoordinatorFactory.create(activity, config,
-                new PrefetchEnabledSupplier(), settingsLaunchHelper, snackbarManager,
-                modalDialogManager, TrackerFactory.getTrackerForProfile(profile),
-                new FaviconProviderImpl(profile), OfflineContentAggregatorFactory.get(),
+        return DownloadManagerCoordinatorFactory.create(
+                activity,
+                config,
+                new PrefetchEnabledSupplier(),
+                settingsLaunchHelper,
+                snackbarManager,
+                modalDialogManager,
+                TrackerFactory.getTrackerForProfile(profile),
+                new FaviconProviderImpl(profile),
+                OfflineContentAggregatorFactory.get(),
                 GlobalDiscardableReferencePool.getReferencePool());
     }
 

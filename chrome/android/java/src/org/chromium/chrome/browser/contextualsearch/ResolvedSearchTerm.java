@@ -13,10 +13,20 @@ import java.lang.annotation.RetentionPolicy;
  * Encapsulates the response from the server to a Resolve request (as a single immutable object).
  */
 public class ResolvedSearchTerm {
-    @IntDef({CardTag.CT_NONE, CardTag.CT_OTHER, CardTag.CT_HAS_ENTITY, CardTag.CT_BUSINESS,
-            CardTag.CT_PRODUCT, CardTag.CT_CONTACT, CardTag.CT_EMAIL, CardTag.CT_LOCATION,
-            CardTag.CT_URL, CardTag.CT_DEFINITION, CardTag.CT_TRANSLATE,
-            CardTag.CT_CONTEXTUAL_DEFINITION})
+    @IntDef({
+        CardTag.CT_NONE,
+        CardTag.CT_OTHER,
+        CardTag.CT_HAS_ENTITY,
+        CardTag.CT_BUSINESS,
+        CardTag.CT_PRODUCT,
+        CardTag.CT_CONTACT,
+        CardTag.CT_EMAIL,
+        CardTag.CT_LOCATION,
+        CardTag.CT_URL,
+        CardTag.CT_DEFINITION,
+        CardTag.CT_TRANSLATE,
+        CardTag.CT_CONTEXTUAL_DEFINITION
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CardTag {
         int CT_NONE = 0;
@@ -47,12 +57,10 @@ public class ResolvedSearchTerm {
     private final String mThumbnailUrl;
     private final String mCaption;
     private final String mQuickActionUri;
-    @QuickActionCategory
-    private final int mQuickActionCategory;
+    @QuickActionCategory private final int mQuickActionCategory;
     private final String mSearchUrlFull;
     private final String mSearchUrlPreload;
-    @CardTag
-    private final int mCardTagEnum;
+    @CardTag private final int mCardTagEnum;
     private final String mRelatedSearchesJson;
 
     /**
@@ -83,13 +91,24 @@ public class ResolvedSearchTerm {
      *        or {@code 0} if no card was returned.
      * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config data.
      */
-    private ResolvedSearchTerm(boolean isNetworkUnavailable, int responseCode,
-            final String searchTerm, final String displayText, final String alternateTerm,
-            final String mid, boolean doPreventPreload, int selectionStartAdjust,
-            int selectionEndAdjust, final String contextLanguage, final String thumbnailUrl,
-            final String caption, final String quickActionUri,
-            @QuickActionCategory final int quickActionCategory, final String searchUrlFull,
-            final String searchUrlPreload, @CardTag final int cardTagEnum,
+    private ResolvedSearchTerm(
+            boolean isNetworkUnavailable,
+            int responseCode,
+            final String searchTerm,
+            final String displayText,
+            final String alternateTerm,
+            final String mid,
+            boolean doPreventPreload,
+            int selectionStartAdjust,
+            int selectionEndAdjust,
+            final String contextLanguage,
+            final String thumbnailUrl,
+            final String caption,
+            final String quickActionUri,
+            @QuickActionCategory final int quickActionCategory,
+            final String searchUrlFull,
+            final String searchUrlPreload,
+            @CardTag final int cardTagEnum,
             final String relatedSearchesJson) {
         mIsNetworkUnavailable = isNetworkUnavailable;
         mResponseCode = responseCode;
@@ -227,12 +246,10 @@ public class ResolvedSearchTerm {
         private String mThumbnailUrl;
         private String mCaption;
         private String mQuickActionUri;
-        @QuickActionCategory
-        private int mQuickActionCategory;
+        @QuickActionCategory private int mQuickActionCategory;
         private String mSearchUrlFull;
         private String mSearchUrlPreload;
-        @CardTag
-        private int mCardTagEnum;
+        @CardTag private int mCardTagEnum;
         private String mRelatedSearchesJson;
 
         /**
@@ -245,7 +262,10 @@ public class ResolvedSearchTerm {
          * @param searchTerm The term to use in our subsequent search.
          * @param displayText The text to display in our UX.
          */
-        public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
+        public Builder(
+                boolean isNetworkUnavailable,
+                int responseCode,
+                final String searchTerm,
                 final String displayText) {
             this(isNetworkUnavailable, responseCode, searchTerm, displayText, "", false);
         }
@@ -262,11 +282,32 @@ public class ResolvedSearchTerm {
          * @param alternateTerm The alternate term to display on the results page.
          * @param doPreventPreload Whether we should prevent preloading on this search.
          */
-        public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
-                final String displayText, final String alternateTerm, boolean doPreventPreload) {
-            this(isNetworkUnavailable, responseCode, searchTerm, displayText, alternateTerm, "",
-                    doPreventPreload, 0, 0, "", "", "", "", QuickActionCategory.NONE, "", "",
-                    CardTag.CT_NONE, "");
+        public Builder(
+                boolean isNetworkUnavailable,
+                int responseCode,
+                final String searchTerm,
+                final String displayText,
+                final String alternateTerm,
+                boolean doPreventPreload) {
+            this(
+                    isNetworkUnavailable,
+                    responseCode,
+                    searchTerm,
+                    displayText,
+                    alternateTerm,
+                    "",
+                    doPreventPreload,
+                    0,
+                    0,
+                    "",
+                    "",
+                    "",
+                    "",
+                    QuickActionCategory.NONE,
+                    "",
+                    "",
+                    CardTag.CT_NONE,
+                    "");
         }
 
         /**
@@ -298,13 +339,25 @@ public class ResolvedSearchTerm {
          * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config
          *         data.
          */
-        public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
-                final String displayText, final String alternateTerm, final String mid,
-                boolean doPreventPreload, int selectionStartAdjust, int selectionEndAdjust,
-                final String contextLanguage, final String thumbnailUrl, final String caption,
-                final String quickActionUri, @QuickActionCategory final int quickActionCategory,
-                final String searchUrlFull, final String searchUrlPreload,
-                @CardTag final int cardTag, final String relatedSearchesJson) {
+        public Builder(
+                boolean isNetworkUnavailable,
+                int responseCode,
+                final String searchTerm,
+                final String displayText,
+                final String alternateTerm,
+                final String mid,
+                boolean doPreventPreload,
+                int selectionStartAdjust,
+                int selectionEndAdjust,
+                final String contextLanguage,
+                final String thumbnailUrl,
+                final String caption,
+                final String quickActionUri,
+                @QuickActionCategory final int quickActionCategory,
+                final String searchUrlFull,
+                final String searchUrlPreload,
+                @CardTag final int cardTag,
+                final String relatedSearchesJson) {
             mIsNetworkUnavailable = isNetworkUnavailable;
             mResponseCode = responseCode;
             mSearchTerm = searchTerm;
@@ -461,10 +514,24 @@ public class ResolvedSearchTerm {
          *         the server for the Resolve request.
          */
         public ResolvedSearchTerm build() {
-            return new ResolvedSearchTerm(mIsNetworkUnavailable, mResponseCode, mSearchTerm,
-                    mDisplayText, mAlternateTerm, mMid, mDoPreventPreload, mSelectionStartAdjust,
-                    mSelectionEndAdjust, mContextLanguage, mThumbnailUrl, mCaption, mQuickActionUri,
-                    mQuickActionCategory, mSearchUrlFull, mSearchUrlPreload, mCardTagEnum,
+            return new ResolvedSearchTerm(
+                    mIsNetworkUnavailable,
+                    mResponseCode,
+                    mSearchTerm,
+                    mDisplayText,
+                    mAlternateTerm,
+                    mMid,
+                    mDoPreventPreload,
+                    mSelectionStartAdjust,
+                    mSelectionEndAdjust,
+                    mContextLanguage,
+                    mThumbnailUrl,
+                    mCaption,
+                    mQuickActionUri,
+                    mQuickActionCategory,
+                    mSearchUrlFull,
+                    mSearchUrlPreload,
+                    mCardTagEnum,
                     mRelatedSearchesJson);
         }
     }

@@ -40,9 +40,12 @@ public class WebappActivityCoordinator
     // Whether the current page is within the webapp's scope.
 
     @Inject
-    public WebappActivityCoordinator(SharedActivityCoordinator sharedActivityCoordinator,
-            Activity activity, BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityTabProvider activityTabProvider, CurrentPageVerifier currentPageVerifier,
+    public WebappActivityCoordinator(
+            SharedActivityCoordinator sharedActivityCoordinator,
+            Activity activity,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            ActivityTabProvider activityTabProvider,
+            CurrentPageVerifier currentPageVerifier,
             WebappSplashController splashController,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             WebappActionsNotificationManager actionsNotificationManager,
@@ -55,13 +58,14 @@ public class WebappActivityCoordinator
         mActivity = activity;
         mDeferredStartupWithStorageHandler = deferredStartupWithStorageHandler;
 
-        mDeferredStartupWithStorageHandler.addTask((storage, didCreateStorage) -> {
-            if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+        mDeferredStartupWithStorageHandler.addTask(
+                (storage, didCreateStorage) -> {
+                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
 
-            if (storage != null) {
-                updateStorage(storage);
-            }
-        });
+                    if (storage != null) {
+                        updateStorage(storage);
+                    }
+                });
 
         lifecycleDispatcher.register(this);
 
@@ -74,9 +78,7 @@ public class WebappActivityCoordinator
         }
     }
 
-    /**
-     * Invoked to add deferred startup tasks to queue.
-     */
+    /** Invoked to add deferred startup tasks to queue. */
     public void initDeferredStartupForActivity() {
         mDeferredStartupWithStorageHandler.initDeferredStartupForActivity();
     }

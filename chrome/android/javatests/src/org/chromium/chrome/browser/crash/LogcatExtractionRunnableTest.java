@@ -54,7 +54,6 @@ public class LogcatExtractionRunnableTest {
             return LOGCAT;
         }
     }
-    ;
 
     private static class TestJobScheduler extends JobScheduler {
         TestJobScheduler() {}
@@ -90,7 +89,6 @@ public class LogcatExtractionRunnableTest {
             return JobScheduler.RESULT_SUCCESS;
         }
     }
-    ;
 
     // Responsible for verifying that the correct intent is fired after the logcat is extracted.
     private class TestContext extends AdvancedMockContext {

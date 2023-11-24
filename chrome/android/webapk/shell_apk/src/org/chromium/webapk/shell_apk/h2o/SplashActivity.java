@@ -117,7 +117,7 @@ public class SplashActivity extends Activity {
 
         mLaunchTrigger.reset();
 
-        selectHostBrowser(-1 /* splashShownTimeMs */);
+        selectHostBrowser(/* splashShownTimeMs= */ -1);
     }
 
     @Override

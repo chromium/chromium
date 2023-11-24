@@ -44,9 +44,9 @@ import org.chromium.ui.resources.ResourceManager;
  * The is the {@link View} displaying the ui compositor results; including webpages and tabswitcher.
  */
 @JNINamespace("android")
-public class CompositorView
-        extends FrameLayout implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
-                                       WindowAndroid.SelectionHandlesObserver {
+public class CompositorView extends FrameLayout
+        implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
+                WindowAndroid.SelectionHandlesObserver {
     // Cache objects that should not be created every frame
     private final Rect mCacheAppRect = new Rect();
 
@@ -104,7 +104,8 @@ public class CompositorView
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
-                    && mCompositorSurfaceManager != null && !mIsInXr
+                    && mCompositorSurfaceManager != null
+                    && !mIsInXr
                     && mNativeCompositorView != 0) {
                 mNeedsReset = true;
             }
@@ -203,7 +204,8 @@ public class CompositorView
             // If the measured width is the same as the allowed width (i.e. the orientation has
             // not changed) and multi-window mode is off, use the largest measured height seen thus
             // far.  This will prevent surface resizes as a result of showing the keyboard.
-            if (!topChanged && !isMultiWindow
+            if (!topChanged
+                    && !isMultiWindow
                     && getMeasuredWidth() == MeasureSpec.getSize(widthMeasureSpec)
                     && getMeasuredHeight() > MeasureSpec.getSize(heightMeasureSpec)) {
                 heightMeasureSpec =
@@ -219,14 +221,13 @@ public class CompositorView
         mPreviousWindowTop = -1;
     }
 
-    /**
-     * WindowAndroid.SelectionHandlesObserver impl.
-     */
+    /** WindowAndroid.SelectionHandlesObserver impl. */
     @Override
     public void onSelectionHandlesStateChanged(boolean active) {
         // If the feature is disabled or we're in Vr mode, we are already rendering directly to the
         // SurfaceView.
-        if (!mIsSurfaceControlEnabled || mIsInXr
+        if (!mIsSurfaceControlEnabled
+                || mIsInXr
                 || !SelectionPopupController.needsSurfaceViewDuringSelection()) {
             return;
         }
@@ -250,8 +251,8 @@ public class CompositorView
         // destroying the GLSurface in the GPU process. So we need to explicitly preserve them in
         // the GPU process during this transition.
         if (switchToSurfaceView) {
-            CompositorViewJni.get().cacheBackBufferForCurrentSurface(
-                    mNativeCompositorView, CompositorView.this);
+            CompositorViewJni.get()
+                    .cacheBackBufferForCurrentSurface(mNativeCompositorView, CompositorView.this);
         }
 
         // Trigger the creation of a new SurfaceView. CompositorSurfaceManager will handle caching
@@ -273,9 +274,7 @@ public class CompositorView
         return mCompositorSurfaceManager.getActiveSurfaceView();
     }
 
-    /**
-     * Should be called for cleanup when the CompositorView instance is no longer used.
-     */
+    /** Should be called for cleanup when the CompositorView instance is no longer used. */
     public void shutDown() {
         mCompositorSurfaceManager.shutDown();
         if (mScreenStateReceiver != null) {
@@ -293,7 +292,9 @@ public class CompositorView
      * @param windowAndroid        A {@link WindowAndroid} instance.
      * @param tabContentManager    A {@link TabContentManager} instance.
      */
-    public void initNativeCompositor(boolean lowMemDevice, WindowAndroid windowAndroid,
+    public void initNativeCompositor(
+            boolean lowMemDevice,
+            WindowAndroid windowAndroid,
             TabContentManager tabContentManager) {
         // https://crbug.com/802160. We can't call setWindowAndroid here because updating the window
         // visibility here breaks exiting Reader Mode somehow.
@@ -302,8 +303,9 @@ public class CompositorView
 
         mTabContentManager = tabContentManager;
 
-        mNativeCompositorView = CompositorViewJni.get().init(
-                CompositorView.this, lowMemDevice, windowAndroid, tabContentManager);
+        mNativeCompositorView =
+                CompositorViewJni.get()
+                        .init(CompositorView.this, lowMemDevice, windowAndroid, tabContentManager);
 
         // compositor_impl_android.cc will use 565 EGL surfaces if and only if we're using a low
         // memory device, and no alpha channel is desired.  Otherwise, it will use 8888.  Since
@@ -324,8 +326,9 @@ public class CompositorView
         setVisibility(View.VISIBLE);
 
         // Grab the Resource Manager
-        mResourceManager = CompositorViewJni.get().getResourceManager(
-                mNativeCompositorView, CompositorView.this);
+        mResourceManager =
+                CompositorViewJni.get()
+                        .getResourceManager(mNativeCompositorView, CompositorView.this);
 
         // Redraw in case there are callbacks pending |mDrawingFinishedCallback|.
         CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
@@ -345,8 +348,8 @@ public class CompositorView
      * @param enabled Whether to enter or leave overlay video mode.
      */
     public void setOverlayVideoMode(boolean enabled) {
-        CompositorViewJni.get().setOverlayVideoMode(
-                mNativeCompositorView, CompositorView.this, enabled);
+        CompositorViewJni.get()
+                .setOverlayVideoMode(mNativeCompositorView, CompositorView.this, enabled);
 
         mOverlayVideoEnabled = enabled;
         // Request the new surface, even if it's the same as the old one.  We'll get a synthetic
@@ -369,8 +372,8 @@ public class CompositorView
             setOverlayVideoMode(enabled);
         }
 
-        CompositorViewJni.get().setOverlayImmersiveArMode(
-                mNativeCompositorView, CompositorView.this, enabled);
+        CompositorViewJni.get()
+                .setOverlayImmersiveArMode(mNativeCompositorView, CompositorView.this, enabled);
         // Entering or exiting AR mode can leave SurfaceControl in a confused state, especially if
         // the screen keyboard (IME) was activated, see https://crbug.com/1166248 and
         // https://crbug.com/1169822. Reset the surface manager at session start and exit to work
@@ -451,8 +454,15 @@ public class CompositorView
     public void surfaceChanged(Surface surface, int format, int width, int height) {
         if (mNativeCompositorView == 0) return;
 
-        CompositorViewJni.get().surfaceChanged(mNativeCompositorView, CompositorView.this, format,
-                width, height, canUseSurfaceControl(), surface);
+        CompositorViewJni.get()
+                .surfaceChanged(
+                        mNativeCompositorView,
+                        CompositorView.this,
+                        format,
+                        width,
+                        height,
+                        canUseSurfaceControl(),
+                        surface);
         mRenderHost.onSurfaceResized(width, height);
     }
 
@@ -478,8 +488,8 @@ public class CompositorView
         // leads to a visible hole: b/157439199. To avoid this we don't detach surfaces if the
         // surface is going to be destroyed, they will be detached and freed by OS.
         if (androidSurfaceDestroyed) {
-            CompositorViewJni.get().preserveChildSurfaceControls(
-                    mNativeCompositorView, CompositorView.this);
+            CompositorViewJni.get()
+                    .preserveChildSurfaceControls(mNativeCompositorView, CompositorView.this);
         }
 
         CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView, CompositorView.this);
@@ -511,13 +521,18 @@ public class CompositorView
     }
 
     void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
-        CompositorViewJni.get().onPhysicalBackingSizeChanged(
-                mNativeCompositorView, CompositorView.this, webContents, width, height);
+        CompositorViewJni.get()
+                .onPhysicalBackingSizeChanged(
+                        mNativeCompositorView, CompositorView.this, webContents, width, height);
     }
 
     void onControlsResizeViewChanged(WebContents webContents, boolean controlsResizeView) {
-        CompositorViewJni.get().onControlsResizeViewChanged(
-                mNativeCompositorView, CompositorView.this, webContents, controlsResizeView);
+        CompositorViewJni.get()
+                .onControlsResizeViewChanged(
+                        mNativeCompositorView,
+                        CompositorView.this,
+                        webContents,
+                        controlsResizeView);
     }
 
     /**
@@ -530,8 +545,15 @@ public class CompositorView
      */
     void notifyVirtualKeyboardOverlayRect(
             WebContents webContents, int x, int y, int width, int height) {
-        CompositorViewJni.get().notifyVirtualKeyboardOverlayRect(
-                mNativeCompositorView, CompositorView.this, webContents, x, y, width, height);
+        CompositorViewJni.get()
+                .notifyVirtualKeyboardOverlayRect(
+                        mNativeCompositorView,
+                        CompositorView.this,
+                        webContents,
+                        x,
+                        y,
+                        width,
+                        height);
     }
 
     @CalledByNative
@@ -544,9 +566,7 @@ public class CompositorView
         mCompositorSurfaceManager.recreateSurface();
     }
 
-    /**
-     * Request compositor view to render a frame.
-     */
+    /** Request compositor view to render a frame. */
     public void requestRender() {
         if (mNativeCompositorView != 0) {
             CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
@@ -567,10 +587,12 @@ public class CompositorView
     // Should be called any time the inputs used to compute `needsSwapCallback` change.
     private void updateNeedsDidSwapBuffersCallback() {
         if (mNativeCompositorView == 0) return;
-        boolean needsSwapCallback = mRenderHostNeedsDidSwapBuffersCallback
-                || mFramesUntilHideBackground > 0 || mDrawingFinishedCallback != null;
-        CompositorViewJni.get().setDidSwapBuffersCallbackEnabled(
-                mNativeCompositorView, needsSwapCallback);
+        boolean needsSwapCallback =
+                mRenderHostNeedsDidSwapBuffersCallback
+                        || mFramesUntilHideBackground > 0
+                        || mDrawingFinishedCallback != null;
+        CompositorViewJni.get()
+                .setDidSwapBuffersCallbackEnabled(mNativeCompositorView, needsSwapCallback);
     }
 
     @CalledByNative
@@ -594,8 +616,8 @@ public class CompositorView
 
             // Evict the SurfaceView and the associated backbuffer now that the new SurfaceView is
             // ready.
-            CompositorViewJni.get().evictCachedBackBuffer(
-                    mNativeCompositorView, CompositorView.this);
+            CompositorViewJni.get()
+                    .evictCachedBackBuffer(mNativeCompositorView, CompositorView.this);
             mCompositorSurfaceManager.doneWithUnownedSurface();
         }
 
@@ -651,10 +673,12 @@ public class CompositorView
 
         if (!mPreloadedResources) {
             // Attempt to prefetch any necessary resources
-            mResourceManager.preloadResources(AndroidResourceType.STATIC,
+            mResourceManager.preloadResources(
+                    AndroidResourceType.STATIC,
                     StaticResourcePreloads.getSynchronousResources(getContext()),
                     StaticResourcePreloads.getAsynchronousResources(getContext()));
-            mResourceManager.preloadResources(AndroidResourceType.SYSTEM,
+            mResourceManager.preloadResources(
+                    AndroidResourceType.SYSTEM,
                     SystemResourcePreloads.getSynchronousResources(),
                     SystemResourcePreloads.getAsynchronousResources());
             mPreloadedResources = true;
@@ -666,11 +690,12 @@ public class CompositorView
 
         CompositorViewJni.get().setLayoutBounds(mNativeCompositorView, CompositorView.this);
 
-        SceneLayer sceneLayer = provider.getUpdatedActiveSceneLayer(mTabContentManager,
-                mResourceManager, provider.getBrowserControlsManager());
+        SceneLayer sceneLayer =
+                provider.getUpdatedActiveSceneLayer(
+                        mTabContentManager, mResourceManager, provider.getBrowserControlsManager());
 
-        CompositorViewJni.get().setSceneLayer(
-                mNativeCompositorView, CompositorView.this, sceneLayer);
+        CompositorViewJni.get()
+                .setSceneLayer(mNativeCompositorView, CompositorView.this, sceneLayer);
 
         CompositorViewJni.get().finalizeLayers(mNativeCompositorView, CompositorView.this);
         TraceEvent.end("CompositorView:finalizeLayers");
@@ -728,33 +753,75 @@ public class CompositorView
 
     @NativeMethods
     interface Natives {
-        long init(CompositorView caller, boolean lowMemDevice, WindowAndroid windowAndroid,
+        long init(
+                CompositorView caller,
+                boolean lowMemDevice,
+                WindowAndroid windowAndroid,
                 TabContentManager tabContentManager);
+
         void destroy(long nativeCompositorView, CompositorView caller);
+
         ResourceManager getResourceManager(long nativeCompositorView, CompositorView caller);
+
         void surfaceCreated(long nativeCompositorView, CompositorView caller);
+
         void surfaceDestroyed(long nativeCompositorView, CompositorView caller);
-        void surfaceChanged(long nativeCompositorView, CompositorView caller, int format, int width,
-                int height, boolean backedBySurfaceTexture, Surface surface);
-        void onPhysicalBackingSizeChanged(long nativeCompositorView, CompositorView caller,
-                WebContents webContents, int width, int height);
-        void onControlsResizeViewChanged(long nativeCompositorView, CompositorView caller,
-                WebContents webContents, boolean controlsResizeView);
-        void notifyVirtualKeyboardOverlayRect(long nativeCompositorView, CompositorView caller,
-                WebContents webContents, int x, int y, int width, int height);
+
+        void surfaceChanged(
+                long nativeCompositorView,
+                CompositorView caller,
+                int format,
+                int width,
+                int height,
+                boolean backedBySurfaceTexture,
+                Surface surface);
+
+        void onPhysicalBackingSizeChanged(
+                long nativeCompositorView,
+                CompositorView caller,
+                WebContents webContents,
+                int width,
+                int height);
+
+        void onControlsResizeViewChanged(
+                long nativeCompositorView,
+                CompositorView caller,
+                WebContents webContents,
+                boolean controlsResizeView);
+
+        void notifyVirtualKeyboardOverlayRect(
+                long nativeCompositorView,
+                CompositorView caller,
+                WebContents webContents,
+                int x,
+                int y,
+                int width,
+                int height);
+
         void finalizeLayers(long nativeCompositorView, CompositorView caller);
+
         void setNeedsComposite(long nativeCompositorView, CompositorView caller);
+
         void setLayoutBounds(long nativeCompositorView, CompositorView caller);
+
         void setOverlayVideoMode(long nativeCompositorView, CompositorView caller, boolean enabled);
+
         void setOverlayImmersiveArMode(
                 long nativeCompositorView, CompositorView caller, boolean enabled);
+
         void setSceneLayer(long nativeCompositorView, CompositorView caller, SceneLayer sceneLayer);
+
         void setCompositorWindow(
                 long nativeCompositorView, CompositorView caller, WindowAndroid window);
+
         void cacheBackBufferForCurrentSurface(long nativeCompositorView, CompositorView caller);
+
         void evictCachedBackBuffer(long nativeCompositorView, CompositorView caller);
+
         void onTabChanged(long nativeCompositorView, CompositorView caller);
+
         void preserveChildSurfaceControls(long nativeCompositorView, CompositorView caller);
+
         void setDidSwapBuffersCallbackEnabled(long nativeCompositorView, boolean enabled);
     }
 }

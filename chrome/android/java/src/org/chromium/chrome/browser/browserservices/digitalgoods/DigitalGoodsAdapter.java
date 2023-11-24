@@ -78,43 +78,57 @@ public class DigitalGoodsAdapter {
 
         // If Consume fails, try to call acknowledge(..., makeAvailableAgain = true) which will
         // achieve the same effect on older clients.
-        Runnable tryAcknowledgeOnError = () -> {
-            Bundle ackArgs = AcknowledgeConverter.convertParams(purchaseToken);
-            TrustedWebActivityCallback ackCallback = AcknowledgeConverter.convertCallback(response);
+        Runnable tryAcknowledgeOnError =
+                () -> {
+                    Bundle ackArgs = AcknowledgeConverter.convertParams(purchaseToken);
+                    TrustedWebActivityCallback ackCallback =
+                            AcknowledgeConverter.convertCallback(response);
 
-            execute(scope, COMMAND_ACKNOWLEDGE, ackArgs, ackCallback, onError, onUnavailable);
-        };
+                    execute(
+                            scope,
+                            COMMAND_ACKNOWLEDGE,
+                            ackArgs,
+                            ackCallback,
+                            onError,
+                            onUnavailable);
+                };
 
         execute(scope, COMMAND_CONSUME, args, callback, tryAcknowledgeOnError, onUnavailable);
     }
 
-    private void execute(Uri scope, String command, Bundle args,
-            TrustedWebActivityCallback callback, Runnable onClientAppError,
+    private void execute(
+            Uri scope,
+            String command,
+            Bundle args,
+            TrustedWebActivityCallback callback,
+            Runnable onClientAppError,
             Runnable onClientAppUnavailable) {
-        mClient.connectAndExecute(scope, new TrustedWebActivityClient.ExecutionCallback() {
-            @Override
-            public void onConnected(
-                    Origin origin, TrustedWebActivityClientWrappers.Connection service) {
-                // Wrap this call so that crashes in the TWA client don't cause crashes in Chrome.
-                Bundle result = null;
-                try {
-                    result = service.sendExtraCommand(command, args, callback);
-                } catch (Exception e) {
-                    Log.w(TAG, "Exception communicating with client.");
-                    onClientAppError.run();
-                }
+        mClient.connectAndExecute(
+                scope,
+                new TrustedWebActivityClient.ExecutionCallback() {
+                    @Override
+                    public void onConnected(
+                            Origin origin, TrustedWebActivityClientWrappers.Connection service) {
+                        // Wrap this call so that crashes in the TWA client don't cause crashes in
+                        // Chrome.
+                        Bundle result = null;
+                        try {
+                            result = service.sendExtraCommand(command, args, callback);
+                        } catch (Exception e) {
+                            Log.w(TAG, "Exception communicating with client.");
+                            onClientAppError.run();
+                        }
 
-                boolean success = result != null &&
-                        result.getBoolean(KEY_SUCCESS, false);
-                if (!success) {
-                    onClientAppError.run();
-                }
-            }
+                        boolean success = result != null && result.getBoolean(KEY_SUCCESS, false);
+                        if (!success) {
+                            onClientAppError.run();
+                        }
+                    }
 
-            @Override
-            public void onNoTwaFound() {
-                onClientAppUnavailable.run();
-            }
-        });
+                    @Override
+                    public void onNoTwaFound() {
+                        onClientAppUnavailable.run();
+                    }
+                });
     }
 }

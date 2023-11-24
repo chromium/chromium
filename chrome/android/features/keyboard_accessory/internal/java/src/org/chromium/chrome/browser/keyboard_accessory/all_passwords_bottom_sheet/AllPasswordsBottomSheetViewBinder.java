@@ -56,16 +56,19 @@ class AllPasswordsBottomSheetViewBinder {
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == ORIGIN) {
-            view.setWarning(formatWarningForOrigin(
-                    view.getContentView().getResources(), model.get(ORIGIN)));
+            view.setWarning(
+                    formatWarningForOrigin(
+                            view.getContentView().getResources(), model.get(ORIGIN)));
         } else if (propertyKey == ON_QUERY_TEXT_CHANGE) {
             view.setSearchQueryChangeHandler(model.get(ON_QUERY_TEXT_CHANGE));
         } else if (propertyKey == SHEET_ITEMS) {
-            view.setSheetItemListAdapter(new RecyclerViewAdapter<>(
-                    new SimpleRecyclerViewMcp<>(model.get(SHEET_ITEMS),
-                            AllPasswordsBottomSheetProperties::getItemType,
-                            AllPasswordsBottomSheetViewBinder::connectPropertyModel),
-                    AllPasswordsBottomSheetViewBinder::createViewHolder));
+            view.setSheetItemListAdapter(
+                    new RecyclerViewAdapter<>(
+                            new SimpleRecyclerViewMcp<>(
+                                    model.get(SHEET_ITEMS),
+                                    AllPasswordsBottomSheetProperties::getItemType,
+                                    AllPasswordsBottomSheetViewBinder::connectPropertyModel),
+                            AllPasswordsBottomSheetViewBinder::createViewHolder));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -91,7 +94,8 @@ class AllPasswordsBottomSheetViewBinder {
             ViewGroup parent, @ItemType int itemType) {
         switch (itemType) {
             case ItemType.CREDENTIAL:
-                return new AllPasswordsBottomSheetViewHolder(parent,
+                return new AllPasswordsBottomSheetViewHolder(
+                        parent,
                         R.layout.keyboard_accessory_sheet_tab_password_info,
                         AllPasswordsBottomSheetViewBinder::bindCredentialView);
         }
@@ -123,29 +127,38 @@ class AllPasswordsBottomSheetViewBinder {
             updateChipViewVisibility(passwordChip);
         } else if (propertyKey == CREDENTIAL) {
             TextView passwordTitleView = view.findViewById(R.id.password_info_title);
-            String title = credential.isAndroidCredential()
-                    ? credential.getAppDisplayName()
-                    : UrlFormatter.formatUrlForSecurityDisplay(
-                            new GURL(credential.getOriginUrl()), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
+            String title =
+                    credential.isAndroidCredential()
+                            ? credential.getAppDisplayName()
+                            : UrlFormatter.formatUrlForSecurityDisplay(
+                                    new GURL(credential.getOriginUrl()),
+                                    SchemeDisplay.OMIT_CRYPTOGRAPHIC);
             passwordTitleView.setText(title);
 
             usernameChip.getPrimaryTextView().setText(credential.getFormattedUsername());
 
             boolean isEmptyPassword = credential.getPassword().isEmpty();
             if (!isEmptyPassword) {
-                passwordChip.getPrimaryTextView().setTransformationMethod(
-                        new PasswordTransformationMethod());
+                passwordChip
+                        .getPrimaryTextView()
+                        .setTransformationMethod(new PasswordTransformationMethod());
             }
-            passwordChip.getPrimaryTextView().setText(isEmptyPassword
-                            ? view.getContext().getString(
-                                    R.string.all_passwords_bottom_sheet_no_password)
-                            : credential.getPassword());
+            passwordChip
+                    .getPrimaryTextView()
+                    .setText(
+                            isEmptyPassword
+                                    ? view.getContext()
+                                            .getString(
+                                                    R.string.all_passwords_bottom_sheet_no_password)
+                                    : credential.getPassword());
 
             // Set the default icon, then try to get a better one.
             FaviconHelper faviconHelper = FaviconHelper.create(view.getContext());
             ImageView iconView = view.findViewById(R.id.favicon);
-            setIconForBitmap(iconView,
-                    faviconHelper.getDefaultIcon(credential.isAndroidCredential()
+            setIconForBitmap(
+                    iconView,
+                    faviconHelper.getDefaultIcon(
+                            credential.isAndroidCredential()
                                     ? credential.getAppDisplayName()
                                     : credential.getOriginUrl()));
 
@@ -160,21 +173,27 @@ class AllPasswordsBottomSheetViewBinder {
     }
 
     private static void setIconForBitmap(ImageView iconView, @Nullable Drawable icon) {
-        final int kIconSize = iconView.getContext().getResources().getDimensionPixelSize(
-                R.dimen.keyboard_accessory_suggestion_icon_size);
+        final int kIconSize =
+                iconView.getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);
         if (icon != null) icon.setBounds(0, 0, kIconSize, kIconSize);
         iconView.setImageDrawable(icon);
     }
 
     private static String formatWarningForOrigin(Resources resources, String origin) {
-        String formattedOrigin = UrlFormatter.formatUrlForSecurityDisplay(
-                new GURL(origin), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
+        String formattedOrigin =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        new GURL(origin), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
         return String.format(
                 resources.getString(R.string.all_passwords_bottom_sheet_subtitle), formattedOrigin);
     }
 
-    private static void updatePasswordChipListener(View view, Credential credential,
-            boolean isPasswordField, Callback<CredentialFillRequest> callback) {
+    private static void updatePasswordChipListener(
+            View view,
+            Credential credential,
+            boolean isPasswordField,
+            Callback<CredentialFillRequest> callback) {
         if (isPasswordField) {
             view.setOnClickListener(
                     src -> callback.onResult(new CredentialFillRequest(credential, true)));

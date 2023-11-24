@@ -24,8 +24,8 @@ public class HostBrowserLauncher {
     public static final String ACTION_START_WEBAPK =
             "com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP";
 
-    // Must stay in sync with
-    // {@link org.chromium.chrome.browser.ShortcutHelper#REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB}.
+    // Must stay in sync with {@link
+    // org.chromium.chrome.browser.ShortcutHelper#REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB}.
     private static final String REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB =
             "REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB";
 
@@ -40,7 +40,7 @@ public class HostBrowserLauncher {
         }
 
         launchBrowserInWebApkMode(
-                activity, params, null, Intent.FLAG_ACTIVITY_NEW_TASK, false /* expectResult */);
+                activity, params, null, Intent.FLAG_ACTIVITY_NEW_TASK, /* expectResult= */ false);
     }
 
     /** Launches host browser in WebAPK mode. */

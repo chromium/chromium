@@ -50,8 +50,9 @@ public class FramebustBlockInfoBar extends InfoBar {
         InfoBarControlLayout control = layout.addControlLayout();
 
         ViewGroup ellipsizerView =
-                (ViewGroup) LayoutInflater.from(getContext())
-                        .inflate(R.layout.infobar_control_url_ellipsizer, control, false);
+                (ViewGroup)
+                        LayoutInflater.from(getContext())
+                                .inflate(R.layout.infobar_control_url_ellipsizer, control, false);
 
         // Formatting the URL and requesting to omit the scheme might still include it for some of
         // them (e.g. file, filesystem). We split the output of the formatting to make sure we don't
@@ -67,9 +68,9 @@ public class FramebustBlockInfoBar extends InfoBar {
             urlWithScheme = schemeSeparator + mBlockedUrl;
         }
 
-        String textToEllipsize = UrlFormatter
-                    .formatUrlForSecurityDisplay(urlWithScheme)
-                    .substring(scheme.length() + schemeSeparator.length());
+        String textToEllipsize =
+                UrlFormatter.formatUrlForSecurityDisplay(urlWithScheme)
+                        .substring(scheme.length() + schemeSeparator.length());
 
         TextView schemeView = ellipsizerView.findViewById(R.id.url_scheme);
         schemeView.setText(scheme);

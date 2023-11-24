@@ -183,21 +183,25 @@ public class DownloadItem {
         offlineItem.canRename = item.getDownloadInfo().state() == DownloadState.COMPLETE;
         switch (downloadInfo.state()) {
             case DownloadState.IN_PROGRESS:
-                offlineItem.state = downloadInfo.isPaused() ? OfflineItemState.PAUSED
-                                                            : OfflineItemState.IN_PROGRESS;
+                offlineItem.state =
+                        downloadInfo.isPaused()
+                                ? OfflineItemState.PAUSED
+                                : OfflineItemState.IN_PROGRESS;
                 break;
             case DownloadState.COMPLETE:
-                offlineItem.state = downloadInfo.getBytesReceived() == 0
-                        ? OfflineItemState.FAILED
-                        : OfflineItemState.COMPLETE;
+                offlineItem.state =
+                        downloadInfo.getBytesReceived() == 0
+                                ? OfflineItemState.FAILED
+                                : OfflineItemState.COMPLETE;
                 break;
             case DownloadState.CANCELLED:
                 offlineItem.state = OfflineItemState.CANCELLED;
                 break;
             case DownloadState.INTERRUPTED:
                 @ResumeMode
-                int resumeMode = DownloadUtils.getResumeMode(
-                        downloadInfo.getUrl().getSpec(), downloadInfo.getFailState());
+                int resumeMode =
+                        DownloadUtils.getResumeMode(
+                                downloadInfo.getUrl().getSpec(), downloadInfo.getFailState());
                 if (resumeMode == ResumeMode.INVALID || resumeMode == ResumeMode.USER_RESTART) {
                     // Fail but can restart from the beginning. The UI should let the user to retry.
                     offlineItem.state = OfflineItemState.INTERRUPTED;
@@ -245,8 +249,11 @@ public class DownloadItem {
     }
 
     @CalledByNative
-    private static DownloadItem createDownloadItem(DownloadInfo downloadInfo, long startTimestamp,
-            long endTimestamp, boolean hasBeenExternallyRemoved) {
+    private static DownloadItem createDownloadItem(
+            DownloadInfo downloadInfo,
+            long startTimestamp,
+            long endTimestamp,
+            boolean hasBeenExternallyRemoved) {
         DownloadItem downloadItem = new DownloadItem(false, downloadInfo);
         downloadItem.setStartTime(startTimestamp);
         downloadItem.setEndTime(endTimestamp);

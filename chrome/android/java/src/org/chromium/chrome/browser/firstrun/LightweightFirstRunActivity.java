@@ -30,11 +30,9 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.LoadingView;
 
-/**
-* Lightweight FirstRunActivity. It shows ToS dialog only.
-*/
-public class LightweightFirstRunActivity
-        extends FirstRunActivityBase implements LoadingView.Observer {
+/** Lightweight FirstRunActivity. It shows ToS dialog only. */
+public class LightweightFirstRunActivity extends FirstRunActivityBase
+        implements LoadingView.Observer {
     // TODO(https://crbug.com/1148081) Clean this boolean when releasing this feature, and remove
     // @Nullable from members below.
     private static boolean sSupportSkippingTos = true;
@@ -64,8 +62,9 @@ public class LightweightFirstRunActivity
         super();
 
         if (sSupportSkippingTos) {
-            mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
-                    getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
+            mSkipTosDialogPolicyListener =
+                    new SkipTosDialogPolicyListener(
+                            getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
             // We can ignore the result from #onAvailable here, as views are not created at this
             // point.
             mSkipTosDialogPolicyListener.onAvailable((ignored) -> onPolicyLoadListenerAvailable());
@@ -100,15 +99,20 @@ public class LightweightFirstRunActivity
 
     /** Called once it is known whether the device has a child account. */
     private void initializeViews(boolean hasChildAccount) {
-        setContentView(LayoutInflater.from(LightweightFirstRunActivity.this)
-                               .inflate(R.layout.lightweight_fre_tos, null));
+        setContentView(
+                LayoutInflater.from(LightweightFirstRunActivity.this)
+                        .inflate(R.layout.lightweight_fre_tos, null));
 
-        NoUnderlineClickableSpan clickableGoogleTermsSpan = new NoUnderlineClickableSpan(
-                this, (view) -> showInfoPage(R.string.google_terms_of_service_url));
-        NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan = new NoUnderlineClickableSpan(
-                this, (view) -> showInfoPage(R.string.chrome_additional_terms_of_service_url));
-        NoUnderlineClickableSpan clickableGooglePrivacySpan = new NoUnderlineClickableSpan(
-                this, (view) -> showInfoPage(R.string.google_privacy_policy_url));
+        NoUnderlineClickableSpan clickableGoogleTermsSpan =
+                new NoUnderlineClickableSpan(
+                        this, (view) -> showInfoPage(R.string.google_terms_of_service_url));
+        NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan =
+                new NoUnderlineClickableSpan(
+                        this,
+                        (view) -> showInfoPage(R.string.chrome_additional_terms_of_service_url));
+        NoUnderlineClickableSpan clickableGooglePrivacySpan =
+                new NoUnderlineClickableSpan(
+                        this, (view) -> showInfoPage(R.string.google_privacy_policy_url));
         String associatedAppName =
                 IntentUtils.safeGetStringExtra(getIntent(), EXTRA_ASSOCIATED_APP_NAME);
         if (associatedAppName == null) {
@@ -116,17 +120,23 @@ public class LightweightFirstRunActivity
         }
         final CharSequence tosAndPrivacyText;
         if (hasChildAccount) {
-            tosAndPrivacyText = SpanApplier.applySpans(
-                    getString(R.string.lightweight_fre_associated_app_tos_and_privacy_child_account,
-                            associatedAppName),
-                    new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
-                    new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
-                    new SpanInfo("<LINK3>", "</LINK3>", clickableGooglePrivacySpan));
+            tosAndPrivacyText =
+                    SpanApplier.applySpans(
+                            getString(
+                                    R.string
+                                            .lightweight_fre_associated_app_tos_and_privacy_child_account,
+                                    associatedAppName),
+                            new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
+                            new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
+                            new SpanInfo("<LINK3>", "</LINK3>", clickableGooglePrivacySpan));
         } else {
-            tosAndPrivacyText = SpanApplier.applySpans(
-                    getString(R.string.lightweight_fre_associated_app_tos, associatedAppName),
-                    new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
-                    new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan));
+            tosAndPrivacyText =
+                    SpanApplier.applySpans(
+                            getString(
+                                    R.string.lightweight_fre_associated_app_tos, associatedAppName),
+                            new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
+                            new SpanInfo(
+                                    "<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan));
         }
 
         mTosAndPrivacyTextView = (TextView) findViewById(R.id.lightweight_fre_tos_and_privacy);
@@ -241,11 +251,12 @@ public class LightweightFirstRunActivity
         mPrivacyDisclaimer.setVisibility(View.VISIBLE);
         mPrivacyDisclaimer.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
 
-        mExitFreRunnable = () -> {
-            FirstRunStatus.setFirstRunSkippedByPolicy(true);
-            exitLightweightFirstRun();
-            mExitFreRunnable = null;
-        };
+        mExitFreRunnable =
+                () -> {
+                    FirstRunStatus.setFirstRunSkippedByPolicy(true);
+                    exitLightweightFirstRun();
+                    mExitFreRunnable = null;
+                };
         mHandler = new Handler(ThreadUtils.getUiThreadLooper());
         mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.getSkipTosExitDelayMs());
     }

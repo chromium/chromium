@@ -21,9 +21,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-/**
- * An observer for firing navigation events on {@link CustomTabsCallback}.
- */
+/** An observer for firing navigation events on {@link CustomTabsCallback}. */
 @ActivityScope
 public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     // An operation was aborted (due to user action). Should match the value in net_error_list.h.
@@ -51,8 +49,10 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
 
     @Override
     public void onPageLoadFailed(Tab tab, int errorCode) {
-        int navigationEvent = errorCode == NET_ERROR_ABORTED ? CustomTabsCallback.NAVIGATION_ABORTED
-                                                             : CustomTabsCallback.NAVIGATION_FAILED;
+        int navigationEvent =
+                errorCode == NET_ERROR_ABORTED
+                        ? CustomTabsCallback.NAVIGATION_ABORTED
+                        : CustomTabsCallback.NAVIGATION_FAILED;
 
         // For privacy reason, we do not pass all the error codes but choose a few safe ones.
         // See crbug/1501085 for more details.

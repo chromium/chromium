@@ -41,7 +41,9 @@ public class ActivityTabStartupMetricsTracker {
         private boolean mShouldRecordHistograms;
 
         @Override
-        public void onNewNavigation(WebContents webContents, long navigationId,
+        public void onNewNavigation(
+                WebContents webContents,
+                long navigationId,
                 boolean isFirstNavigationInWebContents) {
             if (mNavigationId != NO_NAVIGATION_ID) return;
 
@@ -50,13 +52,16 @@ public class ActivityTabStartupMetricsTracker {
         }
 
         @Override
-        public void onFirstContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartMicros, long firstContentfulPaintMs) {
+        public void onFirstContentfulPaint(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long firstContentfulPaintMs) {
             if (navigationId != mNavigationId || !mShouldRecordHistograms) return;
 
             recordFirstContentfulPaint(navigationStartMicros / 1000 + firstContentfulPaintMs);
         }
-    };
+    }
 
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in milliseconds relative to this value.
@@ -186,27 +191,28 @@ public class ActivityTabStartupMetricsTracker {
      * @param startupPaintPreviewHelper the helper to register the observer to.
      */
     public void registerPaintPreviewObserver(StartupPaintPreviewHelper startupPaintPreviewHelper) {
-        startupPaintPreviewHelper.addMetricsObserver(new PaintPreviewMetricsObserver() {
-            @Override
-            public void onFirstPaint(long durationMs) {
-                RecordHistogram.recordBooleanHistogram(
-                        FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
-                recordFirstVisibleContent(durationMs);
-                recordFirstVisibleContent2(durationMs);
-                recordVisibleContent(durationMs);
-            }
+        startupPaintPreviewHelper.addMetricsObserver(
+                new PaintPreviewMetricsObserver() {
+                    @Override
+                    public void onFirstPaint(long durationMs) {
+                        RecordHistogram.recordBooleanHistogram(
+                                FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
+                        recordFirstVisibleContent(durationMs);
+                        recordFirstVisibleContent2(durationMs);
+                        recordVisibleContent(durationMs);
+                    }
 
-            @Override
-            public void onUnrecordedFirstPaint() {
-                // The first paint not being recorded means that either (1) the browser is not
-                // marked as being in the foreground or (2) it has been backgrounded. Update
-                // |mRegisteredFirstPaintPreForeground| if appropriate.
-                if (!UmaUtils.hasComeToForegroundWithNative()
-                        && !UmaUtils.hasComeToBackgroundWithNative()) {
-                    mRegisteredFirstPaintPreForeground = true;
-                }
-            }
-        });
+                    @Override
+                    public void onUnrecordedFirstPaint() {
+                        // The first paint not being recorded means that either (1) the browser is
+                        // not marked as being in the foreground or (2) it has been backgrounded.
+                        // Update |mRegisteredFirstPaintPreForeground| if appropriate.
+                        if (!UmaUtils.hasComeToForegroundWithNative()
+                                && !UmaUtils.hasComeToBackgroundWithNative()) {
+                            mRegisteredFirstPaintPreForeground = true;
+                        }
+                    }
+                });
     }
 
     /**
@@ -247,7 +253,8 @@ public class ActivityTabStartupMetricsTracker {
     private void registerFinishNavigation(boolean isTrackedPage) {
         if (!mShouldTrackStartupMetrics) return;
 
-        if (isTrackedPage && UmaUtils.hasComeToForegroundWithNative()
+        if (isTrackedPage
+                && UmaUtils.hasComeToForegroundWithNative()
                 && !UmaUtils.hasComeToBackgroundWithNative()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
@@ -260,12 +267,14 @@ public class ActivityTabStartupMetricsTracker {
             }
             RecordHistogram.recordBooleanHistogram(
                     FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
-        } else if (isTrackedPage && !UmaUtils.hasComeToForegroundWithNative()
+        } else if (isTrackedPage
+                && !UmaUtils.hasComeToForegroundWithNative()
                 && !UmaUtils.hasComeToBackgroundWithNative()) {
             mRegisteredFirstCommitPreForeground = true;
         }
 
-        if (mHistogramSuffix == ActivityType.TABBED && isTrackedPage
+        if (mHistogramSuffix == ActivityType.TABBED
+                && isTrackedPage
                 && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(

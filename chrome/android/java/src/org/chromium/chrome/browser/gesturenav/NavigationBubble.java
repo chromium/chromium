@@ -68,7 +68,8 @@ public class NavigationBubble extends LinearLayout {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
             float fraction = (float) animation.getAnimatedValue();
-            ImageViewCompat.setImageTintList(mIcon,
+            ImageViewCompat.setImageTintList(
+                    mIcon,
                     ColorStateList.valueOf(ColorUtils.getColorWithOverlay(mStart, mEnd, fraction)));
         }
     }
@@ -84,9 +85,7 @@ public class NavigationBubble extends LinearLayout {
 
     private @CloseTarget int mCloseTarget;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public NavigationBubble(Context context) {
         this(context, null);
     }
@@ -100,10 +99,15 @@ public class NavigationBubble extends LinearLayout {
         mColorUpdateListener = new ColorUpdateListener();
         mColorAnimator = ValueAnimator.ofFloat(0, 1).setDuration(COLOR_TRANSITION_DURATION_MS);
         mColorAnimator.addUpdateListener(mColorUpdateListener);
-        getBackground().setColorFilter(
-                SemanticColorUtils.getNavigationBubbleBackgroundColor(context), Mode.MULTIPLY);
-        mCloseApp = getResources().getString(R.string.overscroll_navigation_close_chrome,
-                getContext().getString(R.string.app_name));
+        getBackground()
+                .setColorFilter(
+                        SemanticColorUtils.getNavigationBubbleBackgroundColor(context),
+                        Mode.MULTIPLY);
+        mCloseApp =
+                getResources()
+                        .getString(
+                                R.string.overscroll_navigation_close_chrome,
+                                getContext().getString(R.string.app_name));
         mCloseTab = getResources().getString(R.string.overscroll_navigation_close_tab);
         mCloseTarget = CloseTarget.NONE;
     }
@@ -179,9 +183,7 @@ public class NavigationBubble extends LinearLayout {
         setImageTint(false);
     }
 
-    /**
-     * Sets the correct tinting on the arrow icon.
-     */
+    /** Sets the correct tinting on the arrow icon. */
     public void setImageTint(boolean navigate) {
         assert mIcon != null;
         mColorUpdateListener.setTransitionColors(

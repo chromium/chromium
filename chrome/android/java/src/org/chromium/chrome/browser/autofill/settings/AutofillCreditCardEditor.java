@@ -46,13 +46,16 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
 
         // Do not use autofill for the fields.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getActivity().getWindow().getDecorView().setImportantForAutofill(
-                    View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
+            getActivity()
+                    .getWindow()
+                    .getDecorView()
+                    .setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
         }
 
         // Populate the billing address dropdown.
-        ArrayAdapter<AutofillProfile> profilesAdapter = new ArrayAdapter<AutofillProfile>(
-                getActivity(), android.R.layout.simple_spinner_item);
+        ArrayAdapter<AutofillProfile> profilesAdapter =
+                new ArrayAdapter<AutofillProfile>(
+                        getActivity(), android.R.layout.simple_spinner_item);
         profilesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         AutofillProfile noSelection = AutofillProfile.builder().build();

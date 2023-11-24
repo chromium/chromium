@@ -33,35 +33,50 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
     protected void onStartTaskWithNative(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         String extras = taskParameters.getExtras().getString(TaskInfo.SERIALIZED_TASK_EXTRAS);
-        Callback<Boolean> wrappedCallback = needsReschedule -> {
-            callback.taskFinished(needsReschedule);
-            destroy();
-        };
+        Callback<Boolean> wrappedCallback =
+                needsReschedule -> {
+                    callback.taskFinished(needsReschedule);
+                    destroy();
+                };
 
-        mNativeProxyNativeTask = ProxyNativeTaskJni.get().init(
-                ProxyNativeTask.this, taskParameters.getTaskId(), extras, wrappedCallback);
+        mNativeProxyNativeTask =
+                ProxyNativeTaskJni.get()
+                        .init(
+                                ProxyNativeTask.this,
+                                taskParameters.getTaskId(),
+                                extras,
+                                wrappedCallback);
 
         boolean isFullBrowserStarted =
                 BrowserStartupController.getInstance().isFullBrowserStarted();
         if (isFullBrowserStarted) {
-            ProxyNativeTaskJni.get().startBackgroundTaskWithFullBrowser(mNativeProxyNativeTask,
-                    ProxyNativeTask.this, Profile.getLastUsedRegularProfile());
+            ProxyNativeTaskJni.get()
+                    .startBackgroundTaskWithFullBrowser(
+                            mNativeProxyNativeTask,
+                            ProxyNativeTask.this,
+                            Profile.getLastUsedRegularProfile());
         } else {
-            ProxyNativeTaskJni.get().startBackgroundTaskInReducedMode(mNativeProxyNativeTask,
-                    ProxyNativeTask.this,
-                    ProfileKey.getLastUsedRegularProfileKey());
-            BrowserStartupController.getInstance().addStartupCompletedObserver(
-                    new BrowserStartupController.StartupCallback() {
-                        @Override
-                        public void onSuccess() {
-                            if (mNativeProxyNativeTask == 0) return;
-                            ProxyNativeTaskJni.get().onFullBrowserLoaded(mNativeProxyNativeTask,
-                                    ProxyNativeTask.this, Profile.getLastUsedRegularProfile());
-                        }
+            ProxyNativeTaskJni.get()
+                    .startBackgroundTaskInReducedMode(
+                            mNativeProxyNativeTask,
+                            ProxyNativeTask.this,
+                            ProfileKey.getLastUsedRegularProfileKey());
+            BrowserStartupController.getInstance()
+                    .addStartupCompletedObserver(
+                            new BrowserStartupController.StartupCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    if (mNativeProxyNativeTask == 0) return;
+                                    ProxyNativeTaskJni.get()
+                                            .onFullBrowserLoaded(
+                                                    mNativeProxyNativeTask,
+                                                    ProxyNativeTask.this,
+                                                    Profile.getLastUsedRegularProfile());
+                                }
 
-                        @Override
-                        public void onFailure() {}
-                    });
+                                @Override
+                                public void onFailure() {}
+                            });
         }
     }
 
@@ -73,8 +88,9 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
     @Override
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
         if (mNativeProxyNativeTask == 0) return false;
-        boolean taskNeedsReschedule = ProxyNativeTaskJni.get().stopBackgroundTask(
-                mNativeProxyNativeTask, ProxyNativeTask.this);
+        boolean taskNeedsReschedule =
+                ProxyNativeTaskJni.get()
+                        .stopBackgroundTask(mNativeProxyNativeTask, ProxyNativeTask.this);
         destroy();
         return taskNeedsReschedule;
     }
@@ -94,13 +110,18 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
     @NativeMethods
     interface Natives {
         long init(ProxyNativeTask caller, int taskType, String extras, Callback<Boolean> callback);
+
         void startBackgroundTaskInReducedMode(
                 long nativeProxyNativeTask, ProxyNativeTask caller, ProfileKey key);
+
         void startBackgroundTaskWithFullBrowser(
                 long nativeProxyNativeTask, ProxyNativeTask caller, Profile profile);
+
         void onFullBrowserLoaded(
                 long nativeProxyNativeTask, ProxyNativeTask caller, Profile profile);
+
         boolean stopBackgroundTask(long nativeProxyNativeTask, ProxyNativeTask caller);
+
         void destroy(long nativeProxyNativeTask, ProxyNativeTask caller);
     }
 }

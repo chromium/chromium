@@ -31,8 +31,9 @@ public class PartialCustomTabTabObserver extends EmptyTabObserver {
     @Override
     public void onUrlUpdated(Tab tab) {
         if (mImmWrapper == null) {
-            mImmWrapper = new PartialCustomTabInputMethodWrapper(
-                    tab.getContext(), tab.getWindowAndroid(), mShowSoftInputCallback);
+            mImmWrapper =
+                    new PartialCustomTabInputMethodWrapper(
+                            tab.getContext(), tab.getWindowAndroid(), mShowSoftInputCallback);
         }
         if (mCurrentTab != tab) {
             updateImmWrapper(tab);

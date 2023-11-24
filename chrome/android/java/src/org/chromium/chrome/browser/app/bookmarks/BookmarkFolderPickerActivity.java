@@ -84,7 +84,8 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                         BookmarkUtils.getFaviconDisplaySize(res),
                         SyncServiceFactory.getForProfile(profile));
         BookmarkAddNewFolderCoordinator addNewFolderCoordinator =
-                new BookmarkAddNewFolderCoordinator(this,
+                new BookmarkAddNewFolderCoordinator(
+                        this,
                         new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP),
                         mBookmarkModel);
         BookmarkUiPrefs bookmarkUiPrefs =
@@ -109,10 +110,16 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                         shoppingService);
 
         if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator,
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    mCoordinator,
                     SecondaryActivity.BOOKMARK_FOLDER_PICKER);
         } else {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator::onBackPressed,
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    mCoordinator::onBackPressed,
                     SecondaryActivity.BOOKMARK_FOLDER_PICKER);
         }
 

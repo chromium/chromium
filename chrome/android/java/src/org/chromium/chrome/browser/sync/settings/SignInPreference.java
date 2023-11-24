@@ -35,9 +35,11 @@ import org.chromium.ui.base.ViewUtils;
  * the user's name, email, profile image and sync error icon if necessary when the user is signed
  * in.
  */
-public class SignInPreference
-        extends Preference implements SignInStateObserver, ProfileDataCache.Observer,
-                                      SyncService.SyncStateChangedListener, AccountsChangeObserver {
+public class SignInPreference extends Preference
+        implements SignInStateObserver,
+                ProfileDataCache.Observer,
+                SyncService.SyncStateChangedListener,
+                AccountsChangeObserver {
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
     private boolean mIsShowingSigninPromo;
@@ -53,9 +55,7 @@ public class SignInPreference
         return mProfileDataCache;
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SignInPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.account_management_account_row);
@@ -68,9 +68,13 @@ public class SignInPreference
      * Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
-    public void initialize(ProfileDataCache profileDataCache,
-            AccountManagerFacade accountManagerFacade, PrefService prefService,
-            SyncService syncService, SigninManager signinManager, IdentityManager identityManager) {
+    public void initialize(
+            ProfileDataCache profileDataCache,
+            AccountManagerFacade accountManagerFacade,
+            PrefService prefService,
+            SyncService syncService,
+            SigninManager signinManager,
+            IdentityManager identityManager) {
         mProfileDataCache = profileDataCache;
         mAccountManagerFacade = accountManagerFacade;
         mPrefService = prefService;
@@ -124,7 +128,7 @@ public class SignInPreference
             } else {
                 setupSigninDisallowed();
                 assert !mIsShowingSigninPromo
-                    : "Signin Promo should not be shown when signin is not allowed";
+                        : "Signin Promo should not be shown when signin is not allowed";
                 setVisible(false);
             }
             return;
@@ -145,10 +149,11 @@ public class SignInPreference
         setFragment(null);
         setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
         setViewEnabled(false);
-        setOnPreferenceClickListener(pref -> {
-            ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
-            return true;
-        });
+        setOnPreferenceClickListener(
+                pref -> {
+                    ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
+                    return true;
+                });
         mWasGenericSigninPromoDisplayed = false;
     }
 
@@ -163,9 +168,11 @@ public class SignInPreference
         setFragment(null);
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
         setViewEnabled(true);
-        setOnPreferenceClickListener(pref
-                -> SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
+        setOnPreferenceClickListener(
+                pref ->
+                        SyncConsentActivityLauncherImpl.get()
+                                .launchActivityIfAllowed(
+                                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
 
         if (!mWasGenericSigninPromoDisplayed) {
             RecordUserAction.record("Signin_Impression_FromSettings");
@@ -178,8 +185,9 @@ public class SignInPreference
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(accountName);
         final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
         setSummary(canShowEmailAddress ? accountName : "");
-        setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
-                profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
+        setTitle(
+                SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                        profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
         setFragment(AccountManagementFragment.class.getName());
         setIcon(profileData.getImage());
         setViewEnabled(true);

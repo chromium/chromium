@@ -11,9 +11,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 
-/**
- * JNI bridge for SharingService.
- */
+/** JNI bridge for SharingService. */
 public class SharingJNIBridge {
     // Returns if device supports telephony capability.
     @CalledByNative

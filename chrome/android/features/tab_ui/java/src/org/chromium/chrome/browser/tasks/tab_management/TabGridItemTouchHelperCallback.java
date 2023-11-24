@@ -44,9 +44,7 @@ import java.util.List;
  * related actions in grid related layouts.
  */
 public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
-    /**
-     * An interface to observe the longpress event triggered on a tab card item.
-     */
+    /** An interface to observe the longpress event triggered on a tab card item. */
     interface OnLongPressTabItemEventListener {
         /**
          * Notify the observers that the longpress event on the tab has triggered.
@@ -61,8 +59,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     private final @TabListMode int mMode;
-    @Nullable
-    private OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+    @Nullable private OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
     private final int mLongPressDpThreshold;
     private float mSwipeToDismissThreshold;
     private float mMergeThreshold;
@@ -85,10 +82,15 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private Profile mProfile;
     private Context mContext;
 
-    public TabGridItemTouchHelperCallback(Context context, TabListModel tabListModel,
-            TabModelSelector tabModelSelector, TabActionListener tabClosedListener,
-            TabGridDialogHandler tabGridDialogHandler, String componentName,
-            boolean actionsOnAllRelatedTabs, @TabListMode int mode) {
+    public TabGridItemTouchHelperCallback(
+            Context context,
+            TabListModel tabListModel,
+            TabModelSelector tabModelSelector,
+            TabActionListener tabClosedListener,
+            TabGridDialogHandler tabGridDialogHandler,
+            String componentName,
+            boolean actionsOnAllRelatedTabs,
+            @TabListMode int mode) {
         super(0, 0);
         mModel = tabListModel;
         mTabModelSelector = tabModelSelector;
@@ -98,8 +100,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mTabGridDialogHandler = tabGridDialogHandler;
         mContext = context;
         mMode = mode;
-        mLongPressDpThreshold = context.getResources().getDimensionPixelSize(
-                R.dimen.tab_selection_editor_longpress_entry_threshold);
+        mLongPressDpThreshold =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.tab_selection_editor_longpress_entry_threshold);
     }
 
     /**
@@ -128,25 +132,33 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         // TODO(crbug.com/1005931): Figure out how drag-to-reorder lives in StartSurface MRU
         // ordering scenario.
         boolean isDragEnabled = !isMRUEnabledInTabSwitcher;
-        mDragFlags = isDragEnabled ? ItemTouchHelper.START | ItemTouchHelper.END
-                        | ItemTouchHelper.UP | ItemTouchHelper.DOWN
-                                   : 0;
+        mDragFlags =
+                isDragEnabled
+                        ? ItemTouchHelper.START
+                                | ItemTouchHelper.END
+                                | ItemTouchHelper.UP
+                                | ItemTouchHelper.DOWN
+                        : 0;
     }
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        final int dragFlags = viewHolder.getItemViewType() == TabProperties.UiType.MESSAGE
-                        || viewHolder.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE
-                ? 0
-                : mDragFlags;
+        final int dragFlags =
+                viewHolder.getItemViewType() == TabProperties.UiType.MESSAGE
+                                || viewHolder.getItemViewType()
+                                        == TabProperties.UiType.LARGE_MESSAGE
+                        ? 0
+                        : mDragFlags;
         final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         mRecyclerView = recyclerView;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
 
     @Override
-    public boolean canDropOver(@NonNull RecyclerView recyclerView,
-            @NonNull RecyclerView.ViewHolder current, @NonNull RecyclerView.ViewHolder target) {
+    public boolean canDropOver(
+            @NonNull RecyclerView recyclerView,
+            @NonNull RecyclerView.ViewHolder current,
+            @NonNull RecyclerView.ViewHolder target) {
         if (target.getItemViewType() == TabProperties.UiType.MESSAGE
                 || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE) {
             return false;
@@ -155,7 +167,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder fromViewHolder,
+    public boolean onMove(
+            RecyclerView recyclerView,
+            RecyclerView.ViewHolder fromViewHolder,
             RecyclerView.ViewHolder toViewHolder) {
         assert !(fromViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder)
                 || hasTabPropertiesModel(fromViewHolder);
@@ -166,10 +180,12 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
         }
 
-        int currentTabId = ((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder)
-                                   .model.get(TabProperties.TAB_ID);
-        int destinationTabId = ((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder)
-                                       .model.get(TabProperties.TAB_ID);
+        int currentTabId =
+                ((SimpleRecyclerViewAdapter.ViewHolder) fromViewHolder)
+                        .model.get(TabProperties.TAB_ID);
+        int destinationTabId =
+                ((SimpleRecyclerViewAdapter.ViewHolder) toViewHolder)
+                        .model.get(TabProperties.TAB_ID);
         int distance = toViewHolder.getAdapterPosition() - fromViewHolder.getAdapterPosition();
         TabModelFilter filter =
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
@@ -179,9 +195,13 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             tabModel.moveTab(currentTabId, distance > 0 ? destinationIndex + 1 : destinationIndex);
         } else {
             List<Tab> destinationTabGroup = getRelatedTabsForId(destinationTabId);
-            int newIndex = distance >= 0
-                    ? TabGroupUtils.getLastTabModelIndexForList(tabModel, destinationTabGroup) + 1
-                    : TabGroupUtils.getFirstTabModelIndexForList(tabModel, destinationTabGroup);
+            int newIndex =
+                    distance >= 0
+                            ? TabGroupUtils.getLastTabModelIndexForList(
+                                            tabModel, destinationTabGroup)
+                                    + 1
+                            : TabGroupUtils.getFirstTabModelIndexForList(
+                                    tabModel, destinationTabGroup);
             ((TabGroupModelFilter) filter).moveRelatedTabs(currentTabId, newIndex);
         }
         RecordUserAction.record("TabGrid.Drag.Reordered." + mComponentName);
@@ -223,15 +243,17 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     mRecyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
             boolean shouldUpdate =
                     !(hoveredViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder)
-                    || hasTabPropertiesModel(hoveredViewHolder);
+                            || hasTabPropertiesModel(hoveredViewHolder);
 
             if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs) {
                 RecyclerView.ViewHolder selectedViewHolder =
                         mRecyclerView.findViewHolderForAdapterPosition(mSelectedTabIndex);
-                if (selectedViewHolder != null && !mRecyclerView.isComputingLayout()
+                if (selectedViewHolder != null
+                        && !mRecyclerView.isComputingLayout()
                         && shouldUpdate) {
                     View selectedItemView = selectedViewHolder.itemView;
-                    onTabMergeToGroup(mModel.getTabCardCountsBefore(mSelectedTabIndex),
+                    onTabMergeToGroup(
+                            mModel.getTabCardCountsBefore(mSelectedTabIndex),
                             mModel.getTabCardCountsBefore(mHoveredTabIndex));
                     mRecyclerView.getLayoutManager().removeView(selectedItemView);
                 }
@@ -241,7 +263,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             }
 
             if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && shouldUpdate) {
-                mModel.updateHoveredTabForMergeToGroup(mSelectedTabIndex > mHoveredTabIndex
+                mModel.updateHoveredTabForMergeToGroup(
+                        mSelectedTabIndex > mHoveredTabIndex
                                 ? mHoveredTabIndex
                                 : mModel.getTabIndexBefore(mHoveredTabIndex),
                         false);
@@ -249,8 +272,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             }
             if (mUnGroupTabIndex != TabModel.INVALID_TAB_INDEX) {
                 TabGroupModelFilter filter =
-                        (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                                .getCurrentTabModelFilter();
+                        (TabGroupModelFilter)
+                                mTabModelSelector
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter();
                 RecyclerView.ViewHolder ungroupViewHolder =
                         mRecyclerView.findViewHolderForAdapterPosition(mUnGroupTabIndex);
                 if (ungroupViewHolder != null && !mRecyclerView.isComputingLayout()) {
@@ -288,7 +313,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             //      a tab is moved beyond a minimum distance from its original location.
             //
             // Otherwise, the unwanted click behaviour will be blocked.
-            if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX && mSelectedTabIndex < mModel.size()
+            if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX
+                    && mSelectedTabIndex < mModel.size()
                     && !mActionAttempted
                     && mModel.get(mSelectedTabIndex).model.get(CARD_TYPE) == TAB) {
                 // If the child was ever dragged or swiped do not consume the next action, as the
@@ -338,8 +364,14 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     }
 
     @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-            float dX, float dY, int actionState, boolean isCurrentlyActive) {
+    public void onChildDraw(
+            Canvas c,
+            RecyclerView recyclerView,
+            RecyclerView.ViewHolder viewHolder,
+            float dX,
+            float dY,
+            int actionState,
+            boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         if (Math.abs(dX) > 0 || Math.abs(dY) > 0) {
             mActionStarted = true;
@@ -356,8 +388,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
                 index = mModel.indexFromId(simpleViewHolder.model.get(TabProperties.TAB_ID));
             } else if (simpleViewHolder.model.get(CARD_TYPE) == MESSAGE) {
-                index = mModel.lastIndexForMessageItemFromType(
-                        simpleViewHolder.model.get(MessageCardViewProperties.MESSAGE_TYPE));
+                index =
+                        mModel.lastIndexForMessageItemFromType(
+                                simpleViewHolder.model.get(MessageCardViewProperties.MESSAGE_TYPE));
             }
 
             if (index == TabModel.INVALID_TAB_INDEX) return;
@@ -376,8 +409,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mCurrentActionState = actionState;
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mActionsOnAllRelatedTabs) {
             int prev_hovered = mHoveredTabIndex;
-            mHoveredTabIndex = TabListRecyclerView.getHoveredTabIndex(
-                    recyclerView, viewHolder.itemView, dX, dY, mMergeThreshold);
+            mHoveredTabIndex =
+                    TabListRecyclerView.getHoveredTabIndex(
+                            recyclerView, viewHolder.itemView, dX, dY, mMergeThreshold);
 
             RecyclerView.ViewHolder hoveredViewHolder =
                     mRecyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
@@ -393,16 +427,20 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG
                 && mTabGridDialogHandler != null) {
-            boolean isHoveredOnUngroupBar = viewHolder.itemView.getBottom() + dY
-                    > recyclerView.getBottom() - mUngroupThreshold;
+            boolean isHoveredOnUngroupBar =
+                    viewHolder.itemView.getBottom() + dY
+                            > recyclerView.getBottom() - mUngroupThreshold;
             if (mSelectedTabIndex == TabModel.INVALID_TAB_INDEX) return;
-            mUnGroupTabIndex = isHoveredOnUngroupBar ? viewHolder.getAdapterPosition()
-                                                     : TabModel.INVALID_TAB_INDEX;
-            mTabGridDialogHandler.updateUngroupBarStatus(isHoveredOnUngroupBar
+            mUnGroupTabIndex =
+                    isHoveredOnUngroupBar
+                            ? viewHolder.getAdapterPosition()
+                            : TabModel.INVALID_TAB_INDEX;
+            mTabGridDialogHandler.updateUngroupBarStatus(
+                    isHoveredOnUngroupBar
                             ? TabGridDialogView.UngroupBarStatus.HOVERED
                             : (mSelectedTabIndex == TabModel.INVALID_TAB_INDEX
-                                            ? TabGridDialogView.UngroupBarStatus.HIDE
-                                            : TabGridDialogView.UngroupBarStatus.SHOW));
+                                    ? TabGridDialogView.UngroupBarStatus.HIDE
+                                    : TabGridDialogView.UngroupBarStatus.SHOW));
         }
     }
 
@@ -412,24 +450,27 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     }
 
     private List<Tab> getRelatedTabsForId(int id) {
-        return mTabModelSelector.getTabModelFilterProvider()
+        return mTabModelSelector
+                .getTabModelFilterProvider()
                 .getCurrentTabModelFilter()
                 .getRelatedTabList(id);
     }
 
     private void onTabMergeToGroup(int selectedCardIndex, int hoveredCardIndex) {
         TabGroupModelFilter filter =
-                (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                        .getCurrentTabModelFilter();
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         if (filter.getTabAt(selectedCardIndex) == null) return;
         if (filter.getTabAt(hoveredCardIndex) == null) return;
-        filter.mergeTabsToGroup(filter.getTabAt(selectedCardIndex).getId(),
+        filter.mergeTabsToGroup(
+                filter.getTabAt(selectedCardIndex).getId(),
                 filter.getTabAt(hoveredCardIndex).getId());
 
         // If user has used drop-to-merge, send a signal to disable
         // FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE.
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(
-                mTabModelSelector.getCurrentModel().getProfile());
+        final Tracker tracker =
+                TrackerFactory.getTrackerForProfile(
+                        mTabModelSelector.getCurrentModel().getProfile());
         tracker.notifyEvent(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP);
     }
 

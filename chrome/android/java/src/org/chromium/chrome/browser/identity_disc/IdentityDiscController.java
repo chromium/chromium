@@ -54,8 +54,11 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * Handles displaying IdentityDisc on toolbar depending on several conditions
  * (user sign-in state, whether NTP is shown)
  */
-public class IdentityDiscController implements NativeInitObserver, ProfileDataCache.Observer,
-                                               IdentityManager.Observer, ButtonDataProvider {
+public class IdentityDiscController
+        implements NativeInitObserver,
+                ProfileDataCache.Observer,
+                IdentityManager.Observer,
+                ButtonDataProvider {
     // Context is used for fetching resources and launching preferences page.
     private final Context mContext;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -81,7 +84,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g. native
      *         initialization completing.
      */
-    public IdentityDiscController(Context context,
+    public IdentityDiscController(
+            Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<Profile> profileSupplier) {
         mContext = context;
@@ -89,23 +93,25 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         mProfileSupplier = profileSupplier;
         mActivityLifecycleDispatcher.register(this);
 
-        mButtonData = new ButtonDataImpl(/*canShow=*/false, /*drawable=*/null,
-                /*onClickListener=*/
-                view
-                -> onClick(),
-                mContext.getString(R.string.accessibility_toolbar_btn_identity_disc),
-                /*supportsTinting=*/false,
-                new IPHCommandBuilder(mContext.getResources(),
-                        FeatureConstants.IDENTITY_DISC_FEATURE, R.string.iph_identity_disc_text,
-                        R.string.iph_identity_disc_accessibility_text),
-                /*isEnabled=*/true, AdaptiveToolbarButtonVariant.UNKNOWN, /*tooltipTextResId=*/
-                Resources.ID_NULL,
-                /*showHoverHighlight=*/true);
+        mButtonData =
+                new ButtonDataImpl(
+                        /* canShow= */ false,
+                        /* drawable= */ null,
+                        /* onClickListener= */ view -> onClick(),
+                        mContext.getString(R.string.accessibility_toolbar_btn_identity_disc),
+                        /* supportsTinting= */ false,
+                        new IPHCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.IDENTITY_DISC_FEATURE,
+                                R.string.iph_identity_disc_text,
+                                R.string.iph_identity_disc_accessibility_text),
+                        /* isEnabled= */ true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ true);
     }
 
-    /**
-     * Registers itself to observe sign-in and sync status events.
-     */
+    /** Registers itself to observe sign-in and sync status events. */
     @Override
     public void onFinishNativeInitialization() {
         mActivityLifecycleDispatcher.unregister(this);
@@ -140,7 +146,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     public ButtonData getForStartSurface(
             @StartSurfaceState int overviewModeState, @LayoutType int layoutType) {
         if ((ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
-                    && layoutType != LayoutType.START_SURFACE)
+                        && layoutType != LayoutType.START_SURFACE)
                 || (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
                         && overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE)) {
             mIsStartSurface = false;
@@ -176,10 +182,16 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
 
         String contentDescription = getContentDescription(email);
-        return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
-                /*onLongClickListener=*/null, contentDescription, buttonSpec.getSupportsTinting(),
-                buttonSpec.getIPHCommandBuilder(), AdaptiveToolbarButtonVariant.UNKNOWN,
-                buttonSpec.getActionChipLabelResId(), buttonSpec.getHoverTooltipTextId(),
+        return new ButtonSpec(
+                drawable,
+                buttonSpec.getOnClickListener(),
+                /* onLongClickListener= */ null,
+                contentDescription,
+                buttonSpec.getSupportsTinting(),
+                buttonSpec.getIPHCommandBuilder(),
+                AdaptiveToolbarButtonVariant.UNKNOWN,
+                buttonSpec.getActionChipLabelResId(),
+                buttonSpec.getHoverTooltipTextId(),
                 buttonSpec.getShouldShowHoverHighlight());
     }
 
@@ -222,9 +234,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
     }
 
-    /**
-     * Called after profile image becomes available. Updates the image on toolbar button.
-     */
+    /** Called after profile image becomes available. Updates the image on toolbar button. */
     @Override
     public void onProfileDataUpdated(String accountEmail) {
         assert mProfileDataCache != null;
@@ -262,9 +272,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
     }
 
-    /**
-     * Call to tear down dependencies.
-     */
+    /** Call to tear down dependencies. */
     @Override
     public void destroy() {
         if (mActivityLifecycleDispatcher != null) {
@@ -339,7 +347,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         String userName = profileData.getFullName();
         if (profileData.hasDisplayableEmailAddress()) {
             return mContext.getString(
-                    R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email, userName,
+                    R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                    userName,
                     email);
         }
 
@@ -358,11 +367,12 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
         recordIdentityDiscUsed();
 
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        SigninManager signinManager =
+                IdentityServicesProvider.get()
+                        .getSigninManager(Profile.getLastUsedRegularProfile());
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
-            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                    mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+            SyncConsentActivityLauncherImpl.get()
+                    .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
         } else {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);

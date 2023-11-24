@@ -19,9 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/**
- * Select all and deselect all toggle action for the {@link TabSelectionEditorMenu}.
- */
+/** Select all and deselect all toggle action for the {@link TabSelectionEditorMenu}. */
 public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction {
     private Context mContext;
     private @ActionState int mActionState;
@@ -44,8 +42,11 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
      * @param iconPosition the position of the icon in the action view.
      * @param isIncognito whether the current tab model is incognito this will update dynamically.
      */
-    public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition) {
+    public static TabSelectionEditorAction createAction(
+            Context context,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition) {
         Drawable selectAllIcon =
                 AppCompatResources.getDrawable(context, R.drawable.ic_select_all_24dp);
         Drawable deselectAllIcon =
@@ -55,11 +56,21 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     }
 
     @VisibleForTesting
-    TabSelectionEditorSelectionAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition, Drawable selectAllIcon,
+    TabSelectionEditorSelectionAction(
+            Context context,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition,
+            Drawable selectAllIcon,
             Drawable deselectAllIcon) {
-        super(R.id.tab_selection_editor_selection_menu_item, showMode, buttonType, iconPosition,
-                R.string.tab_selection_editor_select_all, null, selectAllIcon);
+        super(
+                R.id.tab_selection_editor_selection_menu_item,
+                showMode,
+                buttonType,
+                iconPosition,
+                R.string.tab_selection_editor_select_all,
+                null,
+                selectAllIcon);
 
         mContext = context;
         mActionState = ActionState.UNKNOWN;
@@ -77,8 +88,10 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
         setEnabledAndItemCount(true, tabIds.size());
-        updateState(getActionDelegate().areAllTabsSelected() ? ActionState.DESELECT_ALL
-                                                             : ActionState.SELECT_ALL);
+        updateState(
+                getActionDelegate().areAllTabsSelected()
+                        ? ActionState.DESELECT_ALL
+                        : ActionState.SELECT_ALL);
     }
 
     @Override
@@ -108,12 +121,16 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         mActionState = selectionState;
 
         if (mActionState == ActionState.SELECT_ALL) {
-            getPropertyModel().set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
-                    R.string.tab_selection_editor_select_all);
+            getPropertyModel()
+                    .set(
+                            TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
+                            R.string.tab_selection_editor_select_all);
             getPropertyModel().set(TabSelectionEditorActionProperties.ICON, mSelectAllIcon);
         } else if (mActionState == ActionState.DESELECT_ALL) {
-            getPropertyModel().set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
-                    R.string.tab_selection_editor_deselect_all);
+            getPropertyModel()
+                    .set(
+                            TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
+                            R.string.tab_selection_editor_deselect_all);
             getPropertyModel().set(TabSelectionEditorActionProperties.ICON, mDeselectAllIcon);
         } else {
             assert false : "Invalid selection state";

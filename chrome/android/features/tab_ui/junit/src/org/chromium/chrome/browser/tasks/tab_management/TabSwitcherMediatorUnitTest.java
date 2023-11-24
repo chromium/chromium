@@ -85,9 +85,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
-@DisableFeatures({
-    ChromeFeatureList.START_SURFACE_ANDROID
-})
+@DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 public class TabSwitcherMediatorUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();

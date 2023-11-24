@@ -22,12 +22,15 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
 
     @Override
     public void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {
-        BrowsingDataBridge.getInstance().clearBrowsingData(
-                onDeleteFinished::run,
-                new int[] {
-                        BrowsingDataType.HISTORY, BrowsingDataType.COOKIES, BrowsingDataType.CACHE
-                },
-                timePeriod);
+        BrowsingDataBridge.getInstance()
+                .clearBrowsingData(
+                        onDeleteFinished::run,
+                        new int[] {
+                            BrowsingDataType.HISTORY,
+                            BrowsingDataType.COOKIES,
+                            BrowsingDataType.CACHE
+                        },
+                        timePeriod);
     }
 
     /**

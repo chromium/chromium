@@ -16,13 +16,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Represents a snapshot of the current tabs and tab groups.
- */
+/** Represents a snapshot of the current tabs and tab groups. */
 public class TabContext {
-    /**
-     * Holds basic information about a tab group.
-     */
+    /** Holds basic information about a tab group. */
     public static class TabGroupInfo {
         public final int rootId;
         public final List<TabInfo> tabs;
@@ -53,9 +49,7 @@ public class TabContext {
         }
     }
 
-    /**
-     * Holds basic information about a tab.
-     */
+    /** Holds basic information about a tab. */
     public static class TabInfo implements Comparable<TabInfo> {
         // equals() and hashCode() only include url and id
         public final String url;
@@ -66,11 +60,15 @@ public class TabContext {
         public final String visibleUrl;
         public final boolean isIncognito;
 
-        /**
-         * Constructs a new TabInfo object
-         */
-        protected TabInfo(int id, String title, String url, String originalUrl,
-                long timestampMillis, String visibleUrl, boolean isIncognito) {
+        /** Constructs a new TabInfo object */
+        protected TabInfo(
+                int id,
+                String title,
+                String url,
+                String originalUrl,
+                long timestampMillis,
+                String visibleUrl,
+                boolean isIncognito) {
             this.id = id;
             this.title = title;
             this.url = url;
@@ -80,22 +78,28 @@ public class TabContext {
             this.isIncognito = isIncognito;
         }
 
-        /**
-         * Constructs a new non-incognito TabInfo object
-         */
-        protected TabInfo(int id, String title, String url, String originalUrl,
-                long timestampMillis, String visibleUrl) {
+        /** Constructs a new non-incognito TabInfo object */
+        protected TabInfo(
+                int id,
+                String title,
+                String url,
+                String originalUrl,
+                long timestampMillis,
+                String visibleUrl) {
             this(id, title, url, originalUrl, timestampMillis, visibleUrl, false);
         }
 
-        /**
-         * Creates a new TabInfo object from {@link Tab}
-         */
+        /** Creates a new TabInfo object from {@link Tab} */
         public static TabInfo createFromTab(Tab tab) {
             // TODO(crbug/783819): convert TabInfo to GURL
-            return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrl().getSpec(),
-                    tab.getOriginalUrl().getSpec(), tab.getTimestampMillis(),
-                    tab.getUrl().getSpec(), tab.isIncognito());
+            return new TabInfo(
+                    tab.getId(),
+                    tab.getTitle(),
+                    tab.getUrl().getSpec(),
+                    tab.getOriginalUrl().getSpec(),
+                    tab.getTimestampMillis(),
+                    tab.getUrl().getSpec(),
+                    tab.isIncognito());
         }
 
         public double getSiteEngagementScore() {
@@ -150,11 +154,12 @@ public class TabContext {
         if (other == null) return false;
         if (other instanceof TabContext) {
             TabContext otherTabContext = (TabContext) other;
-            return (mTabGroups == null ? otherTabContext.getTabGroups() == null
-                                       : mTabGroups.equals(otherTabContext.getTabGroups()))
+            return (mTabGroups == null
+                            ? otherTabContext.getTabGroups() == null
+                            : mTabGroups.equals(otherTabContext.getTabGroups()))
                     && (mUngroupedTabs == null
-                                    ? otherTabContext.getUngroupedTabs() == null
-                                    : mUngroupedTabs.equals(otherTabContext.getUngroupedTabs()));
+                            ? otherTabContext.getUngroupedTabs() == null
+                            : mUngroupedTabs.equals(otherTabContext.getUngroupedTabs()));
         }
         return false;
     }
@@ -192,8 +197,9 @@ public class TabContext {
 
             if (relatedTabs.size() > 1) {
                 List<Tab> nonClosingTabs = getNonClosingTabs(relatedTabs);
-                existingGroups.add(new TabGroupInfo(
-                        currentTab.getRootId(), createTabInfoList(nonClosingTabs)));
+                existingGroups.add(
+                        new TabGroupInfo(
+                                currentTab.getRootId(), createTabInfoList(nonClosingTabs)));
             } else {
                 if (currentTab.isClosing()) continue;
                 ungroupedTabs.add(TabInfo.createFromTab(currentTab));

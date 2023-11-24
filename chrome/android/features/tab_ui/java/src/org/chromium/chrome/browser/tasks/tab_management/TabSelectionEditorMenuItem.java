@@ -67,8 +67,10 @@ public class TabSelectionEditorMenuItem {
 
         if ((!mShowText && !mShowIcon) || showMode == ShowMode.MENU_ONLY) return;
 
-        mActionView = (Button) LayoutInflater.from(mContext).inflate(
-                R.layout.tab_selection_editor_action_view, null);
+        mActionView =
+                (Button)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.tab_selection_editor_action_view, null);
         mActionView.setId(mListItem.model.get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
         if (mShowIcon && !mShowText) {
             mActionView.setCompoundDrawablePadding(0);
@@ -91,8 +93,9 @@ public class TabSelectionEditorMenuItem {
     public void setTitle(int titleResourceId, int itemCount) {
         String title;
         if (itemCount >= 0) {
-            title = mContext.getResources().getQuantityString(
-                    titleResourceId, itemCount, itemCount);
+            title =
+                    mContext.getResources()
+                            .getQuantityString(titleResourceId, itemCount, itemCount);
         } else {
             title = mContext.getResources().getString(titleResourceId);
         }
@@ -117,8 +120,9 @@ public class TabSelectionEditorMenuItem {
             @Nullable Integer contentDescriptionResourceId, int itemCount) {
         String contentDescription = null;
         if (contentDescriptionResourceId != null && itemCount > 0) {
-            contentDescription = mContext.getResources().getQuantityString(
-                    contentDescriptionResourceId, itemCount, itemCount);
+            contentDescription =
+                    mContext.getResources()
+                            .getQuantityString(contentDescriptionResourceId, itemCount, itemCount);
         }
         mListItem.model.set(
                 TabSelectionEditorActionProperties.CONTENT_DESCRIPTION, contentDescription);
@@ -135,9 +139,12 @@ public class TabSelectionEditorMenuItem {
     public void setIcon(@IconPosition int iconPosition, Drawable icon) {
         mListItem.model.set(TabSelectionEditorActionProperties.ICON, icon);
         if (mActionView != null && mShowIcon) {
-            TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(mActionView,
-                    iconPosition == IconPosition.START ? icon : null, null,
-                    iconPosition == IconPosition.END ? icon : null, null);
+            TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    mActionView,
+                    iconPosition == IconPosition.START ? icon : null,
+                    null,
+                    iconPosition == IconPosition.END ? icon : null,
+                    null);
         }
     }
 
@@ -202,9 +209,7 @@ public class TabSelectionEditorMenuItem {
         mOnSelectionStateChange = callback;
     }
 
-    /**
-     * Handler for click events on the menu item or action view.
-     */
+    /** Handler for click events on the menu item or action view. */
     public boolean onClick() {
         if (!mEnabled) return false;
 
@@ -213,9 +218,7 @@ public class TabSelectionEditorMenuItem {
         return true;
     }
 
-    /**
-     * Updates the {@link TabSelectionEditorAction} with the currently selected tabs.
-     */
+    /** Updates the {@link TabSelectionEditorAction} with the currently selected tabs. */
     public void onSelectionStateChange(List<Integer> tabIds) {
         mOnSelectionStateChange.onResult(tabIds);
     }

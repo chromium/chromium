@@ -26,43 +26,37 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Settings fragment that shows options for recording a performance trace.
- */
-public class TracingSettings
-        extends PreferenceFragmentCompat implements TracingController.Observer {
+/** Settings fragment that shows options for recording a performance trace. */
+public class TracingSettings extends PreferenceFragmentCompat
+        implements TracingController.Observer {
     static final String NON_DEFAULT_CATEGORY_PREFIX = "disabled-by-default-";
 
-    @VisibleForTesting
-    static final String UI_PREF_DEFAULT_CATEGORIES = "default_categories";
+    @VisibleForTesting static final String UI_PREF_DEFAULT_CATEGORIES = "default_categories";
+
     @VisibleForTesting
     static final String UI_PREF_NON_DEFAULT_CATEGORIES = "non_default_categories";
-    @VisibleForTesting
-    static final String UI_PREF_MODE = "mode";
-    @VisibleForTesting
-    static final String UI_PREF_START_RECORDING = "start_recording";
-    @VisibleForTesting
-    static final String UI_PREF_SHARE_TRACE = "share_trace";
-    @VisibleForTesting
-    static final String UI_PREF_TRACING_STATUS = "tracing_status";
+
+    @VisibleForTesting static final String UI_PREF_MODE = "mode";
+    @VisibleForTesting static final String UI_PREF_START_RECORDING = "start_recording";
+    @VisibleForTesting static final String UI_PREF_SHARE_TRACE = "share_trace";
+    @VisibleForTesting static final String UI_PREF_TRACING_STATUS = "tracing_status";
 
     // Non-translated strings:
     private static final String MSG_TRACING_TITLE = "Tracing";
     private static final String MSG_PRIVACY_NOTICE =
             "Traces may contain user or site data related to the active browsing session, "
-            + "including incognito tabs.";
+                    + "including incognito tabs.";
     private static final String MSG_ACTIVE_SUMMARY =
             "A trace is being recorded. Use the notification to stop and share the result.";
-    @VisibleForTesting
-    static final String MSG_START = "Record trace";
-    @VisibleForTesting
-    static final String MSG_ACTIVE = "Recording…";
+    @VisibleForTesting static final String MSG_START = "Record trace";
+    @VisibleForTesting static final String MSG_ACTIVE = "Recording…";
     private static final String MSG_CATEGORIES_SUMMARY = "%s out of %s enabled";
     private static final String MSG_MODE_RECORD_UNTIL_FULL = "Record until full";
     private static final String MSG_MODE_RECORD_AS_MUCH_AS_POSSIBLE =
             "Record until full (large buffer)";
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
+
     @VisibleForTesting
     static final String MSG_NOTIFICATIONS_DISABLED =
             "Please enable Chrome browser notifications to record a trace.";
@@ -77,9 +71,7 @@ public class TracingSettings
     private Preference mPrefShareTrace;
     private Preference mPrefTracingStatus;
 
-    /**
-     * Type of a tracing category indicating whether it is enabled by default or not.
-     */
+    /** Type of a tracing category indicating whether it is enabled by default or not. */
     @IntDef({CategoryType.DEFAULT, CategoryType.NON_DEFAULT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CategoryType {
@@ -99,8 +91,10 @@ public class TracingSettings
      * @return the current set of all enabled categories, irrespective of their type.
      */
     public static Set<String> getEnabledCategories() {
-        Set<String> enabled = ChromeSharedPreferences.getInstance().readStringSet(
-                ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_CATEGORIES, null);
+        Set<String> enabled =
+                ChromeSharedPreferences.getInstance()
+                        .readStringSet(
+                                ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_CATEGORIES, null);
         if (enabled == null) {
             enabled = new HashSet<>();
             // By default, enable all default categories.
@@ -141,8 +135,9 @@ public class TracingSettings
                 enabled.add(category);
             }
         }
-        ChromeSharedPreferences.getInstance().writeStringSet(
-                ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_CATEGORIES, enabled);
+        ChromeSharedPreferences.getInstance()
+                .writeStringSet(
+                        ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_CATEGORIES, enabled);
     }
 
     /**
@@ -151,8 +146,9 @@ public class TracingSettings
      * @return the type of the category.
      */
     public static @CategoryType int getCategoryType(String category) {
-        return category.startsWith(NON_DEFAULT_CATEGORY_PREFIX) ? CategoryType.NON_DEFAULT
-                                                                : CategoryType.DEFAULT;
+        return category.startsWith(NON_DEFAULT_CATEGORY_PREFIX)
+                ? CategoryType.NON_DEFAULT
+                : CategoryType.DEFAULT;
     }
 
     /**
@@ -160,9 +156,10 @@ public class TracingSettings
      *     "record-as-much-as-possible", or "record-continuously".
      */
     public static String getSelectedTracingMode() {
-        return ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE,
-                TRACING_MODES.keySet().iterator().next());
+        return ChromeSharedPreferences.getInstance()
+                .readString(
+                        ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE,
+                        TRACING_MODES.keySet().iterator().next());
     }
 
     /**
@@ -173,8 +170,8 @@ public class TracingSettings
      */
     public static void setSelectedTracingMode(String tracingMode) {
         assert TRACING_MODES.containsKey(tracingMode);
-        ChromeSharedPreferences.getInstance().writeString(
-                ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE, tracingMode);
+        ChromeSharedPreferences.getInstance()
+                .writeString(ChromePreferenceKeys.SETTINGS_DEVELOPER_TRACING_MODE, tracingMode);
     }
 
     @Override
@@ -189,34 +186,39 @@ public class TracingSettings
         mPrefShareTrace = findPreference(UI_PREF_SHARE_TRACE);
         mPrefTracingStatus = findPreference(UI_PREF_TRACING_STATUS);
 
-        mPrefDefaultCategories.getExtras().putInt(
-                TracingCategoriesSettings.EXTRA_CATEGORY_TYPE, CategoryType.DEFAULT);
+        mPrefDefaultCategories
+                .getExtras()
+                .putInt(TracingCategoriesSettings.EXTRA_CATEGORY_TYPE, CategoryType.DEFAULT);
 
-        mPrefNondefaultCategories.getExtras().putInt(
-                TracingCategoriesSettings.EXTRA_CATEGORY_TYPE, CategoryType.NON_DEFAULT);
+        mPrefNondefaultCategories
+                .getExtras()
+                .putInt(TracingCategoriesSettings.EXTRA_CATEGORY_TYPE, CategoryType.NON_DEFAULT);
 
         mPrefMode.setEntryValues(TRACING_MODES.keySet().toArray(new String[TRACING_MODES.size()]));
         String[] descriptions =
                 TRACING_MODES.values().toArray(new String[TRACING_MODES.values().size()]);
         mPrefMode.setEntries(descriptions);
-        mPrefMode.setOnPreferenceChangeListener((preference, newValue) -> {
-            setSelectedTracingMode((String) newValue);
-            updatePreferences();
-            return true;
-        });
+        mPrefMode.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    setSelectedTracingMode((String) newValue);
+                    updatePreferences();
+                    return true;
+                });
 
-        mPrefStartRecording.setOnPreferenceClickListener(preference -> {
-            TracingController.getInstance().startRecording();
-            updatePreferences();
-            return true;
-        });
+        mPrefStartRecording.setOnPreferenceClickListener(
+                preference -> {
+                    TracingController.getInstance().startRecording();
+                    updatePreferences();
+                    return true;
+                });
 
         mPrefShareTrace.setTitle(MSG_SHARE_TRACE);
-        mPrefShareTrace.setOnPreferenceClickListener(preference -> {
-            TracingController.getInstance().shareTrace();
-            updatePreferences();
-            return true;
-        });
+        mPrefShareTrace.setOnPreferenceClickListener(
+                preference -> {
+                    TracingController.getInstance().shareTrace();
+                    updatePreferences();
+                    return true;
+                });
     }
 
     @Override
@@ -238,8 +240,7 @@ public class TracingSettings
     }
 
     private void updatePreferences() {
-        @TracingController.State
-        int state = TracingController.getInstance().getState();
+        @TracingController.State int state = TracingController.getInstance().getState();
         boolean initialized = state != TracingController.State.INITIALIZING;
         boolean idle = state == TracingController.State.IDLE || !initialized;
         boolean hasTrace = state == TracingController.State.STOPPED;

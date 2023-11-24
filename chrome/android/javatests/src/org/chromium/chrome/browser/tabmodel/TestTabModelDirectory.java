@@ -53,7 +53,6 @@ public class TestTabModelDirectory {
             this.filename = (incognito ? "cryptonito" : "tab") + tabId;
         }
     }
-    ;
 
     /** Information about a TabModel and all of the TabStates it needs to be restored. */
     public static final class TabModelMetaDataInfo {
@@ -89,22 +88,22 @@ public class TestTabModelDirectory {
                     "chrome-native://newtab/",
                     "New tab",
                     "AAABPK1gIpkAAAQYFAQAAAAAAAACAAAAAAAAAB0AAABjaHJvbWU6Ly9uZXd0YWIvI21vc3RfdmlzaXRlZAAAAA"
-                        + "AAAAAHAAAATgBlAHcAIAB0AGEAYgAAADQBAAAwAQAACwAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
-                        + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
-                        + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
-                        + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAAAAQMYvST4F1QQAxy9JPgXVBAABAAAAMgAAAP"
-                        + "8BPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
-                        + "8IAAAAAAAAAAAAAEABAAAAAAAAAAYAAAEVAAAAaHR0cDovL3d3dy5nb29nbGUuY2EvAAAAAAAAAAYAAABHAG"
-                        + "8AbwBnAGwAZQAUAgAAEAIAAAsAAAAqAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGcAbwBvAGcAbABlAC4AYw"
-                        + "BhAC8AAAAiAAAAaAB0AHQAcAA6AC8ALwBnAG8AbwBnAGwAZQAuAGMAYQAvAAAA/////wAAAAAMAAAARwBvAG"
-                        + "8AZwBsAGUA/////wgAAAAAAAAAAAAAAAAAAAACAAAAAQAAAAAAAAD/////AwAAAAYAAABjAHMAaQAAABAAAA"
-                        + "B0AGUAeAB0AGEAcgBlAGEA/////wgAAAAAAAAAAAAAQHu+oD4F1QQAfL6gPgXVBAAAAAAAAAAAAP////////"
-                        + "//CAAAAAAAAAAAAABAAQAAAAEAAAALAAAAFgAAAGEAYgBvAHUAdAA6AGIAbABhAG4AawAAABYAAABhAGIAbw"
-                        + "B1AHQAOgBiAGwAYQBuAGsAAAAIAAAAdwBnAGoAZgD///////////////8IAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                        + "AAAAAAAAAAKgAAAGgAdAB0AHAAOgAvAC8AdwB3AHcALgBnAG8AbwBnAGwAZQAuAGMAYQAvAAAAAAAAAAgAAA"
-                        + "AAAAAAAADwP32+oD4F1QQAfr6gPgXVBAAAAAAAAAAAAP////8qAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAG"
-                        + "cAbwBvAGcAbABlAC4AYwBhAC8AAAAIAAAAAAAAAAAA8D8BAAAAAAAAAAEAAAAdAAAAY2hyb21lOi8vbmV3dG"
-                        + "FiLyNtb3N0X3Zpc2l0ZWQAAAAAAAAAEQAAAGh0dHA6Ly9nb29nbGUuY2EvAAAAAAAAAP////8AAA==");
+                            + "AAAAAHAAAATgBlAHcAIAB0AGEAYgAAADQBAAAwAQAACwAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
+                            + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
+                            + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
+                            + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAAAAQMYvST4F1QQAxy9JPgXVBAABAAAAMgAAAP"
+                            + "8BPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
+                            + "8IAAAAAAAAAAAAAEABAAAAAAAAAAYAAAEVAAAAaHR0cDovL3d3dy5nb29nbGUuY2EvAAAAAAAAAAYAAABHAG"
+                            + "8AbwBnAGwAZQAUAgAAEAIAAAsAAAAqAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGcAbwBvAGcAbABlAC4AYw"
+                            + "BhAC8AAAAiAAAAaAB0AHQAcAA6AC8ALwBnAG8AbwBnAGwAZQAuAGMAYQAvAAAA/////wAAAAAMAAAARwBvAG"
+                            + "8AZwBsAGUA/////wgAAAAAAAAAAAAAAAAAAAACAAAAAQAAAAAAAAD/////AwAAAAYAAABjAHMAaQAAABAAAA"
+                            + "B0AGUAeAB0AGEAcgBlAGEA/////wgAAAAAAAAAAAAAQHu+oD4F1QQAfL6gPgXVBAAAAAAAAAAAAP////////"
+                            + "//CAAAAAAAAAAAAABAAQAAAAEAAAALAAAAFgAAAGEAYgBvAHUAdAA6AGIAbABhAG4AawAAABYAAABhAGIAbw"
+                            + "B1AHQAOgBiAGwAYQBuAGsAAAAIAAAAdwBnAGoAZgD///////////////8IAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                            + "AAAAAAAAAAKgAAAGgAdAB0AHAAOgAvAC8AdwB3AHcALgBnAG8AbwBnAGwAZQAuAGMAYQAvAAAAAAAAAAgAAA"
+                            + "AAAAAAAADwP32+oD4F1QQAfr6gPgXVBAAAAAAAAAAAAP////8qAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAG"
+                            + "cAbwBvAGcAbABlAC4AYwBhAC8AAAAIAAAAAAAAAAAA8D8BAAAAAAAAAAEAAAAdAAAAY2hyb21lOi8vbmV3dG"
+                            + "FiLyNtb3N0X3Zpc2l0ZWQAAAAAAAAAEQAAAGh0dHA6Ly9nb29nbGUuY2EvAAAAAAAAAP////8AAA==");
 
     /**
      * Contains information about an M18 tab for http://google.com. When used for testing, the
@@ -118,18 +117,18 @@ public class TestTabModelDirectory {
                     "http://www.google.com/",
                     "Google",
                     "AAABPLD4wNkAAALk4AIAAAAAAAACAAAAAQAAAB0AAABjaHJvbWU6Ly9uZXd0YWIvI21vc3RfdmlzaXRlZAAAAA"
-                        + "AAAAAHAAAATgBlAHcAIAB0AGEAYgAAADQBAAAwAQAACwAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
-                        + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
-                        + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
-                        + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAAAAQHuHvz0F1QQAfIe/PQXVBAABAAAAMgAAAP"
-                        + "8BPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
-                        + "8IAAAAAAAAAAAAAEABAAAAAAAAAAgAAAAWAAAAaHR0cDovL3d3dy5nb29nbGUuY29tLwAAAAAAAAYAAABHAG"
-                        + "8AbwBnAGwAZQDcAAAA2AAAAAsAAAAsAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGcAbwBvAGcAbABlAC4AYw"
-                        + "BvAG0ALwAsAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGcAbwBvAGcAbABlAC4AYwBvAG0ALwD/////AAAAAP"
-                        + "//////////CAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAP////8AAAAACAAAAAAAAMCcguc/o8IqPgXVBA"
-                        + "Ckwio+BdUEAAAAAAAAAAAA//////////8IAAAAAAAAwJyC5z8AAAAAAAAAAAgAAAAdAAAAY2hyb21lOi8vbm"
-                        + "V3dGFiLyNtb3N0X3Zpc2l0ZWQAAAAAAAAAFgAAAGh0dHA6Ly93d3cuZ29vZ2xlLmNvbS8AAAAAAAD/////AA"
-                        + "A=");
+                            + "AAAAAHAAAATgBlAHcAIAB0AGEAYgAAADQBAAAwAQAACwAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
+                            + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
+                            + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
+                            + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAAAAQHuHvz0F1QQAfIe/PQXVBAABAAAAMgAAAP"
+                            + "8BPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
+                            + "8IAAAAAAAAAAAAAEABAAAAAAAAAAgAAAAWAAAAaHR0cDovL3d3dy5nb29nbGUuY29tLwAAAAAAAAYAAABHAG"
+                            + "8AbwBnAGwAZQDcAAAA2AAAAAsAAAAsAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGcAbwBvAGcAbABlAC4AYw"
+                            + "BvAG0ALwAsAAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGcAbwBvAGcAbABlAC4AYwBvAG0ALwD/////AAAAAP"
+                            + "//////////CAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAP////8AAAAACAAAAAAAAMCcguc/o8IqPgXVBA"
+                            + "Ckwio+BdUEAAAAAAAAAAAA//////////8IAAAAAAAAwJyC5z8AAAAAAAAAAAgAAAAdAAAAY2hyb21lOi8vbm"
+                            + "V3dGFiLyNtb3N0X3Zpc2l0ZWQAAAAAAAAAFgAAAGh0dHA6Ly93d3cuZ29vZ2xlLmNvbS8AAAAAAAD/////AA"
+                            + "A=");
 
     public static final TabStateInfo M26_GOOGLE_COM =
             new TabStateInfo(
@@ -139,17 +138,17 @@ public class TestTabModelDirectory {
                     "http://www.google.com/",
                     "Google",
                     "AAABPK2JhPQAAALg3AIAAAAAAAACAAAAAQAAAAAAAAAdAAAAY2hyb21lOi8vbmV3dGFiLyNtb3N0X3Zpc2l0ZW"
-                        + "QAAAAHAAAATgBlAHcAIAB0AGEAYgAAACQBAAAgAQAADQAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
-                        + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
-                        + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
-                        + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAADwP2hSNuEF1QQAaVI24QXVBAABAAAAMgAAAP"
-                        + "8CPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
-                        + "8AAAAABgAAAAAAAAAAAAAAAQAAAB0AAABjaHJvbWU6Ly9uZXd0YWIvI21vc3RfdmlzaXRlZAAAAAAAAABaa9"
-                        + "YpnDMuAAEAAAAWAAAAaHR0cDovL3d3dy5nb29nbGUuY29tLwAABgAAAEcAbwBvAGcAbABlAMQAAADAAAAADQ"
-                        + "AAACwAAABoAHQAdABwADoALwAvAHcAdwB3AC4AZwBvAG8AZwBsAGUALgBjAG8AbQAvACQAAABoAHQAdABwAD"
-                        + "oALwAvAGcAbwBvAGcAbABlAC4AYwBvAG0ALwD/////AAAAAP//////////CAAAAAAAAAAAAAAAAAAAAAAAAA"
-                        + "ABAAAAAAAAAP////8AAAAACAAAAAAAAMCcgtc/XIjK4gXVBABdiMriBdUEAAAAAAAAAAAA//////////8AAA"
-                        + "AAAQAAAgAAAAAAAAAAAQAAABIAAABodHRwOi8vZ29vZ2xlLmNvbS8AAAAAAABIAVIrnDMuAP////8AAA==");
+                            + "QAAAAHAAAATgBlAHcAIAB0AGEAYgAAACQBAAAgAQAADQAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
+                            + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
+                            + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
+                            + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAADwP2hSNuEF1QQAaVI24QXVBAABAAAAMgAAAP"
+                            + "8CPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
+                            + "8AAAAABgAAAAAAAAAAAAAAAQAAAB0AAABjaHJvbWU6Ly9uZXd0YWIvI21vc3RfdmlzaXRlZAAAAAAAAABaa9"
+                            + "YpnDMuAAEAAAAWAAAAaHR0cDovL3d3dy5nb29nbGUuY29tLwAABgAAAEcAbwBvAGcAbABlAMQAAADAAAAADQ"
+                            + "AAACwAAABoAHQAdABwADoALwAvAHcAdwB3AC4AZwBvAG8AZwBsAGUALgBjAG8AbQAvACQAAABoAHQAdABwAD"
+                            + "oALwAvAGcAbwBvAGcAbABlAC4AYwBvAG0ALwD/////AAAAAP//////////CAAAAAAAAAAAAAAAAAAAAAAAAA"
+                            + "ABAAAAAAAAAP////8AAAAACAAAAAAAAMCcgtc/XIjK4gXVBABdiMriBdUEAAAAAAAAAAAA//////////8AAA"
+                            + "AAAQAAAgAAAAAAAAAAAQAAABIAAABodHRwOi8vZ29vZ2xlLmNvbS8AAAAAAABIAVIrnDMuAP////8AAA==");
 
     public static final TabStateInfo M26_GOOGLE_CA =
             new TabStateInfo(
@@ -159,18 +158,18 @@ public class TestTabModelDirectory {
                     "http://www.google.ca/",
                     "Google",
                     "AAABPK2J90YAAALs6AIAAAAAAAACAAAAAQAAAAAAAAAdAAAAY2hyb21lOi8vbmV3dGFiLyNtb3N0X3Zpc2l0ZW"
-                        + "QAAAAHAAAATgBlAHcAIAB0AGEAYgAAACQBAAAgAQAADQAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
-                        + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
-                        + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
-                        + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAADwP9eU9OIF1QQA2JT04gXVBAABAAAAMgAAAP"
-                        + "8CPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
-                        + "8AAAAABgAAAAAAAAAAAAAAAQAAAB0AAABjaHJvbWU6Ly9uZXd0YWIvI21vc3RfdmlzaXRlZAAAAAAAAADl8o"
-                        + "QrnDMuAAEAAAAVAAAAaHR0cDovL3d3dy5nb29nbGUuY2EvAAAABgAAAEcAbwBvAGcAbABlAMwAAADIAAAADQ"
-                        + "AAACoAAABoAHQAdABwADoALwAvAHcAdwB3AC4AZwBvAG8AZwBsAGUALgBjAGEALwAAACoAAABoAHQAdABwAD"
-                        + "oALwAvAHcAdwB3AC4AZwBvAG8AZwBsAGUALgBjAGEALwAAAP////8AAAAA//////////8IAAAAAAAAAAAAAA"
-                        + "AAAAAAAAAAAAEAAAAAAAAA/////wAAAAAIAAAAAAAAAAAA8D9VtDjjBdUEAFa0OOMF1QQAAAAAAAAAAAD///"
-                        + "///////wAAAAABAAAAAAAAAAAAAAABAAAAFQAAAGh0dHA6Ly93d3cuZ29vZ2xlLmNhLwAAAAAAAAD8oBUsnD"
-                        + "MuAP////8AAA==");
+                            + "QAAAAHAAAATgBlAHcAIAB0AGEAYgAAACQBAAAgAQAADQAAADoAAABjAGgAcgBvAG0AZQA6AC8ALwBuAGUAdw"
+                            + "B0AGEAYgAvACMAbQBvAHMAdABfAHYAaQBzAGkAdABlAGQAAAA6AAAAYwBoAHIAbwBtAGUAOgAvAC8AbgBlAH"
+                            + "cAdABhAGIALwAjAG0AbwBzAHQAXwB2AGkAcwBpAHQAZQBkAAAA/////wAAAAD//////////wgAAAAAAAAAAA"
+                            + "AAAAAAAAAAAAAAAQAAAAAAAAD/////AAAAAAgAAAAAAAAAAADwP9eU9OIF1QQA2JT04gXVBAABAAAAMgAAAP"
+                            + "8CPwBvPwFTCGZvbGRlcklkPwFTATM/AVMRc2VsZWN0ZWRQYW5lSW5kZXg/AUkCewIAAAAAAAAA//////////"
+                            + "8AAAAABgAAAAAAAAAAAAAAAQAAAB0AAABjaHJvbWU6Ly9uZXd0YWIvI21vc3RfdmlzaXRlZAAAAAAAAADl8o"
+                            + "QrnDMuAAEAAAAVAAAAaHR0cDovL3d3dy5nb29nbGUuY2EvAAAABgAAAEcAbwBvAGcAbABlAMwAAADIAAAADQ"
+                            + "AAACoAAABoAHQAdABwADoALwAvAHcAdwB3AC4AZwBvAG8AZwBsAGUALgBjAGEALwAAACoAAABoAHQAdABwAD"
+                            + "oALwAvAHcAdwB3AC4AZwBvAG8AZwBsAGUALgBjAGEALwAAAP////8AAAAA//////////8IAAAAAAAAAAAAAA"
+                            + "AAAAAAAAAAAAEAAAAAAAAA/////wAAAAAIAAAAAAAAAAAA8D9VtDjjBdUEAFa0OOMF1QQAAAAAAAAAAAD///"
+                            + "///////wAAAAABAAAAAAAAAAAAAAABAAAAFQAAAGh0dHA6Ly93d3cuZ29vZ2xlLmNhLwAAAAAAAAD8oBUsnD"
+                            + "MuAP////8AAA==");
 
     public static final TabStateInfo V2_BAIDU =
             new TabStateInfo(
@@ -180,12 +179,12 @@ public class TestTabModelDirectory {
                     "http://www.baidu.com/",
                     "百度一下",
                     "AAABTbBCEBcAAAFkYAEAAAAAAAABAAAAAAAAAFABAABMAQAAAAAAABUAAABodHRwOi8vd3d3LmJhaWR1LmNvbS"
-                        + "8AAAAEAAAAfnamXgBOC07IAAAAxAAAABYAAAAAAAAAKgAAAGgAdAB0AHAAOgAvAC8AdwB3AHcALgBiAGEAaQ"
-                        + "BkAHUALgBjAG8AbQAvAAAA/////wAAAAAAAAAAIgAAAGgAdAB0AHAAOgAvAC8AYgBhAGkAZAB1AC4AYwBvAG"
-                        + "0ALwAAAAAAAAAIAAAAAAAAwJyC1z9MWRSCeBcFAE1ZFIJ4FwUAS1kUgngXBQABAAAACAAAAAAAAAAAAAAACA"
-                        + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAIAAAAABEAAABodHRwOi8vYmFpZHUuY29tLwAAAA"
-                        + "EAAAARAAAAaHR0cDovL2JhaWR1LmNvbS8AAAAAAAAA7Nyiyg52LgAAAAAAyAAAAAEAAAD/////AAAAAAACAA"
-                        + "AAAAAAAAAA");
+                            + "8AAAAEAAAAfnamXgBOC07IAAAAxAAAABYAAAAAAAAAKgAAAGgAdAB0AHAAOgAvAC8AdwB3AHcALgBiAGEAaQ"
+                            + "BkAHUALgBjAG8AbQAvAAAA/////wAAAAAAAAAAIgAAAGgAdAB0AHAAOgAvAC8AYgBhAGkAZAB1AC4AYwBvAG"
+                            + "0ALwAAAAAAAAAIAAAAAAAAwJyC1z9MWRSCeBcFAE1ZFIJ4FwUAS1kUgngXBQABAAAACAAAAAAAAAAAAAAACA"
+                            + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAIAAAAABEAAABodHRwOi8vYmFpZHUuY29tLwAAAA"
+                            + "EAAAARAAAAaHR0cDovL2JhaWR1LmNvbS8AAAAAAAAA7Nyiyg52LgAAAAAAyAAAAAEAAAD/////AAAAAAACAA"
+                            + "AAAAAAAAAA");
 
     public static final TabStateInfo V2_DUCK_DUCK_GO =
             new TabStateInfo(
@@ -195,11 +194,11 @@ public class TestTabModelDirectory {
                     "https://duckduckgo.com/",
                     "DuckDuckGo",
                     "AAABTbBCExUAAAFAPAEAAAAAAAABAAAAAAAAACwBAAAoAQAAAAAAABcAAABodHRwczovL2R1Y2tkdWNrZ28uY2"
-                        + "9tLwAKAAAARAB1AGMAawBEAHUAYwBrAEcAbwCoAAAApAAAABYAAAAAAAAALgAAAGgAdAB0AHAAcwA6AC8ALw"
-                        + "BkAHUAYwBrAGQAdQBjAGsAZwBvAC4AYwBvAG0ALwAAAP////8AAAAAAAAAAP////8AAAAACAAAAAAAAAAAAA"
-                        + "AAlVAhgngXBQCWUCGCeBcFAJdQIYJ4FwUAAQAAAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                        + "AAAP////8AAAAAAAAACAAAAAAAAAAAAQAAABYAAABodHRwOi8vZHVja2R1Y2tnby5jb20vAAAAAAAAmoGoyg"
-                        + "52LgAAAAAAyAAAAAEAAAD/////AAAAAAACAAAAAAAAAAAA");
+                            + "9tLwAKAAAARAB1AGMAawBEAHUAYwBrAEcAbwCoAAAApAAAABYAAAAAAAAALgAAAGgAdAB0AHAAcwA6AC8ALw"
+                            + "BkAHUAYwBrAGQAdQBjAGsAZwBvAC4AYwBvAG0ALwAAAP////8AAAAAAAAAAP////8AAAAACAAAAAAAAAAAAA"
+                            + "AAlVAhgngXBQCWUCGCeBcFAJdQIYJ4FwUAAQAAAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                            + "AAAP////8AAAAAAAAACAAAAAAAAAAAAQAAABYAAABodHRwOi8vZHVja2R1Y2tnby5jb20vAAAAAAAAmoGoyg"
+                            + "52LgAAAAAAyAAAAAEAAAD/////AAAAAAACAAAAAAAAAAAA");
 
     public static final TabStateInfo V2_HAARETZ =
             new TabStateInfo(
@@ -209,10 +208,10 @@ public class TestTabModelDirectory {
                     "http://www.haaretz.co.il/",
                     "חדשות, ידיעות מהארץ והעולם - עיתון הארץ",
                     "AAABTbBhcJQAAAD49AAAAAAAAAABAAAAAAAAAOQAAADgAAAAAAAAABkAAABodHRwOi8vd3d3LmhhYXJldHouY2"
-                        + "8uaWwvAAAAJwAAANcF0wXpBdUF6gUsACAA2QXTBdkF4gXVBeoFIADeBdQF0AXoBeUFIADVBdQF4gXVBdwF3Q"
-                        + "UgAC0AIADiBdkF6gXVBd8FIADUBdAF6AXlBQAAAAAAAAAAAAgAAAAAGQAAAGh0dHA6Ly93d3cuaGFhcmV0ei"
-                        + "5jby5pbC8AAAABAAAAGQAAAGh0dHA6Ly93d3cuaGFhcmV0ei5jby5pbC8AAAAAAAAAJ7hFRQ92LgAAAAAAyA"
-                        + "AAAAEAAAD/////AAAAAAACAAAAAAAAAAAA");
+                            + "8uaWwvAAAAJwAAANcF0wXpBdUF6gUsACAA2QXTBdkF4gXVBeoFIADeBdQF0AXoBeUFIADVBdQF4gXVBdwF3Q"
+                            + "UgAC0AIADiBdkF6gXVBd8FIADUBdAF6AXlBQAAAAAAAAAAAAgAAAAAGQAAAGh0dHA6Ly93d3cuaGFhcmV0ei"
+                            + "5jby5pbC8AAAABAAAAGQAAAGh0dHA6Ly93d3cuaGFhcmV0ei5jby5pbC8AAAAAAAAAJ7hFRQ92LgAAAAAAyA"
+                            + "AAAAEAAAD/////AAAAAAACAAAAAAAAAAAA");
 
     public static final TabStateInfo V2_TEXTAREA =
             new TabStateInfo(
@@ -222,18 +221,18 @@ public class TestTabModelDirectory {
                     "http://textarea.org/",
                     "textarea",
                     "AAABSPI9OA8AAALs6AIAAAAAAAACAAAAAQAAACABAAAcAQAAAAAAABcAAABjaHJvbWUtbmF0aXZlOi8vbmV3dG"
-                        + "FiLwAHAAAATgBlAHcAIAB0AGEAYgAAAKQAAACgAAAAFQAAAAAAAAAuAAAAYwBoAHIAbwBtAGUALQBuAGEAdA"
-                        + "BpAHYAZQA6AC8ALwBuAGUAdwB0AGEAYgAvAAAA/////wAAAAAAAAAA/////wAAAAAIAAAAAAAAAAAA8D8EkS"
-                        + "Y/8gQFAAWRJj/yBAUABpEmP/IEBQABAAAACAAAAAAAAAAAAPC/CAAAAAAAAAAAAPC/AAAAAAAAAAD/////AA"
-                        + "AAAAYAAAAAAAAAAAAAAAEAAAAXAAAAY2hyb21lLW5hdGl2ZTovL25ld3RhYi8AAAAAAMnUrIeIYy4AAAAAAA"
-                        + "AAAAC0AQAAsAEAAAEAAAAUAAAAaHR0cDovL3RleHRhcmVhLm9yZy8IAAAAdABlAHgAdABhAHIAZQBhAEABAA"
-                        + "A8AQAAFQAAAAAAAAAoAAAAaAB0AHQAcAA6AC8ALwB0AGUAeAB0AGEAcgBlAGEALgBvAHIAZwAvAP////8AAA"
-                        + "AAAAAAAP////8HAAAAYAAAAAoADQA/ACUAIABXAGUAYgBLAGkAdAAgAHMAZQByAGkAYQBsAGkAegBlAGQAIA"
-                        + "BmAG8AcgBtACAAcwB0AGEAdABlACAAdgBlAHIAcwBpAG8AbgAgADgAIAAKAA0APQAmABAAAABOAG8AIABvAH"
-                        + "cAbgBlAHIAAgAAADEAAAAAAAAAEAAAAHQAZQB4AHQAYQByAGUAYQACAAAAMQAAAAAAAAAIAAAAAAAAAAAAAA"
-                        + "AHkSY/8gQFAAiRJj/yBAUABpEmP/IEBQABAAAACAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAD///"
-                        + "//AAAAAAEAAAIAAAAAAAAAAAEAAAAUAAAAaHR0cDovL3RleHRhcmVhLm9yZy8AAAAANKvVh4hjLgAAAAAAyA"
-                        + "AAAP////8AAAAAAAIAAAAAAAAAAwE=");
+                            + "FiLwAHAAAATgBlAHcAIAB0AGEAYgAAAKQAAACgAAAAFQAAAAAAAAAuAAAAYwBoAHIAbwBtAGUALQBuAGEAdA"
+                            + "BpAHYAZQA6AC8ALwBuAGUAdwB0AGEAYgAvAAAA/////wAAAAAAAAAA/////wAAAAAIAAAAAAAAAAAA8D8EkS"
+                            + "Y/8gQFAAWRJj/yBAUABpEmP/IEBQABAAAACAAAAAAAAAAAAPC/CAAAAAAAAAAAAPC/AAAAAAAAAAD/////AA"
+                            + "AAAAYAAAAAAAAAAAAAAAEAAAAXAAAAY2hyb21lLW5hdGl2ZTovL25ld3RhYi8AAAAAAMnUrIeIYy4AAAAAAA"
+                            + "AAAAC0AQAAsAEAAAEAAAAUAAAAaHR0cDovL3RleHRhcmVhLm9yZy8IAAAAdABlAHgAdABhAHIAZQBhAEABAA"
+                            + "A8AQAAFQAAAAAAAAAoAAAAaAB0AHQAcAA6AC8ALwB0AGUAeAB0AGEAcgBlAGEALgBvAHIAZwAvAP////8AAA"
+                            + "AAAAAAAP////8HAAAAYAAAAAoADQA/ACUAIABXAGUAYgBLAGkAdAAgAHMAZQByAGkAYQBsAGkAegBlAGQAIA"
+                            + "BmAG8AcgBtACAAcwB0AGEAdABlACAAdgBlAHIAcwBpAG8AbgAgADgAIAAKAA0APQAmABAAAABOAG8AIABvAH"
+                            + "cAbgBlAHIAAgAAADEAAAAAAAAAEAAAAHQAZQB4AHQAYQByAGUAYQACAAAAMQAAAAAAAAAIAAAAAAAAAAAAAA"
+                            + "AHkSY/8gQFAAiRJj/yBAUABpEmP/IEBQABAAAACAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAD///"
+                            + "//AAAAAAEAAAIAAAAAAAAAAAEAAAAUAAAAaHR0cDovL3RleHRhcmVhLm9yZy8AAAAANKvVh4hjLgAAAAAAyA"
+                            + "AAAP////8AAAAAAAIAAAAAAAAAAwE=");
 
     /**
      * Tab model metadata file containing information about multiple tabs, with Baidu selected.
@@ -258,9 +257,9 @@ public class TestTabModelDirectory {
                         V2_TEXTAREA
                     },
                     "AAAABAAAAAf/////AAAAAwAAAAEAFmh0dHA6Ly93d3cuZ29vZ2xlLmNvbS8AAAACABZodHRw"
-                        + "Oi8vd3d3Lmdvb2dsZS5jb20vAAAAAwAVaHR0cDovL3d3dy5nb29nbGUuY2EvAAAABAAVaHR0"
-                        + "cDovL3d3dy5iYWlkdS5jb20vAAAABQAXaHR0cHM6Ly9kdWNrZHVja2dvLmNvbS8AAAAGABlo"
-                        + "dHRwOi8vd3d3LmhhYXJldHouY28uaWwvAAAABwAUaHR0cDovL3RleHRhcmVhLm9yZy8=");
+                            + "Oi8vd3d3Lmdvb2dsZS5jb20vAAAAAwAVaHR0cDovL3d3dy5nb29nbGUuY2EvAAAABAAVaHR0"
+                            + "cDovL3d3dy5iYWlkdS5jb20vAAAABQAXaHR0cHM6Ly9kdWNrZHVja2dvLmNvbS8AAAAGABlo"
+                            + "dHRwOi8vd3d3LmhhYXJldHouY28uaWwvAAAABwAUaHR0cDovL3RleHRhcmVhLm9yZy8=");
 
     /** Same as TAB_MODEL_METADATA_V4, but using the version 5 file format. */
     public static final TabModelMetaDataInfo TAB_MODEL_METADATA_V5 =
@@ -278,9 +277,9 @@ public class TestTabModelDirectory {
                         V2_TEXTAREA
                     },
                     "AAAABQAAAAcAAAAA/////wAAAAMAAAABABZodHRwOi8vd3d3Lmdvb2dsZS5jb20vAAAAAgAWaHR0"
-                        + "cDovL3d3dy5nb29nbGUuY29tLwAAAAMAFWh0dHA6Ly93d3cuZ29vZ2xlLmNhLwAAAAQAFWh0dHA6"
-                        + "Ly93d3cuYmFpZHUuY29tLwAAAAUAF2h0dHBzOi8vZHVja2R1Y2tnby5jb20vAAAABgAZaHR0cDov"
-                        + "L3d3dy5oYWFyZXR6LmNvLmlsLwAAAAcAFGh0dHA6Ly90ZXh0YXJlYS5vcmcv");
+                            + "cDovL3d3dy5nb29nbGUuY29tLwAAAAMAFWh0dHA6Ly93d3cuZ29vZ2xlLmNhLwAAAAQAFWh0dHA6"
+                            + "Ly93d3cuYmFpZHUuY29tLwAAAAUAF2h0dHBzOi8vZHVja2R1Y2tnby5jb20vAAAABgAZaHR0cDov"
+                            + "L3d3dy5oYWFyZXR6LmNvLmlsLwAAAAcAFGh0dHA6Ly90ZXh0YXJlYS5vcmcv");
 
     /**
      * Similar to TAB_MODEL_METADATA_V5, but has a single Incognito tab. The tab state can't be
@@ -302,10 +301,10 @@ public class TestTabModelDirectory {
                         V2_TEXTAREA
                     },
                     "AAAABQAAAAgAAAABAAAAAAAAAAQAAAAIABRodHRwOi8vZXJmd29ybGQuY29tLwAAAAEAFmh0dHA6"
-                        + "Ly93d3cuZ29vZ2xlLmNvbS8AAAACABZodHRwOi8vd3d3Lmdvb2dsZS5jb20vAAAAAwAVaHR0cDov"
-                        + "L3d3dy5nb29nbGUuY2EvAAAABAAVaHR0cDovL3d3dy5iYWlkdS5jb20vAAAABQAXaHR0cHM6Ly9k"
-                        + "dWNrZHVja2dvLmNvbS8AAAAGABlodHRwOi8vd3d3LmhhYXJldHouY28uaWwvAAAABwAUaHR0cDov"
-                        + "L3RleHRhcmVhLm9yZy8=");
+                            + "Ly93d3cuZ29vZ2xlLmNvbS8AAAACABZodHRwOi8vd3d3Lmdvb2dsZS5jb20vAAAAAwAVaHR0cDov"
+                            + "L3d3dy5nb29nbGUuY2EvAAAABAAVaHR0cDovL3d3dy5iYWlkdS5jb20vAAAABQAXaHR0cHM6Ly9k"
+                            + "dWNrZHVja2dvLmNvbS8AAAAGABlodHRwOi8vd3d3LmhhYXJldHouY28uaWwvAAAABwAUaHR0cDov"
+                            + "L3RleHRhcmVhLm9yZy8=");
 
     /** Same as TAB_MODEL_METADATA_V4, but using the version 5 file format. */
     public static final TabModelMetaDataInfo TAB_MODEL_METADATA_V5_NO_M18 =
@@ -322,9 +321,9 @@ public class TestTabModelDirectory {
                         M26_GOOGLE_COM
                     },
                     "AAAABQAAAAYAAAAA/////wAAAAQAAAAHABRodHRwOi8vdGV4dGFyZWEub3JnLwAAAAQAFWh0dHA6"
-                        + "Ly93d3cuYmFpZHUuY29tLwAAAAUAF2h0dHBzOi8vZHVja2R1Y2tnby5jb20vAAAABgAZaHR0cDov"
-                        + "L3d3dy5oYWFyZXR6LmNvLmlsLwAAAAMAFWh0dHA6Ly93d3cuZ29vZ2xlLmNhLwAAAAIAFmh0dHA6"
-                        + "Ly93d3cuZ29vZ2xlLmNvbS8=");
+                            + "Ly93d3cuYmFpZHUuY29tLwAAAAUAF2h0dHBzOi8vZHVja2R1Y2tnby5jb20vAAAABgAZaHR0cDov"
+                            + "L3d3dy5oYWFyZXR6LmNvLmlsLwAAAAMAFWh0dHA6Ly93d3cuZ29vZ2xlLmNhLwAAAAIAFmh0dHA6"
+                            + "Ly93d3cuZ29vZ2xlLmNvbS8=");
 
     // Active Tab is google.ca (M26_GOOGLE_CA) with Tab ID 1.
     // Other Tab in the Tab Model is google.com (M26_GOOGLE_COM) with Tab ID 3
@@ -356,8 +355,8 @@ public class TestTabModelDirectory {
                     V2_TEXTAREA.tabId,
                     new TabStateInfo[] {V2_TEXTAREA, V2_DUCK_DUCK_GO},
                     "AAAABQAAAAQAAAACAAAAAQAAAAIAAAAGABJodHRwczovL2hlbGxvLmNvbS8AAAAHAA9odHRwOi8v"
-                        + "Ym9vLmNvbS8AAAADABVodHRwczovL3RleHRhcmVhLm9yZy8AAAAEABdodHRwczovL2R1Y2tkdWNr"
-                        + "Z28uY29tLw==");
+                            + "Ym9vLmNvbS8AAAADABVodHRwczovL3RleHRhcmVhLm9yZy8AAAAEABdodHRwczovL2R1Y2tkdWNr"
+                            + "Z28uY29tLw==");
 
     private File mTestingDirectory;
     private File mDataDirectory;

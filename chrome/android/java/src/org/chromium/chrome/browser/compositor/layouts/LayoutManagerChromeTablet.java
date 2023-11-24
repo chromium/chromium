@@ -149,8 +149,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     }
 
     @Override
-    protected void tabCreated(int id, int sourceId, @TabLaunchType int launchType,
-            boolean incognito, boolean willBeSelected, float originX, float originY) {
+    protected void tabCreated(
+            int id,
+            int sourceId,
+            @TabLaunchType int launchType,
+            boolean incognito,
+            boolean willBeSelected,
+            float originX,
+            float originY) {
         if (getBrowserControlsManager() != null) {
             getBrowserControlsManager().getBrowserVisibilityDelegate().showControlsTransient();
         }
@@ -160,7 +166,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     public void onTabsAllClosing(boolean incognito) {
         if (getActiveLayout() == mStaticLayout && !incognito) {
-            showLayout(LayoutType.TAB_SWITCHER, /*animate=*/false);
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
         }
         super.onTabsAllClosing(incognito);
     }
@@ -169,15 +175,18 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     protected void tabModelSwitched(boolean incognito) {
         super.tabModelSwitched(incognito);
         getTabModelSelector().commitAllTabClosures();
-        if (getActiveLayout() == mStaticLayout && !incognito
+        if (getActiveLayout() == mStaticLayout
+                && !incognito
                 && getTabModelSelector().getModel(false).getCount() == 0
                 && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
-            showLayout(LayoutType.TAB_SWITCHER, /*animate=*/false);
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
         }
     }
 
     @Override
-    public void init(TabModelSelector selector, TabCreatorManager creator,
+    public void init(
+            TabModelSelector selector,
+            TabCreatorManager creator,
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider) {

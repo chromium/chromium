@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 
 import org.chromium.url.GURL;
 
-/**
- * An Observer that gets notified on Ephemeral Tab events.
- */
+/** An Observer that gets notified on Ephemeral Tab events. */
 public interface EphemeralTabObserver {
     default void onToolbarCreated(ViewGroup toolbarView) {}
 

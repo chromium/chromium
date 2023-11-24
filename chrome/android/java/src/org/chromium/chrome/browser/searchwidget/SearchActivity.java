@@ -344,9 +344,10 @@ public class SearchActivity extends AsyncInitializationActivity
                                 "Attempting to access incognito from the search activity");
                     }
                 };
-        profileProvider.onAvailable((provider) -> {
-            mProfileSupplier.set(profileProvider.get().getOriginalProfile());
-        });
+        profileProvider.onAvailable(
+                (provider) -> {
+                    mProfileSupplier.set(profileProvider.get().getOriginalProfile());
+                });
         return profileProvider;
     }
 

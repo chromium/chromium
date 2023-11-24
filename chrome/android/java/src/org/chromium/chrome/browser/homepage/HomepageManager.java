@@ -36,15 +36,12 @@ import org.chromium.url.GURL;
  *
  * This class serves as a single homepage logic gateway.
  */
-public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStateListener,
-                                        PartnerBrowserCustomizations.PartnerHomepageListener {
-    /**
-     * An interface to use for getting homepage related updates.
-     */
+public class HomepageManager
+        implements HomepagePolicyManager.HomepagePolicyStateListener,
+                PartnerBrowserCustomizations.PartnerHomepageListener {
+    /** An interface to use for getting homepage related updates. */
     public interface HomepageStateListener {
-        /**
-         * Called when the homepage is enabled or disabled or the homepage URL changes.
-         */
+        /** Called when the homepage is enabled or disabled or the homepage URL changes. */
         void onHomepageStateUpdated();
     }
 
@@ -62,9 +59,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         mSettingsLauncher = new SettingsLauncherImpl();
     }
 
-    /**
-     * Returns the singleton instance of HomepageManager, creating it if needed.
-     */
+    /** Returns the singleton instance of HomepageManager, creating it if needed. */
     public static HomepageManager getInstance() {
         if (sInstance == null) {
             sInstance = new HomepageManager();
@@ -72,9 +67,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         return sInstance;
     }
 
-    /**
-     * Adds a HomepageStateListener to receive updates when the homepage state changes.
-     */
+    /** Adds a HomepageStateListener to receive updates when the homepage state changes. */
     public void addListener(HomepageStateListener listener) {
         mHomepageStateListeners.addObserver(listener);
     }
@@ -95,9 +88,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         mSettingsLauncher.launchSettingsActivity(context, HomepageSettings.class);
     }
 
-    /**
-     * Notify any listeners about a homepage state change.
-     */
+    /** Notify any listeners about a homepage state change. */
     public void notifyHomepageUpdated() {
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onHomepageStateUpdated();
@@ -160,7 +151,8 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         // before HomepageManager supports multiple Profiles. Thus, if DSE isn't Google, pressing
         // the home button may redirect to the DSE's new Tab URL, rather than showing an incognito
         // NTP.
-        return DseNewTabUrlManager.maybeGetOverrideUrl(homepageGurl,
+        return DseNewTabUrlManager.maybeGetOverrideUrl(
+                homepageGurl,
                 ProfileManager.isInitialized() ? Profile.getLastUsedRegularProfile() : null);
     }
 
@@ -174,8 +166,9 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         }
 
         String homepagePartnerDefaultGurlSerialized =
-                ChromeSharedPreferences.getInstance().readString(
-                        ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         if (!homepagePartnerDefaultGurlSerialized.equals("")) {
             GURL homepagePartnerDefaultGurl =
                     GURL.deserialize(homepagePartnerDefaultGurlSerialized);
@@ -184,8 +177,12 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
             }
         }
 
-        String homepagePartnerDefaultUri = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
+        String homepagePartnerDefaultUri =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys
+                                        .DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
+                                "");
         if (!homepagePartnerDefaultUri.equals("")) {
             GURL homepagePartnerDefaultGurl = new GURL(homepagePartnerDefaultUri);
             if (homepagePartnerDefaultGurl.isValid()) {
@@ -243,9 +240,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         return mSharedPreferencesManager.readBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
     }
 
-    /**
-     * Sets the user preference for whether the homepage is enabled.
-     */
+    /** Sets the user preference for whether the homepage is enabled. */
     public void setPrefHomepageEnabled(boolean enabled) {
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, enabled);
         notifyHomepageUpdated();
@@ -261,8 +256,9 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
             return GURL.deserialize(homepageCustomGurlSerialized);
         }
 
-        String homepageCustomUri = mSharedPreferencesManager.readString(
-                ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, "");
+        String homepageCustomUri =
+                mSharedPreferencesManager.readString(
+                        ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, "");
         if (!homepageCustomUri.equals("")) {
             GURL homepageCustomGurl = new GURL(homepageCustomUri);
             if (homepageCustomGurl.isValid()) {
@@ -316,7 +312,8 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         boolean wasUseDefaultUri = getPrefHomepageUseDefaultUri();
         GURL oldCustomGurl = getPrefHomepageCustomGurl();
 
-        if (useChromeNtp == wasUseChromeNTP && useDefaultGurl == wasUseDefaultUri
+        if (useChromeNtp == wasUseChromeNTP
+                && useDefaultGurl == wasUseDefaultUri
                 && oldCustomGurl.equals(customGurl)) {
             return;
         }
@@ -347,8 +344,10 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         if (!isHomepageEnabled()) return;
 
         int homepageLocationType = getInstance().getHomepageLocationType();
-        RecordHistogram.recordEnumeratedHistogram("Settings.Homepage.LocationType",
-                homepageLocationType, HomepageLocationType.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Settings.Homepage.LocationType",
+                homepageLocationType,
+                HomepageLocationType.NUM_ENTRIES);
     }
 
     /**
@@ -366,12 +365,12 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         }
         if (getPrefHomepageUseDefaultUri()) {
             if (!PartnerBrowserCustomizations.getInstance()
-                            .isHomepageProviderAvailableAndEnabled()) {
+                    .isHomepageProviderAvailableAndEnabled()) {
                 return HomepageLocationType.DEFAULT_NTP;
             }
 
             return UrlUtilities.isNTPUrl(
-                           PartnerBrowserCustomizations.getInstance().getHomePageUrl())
+                            PartnerBrowserCustomizations.getInstance().getHomePageUrl())
                     ? HomepageLocationType.PARTNER_PROVIDED_NTP
                     : HomepageLocationType.PARTNER_PROVIDED_OTHER;
         }

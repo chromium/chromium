@@ -40,17 +40,23 @@ public class UsageStatsConsentDialog {
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, makeController())
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.cancel);
         if (mIsRevocation) {
-            builder.with(ModalDialogProperties.TITLE, resources,
-                           R.string.usage_stats_revocation_prompt)
-                    .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+            builder.with(
+                            ModalDialogProperties.TITLE,
+                            resources,
+                            R.string.usage_stats_revocation_prompt)
+                    .with(
+                            ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                             resources.getString(R.string.usage_stats_revocation_explanation))
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.remove);
         } else {
             builder.with(ModalDialogProperties.TITLE, resources, R.string.usage_stats_consent_title)
-                    .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                    .with(
+                            ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                             resources.getString(R.string.usage_stats_consent_prompt))
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.show);
         }

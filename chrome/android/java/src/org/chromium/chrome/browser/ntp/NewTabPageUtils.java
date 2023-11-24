@@ -9,9 +9,7 @@ import android.net.Uri;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
-/**
- * Collection of util methods for help launching a NewTabPage.
- */
+/** Collection of util methods for help launching a NewTabPage. */
 public class NewTabPageUtils {
     private static final String ORIGIN_PARAMETER_KEY = "origin";
     private static final String WEB_FEED_PARAMETER = "web-feed";

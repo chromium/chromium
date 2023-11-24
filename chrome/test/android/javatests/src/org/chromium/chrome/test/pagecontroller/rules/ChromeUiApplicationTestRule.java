@@ -9,12 +9,11 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.rules.ExternalResource;
 
-/**
- * Test rule that provides access to a Chrome application.
- */
+/** Test rule that provides access to a Chrome application. */
 public class ChromeUiApplicationTestRule extends ExternalResource {
-    public static final String PACKAGE_NAME_ARG = "org.chromium.chrome.test.pagecontroller.rules."
-            + "ChromeUiApplicationTestRule.PackageUnderTest";
+    public static final String PACKAGE_NAME_ARG =
+            "org.chromium.chrome.test.pagecontroller.rules."
+                    + "ChromeUiApplicationTestRule.PackageUnderTest";
 
     private String mPackageName;
 

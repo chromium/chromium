@@ -14,9 +14,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
-/**
- * Java counterpart of android DownloadController. Owned by native.
- */
+/** Java counterpart of android DownloadController. Owned by native. */
 public class DownloadController {
     /**
      * Notifies the download delegate that a download completed and passes along info about the
@@ -48,14 +46,17 @@ public class DownloadController {
     @CalledByNative
     private static void requestFileAccess(final long callbackId, WindowAndroid windowAndroid) {
         if (windowAndroid == null) {
-            DownloadControllerJni.get().onAcquirePermissionResult(
-                    callbackId, /*granted=*/false, /*permissionToUpdate=*/null);
+            DownloadControllerJni.get()
+                    .onAcquirePermissionResult(
+                            callbackId, /* granted= */ false, /* permissionToUpdate= */ null);
             return;
         }
-        FileAccessPermissionHelper.requestFileAccessPermissionHelper(windowAndroid, result -> {
-            DownloadControllerJni.get().onAcquirePermissionResult(
-                    callbackId, result.first, result.second);
-        });
+        FileAccessPermissionHelper.requestFileAccessPermissionHelper(
+                windowAndroid,
+                result -> {
+                    DownloadControllerJni.get()
+                            .onAcquirePermissionResult(callbackId, result.first, result.second);
+                });
     }
 
     /**
@@ -68,17 +69,23 @@ public class DownloadController {
      * @param referrer Referrer to use.
      */
     @CalledByNative
-    private static void enqueueAndroidDownloadManagerRequest(GURL url, String userAgent,
-            String fileName, String mimeType, String cookie, GURL referrer) {
-        DownloadInfo downloadInfo = new DownloadInfo.Builder()
-                .setUrl(url)
-                .setUserAgent(userAgent)
-                .setFileName(fileName)
-                .setMimeType(mimeType)
-                .setCookie(cookie)
-                .setReferrer(referrer)
-                .setIsGETRequest(true)
-                .build();
+    private static void enqueueAndroidDownloadManagerRequest(
+            GURL url,
+            String userAgent,
+            String fileName,
+            String mimeType,
+            String cookie,
+            GURL referrer) {
+        DownloadInfo downloadInfo =
+                new DownloadInfo.Builder()
+                        .setUrl(url)
+                        .setUserAgent(userAgent)
+                        .setFileName(fileName)
+                        .setMimeType(mimeType)
+                        .setCookie(cookie)
+                        .setReferrer(referrer)
+                        .setIsGETRequest(true)
+                        .build();
         enqueueDownloadManagerRequest(downloadInfo);
     }
 
@@ -88,8 +95,8 @@ public class DownloadController {
      * @param info Download information about the download.
      */
     static void enqueueDownloadManagerRequest(final DownloadInfo info) {
-        DownloadManagerService.getDownloadManagerService().enqueueNewDownload(
-                new DownloadItem(true, info), true);
+        DownloadManagerService.getDownloadManagerService()
+                .enqueueNewDownload(new DownloadItem(true, info), true);
     }
 
     @CalledByNative

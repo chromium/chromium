@@ -36,9 +36,7 @@ import java.util.Set;
 public class TabSuggestionMessageService extends MessageService implements TabSuggestionsObserver {
     private static boolean sSuggestionAvailableForTesting;
 
-    /**
-     * This is the data type that this MessageService is serving to its Observer.
-     */
+    /** This is the data type that this MessageService is serving to its Observer. */
     public class TabSuggestionMessageData implements MessageData {
         private final TabSuggestion mTabSuggestion;
         private final Callback<TabSuggestionFeedback> mTabSuggestionFeedback;
@@ -122,7 +120,8 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     }
 
     @VisibleForTesting
-    void review(@NonNull TabSuggestion tabSuggestion,
+    void review(
+            @NonNull TabSuggestion tabSuggestion,
             @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
         TabSelectionEditorCoordinator.TabSelectionEditorController tabSelectionEditorController =
                 mTabSelectionEditorControllerSupplier.get();
@@ -132,8 +131,10 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
                 Collections.singletonList(getAction(tabSuggestion, feedbackCallback)),
                 getNavigationProvider(tabSuggestion, feedbackCallback));
 
-        tabSelectionEditorController.show(getTabListFromSuggestion(tabSuggestion),
-                tabSuggestion.getTabsInfo().size(), /*recyclerViewPosition=*/null);
+        tabSelectionEditorController.show(
+                getTabListFromSuggestion(tabSuggestion),
+                tabSuggestion.getTabsInfo().size(),
+                /* recyclerViewPosition= */ null);
     }
 
     @VisibleForTesting
@@ -142,27 +143,35 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
         TabSelectionEditorAction action;
         switch (tabSuggestion.getAction()) {
             case TabSuggestion.TabSuggestionAction.CLOSE:
-                action = TabSelectionEditorCloseAction.createAction(mContext,
-                        TabSelectionEditorAction.ShowMode.IF_ROOM,
-                        TabSelectionEditorAction.ButtonType.TEXT,
-                        TabSelectionEditorAction.IconPosition.END);
+                action =
+                        TabSelectionEditorCloseAction.createAction(
+                                mContext,
+                                TabSelectionEditorAction.ShowMode.IF_ROOM,
+                                TabSelectionEditorAction.ButtonType.TEXT,
+                                TabSelectionEditorAction.IconPosition.END);
                 break;
             default:
                 assert false;
                 return null;
         }
 
-        action.addActionObserver(new TabSelectionEditorAction.ActionObserver() {
-            @Override
-            public void preProcessSelectedTabs(List<Tab> selectedTabs) {
-                int totalTabCountBeforeProcess = mTabModelSelector.getCurrentModel().getCount();
-                List<Integer> selectedTabIds = new ArrayList<>();
-                for (int i = 0; i < selectedTabs.size(); i++) {
-                    selectedTabIds.add(selectedTabs.get(i).getId());
-                }
-                accept(selectedTabIds, totalTabCountBeforeProcess, tabSuggestion, feedbackCallback);
-            }
-        });
+        action.addActionObserver(
+                new TabSelectionEditorAction.ActionObserver() {
+                    @Override
+                    public void preProcessSelectedTabs(List<Tab> selectedTabs) {
+                        int totalTabCountBeforeProcess =
+                                mTabModelSelector.getCurrentModel().getCount();
+                        List<Integer> selectedTabIds = new ArrayList<>();
+                        for (int i = 0; i < selectedTabs.size(); i++) {
+                            selectedTabIds.add(selectedTabs.get(i).getId());
+                        }
+                        accept(
+                                selectedTabIds,
+                                totalTabCountBeforeProcess,
+                                tabSuggestion,
+                                feedbackCallback);
+                    }
+                });
         return action;
     }
 
@@ -210,13 +219,16 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     }
 
     @VisibleForTesting
-    public void dismiss(@NonNull TabSuggestion tabSuggestion,
+    public void dismiss(
+            @NonNull TabSuggestion tabSuggestion,
             @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
         feedbackCallback.onResult(
                 new TabSuggestionFeedback(tabSuggestion, NOT_CONSIDERED, null, 0));
     }
 
-    private void accept(List<Integer> selectedTabIds, int totalTabCount,
+    private void accept(
+            List<Integer> selectedTabIds,
+            int totalTabCount,
             @NonNull TabSuggestion tabSuggestion,
             @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
         feedbackCallback.onResult(
@@ -225,7 +237,8 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
 
     // TabSuggestionObserver implementations.
     @Override
-    public void onNewSuggestion(List<TabSuggestion> tabSuggestions,
+    public void onNewSuggestion(
+            List<TabSuggestion> tabSuggestions,
             Callback<TabSuggestionFeedback> tabSuggestionFeedback) {
         if (tabSuggestions.size() == 0) return;
 

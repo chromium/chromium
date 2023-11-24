@@ -25,9 +25,7 @@ class PasswordAccessoryInfoView extends LinearLayout {
     private ChipView mUsername;
     private ChipView mPassword;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public PasswordAccessoryInfoView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -43,8 +41,10 @@ class PasswordAccessoryInfoView extends LinearLayout {
     }
 
     void setIconForBitmap(@Nullable Drawable icon) {
-        final int kIconSize = getContext().getResources().getDimensionPixelSize(
-                R.dimen.keyboard_accessory_suggestion_icon_size);
+        final int kIconSize =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);
         if (icon != null) icon.setBounds(0, 0, kIconSize, kIconSize);
         mIcon.setImageDrawable(icon);
     }

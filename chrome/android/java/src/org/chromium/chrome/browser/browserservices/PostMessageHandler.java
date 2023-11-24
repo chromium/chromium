@@ -58,22 +58,24 @@ public class PostMessageHandler implements OriginVerificationListener {
      */
     public PostMessageHandler(PostMessageBackend postMessageBackend) {
         mPostMessageBackend = postMessageBackend;
-        mMessageCallback = (messagePayload, sentPorts) -> {
-            if (mChannel[0].isTransferred()) {
-                Log.e(TAG, "Discarding postMessage as channel has been transferred.");
-                return;
-            }
+        mMessageCallback =
+                (messagePayload, sentPorts) -> {
+                    if (mChannel[0].isTransferred()) {
+                        Log.e(TAG, "Discarding postMessage as channel has been transferred.");
+                        return;
+                    }
 
-            Bundle bundle = null;
-            GURL url = mWebContents.getMainFrame().getLastCommittedURL();
-            if (url != null) {
-                String origin = GURLUtils.getOrigin(url.getSpec());
-                bundle = new Bundle();
-                bundle.putString(POST_MESSAGE_ORIGIN, origin);
-            }
-            mPostMessageBackend.onPostMessage(messagePayload.getAsString(), bundle);
-            RecordHistogram.recordBooleanHistogram("CustomTabs.PostMessage.OnMessage", true);
-        };
+                    Bundle bundle = null;
+                    GURL url = mWebContents.getMainFrame().getLastCommittedURL();
+                    if (url != null) {
+                        String origin = GURLUtils.getOrigin(url.getSpec());
+                        bundle = new Bundle();
+                        bundle.putString(POST_MESSAGE_ORIGIN, origin);
+                    }
+                    mPostMessageBackend.onPostMessage(messagePayload.getAsString(), bundle);
+                    RecordHistogram.recordBooleanHistogram(
+                            "CustomTabs.PostMessage.OnMessage", true);
+                };
     }
 
     /**
@@ -97,7 +99,9 @@ public class PostMessageHandler implements OriginVerificationListener {
 
             @Override
             public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                if (mNavigatedOnce && navigation.hasCommitted() && !navigation.isSameDocument()
+                if (mNavigatedOnce
+                        && navigation.hasCommitted()
+                        && !navigation.isSameDocument()
                         && mChannel != null) {
                     webContents.removeObserver(this);
                     disconnectChannel();
@@ -126,7 +130,9 @@ public class PostMessageHandler implements OriginVerificationListener {
         mChannel = webContents.createMessageChannel();
         mChannel[0].setMessageCallback(mMessageCallback, null);
 
-        webContents.postMessageToMainFrame(new MessagePayload(""), mPostMessageSourceUri.toString(),
+        webContents.postMessageToMainFrame(
+                new MessagePayload(""),
+                mPostMessageSourceUri.toString(),
                 mPostMessageTargetUri != null ? mPostMessageTargetUri.toString() : "",
                 new MessagePort[] {mChannel[1]});
 
@@ -170,15 +176,18 @@ public class PostMessageHandler implements OriginVerificationListener {
             Log.e(TAG, "Not sending postMessage as channel has been transferred.");
             return CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR;
         }
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                // It is still possible that the page has navigated while this task is in the queue.
-                // If that happens fail gracefully.
-                if (mChannel == null || mChannel[0].isClosed()) return;
-                mChannel[0].postMessage(new MessagePayload(message), null);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // It is still possible that the page has navigated while this task is in
+                        // the queue.
+                        // If that happens fail gracefully.
+                        if (mChannel == null || mChannel[0].isClosed()) return;
+                        mChannel[0].postMessage(new MessagePayload(message), null);
+                    }
+                });
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.PostMessage.PostMessageFromClientApp", true);
         return CustomTabsService.RESULT_SUCCESS;

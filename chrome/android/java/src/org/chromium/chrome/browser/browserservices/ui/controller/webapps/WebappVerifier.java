@@ -36,9 +36,7 @@ public abstract class WebappVerifier implements Verifier {
         return isUrlInScope(url);
     }
 
-    /**
-     * Returns the scope that the homscreen shortcut/WebAPK is valid for.
-     */
+    /** Returns the scope that the homscreen shortcut/WebAPK is valid for. */
     protected abstract String getScope();
 
     /**

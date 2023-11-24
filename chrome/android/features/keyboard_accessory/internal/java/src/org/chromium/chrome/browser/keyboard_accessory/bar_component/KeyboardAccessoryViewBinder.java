@@ -114,8 +114,10 @@ class KeyboardAccessoryViewBinder {
             view.setBottomOffset(model.get(BOTTOM_OFFSET_PX));
         } else if (propertyKey == ANIMATION_LISTENER) {
             view.setAnimationListener(model.get(ANIMATION_LISTENER));
-        } else if (propertyKey == SHEET_OPENER_ITEM || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK
-                || propertyKey == SHOW_SWIPING_IPH || propertyKey == HAS_SUGGESTIONS) {
+        } else if (propertyKey == SHEET_OPENER_ITEM
+                || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK
+                || propertyKey == SHOW_SWIPING_IPH
+                || propertyKey == HAS_SUGGESTIONS) {
             // No binding required.
         } else {
             return false;

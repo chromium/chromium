@@ -54,6 +54,7 @@ public class ServiceTracingProxyProvider {
     private static final Method sGetMethod;
     private static final Method sGetDeclaredField;
     private static final Method sGetField;
+
     static {
         try {
             sGetDeclaredMethod =
@@ -130,8 +131,12 @@ public class ServiceTracingProxyProvider {
         assert unwrappedBaseContext.getClass().getName().equals("android.app.ContextImpl");
         mUnwrappedBaseContext = unwrappedBaseContext;
         try {
-            mServiceCache = (Object[]) getField(
-                    mUnwrappedBaseContext, mUnwrappedBaseContext.getClass(), "mServiceCache");
+            mServiceCache =
+                    (Object[])
+                            getField(
+                                    mUnwrappedBaseContext,
+                                    mUnwrappedBaseContext.getClass(),
+                                    "mServiceCache");
             mServiceCacheProxied = new AtomicBoolean[mServiceCache.length];
             for (int i = 0; i < mServiceCacheProxied.length; ++i) {
                 mServiceCacheProxied[i] = new AtomicBoolean(false);
@@ -279,9 +284,10 @@ public class ServiceTracingProxyProvider {
                 Class<?> type;
                 if (isGenericClass) {
                     if (!field.getGenericType().getTypeName().equals(genericTypeName)) continue;
-                    type = (Class<?>) ((ParameterizedType) service.getClass()
-                                               .getGenericSuperclass())
-                                   .getActualTypeArguments()[0];
+                    type =
+                            (Class<?>)
+                                    ((ParameterizedType) service.getClass().getGenericSuperclass())
+                                            .getActualTypeArguments()[0];
                 } else {
                     type = field.getType();
                 }
@@ -293,8 +299,11 @@ public class ServiceTracingProxyProvider {
                     }
                     // Avoid double-proxying for shared/static bindings.
                     if (Proxy.isProxyClass(impl.getClass())) continue;
-                    Object listener = Proxy.newProxyInstance(
-                            context.getClassLoader(), new Class<?>[] {type}, new IPCListener(impl));
+                    Object listener =
+                            Proxy.newProxyInstance(
+                                    context.getClassLoader(),
+                                    new Class<?>[] {type},
+                                    new IPCListener(impl));
                     field.set(service, listener);
                     Log.d(TAG, "Tracing Proxy installed on: " + type.toString());
                 }

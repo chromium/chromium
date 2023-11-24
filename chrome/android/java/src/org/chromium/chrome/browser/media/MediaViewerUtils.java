@@ -35,9 +35,7 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.util.Locale;
 
-/**
- * A class containing some utility static methods.
- */
+/** A class containing some utility static methods. */
 public class MediaViewerUtils {
     private static final String DEFAULT_MIME_TYPE = "*/*";
     private static final String MIMETYPE_AUDIO = "audio";
@@ -56,16 +54,23 @@ public class MediaViewerUtils {
      * @param allowShareAction         Whether the view should allow the share action.
      * @return Intent that can be fired to open the file.
      */
-    public static Intent getMediaViewerIntent(Uri displayUri, Uri contentUri, String mimeType,
-            boolean allowExternalAppHandlers, boolean allowShareAction, Context context) {
-        Bitmap closeIcon = BitmapFactory.decodeResource(
-                context.getResources(), R.drawable.ic_arrow_back_white_24dp);
+    public static Intent getMediaViewerIntent(
+            Uri displayUri,
+            Uri contentUri,
+            String mimeType,
+            boolean allowExternalAppHandlers,
+            boolean allowShareAction,
+            Context context) {
+        Bitmap closeIcon =
+                BitmapFactory.decodeResource(
+                        context.getResources(), R.drawable.ic_arrow_back_white_24dp);
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setToolbarColor(Color.BLACK);
         builder.setCloseButtonIcon(closeIcon);
         builder.setShowTitle(true);
-        builder.setColorScheme(ColorUtils.inNightMode(context)
+        builder.setColorScheme(
+                ColorUtils.inNightMode(context)
                         ? CustomTabsIntent.COLOR_SCHEME_DARK
                         : CustomTabsIntent.COLOR_SCHEME_LIGHT);
 
@@ -82,10 +87,14 @@ public class MediaViewerUtils {
             // TODO(https://crbug.com/1428364): PendingIntents are no longer allowed to be both
             // mutable and implicit. Since this must be mutable, we need to set a component and then
             // remove the FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT flag.
-            PendingIntent pendingViewIntent = PendingIntent.getActivity(context, 0, chooserIntent,
-                    PendingIntent.FLAG_CANCEL_CURRENT
-                            | IntentUtils.getPendingIntentMutabilityFlag(true)
-                            | getAllowUnsafeImplicitIntentFlag());
+            PendingIntent pendingViewIntent =
+                    PendingIntent.getActivity(
+                            context,
+                            0,
+                            chooserIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                                    | IntentUtils.getPendingIntentMutabilityFlag(true)
+                                    | getAllowUnsafeImplicitIntentFlag());
             builder.addMenuItem(openWithStr, pendingViewIntent);
         }
 
@@ -93,14 +102,18 @@ public class MediaViewerUtils {
         // If the URI is a file URI and the Android version is N or later, this will throw a
         // FileUriExposedException. In this case, we just don't add the share button.
         if (allowShareAction && !willExposeFileUri(contentUri)) {
-            Bitmap shareIcon = BitmapFactory.decodeResource(
-                    context.getResources(), R.drawable.ic_share_white_24dp);
+            Bitmap shareIcon =
+                    BitmapFactory.decodeResource(
+                            context.getResources(), R.drawable.ic_share_white_24dp);
 
             // TODO(https://crbug.com/1428364): PendingIntents are no longer allowed to be both
             // mutable and implicit. Since this must be mutable, we need to set a component and then
             // remove the FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT flag.
             PendingIntent pendingShareIntent =
-                    PendingIntent.getActivity(context, 0, createShareIntent(contentUri, mimeType),
+                    PendingIntent.getActivity(
+                            context,
+                            0,
+                            createShareIntent(contentUri, mimeType),
                             PendingIntent.FLAG_CANCEL_CURRENT
                                     | IntentUtils.getPendingIntentMutabilityFlag(true)
                                     | getAllowUnsafeImplicitIntentFlag());
@@ -197,27 +210,31 @@ public class MediaViewerUtils {
         }
     }
 
-    /**
-     * Selectively enables or disables the MediaLauncherActivity.
-     */
+    /** Selectively enables or disables the MediaLauncherActivity. */
     public static void updateMediaLauncherActivityEnabled() {
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> { synchronousUpdateMediaLauncherActivityEnabled(); });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    synchronousUpdateMediaLauncherActivityEnabled();
+                });
     }
 
     static void synchronousUpdateMediaLauncherActivityEnabled() {
         Context context = ContextUtils.getApplicationContext();
         PackageManager packageManager = context.getPackageManager();
         ComponentName mediaComponentName = new ComponentName(context, MediaLauncherActivity.class);
-        ComponentName audioComponentName = new ComponentName(
-                context, "org.chromium.chrome.browser.media.AudioLauncherActivity");
+        ComponentName audioComponentName =
+                new ComponentName(
+                        context, "org.chromium.chrome.browser.media.AudioLauncherActivity");
 
-        int newMediaState = shouldEnableMediaLauncherActivity()
-                ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-        int newAudioState = shouldEnableAudioLauncherActivity()
-                ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+        int newMediaState =
+                shouldEnableMediaLauncherActivity()
+                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+        int newAudioState =
+                shouldEnableAudioLauncherActivity()
+                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
         // This indicates that we don't want to kill Chrome when changing component enabled
         // state.
         int flags = PackageManager.DONT_KILL_APP;
@@ -230,18 +247,14 @@ public class MediaViewerUtils {
         }
     }
 
-    /**
-     * Force MediaLauncherActivity to be enabled for testing.
-     */
+    /** Force MediaLauncherActivity to be enabled for testing. */
     public static void forceEnableMediaLauncherActivityForTest() {
         sIsMediaLauncherActivityForceEnabledForTest = true;
         // Synchronously update to avoid race conditions in tests.
         synchronousUpdateMediaLauncherActivityEnabled();
     }
 
-    /**
-     * Stops forcing MediaLauncherActivity to be enabled for testing.
-     */
+    /** Stops forcing MediaLauncherActivity to be enabled for testing. */
     public static void stopForcingEnableMediaLauncherActivityForTest() {
         sIsMediaLauncherActivityForceEnabledForTest = false;
         // Synchronously update to avoid race conditions in tests.
@@ -249,7 +262,8 @@ public class MediaViewerUtils {
     }
 
     private static boolean shouldEnableMediaLauncherActivity() {
-        return sIsMediaLauncherActivityForceEnabledForTest || SysUtils.isAndroidGo()
+        return sIsMediaLauncherActivityForceEnabledForTest
+                || SysUtils.isAndroidGo()
                 || isEnterpriseManaged();
     }
 
@@ -260,8 +274,9 @@ public class MediaViewerUtils {
     private static boolean isEnterpriseManaged() {
 
         RestrictionsManager restrictionsManager =
-                (RestrictionsManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.RESTRICTIONS_SERVICE);
+                (RestrictionsManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.RESTRICTIONS_SERVICE);
         return restrictionsManager.hasRestrictionsProvider()
                 || !restrictionsManager.getApplicationRestrictions().isEmpty();
     }
@@ -295,7 +310,8 @@ public class MediaViewerUtils {
     private static int getAllowUnsafeImplicitIntentFlag() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             try {
-                return PendingIntent.class.getDeclaredField("FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT")
+                return PendingIntent.class
+                        .getDeclaredField("FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT")
                         .getInt(null);
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 assert false : "Unsafe implicit PendingIntent may fail to run.";

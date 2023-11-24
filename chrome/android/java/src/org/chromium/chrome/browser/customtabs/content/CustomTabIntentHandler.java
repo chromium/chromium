@@ -34,11 +34,11 @@ public class CustomTabIntentHandler {
     private final CustomTabIntentHandlingStrategy mHandlingStrategy;
     private final IntentIgnoringCriterion mIntentIgnoringCriterion;
     private final Context mContext;
-    @Nullable
-    private Runnable mOnTabCreatedRunnable;
+    @Nullable private Runnable mOnTabCreatedRunnable;
 
     @Inject
-    public CustomTabIntentHandler(CustomTabActivityTabProvider tabProvider,
+    public CustomTabIntentHandler(
+            CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabIntentHandlingStrategy handlingStrategy,
             IntentIgnoringCriterion intentIgnoringCriterion,
@@ -59,27 +59,29 @@ public class CustomTabIntentHandler {
         }
         // Note that only one observer and one Runnable exists: if multiple intents arrive before
         // native init, we want to handle only the last one.
-        mTabProvider.addObserver(new CustomTabActivityTabProvider.Observer() {
-            @Override
-            public void onInitialTabCreated(@NonNull Tab tab, @TabCreationMode int mode) {
-                if (mOnTabCreatedRunnable != null) {
-                    mOnTabCreatedRunnable.run();
-                    mOnTabCreatedRunnable = null;
-                }
-                mTabProvider.removeObserver(this);
-            }
-        });
+        mTabProvider.addObserver(
+                new CustomTabActivityTabProvider.Observer() {
+                    @Override
+                    public void onInitialTabCreated(@NonNull Tab tab, @TabCreationMode int mode) {
+                        if (mOnTabCreatedRunnable != null) {
+                            mOnTabCreatedRunnable.run();
+                            mOnTabCreatedRunnable = null;
+                        }
+                        mTabProvider.removeObserver(this);
+                    }
+                });
     }
 
     private void handleInitialIntent() {
-        runWhenTabCreated(() -> {
-            if (mTabProvider.getInitialTabCreationMode() != TabCreationMode.RESTORED) {
-                mHandlingStrategy.handleInitialIntent(mIntentDataProvider);
-            } else if (mIntentDataProvider.getActivityType() == ActivityType.WEBAPP
-                    && NetworkChangeNotifier.isOnline()) {
-                mTabProvider.getTab().reloadIgnoringCache();
-            }
-        });
+        runWhenTabCreated(
+                () -> {
+                    if (mTabProvider.getInitialTabCreationMode() != TabCreationMode.RESTORED) {
+                        mHandlingStrategy.handleInitialIntent(mIntentDataProvider);
+                    } else if (mIntentDataProvider.getActivityType() == ActivityType.WEBAPP
+                            && NetworkChangeNotifier.isOnline()) {
+                        mTabProvider.getTab().reloadIgnoringCache();
+                    }
+                });
     }
 
     /**
@@ -109,9 +111,7 @@ public class CustomTabIntentHandler {
             return false;
         }
 
-        runWhenTabCreated(() ->
-            mHandlingStrategy.handleNewIntent(intentDataProvider)
-        );
+        runWhenTabCreated(() -> mHandlingStrategy.handleNewIntent(intentDataProvider));
 
         return true;
     }
@@ -124,13 +124,9 @@ public class CustomTabIntentHandler {
         }
     }
 
-    /**
-     * Represents Chrome-wide rules for ignoring Intents.
-     */
+    /** Represents Chrome-wide rules for ignoring Intents. */
     public interface IntentIgnoringCriterion {
-        /**
-         * Returns whether given intent should be ignored.
-         */
+        /** Returns whether given intent should be ignored. */
         boolean shouldIgnoreIntent(Intent intent);
     }
 }

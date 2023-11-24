@@ -175,36 +175,35 @@ public class ToolbarButtonInProductHelpController
         }
 
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(),
-                        FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
-                        R.string.iph_price_tracking_menu_item,
-                        R.string.iph_price_tracking_menu_item_accessibility)
+                new IPHCommandBuilder(
+                                mActivity.getResources(),
+                                FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
+                                R.string.iph_price_tracking_menu_item,
+                                R.string.iph_price_tracking_menu_item_accessibility)
                         .setAnchorView(mMenuButtonAnchorView)
-                        .setOnShowCallback(()
-                                                   -> turnOnHighlightForMenuItem(
-                                                           R.id.enable_price_tracking_menu_id))
+                        .setOnShowCallback(
+                                () ->
+                                        turnOnHighlightForMenuItem(
+                                                R.id.enable_price_tracking_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }
 
-    /**
-     * Attempts to show an IPH text bubble for download continuing.
-     */
+    /** Attempts to show an IPH text bubble for download continuing. */
     public void showDownloadContinuingIPH() {
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(),
-                        FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_FEATURE,
-                        R.string.iph_download_infobar_download_continuing_text,
-                        R.string.iph_download_infobar_download_continuing_text)
+                new IPHCommandBuilder(
+                                mActivity.getResources(),
+                                FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_FEATURE,
+                                R.string.iph_download_infobar_download_continuing_text,
+                                R.string.iph_download_infobar_download_continuing_text)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.downloads_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }
 
-    /**
-     * Attempts to show an IPH text bubble for those that trigger on a cold start.
-     */
+    /** Attempts to show an IPH text bubble for those that trigger on a cold start. */
     public void showColdStartIPH() {
         showDownloadHomeIPH();
     }
@@ -254,9 +253,11 @@ public class ToolbarButtonInProductHelpController
 
     private void showDownloadHomeIPH() {
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(),
-                        FeatureConstants.DOWNLOAD_HOME_FEATURE, R.string.iph_download_home_text,
-                        R.string.iph_download_home_accessibility_text)
+                new IPHCommandBuilder(
+                                mActivity.getResources(),
+                                FeatureConstants.DOWNLOAD_HOME_FEATURE,
+                                R.string.iph_download_home_text,
+                                R.string.iph_download_home_accessibility_text)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.downloads_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
@@ -265,11 +266,12 @@ public class ToolbarButtonInProductHelpController
 
     private void showIncognitoTabIPH() {
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(),
-                        FeatureConstants
-                                .FEATURE_NOTIFICATION_GUIDE_INCOGNITO_TAB_HELP_BUBBLE_FEATURE,
-                        R.string.feature_notification_guide_tooltip_message_incognito_tab,
-                        R.string.feature_notification_guide_tooltip_message_incognito_tab)
+                new IPHCommandBuilder(
+                                mActivity.getResources(),
+                                FeatureConstants
+                                        .FEATURE_NOTIFICATION_GUIDE_INCOGNITO_TAB_HELP_BUBBLE_FEATURE,
+                                R.string.feature_notification_guide_tooltip_message_incognito_tab,
+                                R.string.feature_notification_guide_tooltip_message_incognito_tab)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setOnShowCallback(
                                 () -> turnOnHighlightForMenuItem(R.id.new_incognito_tab_menu_id))
@@ -290,9 +292,11 @@ public class ToolbarButtonInProductHelpController
         }
 
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(), featureName,
-                        R.string.iph_download_page_for_offline_usage_text,
-                        R.string.iph_download_page_for_offline_usage_accessibility_text)
+                new IPHCommandBuilder(
+                                mActivity.getResources(),
+                                featureName,
+                                R.string.iph_download_page_for_offline_usage_text,
+                                R.string.iph_download_page_for_offline_usage_accessibility_text)
                         .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.offline_page_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mMenuButtonAnchorView)
@@ -317,10 +321,11 @@ public class ToolbarButtonInProductHelpController
         }
 
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(),
-                        FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE,
-                        R.string.iph_translate_menu_button_text,
-                        R.string.iph_translate_menu_button_accessibility_text)
+                new IPHCommandBuilder(
+                                mActivity.getResources(),
+                                FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE,
+                                R.string.iph_translate_menu_button_text,
+                                R.string.iph_translate_menu_button_accessibility_text)
                         .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.translate_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mMenuButtonAnchorView)

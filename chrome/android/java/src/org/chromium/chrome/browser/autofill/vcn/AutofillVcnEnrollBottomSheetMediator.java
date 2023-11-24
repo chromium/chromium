@@ -20,7 +20,8 @@ import org.chromium.ui.base.WindowAndroid;
      * @param content The bottom sheet content.
      * @param lifecycle A custom lifecycle that ignores page navigations.
      */
-    AutofillVcnEnrollBottomSheetMediator(AutofillVcnEnrollBottomSheetContent content,
+    AutofillVcnEnrollBottomSheetMediator(
+            AutofillVcnEnrollBottomSheetContent content,
             AutofillVcnEnrollBottomSheetLifecycle lifecycle) {
         mContent = content;
         mLifecycle = lifecycle;
@@ -39,9 +40,9 @@ import org.chromium.ui.base.WindowAndroid;
         mBottomSheetController = BottomSheetControllerProvider.from(window);
         if (mBottomSheetController == null) return false;
 
-        boolean didShow = mBottomSheetController.requestShowContent(mContent, /*animate=*/true);
+        boolean didShow = mBottomSheetController.requestShowContent(mContent, /* animate= */ true);
 
-        if (didShow) mLifecycle.begin(/*onEndOfLifecycle=*/this::hide);
+        if (didShow) mLifecycle.begin(/* onEndOfLifecycle= */ this::hide);
 
         return didShow;
     }
@@ -51,7 +52,9 @@ import org.chromium.ui.base.WindowAndroid;
         if (mLifecycle.hasBegun()) mLifecycle.end();
 
         if (mBottomSheetController == null) return;
-        mBottomSheetController.hideContent(mContent, /*animate=*/true,
+        mBottomSheetController.hideContent(
+                mContent,
+                /* animate= */ true,
                 BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
     }
 }

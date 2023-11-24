@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
+import dagger.Lazy;
+
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -23,8 +25,6 @@ import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
-
 /**
  * Coordinator for the Trusted Web Activity component.
  * Add methods here if other components need to communicate with Trusted Web Activity component.
@@ -37,11 +37,13 @@ public class TrustedWebActivityCoordinator {
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
     @Inject
-    public TrustedWebActivityCoordinator(SharedActivityCoordinator sharedActivityCoordinator,
+    public TrustedWebActivityCoordinator(
+            SharedActivityCoordinator sharedActivityCoordinator,
             TrustedWebActivityDisclosureController disclosureController,
             DisclosureUiPicker disclosureUiPicker,
             TrustedWebActivityOpenTimeRecorder openTimeRecorder,
-            CurrentPageVerifier currentPageVerifier, Lazy<TwaSplashController> splashController,
+            CurrentPageVerifier currentPageVerifier,
+            Lazy<TwaSplashController> splashController,
             BrowserServicesIntentDataProvider intentDataProvider,
             TrustedWebActivityUmaRecorder umaRecorder,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -62,7 +64,8 @@ public class TrustedWebActivityCoordinator {
                 new PostMessageDisabler(customTabsConnection, intentDataProvider));
     }
 
-    private void initSplashScreen(Lazy<TwaSplashController> splashController,
+    private void initSplashScreen(
+            Lazy<TwaSplashController> splashController,
             BrowserServicesIntentDataProvider intentDataProvider,
             TrustedWebActivityUmaRecorder umaRecorder) {
         boolean showSplashScreen =
@@ -92,7 +95,8 @@ public class TrustedWebActivityCoordinator {
         private final CustomTabsConnection mCustomTabsConnection;
         private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-        PostMessageDisabler(CustomTabsConnection connection,
+        PostMessageDisabler(
+                CustomTabsConnection connection,
                 BrowserServicesIntentDataProvider intentDataProvider) {
             mCustomTabsConnection = connection;
             mIntentDataProvider = intentDataProvider;

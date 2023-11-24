@@ -46,8 +46,13 @@ class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
         state.view = anchorView;
         state.feature = params.feature;
         state.bubble =
-                new TextBubble(mContext, anchorView, params.textId, params.accessibilityTextId,
-                        anchorView, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                new TextBubble(
+                        mContext,
+                        anchorView,
+                        params.textId,
+                        params.accessibilityTextId,
+                        anchorView,
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         state.bubble.setDismissOnTouchInteraction(true);
 
         return state;
@@ -67,7 +72,8 @@ class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
                     PermissionSettingsBridge.didShowNotificationsPromo();
                     return new IPHInfoBarSupport.TrackerParameters(
                             FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
-                            R.string.notifications_iph, R.string.notifications_iph);
+                            R.string.notifications_iph,
+                            R.string.notifications_iph);
                 }
                 return null;
             default:

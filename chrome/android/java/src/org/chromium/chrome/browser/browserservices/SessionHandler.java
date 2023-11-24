@@ -57,12 +57,14 @@ public interface SessionHandler {
     /**
      * @return The current url being displayed to the user.
      */
-    @Nullable String getCurrentUrl();
+    @Nullable
+    String getCurrentUrl();
 
     /**
      * @return The url of a pending navigation, if any.
      */
-    @Nullable String getPendingUrl();
+    @Nullable
+    String getPendingUrl();
 
     /**
      * @return the task id the content handler is running in.

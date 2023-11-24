@@ -54,19 +54,16 @@ public class TileRenderer {
     private RoundedIconGenerator mIconGenerator;
     private ImageFetcher mImageFetcher;
 
-    @TileStyle
-    private final int mStyle;
+    @TileStyle private final int mStyle;
     private final int mDesiredIconSize;
     private final int mMinIconSize;
     private final float mIconCornerRadius;
     private int mTitleLinesCount;
     private boolean mNativeInitializationComplete;
 
-    @LayoutRes
-    private final int mLayout;
+    @LayoutRes private final int mLayout;
 
-    @LayoutRes
-    private final int mTopSitesLayout;
+    @LayoutRes private final int mTopSitesLayout;
 
     private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
         private final WeakReference<Tile> mTile;
@@ -78,8 +75,11 @@ public class TileRenderer {
         }
 
         @Override
-        public void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor,
-                boolean isFallbackColorDefault, @IconType int iconType) {
+        public void onLargeIconAvailable(
+                @Nullable Bitmap icon,
+                int fallbackColor,
+                boolean isFallbackColorDefault,
+                @IconType int iconType) {
             Tile tile = mTile.get();
             if (tile != null) { // Do nothing if the tile was removed.
                 tile.setIconType(iconType);
@@ -116,8 +116,13 @@ public class TileRenderer {
 
         int iconColor = context.getColor(R.color.default_favicon_background_color);
         int iconTextSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
-        mIconGenerator = new RoundedIconGenerator(
-                mDesiredIconSize, mDesiredIconSize, mDesiredIconSize / 2, iconColor, iconTextSize);
+        mIconGenerator =
+                new RoundedIconGenerator(
+                        mDesiredIconSize,
+                        mDesiredIconSize,
+                        mDesiredIconSize / 2,
+                        iconColor,
+                        iconTextSize);
     }
 
     /**
@@ -165,9 +170,7 @@ public class TileRenderer {
         mTitleLinesCount = titleLines;
     }
 
-    /**
-     * Record that a tile was clicked for IPH reasons.
-     */
+    /** Record that a tile was clicked for IPH reasons. */
     private void recordTileClickedForIPH(String eventName) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.notifyEvent(eventName);
@@ -184,8 +187,9 @@ public class TileRenderer {
     SuggestionsTileView buildTileView(
             Tile tile, ViewGroup parentView, TileGroup.TileSetupDelegate setupDelegate) {
         SuggestionsTileView tileView =
-                (SuggestionsTileView) LayoutInflater.from(parentView.getContext())
-                        .inflate(mLayout, parentView, false);
+                (SuggestionsTileView)
+                        LayoutInflater.from(parentView.getContext())
+                                .inflate(mLayout, parentView, false);
 
         tileView.initialize(tile, mTitleLinesCount);
 
@@ -200,32 +204,44 @@ public class TileRenderer {
 
         TileGroup.TileInteractionDelegate delegate = setupDelegate.createInteractionDelegate(tile);
         if (tile.getSource() == TileSource.HOMEPAGE) {
-            delegate.setOnClickRunnable(() -> {
-                recordTileClickedForIPH(EventConstants.HOMEPAGE_TILE_CLICKED);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.OTHER,
-                        SuggestTileType.COUNT);
-            });
+            delegate.setOnClickRunnable(
+                    () -> {
+                        recordTileClickedForIPH(EventConstants.HOMEPAGE_TILE_CLICKED);
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "NewTabPage.SuggestTiles.SelectedTileType",
+                                SuggestTileType.OTHER,
+                                SuggestTileType.COUNT);
+                    });
         } else if (isSearchTile(tile)) {
-            delegate.setOnClickRunnable(() -> {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.SEARCH,
-                        SuggestTileType.COUNT);
-            });
-            delegate.setOnRemoveRunnable(() -> {
-                RecordHistogram.recordEnumeratedHistogram("NewTabPage.SuggestTiles.DeletedTileType",
-                        SuggestTileType.SEARCH, SuggestTileType.COUNT);
-            });
+            delegate.setOnClickRunnable(
+                    () -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "NewTabPage.SuggestTiles.SelectedTileType",
+                                SuggestTileType.SEARCH,
+                                SuggestTileType.COUNT);
+                    });
+            delegate.setOnRemoveRunnable(
+                    () -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "NewTabPage.SuggestTiles.DeletedTileType",
+                                SuggestTileType.SEARCH,
+                                SuggestTileType.COUNT);
+                    });
         } else {
-            delegate.setOnClickRunnable(() -> {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.URL,
-                        SuggestTileType.COUNT);
-            });
-            delegate.setOnRemoveRunnable(() -> {
-                RecordHistogram.recordEnumeratedHistogram("NewTabPage.SuggestTiles.DeletedTileType",
-                        SuggestTileType.URL, SuggestTileType.COUNT);
-            });
+            delegate.setOnClickRunnable(
+                    () -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "NewTabPage.SuggestTiles.SelectedTileType",
+                                SuggestTileType.URL,
+                                SuggestTileType.COUNT);
+                    });
+            delegate.setOnRemoveRunnable(
+                    () -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "NewTabPage.SuggestTiles.DeletedTileType",
+                                SuggestTileType.URL,
+                                SuggestTileType.COUNT);
+                    });
         }
 
         tileView.setOnClickListener(delegate);
@@ -261,12 +277,16 @@ public class TileRenderer {
      */
     private void updateContentDescription(Tile tile, SuggestionsTileView tileView) {
         if (isSearchTile(tile)) {
-            tileView.setContentDescription(mContext.getString(
-                    R.string.accessibility_omnibox_most_visited_tile_search, tile.getTitle()));
+            tileView.setContentDescription(
+                    mContext.getString(
+                            R.string.accessibility_omnibox_most_visited_tile_search,
+                            tile.getTitle()));
         } else {
             tileView.setContentDescription(
-                    mContext.getString(R.string.accessibility_omnibox_most_visited_tile_navigate,
-                            tile.getTitle(), tile.getUrl().getHost()));
+                    mContext.getString(
+                            R.string.accessibility_omnibox_most_visited_tile_navigate,
+                            tile.getTitle(),
+                            tile.getUrl().getHost()));
         }
     }
 
@@ -282,12 +302,16 @@ public class TileRenderer {
             // Problem is, the TileView is likely not attached yet and the update would not be
             // properly reflected. Yield.
             final Runnable iconCallback = setupDelegate.createIconLoadCallback(tile);
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                setTileIconFromRes(tile, R.drawable.ic_suggestion_magnifier);
-                if (iconCallback != null) iconCallback.run();
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        setTileIconFromRes(tile, R.drawable.ic_suggestion_magnifier);
+                        if (iconCallback != null) iconCallback.run();
+                    });
         } else if (mImageFetcher != null) {
-            mImageFetcher.makeLargeIconRequest(tile.getUrl(), mMinIconSize,
+            mImageFetcher.makeLargeIconRequest(
+                    tile.getUrl(),
+                    mMinIconSize,
                     new LargeIconCallbackImpl(tile, setupDelegate.createIconLoadCallback(tile)));
         }
     }

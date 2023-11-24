@@ -109,9 +109,7 @@ public class PartialCustomTabDisplayManagerTest {
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =
                 (type, intentData0, maximized) -> {
-                    var strategy =
-                            sizeStrategyCreator.createForType(
-                                    type, intentData0, maximized);
+                    var strategy = sizeStrategyCreator.createForType(type, intentData0, maximized);
                     strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
                     strategy.setMockViewForTesting(
                             mPCCTTestRule.mCoordinatorLayout,

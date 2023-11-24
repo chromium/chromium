@@ -13,15 +13,11 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 
-/**
- * Provides utility methods for generating context menus.
- */
+/** Provides utility methods for generating context menus. */
 public final class ContextMenuUtils {
     private ContextMenuUtils() {}
 
-    /**
-     * Returns the title for the given {@link ContextMenuParams}.
-     */
+    /** Returns the title for the given {@link ContextMenuParams}. */
     static String getTitle(ContextMenuParams params) {
         if (!TextUtils.isEmpty(params.getTitleText())) {
             return params.getTitleText();
@@ -64,7 +60,7 @@ public final class ContextMenuUtils {
         if (context == null) return false;
 
         return ChromeFeatureList.isEnabled(
-                       ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES)
+                        ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES)
                 || (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                         && DragAndDropDelegate.isDragAndDropSupportedForOs());
     }

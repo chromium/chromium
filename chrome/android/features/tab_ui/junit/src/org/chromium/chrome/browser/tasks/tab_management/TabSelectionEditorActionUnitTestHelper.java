@@ -17,13 +17,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Helper for setting up mock tabs and groups for TabSelectionEditor*ActionUnitTests.
- */
+/** Helper for setting up mock tabs and groups for TabSelectionEditor*ActionUnitTests. */
 public class TabSelectionEditorActionUnitTestHelper {
-    /**
-     * Defines a group of tabs and its selection state.
-     */
+    /** Defines a group of tabs and its selection state. */
     public static class TabIdGroup {
         private int[] mTabIds;
         private boolean mSelected;
@@ -92,8 +88,11 @@ public class TabSelectionEditorActionUnitTestHelper {
      * @param tabIdGroups defining the tab structure.
      * @param deterministicSetOrder allow arbitrary selection order.
      */
-    public static TabListHolder configureTabs(MockTabModel tabModel, TabGroupModelFilter filter,
-            SelectionDelegate<Integer> selectionDelegate, List<TabIdGroup> tabIdGroups,
+    public static TabListHolder configureTabs(
+            MockTabModel tabModel,
+            TabGroupModelFilter filter,
+            SelectionDelegate<Integer> selectionDelegate,
+            List<TabIdGroup> tabIdGroups,
             boolean deterministicSetOrder) {
         List<Tab> selectedTabs = new ArrayList<>();
         List<Tab> selectedAndRelatedTabs = new ArrayList<>();

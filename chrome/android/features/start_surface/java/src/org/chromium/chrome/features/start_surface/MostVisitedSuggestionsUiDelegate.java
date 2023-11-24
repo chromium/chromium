@@ -15,10 +15,12 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 public class MostVisitedSuggestionsUiDelegate extends SuggestionsUiDelegateImpl {
     private final View mView;
 
-    public MostVisitedSuggestionsUiDelegate(View view,
-            SuggestionsNavigationDelegate navigationDelegate, Profile profile,
+    public MostVisitedSuggestionsUiDelegate(
+            View view,
+            SuggestionsNavigationDelegate navigationDelegate,
+            Profile profile,
             SnackbarManager snackbarManager) {
-        super(navigationDelegate, profile, /*host=*/null, snackbarManager);
+        super(navigationDelegate, profile, /* host= */ null, snackbarManager);
         mView = view;
     }
 
@@ -26,6 +28,6 @@ public class MostVisitedSuggestionsUiDelegate extends SuggestionsUiDelegateImpl 
     public boolean isVisible() {
         return mView.getVisibility() == View.VISIBLE
                 && mView.findViewById(org.chromium.chrome.R.id.mv_tiles_layout).getVisibility()
-                == View.VISIBLE;
+                        == View.VISIBLE;
     }
 }

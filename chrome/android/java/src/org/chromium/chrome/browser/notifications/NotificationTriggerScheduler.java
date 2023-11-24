@@ -23,7 +23,9 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 public class NotificationTriggerScheduler {
 
     /** Clock to use so we can mock time in tests. */
-    public static interface Clock { public long currentTimeMillis(); }
+    public static interface Clock {
+        public long currentTimeMillis();
+    }
 
     private Clock mClock;
 
@@ -57,9 +59,7 @@ public class NotificationTriggerScheduler {
         mClock = clock;
     }
 
-    /**
-     * Calls into native code to trigger all pending notifications.
-     */
+    /** Calls into native code to trigger all pending notifications. */
     public void triggerNotifications() {
         NotificationTriggerSchedulerJni.get().triggerNotifications();
     }
@@ -77,18 +77,18 @@ public class NotificationTriggerScheduler {
     }
 
     private long getNextTrigger() {
-        return ChromeSharedPreferences.getInstance().readLong(
-                ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, Long.MAX_VALUE);
+        return ChromeSharedPreferences.getInstance()
+                .readLong(ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, Long.MAX_VALUE);
     }
 
     private void removeNextTrigger() {
-        ChromeSharedPreferences.getInstance().removeKey(
-                ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER);
     }
 
     private void setNextTrigger(long timestamp) {
-        ChromeSharedPreferences.getInstance().writeLong(
-                ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, timestamp);
+        ChromeSharedPreferences.getInstance()
+                .writeLong(ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, timestamp);
     }
 
     @NativeMethods

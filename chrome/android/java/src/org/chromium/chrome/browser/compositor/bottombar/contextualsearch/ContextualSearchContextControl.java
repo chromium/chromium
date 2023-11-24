@@ -23,14 +23,10 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * This is used as a dynamic resource within the {@link ContextualSearchBarControl}.
  */
 public class ContextualSearchContextControl extends OverlayPanelRepaddingTextView {
-    /**
-     * The selected text View.
-     */
+    /** The selected text View. */
     private TextView mSelectedText;
 
-    /**
-     * The end of the surrounding text View.
-     */
+    /** The end of the surrounding text View. */
     private TextView mEndText;
 
     /**
@@ -39,12 +35,19 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
      * @param container         The container View used to inflate the View.
      * @param resourceLoader    The resource loader that will handle the snapshot capturing.
      */
-    public ContextualSearchContextControl(OverlayPanel panel,
-                                          Context context,
-                                          ViewGroup container,
-                                          DynamicResourceLoader resourceLoader) {
-        super(panel, R.layout.contextual_search_context_view, R.id.contextual_search_context_view,
-                context, container, resourceLoader, R.dimen.contextual_search_end_padding,
+    public ContextualSearchContextControl(
+            OverlayPanel panel,
+            Context context,
+            ViewGroup container,
+            DynamicResourceLoader resourceLoader) {
+        super(
+                panel,
+                R.layout.contextual_search_context_view,
+                R.id.contextual_search_context_view,
+                context,
+                container,
+                resourceLoader,
+                R.dimen.contextual_search_end_padding,
                 R.dimen.contextual_search_padded_button_width);
     }
 
@@ -74,7 +77,8 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
     /** @return the Search Context's TextView height. */
     @Px
     int getTextViewHeight() {
-        return Math.max(mSelectedText == null ? 0 : mSelectedText.getHeight(),
+        return Math.max(
+                mSelectedText == null ? 0 : mSelectedText.getHeight(),
                 mEndText == null ? 0 : mEndText.getHeight());
     }
 }

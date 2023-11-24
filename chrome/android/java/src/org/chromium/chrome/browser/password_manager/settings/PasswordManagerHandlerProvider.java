@@ -89,9 +89,7 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver {
         mPasswordUIView = new PasswordUIView(this);
     }
 
-    /**
-     * Starts forwarding events from the PasswordManagerHandler implementation to |observer|.
-     */
+    /** Starts forwarding events from the PasswordManagerHandler implementation to |observer|. */
     public void addObserver(PasswordListObserver observer) {
         ThreadUtils.assertOnUiThread();
         if (getPasswordManagerHandler() == null) createPasswordManagerHandler();

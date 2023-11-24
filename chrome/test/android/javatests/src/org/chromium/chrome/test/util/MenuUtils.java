@@ -10,21 +10,17 @@ import org.junit.Assert;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 
-/**
- * Collection of menu utilities.
- */
+/** Collection of menu utilities. */
 public class MenuUtils {
-    /**
-     * Trigger for a new activity based on a menu being pressed.
-     */
+    /** Trigger for a new activity based on a menu being pressed. */
     public static class MenuActivityTrigger implements Runnable {
 
         private final Instrumentation mInstrumentation;
         private final ChromeActivity mActivity;
         private final int mMenuId;
 
-        public MenuActivityTrigger(Instrumentation instrumentation, ChromeActivity activity,
-                int menuId) {
+        public MenuActivityTrigger(
+                Instrumentation instrumentation, ChromeActivity activity, int menuId) {
             mInstrumentation = instrumentation;
             mActivity = activity;
             mMenuId = menuId;
@@ -32,13 +28,15 @@ public class MenuUtils {
 
         @Override
         public void run() {
-            mInstrumentation.runOnMainSync(new Runnable() {
-                @Override
-                public void run() {
-                    Assert.assertTrue("Could not execute menu item.",
-                            mActivity.onMenuOrKeyboardAction(mMenuId, true));
-                }
-            });
+            mInstrumentation.runOnMainSync(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            Assert.assertTrue(
+                                    "Could not execute menu item.",
+                                    mActivity.onMenuOrKeyboardAction(mMenuId, true));
+                        }
+                    });
         }
     }
 
@@ -46,14 +44,16 @@ public class MenuUtils {
      * Execute a particular menu item from the custom menu.
      * The item is executed even if it is disabled or not visible.
      */
-    public static void invokeCustomMenuActionSync(Instrumentation instrumentation,
-            final ChromeActivity activity, final int id) {
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                Assert.assertTrue("Could not execute menu item.",
-                        activity.onMenuOrKeyboardAction(id, true));
-            }
-        });
+    public static void invokeCustomMenuActionSync(
+            Instrumentation instrumentation, final ChromeActivity activity, final int id) {
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Assert.assertTrue(
+                                "Could not execute menu item.",
+                                activity.onMenuOrKeyboardAction(id, true));
+                    }
+                });
     }
 }

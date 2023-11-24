@@ -44,8 +44,8 @@ public class SyncErrorMessageImpressionTracker {
     }
 
     public static void updateLastShownTime() {
-        ChromeSharedPreferences.getInstance().writeLong(
-                SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, TimeUtils.currentTimeMillis());
+        ChromeSharedPreferences.getInstance()
+                .writeLong(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, TimeUtils.currentTimeMillis());
     }
 
     public static void resetLastShownTime() {

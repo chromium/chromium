@@ -591,8 +591,7 @@ public class SiteSettingsTest {
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
                     TriStateSiteSettingsPreference triStateToggle =
-                                    preferences.findPreference(
-                                            SingleCategorySettings.TRI_STATE_TOGGLE_KEY);
+                            preferences.findPreference(SingleCategorySettings.TRI_STATE_TOGGLE_KEY);
                     preferences.onPreferenceChange(triStateToggle, newValue);
                 });
         settingsActivity.finish();

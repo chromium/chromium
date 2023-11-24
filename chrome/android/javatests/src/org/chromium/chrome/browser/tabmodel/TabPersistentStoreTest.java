@@ -359,8 +359,7 @@ public class TabPersistentStoreTest {
                                 }
 
                                 @Override
-                                protected OneshotSupplier<ProfileProvider>
-                                        createProfileProvider() {
+                                protected OneshotSupplier<ProfileProvider> createProfileProvider() {
                                     throw new IllegalStateException();
                                 }
                             };

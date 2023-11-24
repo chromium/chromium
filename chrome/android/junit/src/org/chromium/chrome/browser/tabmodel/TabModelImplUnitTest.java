@@ -103,7 +103,6 @@ public class TabModelImplUnitTest {
         return createTab(model, 0, Tab.INVALID_TAB_ID);
     }
 
-
     private Tab createTab(final TabModel model, long activeTimestampMillis, int parentId) {
         MockTab tab = MockTab.createAndInitialize(mNextTabId++, model.getProfile());
         tab.setTimestampMillis(activeTimestampMillis);

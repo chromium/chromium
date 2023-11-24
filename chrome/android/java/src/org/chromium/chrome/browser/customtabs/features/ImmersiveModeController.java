@@ -28,9 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import javax.inject.Inject;
 
-/**
- * Allows to enter and exit immersive mode in TWAs and WebAPKs.
- */
+/** Allows to enter and exit immersive mode in TWAs and WebAPKs. */
 @ActivityScope
 public class ImmersiveModeController implements WindowFocusChangedObserver, DestroyObserver {
     private static final int ENTER_IMMERSIVE_MODE_ON_WINDOW_FOCUS_DELAY_MILLIS = 300;
@@ -45,19 +43,24 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     private boolean mInImmersiveMode;
     private boolean mIsImmersiveModeSticky;
 
-    private static final int IMMERSIVE_MODE_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-            | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_IMMERSIVE;
+    private static final int IMMERSIVE_MODE_UI_FLAGS =
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                    | View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE;
 
     private static final int IMMERSIVE_STICKY_MODE_UI_FLAGS =
             (IMMERSIVE_MODE_UI_FLAGS & ~View.SYSTEM_UI_FLAG_IMMERSIVE)
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     @Inject
-    public ImmersiveModeController(ActivityLifecycleDispatcher lifecycleDispatcher,
-            Activity activity, WindowAndroid window) {
+    public ImmersiveModeController(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Activity activity,
+            WindowAndroid window) {
         mActivity = activity;
         lifecycleDispatcher.register(this);
 
@@ -100,9 +103,7 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         postSetImmersiveFlags(0);
     }
 
-    /**
-     * Exits immersive mode.
-     */
+    /** Exits immersive mode. */
     public void exitImmersiveMode() {
         if (!mInImmersiveMode) return;
 
@@ -140,8 +141,10 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
 
         int immersiveModeFlags =
                 mIsImmersiveModeSticky ? IMMERSIVE_STICKY_MODE_UI_FLAGS : IMMERSIVE_MODE_UI_FLAGS;
-        int desiredFlags = mInImmersiveMode ? (currentFlags | immersiveModeFlags)
-                                            : (currentFlags & ~immersiveModeFlags);
+        int desiredFlags =
+                mInImmersiveMode
+                        ? (currentFlags | immersiveModeFlags)
+                        : (currentFlags & ~immersiveModeFlags);
 
         if (currentFlags != desiredFlags) {
             decor.setSystemUiVisibility(desiredFlags);

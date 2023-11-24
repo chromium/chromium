@@ -62,7 +62,7 @@ public class LaunchHostBrowserSelector {
     public void selectHostBrowser(Callback selectCallback) {
         Bundle metadata = WebApkUtils.readMetaData(mContext);
         if (metadata == null) {
-            selectCallback.onBrowserSelected(null, false /* dialogShown */);
+            selectCallback.onBrowserSelected(null, /* dialogShown= */ false);
             return;
         }
 
@@ -72,7 +72,7 @@ public class LaunchHostBrowserSelector {
         String runtimeHost =
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext);
         if (!TextUtils.isEmpty(runtimeHost)) {
-            selectCallback.onBrowserSelected(runtimeHost, false /* dialogShown */);
+            selectCallback.onBrowserSelected(runtimeHost, /* dialogShown= */ false);
             return;
         }
 
@@ -103,12 +103,12 @@ public class LaunchHostBrowserSelector {
                         HostBrowserUtils.writeHostBrowserToSharedPref(
                                 mContext, selectedHostBrowser);
                         selectCallback.onBrowserSelected(
-                                selectedHostBrowser, true /* dialogShown */);
+                                selectedHostBrowser, /* dialogShown= */ true);
                     }
 
                     @Override
                     public void onQuit() {
-                        selectCallback.onBrowserSelected(null, true /* dialogShown */);
+                        selectCallback.onBrowserSelected(null, /* dialogShown= */ true);
                     }
                 };
         ChooseHostBrowserDialog.show(
@@ -135,12 +135,12 @@ public class LaunchHostBrowserSelector {
                     public void onConfirmInstall(String packageName) {
                         installBrowser(packageName);
                         HostBrowserUtils.writeHostBrowserToSharedPref(mContext, packageName);
-                        selectCallback.onBrowserSelected(null, true /* dialogShown */);
+                        selectCallback.onBrowserSelected(null, /* dialogShown= */ true);
                     }
 
                     @Override
                     public void onConfirmQuit() {
-                        selectCallback.onBrowserSelected(null, true /* dialogShown */);
+                        selectCallback.onBrowserSelected(null, /* dialogShown= */ true);
                     }
                 };
 

@@ -8,9 +8,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * This class clears the persisted data in prefs from OfflineMeasurementsBackgroundTask.
- */
+/** This class clears the persisted data in prefs from OfflineMeasurementsBackgroundTask. */
 public class OfflineMeasurementsBackgroundTask {
     public static void clearPersistedDataFromPrefs() {
         // Clear any data persisted in prefs.

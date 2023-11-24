@@ -48,6 +48,7 @@ class BrandingSecurityButtonAnimationDelegate {
 
     /** The current drawable resource set through {@link #updateDrawableResource(int)} */
     private @DrawableRes int mCurrentDrawableResource;
+
     private final ImageView mImageView;
 
     /**
@@ -79,8 +80,9 @@ class BrandingSecurityButtonAnimationDelegate {
             resetAnimationStatus();
         }
 
-        Drawable targetDrawable = ApiCompatibilityUtils.getDrawable(
-                mImageView.getContext().getResources(), resourceId);
+        Drawable targetDrawable =
+                ApiCompatibilityUtils.getDrawable(
+                        mImageView.getContext().getResources(), resourceId);
         Drawable existingDrawable = mImageView.getDrawable();
 
         // If the drawable is a transitional drawable, this means previous transition is in place.
@@ -98,30 +100,34 @@ class BrandingSecurityButtonAnimationDelegate {
         Resources resources = mImageView.getResources();
         int targetX =
                 Math.max(targetDrawable.getIntrinsicWidth(), existingDrawable.getIntrinsicWidth());
-        int targetY = Math.max(
-                targetDrawable.getIntrinsicHeight(), existingDrawable.getIntrinsicHeight());
+        int targetY =
+                Math.max(
+                        targetDrawable.getIntrinsicHeight(), existingDrawable.getIntrinsicHeight());
         targetDrawable = resizeToBitmapDrawable(resources, targetDrawable, targetX, targetY);
         existingDrawable = resizeToBitmapDrawable(resources, existingDrawable, targetX, targetY);
-        TransitionDrawable transitionDrawable = new TransitionDrawable(
-                new Drawable[] {existingDrawable, getRotatedIcon(targetDrawable)});
+        TransitionDrawable transitionDrawable =
+                new TransitionDrawable(
+                        new Drawable[] {existingDrawable, getRotatedIcon(targetDrawable)});
         transitionDrawable.setCrossFadeEnabled(true);
         mImageView.setImageDrawable(transitionDrawable);
 
         mIsAnimationInProgress = true;
-        mImageView.animate()
+        mImageView
+                .animate()
                 .setDuration(ICON_ANIMATION_DURATION_MS)
                 .rotationBy(ICON_ROTATION_DEGREES)
                 .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                 .withStartAction(
                         () -> transitionDrawable.startTransition(ICON_ANIMATION_DURATION_MS))
-                .withEndAction(() -> {
-                    mIsAnimationInProgress = false;
-                    mImageView.setRotation(0);
-                    // Only update security icon if it is still the current icon.
-                    if (mCurrentDrawableResource == resourceId) {
-                        mImageView.setImageResource(resourceId);
-                    }
-                })
+                .withEndAction(
+                        () -> {
+                            mIsAnimationInProgress = false;
+                            mImageView.setRotation(0);
+                            // Only update security icon if it is still the current icon.
+                            if (mCurrentDrawableResource == resourceId) {
+                                mImageView.setImageResource(resourceId);
+                            }
+                        })
                 .start();
     }
 
@@ -142,8 +148,9 @@ class BrandingSecurityButtonAnimationDelegate {
      * to a {@link BitmapDrawable}.
      */
     @VisibleForTesting
-    static BitmapDrawable resizeToBitmapDrawable(Resources resource, @NonNull Drawable drawable,
-            int targetWidth, int targetHeight) throws IllegalArgumentException {
+    static BitmapDrawable resizeToBitmapDrawable(
+            Resources resource, @NonNull Drawable drawable, int targetWidth, int targetHeight)
+            throws IllegalArgumentException {
         int width = drawable.getIntrinsicWidth();
         int height = drawable.getIntrinsicHeight();
         if (height > targetHeight || width > targetWidth) {

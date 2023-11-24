@@ -26,7 +26,8 @@ public class CustomTabOrientationController {
     private int mLockScreenOrientation;
 
     @Inject
-    public CustomTabOrientationController(ActivityWindowAndroid activityWindowAndroid,
+    public CustomTabOrientationController(
+            ActivityWindowAndroid activityWindowAndroid,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mActivityWindowAndroid = activityWindowAndroid;
 
@@ -48,23 +49,25 @@ public class CustomTabOrientationController {
 
         ScreenOrientationProvider.getInstance().delayOrientationRequests(mActivityWindowAndroid);
 
-        splashController.addObserver(new SplashscreenObserver() {
-            @Override
-            public void onTranslucencyRemoved() {
-                ScreenOrientationProvider.getInstance().runDelayedOrientationRequests(
-                        mActivityWindowAndroid);
-            }
+        splashController.addObserver(
+                new SplashscreenObserver() {
+                    @Override
+                    public void onTranslucencyRemoved() {
+                        ScreenOrientationProvider.getInstance()
+                                .runDelayedOrientationRequests(mActivityWindowAndroid);
+                    }
 
-            @Override
-            public void onSplashscreenHidden(long startTimestamp, long endTimestamp) {}
-        });
+                    @Override
+                    public void onSplashscreenHidden(long startTimestamp, long endTimestamp) {}
+                });
     }
 
     public void setCanControlOrientation(boolean inAppMode) {
         int defaultWebOrientation =
                 inAppMode ? mLockScreenOrientation : ScreenOrientationLockType.DEFAULT;
-        ScreenOrientationProvider.getInstance().setOverrideDefaultOrientation(
-                mActivityWindowAndroid, (byte) defaultWebOrientation);
+        ScreenOrientationProvider.getInstance()
+                .setOverrideDefaultOrientation(
+                        mActivityWindowAndroid, (byte) defaultWebOrientation);
 
         ScreenOrientationProvider.getInstance().unlockOrientation(mActivityWindowAndroid);
     }

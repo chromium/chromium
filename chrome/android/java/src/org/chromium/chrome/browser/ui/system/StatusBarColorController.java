@@ -51,15 +51,15 @@ import org.chromium.ui.util.ColorUtils;
  * TODO(crbug.com/1450945): Prevent initialization of StatusBarColorController for automotive.
  */
 public class StatusBarColorController
-        implements DestroyObserver, TopToolbarCoordinator.UrlExpansionObserver,
-                   StatusIndicatorCoordinator.StatusIndicatorObserver, UrlFocusChangeListener,
-                   TopToolbarCoordinator.ToolbarColorObserver {
+        implements DestroyObserver,
+                TopToolbarCoordinator.UrlExpansionObserver,
+                StatusIndicatorCoordinator.StatusIndicatorObserver,
+                UrlFocusChangeListener,
+                TopToolbarCoordinator.ToolbarColorObserver {
     public static final @ColorInt int UNDEFINED_STATUS_BAR_COLOR = Color.TRANSPARENT;
     public static final @ColorInt int DEFAULT_STATUS_BAR_COLOR = Color.argb(0x01, 0, 0, 0);
 
-    /**
-     * Provides the base status bar color.
-     */
+    /** Provides the base status bar color. */
     public interface StatusBarColorProvider {
         /**
          * @return The base status bar color to override default colors used in the
@@ -125,11 +125,15 @@ public class StatusBarColorController
      * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
      * @param startSurfaceSupplier The supplier for {@link StartSurface}.
      */
-    public StatusBarColorController(Window window, boolean isTablet, Context context,
+    public StatusBarColorController(
+            Window window,
+            boolean isTablet,
+            Context context,
             StatusBarColorProvider statusBarColorProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            ActivityTabProvider tabProvider, TopUiThemeColorProvider topUiThemeColorProvider,
+            ActivityTabProvider tabProvider,
+            TopUiThemeColorProvider topUiThemeColorProvider,
             OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mWindow = window;
         mIsTablet = isTablet;
@@ -141,79 +145,89 @@ public class StatusBarColorController
         mIncognitoPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, true);
         mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, true);
-        mPolishedHomeSurfaceBgColor = ChromeColors.getSurfaceColor(
-                context, R.dimen.home_surface_background_color_elevation);
+        mPolishedHomeSurfaceBgColor =
+                ChromeColors.getSurfaceColor(
+                        context, R.dimen.home_surface_background_color_elevation);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            mActiveOmniboxDefaultColor = ChromeColors.getSurfaceColor(
-                    context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+            mActiveOmniboxDefaultColor =
+                    ChromeColors.getSurfaceColor(
+                            context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
         } else {
             mActiveOmniboxDefaultColor = mStandardDefaultThemeColor;
         }
 
-        mStatusBarColorTabObserver = new ActivityTabProvider.ActivityTabTabObserver(tabProvider) {
-            @Override
-            public void onShown(Tab tab, @TabSelectionType int type) {
-                updateStatusBarColor();
-            }
+        mStatusBarColorTabObserver =
+                new ActivityTabProvider.ActivityTabTabObserver(tabProvider) {
+                    @Override
+                    public void onShown(Tab tab, @TabSelectionType int type) {
+                        updateStatusBarColor();
+                    }
 
-            @Override
-            public void onDidChangeThemeColor(Tab tab, int color) {
-                updateStatusBarColor();
-            }
+                    @Override
+                    public void onDidChangeThemeColor(Tab tab, int color) {
+                        updateStatusBarColor();
+                    }
 
-            @Override
-            public void onContentChanged(Tab tab) {
-                final boolean newShouldUpdateStatusBarColorForNTP = isStandardNTP();
-                // Also update the status bar color if the content was previously an NTP, because an
-                // NTP can use a different status bar color than the default theme color. In this
-                // case, the theme color might not change, and thus #onDidChangeThemeColor might
-                // not get called.
-                if (mShouldUpdateStatusBarColorForNTP || newShouldUpdateStatusBarColorForNTP) {
-                    updateStatusBarColor();
-                }
-                mShouldUpdateStatusBarColorForNTP = newShouldUpdateStatusBarColorForNTP;
-            }
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        final boolean newShouldUpdateStatusBarColorForNTP = isStandardNTP();
+                        // Also update the status bar color if the content was previously an NTP,
+                        // because an NTP can use a different status bar color than the default
+                        // theme color. In this case, the theme color might not change, and thus
+                        // #onDidChangeThemeColor
+                        // might not get called.
+                        if (mShouldUpdateStatusBarColorForNTP
+                                || newShouldUpdateStatusBarColorForNTP) {
+                            updateStatusBarColor();
+                        }
+                        mShouldUpdateStatusBarColorForNTP = newShouldUpdateStatusBarColorForNTP;
+                    }
 
-            @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                // Stop referring to the Tab once detached from an activity. Will be restored
-                // by |onObservingDifferentTab|.
-                if (window == null) mCurrentTab = null;
-            }
+                    @Override
+                    public void onActivityAttachmentChanged(
+                            Tab tab, @Nullable WindowAndroid window) {
+                        // Stop referring to the Tab once detached from an activity. Will be
+                        // restored by |onObservingDifferentTab|.
+                        if (window == null) mCurrentTab = null;
+                    }
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                // Make sure that #mCurrentTab is cleared because #onObservingDifferentTab() might
-                // not be notified early enough when #onUrlExpansionPercentageChanged() is called.
-                mCurrentTab = null;
-                mShouldUpdateStatusBarColorForNTP = false;
-            }
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        // Make sure that #mCurrentTab is cleared because #onObservingDifferentTab()
+                        // might not be notified early enough when
+                        // #onUrlExpansionPercentageChanged() is
+                        // called.
+                        mCurrentTab = null;
+                        mShouldUpdateStatusBarColorForNTP = false;
+                    }
 
-            @Override
-            protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                mCurrentTab = tab;
-                mShouldUpdateStatusBarColorForNTP = isStandardNTP();
+                    @Override
+                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                        mCurrentTab = tab;
+                        mShouldUpdateStatusBarColorForNTP = isStandardNTP();
 
-                // |tab == null| means we're switching tabs - by the tab switcher or by swiping
-                // on the omnibox. These cases are dealt with differently, elsewhere.
-                if (tab == null) return;
-                updateStatusBarColor();
-            }
-        };
+                        // |tab == null| means we're switching tabs - by the tab switcher or by
+                        // swiping on the omnibox. These cases are dealt with differently,
+                        // elsewhere.
+                        if (tab == null) return;
+                        updateStatusBarColor();
+                    }
+                };
 
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                mIsIncognito = newModel.isIncognito();
-                // When opening a new Incognito Tab from a normal Tab (or vice versa), the
-                // status bar color is updated. However, this update is triggered after the
-                // animation, so we update here for the duration of the new Tab animation.
-                // See https://crbug.com/917689.
-                updateStatusBarColor();
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        mIsIncognito = newModel.isIncognito();
+                        // When opening a new Incognito Tab from a normal Tab (or vice versa), the
+                        // status bar color is updated. However, this update is triggered after the
+                        // animation, so we update here for the duration of the new Tab animation.
+                        // See https://crbug.com/917689.
+                        updateStatusBarColor();
+                    }
+                };
 
         // TODO(https://crbug.com/1315679): Remove mStartSurfaceSupplier after the refactor is
         // enabled by default. If Start surface refactor is enabled, we can observe layout state
@@ -225,44 +239,50 @@ public class StatusBarColorController
         } else if (layoutManagerSupplier != null) {
             // LayoutState is observed when the feature "Start surface refactor" is enabled or Start
             // surface is disabled.
-            layoutManagerSupplier.addObserver(mCallbackController.makeCancelable(layoutManager -> {
-                assert layoutManager != null;
-                mLayoutStateProvider = layoutManager;
-                mLayoutStateObserver = new LayoutStateObserver() {
-                    @Override
-                    public void onStartedShowing(int layoutType) {
-                        if (layoutType != LayoutType.TAB_SWITCHER
-                                && layoutType != LayoutType.START_SURFACE) {
-                            return;
-                        }
-                        mIsInOverviewMode = true;
-                        if (shouldUpdateStatusBarColorForHomeSurface()
-                                || !OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-                            updateStatusBarColor();
-                        }
-                    }
+            layoutManagerSupplier.addObserver(
+                    mCallbackController.makeCancelable(
+                            layoutManager -> {
+                                assert layoutManager != null;
+                                mLayoutStateProvider = layoutManager;
+                                mLayoutStateObserver =
+                                        new LayoutStateObserver() {
+                                            @Override
+                                            public void onStartedShowing(int layoutType) {
+                                                if (layoutType != LayoutType.TAB_SWITCHER
+                                                        && layoutType != LayoutType.START_SURFACE) {
+                                                    return;
+                                                }
+                                                mIsInOverviewMode = true;
+                                                if (shouldUpdateStatusBarColorForHomeSurface()
+                                                        || !OmniboxFeatures
+                                                                .shouldMatchToolbarAndStatusBarColor()) {
+                                                    updateStatusBarColor();
+                                                }
+                                            }
 
-                    @Override
-                    public void onFinishedHiding(int layoutType) {
-                        if (layoutType != LayoutType.TAB_SWITCHER
-                                && layoutType != LayoutType.START_SURFACE) {
-                            return;
-                        }
-                        mIsInOverviewMode = false;
-                        updateStatusBarColor();
-                    }
-                };
+                                            @Override
+                                            public void onFinishedHiding(int layoutType) {
+                                                if (layoutType != LayoutType.TAB_SWITCHER
+                                                        && layoutType != LayoutType.START_SURFACE) {
+                                                    return;
+                                                }
+                                                mIsInOverviewMode = false;
+                                                updateStatusBarColor();
+                                            }
+                                        };
 
-                mLayoutStateProvider.addObserver(mLayoutStateObserver);
-                // It is possible that the Start surface is showing when the LayoutStateProvider
-                // becomes available. We need to check the current active layout and update the
-                // status bar color if that happens.
-                if (mLayoutStateProvider.getActiveLayoutType() == LayoutType.START_SURFACE
-                        && !mIsInOverviewMode) {
-                    mIsInOverviewMode = true;
-                    updateStatusBarColor();
-                }
-            }));
+                                mLayoutStateProvider.addObserver(mLayoutStateObserver);
+                                // It is possible that the Start surface is showing when the
+                                // LayoutStateProvider becomes available. We need to check the
+                                // current active layout and update the status bar color if that
+                                // happens.
+                                if (mLayoutStateProvider.getActiveLayoutType()
+                                                == LayoutType.START_SURFACE
+                                        && !mIsInOverviewMode) {
+                                    mIsInOverviewMode = true;
+                                    updateStatusBarColor();
+                                }
+                            }));
         }
 
         activityLifecycleDispatcher.register(this);
@@ -271,7 +291,9 @@ public class StatusBarColorController
     }
 
     private boolean shouldUpdateStatusBarColorForHomeSurface() {
-        return mIsSurfacePolishEnabled && !mIsIncognito && mStartSurfaceSupplier.hasValue()
+        return mIsSurfacePolishEnabled
+                && !mIsIncognito
+                && mStartSurfaceSupplier.hasValue()
                 && mStartSurfaceSupplier.get().isHomepageShown();
     }
 
@@ -280,11 +302,12 @@ public class StatusBarColorController
         if (mStartSurface.getStartSurfaceState() != mStartSurfaceState) {
             onStartSurfaceStateChanged(mStartSurface.getStartSurfaceState());
         }
-        mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-            if (mStartSurfaceState != newState) {
-                onStartSurfaceStateChanged(newState);
-            }
-        };
+        mStartSurfaceStateObserver =
+                (newState, shouldShowToolbar) -> {
+                    if (mStartSurfaceState != newState) {
+                        onStartSurfaceStateChanged(newState);
+                    }
+                };
         // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|,
         // |mStartSurfaceState| and |mStartSurfaceStateObserver| after the refactor is
         // enabled by default.
@@ -402,9 +425,7 @@ public class StatusBarColorController
         }
     }
 
-    /**
-     * Calculate and update the status bar's color.
-     */
+    /** Calculate and update the status bar's color. */
     public void updateStatusBarColor() {
         mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
         int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
@@ -464,8 +485,10 @@ public class StatusBarColorController
             if (mIsSurfacePolishEnabled) {
                 return mPolishedHomeSurfaceBgColor;
             }
-            return ColorUtils.getColorWithOverlay(mTopUiThemeColor.getBackgroundColor(mCurrentTab),
-                    mTopUiThemeColor.getThemeColor(), mToolbarUrlExpansionPercentage);
+            return ColorUtils.getColorWithOverlay(
+                    mTopUiThemeColor.getBackgroundColor(mCurrentTab),
+                    mTopUiThemeColor.getThemeColor(),
+                    mToolbarUrlExpansionPercentage);
         }
 
         // Return status bar color to match the toolbar.
@@ -477,9 +500,7 @@ public class StatusBarColorController
                 mCurrentTab, calculateDefaultStatusBarColor());
     }
 
-    /**
-     * Calculates the default status bar color based on the incognito state.
-     */
+    /** Calculates the default status bar color based on the incognito state. */
     private @ColorInt int calculateDefaultStatusBarColor() {
         if (mIsOmniboxFocused) {
             return mIsIncognito ? mIncognitoPrimaryBgColor : mActiveOmniboxDefaultColor;

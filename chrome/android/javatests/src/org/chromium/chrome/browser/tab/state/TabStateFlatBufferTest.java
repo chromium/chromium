@@ -286,7 +286,6 @@ public class TabStateFlatBufferTest {
         return temporaryFolder.newFile(String.format(Locale.US, "%s%d", filePrefix, tabId));
     }
 
-
     private static void verifyTabStateResult(TabState actual, TabState expected) {
         Assert.assertNotNull(expected);
         Assert.assertEquals(expected.parentId, actual.parentId);

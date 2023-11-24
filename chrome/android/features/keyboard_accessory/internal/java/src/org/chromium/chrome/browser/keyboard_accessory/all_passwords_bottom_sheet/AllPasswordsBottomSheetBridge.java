@@ -25,8 +25,11 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
         assert (mNativeView != 0);
         assert (windowAndroid.getActivity().get() != null);
         mAllPasswordsBottomSheetCoordinator = new AllPasswordsBottomSheetCoordinator();
-        mAllPasswordsBottomSheetCoordinator.initialize(windowAndroid.getActivity().get(),
-                BottomSheetControllerProvider.from(windowAndroid), this, origin);
+        mAllPasswordsBottomSheetCoordinator.initialize(
+                windowAndroid.getActivity().get(),
+                BottomSheetControllerProvider.from(windowAndroid),
+                this,
+                origin);
     }
 
     @CalledByNative
@@ -46,11 +49,22 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     }
 
     @CalledByNative
-    private void insertCredential(int index, String username, String password,
-            String formattedUsername, String originUrl, boolean isAndroidCredential,
+    private void insertCredential(
+            int index,
+            String username,
+            String password,
+            String formattedUsername,
+            String originUrl,
+            boolean isAndroidCredential,
             String appDisplayName) {
-        mCredentials[index] = new Credential(username, password, formattedUsername, originUrl,
-                isAndroidCredential, appDisplayName);
+        mCredentials[index] =
+                new Credential(
+                        username,
+                        password,
+                        formattedUsername,
+                        originUrl,
+                        isAndroidCredential,
+                        appDisplayName);
     }
 
     @CalledByNative
@@ -61,10 +75,12 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     @Override
     public void onCredentialSelected(CredentialFillRequest credentialFillRequest) {
         assert mNativeView != 0 : "The native side is already dismissed";
-        AllPasswordsBottomSheetBridgeJni.get().onCredentialSelected(mNativeView,
-                credentialFillRequest.getCredential().getUsername(),
-                credentialFillRequest.getCredential().getPassword(),
-                credentialFillRequest.getRequestsToFillPassword());
+        AllPasswordsBottomSheetBridgeJni.get()
+                .onCredentialSelected(
+                        mNativeView,
+                        credentialFillRequest.getCredential().getUsername(),
+                        credentialFillRequest.getCredential().getPassword(),
+                        credentialFillRequest.getRequestsToFillPassword());
     }
 
     @Override
@@ -76,8 +92,12 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
 
     @NativeMethods
     interface Natives {
-        void onCredentialSelected(long nativeAllPasswordsBottomSheetViewImpl, String username,
-                String password, boolean requestsToFillPassword);
+        void onCredentialSelected(
+                long nativeAllPasswordsBottomSheetViewImpl,
+                String username,
+                String password,
+                boolean requestsToFillPassword);
+
         void onDismiss(long nativeAllPasswordsBottomSheetViewImpl);
     }
 }

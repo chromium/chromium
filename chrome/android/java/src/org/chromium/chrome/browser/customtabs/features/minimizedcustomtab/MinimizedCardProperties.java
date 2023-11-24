@@ -9,9 +9,7 @@ import android.graphics.Bitmap;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * Properties of the minimized card.
- */
+/** Properties of the minimized card. */
 public class MinimizedCardProperties {
     /** The title of the minimized webpage. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();

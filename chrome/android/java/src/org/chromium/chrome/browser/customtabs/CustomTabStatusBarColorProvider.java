@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 
 import javax.inject.Inject;
 
-/**
- * Manages the status bar color for a CustomTabActivity.
- */
+/** Manages the status bar color for a CustomTabActivity. */
 @ActivityScope
 public class CustomTabStatusBarColorProvider {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -27,7 +25,8 @@ public class CustomTabStatusBarColorProvider {
     private boolean mUseTabThemeColor;
 
     @Inject
-    public CustomTabStatusBarColorProvider(BrowserServicesIntentDataProvider intentDataProvider,
+    public CustomTabStatusBarColorProvider(
+            BrowserServicesIntentDataProvider intentDataProvider,
             StatusBarColorController statusBarColorController) {
         mIntentDataProvider = intentDataProvider;
         mStatusBarColorController = statusBarColorController;
@@ -46,8 +45,9 @@ public class CustomTabStatusBarColorProvider {
 
     int getBaseStatusBarColor(Tab tab) {
         @ToolbarColorType
-        int toolbarColorType = CustomTabToolbarColorController.computeToolbarColorType(
-                mIntentDataProvider, mUseTabThemeColor, tab);
+        int toolbarColorType =
+                CustomTabToolbarColorController.computeToolbarColorType(
+                        mIntentDataProvider, mUseTabThemeColor, tab);
         return switch (toolbarColorType) {
             case ToolbarColorType.THEME_COLOR -> UNDEFINED_STATUS_BAR_COLOR;
             case ToolbarColorType.DEFAULT_COLOR -> DEFAULT_STATUS_BAR_COLOR;

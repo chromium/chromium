@@ -77,9 +77,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Full screen dialogs display the automotive toolbar using ChromeDialog.
      */
     @IntDef({
-            AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW,
-            AutomotiveToolbarImplementation.WITH_ACTION_BAR,
-            AutomotiveToolbarImplementation.NONE,
+        AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW,
+        AutomotiveToolbarImplementation.WITH_ACTION_BAR,
+        AutomotiveToolbarImplementation.NONE,
     })
     @Retention(RetentionPolicy.SOURCE)
     protected @interface AutomotiveToolbarImplementation {
@@ -95,9 +95,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
          */
         int WITH_ACTION_BAR = 1;
 
-        /**
-         * Automotive toolbar is not added.
-         */
+        /** Automotive toolbar is not added. */
         int NONE = -1;
     }
 
@@ -117,10 +115,17 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         Context appContext = ContextUtils.getApplicationContext();
         if (!chromeModuleClassLoader.equals(appContext.getClassLoader())) {
             // This should only happen on Android O. See crbug.com/1146745 for more info.
-            throw new IllegalStateException("ClassLoader mismatch detected.\nA: "
-                    + chromeModuleClassLoader + "\nB: " + appContext.getClassLoader()
-                    + "\nC: " + chromeModuleClassLoader.getParent()
-                    + "\nD: " + appContext.getClassLoader().getParent() + "\nE: " + appContext);
+            throw new IllegalStateException(
+                    "ClassLoader mismatch detected.\nA: "
+                            + chromeModuleClassLoader
+                            + "\nB: "
+                            + appContext.getClassLoader()
+                            + "\nC: "
+                            + chromeModuleClassLoader.getParent()
+                            + "\nD: "
+                            + appContext.getClassLoader().getParent()
+                            + "\nE: "
+                            + appContext);
         }
         // If ClassLoader was corrected by SplitCompatAppComponentFactory, also need to correct
         // the reference in the associated Context.
@@ -270,8 +275,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, overrideConfig);
 
             // Enable web ui scaling for automotive devices.
-            CommandLine.getInstance().appendSwitch(
-                    DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
+            CommandLine.getInstance()
+                    .appendSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
         }
     }
 
@@ -297,9 +302,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      */
     protected void initializeNightModeStateProvider() {}
 
-    /**
-     * Apply theme overlay to this activity class.
-     */
+    /** Apply theme overlay to this activity class. */
     @CallSuper
     protected void applyThemeOverlays() {
         if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
@@ -308,14 +311,18 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         }
         DynamicColors.applyToActivityIfAvailable(this);
 
-        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
-            // #registerSyntheticFieldTrial requires native.
-            boolean isDynamicColorAvailable = DynamicColors.isDynamicColorAvailable();
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.DynamicColors.IsAvailable", isDynamicColorAvailable);
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    "IsDynamicColorAvailable", isDynamicColorAvailable ? "Enabled" : "Disabled");
-        });
+        DeferredStartupHandler.getInstance()
+                .addDeferredTask(
+                        () -> {
+                            // #registerSyntheticFieldTrial requires native.
+                            boolean isDynamicColorAvailable =
+                                    DynamicColors.isDynamicColorAvailable();
+                            RecordHistogram.recordBooleanHistogram(
+                                    "Android.DynamicColors.IsAvailable", isDynamicColorAvailable);
+                            UmaSessionStats.registerSyntheticFieldTrial(
+                                    "IsDynamicColorAvailable",
+                                    isDynamicColorAvailable ? "Enabled" : "Disabled");
+                        });
 
         if (BuildInfo.getInstance().isAutomotive
                 && getAutomotiveToolbarImplementation()
@@ -327,9 +334,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Sets the default task description that will appear in the recents UI.
-     */
+    /** Sets the default task description that will appear in the recents UI. */
     protected void setDefaultTaskDescription() {
         final TaskDescription taskDescription =
                 new TaskDescription(null, null, getColor(R.color.default_task_description_color));
@@ -342,9 +347,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (!isFinishing()) recreate();
     }
 
-    /**
-     * Required to make preference fragments use InMemorySharedPreferences in tests.
-     */
+    /** Required to make preference fragments use InMemorySharedPreferences in tests. */
     @Override
     public SharedPreferences getSharedPreferences(String name, int mode) {
         return ContextUtils.getApplicationContext().getSharedPreferences(name, mode);
@@ -425,10 +428,15 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @Override
     public void addContentView(View view, ViewGroup.LayoutParams params) {
-        if (BuildInfo.getInstance().isAutomotive && params.width == MATCH_PARENT
+        if (BuildInfo.getInstance().isAutomotive
+                && params.width == MATCH_PARENT
                 && params.height == MATCH_PARENT) {
-            ViewGroup automotiveLayout = (ViewGroup) getLayoutInflater().inflate(
-                    R.layout.automotive_layout_with_back_button_toolbar, null);
+            ViewGroup automotiveLayout =
+                    (ViewGroup)
+                            getLayoutInflater()
+                                    .inflate(
+                                            R.layout.automotive_layout_with_back_button_toolbar,
+                                            null);
             super.addContentView(
                     automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
             setAutomotiveToolbarBackButtonAction();
@@ -468,7 +476,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         Toolbar backButtonToolbarForAutomotive = findViewById(R.id.back_button_toolbar);
         if (backButtonToolbarForAutomotive != null) {
             backButtonToolbarForAutomotive.setNavigationOnClickListener(
-                    backButtonClick -> { getOnBackPressedDispatcher().onBackPressed(); });
+                    backButtonClick -> {
+                        getOnBackPressedDispatcher().onBackPressed();
+                    });
         }
     }
 }

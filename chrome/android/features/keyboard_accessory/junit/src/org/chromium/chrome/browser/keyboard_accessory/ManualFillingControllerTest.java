@@ -151,7 +151,6 @@ public class ManualFillingControllerTest {
             return mTab;
         }
     }
-    ;
 
     private final MockActivityTabProvider mActivityTabProvider = new MockActivityTabProvider();
 

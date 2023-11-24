@@ -419,8 +419,7 @@ public class PseudoTabUnitTest {
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
         tab.destroy();
         // Title was not set. Without the isInitialized() check,
-        // pseudoTab.getTitle() would crash here with
-        // UnsupportedOperationException
+        // pseudoTab.getTitle() would crash here with UnsupportedOperationException
         Assert.assertEquals("", pseudoTab.getTitle());
     }
 
@@ -430,8 +429,7 @@ public class PseudoTabUnitTest {
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
         tab.destroy();
         // Url was not set. Without the isInitialized() check,
-        // pseudoTab.getUrl() would crash here with
-        // UnsupportedOperationException
+        // pseudoTab.getUrl() would crash here with UnsupportedOperationException
         Assert.assertEquals("", pseudoTab.getUrl().getSpec());
     }
 
@@ -441,8 +439,7 @@ public class PseudoTabUnitTest {
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
         tab.destroy();
         // Root ID was not set. Without the isInitialized() check,
-        // pseudoTab.getRootId() would crash here with
-        // UnsupportedOperationException
+        // pseudoTab.getRootId() would crash here with UnsupportedOperationException
         Assert.assertEquals(Tab.INVALID_TAB_ID, pseudoTab.getRootId());
     }
 

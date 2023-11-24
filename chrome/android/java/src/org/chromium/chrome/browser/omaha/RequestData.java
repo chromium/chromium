@@ -15,8 +15,8 @@ public class RequestData {
     private final String mRequestID;
     private final String mInstallSource;
 
-    public RequestData(boolean sendInstallEvent, long timeStamp, String requestID,
-            String installSource) {
+    public RequestData(
+            boolean sendInstallEvent, long timeStamp, String requestID, String installSource) {
         assert requestID != null;
         mSendInstallEvent = sendInstallEvent;
         mCreationTimestamp = timeStamp;
@@ -32,30 +32,22 @@ public class RequestData {
         return mSendInstallEvent;
     }
 
-    /**
-     * ID of the request we're sending to the server.
-     */
+    /** ID of the request we're sending to the server. */
     public String getRequestID() {
         return mRequestID;
     }
 
-    /**
-     * Get the age in milliseconds.
-     */
+    /** Get the age in milliseconds. */
     public long getAgeInMilliseconds(long currentTimestamp) {
         return currentTimestamp - mCreationTimestamp;
     }
 
-    /**
-     * Get the age in seconds.
-     */
+    /** Get the age in seconds. */
     public long getAgeInSeconds(long currentTimestamp) {
         return getAgeInMilliseconds(currentTimestamp) / 1000;
     }
 
-    /**
-     * Get the exact timestamp when this was created.
-     */
+    /** Get the exact timestamp when this was created. */
     public long getCreationTimestamp() {
         return mCreationTimestamp;
     }

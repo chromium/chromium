@@ -18,9 +18,7 @@ import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * A class that handles selection action mode for Payment Handler.
- */
+/** A class that handles selection action mode for Payment Handler. */
 public class PaymentHandlerActionModeCallback extends ActionModeCallback {
     private final ActionModeCallbackHelper mHelper;
 
@@ -52,7 +50,10 @@ public class PaymentHandlerActionModeCallback extends ActionModeCallback {
     }
 
     @Override
-    public boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+    public boolean onDropdownItemClicked(
+            int groupId,
+            int id,
+            @Nullable Intent intent,
             @Nullable View.OnClickListener clickListener) {
         return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
     }

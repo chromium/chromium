@@ -43,8 +43,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First Run Experience. */
-public abstract class FirstRunActivityBase
-        extends AsyncInitializationActivity implements BackPressHandler {
+public abstract class FirstRunActivityBase extends AsyncInitializationActivity
+        implements BackPressHandler {
     private static final String TAG = "FirstRunActivity";
 
     public static final String EXTRA_COMING_FROM_CHROME_ICON = "Extra.ComingFromChromeIcon";
@@ -74,7 +74,9 @@ public abstract class FirstRunActivityBase
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>() {
                 // Always intercept back press.
-                { set(true); }
+                {
+                    set(true);
+                }
             };
     private PolicyLoadListener mPolicyLoadListener;
 
@@ -86,10 +88,12 @@ public abstract class FirstRunActivityBase
     public FirstRunActivityBase() {
         mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
         mPolicyServiceSupplier = new OneshotSupplierImpl<>();
-        mPolicyLoadListener = sPolicyLoadListenerFactoryForTesting == null
-                ? new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier)
-                : sPolicyLoadListenerFactoryForTesting.inject(
-                        mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
+        mPolicyLoadListener =
+                sPolicyLoadListenerFactoryForTesting == null
+                        ? new PolicyLoadListener(
+                                mFirstRunAppRestrictionInfo, mPolicyServiceSupplier)
+                        : sPolicyLoadListenerFactoryForTesting.inject(
+                                mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
         mStartTime = SystemClock.elapsedRealtime();
         mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
     }
@@ -119,8 +123,6 @@ public abstract class FirstRunActivityBase
         }
     }
 
-
-
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
@@ -128,10 +130,14 @@ public abstract class FirstRunActivityBase
             BackPressHelper.create(
                     this, getOnBackPressedDispatcher(), this, getSecondaryActivity());
         } else {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(), () -> {
-                handleBackPress();
-                return true;
-            }, getSecondaryActivity());
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    () -> {
+                        handleBackPress();
+                        return true;
+                    },
+                    getSecondaryActivity());
         }
     }
 
@@ -191,9 +197,7 @@ public abstract class FirstRunActivityBase
         return mBackPressStateSupplier;
     }
 
-    /**
-     * Called when back press is intercepted.
-     */
+    /** Called when back press is intercepted. */
     @Override
     public abstract @BackPressResult int handleBackPress();
 
@@ -212,8 +216,9 @@ public abstract class FirstRunActivityBase
     protected final boolean sendFirstRunCompletePendingIntent() {
         PendingIntent pendingIntent =
                 IntentUtils.safeGetParcelableExtra(getIntent(), EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
-        boolean pendingIntentIsCCT = IntentUtils.safeGetBooleanExtra(
-                getIntent(), EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
+        boolean pendingIntentIsCCT =
+                IntentUtils.safeGetBooleanExtra(
+                        getIntent(), EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
         if (pendingIntent == null) return false;
 
         try {
@@ -221,16 +226,21 @@ public abstract class FirstRunActivityBase
             if (pendingIntentIsCCT) {
                 // After the PendingIntent has been sent, send a first run callback to custom tabs
                 // if necessary.
-                onFinished = new PendingIntent.OnFinished() {
-                    @Override
-                    public void onSendFinished(PendingIntent pendingIntent, Intent intent,
-                            int resultCode, String resultData, Bundle resultExtras) {
-                        // Use {@link FirstRunActivityBase#getIntent()} instead of {@link intent}
-                        // parameter in order to use a more similar code path for completing first
-                        // run and for aborting first run.
-                        notifyCustomTabCallbackFirstRunIfNecessary(getIntent(), true);
-                    }
-                };
+                onFinished =
+                        new PendingIntent.OnFinished() {
+                            @Override
+                            public void onSendFinished(
+                                    PendingIntent pendingIntent,
+                                    Intent intent,
+                                    int resultCode,
+                                    String resultData,
+                                    Bundle resultExtras) {
+                                // Use {@link FirstRunActivityBase#getIntent()} instead of {@link
+                                // intent} parameter in order to use a more similar code path for
+                                // completing first run and for aborting first run.
+                                notifyCustomTabCallbackFirstRunIfNecessary(getIntent(), true);
+                            }
+                        };
             }
 
             // Use the PendingIntent to send the intent that originally launched Chrome. The intent
@@ -260,12 +270,10 @@ public abstract class FirstRunActivityBase
      * @see PolicyLoadListener for return value expectation.
      */
     public OneshotSupplier<Boolean> getPolicyLoadListener() {
-      return mPolicyLoadListener;
+        return mPolicyLoadListener;
     }
 
-    /**
-     * Returns the supplier that supplies child account status.
-     */
+    /** Returns the supplier that supplies child account status. */
     public OneshotSupplier<Boolean> getChildAccountStatusSupplier() {
         return mChildAccountStatusSupplier;
     }
@@ -278,14 +286,15 @@ public abstract class FirstRunActivityBase
      */
     public static void notifyCustomTabCallbackFirstRunIfNecessary(
             Intent freIntent, boolean complete) {
-        boolean launchedByCCT = IntentUtils.safeGetBooleanExtra(
-                freIntent, EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
+        boolean launchedByCCT =
+                IntentUtils.safeGetBooleanExtra(
+                        freIntent, EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
         if (!launchedByCCT) return;
 
         Bundle launchIntentExtras =
                 IntentUtils.safeGetBundleExtra(freIntent, EXTRA_CHROME_LAUNCH_INTENT_EXTRAS);
-        CustomTabsConnection.getInstance().sendFirstRunCallbackIfNecessary(
-                launchIntentExtras, complete);
+        CustomTabsConnection.getInstance()
+                .sendFirstRunCallbackIfNecessary(launchIntentExtras, complete);
     }
 
     /**
@@ -293,7 +302,8 @@ public abstract class FirstRunActivityBase
      * FirstRunActivityBase}'s constructor.
      */
     public interface PolicyLoadListenerFactory {
-        PolicyLoadListener inject(FirstRunAppRestrictionInfo appRestrictionInfo,
+        PolicyLoadListener inject(
+                FirstRunAppRestrictionInfo appRestrictionInfo,
                 OneshotSupplier<PolicyService> policyServiceSupplier);
     }
 

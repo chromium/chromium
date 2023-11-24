@@ -26,29 +26,23 @@ import java.util.Set;
  * the space it contains. Managed by a {@link TabSelectionEditorMenu}.
  */
 public class TabSelectionEditorActionViewLayout extends LinearLayout {
-    /**
-     * All {@link TabSelectionEditoreMenuItem} action views with menu items.
-     */
+    /** All {@link TabSelectionEditoreMenuItem} action views with menu items. */
     private final ArrayList<TabSelectionEditorMenuItem> mMenuItemsWithActionView =
             new ArrayList<>();
-    /**
-     * The {@link TabSelectionEditoreMenuItem}s with visible action views.
-     */
+
+    /** The {@link TabSelectionEditoreMenuItem}s with visible action views. */
     private final Set<TabSelectionEditorMenuItem> mVisibleActions = new ArraySet<>();
 
-    /**
-     * {@link ListMenuButton} for showing the {@link TabSelectionEditorMenu}.
-     */
+    /** {@link ListMenuButton} for showing the {@link TabSelectionEditorMenu}. */
     private ListMenuButton mMenuButton;
+
     private LinearLayout.LayoutParams mActionViewParams;
 
     private Context mContext;
     private ActionViewLayoutDelegate mDelegate;
     private boolean mHasMenuOnlyItems;
 
-    /**
-     * Delegate updates in response to which action views are visible.
-     */
+    /** Delegate updates in response to which action views are visible. */
     public interface ActionViewLayoutDelegate {
         /**
          * @param visibleActions the list of {@link TabSelectionEditorMenuItem}s with visible action
@@ -59,8 +53,11 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
 
     public TabSelectionEditorActionViewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mActionViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 0.0f);
+        mActionViewParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        0.0f);
         mActionViewParams.gravity = Gravity.CENTER_VERTICAL;
         mContext = context;
     }
@@ -109,9 +106,7 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
         update();
     }
 
-    /**
-     * Clears the action views from this layout.
-     */
+    /** Clears the action views from this layout. */
     public void clear() {
         removeAllActionViews();
         mMenuItemsWithActionView.clear();
@@ -120,9 +115,7 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
         update();
     }
 
-    /**
-     * Dismisses the menu.
-     */
+    /** Dismisses the menu. */
     public void dismissMenu() {
         mMenuButton.dismiss();
     }

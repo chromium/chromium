@@ -49,9 +49,7 @@ class PasswordAccessorySheetViewBinder {
         return null;
     }
 
-    /**
-     * Holds a the TextView with the title of the sheet and a divider for the accessory bar.
-     */
+    /** Holds a the TextView with the title of the sheet and a divider for the accessory bar. */
     static class PasswordsTitleViewHolder extends ElementViewHolder<String, LinearLayout> {
         PasswordsTitleViewHolder(ViewGroup parent) {
             super(parent, R.layout.password_accessory_sheet_label);
@@ -78,10 +76,14 @@ class PasswordAccessorySheetViewBinder {
                 int previous = parent.indexOfChild(view) - 1;
                 if (previous < 0) return;
                 if (parent.getChildAt(previous).getId() == R.id.footer_command) return;
-                outRect.top = view.getContext().getResources().getDimensionPixelSize(
-                                      R.dimen.keyboard_accessory_suggestion_padding)
-                        + view.getContext().getResources().getDimensionPixelSize(
-                                R.dimen.divider_height);
+                outRect.top =
+                        view.getContext()
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.keyboard_accessory_suggestion_padding)
+                                + view.getContext()
+                                        .getResources()
+                                        .getDimensionPixelSize(R.dimen.divider_height);
             }
 
             @Override
@@ -96,13 +98,21 @@ class PasswordAccessorySheetViewBinder {
 
                     Drawable dividerDrawable =
                             HorizontalListDividerDrawable.create(nextView.getContext());
-                    int top = currentView.getBottom()
-                            + currentView.getContext().getResources().getDimensionPixelOffset(
-                                      R.dimen.keyboard_accessory_suggestion_padding)
-                                    / 2;
+                    int top =
+                            currentView.getBottom()
+                                    + currentView
+                                                    .getContext()
+                                                    .getResources()
+                                                    .getDimensionPixelOffset(
+                                                            R.dimen
+                                                                    .keyboard_accessory_suggestion_padding)
+                                            / 2;
                     int bottom = top + dividerDrawable.getIntrinsicHeight();
-                    dividerDrawable.setBounds(parent.getLeft() + parent.getPaddingLeft(), top,
-                            parent.getRight() - parent.getPaddingRight(), bottom);
+                    dividerDrawable.setBounds(
+                            parent.getLeft() + parent.getPaddingLeft(),
+                            top,
+                            parent.getRight() - parent.getPaddingRight(),
+                            bottom);
 
                     dividerDrawable.draw(canvas);
                 }
@@ -123,9 +133,7 @@ class PasswordAccessorySheetViewBinder {
         }
     }
 
-    /**
-     * Holds a layout for a username and a password with a small icon.
-     */
+    /** Holds a layout for a username and a password with a small icon. */
     static class PasswordsInfoViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.UserInfo, LinearLayout> {
         private final int mPadding;
@@ -133,10 +141,14 @@ class PasswordAccessorySheetViewBinder {
 
         PasswordsInfoViewHolder(ViewGroup parent) {
             super(parent, R.layout.keyboard_accessory_sheet_tab_legacy_password_info);
-            mPadding = itemView.getContext().getResources().getDimensionPixelSize(
-                    R.dimen.keyboard_accessory_suggestion_padding);
-            mIconSize = itemView.getContext().getResources().getDimensionPixelSize(
-                    R.dimen.keyboard_accessory_suggestion_icon_size);
+            mPadding =
+                    itemView.getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_padding);
+            mIconSize =
+                    itemView.getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);
         }
 
         @Override
@@ -160,8 +172,11 @@ class PasswordAccessorySheetViewBinder {
             text.setTransformationMethod(
                     field.isObfuscated() ? new PasswordTransformationMethod() : null);
             // With transformation, the character set forces a LTR gravity. Therefore, invert it:
-            text.setGravity(Gravity.CENTER_VERTICAL
-                    | (isLayoutRtl() && field.isObfuscated() ? Gravity.END : Gravity.START));
+            text.setGravity(
+                    Gravity.CENTER_VERTICAL
+                            | (isLayoutRtl() && field.isObfuscated()
+                                    ? Gravity.END
+                                    : Gravity.START));
             text.setText(field.getDisplayText());
             text.setContentDescription(field.getA11yDescription());
             text.setOnClickListener(!field.isSelectable() ? null : src -> field.triggerSelection());
@@ -172,8 +187,9 @@ class PasswordAccessorySheetViewBinder {
 
         private @Nullable Drawable getBackgroundDrawable(boolean selectable) {
             if (!selectable) return null;
-            TypedArray a = itemView.getContext().obtainStyledAttributes(
-                    new int[] {R.attr.selectableItemBackground});
+            TypedArray a =
+                    itemView.getContext()
+                            .obtainStyledAttributes(new int[] {R.attr.selectableItemBackground});
             Drawable suggestionBackground = a.getDrawable(0);
             a.recycle();
             return suggestionBackground;

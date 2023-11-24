@@ -26,12 +26,13 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
 
     public ReadingListBackPressHandler(ActivityTabProvider activityTabProvider) {
         mActivityTabProvider = activityTabProvider;
-        mActivityTabTabObserver = new ActivityTabTabObserver(mActivityTabProvider, true) {
-            @Override
-            protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                onBackPressStateChanged();
-            }
-        };
+        mActivityTabTabObserver =
+                new ActivityTabTabObserver(mActivityTabProvider, true) {
+                    @Override
+                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                        onBackPressStateChanged();
+                    }
+                };
     }
 
     @Override

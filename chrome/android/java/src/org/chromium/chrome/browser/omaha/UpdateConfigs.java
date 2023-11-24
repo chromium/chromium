@@ -58,8 +58,9 @@ public class UpdateConfigs {
     public static int getMinRequiredStorage() {
         String value = CommandLine.getInstance().getSwitchValue(MIN_REQUIRED_STORAGE_MB);
         if (TextUtils.isEmpty(value)) {
-            value = VariationsAssociatedData.getVariationParamValue(
-                    FIELD_TRIAL_NAME, MIN_REQUIRED_STORAGE_MB);
+            value =
+                    VariationsAssociatedData.getVariationParamValue(
+                            FIELD_TRIAL_NAME, MIN_REQUIRED_STORAGE_MB);
         }
         if (TextUtils.isEmpty(value)) return -1;
 
@@ -129,7 +130,6 @@ public class UpdateConfigs {
      * @param paramName The name of the parameter (or command-line switch) to get a value for.
      * @return The command-line flag value if present, or the param is value if present.
      */
-
     private static @Nullable String getStringParamValue(String paramName) {
         String value = CommandLine.getInstance().getSwitchValue(paramName);
         if (TextUtils.isEmpty(value)) {

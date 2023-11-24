@@ -12,20 +12,31 @@ import java.lang.annotation.RetentionPolicy;
 /** Interface for receiving updates on playback state during playback. */
 public interface PlaybackListener {
     /** Playback state. */
-    @IntDef({State.UNKNOWN, State.ERROR, State.BUFFERING, State.PAUSED, State.PLAYING,
-            State.STOPPED})
+    @IntDef({
+        State.UNKNOWN,
+        State.ERROR,
+        State.BUFFERING,
+        State.PAUSED,
+        State.PLAYING,
+        State.STOPPED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         /** Unknown. */
         int UNKNOWN = 0;
+
         /** Error. */
         int ERROR = 1;
+
         /** Buffering (audio isn't playing). */
         int BUFFERING = 3;
+
         /** Paused. */
         int PAUSED = 4;
+
         /** Playing. */
         int PLAYING = 5;
+
         /** Stopped; represents end of playback. */
         int STOPPED = 6;
     }
@@ -35,14 +46,19 @@ public interface PlaybackListener {
         /** Current playback state. */
         @State
         int state();
+
         /** Current paragraph index. */
         int paragraphIndex();
+
         /** Audio position in nanoseconds relative to beginning of paragraph. */
         long positionInParagraphNanos();
+
         /** Duration of the current paragraph in nanoseconds. */
         long paragraphDurationNanos();
+
         /** Absolute audio position in nanoseconds. */
         long absolutePositionNanos();
+
         /** Total audio duration in nanoseconds. */
         long totalDurationNanos();
     }
@@ -63,22 +79,27 @@ public interface PlaybackListener {
     interface PhraseTiming {
         /** The start offset of the phrase, relative to the full text. */
         int absoluteStartIndex();
+
         /** The end offset of the phrase, relative to the full text. */
         int absoluteEndIndex();
+
         /**
          * The start time offset of the phrase, relative to the start of the audio in the specific
          * paragraph.
          */
         long startTimeMillis();
+
         /**
          * The end time offset of the phrase, relative to the start of the audio in the specific
          * paragraph.
          */
         long endTimeMillis();
+
         /**
          * The start offset of the phrase, relative to the paragraph text which was used for TTS.
          */
         int relativeStartIndex();
+
         /** The end offset of the phrase, relative to the paragraph text which was used for TTS. */
         int relativeEndIndex();
     }

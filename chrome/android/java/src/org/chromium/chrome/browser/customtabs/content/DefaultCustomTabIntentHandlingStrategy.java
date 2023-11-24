@@ -8,6 +8,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import dagger.Lazy;
+
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
@@ -18,8 +20,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
 import javax.inject.Inject;
-
-import dagger.Lazy;
 
 /**
  * Default implementation of {@link CustomTabIntentHandlingStrategy}.
@@ -33,7 +33,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final Lazy<CustomTabObserver> mCustomTabObserver;
 
     @Inject
-    public DefaultCustomTabIntentHandlingStrategy(CustomTabActivityTabProvider tabProvider,
+    public DefaultCustomTabIntentHandlingStrategy(
+            CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
             CustomTabNavigationEventObserver navigationEventObserver,
             Lazy<CustomTabObserver> customTabObserver) {
@@ -45,8 +46,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
     @Override
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
-        @TabCreationMode
-        int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
+        @TabCreationMode int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
         if (initialTabCreationMode == TabCreationMode.HIDDEN) {
             handleInitialLoadForHiddenTab(initialTabCreationMode, intentDataProvider);
         } else {
@@ -64,7 +64,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     }
 
     // The hidden tab case needs a bit of special treatment.
-    private void handleInitialLoadForHiddenTab(@TabCreationMode int initialTabCreationMode,
+    private void handleInitialLoadForHiddenTab(
+            @TabCreationMode int initialTabCreationMode,
             BrowserServicesIntentDataProvider intentDataProvider) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {
@@ -86,8 +87,10 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         boolean useSpeculation = TextUtils.equals(speculatedUrl, url);
         boolean hasCommitted = !tab.getWebContents().getLastCommittedUrl().isEmpty();
-        mCustomTabObserver.get().trackNextPageLoadForHiddenTab(
-                useSpeculation, hasCommitted, intentDataProvider.getIntent());
+        mCustomTabObserver
+                .get()
+                .trackNextPageLoadForHiddenTab(
+                        useSpeculation, hasCommitted, intentDataProvider.getIntent());
         if (useSpeculation) {
             if (tab.isLoading()) {
                 // CustomTabObserver and CustomTabActivityNavigationObserver are attached
@@ -104,8 +107,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         // The following block is a hack that deals with urls preloaded with
         // the wrong fragment. Does an extra pageload and replaces history.
-        if (speculatedUrl != null
-                && UrlUtilities.urlsFragmentsDiffer(speculatedUrl, url)) {
+        if (speculatedUrl != null && UrlUtilities.urlsFragmentsDiffer(speculatedUrl, url)) {
             params.setShouldReplaceCurrentEntry(true);
         }
 

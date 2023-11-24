@@ -112,78 +112,89 @@ public interface IWebApkApi extends android.os.IInterface {
                     return true;
             }
             switch (code) {
-                case TRANSACTION_getSmallIconId: {
-                    int _result = this.getSmallIconId();
-                    reply.writeNoException();
-                    reply.writeInt(_result);
-                    break;
-                }
-                case TRANSACTION_notifyNotification: {
-                    java.lang.String _arg0;
-                    _arg0 = data.readString();
-                    int _arg1;
-                    _arg1 = data.readInt();
-                    android.app.Notification _arg2;
-                    _arg2 = _Parcel.readTypedObject(data, android.app.Notification.CREATOR);
-                    this.notifyNotification(_arg0, _arg1, _arg2);
-                    reply.writeNoException();
-                    break;
-                }
-                case TRANSACTION_cancelNotification: {
-                    java.lang.String _arg0;
-                    _arg0 = data.readString();
-                    int _arg1;
-                    _arg1 = data.readInt();
-                    this.cancelNotification(_arg0, _arg1);
-                    reply.writeNoException();
-                    break;
-                }
-                case TRANSACTION_notificationPermissionEnabled: {
-                    boolean _result = this.notificationPermissionEnabled();
-                    reply.writeNoException();
-                    reply.writeInt(((_result) ? (1) : (0)));
-                    break;
-                }
-                case TRANSACTION_notifyNotificationWithChannel: {
-                    java.lang.String _arg0;
-                    _arg0 = data.readString();
-                    int _arg1;
-                    _arg1 = data.readInt();
-                    android.app.Notification _arg2;
-                    _arg2 = _Parcel.readTypedObject(data, android.app.Notification.CREATOR);
-                    java.lang.String _arg3;
-                    _arg3 = data.readString();
-                    this.notifyNotificationWithChannel(_arg0, _arg1, _arg2, _arg3);
-                    reply.writeNoException();
-                    break;
-                }
-                case TRANSACTION_finishAndRemoveTaskSdk23: {
-                    boolean _result = this.finishAndRemoveTaskSdk23();
-                    reply.writeNoException();
-                    reply.writeInt(((_result) ? (1) : (0)));
-                    break;
-                }
-                case TRANSACTION_checkNotificationPermission: {
-                    int _result = this.checkNotificationPermission();
-                    reply.writeNoException();
-                    reply.writeInt(_result);
-                    break;
-                }
-                case TRANSACTION_requestNotificationPermission: {
-                    java.lang.String _arg0;
-                    _arg0 = data.readString();
-                    java.lang.String _arg1;
-                    _arg1 = data.readString();
-                    android.app.PendingIntent _result =
-                            this.requestNotificationPermission(_arg0, _arg1);
-                    reply.writeNoException();
-                    _Parcel.writeTypedObject(
-                            reply, _result, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-                    break;
-                }
-                default: {
-                    return super.onTransact(code, data, reply, flags);
-                }
+                case TRANSACTION_getSmallIconId:
+                    {
+                        int _result = this.getSmallIconId();
+                        reply.writeNoException();
+                        reply.writeInt(_result);
+                        break;
+                    }
+                case TRANSACTION_notifyNotification:
+                    {
+                        java.lang.String _arg0;
+                        _arg0 = data.readString();
+                        int _arg1;
+                        _arg1 = data.readInt();
+                        android.app.Notification _arg2;
+                        _arg2 = _Parcel.readTypedObject(data, android.app.Notification.CREATOR);
+                        this.notifyNotification(_arg0, _arg1, _arg2);
+                        reply.writeNoException();
+                        break;
+                    }
+                case TRANSACTION_cancelNotification:
+                    {
+                        java.lang.String _arg0;
+                        _arg0 = data.readString();
+                        int _arg1;
+                        _arg1 = data.readInt();
+                        this.cancelNotification(_arg0, _arg1);
+                        reply.writeNoException();
+                        break;
+                    }
+                case TRANSACTION_notificationPermissionEnabled:
+                    {
+                        boolean _result = this.notificationPermissionEnabled();
+                        reply.writeNoException();
+                        reply.writeInt(((_result) ? (1) : (0)));
+                        break;
+                    }
+                case TRANSACTION_notifyNotificationWithChannel:
+                    {
+                        java.lang.String _arg0;
+                        _arg0 = data.readString();
+                        int _arg1;
+                        _arg1 = data.readInt();
+                        android.app.Notification _arg2;
+                        _arg2 = _Parcel.readTypedObject(data, android.app.Notification.CREATOR);
+                        java.lang.String _arg3;
+                        _arg3 = data.readString();
+                        this.notifyNotificationWithChannel(_arg0, _arg1, _arg2, _arg3);
+                        reply.writeNoException();
+                        break;
+                    }
+                case TRANSACTION_finishAndRemoveTaskSdk23:
+                    {
+                        boolean _result = this.finishAndRemoveTaskSdk23();
+                        reply.writeNoException();
+                        reply.writeInt(((_result) ? (1) : (0)));
+                        break;
+                    }
+                case TRANSACTION_checkNotificationPermission:
+                    {
+                        int _result = this.checkNotificationPermission();
+                        reply.writeNoException();
+                        reply.writeInt(_result);
+                        break;
+                    }
+                case TRANSACTION_requestNotificationPermission:
+                    {
+                        java.lang.String _arg0;
+                        _arg0 = data.readString();
+                        java.lang.String _arg1;
+                        _arg1 = data.readString();
+                        android.app.PendingIntent _result =
+                                this.requestNotificationPermission(_arg0, _arg1);
+                        reply.writeNoException();
+                        _Parcel.writeTypedObject(
+                                reply,
+                                _result,
+                                android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+                        break;
+                    }
+                default:
+                    {
+                        return super.onTransact(code, data, reply, flags);
+                    }
             }
             return true;
         }

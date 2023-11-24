@@ -77,8 +77,11 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     }
 
     @Override
-    public void init(TabModelSelector selector, TabCreatorManager creator,
-            ControlContainer controlContainer, DynamicResourceLoader dynamicResourceLoader,
+    public void init(
+            TabModelSelector selector,
+            TabCreatorManager creator,
+            ControlContainer controlContainer,
+            DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
@@ -115,7 +118,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
         boolean showOverview = nextId == Tab.INVALID_TAB_ID;
         if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
-                && getActiveLayoutType() != LayoutType.START_SURFACE && showOverview) {
+                && getActiveLayoutType() != LayoutType.START_SURFACE
+                && showOverview) {
             // Since there will be no 'next' tab to display, switch to
             // overview mode when the animation is finished.
             if (getActiveLayoutType() == LayoutType.SIMPLE_ANIMATION) {
@@ -129,8 +133,10 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
 
     @Override
     protected void tabCreating(int sourceId, boolean isIncognito) {
-        if (getActiveLayout() != null && !getActiveLayout().isStartingToHide()
-                && overlaysHandleTabCreating() && getActiveLayout().handlesTabCreating()) {
+        if (getActiveLayout() != null
+                && !getActiveLayout().isStartingToHide()
+                && overlaysHandleTabCreating()
+                && getActiveLayout().handlesTabCreating()) {
             // If the current layout in the foreground, let it handle the tab creation animation.
             // This check allows us to switch from the StackLayout to the SimpleAnimationLayout
             // smoothly.
@@ -155,7 +161,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     /** @return Whether the {@link SceneOverlay}s handle tab creation. */
     private boolean overlaysHandleTabCreating() {
         Layout layout = getActiveLayout();
-        if (layout == null || layout.getLayoutTabsToRender() == null
+        if (layout == null
+                || layout.getLayoutTabsToRender() == null
                 || layout.getLayoutTabsToRender().length != 1) {
             return false;
         }

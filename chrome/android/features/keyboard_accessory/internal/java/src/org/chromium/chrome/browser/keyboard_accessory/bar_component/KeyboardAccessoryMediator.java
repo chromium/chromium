@@ -57,14 +57,17 @@ import java.util.stream.StreamSupport;
  * trigger when selecting them.
  */
 class KeyboardAccessoryMediator
-        implements PropertyObservable.PropertyObserver<PropertyKey>, Provider.Observer<Action[]>,
-                   KeyboardAccessoryTabLayoutCoordinator.AccessoryTabObserver {
+        implements PropertyObservable.PropertyObserver<PropertyKey>,
+                Provider.Observer<Action[]>,
+                KeyboardAccessoryTabLayoutCoordinator.AccessoryTabObserver {
     private final PropertyModel mModel;
     private final BarVisibilityDelegate mBarVisibilityDelegate;
     private final AccessorySheetCoordinator.SheetVisibilityDelegate mSheetVisibilityDelegate;
     private final TabSwitchingDelegate mTabSwitcher;
 
-    KeyboardAccessoryMediator(PropertyModel model, BarVisibilityDelegate barVisibilityDelegate,
+    KeyboardAccessoryMediator(
+            PropertyModel model,
+            BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             TabSwitchingDelegate tabSwitcher,
             KeyboardAccessoryTabLayoutCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks) {
@@ -93,10 +96,8 @@ class KeyboardAccessoryMediator
     Provider.Observer<AutofillSuggestion[]> createAutofillSuggestionsObserver(
             AutofillDelegate delegate) {
         return (@AccessoryAction int typeId, AutofillSuggestion[] suggestions) -> {
-            assert typeId
-                    == AccessoryAction.AUTOFILL_SUGGESTION
-                : "Autofill suggestions observer received wrong data: "
-                            + typeId;
+            assert typeId == AccessoryAction.AUTOFILL_SUGGESTION
+                    : "Autofill suggestions observer received wrong data: " + typeId;
             List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
             retainedItems.addAll(toBarItems(suggestions, delegate));
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
@@ -270,11 +271,14 @@ class KeyboardAccessoryMediator
             }
             return;
         }
-        if (propertyKey == BOTTOM_OFFSET_PX || propertyKey == SHEET_OPENER_ITEM
+        if (propertyKey == BOTTOM_OFFSET_PX
+                || propertyKey == SHEET_OPENER_ITEM
                 || propertyKey == SKIP_CLOSING_ANIMATION
                 || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING
-                || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK || propertyKey == SHOW_SWIPING_IPH
-                || propertyKey == HAS_SUGGESTIONS || propertyKey == ANIMATION_LISTENER) {
+                || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK
+                || propertyKey == SHOW_SWIPING_IPH
+                || propertyKey == HAS_SUGGESTIONS
+                || propertyKey == ANIMATION_LISTENER) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";

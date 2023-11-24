@@ -46,9 +46,7 @@ import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * The view of the tasks surface. Set public for testing.
- */
+/** The view of the tasks surface. Set public for testing. */
 public class TasksView extends CoordinatorLayoutForPointer {
     private static final MutableFlagWithSafeDefault sIncognitoRevampFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.INCOGNITO_NTP_REVAMP, false);
@@ -75,14 +73,17 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mContext = context;
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishOmniboxColorEnabled = mIsSurfacePolishEnabled
-                && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
+        mIsSurfacePolishOmniboxColorEnabled =
+                mIsSurfacePolishEnabled
+                        && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
     }
 
-    public void initialize(ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            boolean isIncognito, WindowAndroid windowAndroid) {
-        assert mSearchBoxCoordinator
-                != null : "#onFinishInflate should be completed before the call to initialize.";
+    public void initialize(
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            boolean isIncognito,
+            WindowAndroid windowAndroid) {
+        assert mSearchBoxCoordinator != null
+                : "#onFinishInflate should be completed before the call to initialize.";
 
         mSearchBoxCoordinator.initialize(activityLifecycleDispatcher, isIncognito, windowAndroid);
     }
@@ -120,8 +121,11 @@ public class TasksView extends CoordinatorLayoutForPointer {
         ApiCompatibilityUtils.setTextAppearance(
                 titleDescription, R.style.TextAppearance_TextAccentMediumThick_Secondary);
         ApiCompatibilityUtils.setTextAppearance(moreTabs, R.style.TextAppearance_Button_Text_Blue);
-        ViewCompat.setPaddingRelative(titleDescription, titleDescription.getPaddingStart(),
-                titleDescription.getPaddingTop(), titleDescription.getPaddingEnd(),
+        ViewCompat.setPaddingRelative(
+                titleDescription,
+                titleDescription.getPaddingStart(),
+                titleDescription.getPaddingTop(),
+                titleDescription.getPaddingEnd(),
                 titleDescription.getPaddingBottom());
     }
 
@@ -164,23 +168,17 @@ public class TasksView extends CoordinatorLayoutForPointer {
         return mSearchBoxCoordinator;
     }
 
-    /**
-     * Set the visibility of the Most Visited Tiles.
-     */
+    /** Set the visibility of the Most Visited Tiles. */
     void setMostVisitedVisibility(int visibility) {
         mMvTilesContainerLayout.setVisibility(visibility);
     }
 
-    /**
-     * Set the visibility of the Most Visited Tiles.
-     */
+    /** Set the visibility of the Most Visited Tiles. */
     void setQueryTilesVisibility(int visibility) {
         findViewById(R.id.query_tiles_container).setVisibility(visibility);
     }
 
-    /**
-     * Set the {@link android.view.View.OnClickListener} for More Tabs.
-     */
+    /** Set the {@link android.view.View.OnClickListener} for More Tabs. */
     void setMoreTabsOnClickListener(@Nullable View.OnClickListener listener) {
         findViewById(R.id.more_tabs).setOnClickListener(listener);
     }
@@ -193,26 +191,32 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mSearchBoxCoordinator.setIncognitoMode(isIncognito);
         Drawable searchBackground;
         if (isIncognito) {
-            searchBackground = AppCompatResources.getDrawable(
-                    mContext, R.drawable.fake_search_box_bg_incognito);
+            searchBackground =
+                    AppCompatResources.getDrawable(
+                            mContext, R.drawable.fake_search_box_bg_incognito);
         } else if (mIsSurfacePolishOmniboxColorEnabled) {
-            searchBackground = AppCompatResources.getDrawable(
-                    mContext, R.drawable.home_surface_search_box_background_colorful);
+            searchBackground =
+                    AppCompatResources.getDrawable(
+                            mContext, R.drawable.home_surface_search_box_background_colorful);
         } else if (mIsSurfacePolishEnabled) {
-            searchBackground = AppCompatResources.getDrawable(
-                    mContext, R.drawable.home_surface_search_box_background_neutral);
+            searchBackground =
+                    AppCompatResources.getDrawable(
+                            mContext, R.drawable.home_surface_search_box_background_neutral);
         } else {
             searchBackground = AppCompatResources.getDrawable(mContext, R.drawable.ntp_search_box);
         }
         if (searchBackground instanceof LayerDrawable) {
-            Drawable shapeDrawable = ((LayerDrawable) searchBackground)
-                                             .findDrawableByLayerId(R.id.fake_search_box_bg_shape);
+            Drawable shapeDrawable =
+                    ((LayerDrawable) searchBackground)
+                            .findDrawableByLayerId(R.id.fake_search_box_bg_shape);
             if (shapeDrawable != null) {
                 @ColorInt
-                int searchBackgroundColor = isIncognito
-                        ? getResources().getColor(R.color.toolbar_text_box_background_incognito)
-                        : ChromeColors.getSurfaceColor(
-                                mContext, R.dimen.toolbar_text_box_elevation);
+                int searchBackgroundColor =
+                        isIncognito
+                                ? getResources()
+                                        .getColor(R.color.toolbar_text_box_background_incognito)
+                                : ChromeColors.getSurfaceColor(
+                                        mContext, R.dimen.toolbar_text_box_elevation);
                 shapeDrawable.mutate();
                 // TODO(https://crbug.com/1239289): Change back to #setTint once our min API level
                 // is 23.
@@ -222,8 +226,11 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mSearchBoxCoordinator.setBackground(searchBackground);
 
         if (!mIsSurfacePolishEnabled) {
-            int hintTextColor = mContext.getColor(isIncognito ? R.color.locationbar_light_hint_text
-                                                              : R.color.locationbar_dark_hint_text);
+            int hintTextColor =
+                    mContext.getColor(
+                            isIncognito
+                                    ? R.color.locationbar_light_hint_text
+                                    : R.color.locationbar_dark_hint_text);
             mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
         }
     }
@@ -385,8 +392,8 @@ public class TasksView extends CoordinatorLayoutForPointer {
      */
     void setTabSwitcherTitleTopMargin(int topMargin) {
         MarginLayoutParams params =
-                (MarginLayoutParams) mHeaderView.findViewById(R.id.tab_switcher_title)
-                        .getLayoutParams();
+                (MarginLayoutParams)
+                        mHeaderView.findViewById(R.id.tab_switcher_title).getLayoutParams();
         params.topMargin = topMargin;
     }
 
@@ -396,14 +403,12 @@ public class TasksView extends CoordinatorLayoutForPointer {
      */
     void setSingleTabTopMargin(int topMargin) {
         MarginLayoutParams params =
-                (MarginLayoutParams) mHeaderView.findViewById(R.id.single_tab_view)
-                        .getLayoutParams();
+                (MarginLayoutParams)
+                        mHeaderView.findViewById(R.id.single_tab_view).getLayoutParams();
         params.topMargin = topMargin;
     }
 
-    /**
-     * Set the height of the top toolbar placeholder layout.
-     */
+    /** Set the height of the top toolbar placeholder layout. */
     void setTopToolbarPlaceholderHeight(int height) {
         View topToolbarPlaceholder = findViewById(R.id.top_toolbar_placeholder);
         ViewGroup.LayoutParams lp = topToolbarPlaceholder.getLayoutParams();
@@ -411,14 +416,13 @@ public class TasksView extends CoordinatorLayoutForPointer {
         topToolbarPlaceholder.setLayoutParams(lp);
     }
 
-    /**
-     * Reset the scrolling position by expanding the {@link #mHeaderView}.
-     */
+    /** Reset the scrolling position by expanding the {@link #mHeaderView}. */
     void resetScrollPosition() {
         if (mHeaderView != null && mHeaderView.getHeight() != mHeaderView.getBottom()) {
-            mHeaderView.setExpanded(true, false /* animate */);
+            mHeaderView.setExpanded(true, /* animate= */ false);
         }
     }
+
     /**
      * Add a header offset change listener.
      * @param onOffsetChangedListener The given header offset change listener.
@@ -451,8 +455,14 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * @param lensButtonLeftMargin Current left margin of the lens button in fake search box layout.
      * @param searchTextSize Current size for the search text in the fake search box.
      */
-    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
-            int buttonSize, int lensButtonLeftMargin, float searchTextSize) {
+    public void updateFakeSearchBox(
+            int height,
+            int topMargin,
+            int endPadding,
+            float translationX,
+            int buttonSize,
+            int lensButtonLeftMargin,
+            float searchTextSize) {
         if (mSearchBoxCoordinator.getView().getVisibility() != View.VISIBLE) return;
         mSearchBoxCoordinator.setHeight(height);
         mSearchBoxCoordinator.setTopMargin(topMargin);
@@ -493,12 +503,13 @@ public class TasksView extends CoordinatorLayoutForPointer {
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) mHeaderView.getLayoutParams();
         AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
-        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
-            @Override
-            public boolean canDrag(AppBarLayout appBarLayout) {
-                return true;
-            }
-        });
+        behavior.setDragCallback(
+                new AppBarLayout.Behavior.DragCallback() {
+                    @Override
+                    public boolean canDrag(AppBarLayout appBarLayout) {
+                        return true;
+                    }
+                });
         params.setBehavior(behavior);
     }
 

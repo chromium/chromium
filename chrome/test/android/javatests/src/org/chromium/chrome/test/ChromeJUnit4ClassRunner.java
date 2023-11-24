@@ -32,9 +32,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * A custom runner for //chrome JUnit4 tests.
- */
+/** A custom runner for //chrome JUnit4 tests. */
 public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
     /**
      * Create a ChromeJUnit4ClassRunner to run {@code klass} and initialize values
@@ -47,7 +45,8 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
 
     @Override
     protected List<SkipCheck> getSkipChecks() {
-        return addToList(super.getSkipChecks(),
+        return addToList(
+                super.getSkipChecks(),
                 new ChromeRestrictionSkipCheck(ApplicationProvider.getApplicationContext()));
     }
 
@@ -98,11 +97,15 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
             try {
                 Method isDaydreamMethod =
                         daydreamApiClass.getMethod("isDaydreamReadyPlatform", Context.class);
-                Boolean isDaydream = (Boolean) isDaydreamMethod.invoke(
-                        null, ContextUtils.getApplicationContext());
+                Boolean isDaydream =
+                        (Boolean)
+                                isDaydreamMethod.invoke(null, ContextUtils.getApplicationContext());
                 return isDaydream;
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException
-                    | IllegalArgumentException | InvocationTargetException e) {
+            } catch (NoSuchMethodException
+                    | SecurityException
+                    | IllegalAccessException
+                    | IllegalArgumentException
+                    | InvocationTargetException e) {
                 return false;
             }
         }
@@ -121,9 +124,12 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
             try {
                 Method createMethod = daydreamApiClass.getMethod("create", Context.class);
                 // We need to ensure that the DaydreamApi instance is created on the main thread.
-                Object daydreamApiInstance = TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    return createMethod.invoke(null, ContextUtils.getApplicationContext());
-                });
+                Object daydreamApiInstance =
+                        TestThreadUtils.runOnUiThreadBlocking(
+                                () -> {
+                                    return createMethod.invoke(
+                                            null, ContextUtils.getApplicationContext());
+                                });
                 if (daydreamApiInstance == null) {
                     return false;
                 }
@@ -141,7 +147,9 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
                 // check against com.google.vr.ndk.base.GvrApi.ViewerType.DAYDREAM, but the
                 // constants have never changed, so check this way to be simpler.
                 return viewerType == 1;
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException
+            } catch (NoSuchMethodException
+                    | IllegalAccessException
+                    | InvocationTargetException
                     | ExecutionException e) {
                 return false;
             }
@@ -156,7 +164,7 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
         @Override
         protected boolean restrictionApplies(String restriction) {
             if (TextUtils.equals(
-                        restriction, ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+                            restriction, ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
                     && (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                             getTargetContext()))) {
                 return true;
@@ -166,29 +174,29 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
                 return true;
             }
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_DEVICE_DAYDREAM)
-                    || TextUtils.equals(restriction,
-                               ChromeRestriction.RESTRICTION_TYPE_DEVICE_NON_DAYDREAM)) {
+                    || TextUtils.equals(
+                            restriction, ChromeRestriction.RESTRICTION_TYPE_DEVICE_NON_DAYDREAM)) {
                 boolean isDaydream = isDaydreamReady();
                 if (TextUtils.equals(
-                            restriction, ChromeRestriction.RESTRICTION_TYPE_DEVICE_DAYDREAM)
+                                restriction, ChromeRestriction.RESTRICTION_TYPE_DEVICE_DAYDREAM)
                         && !isDaydream) {
                     return true;
-                } else if (TextUtils.equals(restriction,
-                                   ChromeRestriction.RESTRICTION_TYPE_DEVICE_NON_DAYDREAM)
+                } else if (TextUtils.equals(
+                                restriction, ChromeRestriction.RESTRICTION_TYPE_DEVICE_NON_DAYDREAM)
                         && isDaydream) {
                     return true;
                 }
             }
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM)
-                    || TextUtils.equals(restriction,
-                               ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)) {
+                    || TextUtils.equals(
+                            restriction, ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)) {
                 boolean daydreamViewPaired = isDaydreamViewPaired();
                 if (TextUtils.equals(
-                            restriction, ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM)
+                                restriction, ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM)
                         && !daydreamViewPaired) {
                     return true;
-                } else if (TextUtils.equals(restriction,
-                                   ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)
+                } else if (TextUtils.equals(
+                                restriction, ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)
                         && daydreamViewPaired) {
                     return true;
                 }

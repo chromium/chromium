@@ -10,12 +10,11 @@ import android.content.SharedPreferences;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 
-/**
- * This is a utility class for managing the start surface when returning to Chrome.
- */
+/** This is a utility class for managing the start surface when returning to Chrome. */
 public final class ReturnToStartSurfaceUtil {
     /** Preference to indicate whether explore pane was visible last in the start surface.*/
     private static final String START_SURFACE_PREF_FILE_NAME = "start_surface";
+
     private static final String EXPLORE_SURFACE_VISIBLE_LAST = "explore_surface_visible_last";
 
     private ReturnToStartSurfaceUtil() {}
@@ -40,8 +39,8 @@ public final class ReturnToStartSurfaceUtil {
         // On some versions of Android, creating the Preferences object involves a disk read (to
         // check if the Preferences directory exists, not even to read the actual Preferences).
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getApplicationContext().getSharedPreferences(
-                    START_SURFACE_PREF_FILE_NAME, Context.MODE_PRIVATE);
+            return ContextUtils.getApplicationContext()
+                    .getSharedPreferences(START_SURFACE_PREF_FILE_NAME, Context.MODE_PRIVATE);
         }
     }
 }

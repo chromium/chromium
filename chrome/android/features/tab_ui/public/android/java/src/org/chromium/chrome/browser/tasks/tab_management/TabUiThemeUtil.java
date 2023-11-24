@@ -67,8 +67,13 @@ public class TabUiThemeUtil {
      * @return The color for the tab container.
      */
     // TODO (crbug.com/1469465): Encapsulate tab properties in a state object.
-    public static int getTabStripContainerColor(Context context, boolean isIncognito,
-            boolean foreground, boolean isReordering, boolean isPlaceholder, boolean isHovered) {
+    public static int getTabStripContainerColor(
+            Context context,
+            boolean isIncognito,
+            boolean foreground,
+            boolean isReordering,
+            boolean isPlaceholder,
+            boolean isHovered) {
         if (foreground) {
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 return ChromeColors.getDefaultThemeColor(context, isIncognito);
@@ -93,27 +98,32 @@ public class TabUiThemeUtil {
 
     /** Returns the color for the hovered tab container. */
     private static @ColorInt int getHoveredTabContainerColor(Context context, boolean isIncognito) {
-        int baseColor = isIncognito ? context.getColor(R.color.baseline_primary_80)
-                                    : ChromeSemanticColorUtils.getTabInactiveHoverColor(context);
+        int baseColor =
+                isIncognito
+                        ? context.getColor(R.color.baseline_primary_80)
+                        : ChromeSemanticColorUtils.getTabInactiveHoverColor(context);
         float alpha;
         if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
-            alpha = ResourcesCompat.getFloat(
-                    context.getResources(), R.dimen.tsr_folio_tab_inactive_hover_alpha);
+            alpha =
+                    ResourcesCompat.getFloat(
+                            context.getResources(), R.dimen.tsr_folio_tab_inactive_hover_alpha);
         } else {
-            alpha = ColorUtils.inNightMode(context) || isIncognito
-                    ? ResourcesCompat.getFloat(context.getResources(),
-                            R.dimen.tsr_detached_tab_inactive_hover_alpha_dark)
-                    : ResourcesCompat.getFloat(context.getResources(),
-                            R.dimen.tsr_detached_tab_inactive_hover_alpha_light);
+            alpha =
+                    ColorUtils.inNightMode(context) || isIncognito
+                            ? ResourcesCompat.getFloat(
+                                    context.getResources(),
+                                    R.dimen.tsr_detached_tab_inactive_hover_alpha_dark)
+                            : ResourcesCompat.getFloat(
+                                    context.getResources(),
+                                    R.dimen.tsr_detached_tab_inactive_hover_alpha_light);
         }
         return ColorUtils.setAlphaComponent(baseColor, (int) (alpha * 255));
     }
 
-    /**
-     * Returns the color for the tab strip startup "ghost" containers.
-     */
+    /** Returns the color for the tab strip startup "ghost" containers. */
     private static @ColorInt int getTabStripStartupContainerColor(Context context) {
-        return context.getColor(TabManagementFieldTrial.isTabStripFolioEnabled()
+        return context.getColor(
+                TabManagementFieldTrial.isTabStripFolioEnabled()
                         ? R.color.bg_tabstrip_tab_folio_startup_tint
                         : R.color.bg_tabstrip_tab_detached_startup_tint);
     }

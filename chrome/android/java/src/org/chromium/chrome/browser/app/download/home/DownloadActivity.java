@@ -26,9 +26,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Activity for managing downloads handled through Chrome.
- */
+/** Activity for managing downloads handled through Chrome. */
 public class DownloadActivity extends SnackbarActivity implements ModalDialogManagerHolder {
     private static final String BUNDLE_KEY_CURRENT_URL = "current_url";
 
@@ -55,9 +53,10 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         // If the profile doesn't exist, then do not perform any action.
         if (!DownloadUtils.doesProfileExistFromIntent(getIntent())) finish();
 
-        mCurrentUrl = savedInstanceState == null
-                ? UrlConstants.DOWNLOADS_URL
-                : savedInstanceState.getString(BUNDLE_KEY_CURRENT_URL);
+        mCurrentUrl =
+                savedInstanceState == null
+                        ? UrlConstants.DOWNLOADS_URL
+                        : savedInstanceState.getString(BUNDLE_KEY_CURRENT_URL);
 
         // Loads offline pages and prefetch downloads.
         OfflineContentAggregatorNotificationBridgeUiFactory.instance();
@@ -74,19 +73,27 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
                         .setStartWithPrefetchedContent(showPrefetchContent)
                         .build();
 
-        mModalDialogManager = new ModalDialogManager(
-                new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
-        mDownloadCoordinator = DownloadManagerCoordinatorFactoryHelper.create(
-                this, config, getSnackbarManager(), mModalDialogManager);
+        mModalDialogManager =
+                new ModalDialogManager(
+                        new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
+        mDownloadCoordinator =
+                DownloadManagerCoordinatorFactoryHelper.create(
+                        this, config, getSnackbarManager(), mModalDialogManager);
         setContentView(mDownloadCoordinator.getView());
         if (!showPrefetchContent) mDownloadCoordinator.updateForUrl(mCurrentUrl);
         mDownloadCoordinator.addObserver(mUiObserver);
         if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(),
-                    mDownloadCoordinator.getBackPressHandlers(), SecondaryActivity.DOWNLOAD);
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    mDownloadCoordinator.getBackPressHandlers(),
+                    SecondaryActivity.DOWNLOAD);
         } else {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(),
-                    mDownloadCoordinator::onBackPressed, SecondaryActivity.DOWNLOAD);
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    mDownloadCoordinator::onBackPressed,
+                    SecondaryActivity.DOWNLOAD);
         }
     }
 

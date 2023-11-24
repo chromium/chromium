@@ -131,18 +131,17 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @VisibleForTesting
     static final String START_SHOWN_AT_STARTUP_UMA = "Startup.Android.StartSurfaceShownAtStartup";
+
     private static final String TAG = "StartSurface";
     private static final int MAX_TILE_ROWS_FOR_GRID_MVT = 2;
 
     private final boolean mUseMagicSpace;
 
     // Non-null in SurfaceMode.SINGLE_PANE mode.
-    @Nullable
-    private TasksSurface mTasksSurface;
+    @Nullable private TasksSurface mTasksSurface;
 
     // Non-null in SurfaceMode.SINGLE_PANE mode.
-    @Nullable
-    private PropertyModelChangeProcessor mTasksSurfacePropertyModelChangeProcessor;
+    @Nullable private PropertyModelChangeProcessor mTasksSurfacePropertyModelChangeProcessor;
 
     private PropertyModelChangeProcessor mStartSurfaceWithParentViewPropertyModelChangeProcessor;
     private PropertyModelChangeProcessor mStartSurfacePropertyModelChangeProcessor;
@@ -150,30 +149,25 @@ public class StartSurfaceCoordinator implements StartSurface {
     // TODO(crbug.com/1315676): Remove this once the start surface refactoring is done, since the
     // secondary tasks surface will go away.
     // Non-null in SurfaceMode.SINGLE_PANE mode to show more tabs.
-    @Nullable
-    private TasksSurface mSecondaryTasksSurface;
+    @Nullable private TasksSurface mSecondaryTasksSurface;
 
     // Non-null in SurfaceMode.SINGLE_PANE mode to show more tabs.
     @Nullable
     private PropertyModelChangeProcessor mSecondaryTasksSurfacePropertyModelChangeProcessor;
 
     // Non-null in SurfaceMode.NO_START_SURFACE to show the tabs.
-    @Nullable
-    private TabSwitcher mGridTabSwitcher;
+    @Nullable private TabSwitcher mGridTabSwitcher;
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
-    @Nullable
-    private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
+    @Nullable private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
     // TODO(crbug.com/982018): Get rid of this reference since the mediator keeps a reference to it.
-    @Nullable
-    private PropertyModel mPropertyModel;
+    @Nullable private PropertyModel mPropertyModel;
 
     // Used to remember TabSwitcher.OnTabSelectingListener in SurfaceMode.SINGLE_PANE mode for more
     // tabs surface if necessary.
-    @Nullable
-    private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
+    @Nullable private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
 
     // Whether the {@link initWithNative()} is called.
     private boolean mIsInitializedWithNative;
@@ -198,17 +192,14 @@ public class StartSurfaceCoordinator implements StartSurface {
     private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
 
     // For pull-to-refresh.
-    @Nullable
-    private FeedSwipeRefreshLayout mSwipeRefreshLayout;
+    @Nullable private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     // The single or carousel Tab switcher module on the Start surface.
     // None-null when the Start surface refactoring is enabled.
-    @Nullable
-    private TabSwitcher mTabSwitcherModule;
+    @Nullable private TabSwitcher mTabSwitcherModule;
     // The view of Start surface layout.
     // None-null when the Start surface refactoring is enabled.
-    @Nullable
-    private TasksView mView;
+    @Nullable private TasksView mView;
     private MostVisitedTilesCoordinator mMostVisitedCoordinator;
     private MostVisitedSuggestionsUiDelegate mSuggestionsUiDelegate;
     private TileGroupDelegateImpl mTileGroupDelegate;
@@ -222,6 +213,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         public void addScrollListener(ScrollListener listener) {
             mScrollListeners.addObserver(listener);
         }
+
         @Override
         public void removeScrollListener(ScrollListener listener) {
             mScrollListeners.removeObserver(listener);
@@ -277,12 +269,15 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param profileSupplier Supplies the {@Profile}.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      */
-    public StartSurfaceCoordinator(@NonNull Activity activity,
+    public StartSurfaceCoordinator(
+            @NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull BottomSheetController sheetController,
             @NonNull OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            @NonNull Supplier<Tab> parentTabSupplier, boolean hadWarmStart,
-            @NonNull WindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull Supplier<Tab> parentTabSupplier,
+            boolean hadWarmStart,
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull JankTracker jankTracker,
             @NonNull ViewGroup containerView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabModelSelector tabModelSelector,
@@ -297,7 +292,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull Supplier<Toolbar> toolbarSupplier, BackPressManager backPressManager,
+            @NonNull Supplier<Toolbar> toolbarSupplier,
+            BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler,
             @NonNull ObservableSupplier<Profile> profileSupplier) {
@@ -329,8 +325,8 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicSpace();
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
-        boolean excludeQueryTiles = !mIsStartSurfaceEnabled
-                || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
+        boolean excludeQueryTiles =
+                !mIsStartSurfaceEnabled || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
         mIsStartSurfaceRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
@@ -340,13 +336,26 @@ public class StartSurfaceCoordinator implements StartSurface {
         ViewGroup feedPlaceholderParentView = null;
         if (!mIsStartSurfaceEnabled && !mIsStartSurfaceRefactorEnabled) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
-            mGridTabSwitcher = TabManagementDelegateProvider.getDelegate().createGridTabSwitcher(
-                    activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
-                    browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
-                    containerView, multiWindowModeStateDispatcher, scrimCoordinator,
-                    /* rootView= */ containerView, dynamicResourceLoaderSupplier, snackbarManager,
-                    modalDialogManager, incognitoReauthControllerSupplier, backPressManager,
-                    /* layoutStateProviderSupplier */ null);
+            mGridTabSwitcher =
+                    TabManagementDelegateProvider.getDelegate()
+                            .createGridTabSwitcher(
+                                    activity,
+                                    activityLifecycleDispatcher,
+                                    tabModelSelector,
+                                    tabContentManager,
+                                    browserControlsManager,
+                                    tabCreatorManager,
+                                    menuOrKeyboardActionController,
+                                    containerView,
+                                    multiWindowModeStateDispatcher,
+                                    scrimCoordinator,
+                                    /* rootView= */ containerView,
+                                    dynamicResourceLoaderSupplier,
+                                    snackbarManager,
+                                    modalDialogManager,
+                                    incognitoReauthControllerSupplier,
+                                    backPressManager,
+                                    /* layoutStateProviderSupplier= */ null);
             mTabSwitcherCustomViewManagerSupplier.set(
                     mGridTabSwitcher.getTabSwitcherCustomViewManager());
             controller = mGridTabSwitcher.getController();
@@ -370,15 +379,30 @@ public class StartSurfaceCoordinator implements StartSurface {
             logoContainerView = mView.findViewById(R.id.logo_container);
             feedPlaceholderParentView = mView.findViewById(R.id.tasks_surface_body);
         }
-        mStartSurfaceMediator = new StartSurfaceMediator(controller, containerView,
-                mTabSwitcherModule, mTabModelSelector, mPropertyModel,
-                mTasksSurface != null ? this::initializeSecondaryTasksSurface : null,
-                mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
-                this::isActivityFinishingOrDestroyed, mTabCreatorManager, excludeQueryTiles,
-                startSurfaceOneshotSupplier, hadWarmStart, initializeMVTilesRunnable,
-                mParentTabSupplier, logoContainerView,
-                mGridTabSwitcher == null ? backPressManager : null, feedPlaceholderParentView,
-                mActivityLifecycleDispatcher, tabSwitcherClickHandler, mProfileSupplier);
+        mStartSurfaceMediator =
+                new StartSurfaceMediator(
+                        controller,
+                        containerView,
+                        mTabSwitcherModule,
+                        mTabModelSelector,
+                        mPropertyModel,
+                        mTasksSurface != null ? this::initializeSecondaryTasksSurface : null,
+                        mIsStartSurfaceEnabled,
+                        mActivity,
+                        mBrowserControlsManager,
+                        this::isActivityFinishingOrDestroyed,
+                        mTabCreatorManager,
+                        excludeQueryTiles,
+                        startSurfaceOneshotSupplier,
+                        hadWarmStart,
+                        initializeMVTilesRunnable,
+                        mParentTabSupplier,
+                        logoContainerView,
+                        mGridTabSwitcher == null ? backPressManager : null,
+                        feedPlaceholderParentView,
+                        mActivityLifecycleDispatcher,
+                        tabSwitcherClickHandler,
+                        mProfileSupplier);
 
         startSurfaceOneshotSupplier.set(this);
     }
@@ -514,24 +538,40 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitializedWithNative = true;
         if (mIsStartSurfaceEnabled) {
-            ViewGroup parentView = mView != null ? mView.getBodyViewContainer()
-                                                 : mTasksSurface.getBodyViewContainer();
-            mExploreSurfaceCoordinatorFactory = new ExploreSurfaceCoordinatorFactory(mActivity,
-                    parentView, mPropertyModel, mBottomSheetController, mParentTabSupplier,
-                    new ScrollableContainerDelegateImpl(), mSnackbarManager, mShareDelegateSupplier,
-                    mWindowAndroid, mJankTracker, mTabModelSelector, mToolbarSupplier,
-                    mConstructedTimeNs, mSwipeRefreshLayout);
+            ViewGroup parentView =
+                    mView != null
+                            ? mView.getBodyViewContainer()
+                            : mTasksSurface.getBodyViewContainer();
+            mExploreSurfaceCoordinatorFactory =
+                    new ExploreSurfaceCoordinatorFactory(
+                            mActivity,
+                            parentView,
+                            mPropertyModel,
+                            mBottomSheetController,
+                            mParentTabSupplier,
+                            new ScrollableContainerDelegateImpl(),
+                            mSnackbarManager,
+                            mShareDelegateSupplier,
+                            mWindowAndroid,
+                            mJankTracker,
+                            mTabModelSelector,
+                            mToolbarSupplier,
+                            mConstructedTimeNs,
+                            mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
                 mExploreSurfaceCoordinatorFactory,
-                UserPrefs.get(Profile.getLastUsedRegularProfile()), mSnackbarManager);
+                UserPrefs.get(Profile.getLastUsedRegularProfile()),
+                mSnackbarManager);
 
         if (mGridTabSwitcher != null) {
             mGridTabSwitcher.initWithNative();
         }
         if (mTasksSurface != null) {
-            mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStubSupplier.get(),
+            mTasksSurface.onFinishNativeInitialization(
+                    mActivity,
+                    mOmniboxStubSupplier.get(),
                     mStartSurfaceMediator.getFeedReliabilityLogger());
         }
 
@@ -544,7 +584,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsSecondaryTaskInitPending) {
             mIsSecondaryTaskInitPending = false;
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mOmniboxStubSupplier.get(), /*feedReliabilityLogger=*/null);
+                    mActivity, mOmniboxStubSupplier.get(), /* feedReliabilityLogger= */ null);
             mSecondaryTasksSurface.initialize();
         }
     }
@@ -760,7 +800,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public ObservableSupplier<TabSwitcherCustomViewManager>
-    getTabSwitcherCustomViewManagerSupplier() {
+            getTabSwitcherCustomViewManagerSupplier() {
         return mTabSwitcherCustomViewManagerSupplier;
     }
 
@@ -790,12 +830,18 @@ public class StartSurfaceCoordinator implements StartSurface {
      *         to detect pending re-auth when tab switcher is shown.
      * @return The {@link TasksSurface}.
      */
-    TasksSurface createTasksSurface(@NonNull Activity activity,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull PropertyModel propertyModel,
-            @TabSwitcherType int tabSwitcherType, @NonNull Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, boolean hasQueryTiles, @NonNull WindowAndroid windowAndroid,
+    TasksSurface createTasksSurface(
+            @NonNull Activity activity,
+            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull PropertyModel propertyModel,
+            @TabSwitcherType int tabSwitcherType,
+            @NonNull Supplier<Tab> parentTabSupplier,
+            boolean hasMVTiles,
+            boolean hasQueryTiles,
+            @NonNull WindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector, @NonNull SnackbarManager snackbarManager,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull ModalDialogManager modalDialogManager,
@@ -804,14 +850,29 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ViewGroup rootView,
-            @Nullable OneshotSupplier<IncognitoReauthController>
-                    incognitoReauthControllerSupplier) {
-        return new TasksSurfaceCoordinator(activity, scrimCoordinator, propertyModel,
-                tabSwitcherType, parentTabSupplier, hasMVTiles, hasQueryTiles, windowAndroid,
-                activityLifecycleDispatcher, tabModelSelector, snackbarManager,
-                dynamicResourceLoaderSupplier, tabContentManager, modalDialogManager,
-                browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
-                multiWindowModeStateDispatcher, rootView, incognitoReauthControllerSupplier);
+            @Nullable
+                    OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
+        return new TasksSurfaceCoordinator(
+                activity,
+                scrimCoordinator,
+                propertyModel,
+                tabSwitcherType,
+                parentTabSupplier,
+                hasMVTiles,
+                hasQueryTiles,
+                windowAndroid,
+                activityLifecycleDispatcher,
+                tabModelSelector,
+                snackbarManager,
+                dynamicResourceLoaderSupplier,
+                tabContentManager,
+                modalDialogManager,
+                browserControlsStateProvider,
+                tabCreatorManager,
+                menuOrKeyboardActionController,
+                multiWindowModeStateDispatcher,
+                rootView,
+                incognitoReauthControllerSupplier);
     }
 
     public boolean isInitPendingForTesting() {
@@ -850,9 +911,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         return mTileGroupDelegate;
     }
 
-    /**
-     * Called only when Start Surface is enabled.
-     */
+    /** Called only when Start Surface is enabled. */
     private void createAndSetStartSurface(boolean excludeQueryTiles) {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(TasksSurfaceProperties.ALL_KEYS));
@@ -863,20 +922,37 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         int tabSwitcherType =
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()
-                ? TabSwitcherType.SINGLE
-                : TabSwitcherType.CAROUSEL;
-        mTasksSurface = createTasksSurface(mActivity, mScrimCoordinator, mPropertyModel,
-                tabSwitcherType, mParentTabSupplier, true, !excludeQueryTiles, mWindowAndroid,
-                mActivityLifecycleDispatcher, mTabModelSelector, mSnackbarManager,
-                mDynamicResourceLoaderSupplier, mTabContentManager, mModalDialogManager,
-                mBrowserControlsManager, mTabCreatorManager, mMenuOrKeyboardActionController,
-                mMultiWindowModeStateDispatcher, mContainerView, null);
+                        ? TabSwitcherType.SINGLE
+                        : TabSwitcherType.CAROUSEL;
+        mTasksSurface =
+                createTasksSurface(
+                        mActivity,
+                        mScrimCoordinator,
+                        mPropertyModel,
+                        tabSwitcherType,
+                        mParentTabSupplier,
+                        true,
+                        !excludeQueryTiles,
+                        mWindowAndroid,
+                        mActivityLifecycleDispatcher,
+                        mTabModelSelector,
+                        mSnackbarManager,
+                        mDynamicResourceLoaderSupplier,
+                        mTabContentManager,
+                        mModalDialogManager,
+                        mBrowserControlsManager,
+                        mTabCreatorManager,
+                        mMenuOrKeyboardActionController,
+                        mMultiWindowModeStateDispatcher,
+                        mContainerView,
+                        null);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         initializeOffsetChangedListener();
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
 
         mTasksSurfacePropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mPropertyModel,
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel,
                         new StartSurfaceWithParentViewBinder.ViewHolder(
                                 mContainerView, mTasksSurface.getView(), mSwipeRefreshLayout),
                         StartSurfaceWithParentViewBinder::bind);
@@ -894,30 +970,44 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (!mUseMagicSpace) {
             tabSwitcherType =
                     StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()
-                    ? TabSwitcherType.SINGLE
-                    : TabSwitcherType.CAROUSEL;
+                            ? TabSwitcherType.SINGLE
+                            : TabSwitcherType.CAROUSEL;
         }
 
         if (!mIsSurfacePolishEnabled) {
-            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
-                    R.layout.tasks_view_layout, null);
+            mView =
+                    (TasksView)
+                            LayoutInflater.from(mActivity)
+                                    .inflate(R.layout.tasks_view_layout, null);
         } else {
-            mView = (TasksView) LayoutInflater.from(mActivity).inflate(
-                    R.layout.tasks_view_layout_polish, null);
+            mView =
+                    (TasksView)
+                            LayoutInflater.from(mActivity)
+                                    .inflate(R.layout.tasks_view_layout_polish, null);
         }
         mView.setId(R.id.primary_tasks_surface_view);
-        mView.initialize(mActivityLifecycleDispatcher,
+        mView.initialize(
+                mActivityLifecycleDispatcher,
                 mParentTabSupplier.hasValue() && mParentTabSupplier.get().isIncognito(),
                 mWindowAndroid);
         if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
             mTabSwitcherModule =
-                    TabManagementDelegateProvider.getDelegate().createCarouselTabSwitcher(mActivity,
-                            mActivityLifecycleDispatcher, mTabModelSelector, mTabContentManager,
-                            mBrowserControlsManager, mTabCreatorManager,
-                            mMenuOrKeyboardActionController,
-                            mView.getCarouselTabSwitcherContainer(),
-                            mMultiWindowModeStateDispatcher, mScrimCoordinator, mView,
-                            mDynamicResourceLoaderSupplier, mSnackbarManager, mModalDialogManager);
+                    TabManagementDelegateProvider.getDelegate()
+                            .createCarouselTabSwitcher(
+                                    mActivity,
+                                    mActivityLifecycleDispatcher,
+                                    mTabModelSelector,
+                                    mTabContentManager,
+                                    mBrowserControlsManager,
+                                    mTabCreatorManager,
+                                    mMenuOrKeyboardActionController,
+                                    mView.getCarouselTabSwitcherContainer(),
+                                    mMultiWindowModeStateDispatcher,
+                                    mScrimCoordinator,
+                                    mView,
+                                    mDynamicResourceLoaderSupplier,
+                                    mSnackbarManager,
+                                    mModalDialogManager);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
             // is only created on phones.
@@ -928,28 +1018,34 @@ public class StartSurfaceCoordinator implements StartSurface {
                             null,
                             mTabModelSelector,
                             /* isShownOnNtp= */ false,
-                            /* isTablet */ false,
-                            /* isScrollableMvtEnabled */ true,
+                            /* isTablet= */ false,
+                            /* isScrollableMvtEnabled= */ true,
                             /* mostRecentTab= */ null,
-                            /* singleTabCardClickedCallback */ null,
-                            /* snapshotParentViewRunnable */ null,
+                            /* singleTabCardClickedCallback= */ null,
+                            /* snapshotParentViewRunnable= */ null,
                             mTabContentManager,
                             null);
         }
         boolean isScrollableMVTEnabled =
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);
-        int maxRowsForGridMVT = getQueryTilesVisibility()
-                ? QueryTileSection.getMaxRowsForMostVisitedTiles(mActivity)
-                : MAX_TILE_ROWS_FOR_GRID_MVT;
+        int maxRowsForGridMVT =
+                getQueryTilesVisibility()
+                        ? QueryTileSection.getMaxRowsForMostVisitedTiles(mActivity)
+                        : MAX_TILE_ROWS_FOR_GRID_MVT;
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
-        mMostVisitedCoordinator = new MostVisitedTilesCoordinator(mActivity,
-                mActivityLifecycleDispatcher, mvTilesContainer, mWindowAndroid,
-                TabUiFeatureUtilities.supportInstantStart(
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity), mActivity),
-                isScrollableMVTEnabled,
-                isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
-                /*snapshotTileGridChangedRunnable=*/null,
-                /*tileCountChangedRunnable=*/null);
+        mMostVisitedCoordinator =
+                new MostVisitedTilesCoordinator(
+                        mActivity,
+                        mActivityLifecycleDispatcher,
+                        mvTilesContainer,
+                        mWindowAndroid,
+                        TabUiFeatureUtilities.supportInstantStart(
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                                mActivity),
+                        isScrollableMVTEnabled,
+                        isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
+                        /* snapshotTileGridChangedRunnable= */ null,
+                        /* tileCountChangedRunnable= */ null);
 
         if (!excludeQueryTiles) {
             if (ProfileManager.isInitialized()) {
@@ -964,7 +1060,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
 
         mStartSurfaceWithParentViewPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mPropertyModel,
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel,
                         new StartSurfaceWithParentViewBinder.ViewHolder(
                                 mContainerView, mView, mSwipeRefreshLayout),
                         StartSurfaceWithParentViewBinder::bind);
@@ -981,17 +1078,31 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         PropertyModel propertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
         mStartSurfaceMediator.setSecondaryTasksSurfacePropertyModel(propertyModel);
-        mSecondaryTasksSurface = createTasksSurface(mActivity, mScrimCoordinator, propertyModel,
-                TabSwitcherType.GRID, mParentTabSupplier,
-                /* hasMVTiles= */ false, /* hasQueryTiles= */ false, mWindowAndroid,
-                mActivityLifecycleDispatcher, mTabModelSelector, mSnackbarManager,
-                mDynamicResourceLoaderSupplier, mTabContentManager, mModalDialogManager,
-                mBrowserControlsManager, mTabCreatorManager, mMenuOrKeyboardActionController,
-                mMultiWindowModeStateDispatcher, mContainerView,
-                mIncognitoReauthControllerSupplier);
+        mSecondaryTasksSurface =
+                createTasksSurface(
+                        mActivity,
+                        mScrimCoordinator,
+                        propertyModel,
+                        TabSwitcherType.GRID,
+                        mParentTabSupplier,
+                        /* hasMVTiles= */ false,
+                        /* hasQueryTiles= */ false,
+                        mWindowAndroid,
+                        mActivityLifecycleDispatcher,
+                        mTabModelSelector,
+                        mSnackbarManager,
+                        mDynamicResourceLoaderSupplier,
+                        mTabContentManager,
+                        mModalDialogManager,
+                        mBrowserControlsManager,
+                        mTabCreatorManager,
+                        mMenuOrKeyboardActionController,
+                        mMultiWindowModeStateDispatcher,
+                        mContainerView,
+                        mIncognitoReauthControllerSupplier);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mOmniboxStubSupplier.get(), /*feedReliabilityLogger=*/null);
+                    mActivity, mOmniboxStubSupplier.get(), /* feedReliabilityLogger= */ null);
             mSecondaryTasksSurface.initialize();
         } else {
             mIsSecondaryTaskInitPending = true;
@@ -999,7 +1110,8 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mSecondaryTasksSurface.getView().setId(R.id.secondary_tasks_surface_view);
         mSecondaryTasksSurfacePropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mPropertyModel,
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel,
                         new StartSurfaceWithParentViewBinder.ViewHolder(
                                 mContainerView, mSecondaryTasksSurface.getView(), null),
                         SecondaryTasksSurfaceViewBinder::bind);
@@ -1024,16 +1136,15 @@ public class StartSurfaceCoordinator implements StartSurface {
     private boolean isActivityFinishingOrDestroyed() {
         boolean finishingOrDestroyed =
                 mChromeActivityNativeDelegate.isActivityFinishingOrDestroyed()
-                || ApplicationStatus.getStateForActivity(mActivity) == ActivityState.DESTROYED;
+                        || ApplicationStatus.getStateForActivity(mActivity)
+                                == ActivityState.DESTROYED;
         // TODO(crbug.com/1047488): Assert false. Do not do that in this CL to keep it small since
         // Start surface is eanbled in the fieldtrial_testing_config.json, which requires update of
         // the other browser tests.
         return finishingOrDestroyed;
     }
 
-    /**
-     * Creates a {@link SwipeRefreshLayout} to do a pull-to-refresh.
-     */
+    /** Creates a {@link SwipeRefreshLayout} to do a pull-to-refresh. */
     private void createSwipeRefreshLayout() {
         assert mSwipeRefreshLayout == null;
         mSwipeRefreshLayout = FeedSwipeRefreshLayout.create(mActivity, R.id.toolbar_container);
@@ -1066,7 +1177,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             }
         }
 
-        return getPixelSize(R.dimen.ntp_logo_height) + getPixelSize(R.dimen.ntp_logo_margin_top)
+        return getPixelSize(R.dimen.ntp_logo_height)
+                + getPixelSize(R.dimen.ntp_logo_margin_top)
                 + getPixelSize(R.dimen.ntp_logo_margin_bottom);
     }
 
@@ -1093,56 +1205,61 @@ public class StartSurfaceCoordinator implements StartSurface {
         // mean the values of the real search box.
         int realHeight = getPixelSize(R.dimen.toolbar_height_no_shadow) - realVerticalMargin * 2;
         int fakeHeightForAnimation = getPixelSize(R.dimen.ntp_search_box_height);
-        int fakeHeightBeforeAnimation = mIsSurfacePolishEnabled
-                ? getPixelSize(R.dimen.ntp_search_box_height_polish)
-                : fakeHeightForAnimation;
+        int fakeHeightBeforeAnimation =
+                mIsSurfacePolishEnabled
+                        ? getPixelSize(R.dimen.ntp_search_box_height_polish)
+                        : fakeHeightForAnimation;
         // The gap between the top of fake box and its final position for Phase 2A to start.
         int heightReducedBeforeRealAnimation = fakeHeightBeforeAnimation - fakeHeightForAnimation;
 
-        int fakeEndPadding = mIsSurfacePolishEnabled
-                ? getPixelSize(R.dimen.fake_search_box_end_padding)
-                : getPixelSize(R.dimen.search_box_end_padding);
+        int fakeEndPadding =
+                mIsSurfacePolishEnabled
+                        ? getPixelSize(R.dimen.fake_search_box_end_padding)
+                        : getPixelSize(R.dimen.search_box_end_padding);
         // realEndPadding is 0 when surface is not polished;
         int realEndPadding =
-            mIsSurfacePolishEnabled
-                ? getPixelSize(R.dimen.location_bar_end_padding)
-                + getPixelSize(R.dimen.location_bar_url_action_offset_polish)
-                : 0;
+                mIsSurfacePolishEnabled
+                        ? getPixelSize(R.dimen.location_bar_end_padding)
+                                + getPixelSize(R.dimen.location_bar_url_action_offset_polish)
+                        : 0;
         int endPaddingDiff = fakeEndPadding - realEndPadding;
 
         // fakeTranslationX is 0;
         int realTranslationX;
         if (mIsSurfacePolishEnabled) {
             realTranslationX =
-                OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(mActivity)
-                    + getPixelSize(R.dimen.status_view_highlight_size)
-                    + getPixelSize(
-                    OmniboxFeatures.shouldShowModernizeVisualUpdate(mActivity)
-                        && OmniboxFeatures.shouldShowSmallBottomMargin()
-                        ? R.dimen.location_bar_icon_end_padding_focused_smaller
-                        : R.dimen.location_bar_icon_end_padding_focused)
-                    - getPixelSize(R.dimen.fake_search_box_start_padding);
+                    OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(mActivity)
+                            + getPixelSize(R.dimen.status_view_highlight_size)
+                            + getPixelSize(
+                                    OmniboxFeatures.shouldShowModernizeVisualUpdate(mActivity)
+                                                    && OmniboxFeatures.shouldShowSmallBottomMargin()
+                                            ? R.dimen.location_bar_icon_end_padding_focused_smaller
+                                            : R.dimen.location_bar_icon_end_padding_focused)
+                            - getPixelSize(R.dimen.fake_search_box_start_padding);
         } else {
             realTranslationX =
-                getPixelSize(R.dimen.location_bar_status_icon_width)
-                    + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
-                    + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
-                    - (getPixelSize(R.dimen.search_box_start_padding)));
+                    getPixelSize(R.dimen.location_bar_status_icon_width)
+                            + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+                            + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
+                                    - (getPixelSize(R.dimen.search_box_start_padding)));
         }
 
-        int fakeButtonSize = mIsSurfacePolishEnabled
-                ? getPixelSize(R.dimen.location_bar_action_icon_width)
-                : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_size);
+        int fakeButtonSize =
+                mIsSurfacePolishEnabled
+                        ? getPixelSize(R.dimen.location_bar_action_icon_width)
+                        : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_size);
         int realButtonSize = getPixelSize(R.dimen.location_bar_action_icon_width);
 
-        int fakeLensButtonStartMargin = mIsSurfacePolishEnabled
-                ? 0
-                : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
+        int fakeLensButtonStartMargin =
+                mIsSurfacePolishEnabled
+                        ? 0
+                        : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
         // realLensButtonStartMargin is 0;
 
-        float fakeSearchTextSize = mIsSurfacePolishEnabled
-            ? getTextSizeFromDimen(R.dimen.location_bar_url_text_size_polish)
-            : getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
+        float fakeSearchTextSize =
+                mIsSurfacePolishEnabled
+                        ? getTextSizeFromDimen(R.dimen.location_bar_url_text_size_polish)
+                        : getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
         float realSearchTextSize = getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
 
         TasksView tasksView = mTasksSurface != null ? (TasksView) mTasksSurface.getView() : mView;
@@ -1193,8 +1310,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
                     int fakeAndRealHeightDiff = fakeHeight - realHeight;
                     // When the fake search box top is scrolled to the search box top, start to
-                    // reduce
-                    // fake search box's height until it's the same as the real search box.
+                    // reduce fake search box's height until it's the same as the real search box.
                     int reducedHeight =
                             MathUtils.clamp(
                                     scrolledHeight - fakeSearchBoxToRealSearchBoxTop,
@@ -1243,8 +1359,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         Resources resources = mActivity.getResources();
         resources.getValue(id, typedValue, true);
 
-        if (typedValue.type == TypedValue.TYPE_DIMENSION &&
-            (typedValue.data & TypedValue.COMPLEX_UNIT_MASK) == TypedValue.COMPLEX_UNIT_SP) {
+        if (typedValue.type == TypedValue.TYPE_DIMENSION
+                && (typedValue.data & TypedValue.COMPLEX_UNIT_MASK) == TypedValue.COMPLEX_UNIT_SP) {
             return TypedValue.complexToFloat(typedValue.data);
         }
 
@@ -1252,7 +1368,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     public void initializeMVTiles() {
-        if (!LibraryLoader.getInstance().isInitialized() || mIsMVTilesInitialized
+        if (!LibraryLoader.getInstance().isInitialized()
+                || mIsMVTilesInitialized
                 || mMostVisitedCoordinator == null) {
             return;
         }
@@ -1260,10 +1377,16 @@ public class StartSurfaceCoordinator implements StartSurface {
         Profile profile = Profile.getLastUsedRegularProfile();
         MostVisitedTileNavigationDelegate navigationDelegate =
                 new MostVisitedTileNavigationDelegate(mActivity, profile, mParentTabSupplier);
-        mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(
-                mView, navigationDelegate, profile, mSnackbarManager);
-        mTileGroupDelegate = new TileGroupDelegateImpl(mActivity, profile, navigationDelegate,
-                mSnackbarManager, BrowserUiUtils.HostSurface.START_SURFACE);
+        mSuggestionsUiDelegate =
+                new MostVisitedSuggestionsUiDelegate(
+                        mView, navigationDelegate, profile, mSnackbarManager);
+        mTileGroupDelegate =
+                new TileGroupDelegateImpl(
+                        mActivity,
+                        profile,
+                        navigationDelegate,
+                        mSnackbarManager,
+                        BrowserUiUtils.HostSurface.START_SURFACE);
 
         mMostVisitedCoordinator.initWithNative(
                 mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});
@@ -1271,13 +1394,13 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     private void storeQueryTilesVisibility(boolean isShown) {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, isShown);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, isShown);
     }
 
     private boolean getQueryTilesVisibility() {
-        return ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, false);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, false);
     }
 
     private void initializeQueryTileSection(Profile profile) {
@@ -1288,8 +1411,11 @@ public class StartSurfaceCoordinator implements StartSurface {
             storeQueryTilesVisibility(false);
             return;
         }
-        mQueryTileSection = new QueryTileSection(mView.findViewById(R.id.query_tiles_layout),
-                profile, query -> performSearchQuery(query.queryText, query.searchParams));
+        mQueryTileSection =
+                new QueryTileSection(
+                        mView.findViewById(R.id.query_tiles_layout),
+                        profile,
+                        query -> performSearchQuery(query.queryText, query.searchParams));
         storeQueryTilesVisibility(true);
         mProfileSupplier.removeObserver(this::initializeQueryTileSection);
     }

@@ -326,7 +326,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
         if (!needsUpgrade) {
             if (!mStorage.didPreviousUpdateSucceed() || mStorage.shouldForceUpdate()) {
-                onFinishedUpdate(mStorage, WebApkInstallResult.SUCCESS, false /* relaxUpdates */);
+                onFinishedUpdate(mStorage, WebApkInstallResult.SUCCESS, /* relaxUpdates= */ false);
             }
             return;
         }
@@ -463,7 +463,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     protected void onUserApprovedUpdate(int dismissalCause) {
         // Set WebAPK update as having failed in case that Chrome is killed prior to
         // {@link onBuiltWebApk} being called.
-        recordUpdate(mStorage, WebApkInstallResult.FAILURE, false /* relaxUpdates*/);
+        recordUpdate(mStorage, WebApkInstallResult.FAILURE, /* relaxUpdates= */ false);
 
         // Continue if the user explicitly allows the update using the button, or isn't interested
         // in the update dialog warning (presses Back). Otherwise, they can be left in a state where
@@ -526,7 +526,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 (success) -> {
                     if (!success) {
                         onFinishedUpdate(
-                                mStorage, WebApkInstallResult.FAILURE, false /* relaxUpdates*/);
+                                mStorage, WebApkInstallResult.FAILURE, /* relaxUpdates= */ false);
                         return;
                     }
                     scheduleUpdate();
@@ -565,7 +565,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         if (mStorage.shouldForceUpdate()) {
             // Start an update task ASAP for forced updates.
             updateTask =
-                    TaskInfo.createOneOffTask(TaskIds.WEBAPK_UPDATE_JOB_ID, 0 /* windowEndTimeMs */)
+                    TaskInfo.createOneOffTask(
+                                    TaskIds.WEBAPK_UPDATE_JOB_ID, /* windowEndTimeMs= */ 0)
                             .setUpdateCurrent(true)
                             .setIsPersisted(true)
                             .build();

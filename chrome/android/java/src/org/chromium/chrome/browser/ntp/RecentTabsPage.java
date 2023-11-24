@@ -29,11 +29,15 @@ import org.chromium.ui.base.ViewUtils;
  * synced devices, and snapshot documents sent from Chrome to Mobile in an expandable list view.
  */
 public class RecentTabsPage
-        implements NativePage, ExpandableListView.OnChildClickListener,
-                   ExpandableListView.OnGroupCollapseListener,
-                   ExpandableListView.OnGroupExpandListener, RecentTabsManager.UpdatedCallback,
-                   View.OnAttachStateChangeListener, View.OnCreateContextMenuListener,
-                   InvalidationAwareThumbnailProvider, BrowserControlsStateProvider.Observer {
+        implements NativePage,
+                ExpandableListView.OnChildClickListener,
+                ExpandableListView.OnGroupCollapseListener,
+                ExpandableListView.OnGroupExpandListener,
+                RecentTabsManager.UpdatedCallback,
+                View.OnAttachStateChangeListener,
+                View.OnCreateContextMenuListener,
+                InvalidationAwareThumbnailProvider,
+                BrowserControlsStateProvider.Observer {
     private final Activity mActivity;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ExpandableListView mListView;
@@ -50,9 +54,7 @@ public class RecentTabsPage
     private int mSnapshotWidth;
     private int mSnapshotHeight;
 
-    /**
-     * Whether {@link #mView} is attached to the application window.
-     */
+    /** Whether {@link #mView} is attached to the application window. */
     private boolean mIsAttachedToWindow;
 
     /**
@@ -63,8 +65,11 @@ public class RecentTabsPage
      * @param pageHost The NativePageHost used to provide a history navigation delegate object.
      * @param browserControlsManager The BrowserControlsManager used to provide offset values.
      */
-    public RecentTabsPage(Activity activity, RecentTabsManager recentTabsManager,
-            NativePageHost pageHost, BrowserControlsStateProvider browserControlsStateProvider) {
+    public RecentTabsPage(
+            Activity activity,
+            RecentTabsManager recentTabsManager,
+            NativePageHost pageHost,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
         mPageHost = pageHost;
@@ -88,7 +93,8 @@ public class RecentTabsPage
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mBrowserControlsStateProvider.addObserver(this);
-            onBottomControlsHeightChanged(mBrowserControlsStateProvider.getBottomControlsHeight(),
+            onBottomControlsHeightChanged(
+                    mBrowserControlsStateProvider.getBottomControlsHeight(),
                     mBrowserControlsStateProvider.getBottomControlsMinHeight());
         } else {
             mBrowserControlsStateProvider = null;
@@ -146,8 +152,7 @@ public class RecentTabsPage
     }
 
     @Override
-    public void updateForUrl(String url) {
-    }
+    public void updateForUrl(String url) {}
 
     // View.OnAttachStateChangeListener
     @Override
@@ -170,8 +175,8 @@ public class RecentTabsPage
 
     // ExpandableListView.OnChildClickedListener
     @Override
-    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-            int childPosition, long id) {
+    public boolean onChildClick(
+            ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
         return mAdapter.getGroup(groupPosition).onChildClick(childPosition);
     }
 
@@ -218,8 +223,8 @@ public class RecentTabsPage
             mAdapter.getGroup(groupPosition).onCreateContextMenuForGroup(menu, mActivity);
         } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
             int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
-            mAdapter.getGroup(groupPosition).onCreateContextMenuForChild(childPosition, menu,
-                    mActivity);
+            mAdapter.getGroup(groupPosition)
+                    .onCreateContextMenuForChild(childPosition, menu, mActivity);
         }
     }
 
@@ -260,8 +265,12 @@ public class RecentTabsPage
     }
 
     @Override
-    public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+    public void onControlsOffsetChanged(
+            int topOffset,
+            int topControlsMinHeightOffset,
+            int bottomOffset,
+            int bottomControlsMinHeightOffset,
+            boolean needsAnimate) {
         updateMargins();
     }
 

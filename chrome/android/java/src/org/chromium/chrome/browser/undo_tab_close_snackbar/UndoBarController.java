@@ -51,74 +51,84 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      * @param snackbarManageable The holder class to get the manager that helps to show up snackbar.
      * @param dialogVisibilitySupplier The {@link Supplier} to get the visibility of TabGridDialog.
      */
-    public UndoBarController(Context context, TabModelSelector selector,
+    public UndoBarController(
+            Context context,
+            TabModelSelector selector,
             SnackbarManageable snackbarManageable,
             @Nullable Supplier<Boolean> dialogVisibilitySupplier) {
         mSnackbarManagable = snackbarManageable;
         mTabModelSelector = selector;
         mContext = context;
 
-        mTabModelObserver = new TabModelObserver() {
-            /**
-             * Decides whether we should disable an attempt to show/hide the undo bar.
-             * @param showingUndoBar indicates whether the expected behavior of the caller is to
-             *         show or dismiss the undo bar.
-             */
-            private boolean disableUndo(boolean showingUndoBar) {
-                // When closure(s) happen and we are trying to show the undo bar, check whether the
-                // TabGridDialog is showing. If so, don't show the undo bar because TabGridDialog
-                // has its own undo bar. See crbug.com/1119899. Note that we don't disable attempts
-                // to dismiss snack bar to make sure that snack bar state is in sync with tab model.
-                return showingUndoBar && dialogVisibilitySupplier != null
-                        && dialogVisibilitySupplier.get();
-            }
+        mTabModelObserver =
+                new TabModelObserver() {
+                    /**
+                     * Decides whether we should disable an attempt to show/hide the undo bar.
+                     * @param showingUndoBar indicates whether the expected behavior of the caller is to
+                     *         show or dismiss the undo bar.
+                     */
+                    private boolean disableUndo(boolean showingUndoBar) {
+                        // When closure(s) happen and we are trying to show the undo bar, check
+                        // whether the TabGridDialog is showing. If so, don't show the undo bar
+                        // because TabGridDialog has its own undo bar. See crbug.com/1119899. Note
+                        // that we don't disable attempts to dismiss snack bar to make sure that
+                        // snack bar state is in sync with tab model.
+                        return showingUndoBar
+                                && dialogVisibilitySupplier != null
+                                && dialogVisibilitySupplier.get();
+                    }
 
-            @Override
-            public void tabPendingClosure(Tab tab) {
-                if (disableUndo(true)) return;
-                showUndoBar(tab.getId(), tab.getTitle());
-            }
+                    @Override
+                    public void tabPendingClosure(Tab tab) {
+                        if (disableUndo(true)) return;
+                        showUndoBar(tab.getId(), tab.getTitle());
+                    }
 
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                if (disableUndo(false)) return;
-                mSnackbarManagable.getSnackbarManager().dismissSnackbars(
-                        UndoBarController.this, tab.getId());
-            }
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        if (disableUndo(false)) return;
+                        mSnackbarManagable
+                                .getSnackbarManager()
+                                .dismissSnackbars(UndoBarController.this, tab.getId());
+                    }
 
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                if (disableUndo(false)) return;
-                mSnackbarManagable.getSnackbarManager().dismissSnackbars(
-                        UndoBarController.this, tab.getId());
-            }
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        if (disableUndo(false)) return;
+                        mSnackbarManagable
+                                .getSnackbarManager()
+                                .dismissSnackbars(UndoBarController.this, tab.getId());
+                    }
 
-            @Override
-            public void onFinishingMultipleTabClosure(List<Tab> tabs) {
-                if (disableUndo(false)) return;
-                mSnackbarManagable.getSnackbarManager().dismissSnackbars(
-                        UndoBarController.this, tabs);
-            }
+                    @Override
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                        if (disableUndo(false)) return;
+                        mSnackbarManagable
+                                .getSnackbarManager()
+                                .dismissSnackbars(UndoBarController.this, tabs);
+                    }
 
-            @Override
-            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
-                if (disableUndo(true)) return;
+                    @Override
+                    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                        if (disableUndo(true)) return;
 
-                if (tabs.size() == 1) {
-                    tabPendingClosure(tabs.get(0));
-                    return;
-                }
+                        if (tabs.size() == 1) {
+                            tabPendingClosure(tabs.get(0));
+                            return;
+                        }
 
-                // "Undo close all" bar can be reused for undoing close multiple tabs.
-                showUndoCloseMultipleBar(tabs, isAllTabs);
-            }
+                        // "Undo close all" bar can be reused for undoing close multiple tabs.
+                        showUndoCloseMultipleBar(tabs, isAllTabs);
+                    }
 
-            @Override
-            public void allTabsClosureCommitted(boolean isIncognito) {
-                if (disableUndo(false)) return;
-                mSnackbarManagable.getSnackbarManager().dismissSnackbars(UndoBarController.this);
-            }
-        };
+                    @Override
+                    public void allTabsClosureCommitted(boolean isIncognito) {
+                        if (disableUndo(false)) return;
+                        mSnackbarManagable
+                                .getSnackbarManager()
+                                .dismissSnackbars(UndoBarController.this);
+                    }
+                };
     }
 
     /**
@@ -146,12 +156,19 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      * @param content The title of the tab.
      */
     private void showUndoBar(int tabId, String content) {
-        mSnackbarManagable.getSnackbarManager().showSnackbar(
-                Snackbar.make(content, this, Snackbar.TYPE_ACTION, Snackbar.UMA_TAB_CLOSE_UNDO)
-                        .setTemplateText(mContext.getString(R.string.undo_bar_close_message))
-                        .setAction(mContext.getString(R.string.undo), tabId)
-                        .setActionAccessibilityAnnouncement(
-                                getUndoneAccessibilityAnnouncement(content, false)));
+        mSnackbarManagable
+                .getSnackbarManager()
+                .showSnackbar(
+                        Snackbar.make(
+                                        content,
+                                        this,
+                                        Snackbar.TYPE_ACTION,
+                                        Snackbar.UMA_TAB_CLOSE_UNDO)
+                                .setTemplateText(
+                                        mContext.getString(R.string.undo_bar_close_message))
+                                .setAction(mContext.getString(R.string.undo), tabId)
+                                .setActionAccessibilityAnnouncement(
+                                        getUndoneAccessibilityAnnouncement(content, false)));
     }
 
     /**
@@ -165,16 +182,25 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      */
     private void showUndoCloseMultipleBar(List<Tab> closedTabs, boolean isAllTabs) {
         String content = String.format(Locale.getDefault(), "%d", closedTabs.size());
-        mSnackbarManagable.getSnackbarManager().showSnackbar(
-                Snackbar.make(content, this, Snackbar.TYPE_ACTION,
-                                isAllTabs ? Snackbar.UMA_TAB_CLOSE_ALL_UNDO
-                                          : Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
-                        .setDuration(isAllTabs ? SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS
-                                               : SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS)
-                        .setTemplateText(mContext.getString(R.string.undo_bar_close_all_message))
-                        .setAction(mContext.getString(R.string.undo), closedTabs)
-                        .setActionAccessibilityAnnouncement(
-                                getUndoneAccessibilityAnnouncement(content, true)));
+        mSnackbarManagable
+                .getSnackbarManager()
+                .showSnackbar(
+                        Snackbar.make(
+                                        content,
+                                        this,
+                                        Snackbar.TYPE_ACTION,
+                                        isAllTabs
+                                                ? Snackbar.UMA_TAB_CLOSE_ALL_UNDO
+                                                : Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
+                                .setDuration(
+                                        isAllTabs
+                                                ? SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS
+                                                : SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS)
+                                .setTemplateText(
+                                        mContext.getString(R.string.undo_bar_close_all_message))
+                                .setAction(mContext.getString(R.string.undo), closedTabs)
+                                .setActionAccessibilityAnnouncement(
+                                        getUndoneAccessibilityAnnouncement(content, true)));
     }
 
     private String getUndoneAccessibilityAnnouncement(String content, boolean isMultiple) {

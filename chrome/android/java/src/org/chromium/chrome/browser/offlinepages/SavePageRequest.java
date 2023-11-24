@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.offlinepages;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * Data class representing an underlying request to save a page later.
- */
+/** Data class representing an underlying request to save a page later. */
 @JNINamespace("offline_pages::android")
 public class SavePageRequest {
     // Int representation of the org.chromium.components.offlinepages.RequestState enum.
@@ -36,16 +34,30 @@ public class SavePageRequest {
      * @param clientIdId a String that will be the ID of the client ID of this request.
      */
     @CalledByNative
-    public static SavePageRequest create(int state, long requestId, String url,
-            String clientIdNamespace, String clientIdId, String originString,
+    public static SavePageRequest create(
+            int state,
+            long requestId,
+            String url,
+            String clientIdNamespace,
+            String clientIdId,
+            String originString,
             int autoFetchNotificationState) {
-        return new SavePageRequest(state, requestId, url,
-                new ClientId(clientIdNamespace, clientIdId), new OfflinePageOrigin(originString),
+        return new SavePageRequest(
+                state,
+                requestId,
+                url,
+                new ClientId(clientIdNamespace, clientIdId),
+                new OfflinePageOrigin(originString),
                 autoFetchNotificationState);
     }
 
-    private SavePageRequest(int state, long requestId, String url, ClientId clientId,
-            OfflinePageOrigin origin, int autoFetchNotificationState) {
+    private SavePageRequest(
+            int state,
+            long requestId,
+            String url,
+            ClientId clientId,
+            OfflinePageOrigin origin,
+            int autoFetchNotificationState) {
         mRequestState = state;
         mRequestId = requestId;
         mUrl = url;

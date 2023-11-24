@@ -22,8 +22,11 @@ public class WebApkInstallCoordinatorServiceImpl extends WebApkInstallCoordinato
     private final IWebApkInstallCoordinatorService.Stub mBinder =
             new IWebApkInstallCoordinatorService.Stub() {
                 @Override
-                public void scheduleInstallAsync(byte[] apkProto, Bitmap primaryIcon,
-                        boolean isPrimaryIconMaskable, IOnFinishInstallCallback callback) {
+                public void scheduleInstallAsync(
+                        byte[] apkProto,
+                        Bitmap primaryIcon,
+                        boolean isPrimaryIconMaskable,
+                        IOnFinishInstallCallback callback) {
                     WebApkInstallCoordinatorBridge bridge = new WebApkInstallCoordinatorBridge();
                     bridge.install(apkProto, primaryIcon, isPrimaryIconMaskable, callback);
                 }

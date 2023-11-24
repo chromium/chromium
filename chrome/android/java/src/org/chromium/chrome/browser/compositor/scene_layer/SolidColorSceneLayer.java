@@ -45,6 +45,7 @@ public class SolidColorSceneLayer extends SceneLayer {
     @NativeMethods
     interface Natives {
         long init(SolidColorSceneLayer caller);
+
         void setBackgroundColor(long nativeSolidColorSceneLayer, int backgroundColor);
     }
 }

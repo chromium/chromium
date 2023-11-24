@@ -41,15 +41,13 @@ import java.util.function.BooleanSupplier;
  * user-intervened ones.
  */
 class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
-    @VisibleForTesting
-    static final String PACKAGE_NAME_EMPTY_1P = "1p";
+    @VisibleForTesting static final String PACKAGE_NAME_EMPTY_1P = "1p";
     private final CustomTabActivityNavigationController mNavigationController;
     private final BooleanSupplier mIsCctFinishing;
     private final BrowserServicesIntentDataProvider mIntent;
 
     // Getting the package name from the Intent only works when the client is still connected.
-    @Nullable
-    private final String mCachedPackageName;
+    @Nullable private final String mCachedPackageName;
 
     private long mOnStartTimestampMs;
 
@@ -66,9 +64,11 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
 
     private @CloseCause int mCloseCause;
 
-    public CustomTabsOpenTimeRecorder(ActivityLifecycleDispatcher lifecycleDispatcher,
+    public CustomTabsOpenTimeRecorder(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabActivityNavigationController navigationController,
-            BooleanSupplier isCctFinishing, BrowserServicesIntentDataProvider intent) {
+            BooleanSupplier isCctFinishing,
+            BrowserServicesIntentDataProvider intent) {
         lifecycleDispatcher.register(this);
         mNavigationController = navigationController;
         mIsCctFinishing = isCctFinishing;
@@ -105,8 +105,13 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
             // For the real implementation, there'll be a native method on this class or a new
             // class entirely. Just for the proof-of-concept I tacked the native method onto another
             // class that already have natives.
-            CustomTabsOpenTimeRecorderJni.get().recordCustomTabSession(
-                    time, getPackageName(isPartial), recordDuration, wasUserClose, isPartial);
+            CustomTabsOpenTimeRecorderJni.get()
+                    .recordCustomTabSession(
+                            time,
+                            getPackageName(isPartial),
+                            recordDuration,
+                            wasUserClose,
+                            isPartial);
         }
 
         mOnStartTimestampMs = 0;
@@ -126,9 +131,9 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     }
 
     void updateCloseCause() {
-        @FinishReason
-        int finishReason = mNavigationController.getFinishReason();
-        if (finishReason == FinishReason.USER_NAVIGATION || finishReason == FinishReason.REPARENTING
+        @FinishReason int finishReason = mNavigationController.getFinishReason();
+        if (finishReason == FinishReason.USER_NAVIGATION
+                || finishReason == FinishReason.REPARENTING
                 || finishReason == FinishReason.OPEN_IN_BROWSER) {
             mCloseCause = CloseCause.USER_ACTION_CHROME;
         }
@@ -140,7 +145,11 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
 
     @NativeMethods
     interface Natives {
-        void recordCustomTabSession(long time, String packageName, long sessionDuration,
-                boolean wasAutomaticallyClosed, boolean isPartialCct);
+        void recordCustomTabSession(
+                long time,
+                String packageName,
+                long sessionDuration,
+                boolean wasAutomaticallyClosed,
+                boolean isPartialCct);
     }
 }

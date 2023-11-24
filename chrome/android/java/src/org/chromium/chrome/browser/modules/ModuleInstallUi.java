@@ -30,6 +30,7 @@ public class ModuleInstallUi {
      */
     public interface Delegate {
         WindowAndroid getWindowAndroid();
+
         Context getContext();
     }
 
@@ -61,10 +62,13 @@ public class ModuleInstallUi {
     public void showInstallStartUi() {
         Context context = mDelegate.getContext();
         if (context == null) return;
-        mInstallStartToast = Toast.makeText(context,
-                context.getString(R.string.module_install_start_text,
-                        context.getString(mModuleTitleStringId)),
-                Toast.LENGTH_SHORT);
+        mInstallStartToast =
+                Toast.makeText(
+                        context,
+                        context.getString(
+                                R.string.module_install_start_text,
+                                context.getString(mModuleTitleStringId)),
+                        Toast.LENGTH_SHORT);
         mInstallStartToast.show();
     }
 
@@ -97,23 +101,30 @@ public class ModuleInstallUi {
             return;
         }
 
-        String text = String.format(context.getString(R.string.module_install_failure_text),
-                context.getResources().getString(mModuleTitleStringId));
-        Snackbar snackbar = Snackbar.make(text, new SnackbarController() {
-            @Override
-            public void onAction(Object actionData) {
-                if (mFailureUiListener != null) {
-                    mFailureUiListener.onFailureUiResponse(true);
-                }
-            }
+        String text =
+                String.format(
+                        context.getString(R.string.module_install_failure_text),
+                        context.getResources().getString(mModuleTitleStringId));
+        Snackbar snackbar =
+                Snackbar.make(
+                        text,
+                        new SnackbarController() {
+                            @Override
+                            public void onAction(Object actionData) {
+                                if (mFailureUiListener != null) {
+                                    mFailureUiListener.onFailureUiResponse(true);
+                                }
+                            }
 
-            @Override
-            public void onDismissNoAction(Object actionData) {
-                if (mFailureUiListener != null) {
-                    mFailureUiListener.onFailureUiResponse(false);
-                }
-            }
-        }, Snackbar.TYPE_ACTION, Snackbar.UMA_MODULE_INSTALL_FAILURE);
+                            @Override
+                            public void onDismissNoAction(Object actionData) {
+                                if (mFailureUiListener != null) {
+                                    mFailureUiListener.onFailureUiResponse(false);
+                                }
+                            }
+                        },
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_MODULE_INSTALL_FAILURE);
         snackbar.setAction(context.getString(R.string.try_again), null);
         snackbar.setSingleLine(false);
         snackbar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);

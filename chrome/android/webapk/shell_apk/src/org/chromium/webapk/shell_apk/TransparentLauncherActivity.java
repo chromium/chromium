@@ -32,7 +32,7 @@ public class TransparentLauncherActivity extends Activity {
                                                 hostBrowserPackageName,
                                                 dialogShown,
                                                 activityStartTimeMs,
-                                                -1 /* splashShownTimeMs */);
+                                                /* splashShownTimeMs= */ -1);
 
                                 onHostBrowserSelected(params);
                                 finish();

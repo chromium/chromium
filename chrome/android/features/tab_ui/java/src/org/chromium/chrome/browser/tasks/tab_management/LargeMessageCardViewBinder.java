@@ -13,9 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ViewBinder for TabGridLargeMessageItem.
- */
+/** ViewBinder for TabGridLargeMessageItem. */
 class LargeMessageCardViewBinder {
     public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         assert view instanceof LargeMessageCardView;
@@ -24,7 +22,9 @@ class LargeMessageCardViewBinder {
         if (MessageCardViewProperties.ACTION_TEXT == propertyKey) {
             itemView.setActionText(model.get(MessageCardViewProperties.ACTION_TEXT));
             itemView.setActionButtonOnClickListener(
-                    v -> { LargeMessageCardViewBinder.handleReviewActionButton(model); });
+                    v -> {
+                        LargeMessageCardViewBinder.handleReviewActionButton(model);
+                    });
         } else if (MessageCardViewProperties.TITLE_TEXT == propertyKey) {
             itemView.setTitleText(model.get(MessageCardViewProperties.TITLE_TEXT));
         } else if (MessageCardViewProperties.DESCRIPTION_TEXT == propertyKey) {
@@ -33,7 +33,9 @@ class LargeMessageCardViewBinder {
             itemView.setDismissButtonContentDescription(
                     model.get(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION));
             itemView.setDismissButtonOnClickListener(
-                    v -> { LargeMessageCardViewBinder.handleDismissActionButton(model); });
+                    v -> {
+                        LargeMessageCardViewBinder.handleDismissActionButton(model);
+                    });
         } else if (MessageCardViewProperties.SECONDARY_ACTION_TEXT == propertyKey) {
             itemView.setSecondaryActionText(
                     model.get(MessageCardViewProperties.SECONDARY_ACTION_TEXT));

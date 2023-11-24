@@ -12,17 +12,15 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.variations.VariationsAssociatedData;
 
-/**
- * Provides Field Trial support for the Contextual Search application within Chrome for Android.
- */
+/** Provides Field Trial support for the Contextual Search application within Chrome for Android. */
 public class ContextualSearchFieldTrial {
     private static final String FIELD_TRIAL_NAME = "ContextualSearch";
     private static final String DISABLED_PARAM = "disabled";
     private static final String ENABLED_VALUE = "true";
 
-    //==========================================================================================
+    // ==========================================================================================
     // Related Searches FieldTrial and parameter names.
-    //==========================================================================================
+    // ==========================================================================================
     // Params used elsewhere but gathered here since they may be present in FieldTrial configs.
     static final String RELATED_SEARCHES_NEEDS_URL_PARAM_NAME = "needs_url";
     static final String RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME = "needs_content";
@@ -91,7 +89,8 @@ public class ContextualSearchFieldTrial {
     static int getContextualSearchMinimumBasePageHeightDp() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW,
-                CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME, 0);
+                CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME,
+                0);
     }
 
     // --------------------------------------------------------------------------------------------
@@ -129,7 +128,8 @@ public class ContextualSearchFieldTrial {
         if (CommandLine.getInstance().hasSwitch(paramName)) {
             return true;
         }
-        return TextUtils.equals(ENABLED_VALUE,
+        return TextUtils.equals(
+                ENABLED_VALUE,
                 VariationsAssociatedData.getVariationParamValue(FIELD_TRIAL_NAME, paramName));
     }
 }

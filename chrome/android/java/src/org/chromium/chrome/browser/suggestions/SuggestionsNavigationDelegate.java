@@ -14,12 +14,14 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
-/**
- * Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods.
- */
+/** Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods. */
 public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateImpl {
-    public SuggestionsNavigationDelegate(Activity activity, Profile profile, NativePageHost host,
-            TabModelSelector tabModelSelector, Tab tab) {
+    public SuggestionsNavigationDelegate(
+            Activity activity,
+            Profile profile,
+            NativePageHost host,
+            TabModelSelector tabModelSelector,
+            Tab tab) {
         super(activity, profile, host, tabModelSelector, tab);
     }
 

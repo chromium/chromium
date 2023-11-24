@@ -85,9 +85,10 @@ public class AutofillDeleteSavedCvcsConfirmationDialogTest {
                         .getShownDialogModel()
                         .get(ModalDialogProperties.POSITIVE_BUTTON_TEXT);
         assertThat(positiveButtonLabel)
-                .isEqualTo(context.getString(
-                        R.string.autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label)
-                );
+                .isEqualTo(
+                        context.getString(
+                                R.string
+                                        .autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label));
         String negativeButtonLabel =
                 mModalDialogManager
                         .getShownDialogModel()

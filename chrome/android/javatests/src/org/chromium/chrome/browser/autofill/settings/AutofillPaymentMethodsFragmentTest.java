@@ -86,13 +86,10 @@ public class AutofillPaymentMethodsFragmentTest {
             mSettingsActivityTestRule =
                     new SettingsActivityTestRule<>(AutofillPaymentMethodsFragment.class);
 
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private ReauthenticatorBridge mReauthenticatorMock;
-    @Mock
-    private AutofillPaymentMethodsDelegate.Natives mNativeMock;
+    @Mock private ReauthenticatorBridge mReauthenticatorMock;
+    @Mock private AutofillPaymentMethodsDelegate.Natives mNativeMock;
 
     // Card Issuer values that map to the browser CreditCard.Issuer enum.
     private static final int CARD_ISSUER_UNKNOWN = 0;
@@ -1026,9 +1023,11 @@ public class AutofillPaymentMethodsFragmentTest {
                 .check(matches(isDisplayed()));
         onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_message))
                 .check(matches(isDisplayed()));
-        onView(withText(
-                R.string.autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
-                    .check(matches(isDisplayed()));
+        onView(
+                        withText(
+                                R.string
+                                        .autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
+                .check(matches(isDisplayed()));
         onView(withText(android.R.string.cancel)).check(matches(isDisplayed()));
     }
 
@@ -1054,10 +1053,12 @@ public class AutofillPaymentMethodsFragmentTest {
                 () -> {
                     deleteSavedCvcsPreference.performClick();
                 });
-        onView(withText(
-                R.string.autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
-                    .inRoot(isDialog())
-                    .perform(click());
+        onView(
+                        withText(
+                                R.string
+                                        .autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
+                .inRoot(isDialog())
+                .perform(click());
 
         verify(mNativeMock).deleteSavedCvcs(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
     }

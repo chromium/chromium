@@ -13,9 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * A tab model observer for managing bulk closures.
- */
+/** A tab model observer for managing bulk closures. */
 public class HistoricalTabModelObserver implements TabModelObserver {
     private final TabModel mTabModel;
     private HistoricalTabSaver mHistoricalTabSaver;

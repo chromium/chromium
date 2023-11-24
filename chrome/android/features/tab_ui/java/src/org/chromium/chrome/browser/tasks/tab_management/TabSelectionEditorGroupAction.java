@@ -20,9 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Group action for the {@link TabSelectionEditorMenu}.
- */
+/** Group action for the {@link TabSelectionEditorMenu}. */
 public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
     /**
      * Create an action for grouping tabs.
@@ -31,42 +29,60 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition) {
+    public static TabSelectionEditorAction createAction(
+            Context context,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition) {
         Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_widgets);
         return new TabSelectionEditorGroupAction(showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabSelectionEditorGroupAction(@ShowMode int showMode, @ButtonType int buttonType,
-            @IconPosition int iconPosition, Drawable drawable) {
-        super(R.id.tab_selection_editor_group_menu_item, showMode, buttonType, iconPosition,
+    private TabSelectionEditorGroupAction(
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition,
+            Drawable drawable) {
+        super(
+                R.id.tab_selection_editor_group_menu_item,
+                showMode,
+                buttonType,
+                iconPosition,
                 R.plurals.tab_selection_editor_group_tabs,
-                R.plurals.accessibility_tab_selection_editor_group_tabs, drawable);
+                R.plurals.accessibility_tab_selection_editor_group_tabs,
+                drawable);
     }
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter;
+                instanceof TabGroupModelFilter;
 
-        int size = editorSupportsActionOnRelatedTabs()
-                ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
-                : tabIds.size();
+        int size =
+                editorSupportsActionOnRelatedTabs()
+                        ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
+                        : tabIds.size();
         setEnabledAndItemCount(tabIds.size() > 1, size);
     }
 
     @Override
     public boolean performAction(List<Tab> tabs) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter;
+                instanceof TabGroupModelFilter;
 
-        TabGroupModelFilter tabGroupModelFilter = (TabGroupModelFilter) getTabModelSelector()
-                                                          .getTabModelFilterProvider()
-                                                          .getCurrentTabModelFilter();
+        TabGroupModelFilter tabGroupModelFilter =
+                (TabGroupModelFilter)
+                        getTabModelSelector()
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
 
         HashSet<Tab> selectedTabs = new HashSet<>(tabs);
-        Tab destinationTab = getDestinationTab(tabs, getTabModelSelector().getCurrentModel(),
-                tabGroupModelFilter, editorSupportsActionOnRelatedTabs());
+        Tab destinationTab =
+                getDestinationTab(
+                        tabs,
+                        getTabModelSelector().getCurrentModel(),
+                        tabGroupModelFilter,
+                        editorSupportsActionOnRelatedTabs());
         List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabList(destinationTab.getId());
         selectedTabs.removeAll(relatedTabs);
 
@@ -82,7 +98,7 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
 
         // Use true for "isSameGroup" to avoid updating the title multiple times.
         tabGroupModelFilter.mergeListOfTabsToGroup(
-                sortedTabs, destinationTab, /*isSameGroup=*/true, /*notify=*/true);
+                sortedTabs, destinationTab, /* isSameGroup= */ true, /* notify= */ true);
 
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                 TabSelectionEditorActionMetricGroups.GROUP);
@@ -104,7 +120,10 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
      * @param actionOnRelatedTabs whether to attempt to merge to groups.
      * @return the tab to merge to.
      */
-    private Tab getDestinationTab(List<Tab> tabs, TabModel model, TabGroupModelFilter filter,
+    private Tab getDestinationTab(
+            List<Tab> tabs,
+            TabModel model,
+            TabGroupModelFilter filter,
             boolean actionOnRelatedTabs) {
         int greatestTabIndex = TabModel.INVALID_TAB_INDEX;
         int smallestGroupIndex = TabModel.INVALID_TAB_INDEX;
@@ -112,12 +131,14 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
             final int index = TabModelUtils.getTabIndexById(model, tab.getId());
             greatestTabIndex = Math.max(index, greatestTabIndex);
             if (actionOnRelatedTabs && filter.hasOtherRelatedTabs(tab)) {
-                smallestGroupIndex = (smallestGroupIndex == TabModel.INVALID_TAB_INDEX)
-                        ? index
-                        : Math.min(index, smallestGroupIndex);
+                smallestGroupIndex =
+                        (smallestGroupIndex == TabModel.INVALID_TAB_INDEX)
+                                ? index
+                                : Math.min(index, smallestGroupIndex);
             }
         }
-        return model.getTabAt((smallestGroupIndex != TabModel.INVALID_TAB_INDEX)
+        return model.getTabAt(
+                (smallestGroupIndex != TabModel.INVALID_TAB_INDEX)
                         ? smallestGroupIndex
                         : greatestTabIndex);
     }

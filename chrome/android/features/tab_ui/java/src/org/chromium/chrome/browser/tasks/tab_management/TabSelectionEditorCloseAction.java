@@ -15,9 +15,7 @@ import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
 
-/**
- * Close action for the {@link TabSelectionEditorMenu}.
- */
+/** Close action for the {@link TabSelectionEditorMenu}. */
 public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
     /**
      * Create an action for closing tabs.
@@ -26,24 +24,36 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition) {
+    public static TabSelectionEditorAction createAction(
+            Context context,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition) {
         Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_close_tabs_24dp);
         return new TabSelectionEditorCloseAction(showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabSelectionEditorCloseAction(@ShowMode int showMode, @ButtonType int buttonType,
-            @IconPosition int iconPosition, Drawable drawable) {
-        super(R.id.tab_selection_editor_close_menu_item, showMode, buttonType, iconPosition,
+    private TabSelectionEditorCloseAction(
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition,
+            Drawable drawable) {
+        super(
+                R.id.tab_selection_editor_close_menu_item,
+                showMode,
+                buttonType,
+                iconPosition,
                 R.plurals.tab_selection_editor_close_tabs,
-                R.plurals.accessibility_tab_selection_editor_close_tabs, drawable);
+                R.plurals.accessibility_tab_selection_editor_close_tabs,
+                drawable);
     }
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        int size = editorSupportsActionOnRelatedTabs()
-                ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
-                : tabIds.size();
+        int size =
+                editorSupportsActionOnRelatedTabs()
+                        ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
+                        : tabIds.size();
         setEnabledAndItemCount(!tabIds.isEmpty(), size);
     }
 
@@ -52,8 +62,13 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
         if (tabs.size() == 1) {
-            getTabModelSelector().getCurrentModel().closeTab(
-                    tabs.get(0), /*animate=*/false, /*uponExit=*/false, /*canUndo=*/true);
+            getTabModelSelector()
+                    .getCurrentModel()
+                    .closeTab(
+                            tabs.get(0),
+                            /* animate= */ false,
+                            /* uponExit= */ false,
+                            /* canUndo= */ true);
         } else {
             getTabModelSelector().getCurrentModel().closeMultipleTabs(tabs, true);
         }

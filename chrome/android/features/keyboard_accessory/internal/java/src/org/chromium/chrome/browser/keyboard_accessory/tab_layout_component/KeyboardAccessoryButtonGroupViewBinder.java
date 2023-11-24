@@ -20,25 +20,35 @@ import org.chromium.ui.modelutil.PropertyModel;
  * a {@link KeyboardAccessoryButtonGroupView}.
  */
 public class KeyboardAccessoryButtonGroupViewBinder
-        implements ListModelChangeProcessor.ViewBinder<ListModel<KeyboardAccessoryData.Tab>,
-                KeyboardAccessoryButtonGroupView, Void> {
+        implements ListModelChangeProcessor.ViewBinder<
+                ListModel<KeyboardAccessoryData.Tab>, KeyboardAccessoryButtonGroupView, Void> {
     @Override
-    public void onItemsInserted(ListModel<KeyboardAccessoryData.Tab> model,
-            KeyboardAccessoryButtonGroupView view, int index, int count) {
+    public void onItemsInserted(
+            ListModel<KeyboardAccessoryData.Tab> model,
+            KeyboardAccessoryButtonGroupView view,
+            int index,
+            int count) {
         // More fine-grained implementations showed artifacts when adding in quick succession.
         updateAllButtons(view, model);
     }
 
     @Override
-    public void onItemsRemoved(ListModel<KeyboardAccessoryData.Tab> model,
-            KeyboardAccessoryButtonGroupView view, int index, int count) {
+    public void onItemsRemoved(
+            ListModel<KeyboardAccessoryData.Tab> model,
+            KeyboardAccessoryButtonGroupView view,
+            int index,
+            int count) {
         // More fine-grained implementations showed artifacts when removing in quick succession.
         updateAllButtons(view, model);
     }
 
     @Override
-    public void onItemsChanged(ListModel<KeyboardAccessoryData.Tab> model,
-            KeyboardAccessoryButtonGroupView view, int index, int count, Void payload) {
+    public void onItemsChanged(
+            ListModel<KeyboardAccessoryData.Tab> model,
+            KeyboardAccessoryButtonGroupView view,
+            int index,
+            int count,
+            Void payload) {
         updateAllButtons(view, model);
     }
 
@@ -56,9 +66,11 @@ public class KeyboardAccessoryButtonGroupViewBinder
             KeyboardAccessoryButtonGroupView view, ListModel<KeyboardAccessoryData.Tab> model) {
         for (int i = 0; i < model.size(); i++) {
             final int observedIconIndex = i;
-            model.get(i).addIconObserver((unusedTypeId, unusedDrawable) -> {
-                onItemsChanged(model, view, observedIconIndex, 1, null);
-            });
+            model.get(i)
+                    .addIconObserver(
+                            (unusedTypeId, unusedDrawable) -> {
+                                onItemsChanged(model, view, observedIconIndex, 1, null);
+                            });
         }
     }
 

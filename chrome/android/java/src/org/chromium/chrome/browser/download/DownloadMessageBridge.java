@@ -34,10 +34,12 @@ public class DownloadMessageBridge {
     @CalledByNative
     public void showIncognitoDownloadMessage(long callbackId) {
         DownloadMessageUiController messageUiController =
-                DownloadManagerService.getDownloadManagerService().getMessageUiController(
-                        /*otrProfileID=*/null);
+                DownloadManagerService.getDownloadManagerService()
+                        .getMessageUiController(/* otrProfileID= */ null);
         messageUiController.showIncognitoDownloadMessage(
-                (accepted) -> { onConfirmed(callbackId, accepted); });
+                (accepted) -> {
+                    onConfirmed(callbackId, accepted);
+                });
     }
 
     @CalledByNative
@@ -47,8 +49,11 @@ public class DownloadMessageBridge {
 
         Context context = window.getContext().get();
         Snackbar snackbar =
-                Snackbar.make(context.getString(R.string.download_file_type_not_supported), null,
-                        Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_AUTO_LOGIN);
+                Snackbar.make(
+                        context.getString(R.string.download_file_type_not_supported),
+                        null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_AUTO_LOGIN);
         snackbar.setAction(context.getString(R.string.ok), null);
         snackbar.setSingleLine(false);
         snackbarManager.showSnackbar(snackbar);
@@ -61,8 +66,8 @@ public class DownloadMessageBridge {
 
     private void onConfirmed(long callbackId, boolean accepted) {
         if (mNativeDownloadMessageBridge != 0) {
-            DownloadMessageBridgeJni.get().onConfirmed(
-                    mNativeDownloadMessageBridge, callbackId, accepted);
+            DownloadMessageBridgeJni.get()
+                    .onConfirmed(mNativeDownloadMessageBridge, callbackId, accepted);
         }
     }
 

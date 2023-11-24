@@ -39,9 +39,7 @@ import org.chromium.net.NetError;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
-/**
- * WebContentsObserver used by Tab.
- */
+/** WebContentsObserver used by Tab. */
 public class TabWebContentsObserver extends TabWebContentsUserData {
     // URL didFailLoad error code. Should match the value in net_error_list.h.
     public static final int BLOCKED_BY_ADMINISTRATOR = -22;
@@ -88,9 +86,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
     }
 
-    /**
-     * Remove the InitWebContents observer from the list.
-     */
+    /** Remove the InitWebContents observer from the list. */
     public void removeInitWebContentsObserver(Callback<WebContents> observer) {
         mInitObservers.removeObserver(observer);
     }
@@ -126,9 +122,12 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void renderProcessGone() {
-            Log.i(TAG,
-                    "renderProcessGone() for tab id: " + mTab.getId()
-                            + ", already needs reload: " + Boolean.toString(mTab.needsReload()));
+            Log.i(
+                    TAG,
+                    "renderProcessGone() for tab id: "
+                            + mTab.getId()
+                            + ", already needs reload: "
+                            + Boolean.toString(mTab.needsReload()));
             // Do nothing for subsequent calls that happen while the tab remains crashed. This
             // can occur when the tab is in the background and it shares the renderer with other
             // tabs. After the renderer crashes, the WebContents of its tabs are still around
@@ -146,9 +145,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 return;
             }
 
-            int activityState = ApplicationStatus.getStateForActivity(
-                    mTab.getWindowAndroid().getActivity().get());
-            if (mTab.isHidden() || activityState == ActivityState.PAUSED
+            int activityState =
+                    ApplicationStatus.getStateForActivity(
+                            mTab.getWindowAndroid().getActivity().get());
+            if (mTab.isHidden()
+                    || activityState == ActivityState.PAUSED
                     || activityState == ActivityState.STOPPED
                     || activityState == ActivityState.DESTROYED) {
                 // The tab crashed in background or was killed by the OS out-of-memory killer.
@@ -201,8 +202,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId frameId, GURL url,
-                boolean isKnownValid, @LifecycleState int frameLifecycleState) {
+        public void didFinishLoadInPrimaryMainFrame(
+                GlobalRenderFrameHostId frameId,
+                GURL url,
+                boolean isKnownValid,
+                @LifecycleState int frameLifecycleState) {
             assert isKnownValid;
             if (frameLifecycleState == LifecycleState.ACTIVE) {
                 if (mTab.getNativePage() != null) {
@@ -213,7 +217,10 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingGurl,
+        public void didFailLoad(
+                boolean isInPrimaryMainFrame,
+                int errorCode,
+                GURL failingGurl,
                 @LifecycleState int frameLifecycleState) {
             if (isInPrimaryMainFrame) {
                 mTab.didFailPageLoad(errorCode);
@@ -228,11 +235,17 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
             PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
             if (auditor != null) {
-                auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
-                        AuditEvent.OPEN_URL_FAILURE, failingUrl, description);
+                auditor.notifyAuditEvent(
+                        ContextUtils.getApplicationContext(),
+                        AuditEvent.OPEN_URL_FAILURE,
+                        failingUrl,
+                        description);
                 if (errorCode == BLOCKED_BY_ADMINISTRATOR) {
-                    auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
-                            AuditEvent.OPEN_URL_BLOCKED, failingUrl, "");
+                    auditor.notifyAuditEvent(
+                            ContextUtils.getApplicationContext(),
+                            AuditEvent.OPEN_URL_BLOCKED,
+                            failingUrl,
+                            "");
                 }
             }
         }
@@ -342,10 +355,19 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(), mTab.getId(), null, mLastUrl);
             BluetoothNotificationManager.updateBluetoothNotificationForTab(
-                    ContextUtils.getApplicationContext(), BluetoothNotificationService.class,
-                    mTab.getId(), null, mLastUrl, mTab.isIncognito());
-            UsbNotificationManager.updateUsbNotificationForTab(ContextUtils.getApplicationContext(),
-                    UsbNotificationService.class, mTab.getId(), null, mLastUrl, mTab.isIncognito());
+                    ContextUtils.getApplicationContext(),
+                    BluetoothNotificationService.class,
+                    mTab.getId(),
+                    null,
+                    mLastUrl,
+                    mTab.isIncognito());
+            UsbNotificationManager.updateUsbNotificationForTab(
+                    ContextUtils.getApplicationContext(),
+                    UsbNotificationService.class,
+                    mTab.getId(),
+                    null,
+                    mLastUrl,
+                    mTab.isIncognito());
             super.destroy();
         }
     }

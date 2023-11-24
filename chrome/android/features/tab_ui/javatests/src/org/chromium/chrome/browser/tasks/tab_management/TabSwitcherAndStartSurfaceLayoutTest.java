@@ -274,9 +274,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @Feature({"RenderTest"})
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(
@@ -883,8 +881,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @DisabledTest(
             message =
                     "http://crbug/1005865 - Test was previously flaky but only on bots.Was not"
-                        + " locally reproducible. Disabling until verified that it's deflaked on"
-                        + " bots.")
+                            + " locally reproducible. Disabling until verified that it's deflaked on"
+                            + " bots.")
     public void testIncognitoEnterGts(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(1, 1, null);
@@ -1370,9 +1368,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testExpandTab_ThumbnailCacheRefactor(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {

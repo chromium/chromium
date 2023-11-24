@@ -17,9 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 
-/**
- * Default {@link TabModelSelectorFactory} for Chrome.
- */
+/** Default {@link TabModelSelectorFactory} for Chrome. */
 public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
     // Do not inline since this uses some APIs only available on Android N versions, which cause
     // verification errors.

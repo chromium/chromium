@@ -56,13 +56,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Displays and manages the content view / list UI for browsing history.
- */
+/** Displays and manages the content view / list UI for browsing history. */
 public class HistoryContentManager implements SignInStateObserver, PrefObserver {
-    /**
-     * Interface for a class that wants to receive updates from this Manager.
-     */
+    /** Interface for a class that wants to receive updates from this Manager. */
     public interface Observer {
         /**
          * Called after the content view was scrolled.
@@ -97,6 +93,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
          */
         void onHistoryDeletedExternally();
     }
+
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
     // PageTransition value to use for all URL requests triggered by the history page.
@@ -144,13 +141,19 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *         history UI and is thus controlled by our parent component.
      * @param historyProvider Provider of methods for querying and managing browsing history.
      */
-    public HistoryContentManager(@NonNull Activity activity, @NonNull Observer observer,
-            boolean isSeparateActivity, Profile profile, boolean shouldShowPrivacyDisclaimers,
-            boolean shouldShowClearDataIfAvailable, @Nullable String hostName,
+    public HistoryContentManager(
+            @NonNull Activity activity,
+            @NonNull Observer observer,
+            boolean isSeparateActivity,
+            Profile profile,
+            boolean shouldShowPrivacyDisclaimers,
+            boolean shouldShowClearDataIfAvailable,
+            @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable Supplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> showHistoryToggleSupplier,
-            Function<ViewGroup, ViewGroup> toggleViewFactory, HistoryProvider historyProvider) {
+            Function<ViewGroup, ViewGroup> toggleViewFactory,
+            HistoryProvider historyProvider) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
@@ -159,33 +162,38 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
-        mIsScrollToLoadDisabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                || UiUtils.isHardwareKeyboardAttached();
-        mSelectionDelegate = selectionDelegate != null
-                ? selectionDelegate
-                : new SelectionDelegate<HistoryItem>() {
-                      @Override
-                      public boolean toggleSelectionForItem(HistoryItem bookmark) {
-                          return false;
-                      }
+        mIsScrollToLoadDisabled =
+                ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                        || UiUtils.isHardwareKeyboardAttached();
+        mSelectionDelegate =
+                selectionDelegate != null
+                        ? selectionDelegate
+                        : new SelectionDelegate<HistoryItem>() {
+                            @Override
+                            public boolean toggleSelectionForItem(HistoryItem bookmark) {
+                                return false;
+                            }
 
-                      @Override
-                      public boolean isItemSelected(HistoryItem item) {
-                          return false;
-                      }
+                            @Override
+                            public boolean isItemSelected(HistoryItem item) {
+                                return false;
+                            }
 
-                      @Override
-                      public boolean isSelectionEnabled() {
-                          return false;
-                      }
-                  };
+                            @Override
+                            public boolean isSelectionEnabled() {
+                                return false;
+                            }
+                        };
         mTabSupplier = tabSupplier;
 
         // History service is not keyed for Incognito profiles and {@link HistoryServiceFactory}
         // explicitly redirects to use regular profile for Incognito case.
-        mHistoryAdapter = new HistoryAdapter(this,
-                sProviderForTests != null ? sProviderForTests : historyProvider,
-                showHistoryToggleSupplier, toggleViewFactory);
+        mHistoryAdapter =
+                new HistoryAdapter(
+                        this,
+                        sProviderForTests != null ? sProviderForTests : historyProvider,
+                        showHistoryToggleSupplier,
+                        toggleViewFactory);
 
         // Create a recycler view.
         mRecyclerView =
@@ -197,34 +205,38 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // Create icon bridge to get icons for each entry.
         mLargeIconBridge = new LargeIconBridge(profile);
         ActivityManager activityManager =
-                ((ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE));
-        int maxSize = Math.min(
-                (activityManager.getMemoryClass() / 4) * ConversionUtils.BYTES_PER_MEGABYTE,
-                FAVICON_MAX_CACHE_SIZE_BYTES);
+                ((ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE));
+        int maxSize =
+                Math.min(
+                        (activityManager.getMemoryClass() / 4) * ConversionUtils.BYTES_PER_MEGABYTE,
+                        FAVICON_MAX_CACHE_SIZE_BYTES);
         mLargeIconBridge.createCache(maxSize);
 
         // Add the scroll listener for the recycler view.
-        mRecyclerView.addOnScrollListener(new OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                LinearLayoutManager layoutManager =
-                        (LinearLayoutManager) recyclerView.getLayoutManager();
+        mRecyclerView.addOnScrollListener(
+                new OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        LinearLayoutManager layoutManager =
+                                (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                if (!mHistoryAdapter.canLoadMoreItems() || isScrollToLoadDisabled()) {
-                    return;
-                }
+                        if (!mHistoryAdapter.canLoadMoreItems() || isScrollToLoadDisabled()) {
+                            return;
+                        }
 
-                // Load more items if the scroll position is close to the bottom of the list.
-                boolean loadedMore = false;
-                if (layoutManager.findLastVisibleItemPosition()
-                        > (mHistoryAdapter.getItemCount() - 25)) {
-                    mHistoryAdapter.loadMoreItems();
-                    loadedMore = true;
-                }
-                mObserver.onScrolledCallback(loadedMore);
-            }
-        });
+                        // Load more items if the scroll position is close to the bottom of the
+                        // list.
+                        boolean loadedMore = false;
+                        if (layoutManager.findLastVisibleItemPosition()
+                                > (mHistoryAdapter.getItemCount() - 25)) {
+                            mHistoryAdapter.loadMoreItems();
+                            loadedMore = true;
+                        }
+                        mObserver.onScrolledCallback(loadedMore);
+                    }
+                });
 
         // Create header and footer.
         mHistoryAdapter.generateHeaderItems();
@@ -360,9 +372,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 && UserPrefs.get(mProfile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
     }
 
-    /**
-     * Opens the url of each of the visits in the provided list in a new tab.
-     */
+    /** Opens the url of each of the visits in the provided list in a new tab. */
     public void openItemsInNewTab(List<HistoryItem> items, boolean isIncognito) {
         if (mIsSeparateActivity && items.size() > 1) {
             ArrayList<String> additionalUrls = new ArrayList<>(items.size() - 1);
@@ -442,9 +452,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHistoryAdapter.markItemForRemoval(item);
     }
 
-    /**
-     * Removes all items that have been marked for removal through #markItemForRemoval().
-     */
+    /** Removes all items that have been marked for removal through #markItemForRemoval(). */
     public void removeItems() {
         mHistoryAdapter.removeItems();
     }
@@ -533,8 +541,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // Determine component or class name.
         ComponentName component;
         if (activity instanceof HistoryActivity) { // phone
-            component = IntentUtils.safeGetParcelableExtra(
-                    activity.getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
+            component =
+                    IntentUtils.safeGetParcelableExtra(
+                            activity.getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
         } else { // tablet
             component = activity.getComponentName();
         }

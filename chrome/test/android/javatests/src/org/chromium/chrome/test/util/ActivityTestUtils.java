@@ -37,9 +37,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
-/**
- * Collection of activity utilities.
- */
+/** Collection of activity utilities. */
 public class ActivityTestUtils {
     private static final String TAG = "ActivityTestUtils";
 
@@ -56,22 +54,24 @@ public class ActivityTestUtils {
      */
     public static <T> T waitForActivity(
             final Instrumentation instrumentation, final Class<T> activityType) {
-        Runnable intentTrigger = new Runnable() {
-            @Override
-            public void run() {
-                Context context = instrumentation.getTargetContext().getApplicationContext();
-                Intent activityIntent = new Intent();
-                activityIntent.setClass(context, activityType);
-                activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        Runnable intentTrigger =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Context context =
+                                instrumentation.getTargetContext().getApplicationContext();
+                        Intent activityIntent = new Intent();
+                        activityIntent.setClass(context, activityType);
+                        activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 
-                Bundle optionsBundle =
-                        ActivityOptionsCompat
-                                .makeCustomAnimation(context, R.anim.activity_open_enter, 0)
-                                .toBundle();
-                IntentUtils.safeStartActivity(context, activityIntent, optionsBundle);
-            }
-        };
+                        Bundle optionsBundle =
+                                ActivityOptionsCompat.makeCustomAnimation(
+                                                context, R.anim.activity_open_enter, 0)
+                                        .toBundle();
+                        IntentUtils.safeStartActivity(context, activityIntent, optionsBundle);
+                    }
+                };
         return waitForActivity(instrumentation, activityType, intentTrigger);
     }
 
@@ -85,13 +85,14 @@ public class ActivityTestUtils {
      */
     public static <T> T waitForActivity(
             Instrumentation instrumentation, Class<T> activityType, Runnable activityTrigger) {
-        Callable<Void> callableWrapper = new Callable<Void>() {
-            @Override
-            public Void call() {
-                activityTrigger.run();
-                return null;
-            }
-        };
+        Callable<Void> callableWrapper =
+                new Callable<Void>() {
+                    @Override
+                    public Void call() {
+                        activityTrigger.run();
+                        return null;
+                    }
+                };
 
         try {
             return waitForActivityWithTimeout(
@@ -110,8 +111,9 @@ public class ActivityTestUtils {
      * @param activityTrigger The action that will trigger the new activity (run in this thread).
      * @return The spawned activity.
      */
-    public static <T> T waitForActivity(Instrumentation instrumentation, Class<T> activityType,
-            Callable<Void> activityTrigger) throws Exception {
+    public static <T> T waitForActivity(
+            Instrumentation instrumentation, Class<T> activityType, Callable<Void> activityTrigger)
+            throws Exception {
         return waitForActivityWithTimeout(
                 instrumentation, activityType, activityTrigger, ACTIVITY_START_TIMEOUT_MS);
     }
@@ -124,8 +126,12 @@ public class ActivityTestUtils {
      * @param timeOut The maximum time to wait for activity creation
      * @return The spawned activity.
      */
-    public static <T> T waitForActivityWithTimeout(Instrumentation instrumentation,
-            Class<T> activityType, Callable<Void> activityTrigger, long timeOut) throws Exception {
+    public static <T> T waitForActivityWithTimeout(
+            Instrumentation instrumentation,
+            Class<T> activityType,
+            Callable<Void> activityTrigger,
+            long timeOut)
+            throws Exception {
         TimeoutTimer timer = new TimeoutTimer(timeOut);
         ActivityMonitor monitor =
                 instrumentation.addMonitor(activityType.getCanonicalName(), null, false);
@@ -143,15 +149,19 @@ public class ActivityTestUtils {
     }
 
     private static void logRunningChromeActivities() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StringBuilder builder = new StringBuilder("Running Chrome Activities: ");
-            for (Activity activity : ApplicationStatus.getRunningActivities()) {
-                builder.append(String.format(Locale.US, "\n   %s : %d",
-                        activity.getClass().getSimpleName(),
-                        ApplicationStatus.getStateForActivity(activity)));
-            }
-            Log.i(TAG, builder.toString());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    StringBuilder builder = new StringBuilder("Running Chrome Activities: ");
+                    for (Activity activity : ApplicationStatus.getRunningActivities()) {
+                        builder.append(
+                                String.format(
+                                        Locale.US,
+                                        "\n   %s : %d",
+                                        activity.getClass().getSimpleName(),
+                                        ApplicationStatus.getStateForActivity(activity)));
+                    }
+                    Log.i(TAG, builder.toString());
+                });
     }
 
     /**
@@ -165,17 +175,22 @@ public class ActivityTestUtils {
             AppCompatActivity activity, String fragmentTag) {
         String failureReason =
                 String.format("Could not locate the fragment with tag '%s'", fragmentTag);
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
-            Criteria.checkThat(fragment, Matchers.notNullValue());
-            if (fragment instanceof DialogFragment) {
-                DialogFragment dialogFragment = (DialogFragment) fragment;
-                Criteria.checkThat(dialogFragment.getDialog(), Matchers.notNullValue());
-                Criteria.checkThat(dialogFragment.getDialog().isShowing(), Matchers.is(true));
-            } else {
-                Criteria.checkThat(fragment.getView(), Matchers.notNullValue());
-            }
-        }, ACTIVITY_START_TIMEOUT_MS, CONDITION_POLL_INTERVAL_MS);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Fragment fragment =
+                            activity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
+                    Criteria.checkThat(fragment, Matchers.notNullValue());
+                    if (fragment instanceof DialogFragment) {
+                        DialogFragment dialogFragment = (DialogFragment) fragment;
+                        Criteria.checkThat(dialogFragment.getDialog(), Matchers.notNullValue());
+                        Criteria.checkThat(
+                                dialogFragment.getDialog().isShowing(), Matchers.is(true));
+                    } else {
+                        Criteria.checkThat(fragment.getView(), Matchers.notNullValue());
+                    }
+                },
+                ACTIVITY_START_TIMEOUT_MS,
+                CONDITION_POLL_INTERVAL_MS);
         return (T) activity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
     }
 
@@ -193,9 +208,13 @@ public class ActivityTestUtils {
     @SuppressWarnings("unchecked")
     public static <T extends Fragment> T waitForFragmentToAttach(
             final SettingsActivity activity, final Class<T> fragmentClass) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(activity.getMainFragment(), Matchers.instanceOf(fragmentClass));
-        }, ACTIVITY_START_TIMEOUT_MS, CONDITION_POLL_INTERVAL_MS);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getMainFragment(), Matchers.instanceOf(fragmentClass));
+                },
+                ACTIVITY_START_TIMEOUT_MS,
+                CONDITION_POLL_INTERVAL_MS);
         return (T) activity.getMainFragment();
     }
 
@@ -214,16 +233,20 @@ public class ActivityTestUtils {
      */
     public static void rotateActivityToOrientation(Activity activity, int orientation) {
         if (activity.getResources().getConfiguration().orientation == orientation) return;
-        assertTrue("Incorrect orientation supplied.",
+        assertTrue(
+                "Incorrect orientation supplied.",
                 orientation == Configuration.ORIENTATION_LANDSCAPE
                         || orientation == Configuration.ORIENTATION_PORTRAIT);
-        activity.setRequestedOrientation(orientation == Configuration.ORIENTATION_LANDSCAPE
+        activity.setRequestedOrientation(
+                orientation == Configuration.ORIENTATION_LANDSCAPE
                         ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    activity.getResources().getConfiguration().orientation, is(orientation));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getResources().getConfiguration().orientation,
+                            is(orientation));
+                });
     }
 
     /**

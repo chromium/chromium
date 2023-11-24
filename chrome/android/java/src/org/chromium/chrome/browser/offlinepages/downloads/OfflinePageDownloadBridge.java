@@ -59,16 +59,17 @@ public class OfflinePageDownloadBridge {
     }
 
     private OfflinePageDownloadBridge() {
-        mNativeOfflinePageDownloadBridge = sIsTesting
-                ? 0L
-                : OfflinePageDownloadBridgeJni.get().init(OfflinePageDownloadBridge.this);
+        mNativeOfflinePageDownloadBridge =
+                sIsTesting
+                        ? 0L
+                        : OfflinePageDownloadBridgeJni.get().init(OfflinePageDownloadBridge.this);
     }
 
     /** Destroys the native portion of the bridge. */
     public void destroy() {
         if (mNativeOfflinePageDownloadBridge != 0) {
-            OfflinePageDownloadBridgeJni.get().destroy(
-                    mNativeOfflinePageDownloadBridge, OfflinePageDownloadBridge.this);
+            OfflinePageDownloadBridgeJni.get()
+                    .destroy(mNativeOfflinePageDownloadBridge, OfflinePageDownloadBridge.this);
             mNativeOfflinePageDownloadBridge = 0;
         }
     }
@@ -79,10 +80,17 @@ public class OfflinePageDownloadBridge {
      * item with specified GUID is not found or can't be opened, nothing happens.
      */
     @CalledByNative
-    private static void openItem(final String url, final long offlineId, final int location,
-            final boolean isIncognito, final boolean openInCct) {
+    private static void openItem(
+            final String url,
+            final long offlineId,
+            final int location,
+            final boolean isIncognito,
+            final boolean openInCct) {
         OfflinePageUtils.getLoadUrlParamsForOpeningOfflineVersion(
-                url, offlineId, location, (params) -> {
+                url,
+                offlineId,
+                location,
+                (params) -> {
                     if (params == null) return;
                     boolean openingFromDownloadsHome =
                             ApplicationStatus.getLastTrackedFocusedActivity()
@@ -94,7 +102,8 @@ public class OfflinePageDownloadBridge {
                     } else {
                         openItemInNewTab(offlineId, params, isIncognito);
                     }
-                }, Profile.getLastUsedRegularProfile());
+                },
+                Profile.getLastUsedRegularProfile());
     }
 
     /**
@@ -120,18 +129,17 @@ public class OfflinePageDownloadBridge {
     private static void openItemInNewTab(
             long offlineId, LoadUrlParams params, boolean isIncognito) {
         ComponentName componentName = getComponentName();
-        AsyncTabCreationParams asyncParams = componentName == null
-                ? new AsyncTabCreationParams(params)
-                : new AsyncTabCreationParams(params, componentName);
+        AsyncTabCreationParams asyncParams =
+                componentName == null
+                        ? new AsyncTabCreationParams(params)
+                        : new AsyncTabCreationParams(params, componentName);
         final ChromeAsyncTabLauncher chromeAsyncTabLauncher =
                 new ChromeAsyncTabLauncher(isIncognito);
         chromeAsyncTabLauncher.launchNewTab(
                 asyncParams, TabLaunchType.FROM_CHROME_UI, Tab.INVALID_TAB_ID);
     }
 
-    /**
-     * Opens the offline page identified by the given offlineId and the LoadUrlParams in a CCT.
-     */
+    /** Opens the offline page identified by the given offlineId and the LoadUrlParams in a CCT. */
     private static void openItemInCct(long offlineId, LoadUrlParams params, boolean isIncognito) {
         final Context context;
         if (ApplicationStatus.hasVisibleActivities()) {
@@ -147,8 +155,9 @@ public class OfflinePageDownloadBridge {
         CustomTabsIntent customTabIntent = builder.build();
         customTabIntent.intent.setData(Uri.parse(params.getUrl()));
 
-        Intent intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
-                context, customTabIntent.intent);
+        Intent intent =
+                LaunchIntentDispatcher.createCustomTabActivityIntent(
+                        context, customTabIntent.intent);
         intent.setPackage(context.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.OFFLINE_PAGE);
@@ -178,13 +187,11 @@ public class OfflinePageDownloadBridge {
         OfflinePageDownloadBridgeJni.get().startDownload(tab, origin.encodeAsJsonString());
     }
 
-    /**
-     * Shows a "Downloading ..." toast for the requested items already scheduled for download.
-     */
+    /** Shows a "Downloading ..." toast for the requested items already scheduled for download. */
     @CalledByNative
     public static void showDownloadingToast() {
         DownloadManagerService.getDownloadManagerService()
-                .getMessageUiController(/*otrProfileID=*/null)
+                .getMessageUiController(/* otrProfileID= */ null)
                 .onDownloadStarted();
     }
 
@@ -211,7 +218,9 @@ public class OfflinePageDownloadBridge {
     @NativeMethods
     interface Natives {
         long init(OfflinePageDownloadBridge caller);
+
         void destroy(long nativeOfflinePageDownloadBridge, OfflinePageDownloadBridge caller);
+
         void startDownload(Tab tab, String origin);
     }
 }

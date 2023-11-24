@@ -22,8 +22,11 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         final TabDistillabilityProvider tabDistillabilityProvider =
                 TabDistillabilityProvider.get(tab);
         if (tabDistillabilityProvider.isDistillabilityDetermined()) {
-            notifyActionAvailable(tabDistillabilityProvider.isDistillable(),
-                    tabDistillabilityProvider.isMobileOptimized(), tab, signalAccumulator);
+            notifyActionAvailable(
+                    tabDistillabilityProvider.isDistillable(),
+                    tabDistillabilityProvider.isMobileOptimized(),
+                    tab,
+                    signalAccumulator);
             return;
         }
 
@@ -31,8 +34,11 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         final TabDistillabilityProvider.DistillabilityObserver distillabilityObserver =
                 new DistillabilityObserver() {
                     @Override
-                    public void onIsPageDistillableResult(Tab tab, boolean isDistillable,
-                            boolean isLast, boolean isMobileOptimized) {
+                    public void onIsPageDistillableResult(
+                            Tab tab,
+                            boolean isDistillable,
+                            boolean isLast,
+                            boolean isMobileOptimized) {
                         notifyActionAvailable(
                                 isDistillable, isMobileOptimized, tab, signalAccumulator);
                         tabDistillabilityProvider.removeObserver(this);
@@ -61,7 +67,10 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                         /* delayMillis= */ 500);
     }
 
-    private void notifyActionAvailable(boolean isDistillable, boolean isMobileOptimized, Tab tab,
+    private void notifyActionAvailable(
+            boolean isDistillable,
+            boolean isMobileOptimized,
+            Tab tab,
             SignalAccumulator signalAccumulator) {
         // TODO(shaktisahu): Can we merge these into a single method call?
         signalAccumulator.setHasReaderMode(isDistillable && !isFilteredOut(tab, isMobileOptimized));
@@ -71,9 +80,10 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     private boolean isFilteredOut(Tab tab, boolean isMobileOptimized) {
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
         // ALWAYS_TRUE.
-        boolean usingRequestDesktopSite = tab.getWebContents() != null
-                && tab.getWebContents().getNavigationController().getUseDesktopUserAgent()
-                && !DomDistillerTabUtils.isHeuristicAlwaysTrue();
+        boolean usingRequestDesktopSite =
+                tab.getWebContents() != null
+                        && tab.getWebContents().getNavigationController().getUseDesktopUserAgent()
+                        && !DomDistillerTabUtils.isHeuristicAlwaysTrue();
 
         if (usingRequestDesktopSite) return true;
 

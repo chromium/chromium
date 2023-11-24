@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.favicon.IconType;
 import org.chromium.url.GURL;
 
-/**
- * Holds the details to populate a site suggestion tile.
- */
+/** Holds the details to populate a site suggestion tile. */
 public class Tile implements OfflinableSuggestion {
     private final SiteSuggestion mSiteData;
 
@@ -26,14 +24,11 @@ public class Tile implements OfflinableSuggestion {
 
     private @IconType int mIconType = IconType.INVALID;
 
-    @Nullable
-    private Drawable mIcon;
+    @Nullable private Drawable mIcon;
 
-    @Nullable
-    private ColorStateList mIconTint;
+    @Nullable private ColorStateList mIconTint;
 
-    @Nullable
-    private Long mOfflinePageOfflineId;
+    @Nullable private Long mOfflinePageOfflineId;
 
     /**
      * @param suggestion The site data we want to populate the tile with.
@@ -128,9 +123,7 @@ public class Tile implements OfflinableSuggestion {
         return mIconType;
     }
 
-    /**
-     * Sets the icon type of this tile. Valid values are listed in {@link IconType}.
-     */
+    /** Sets the icon type of this tile. Valid values are listed in {@link IconType}. */
     public void setIconType(@IconType int iconType) {
         mIconType = iconType;
     }
@@ -142,16 +135,12 @@ public class Tile implements OfflinableSuggestion {
         return mIcon;
     }
 
-    /**
-     * Updates the icon drawable.
-     */
+    /** Updates the icon drawable. */
     public void setIcon(@Nullable Drawable icon) {
         mIcon = icon;
     }
 
-    /**
-     * Updates the icon tint color.
-     */
+    /** Updates the icon tint color. */
     public void setIconTint(@Nullable ColorStateList iconTint) {
         mIconTint = iconTint;
     }

@@ -33,12 +33,20 @@ public class WebApkInstallCoordinatorBridge {
     }
 
     @BinderThread
-    void install(byte[] apkProto, Bitmap primaryIcon, boolean isPrimaryIconMaskable,
+    void install(
+            byte[] apkProto,
+            Bitmap primaryIcon,
+            boolean isPrimaryIconMaskable,
             IOnFinishInstallCallback callback) {
         mCallback = callback;
 
-        WebApkInstallCoordinatorBridgeJni.get().install(mNativeWebApkInstallCoordinatorBridge,
-                WebApkInstallCoordinatorBridge.this, apkProto, primaryIcon, isPrimaryIconMaskable);
+        WebApkInstallCoordinatorBridgeJni.get()
+                .install(
+                        mNativeWebApkInstallCoordinatorBridge,
+                        WebApkInstallCoordinatorBridge.this,
+                        apkProto,
+                        primaryIcon,
+                        isPrimaryIconMaskable);
     }
 
     @CalledByNative
@@ -64,18 +72,27 @@ public class WebApkInstallCoordinatorBridge {
     }
 
     void retry(String startUrl, byte[] proto, Bitmap primaryIcon) {
-        WebApkInstallCoordinatorBridgeJni.get().retry(
-                mNativeWebApkInstallCoordinatorBridge, startUrl, proto, primaryIcon);
+        WebApkInstallCoordinatorBridgeJni.get()
+                .retry(mNativeWebApkInstallCoordinatorBridge, startUrl, proto, primaryIcon);
     }
 
     @NativeMethods
     interface Natives {
         long init(WebApkInstallCoordinatorBridge caller);
-        void install(long nativeWebApkInstallCoordinatorBridge,
-                WebApkInstallCoordinatorBridge caller, byte[] apkProto, Bitmap primaryIcon,
+
+        void install(
+                long nativeWebApkInstallCoordinatorBridge,
+                WebApkInstallCoordinatorBridge caller,
+                byte[] apkProto,
+                Bitmap primaryIcon,
                 boolean isPrimaryIconMaskable);
-        void retry(long nativeWebApkInstallCoordinatorBridge, String startUrl, byte[] apkProto,
+
+        void retry(
+                long nativeWebApkInstallCoordinatorBridge,
+                String startUrl,
+                byte[] apkProto,
                 Bitmap primaryIcon);
+
         void destroy(long nativeWebApkInstallCoordinatorBridge);
     }
 }

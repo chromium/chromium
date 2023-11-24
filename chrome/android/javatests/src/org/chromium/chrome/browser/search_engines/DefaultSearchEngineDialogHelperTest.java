@@ -98,7 +98,6 @@ public class DefaultSearchEngineDialogHelperTest {
             runCount++;
         }
     }
-    ;
 
     private final DismissRunnable mDismissRunnable = new DismissRunnable();
     private final List<TemplateUrl> mTemplateUrls = new ArrayList<>();

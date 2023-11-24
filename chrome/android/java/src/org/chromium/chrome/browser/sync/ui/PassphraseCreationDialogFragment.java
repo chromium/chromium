@@ -27,11 +27,9 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-/**
- * Dialog to ask the user to enter a new custom passphrase.
- */
-public class PassphraseCreationDialogFragment
-        extends DialogFragment implements FragmentHelpAndFeedbackLauncher {
+/** Dialog to ask the user to enter a new custom passphrase. */
+public class PassphraseCreationDialogFragment extends DialogFragment
+        implements FragmentHelpAndFeedbackLauncher {
     public interface Listener {
         void onPassphraseCreated(String passphrase);
     }
@@ -53,15 +51,16 @@ public class PassphraseCreationDialogFragment
         mEnterPassphrase = (EditText) view.findViewById(R.id.passphrase);
         mConfirmPassphrase = (EditText) view.findViewById(R.id.confirm_passphrase);
 
-        mConfirmPassphrase.setOnEditorActionListener(new OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    tryToSubmitPassphrase();
-                }
-                return false;
-            }
-        });
+        mConfirmPassphrase.setOnEditorActionListener(
+                new OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_DONE) {
+                            tryToSubmitPassphrase();
+                        }
+                        return false;
+                    }
+                });
 
         TextView instructionsView =
                 (TextView) view.findViewById(R.id.custom_passphrase_instructions);
@@ -81,15 +80,21 @@ public class PassphraseCreationDialogFragment
 
     private SpannableString getInstructionsText() {
         final Activity activity = getActivity();
-        return SpanApplier.applySpans(activity.getString(R.string.new_sync_custom_passphrase),
-                new SpanInfo("<learnmore>", "</learnmore>", new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        mHelpAndFeedbackLauncher.show(activity,
-                                activity.getString(R.string.help_context_change_sync_passphrase),
-                                null);
-                    }
-                }));
+        return SpanApplier.applySpans(
+                activity.getString(R.string.new_sync_custom_passphrase),
+                new SpanInfo(
+                        "<learnmore>",
+                        "</learnmore>",
+                        new ClickableSpan() {
+                            @Override
+                            public void onClick(View view) {
+                                mHelpAndFeedbackLauncher.show(
+                                        activity,
+                                        activity.getString(
+                                                R.string.help_context_change_sync_passphrase),
+                                        null);
+                            }
+                        }));
     }
 
     @Override
@@ -101,12 +106,14 @@ public class PassphraseCreationDialogFragment
             // onCreate, when it is shown (in super.onStart()), so we have to do this here.
             // Otherwise the dialog will close when the button is clicked regardless of what else we
             // do.
-            d.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    tryToSubmitPassphrase();
-                }
-            });
+            d.getButton(Dialog.BUTTON_POSITIVE)
+                    .setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    tryToSubmitPassphrase();
+                                }
+                            });
         }
     }
 

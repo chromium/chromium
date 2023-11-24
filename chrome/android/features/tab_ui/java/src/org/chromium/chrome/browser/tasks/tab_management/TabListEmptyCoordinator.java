@@ -34,7 +34,9 @@ class TabListEmptyCoordinator {
     private boolean mIsListObserverAttached;
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    public TabListEmptyCoordinator(ViewGroup rootView, TabListModel model,
+    public TabListEmptyCoordinator(
+            ViewGroup rootView,
+            TabListModel model,
             BrowserControlsStateProvider browserControlsStateProvider) {
         mRootView = rootView;
         mContext = rootView.getContext();
@@ -42,17 +44,18 @@ class TabListEmptyCoordinator {
         // Observe TabListModel to determine when to add / remove empty state view.
         mModel = model;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mListObserver = new ListObserver<Void>() {
-            @Override
-            public void onItemRangeInserted(ListObservable source, int index, int count) {
-                updateEmptyView();
-            }
+        mListObserver =
+                new ListObserver<Void>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        updateEmptyView();
+                    }
 
-            @Override
-            public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                updateEmptyView();
-            }
-        };
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        updateEmptyView();
+                    }
+                };
     }
 
     public void initializeEmptyStateView(
@@ -61,8 +64,10 @@ class TabListEmptyCoordinator {
             return;
         }
         // Initialize empty state resource.
-        mEmptyView = (ViewGroup) android.view.LayoutInflater.from(mContext).inflate(
-                R.layout.empty_state_view, null);
+        mEmptyView =
+                (ViewGroup)
+                        android.view.LayoutInflater.from(mContext)
+                                .inflate(R.layout.empty_state_view, null);
         mEmptyStateHeading = mEmptyView.findViewById(R.id.empty_state_text_title);
         mEmptyStateSubheading = mEmptyView.findViewById(R.id.empty_state_text_description);
         mImageView = mEmptyView.findViewById(R.id.empty_state_icon);

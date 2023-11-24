@@ -34,53 +34,56 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Utility class for test signin functionality.
- */
+/** Utility class for test signin functionality. */
 public final class SigninTestUtil {
     /**
      * @return The primary account of the requested {@link ConsentLevel}.
      */
     static CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return IdentityServicesProvider.get()
-                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                    .getPrimaryAccountInfo(consentLevel);
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getPrimaryAccountInfo(consentLevel);
+                });
     }
 
-    /**
-     * Signs the user into the given account.
-     */
+    /** Signs the user into the given account. */
     public static void signin(CoreAccountInfo coreAccountInfo) {
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                    Profile.getLastUsedRegularProfile());
-            signinManager.signin(AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
-                    SigninAccessPoint.UNKNOWN, new SigninManager.SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            callbackHelper.notifyCalled();
-                        }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                    signinManager.signin(
+                            AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                            SigninAccessPoint.UNKNOWN,
+                            new SigninManager.SignInCallback() {
+                                @Override
+                                public void onSignInComplete() {
+                                    callbackHelper.notifyCalled();
+                                }
 
-                        @Override
-                        public void onSignInAborted() {
-                            Assert.fail("Sign-in was aborted");
-                        }
-                    });
-        });
+                                @Override
+                                public void onSignInAborted() {
+                                    Assert.fail("Sign-in was aborted");
+                                }
+                            });
+                });
         try {
             callbackHelper.waitForFirst();
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(coreAccountInfo,
-                    IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            coreAccountInfo,
+                            IdentityServicesProvider.get()
+                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                });
     }
 
     /**
@@ -92,43 +95,46 @@ public final class SigninTestUtil {
     public static void signinAndEnableSync(
             CoreAccountInfo coreAccountInfo, @Nullable SyncService syncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                    Profile.getLastUsedRegularProfile());
-            signinManager.signinAndEnableSync(
-                    AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
-                    SigninAccessPoint.UNKNOWN, new SigninManager.SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            if (syncService != null) {
-                                syncService.setInitialSyncFeatureSetupComplete(
-                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            }
-                            callbackHelper.notifyCalled();
-                        }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                    signinManager.signinAndEnableSync(
+                            AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                            SigninAccessPoint.UNKNOWN,
+                            new SigninManager.SignInCallback() {
+                                @Override
+                                public void onSignInComplete() {
+                                    if (syncService != null) {
+                                        syncService.setInitialSyncFeatureSetupComplete(
+                                                SyncFirstSetupCompleteSource.BASIC_FLOW);
+                                    }
+                                    callbackHelper.notifyCalled();
+                                }
 
-                        @Override
-                        public void onSignInAborted() {
-                            Assert.fail("Sign-in was aborted");
-                        }
-                    });
-        });
+                                @Override
+                                public void onSignInAborted() {
+                                    Assert.fail("Sign-in was aborted");
+                                }
+                            });
+                });
         try {
             callbackHelper.waitForFirst();
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(coreAccountInfo,
-                    IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SYNC));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            coreAccountInfo,
+                            IdentityServicesProvider.get()
+                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                });
     }
 
-    /**
-     * Waits for the AccountTrackerService to seed system accounts.
-     */
+    /** Waits for the AccountTrackerService to seed system accounts. */
     static void seedAccounts() {
         ThreadUtils.assertOnBackgroundThread();
         CallbackHelper ch = new CallbackHelper();
@@ -157,14 +163,16 @@ public final class SigninTestUtil {
     private static void signOut(@SignoutReason int signoutReason) {
         ThreadUtils.assertOnBackgroundThread();
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                    Profile.getLastUsedRegularProfile());
-            signinManager.runAfterOperationInProgress(
-                    ()
-                            -> signinManager.signOut(
-                                    signoutReason, callbackHelper::notifyCalled, false));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                    signinManager.runAfterOperationInProgress(
+                            () ->
+                                    signinManager.signOut(
+                                            signoutReason, callbackHelper::notifyCalled, false));
+                });
         try {
             callbackHelper.waitForFirst();
         } catch (TimeoutException e) {
@@ -178,7 +186,7 @@ public final class SigninTestUtil {
      */
     public static void completeAutoDeviceLockIfNeeded(SigninFirstRunFragment fragment) {
         if (!ThreadUtils.runOnUiThreadBlockingNoException(
-                    () -> BuildInfo.getInstance().isAutomotive)) {
+                () -> BuildInfo.getInstance().isAutomotive)) {
             return;
         }
 

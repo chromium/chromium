@@ -30,35 +30,23 @@ import java.lang.annotation.RetentionPolicy;
  * a {@link RadioButtonWithDescription} that represent Chrome NTP, and a
  * {@link RadioButtonWithEditText} that represents customized URL set by partner or user.
  */
-public final class RadioButtonGroupHomepagePreference
-        extends Preference implements RadioGroup.OnCheckedChangeListener, OnTextChangeListener {
-    /**
-     * A data structure which holds the displayed value and the status for this preference.
-     */
+public final class RadioButtonGroupHomepagePreference extends Preference
+        implements RadioGroup.OnCheckedChangeListener, OnTextChangeListener {
+    /** A data structure which holds the displayed value and the status for this preference. */
     static class PreferenceValues {
-        /**
-         * The option that is checked in {@link RadioButtonGroupHomepagePreference}.
-         */
+        /** The option that is checked in {@link RadioButtonGroupHomepagePreference}. */
         private @HomepageOption int mCheckedOption;
 
-        /**
-         * The string that displayed on the edit text box.
-         */
+        /** The string that displayed on the edit text box. */
         private String mCustomizedText;
 
-        /**
-         * Whether the RadioButtonGroup is enabled.
-         */
+        /** Whether the RadioButtonGroup is enabled. */
         private boolean mIsEnabled;
 
-        /**
-         * Whether the option for to {@link HomepageOption#ENTRY_CHROME_NTP} is visible.
-         */
+        /** Whether the option for to {@link HomepageOption#ENTRY_CHROME_NTP} is visible. */
         private boolean mIsNTPOptionVisible;
 
-        /**
-         * Whether the option for to {@link HomepageOption#ENTRY_CUSTOM_URI} is visible.
-         */
+        /** Whether the option for to {@link HomepageOption#ENTRY_CUSTOM_URI} is visible. */
         private boolean mIsCustomizedOptionVisible;
 
         /**
@@ -73,8 +61,12 @@ public final class RadioButtonGroupHomepagePreference
          * @param isCustomizedOptionVisible Whether the option for to {@link
          *         HomepageOption#ENTRY_CUSTOM_URI} is visible.
          */
-        PreferenceValues(@HomepageOption int checkedOption, String customizedText,
-                boolean isEnabled, boolean isNTPButtonVisible, boolean isCustomizedOptionVisible) {
+        PreferenceValues(
+                @HomepageOption int checkedOption,
+                String customizedText,
+                boolean isEnabled,
+                boolean isNTPButtonVisible,
+                boolean isCustomizedOptionVisible) {
             mCheckedOption = checkedOption;
             mCustomizedText = customizedText;
 
@@ -99,9 +91,7 @@ public final class RadioButtonGroupHomepagePreference
         }
     }
 
-    /**
-     * Enums that represent the status of radio buttons inside this Preference.
-     */
+    /** Enums that represent the status of radio buttons inside this Preference. */
     @IntDef({HomepageOption.ENTRY_CHROME_NTP, HomepageOption.ENTRY_CUSTOM_URI})
     @Retention(RetentionPolicy.SOURCE)
     @interface HomepageOption {
@@ -140,8 +130,10 @@ public final class RadioButtonGroupHomepagePreference
         assert mCustomUri.isChecked() != mChromeNTP.isChecked();
 
         @HomepageOption
-        int checkedOption = mChromeNTP.isChecked() ? HomepageOption.ENTRY_CHROME_NTP
-                                                   : HomepageOption.ENTRY_CUSTOM_URI;
+        int checkedOption =
+                mChromeNTP.isChecked()
+                        ? HomepageOption.ENTRY_CHROME_NTP
+                        : HomepageOption.ENTRY_CUSTOM_URI;
 
         mPreferenceValues.mCheckedOption = checkedOption;
     }
@@ -170,9 +162,7 @@ public final class RadioButtonGroupHomepagePreference
         mCustomUri.addTextChangeListener(this);
     }
 
-    /**
-     * Will be called when the text edit has a value change.
-     */
+    /** Will be called when the text edit has a value change. */
     @Override
     public void onTextChanged(CharSequence newText) {
         assert mPreferenceValues != null;

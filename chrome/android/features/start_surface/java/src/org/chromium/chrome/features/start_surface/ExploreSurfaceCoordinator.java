@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.features.start_surface;
+
 import android.app.Activity;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -47,6 +48,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ExploreSurfaceCoordinator {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
+
     @VisibleForTesting
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
 
@@ -65,32 +67,62 @@ public class ExploreSurfaceCoordinator {
     private long mActivityCreationTimeMs;
     private long mStreamCreatedTimeMs;
 
-    public ExploreSurfaceCoordinator(Profile profile, Activity activity, boolean isInNightMode,
-            boolean isPlaceholderShown, BottomSheetController bottomSheetController,
+    public ExploreSurfaceCoordinator(
+            Profile profile,
+            Activity activity,
+            boolean isInNightMode,
+            boolean isPlaceholderShown,
+            BottomSheetController bottomSheetController,
             ScrollableContainerDelegate scrollableContainerDelegate,
-            @NewTabPageLaunchOrigin int launchOrigin, @NonNull Supplier<Toolbar> toolbarSupplier,
-            long embeddingSurfaceConstructedTimeNs, FeedSwipeRefreshLayout swipeRefreshLayout,
-            ViewGroup parentView, Supplier<Tab> parentTabSupplier, SnackbarManager snackbarManager,
-            Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
-            JankTracker jankTracker, TabModelSelector tabModelSelector) {
+            @NewTabPageLaunchOrigin int launchOrigin,
+            @NonNull Supplier<Toolbar> toolbarSupplier,
+            long embeddingSurfaceConstructedTimeNs,
+            FeedSwipeRefreshLayout swipeRefreshLayout,
+            ViewGroup parentView,
+            Supplier<Tab> parentTabSupplier,
+            SnackbarManager snackbarManager,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            WindowAndroid windowAndroid,
+            JankTracker jankTracker,
+            TabModelSelector tabModelSelector) {
         mActivity = activity;
         mJankTracker = jankTracker;
         mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(parentTabSupplier);
         mIsPlaceholderShownInitially = isPlaceholderShown;
         mProfile = profile;
 
-        mFeedSurfaceCoordinator = new FeedSurfaceCoordinator(mActivity, snackbarManager,
-                windowAndroid, mJankTracker, /*snapScrollHelper=*/null, /*ntpHeader=*/null,
-                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow),
-                isInNightMode, /*delegate=*/new ExploreFeedSurfaceDelegate(), profile,
-                isPlaceholderShown, bottomSheetController, shareDelegateSupplier,
-                scrollableContainerDelegate, launchOrigin,
-                PrivacyPreferencesManagerImpl.getInstance(), toolbarSupplier,
-                SurfaceType.START_SURFACE, embeddingSurfaceConstructedTimeNs, swipeRefreshLayout,
-                /*overScrollDisabled=*/true, parentView,
-                new ExploreSurfaceActionDelegate(
-                        snackbarManager, BookmarkModel.getForProfile(profile), tabModelSelector),
-                HelpAndFeedbackLauncherImpl.getForProfile(profile), tabModelSelector);
+        mFeedSurfaceCoordinator =
+                new FeedSurfaceCoordinator(
+                        mActivity,
+                        snackbarManager,
+                        windowAndroid,
+                        mJankTracker,
+                        /* snapScrollHelper= */ null,
+                        /* ntpHeader= */ null,
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow),
+                        isInNightMode,
+                        /* delegate= */ new ExploreFeedSurfaceDelegate(),
+                        profile,
+                        isPlaceholderShown,
+                        bottomSheetController,
+                        shareDelegateSupplier,
+                        scrollableContainerDelegate,
+                        launchOrigin,
+                        PrivacyPreferencesManagerImpl.getInstance(),
+                        toolbarSupplier,
+                        SurfaceType.START_SURFACE,
+                        embeddingSurfaceConstructedTimeNs,
+                        swipeRefreshLayout,
+                        /* overScrollDisabled= */ true,
+                        parentView,
+                        new ExploreSurfaceActionDelegate(
+                                snackbarManager,
+                                BookmarkModel.getForProfile(profile),
+                                tabModelSelector),
+                        HelpAndFeedbackLauncherImpl.getForProfile(profile),
+                        tabModelSelector);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.
@@ -116,14 +148,17 @@ public class ExploreSurfaceCoordinator {
         if (!maybeRecordContentLoadingTime() && mFeedSurfaceCoordinator.isLoadingFeed()) {
             mHasPendingUmaRecording = true;
         }
-        StartSurfaceConfiguration.recordHistogram(FEED_STREAM_CREATED_TIME_MS_UMA,
-                mStreamCreatedTimeMs - activityCreationTimeMs, mIsPlaceholderShownInitially);
+        StartSurfaceConfiguration.recordHistogram(
+                FEED_STREAM_CREATED_TIME_MS_UMA,
+                mStreamCreatedTimeMs - activityCreationTimeMs,
+                mIsPlaceholderShownInitially);
     }
 
     private boolean maybeRecordContentLoadingTime() {
         if (mActivityCreationTimeMs == 0 || mContentFirstAvailableTimeMs == 0) return false;
 
-        StartSurfaceConfiguration.recordHistogram(FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
+        StartSurfaceConfiguration.recordHistogram(
+                FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
                 mContentFirstAvailableTimeMs - mActivityCreationTimeMs,
                 mIsPlaceholderShownInitially);
         return true;
@@ -142,7 +177,9 @@ public class ExploreSurfaceCoordinator {
     }
 
     private class ExploreSurfaceActionDelegate extends FeedActionDelegateImpl {
-        ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel,
+        ExploreSurfaceActionDelegate(
+                SnackbarManager snackbarManager,
+                BookmarkModel bookmarkModel,
                 TabModelSelector tabModelSelector) {
             super(
                     mActivity,
@@ -164,6 +201,7 @@ public class ExploreSurfaceCoordinator {
                 }
             }
         }
+
         @Override
         public void onStreamCreated() {
             mStreamCreatedTimeMs = SystemClock.elapsedRealtime();

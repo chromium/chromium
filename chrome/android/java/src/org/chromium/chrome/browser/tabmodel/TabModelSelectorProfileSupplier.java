@@ -17,8 +17,8 @@ import org.chromium.chrome.browser.tab.Tab;
  * Like {@link org.chromium.base.supplier.ObservableSupplier}, this class must only be
  * accessed from a single thread.
  */
-public class TabModelSelectorProfileSupplier
-        extends ObservableSupplierImpl<Profile> implements Destroyable {
+public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Profile>
+        implements Destroyable {
     private final TabModelSelectorObserver mSelectorObserver;
     private final ObservableSupplier<TabModelSelector> mSelectorSupplier;
     private final Callback<TabModelSelector> mSelectorSupplierCallback;
@@ -27,34 +27,35 @@ public class TabModelSelectorProfileSupplier
     private boolean mHasProfile;
 
     public TabModelSelectorProfileSupplier(ObservableSupplier<TabModelSelector> selectorSupplier) {
-        mSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                Profile newProfile = newModel.getProfile();
-                // Postpone setting the profile until tab state is initialized.
-                if (newProfile == null) return;
-                set(newProfile);
-            }
+        mSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        Profile newProfile = newModel.getProfile();
+                        // Postpone setting the profile until tab state is initialized.
+                        if (newProfile == null) return;
+                        set(newProfile);
+                    }
 
-            @Override
-            public void onChange() {
-                if (mSelector.getCurrentModel() == null) return;
-                Profile profile = mSelector.getCurrentModel().getProfile();
-                if (profile == null) return;
-                set(profile);
-            }
+                    @Override
+                    public void onChange() {
+                        if (mSelector.getCurrentModel() == null) return;
+                        Profile profile = mSelector.getCurrentModel().getProfile();
+                        if (profile == null) return;
+                        set(profile);
+                    }
 
-            @Override
-            public void onNewTabCreated(Tab tab, int creationState) {}
+                    @Override
+                    public void onNewTabCreated(Tab tab, int creationState) {}
 
-            @Override
-            public void onTabHidden(Tab tab) {}
+                    @Override
+                    public void onTabHidden(Tab tab) {}
 
-            @Override
-            public void onTabStateInitialized() {
-                set(mSelector.getCurrentModel().getProfile());
-            }
-        };
+                    @Override
+                    public void onTabStateInitialized() {
+                        set(mSelector.getCurrentModel().getProfile());
+                    }
+                };
 
         mSelectorSupplier = selectorSupplier;
         mSelectorSupplierCallback = this::setSelector;

@@ -34,7 +34,7 @@ public class PartnerBookmarksShim {
 
         boolean systemOrPreStable =
                 (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1
-                || !VersionInfo.isStableBuild();
+                        || !VersionInfo.isStableBuild();
         if (!systemOrPreStable) {
             reader.onBookmarksRead();
             return;

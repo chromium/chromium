@@ -10,9 +10,7 @@ import android.os.Bundle;
 
 import org.chromium.base.ObserverList;
 
-/**
- * Implementation of {@link MultiWindowModeStateDispatcher}.
- */
+/** Implementation of {@link MultiWindowModeStateDispatcher}. */
 public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateDispatcher {
     private final Activity mActivity;
     private final ObserverList<MultiWindowModeObserver> mObservers;

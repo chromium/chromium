@@ -46,21 +46,22 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
         mStandardPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoPrimaryColor = ChromeColors.getDefaultThemeColor(context, true);
 
-        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
-            @Override
-            public void onStartedShowing(@LayoutType int layoutType) {
-                if (layoutType == LayoutType.TAB_SWITCHER) {
-                    updateTheme();
-                }
-            }
+        mLayoutStateObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            updateTheme();
+                        }
+                    }
 
-            @Override
-            public void onStartedHiding(@LayoutType int layoutType) {
-                if (layoutType == LayoutType.TAB_SWITCHER) {
-                    updateTheme();
-                }
-            }
-        };
+                    @Override
+                    public void onStartedHiding(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            updateTheme();
+                        }
+                    }
+                };
     }
 
     void setIncognitoStateProvider(IncognitoStateProvider provider) {

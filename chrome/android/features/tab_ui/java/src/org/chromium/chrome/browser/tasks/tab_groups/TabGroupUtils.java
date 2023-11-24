@@ -32,20 +32,18 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 
-/**
- * Helper class to handle tab groups related utilities.
- */
+/** Helper class to handle tab groups related utilities. */
 public class TabGroupUtils {
     private static TabModelSelectorTabObserver sTabModelSelectorTabObserver;
 
-    public static void maybeShowIPH(@FeatureConstants String featureName, View view,
+    public static void maybeShowIPH(
+            @FeatureConstants String featureName,
+            View view,
             @Nullable BottomSheetController bottomSheetController) {
         if (view == null) return;
 
-        @StringRes
-        int textId;
-        @StringRes
-        int accessibilityTextId;
+        @StringRes int textId;
+        @StringRes int accessibilityTextId;
         switch (featureName) {
             case FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE:
                 textId = R.string.iph_tab_groups_quickly_compare_pages_text;
@@ -72,41 +70,49 @@ public class TabGroupUtils {
 
         ViewRectProvider rectProvider = new ViewRectProvider(view);
 
-        TextBubble textBubble = new TextBubble(view.getContext(), view, textId, accessibilityTextId,
-                true, rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        TextBubble textBubble =
+                new TextBubble(
+                        view.getContext(),
+                        view,
+                        textId,
+                        accessibilityTextId,
+                        true,
+                        rectProvider,
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setDismissOnTouchInteraction(true);
         if (bottomSheetController == null) return;
         assert featureName.equals(FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE);
 
         // This observer is added when IPH shows and is removed when IPH is dismissed via user
         // explicitly closing the text bubble.
-        BottomSheetObserver bottomSheetObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetStateChanged(int newState, int reason) {
-                if (newState == BottomSheetController.SheetState.HIDDEN) {
-                    textBubble.show();
-                } else {
-                    textBubble.dismiss();
-                }
-            }
-        };
+        BottomSheetObserver bottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {
+                        if (newState == BottomSheetController.SheetState.HIDDEN) {
+                            textBubble.show();
+                        } else {
+                            textBubble.dismiss();
+                        }
+                    }
+                };
 
-        textBubble.addOnDismissListener(() -> {
-            // Don't dismiss the feature when the hide is caused by bottom sheet showing.
-            if (bottomSheetController.getSheetState() != BottomSheetController.SheetState.HIDDEN) {
-                return;
-            }
-            tracker.dismissed(featureName);
-            bottomSheetController.removeObserver(bottomSheetObserver);
-        });
+        textBubble.addOnDismissListener(
+                () -> {
+                    // Don't dismiss the feature when the hide is caused by bottom sheet showing.
+                    if (bottomSheetController.getSheetState()
+                            != BottomSheetController.SheetState.HIDDEN) {
+                        return;
+                    }
+                    tracker.dismissed(featureName);
+                    bottomSheetController.removeObserver(bottomSheetObserver);
+                });
 
         bottomSheetController.addObserver(bottomSheetObserver);
         textBubble.show();
     }
 
-    /**
-     * Start a TabModelSelectorTabObserver to show IPH for TabGroups.
-     */
+    /** Start a TabModelSelectorTabObserver to show IPH for TabGroups. */
     public static void startObservingForCreationIPH() {
         if (sTabModelSelectorTabObserver != null) return;
 
@@ -114,23 +120,26 @@ public class TabGroupUtils {
         if (!(activity instanceof ChromeTabbedActivity)) return;
         TabModelSelector selector = ((ChromeTabbedActivity) activity).getTabModelSelector();
 
-        sTabModelSelectorTabObserver = new TabModelSelectorTabObserver(selector) {
-            @Override
-            public void onDidFinishNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigationHandle) {
-                if (tab.isIncognito()) return;
-                if (!navigationHandle.hasCommitted()) return;
+        sTabModelSelectorTabObserver =
+                new TabModelSelectorTabObserver(selector) {
+                    @Override
+                    public void onDidFinishNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigationHandle) {
+                        if (tab.isIncognito()) return;
+                        if (!navigationHandle.hasCommitted()) return;
 
-                // Searching from omnibox results in PageTransition.GENERATED.
-                if (navigationHandle.isValidSearchFormUrl()
-                        || (navigationHandle.pageTransition() & PageTransition.CORE_MASK)
-                                == PageTransition.GENERATED) {
-                    maybeShowIPH(FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
-                            tab.getView(), null);
-                    sTabModelSelectorTabObserver.destroy();
-                }
-            }
-        };
+                        // Searching from omnibox results in PageTransition.GENERATED.
+                        if (navigationHandle.isValidSearchFormUrl()
+                                || (navigationHandle.pageTransition() & PageTransition.CORE_MASK)
+                                        == PageTransition.GENERATED) {
+                            maybeShowIPH(
+                                    FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
+                                    tab.getView(),
+                                    null);
+                            sTabModelSelectorTabObserver.destroy();
+                        }
+                    }
+                };
     }
 
     /**
@@ -140,8 +149,9 @@ public class TabGroupUtils {
      * @return The selected tab of the group which contains the {@code tab}
      */
     public static Tab getSelectedTabInGroupForTab(TabModelSelector selector, Tab tab) {
-        TabGroupModelFilter filter = (TabGroupModelFilter) selector.getTabModelFilterProvider()
-                                             .getCurrentTabModelFilter();
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        selector.getTabModelFilterProvider().getCurrentTabModelFilter();
         return filter.getTabAt(filter.indexOf(tab));
     }
 

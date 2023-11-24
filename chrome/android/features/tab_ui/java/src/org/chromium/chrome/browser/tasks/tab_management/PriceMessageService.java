@@ -37,9 +37,7 @@ public class PriceMessageService extends MessageService {
         int PRICE_ALERTS = 1;
     }
 
-    /**
-     * Provides the binding tab ID and the price drop of the binding tab.
-     */
+    /** Provides the binding tab ID and the price drop of the binding tab. */
     static class PriceTabData {
         public final int bindingTabId;
         public final ShoppingPersistedTabData.PriceDrop priceDrop;
@@ -66,9 +64,7 @@ public class PriceMessageService extends MessageService {
         }
     }
 
-    /**
-     * An interface to help build the PriceWelcomeMessage.
-     */
+    /** An interface to help build the PriceWelcomeMessage. */
     public interface PriceWelcomeMessageProvider {
         /**
          * This method gets the tab index from tab ID.
@@ -87,9 +83,7 @@ public class PriceMessageService extends MessageService {
         void showPriceDropTooltip(int index);
     }
 
-    /**
-     * An interface to handle the review action of PriceWelcomeMessage.
-     */
+    /** An interface to handle the review action of PriceWelcomeMessage. */
     public interface PriceWelcomeMessageReviewActionProvider {
         /**
          * This method scrolls to the tab at given index.
@@ -99,16 +93,16 @@ public class PriceMessageService extends MessageService {
         void scrollToTab(int tabIndex);
     }
 
-    /**
-     * This is the data type that this MessageService is serving to its Observer.
-     */
+    /** This is the data type that this MessageService is serving to its Observer. */
     class PriceMessageData implements MessageData {
         private final int mType;
         private final ShoppingPersistedTabData.PriceDrop mPriceDrop;
         private final MessageCardView.ReviewActionProvider mReviewActionProvider;
         private final MessageCardView.DismissActionProvider mDismissActionProvider;
 
-        PriceMessageData(@PriceMessageType int type, @Nullable PriceTabData priceTabData,
+        PriceMessageData(
+                @PriceMessageType int type,
+                @Nullable PriceTabData priceTabData,
                 MessageCardView.ReviewActionProvider reviewActionProvider,
                 MessageCardView.DismissActionProvider dismissActionProvider) {
             mType = type;
@@ -157,8 +151,8 @@ public class PriceMessageService extends MessageService {
     // TabSwitcherMediator#prepareOverview}.
     private static final int PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER =
             TabUiFeatureUtilities.isTabToGtsAnimationEnabled(ContextUtils.getApplicationContext())
-            ? 2
-            : 1;
+                    ? 2
+                    : 1;
 
     private final PriceWelcomeMessageProvider mPriceWelcomeMessageProvider;
     private final PriceWelcomeMessageReviewActionProvider mPriceWelcomeMessageReviewActionProvider;
@@ -166,7 +160,8 @@ public class PriceMessageService extends MessageService {
 
     private PriceTabData mPriceTabData;
 
-    PriceMessageService(PriceWelcomeMessageProvider priceWelcomeMessageProvider,
+    PriceMessageService(
+            PriceWelcomeMessageProvider priceWelcomeMessageProvider,
             PriceWelcomeMessageReviewActionProvider priceWelcomeMessageReviewActionProvider,
             PriceDropNotificationManager notificationManager) {
         super(MessageType.PRICE_MESSAGE);
@@ -216,8 +211,12 @@ public class PriceMessageService extends MessageService {
         // before preparing new messages.
         invalidateMessage();
         mPriceTabData = priceTabData;
-        sendAvailabilityNotification(new PriceMessageData(
-                type, mPriceTabData, () -> review(type), (int messageType) -> dismiss(type)));
+        sendAvailabilityNotification(
+                new PriceMessageData(
+                        type,
+                        mPriceTabData,
+                        () -> review(type),
+                        (int messageType) -> dismiss(type)));
         return true;
     }
 

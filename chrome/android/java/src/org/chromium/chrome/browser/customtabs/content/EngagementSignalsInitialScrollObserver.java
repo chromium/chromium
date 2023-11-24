@@ -100,32 +100,34 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
         }
         mWebContents = tab.getWebContents();
 
-        mGestureStateListener = new GestureStateListener() {
-            @Override
-            public void onScrollStarted(
-                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
-                if (!isDirectionUp) {
-                    mHadScrollDown = true;
-                }
-            }
+        mGestureStateListener =
+                new GestureStateListener() {
+                    @Override
+                    public void onScrollStarted(
+                            int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
+                        if (!isDirectionUp) {
+                            mHadScrollDown = true;
+                        }
+                    }
 
-            @Override
-            public void onVerticalScrollDirectionChanged(
-                    boolean directionUp, float currentScrollRatio) {
-                // If the scroll direction changed, either the previous direction was or the new
-                // direction is a down scroll.
-                mHadScrollDown = true;
-            }
-        };
+                    @Override
+                    public void onVerticalScrollDirectionChanged(
+                            boolean directionUp, float currentScrollRatio) {
+                        // If the scroll direction changed, either the previous direction was or the
+                        // new direction is a down scroll.
+                        mHadScrollDown = true;
+                    }
+                };
 
-        mWebContentsObserver = new WebContentsObserver() {
-            @Override
-            public void navigationEntryCommitted(LoadCommittedDetails details) {
-                if (details.isMainFrame() && !details.isSameDocument()) {
-                    mHadScrollDown = false;
-                }
-            }
-        };
+        mWebContentsObserver =
+                new WebContentsObserver() {
+                    @Override
+                    public void navigationEntryCommitted(LoadCommittedDetails details) {
+                        if (details.isMainFrame() && !details.isSameDocument()) {
+                            mHadScrollDown = false;
+                        }
+                    }
+                };
 
         GestureListenerManager gestureListenerManager =
                 GestureListenerManager.fromWebContents(mWebContents);
@@ -152,9 +154,7 @@ public class EngagementSignalsInitialScrollObserver extends CustomTabTabObserver
         mWebContentsObserver = null;
     }
 
-    /**
-     * Returns whether the current page has had a scroll down gesture.
-     */
+    /** Returns whether the current page has had a scroll down gesture. */
     public boolean hasCurrentPageHadScrollDown() {
         return mHadScrollDown;
     }

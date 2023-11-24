@@ -14,6 +14,7 @@ public final class DragDropGlobalState {
 
     public int dragSourceInstanceId = MultiWindowUtils.INVALID_INSTANCE_ID;
     public Tab tabBeingDragged;
+
     public static DragDropGlobalState getInstance() {
         return sInstance;
     }

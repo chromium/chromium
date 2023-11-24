@@ -18,9 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
-/**
- * Provides the additional capabilities needed for the SearchBox container layout.
- */
+/** Provides the additional capabilities needed for the SearchBox container layout. */
 public class SearchBoxContainerView extends LinearLayout {
     private final boolean mIsSurfacePolishEnabled;
     private final boolean mIsSurfacePolishOmniboxColorEnabled;
@@ -32,8 +30,9 @@ public class SearchBoxContainerView extends LinearLayout {
     public SearchBoxContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishOmniboxColorEnabled = mIsSurfacePolishEnabled
-                && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
+        mIsSurfacePolishOmniboxColorEnabled =
+                mIsSurfacePolishEnabled
+                        && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
         mEndPadding = getResources().getDimensionPixelSize(R.dimen.fake_search_box_end_padding);
         mStartPadding = getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding);
         mLateralMargin =
@@ -51,19 +50,25 @@ public class SearchBoxContainerView extends LinearLayout {
             params.rightMargin = mLateralMargin;
 
             if (mIsSurfacePolishOmniboxColorEnabled) {
-                setBackground(AppCompatResources.getDrawable(
-                        getContext(), R.drawable.home_surface_search_box_background_colorful));
+                setBackground(
+                        AppCompatResources.getDrawable(
+                                getContext(),
+                                R.drawable.home_surface_search_box_background_colorful));
             } else {
-                setBackground(AppCompatResources.getDrawable(
-                        getContext(), R.drawable.home_surface_search_box_background_neutral));
+                setBackground(
+                        AppCompatResources.getDrawable(
+                                getContext(),
+                                R.drawable.home_surface_search_box_background_neutral));
             }
 
             TextView searchBoxTextView = findViewById(R.id.search_box_text);
             if (mIsSurfacePolishOmniboxColorEnabled) {
-                searchBoxTextView.setTextAppearance(getContext(),
+                searchBoxTextView.setTextAppearance(
+                        getContext(),
                         R.style.TextAppearance_SearchBoxText_NewTabPage_SurfacePolishColorful);
             } else {
-                searchBoxTextView.setTextAppearance(getContext(),
+                searchBoxTextView.setTextAppearance(
+                        getContext(),
                         R.style.TextAppearance_SearchBoxText_NewTabPage_SurfacePolishNeutral);
             }
             Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);

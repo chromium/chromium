@@ -72,9 +72,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration tests of showing a NTP with Start surface UI at startup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction({
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({
     ChromeFeatureList.START_SURFACE_ON_TABLET,
     ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID,

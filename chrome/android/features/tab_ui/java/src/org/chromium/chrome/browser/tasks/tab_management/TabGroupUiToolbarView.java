@@ -104,13 +104,15 @@ public class TabGroupUiToolbarView extends FrameLayout {
             // to wait for the menu window to hide and current window to gain focus so that we can
             // show the keyboard.
             KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    assert hasWindowFocus();
-                    delegate.showKeyboard(mTitleTextView);
-                }
-            }, showKeyboardDelay);
+            postDelayed(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            assert hasWindowFocus();
+                            delegate.showKeyboard(mTitleTextView);
+                        }
+                    },
+                    showKeyboardDelay);
         } else {
             hideKeyboard();
         }
@@ -150,13 +152,16 @@ public class TabGroupUiToolbarView extends FrameLayout {
     void setIsIncognito(boolean isIncognito) {
         @ColorInt
         int primaryColor =
-                isIncognito ? getResources().getColor(R.color.dialog_bg_color_dark_baseline)
-                            : SemanticColorUtils.getDialogBgColor(getContext());
+                isIncognito
+                        ? getResources().getColor(R.color.dialog_bg_color_dark_baseline)
+                        : SemanticColorUtils.getDialogBgColor(getContext());
         setPrimaryColor(primaryColor);
 
         @ColorRes
-        int tintListRes = isIncognito ? R.color.default_icon_color_light_tint_list
-                                      : R.color.default_icon_color_tint_list;
+        int tintListRes =
+                isIncognito
+                        ? R.color.default_icon_color_light_tint_list
+                        : R.color.default_icon_color_tint_list;
         ColorStateList tintList = ContextCompat.getColorStateList(getContext(), tintListRes);
         setTint(tintList);
     }
@@ -181,9 +186,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
         DrawableCompat.setTint(getBackground(), color);
     }
 
-    /**
-     * Setup the toolbar layout for TabGridDialog.
-     */
+    /** Setup the toolbar layout for TabGridDialog. */
     void setupDialogToolbarLayout() {
         Context context = getContext();
         mLeftButton.setImageResource(R.drawable.ic_arrow_back_24dp);
@@ -195,38 +198,28 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mTitleTextView.setTextAppearance(R.style.TextAppearance_Headline_Primary);
     }
 
-    /**
-     * Hide the title widgets related to tab group continuation features.
-     */
+    /** Hide the title widgets related to tab group continuation features. */
     void hideTitleWidget() {
         mTitleTextView.setFocusable(false);
         mTitleTextView.setBackgroundColor(Color.TRANSPARENT);
     }
 
-    /**
-     * Hide the menu button related to tab group continuation and selection editor features.
-     */
+    /** Hide the menu button related to tab group continuation and selection editor features. */
     void hideMenuButton() {
         mMainContent.removeView(mMenuButton);
     }
 
-    /**
-     * Setup the drawable in the left button.
-     */
+    /** Setup the drawable in the left button. */
     void setLeftButtonDrawableId(int drawableId) {
         mLeftButton.setImageResource(drawableId);
     }
 
-    /**
-     * Set the content description of the left button.
-     */
+    /** Set the content description of the left button. */
     void setLeftButtonContentDescription(String string) {
         mLeftButton.setContentDescription(string);
     }
 
-    /**
-     * Set the content description of the right button.
-     */
+    /** Set the content description of the right button. */
     void setRightButtonContentDescription(String string) {
         mRightButton.setContentDescription(string);
     }

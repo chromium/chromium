@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Utility class for shared sync test functionality.
- */
+/** Utility class for shared sync test functionality. */
 public final class SyncTestUtil {
     private static final String TAG = "SyncTestUtil";
 
@@ -35,25 +33,19 @@ public final class SyncTestUtil {
 
     private SyncTestUtil() {}
 
-    /**
-     * Returns whether sync-the-feature can start.
-     */
+    /** Returns whether sync-the-feature can start. */
     public static boolean canSyncFeatureStart() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> SyncServiceFactory.get().canSyncFeatureStart());
     }
 
-    /**
-     * Returns whether sync-the-feature is enabled.
-     */
+    /** Returns whether sync-the-feature is enabled. */
     public static boolean isSyncFeatureEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> SyncServiceFactory.get().isSyncFeatureEnabled());
     }
 
-    /**
-     * Returns whether sync-the-feature is active.
-     */
+    /** Returns whether sync-the-feature is active. */
     public static boolean isSyncFeatureActive() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> SyncServiceFactory.get().isSyncFeatureActive());
@@ -67,73 +59,79 @@ public final class SyncTestUtil {
      * might just be enough.
      */
     public static void waitForSyncFeatureEnabled() {
-        CriteriaHelper.pollUiThread(()
-                                            -> SyncServiceFactory.get().isSyncFeatureEnabled(),
-                "Timed out waiting for sync to become enabled.", TIMEOUT_MS, INTERVAL_MS);
-    }
-
-    /**
-     * Waits for sync-the-feature to become active.
-     */
-    public static void waitForSyncFeatureActive() {
-        CriteriaHelper.pollUiThread(()
-                                            -> SyncServiceFactory.get().isSyncFeatureActive(),
-                "Timed out waiting for sync to become active.", TIMEOUT_MS, INTERVAL_MS);
-    }
-
-    /**
-     * Waits for canSyncFeatureStart() to return true.
-     */
-    public static void waitForCanSyncFeatureStart() {
-        CriteriaHelper.pollUiThread(()
-                                            -> SyncServiceFactory.get().canSyncFeatureStart(),
-                "Timed out waiting for sync being able to start.", TIMEOUT_MS, INTERVAL_MS);
-    }
-
-    /**
-     * Waits for sync machinery to become active.
-     */
-    public static void waitForSyncTransportActive() {
-        CriteriaHelper.pollUiThread(()
-                                            -> SyncServiceFactory.get().isTransportStateActive(),
-                "Timed out waiting for sync transport state to become active.", TIMEOUT_MS,
+        CriteriaHelper.pollUiThread(
+                () -> SyncServiceFactory.get().isSyncFeatureEnabled(),
+                "Timed out waiting for sync to become enabled.",
+                TIMEOUT_MS,
                 INTERVAL_MS);
     }
 
-    /**
-     * Waits for sync's engine to be initialized.
-     */
+    /** Waits for sync-the-feature to become active. */
+    public static void waitForSyncFeatureActive() {
+        CriteriaHelper.pollUiThread(
+                () -> SyncServiceFactory.get().isSyncFeatureActive(),
+                "Timed out waiting for sync to become active.",
+                TIMEOUT_MS,
+                INTERVAL_MS);
+    }
+
+    /** Waits for canSyncFeatureStart() to return true. */
+    public static void waitForCanSyncFeatureStart() {
+        CriteriaHelper.pollUiThread(
+                () -> SyncServiceFactory.get().canSyncFeatureStart(),
+                "Timed out waiting for sync being able to start.",
+                TIMEOUT_MS,
+                INTERVAL_MS);
+    }
+
+    /** Waits for sync machinery to become active. */
+    public static void waitForSyncTransportActive() {
+        CriteriaHelper.pollUiThread(
+                () -> SyncServiceFactory.get().isTransportStateActive(),
+                "Timed out waiting for sync transport state to become active.",
+                TIMEOUT_MS,
+                INTERVAL_MS);
+    }
+
+    /** Waits for sync's engine to be initialized. */
     public static void waitForEngineInitialized() {
-        CriteriaHelper.pollUiThread(()
-                                            -> SyncServiceFactory.get().isEngineInitialized(),
-                "Timed out waiting for sync's engine to initialize.", TIMEOUT_MS, INTERVAL_MS);
+        CriteriaHelper.pollUiThread(
+                () -> SyncServiceFactory.get().isEngineInitialized(),
+                "Timed out waiting for sync's engine to initialize.",
+                TIMEOUT_MS,
+                INTERVAL_MS);
     }
 
-    /**
-     * Waits for sync being in the desired TrustedVaultKeyRequired state.
-     */
+    /** Waits for sync being in the desired TrustedVaultKeyRequired state. */
     public static void waitForTrustedVaultKeyRequired(boolean desiredValue) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(SyncServiceFactory.get().isTrustedVaultKeyRequired(),
-                    Matchers.is(desiredValue));
-        }, TIMEOUT_MS, INTERVAL_MS);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            SyncServiceFactory.get().isTrustedVaultKeyRequired(),
+                            Matchers.is(desiredValue));
+                },
+                TIMEOUT_MS,
+                INTERVAL_MS);
     }
 
-    /**
-     * Waits for sync being in the desired value for isTrustedVaultRecoverabilityDegraded().
-     */
+    /** Waits for sync being in the desired value for isTrustedVaultRecoverabilityDegraded(). */
     public static void waitForTrustedVaultRecoverabilityDegraded(boolean desiredValue) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(SyncServiceFactory.get().isTrustedVaultRecoverabilityDegraded(),
-                    Matchers.is(desiredValue));
-        }, TIMEOUT_MS, INTERVAL_MS);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            SyncServiceFactory.get().isTrustedVaultRecoverabilityDegraded(),
+                            Matchers.is(desiredValue));
+                },
+                TIMEOUT_MS,
+                INTERVAL_MS);
     }
 
-    /**
-     * Triggers a sync cycle.
-     */
+    /** Triggers a sync cycle. */
     public static void triggerSync() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { SyncServiceFactory.get().triggerRefresh(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SyncServiceFactory.get().triggerRefresh();
+                });
     }
 
     /**
@@ -146,9 +144,12 @@ public final class SyncTestUtil {
     public static void triggerSyncAndWaitForCompletion() {
         final long oldSyncTime = getCurrentSyncTime();
         triggerSync();
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(getCurrentSyncTime(), Matchers.greaterThan(oldSyncTime));
-        }, TIMEOUT_MS, INTERVAL_MS);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(getCurrentSyncTime(), Matchers.greaterThan(oldSyncTime));
+                },
+                TIMEOUT_MS,
+                INTERVAL_MS);
     }
 
     private static long getCurrentSyncTime() {
@@ -166,12 +167,15 @@ public final class SyncTestUtil {
             public JSONArray nodes;
         }
         NodesCallbackHelper callbackHelper = new NodesCallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SyncServiceFactory.get().getAllNodes((nodes) -> {
-                callbackHelper.nodes = nodes;
-                callbackHelper.notifyCalled();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SyncServiceFactory.get()
+                            .getAllNodes(
+                                    (nodes) -> {
+                                        callbackHelper.nodes = nodes;
+                                        callbackHelper.notifyCalled();
+                                    });
+                });
 
         try {
             callbackHelper.waitForNext(TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -291,11 +295,11 @@ public final class SyncTestUtil {
         SyncTestUtil.triggerSyncAndWaitForCompletion();
     }
 
-    /**
-     * Decrypts the profile using the input |passphrase|.
-     */
+    /** Decrypts the profile using the input |passphrase|. */
     public static void decryptWithPassphrase(final String passphrase) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { SyncServiceFactory.get().setDecryptionPassphrase(passphrase); });
+                () -> {
+                    SyncServiceFactory.get().setDecryptionPassphrase(passphrase);
+                });
     }
 }

@@ -56,20 +56,33 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
     }
 
     @CalledByNative
-    void show(String title, String content, String positiveButtonLabel, String negativeButtonLabel,
+    void show(
+            String title,
+            String content,
+            String positiveButtonLabel,
+            String negativeButtonLabel,
             @Nullable String learnMoreText) {
         SpannableStringBuilder fullString = new SpannableStringBuilder();
 
-        TextView message = new TextView(
-                new ContextThemeWrapper(mContext, R.style.NotificationBlockedDialogContent));
+        TextView message =
+                new TextView(
+                        new ContextThemeWrapper(
+                                mContext, R.style.NotificationBlockedDialogContent));
         fullString.append(content);
         if (learnMoreText != null) {
             fullString.append(" ");
             int start = fullString.length();
             fullString.append(learnMoreText);
-            fullString.setSpan(new NoUnderlineClickableSpan(mContext, (v) -> {
-                NotificationBlockedDialogJni.get().onLearnMoreClicked(mNativeDialogController);
-            }), start, fullString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            fullString.setSpan(
+                    new NoUnderlineClickableSpan(
+                            mContext,
+                            (v) -> {
+                                NotificationBlockedDialogJni.get()
+                                        .onLearnMoreClicked(mNativeDialogController);
+                            }),
+                    start,
+                    fullString.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         message.setText(fullString);
@@ -114,7 +127,8 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
     @CalledByNative
     private void showSettings() {
         Bundle fragmentArguments = new Bundle();
-        fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
+        fragmentArguments.putString(
+                SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
@@ -124,8 +138,11 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
     @NativeMethods
     interface Natives {
         void onPrimaryButtonClicked(long nativeNotificationBlockedDialogController);
+
         void onNegativeButtonClicked(long nativeNotificationBlockedDialogController);
+
         void onLearnMoreClicked(long nativeNotificationBlockedDialogController);
+
         void onDialogDismissed(long nativeNotificationBlockedDialogController);
     }
 }

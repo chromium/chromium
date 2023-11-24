@@ -43,7 +43,8 @@ public class NotificationPermissionUpdater {
     private final TrustedWebActivityClient mTrustedWebActivityClient;
 
     @Inject
-    public NotificationPermissionUpdater(InstalledWebappPermissionManager permissionManager,
+    public NotificationPermissionUpdater(
+            InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityClient trustedWebActivityClient) {
         mPermissionManager = permissionManager;
         mTrustedWebActivityClient = trustedWebActivityClient;
@@ -63,19 +64,23 @@ public class NotificationPermissionUpdater {
         // The function passed to this method call may not be executed in the case of the app not
         // having a TrustedWebActivityService. That's fine because we only want to update the
         // permission if a TrustedWebActivityService exists.
-        mTrustedWebActivityClient.checkNotificationPermission(url,
-                (app, settingValue)
-                        -> updatePermission(
-                                origin, /*callback=*/0, app.getPackageName(), settingValue));
+        mTrustedWebActivityClient.checkNotificationPermission(
+                url,
+                (app, settingValue) ->
+                        updatePermission(
+                                origin, /* callback= */ 0, app.getPackageName(), settingValue));
     }
 
     public void onWebApkLaunch(Origin origin, String packageName) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return;
         }
-        WebApkServiceClient.getInstance().checkNotificationPermission(packageName,
-                settingValue
-                -> updatePermission(origin, /*callback=*/0, packageName, settingValue));
+        WebApkServiceClient.getInstance()
+                .checkNotificationPermission(
+                        packageName,
+                        settingValue ->
+                                updatePermission(
+                                        origin, /* callback= */ 0, packageName, settingValue));
     }
 
     /**
@@ -87,12 +92,13 @@ public class NotificationPermissionUpdater {
         // See if there is any other app installed that could handle the notifications (and update
         // to that apps notification permission if it exists).
         mTrustedWebActivityClient.checkNotificationPermission(
-                origin.toString(), new TrustedWebActivityClient.PermissionCallback() {
+                origin.toString(),
+                new TrustedWebActivityClient.PermissionCallback() {
                     @Override
                     public void onPermission(
                             ComponentName app, @ContentSettingValues int settingValue) {
                         updatePermission(
-                                origin, /*callback=*/0, app.getPackageName(), settingValue);
+                                origin, /* callback= */ 0, app.getPackageName(), settingValue);
                     }
 
                     @Override
@@ -112,8 +118,10 @@ public class NotificationPermissionUpdater {
         assert (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 : "Cannot request notification permission before Android T";
         mTrustedWebActivityClient.requestNotificationPermission(
-                lastCommittedUrl, new TrustedWebActivityClient.PermissionCallback() {
+                lastCommittedUrl,
+                new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
+
                     @Override
                     public void onPermission(
                             ComponentName app, @ContentSettingValues int settingValue) {
@@ -128,9 +136,10 @@ public class NotificationPermissionUpdater {
                     public void onNoTwaFound() {
                         if (mCalled) return;
                         mCalled = true;
-                        findWebApkPackageName(lastCommittedUrl,
-                                packageName
-                                -> requestPermissionFromWebApk(origin, callback, packageName));
+                        findWebApkPackageName(
+                                lastCommittedUrl,
+                                packageName ->
+                                        requestPermissionFromWebApk(origin, callback, packageName));
                     }
                 });
     }
@@ -143,11 +152,14 @@ public class NotificationPermissionUpdater {
             return;
         }
 
-        WebApkServiceClient.getInstance().requestNotificationPermission(
-                packageName, settingValue -> {
-                    WebApkUmaRecorder.recordNotificationPermissionRequestResult(settingValue);
-                    updatePermission(origin, callback, packageName, settingValue);
-                });
+        WebApkServiceClient.getInstance()
+                .requestNotificationPermission(
+                        packageName,
+                        settingValue -> {
+                            WebApkUmaRecorder.recordNotificationPermissionRequestResult(
+                                    settingValue);
+                            updatePermission(origin, callback, packageName, settingValue);
+                        });
     }
 
     /**
@@ -163,13 +175,17 @@ public class NotificationPermissionUpdater {
             packageNameCallback.onResult(null);
             return;
         }
-        ChromeWebApkHost.checkChromeBacksWebApkAsync(webApkPackageName,
-                (doesBrowserBackWebApk, browserPackageName)
-                        -> packageNameCallback.onResult(
+        ChromeWebApkHost.checkChromeBacksWebApkAsync(
+                webApkPackageName,
+                (doesBrowserBackWebApk, browserPackageName) ->
+                        packageNameCallback.onResult(
                                 doesBrowserBackWebApk ? webApkPackageName : null));
     }
 
-    private void updatePermission(Origin origin, long callback, String packageName,
+    private void updatePermission(
+            Origin origin,
+            long callback,
+            String packageName,
             @ContentSettingValues int settingValue) {
         Log.d(TAG, "Updating notification permission to: %d", settingValue);
         mPermissionManager.updatePermission(origin, packageName, TYPE, settingValue);

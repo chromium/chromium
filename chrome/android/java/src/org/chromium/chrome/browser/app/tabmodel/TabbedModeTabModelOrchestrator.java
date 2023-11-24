@@ -70,10 +70,11 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         if (mTabModelSelector == null) {
             markTabModelsInitialized();
-            Toast.makeText(activity,
-                         activity.getString(
-                                 org.chromium.chrome.R.string.unsupported_number_of_windows),
-                         Toast.LENGTH_LONG)
+            Toast.makeText(
+                            activity,
+                            activity.getString(
+                                    org.chromium.chrome.R.string.unsupported_number_of_windows),
+                            Toast.LENGTH_LONG)
                     .show();
             return false;
         }
@@ -105,16 +106,18 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         // that it is a cold start or process restart in fullscreen mode.
         boolean mergeTabs = mTabMergingEnabled && !activity.isInMultiWindowMode();
         if (MultiInstanceManager.shouldMergeOnStartup(activity)) {
-            mergeTabs = mergeTabs
-                    && (!MultiWindowUtils.getInstance().isInMultiDisplayMode(activity)
-                            || TabWindowManagerSingleton.getInstance()
-                                            .getNumberOfAssignedTabModelSelectors()
-                                    == 0);
+            mergeTabs =
+                    mergeTabs
+                            && (!MultiWindowUtils.getInstance().isInMultiDisplayMode(activity)
+                                    || TabWindowManagerSingleton.getInstance()
+                                                    .getNumberOfAssignedTabModelSelectors()
+                                            == 0);
         } else {
-            mergeTabs = mergeTabs
-                    && TabWindowManagerSingleton.getInstance()
-                                    .getNumberOfAssignedTabModelSelectors()
-                            == 0;
+            mergeTabs =
+                    mergeTabs
+                            && TabWindowManagerSingleton.getInstance()
+                                            .getNumberOfAssignedTabModelSelectors()
+                                    == 0;
         }
         return mergeTabs;
     }

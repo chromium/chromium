@@ -25,11 +25,9 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.List;
 
-/**
- * Implementation of {@link SyncConsentFragmentBase} for the first run experience.
- */
-public class SyncConsentFirstRunFragment
-        extends SyncConsentFragmentBase implements FirstRunFragment {
+/** Implementation of {@link SyncConsentFragmentBase} for the first run experience. */
+public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
+        implements FirstRunFragment {
     // Per-page parameters:
     // TODO(crbug/1168516): Remove IS_CHILD_ACCOUNT
     public static final String IS_CHILD_ACCOUNT = "IsChildAccount";
@@ -71,8 +69,8 @@ public class SyncConsentFirstRunFragment
         // elsewhere, so onSyncAccepted() is replaced with signinAndEnableSync() (common code).
         getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_ACCEPTED);
         if (settingsClicked) {
-            getPageDelegate().recordFreProgressHistogram(
-                    MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
+            getPageDelegate()
+                    .recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
         }
 
         // Enable sync now. Only call FirstRunSignInProcessor.scheduleOpeningSettings() later in
@@ -87,24 +85,28 @@ public class SyncConsentFirstRunFragment
         // SigninChecker might have been triggered before the FRE ends and started sign-in (the
         // ConsentLevel depends on AllowSyncOffForChildAccounts). In doubt, wait.
         Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
-        IdentityServicesProvider.get().getSigninManager(profile).runAfterOperationInProgress(() -> {
-            CoreAccountInfo syncingAccount = IdentityServicesProvider.get()
-                                                     .getIdentityManager(profile)
-                                                     .getPrimaryAccountInfo(ConsentLevel.SYNC);
-            if (syncingAccount == null) {
-                signinAndEnableSync(accountName, settingsClicked, callback);
-                return;
-            }
+        IdentityServicesProvider.get()
+                .getSigninManager(profile)
+                .runAfterOperationInProgress(
+                        () -> {
+                            CoreAccountInfo syncingAccount =
+                                    IdentityServicesProvider.get()
+                                            .getIdentityManager(profile)
+                                            .getPrimaryAccountInfo(ConsentLevel.SYNC);
+                            if (syncingAccount == null) {
+                                signinAndEnableSync(accountName, settingsClicked, callback);
+                                return;
+                            }
 
-            if (!accountName.equals(syncingAccount.getEmail())) {
-                throw new IllegalStateException(
-                        "Child accounts should only be allowed to sync with a single account");
-            }
+                            if (!accountName.equals(syncingAccount.getEmail())) {
+                                throw new IllegalStateException(
+                                        "Child accounts should only be allowed to sync with a single account");
+                            }
 
-            // SigninChecker enabled sync already. Just open settings if needed.
-            closeAndMaybeOpenSyncSettings(settingsClicked);
-            callback.run();
-        });
+                            // SigninChecker enabled sync already. Just open settings if needed.
+                            closeAndMaybeOpenSyncSettings(settingsClicked);
+                            callback.run();
+                        });
     }
 
     @Override
@@ -122,8 +124,7 @@ public class SyncConsentFirstRunFragment
         // Ignore calls before view is created.
         if (getView() == null) return;
 
-        @Nullable
-        View title = getView().findViewById(R.id.signin_title);
+        @Nullable View title = getView().findViewById(R.id.signin_title);
         if (title == null) {
             title = getView().findViewById(R.id.sync_consent_title);
         }
@@ -132,9 +133,11 @@ public class SyncConsentFirstRunFragment
 
     @Override
     protected void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
-        final boolean selectedAccountDoesNotExist = (mSelectedAccountEmail != null
-                && AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, mSelectedAccountEmail)
-                        == null);
+        final boolean selectedAccountDoesNotExist =
+                (mSelectedAccountEmail != null
+                        && AccountUtils.findCoreAccountInfoByEmail(
+                                        coreAccountInfos, mSelectedAccountEmail)
+                                == null);
         if (selectedAccountDoesNotExist) {
             // With MICe, there's no account picker and the sync consent is fixed for the signed
             // in account on welcome screen. If the signed-in account is removed, this page

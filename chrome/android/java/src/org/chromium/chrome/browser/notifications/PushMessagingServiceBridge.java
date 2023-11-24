@@ -35,8 +35,9 @@ public class PushMessagingServiceBridge {
      * @param appLevelNotificationsEnabled Whether Chrome has app-level Notifications permission.
      */
     public void verify(String origin, String profileId, boolean appLevelNotificationsEnabled) {
-        PushMessagingServiceBridgeJni.get().verifyAndRevokeNotificationsPermission(
-                origin, profileId, appLevelNotificationsEnabled);
+        PushMessagingServiceBridgeJni.get()
+                .verifyAndRevokeNotificationsPermission(
+                        origin, profileId, appLevelNotificationsEnabled);
     }
 
     @NativeMethods

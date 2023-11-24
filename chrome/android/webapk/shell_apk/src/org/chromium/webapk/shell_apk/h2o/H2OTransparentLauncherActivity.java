@@ -33,8 +33,8 @@ public class H2OTransparentLauncherActivity extends TransparentLauncherActivity 
 
         if (shouldLaunchSplash) {
             // Launch {@link SplashActivity} first instead of directly launching the host
-            // browser so that for a WebAPK launched via
-            // {@link H2OTransparentHostBrowserLauncherActivity}, tapping the app icon
+            // browser so that for a WebAPK launched via {@link
+            // H2OTransparentHostBrowserLauncherActivity}, tapping the app icon
             // brings the WebAPK activity stack to the foreground and does not create a
             // new activity stack.
             Context appContext = getApplicationContext();

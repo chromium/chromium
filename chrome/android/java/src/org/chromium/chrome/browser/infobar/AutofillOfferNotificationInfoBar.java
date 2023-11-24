@@ -22,9 +22,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.url.GURL;
 
-/**
- * Infobar to be displayed when an offer is available for the current merchant website.
- */
+/** Infobar to be displayed when an offer is available for the current merchant website. */
 public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
     private final long mNativeAutofillOfferNotificationInfoBar;
     private String mCreditCardIdentifierString;
@@ -33,14 +31,23 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
     private int mHeaderIconDrawableId;
     private int mNetworkIconDrawableId = -1;
 
-    private AutofillOfferNotificationInfoBar(long nativeAutofillOfferNotificationInfoBar,
-            int headerIconDrawableId, String title, String positiveButtonLabel,
+    private AutofillOfferNotificationInfoBar(
+            long nativeAutofillOfferNotificationInfoBar,
+            int headerIconDrawableId,
+            String title,
+            String positiveButtonLabel,
             GURL offerDeepLinkUrl) {
         // No icon is specified here; it is rather added in |createContent|. This hides the
         // ImageView that normally shows the icon and gets rid of the left padding of the infobar
         // content.
-        super(/*iconId= */ 0, /* iconTintId= */ 0, /* iconBitmap= */ null, title,
-                /*linkText= */ null, positiveButtonLabel, /*secondaryButtonText= */ null);
+        super(
+                /* iconId= */ 0,
+                /* iconTintId= */ 0,
+                /* iconBitmap= */ null,
+                title,
+                /* linkText= */ null,
+                positiveButtonLabel,
+                /* secondaryButtonText= */ null);
         this.mNativeAutofillOfferNotificationInfoBar = nativeAutofillOfferNotificationInfoBar;
         this.mOfferDeepLinkUrl = offerDeepLinkUrl;
         this.mTitleText = title;
@@ -49,10 +56,17 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
 
     @CalledByNative
     private static AutofillOfferNotificationInfoBar create(
-            long nativeAutofillOfferNotificationInfoBar, int headerIconDrawableId, String title,
-            String positiveButtonLabel, GURL offerDeepLinkUrl) {
-        return new AutofillOfferNotificationInfoBar(nativeAutofillOfferNotificationInfoBar,
-                headerIconDrawableId, title, positiveButtonLabel, offerDeepLinkUrl);
+            long nativeAutofillOfferNotificationInfoBar,
+            int headerIconDrawableId,
+            String title,
+            String positiveButtonLabel,
+            GURL offerDeepLinkUrl) {
+        return new AutofillOfferNotificationInfoBar(
+                nativeAutofillOfferNotificationInfoBar,
+                headerIconDrawableId,
+                title,
+                positiveButtonLabel,
+                offerDeepLinkUrl);
     }
 
     @CalledByNative
@@ -73,26 +87,36 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
         InfoBarControlLayout control = layout.addControlLayout();
 
         String offerDetails =
-                getContext().getString(R.string.autofill_offers_reminder_infobar_description_text,
-                        mCreditCardIdentifierString);
+                getContext()
+                        .getString(
+                                R.string.autofill_offers_reminder_infobar_description_text,
+                                mCreditCardIdentifierString);
         SpannableStringBuilder text = new SpannableStringBuilder(offerDetails);
         // Highlight the cardIdentifierString as bold.
         int indexForCardIdentifierString = offerDetails.indexOf(mCreditCardIdentifierString);
-        text.setSpan(new StyleSpan(Typeface.BOLD), indexForCardIdentifierString,
+        text.setSpan(
+                new StyleSpan(Typeface.BOLD),
+                indexForCardIdentifierString,
                 indexForCardIdentifierString + mCreditCardIdentifierString.length(),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         if (mOfferDeepLinkUrl.isValid()) {
             String linkText =
                     getContext().getString(R.string.autofill_offers_reminder_deep_link_text);
-            NoUnderlineClickableSpan noUnderlineClickableSpan = new NoUnderlineClickableSpan(
-                    getContext(),
-                    (view)
-                            -> AutofillOfferNotificationInfoBarJni.get().onOfferDeepLinkClicked(
-                                    mNativeAutofillOfferNotificationInfoBar,
-                                    AutofillOfferNotificationInfoBar.this, mOfferDeepLinkUrl));
+            NoUnderlineClickableSpan noUnderlineClickableSpan =
+                    new NoUnderlineClickableSpan(
+                            getContext(),
+                            (view) ->
+                                    AutofillOfferNotificationInfoBarJni.get()
+                                            .onOfferDeepLinkClicked(
+                                                    mNativeAutofillOfferNotificationInfoBar,
+                                                    AutofillOfferNotificationInfoBar.this,
+                                                    mOfferDeepLinkUrl));
             SpannableString linkSpan = new SpannableString(" " + linkText);
-            linkSpan.setSpan(noUnderlineClickableSpan, 1, linkText.length() + 1,
+            linkSpan.setSpan(
+                    noUnderlineClickableSpan,
+                    1,
+                    linkText.length() + 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             text.append(linkSpan);
         }
@@ -101,7 +125,9 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
 
     @NativeMethods
     interface Natives {
-        void onOfferDeepLinkClicked(long nativeAutofillOfferNotificationInfoBar,
-                AutofillOfferNotificationInfoBar caller, GURL url);
+        void onOfferDeepLinkClicked(
+                long nativeAutofillOfferNotificationInfoBar,
+                AutofillOfferNotificationInfoBar caller,
+                GURL url);
     }
 }

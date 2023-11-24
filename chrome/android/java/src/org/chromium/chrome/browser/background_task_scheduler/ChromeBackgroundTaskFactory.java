@@ -29,6 +29,7 @@ import org.chromium.components.component_updater.UpdateTask;
  */
 public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
     private static final String TAG = "ChromeBkgrdTaskF";
+
     private ChromeBackgroundTaskFactory() {}
 
     private static class LazyHolder {
@@ -78,16 +79,17 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new NotificationTriggerBackgroundTask();
             case TaskIds.PERIODIC_BACKGROUND_SYNC_CHROME_WAKEUP_TASK_JOB_ID:
                 return new PeriodicBackgroundSyncChromeWakeUpTask();
-            // End of Java tasks. All native tasks should be listed here.
+                // End of Java tasks. All native tasks should be listed here.
             case TaskIds.QUERY_TILE_JOB_ID:
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
             case TaskIds.WEBFEEDS_REFRESH_JOB_ID:
                 return new ProxyNativeTask();
-            // When adding a new job id with a BackgroundTask, remember to add a specific case for
-            // it here.
-            // If the job id corresponds to a native task, use {@link ProxyNativeTask} as the task
-            // here and also update ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId
-            // to link to the real task.
+                // When adding a new job id with a BackgroundTask, remember to add a specific case
+                // for it here.
+                // If the job id corresponds to a native task, use {@link ProxyNativeTask} as the
+                // task here and also update
+                // ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId
+                // to link to the real task.
             default:
                 Log.w(TAG, "Unable to find BackgroundTask class for task id " + taskId);
                 return null;

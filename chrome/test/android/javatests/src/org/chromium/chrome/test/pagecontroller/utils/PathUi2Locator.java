@@ -58,8 +58,11 @@ class PathUi2Locator implements IUi2Locator {
     @Override
     public String toString() {
         return "Path{"
-                + "mFirstLocator=" + mFirstLocator
-                + ", mAdditionalLocators=" + Arrays.toString(mAdditionalLocators) + '}';
+                + "mFirstLocator="
+                + mFirstLocator
+                + ", mAdditionalLocators="
+                + Arrays.toString(mAdditionalLocators)
+                + '}';
     }
 
     /**

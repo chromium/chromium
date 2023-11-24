@@ -80,17 +80,18 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
         mPolicyService = PolicyServiceFactory.getGlobalPolicyService();
 
-        mPolicyServiceObserver = new PolicyService.Observer() {
-            @Override
-            public void onPolicyServiceInitialized() {
-                syncUsageAndCrashReportingPermittedByPolicy();
-            }
+        mPolicyServiceObserver =
+                new PolicyService.Observer() {
+                    @Override
+                    public void onPolicyServiceInitialized() {
+                        syncUsageAndCrashReportingPermittedByPolicy();
+                    }
 
-            @Override
-            public void onPolicyUpdated(PolicyMap previous, PolicyMap current) {
-                syncUsageAndCrashReportingPermittedByPolicy();
-            }
-        };
+                    @Override
+                    public void onPolicyUpdated(PolicyMap previous, PolicyMap current) {
+                        syncUsageAndCrashReportingPermittedByPolicy();
+                    }
+                };
 
         if (mPolicyService.isInitializationComplete()) {
             syncUsageAndCrashReportingPermittedByPolicy();
@@ -101,7 +102,8 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     protected void migrateDeprecatedPreferences() {
         if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING)) {
-            mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+            mPrefs.writeBoolean(
+                    ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                     mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false));
             mPrefs.removeKey(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING);
         }
@@ -130,20 +132,21 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         // Skip if native browser process is not yet fully initialized.
         if (!mNativeInitialized) return;
 
-        mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+        mPrefs.writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy());
     }
 
     @Override
     public void addObserver(Observer observer) {
-        getUsageAndCrashReportingPermittedObservableSupplier().addObserver(
-                observer::onIsUsageAndCrashReportingPermittedChanged);
+        getUsageAndCrashReportingPermittedObservableSupplier()
+                .addObserver(observer::onIsUsageAndCrashReportingPermittedChanged);
     }
 
     @Override
     public void removeObserver(Observer observer) {
-        getUsageAndCrashReportingPermittedObservableSupplier().removeObserver(
-                observer::onIsUsageAndCrashReportingPermittedChanged);
+        getUsageAndCrashReportingPermittedObservableSupplier()
+                .removeObserver(observer::onIsUsageAndCrashReportingPermittedChanged);
     }
 
     @Override
@@ -226,7 +229,9 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @NativeMethods
     public interface Natives {
         boolean isMetricsReportingEnabled();
+
         void setMetricsReportingEnabled(boolean enabled);
+
         boolean isMetricsReportingDisabledByPolicy();
     }
 }

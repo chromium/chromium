@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
  *
  * It hosts the {@link Fragment} that drives the security key process, which
  * pulls in the dynamic feature module containing the needed code.
-
+ *
  * Note: it does *not* handle USB intents when a computer is connected via USB
  * cable. See {@link CableAuthenticatorUSBActivity}.
  */
@@ -72,7 +72,8 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             // is untrusted.
             arguments = new Bundle();
             arguments.putParcelable(UsbManager.EXTRA_ACCESSORY, accessory);
-        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)
+        } else if (intent.getAction() != null
+                && intent.getAction().equals(Intent.ACTION_VIEW)
                 && intent.getData() != null) {
             // This is from Play Services and contains a FIDO URL scanned from a
             // QR code.

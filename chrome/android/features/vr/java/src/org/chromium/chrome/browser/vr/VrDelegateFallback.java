@@ -16,9 +16,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
-/**
- * Fallback {@link VrDelegate} implementation if the VR module is not available.
- */
+/** Fallback {@link VrDelegate} implementation if the VR module is not available. */
 /* package */ class VrDelegateFallback extends VrDelegate {
     private static final String TAG = "VrDelegateFallback";
     private static final String DEFAULT_VR_MODE_PACKAGE = "com.google.vr.vrcore";
@@ -65,8 +63,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 
     @Override
     public boolean isDaydreamReadyDevice() {
-        return ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_VR_MODE_HIGH_PERFORMANCE);
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_VR_MODE_HIGH_PERFORMANCE);
     }
 
     @Override
@@ -102,7 +101,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 
     private boolean setVrMode(Activity activity, boolean enabled) {
         try {
-            ApiHelperForN.setVrModeEnabled(activity, enabled,
+            ApiHelperForN.setVrModeEnabled(
+                    activity,
+                    enabled,
                     new ComponentName(DEFAULT_VR_MODE_PACKAGE, DEFAULT_VR_MODE_CLASS));
             return true;
         } catch (PackageManager.NameNotFoundException e) {

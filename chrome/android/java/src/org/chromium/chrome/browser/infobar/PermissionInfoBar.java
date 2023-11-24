@@ -23,11 +23,9 @@ import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 
-/**
- * An infobar used for prompting the user to grant a web API permission.
- */
-public class PermissionInfoBar
-        extends ConfirmInfoBar implements AndroidPermissionRequester.RequestDelegate {
+/** An infobar used for prompting the user to grant a web API permission. */
+public class PermissionInfoBar extends ConfirmInfoBar
+        implements AndroidPermissionRequester.RequestDelegate {
     /** The window which this infobar will be displayed upon. */
     protected final WindowAndroid mWindow;
 
@@ -58,12 +56,26 @@ public class PermissionInfoBar
     /** The text of the `Learn more` link shown in the expanded state after the description. */
     private String mLearnMoreLinkText;
 
-    protected PermissionInfoBar(WindowAndroid window, int[] contentSettingsTypes,
-            int iconDrawableId, String compactMessage, String compactLinkText, String message,
-            String description, String learnMoreLinktext, String primaryButtonText,
-            String secondaryButtonText, boolean secondaryButtonShouldOpenSettings) {
-        super(iconDrawableId, R.color.infobar_icon_drawable_color, null /* iconBitmap */, message,
-                null /* linkText */, primaryButtonText, secondaryButtonText);
+    protected PermissionInfoBar(
+            WindowAndroid window,
+            int[] contentSettingsTypes,
+            int iconDrawableId,
+            String compactMessage,
+            String compactLinkText,
+            String message,
+            String description,
+            String learnMoreLinktext,
+            String primaryButtonText,
+            String secondaryButtonText,
+            boolean secondaryButtonShouldOpenSettings) {
+        super(
+                iconDrawableId,
+                R.color.infobar_icon_drawable_color,
+                /* iconBitmap= */ null,
+                message,
+                /* linkText= */ null,
+                primaryButtonText,
+                secondaryButtonText);
         mWindow = window;
         mContentSettingsTypes = contentSettingsTypes;
         mSecondaryButtonShouldOpenSettings = secondaryButtonShouldOpenSettings;
@@ -107,7 +119,7 @@ public class PermissionInfoBar
             // requestAndroidPermissions will call back into this class to finalize the action if it
             // returns true.
             if (AndroidPermissionRequester.requestAndroidPermissions(
-                        mWindow, mContentSettingsTypes.clone(), this)) {
+                    mWindow, mContentSettingsTypes.clone(), this)) {
                 return;
             }
         } else if (mSecondaryButtonShouldOpenSettings) {
@@ -134,8 +146,11 @@ public class PermissionInfoBar
         SpannableStringBuilder descriptionMessage = new SpannableStringBuilder(mDescription);
         if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
             SpannableString link = new SpannableString(mLearnMoreLinkText);
-            link.setSpan(new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
-                    0, link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            link.setSpan(
+                    new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
+                    0,
+                    link.length(),
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             descriptionMessage.append(" ").append(link);
         }
         layout.getMessageLayout().addDescription(descriptionMessage);
@@ -158,7 +173,8 @@ public class PermissionInfoBar
     private void launchNotificationsSettingsPage() {
         mLastClickOpenedSettings = true;
         Bundle fragmentArguments = new Bundle();
-        fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
+        fragmentArguments.putString(
+                SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
@@ -181,13 +197,31 @@ public class PermissionInfoBar
      *         settings.
      */
     @CalledByNative
-    private static PermissionInfoBar create(WindowAndroid window, int[] contentSettingsTypes,
-            int iconId, String compactMessage, String compactLinkText, String message,
-            String description, String learnMoreLinkText, String primaryButtonText,
-            String secondaryButtonText, boolean secondaryButtonShouldOpenSettings) {
-        PermissionInfoBar infoBar = new PermissionInfoBar(window, contentSettingsTypes, iconId,
-                compactMessage, compactLinkText, message, description, learnMoreLinkText,
-                primaryButtonText, secondaryButtonText, secondaryButtonShouldOpenSettings);
+    private static PermissionInfoBar create(
+            WindowAndroid window,
+            int[] contentSettingsTypes,
+            int iconId,
+            String compactMessage,
+            String compactLinkText,
+            String message,
+            String description,
+            String learnMoreLinkText,
+            String primaryButtonText,
+            String secondaryButtonText,
+            boolean secondaryButtonShouldOpenSettings) {
+        PermissionInfoBar infoBar =
+                new PermissionInfoBar(
+                        window,
+                        contentSettingsTypes,
+                        iconId,
+                        compactMessage,
+                        compactLinkText,
+                        message,
+                        description,
+                        learnMoreLinkText,
+                        primaryButtonText,
+                        secondaryButtonText,
+                        secondaryButtonShouldOpenSettings);
 
         return infoBar;
     }

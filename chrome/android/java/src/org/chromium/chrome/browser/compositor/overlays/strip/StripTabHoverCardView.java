@@ -99,9 +99,7 @@ public class StripTabHoverCardView extends FrameLayout {
         setVisibility(VISIBLE);
     }
 
-    /**
-     * Hide the strip tab hover card.
-     */
+    /** Hide the strip tab hover card. */
     public void hide() {
         mIsShowing = false;
         setVisibility(GONE);
@@ -115,16 +113,18 @@ public class StripTabHoverCardView extends FrameLayout {
      * @param tabModelSelector The {@link TabModelSelector} to observe.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
-    public void initialize(TabModelSelector tabModelSelector,
+    public void initialize(
+            TabModelSelector tabModelSelector,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mTabModelSelector = tabModelSelector;
         mTabContentManager = tabContentManagerSupplier.get();
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                updateHoverCardColors(newModel.isIncognito());
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        updateHoverCardColors(newModel.isIncognito());
+                    }
+                };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
         updateHoverCardColors(mTabModelSelector.isIncognitoSelected());
     }
@@ -136,7 +136,7 @@ public class StripTabHoverCardView extends FrameLayout {
      */
     public void updateHoverCardColors(boolean incognito) {
         if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)) {
+                ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)) {
             return;
         }
 
@@ -145,7 +145,8 @@ public class StripTabHoverCardView extends FrameLayout {
         mUrlView.setTextColor(
                 TabUiThemeProvider.getStripTabHoverCardTextColorSecondary(getContext(), incognito));
 
-        ViewCompat.setBackgroundTintList(this,
+        ViewCompat.setBackgroundTintList(
+                this,
                 TabUiThemeProvider.getStripTabHoverCardBackgroundTintList(getContext(), incognito));
     }
 
@@ -187,8 +188,9 @@ public class StripTabHoverCardView extends FrameLayout {
         // Update the card LayoutParams if an adjustment on the current width is required.
         var layoutParams = getLayoutParams();
         if (hoverCardWidthPx != layoutParams.width) {
-            setLayoutParams(new CoordinatorLayout.LayoutParams(
-                    Math.round(hoverCardWidthPx), layoutParams.height));
+            setLayoutParams(
+                    new CoordinatorLayout.LayoutParams(
+                            Math.round(hoverCardWidthPx), layoutParams.height));
         }
 
         // 3. Determine the horizontal position of the hover card.

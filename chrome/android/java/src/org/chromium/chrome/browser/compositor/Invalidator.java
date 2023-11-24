@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.compositor;
 
-/**
- * The {@link Invalidator} invalidates a client when it is the right time.
- */
+/** The {@link Invalidator} invalidates a client when it is the right time. */
 public class Invalidator {
-    /**
-     * Interface for the host that drives the invalidations.
-     */
+    /** Interface for the host that drives the invalidations. */
     public interface Host {
         /**
          * Requests an invalidation of the view.

@@ -36,9 +36,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         void onButtonClicked(int position);
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public KeyboardAccessoryButtonGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.setGravity(Gravity.CENTER);
@@ -62,14 +60,17 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding),
                 0);
         button.setImageDrawable(icon.mutate()); // mutate() needed to change the active tint.
-        button.getDrawable().setColorFilter(
-                SemanticColorUtils.getDefaultIconColor(getContext()), PorterDuff.Mode.SRC_IN);
+        button.getDrawable()
+                .setColorFilter(
+                        SemanticColorUtils.getDefaultIconColor(getContext()),
+                        PorterDuff.Mode.SRC_IN);
         button.setContentDescription(contentDescription);
         button.setBackground(null);
-        button.setOnClickListener(view -> {
-            if (mListener == null) return;
-            mListener.onButtonClicked(mButtons.indexOf(view));
-        });
+        button.setOnClickListener(
+                view -> {
+                    if (mListener == null) return;
+                    mListener.onButtonClicked(mButtons.indexOf(view));
+                });
         mButtons.add(button);
         addView(button);
     }

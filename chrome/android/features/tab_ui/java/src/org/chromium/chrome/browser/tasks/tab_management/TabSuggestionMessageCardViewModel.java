@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestio
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * This is a util class for creating the property model of the TabSuggestionMessageCard.
- */
+/** This is a util class for creating the property model of the TabSuggestionMessageCard. */
 public class TabSuggestionMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for TabSuggestionMessageCardView.
@@ -25,7 +23,8 @@ public class TabSuggestionMessageCardViewModel {
      * @param data The {@link TabSuggestionMessageService.TabSuggestionMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
-    public static PropertyModel create(Context context,
+    public static PropertyModel create(
+            Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             TabSuggestionMessageService.TabSuggestionMessageData data) {
         // TODO(crbug.com/1487664): Add any missing accessibility or button descriptions.

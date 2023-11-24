@@ -112,7 +112,10 @@ public class CompositorButton implements VirtualView {
      * @param incognitoResource         The incognito Android resource.
      * @param incognitoPressedResource  The incognito pressed resource.
      */
-    public void setResources(int resource, int pressedResource, int incognitoResource,
+    public void setResources(
+            int resource,
+            int pressedResource,
+            int incognitoResource,
             int incognitoPressedResource) {
         mResource = resource;
         mPressedResource = pressedResource;

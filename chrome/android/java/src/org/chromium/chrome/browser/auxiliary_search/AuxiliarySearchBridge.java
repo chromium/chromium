@@ -23,9 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Java bridge to provide information for the auxiliary search.
- */
+/** Java bridge to provide information for the auxiliary search. */
 public class AuxiliarySearchBridge {
     private long mNativeBridge;
 
@@ -69,8 +67,9 @@ public class AuxiliarySearchBridge {
     public @NonNull List<Tab> getSearchableTabs(@NonNull List<Tab> tabs) {
         ArrayList<Tab> tabList = new ArrayList<>();
         if (mNativeBridge != 0) {
-            Object[] tab_objects = AuxiliarySearchBridgeJni.get().getSearchableTabs(
-                    mNativeBridge, tabs.toArray(new Tab[0]));
+            Object[] tab_objects =
+                    AuxiliarySearchBridgeJni.get()
+                            .getSearchableTabs(mNativeBridge, tabs.toArray(new Tab[0]));
 
             for (Object o : tab_objects) {
                 if (o instanceof Tab) {
@@ -91,33 +90,46 @@ public class AuxiliarySearchBridge {
      */
     public void getNonSensitiveTabs(List<Tab> tabs, Callback<List<Tab>> callback) {
         if (mNativeBridge == 0) {
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        callback.onResult(null);
+                    });
         }
 
-        AuxiliarySearchBridgeJni.get().getNonSensitiveTabs(
-                mNativeBridge, tabs.toArray(new Tab[0]), new Callback<Object[]>() {
-                    @Override
-                    public void onResult(Object[] tabs) {
-                        ArrayList<Tab> tabList = new ArrayList<>();
-                        for (Object o : tabs) {
-                            assert (o instanceof Tab);
+        AuxiliarySearchBridgeJni.get()
+                .getNonSensitiveTabs(
+                        mNativeBridge,
+                        tabs.toArray(new Tab[0]),
+                        new Callback<Object[]>() {
+                            @Override
+                            public void onResult(Object[] tabs) {
+                                ArrayList<Tab> tabList = new ArrayList<>();
+                                for (Object o : tabs) {
+                                    assert (o instanceof Tab);
 
-                            tabList.add((Tab) o);
-                        }
+                                    tabList.add((Tab) o);
+                                }
 
-                        PostTask.runOrPostTask(
-                                TaskTraits.UI_DEFAULT, () -> { callback.onResult(tabList); });
-                    }
-                });
+                                PostTask.runOrPostTask(
+                                        TaskTraits.UI_DEFAULT,
+                                        () -> {
+                                            callback.onResult(tabList);
+                                        });
+                            }
+                        });
     }
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long getForProfile(Profile profile);
+
         byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);
+
         void getNonSensitiveTabs(
                 long nativeAuxiliarySearchProvider, Tab[] tabs, Callback<Object[]> callback);
+
         Object[] getSearchableTabs(long nativeAuxiliarySearchProvider, Tab[] tabs);
     }
 }

@@ -49,9 +49,11 @@ import java.util.List;
  * {@link TabListCoordinator} as well as the life-cycle of
  * shared component objects.
  */
-public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, TabGroupUi,
-                                              PauseResumeWithNativeObserver,
-                                              TabGroupUiMediator.TabGroupUiController {
+public class TabGroupUiCoordinator
+        implements TabGroupUiMediator.ResetHandler,
+                TabGroupUi,
+                PauseResumeWithNativeObserver,
+                TabGroupUiMediator.TabGroupUiController {
     static final String COMPONENT_NAME = "TabStrip";
     private final Activity mActivity;
     private final Context mContext;
@@ -79,10 +81,10 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private TabListCoordinator mTabStripCoordinator;
     private TabGroupUiMediator mMediator;
 
-    /**
-     * Creates a new {@link TabGroupUiCoordinator}
-     */
-    public TabGroupUiCoordinator(@NonNull Activity activity, @NonNull ViewGroup parentView,
+    /** Creates a new {@link TabGroupUiCoordinator} */
+    public TabGroupUiCoordinator(
+            @NonNull Activity activity,
+            @NonNull ViewGroup parentView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull IncognitoStateProvider incognitoStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
@@ -91,7 +93,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager, @NonNull ViewGroup rootView,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull ViewGroup rootView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
@@ -104,8 +107,10 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mScrimCoordinator = scrimCoordinator;
             mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
             mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
-            mToolbarView = (TabGroupUiToolbarView) LayoutInflater.from(mContext).inflate(
-                    R.layout.bottom_tab_strip_toolbar, parentView, false);
+            mToolbarView =
+                    (TabGroupUiToolbarView)
+                            LayoutInflater.from(mContext)
+                                    .inflate(R.layout.bottom_tab_strip_toolbar, parentView, false);
             mTabListContainerView = mToolbarView.getViewContainer();
             mBottomSheetController = bottomSheetController;
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -126,31 +131,57 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         assert mTabGridDialogControllerSupplier != null;
         if (mTabGridDialogCoordinator != null) return;
 
-        mTabGridDialogCoordinator = new TabGridDialogCoordinator(mActivity,
-                mBrowserControlsStateProvider, mTabModelSelector, mTabContentManager,
-                mTabCreatorManager, mActivity.findViewById(R.id.coordinator), null, null, null,
-                mScrimCoordinator, mTabStripCoordinator.getTabGroupTitleEditor(), mRootView);
+        mTabGridDialogCoordinator =
+                new TabGridDialogCoordinator(
+                        mActivity,
+                        mBrowserControlsStateProvider,
+                        mTabModelSelector,
+                        mTabContentManager,
+                        mTabCreatorManager,
+                        mActivity.findViewById(R.id.coordinator),
+                        null,
+                        null,
+                        null,
+                        mScrimCoordinator,
+                        mTabStripCoordinator.getTabGroupTitleEditor(),
+                        mRootView);
         mTabGridDialogControllerSupplier.set(mTabGridDialogCoordinator);
     }
 
-    /**
-     * Handle any initialization that occurs once native has been loaded.
-     */
+    /** Handle any initialization that occurs once native has been loaded. */
     @Override
-    public void initializeWithNative(Activity activity,
+    public void initializeWithNative(
+            Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             Callback<Object> onModelTokenChange) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.initializeWithNative")) {
-            mTabStripCoordinator = new TabListCoordinator(TabListCoordinator.TabListMode.STRIP,
-                    mContext, mBrowserControlsStateProvider, mTabModelSelector, null, null, false,
-                    null, null, TabProperties.UiType.STRIP, null, null, mTabListContainerView, true,
-                    COMPONENT_NAME, mRootView, onModelTokenChange);
+            mTabStripCoordinator =
+                    new TabListCoordinator(
+                            TabListCoordinator.TabListMode.STRIP,
+                            mContext,
+                            mBrowserControlsStateProvider,
+                            mTabModelSelector,
+                            null,
+                            null,
+                            false,
+                            null,
+                            null,
+                            TabProperties.UiType.STRIP,
+                            null,
+                            null,
+                            mTabListContainerView,
+                            true,
+                            COMPONENT_NAME,
+                            mRootView,
+                            onModelTokenChange);
             mTabStripCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
 
-            mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
-                    new TabGroupUiViewBinder.ViewHolder(
-                            mToolbarView, mTabStripCoordinator.getContainerView()),
-                    TabGroupUiViewBinder::bind);
+            mModelChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            mModel,
+                            new TabGroupUiViewBinder.ViewHolder(
+                                    mToolbarView, mTabStripCoordinator.getContainerView()),
+                            TabGroupUiViewBinder::bind);
 
             // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
             //  and the dialog here.
@@ -166,10 +197,18 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 mTabGridDialogControllerSupplier = null;
             }
 
-            mMediator = new TabGroupUiMediator(mActivity, visibilityController, this, mModel,
-                    mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
-                    mIncognitoStateProvider, mTabGridDialogControllerSupplier,
-                    mOmniboxFocusStateSupplier);
+            mMediator =
+                    new TabGroupUiMediator(
+                            mActivity,
+                            visibilityController,
+                            this,
+                            mModel,
+                            mTabModelSelector,
+                            mTabCreatorManager,
+                            mLayoutStateProviderSupplier,
+                            mIncognitoStateProvider,
+                            mTabGridDialogControllerSupplier,
+                            mOmniboxFocusStateSupplier);
 
             TabGroupUtils.startObservingForCreationIPH();
 
@@ -177,13 +216,16 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             // it. Record the group count after all tabs are being restored. This only happen once
             // per life cycle, therefore remove the observer after recording. We only focus on
             // normal tab model because we don't restore tabs in incognito tab model.
-            mTabModelSelector.getModel(false).addObserver(new TabModelObserver() {
-                @Override
-                public void restoreCompleted() {
-                    recordTabGroupCount();
-                    mTabModelSelector.getModel(false).removeObserver(this);
-                }
-            });
+            mTabModelSelector
+                    .getModel(false)
+                    .addObserver(
+                            new TabModelObserver() {
+                                @Override
+                                public void restoreCompleted() {
+                                    recordTabGroupCount();
+                                    mTabModelSelector.getModel(false).removeObserver(this);
+                                }
+                            });
         }
     }
 
@@ -202,11 +244,14 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
      */
     @Override
     public void resetStripWithListOfTabs(List<Tab> tabs) {
-        if (tabs != null && tabs.size() > 1
+        if (tabs != null
+                && tabs.size() > 1
                 && mBottomSheetController.getSheetState()
                         == BottomSheetController.SheetState.HIDDEN) {
-            TabGroupUtils.maybeShowIPH(FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
-                    mTabStripCoordinator.getContainerView(), mBottomSheetController);
+            TabGroupUtils.maybeShowIPH(
+                    FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
+                    mTabStripCoordinator.getContainerView(),
+                    mBottomSheetController);
         }
         mTabStripCoordinator.resetWithListOfTabs(tabs);
     }
@@ -224,9 +269,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         }
     }
 
-    /**
-     * TabGroupUi implementation.
-     */
+    /** TabGroupUi implementation. */
     @Override
     public boolean onBackPressed() {
         return mMediator.onBackPressed();
@@ -242,9 +285,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         return mMediator.getHandleBackPressChangedSupplier();
     }
 
-    /**
-     * Destroy any members that needs clean up.
-     */
+    /** Destroy any members that needs clean up. */
     @Override
     public void destroy() {
         // TODO(crbug.com/1208462): Add tests for destroy conditions.

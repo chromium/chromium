@@ -20,9 +20,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Responsible for building and setting properties on the search box on new tab page.
- */
+/** Responsible for building and setting properties on the search box on new tab page. */
 class SearchBoxViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> {
     @Override
@@ -44,7 +42,8 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.BACKGROUND == propertyKey) {
             searchBoxContainer.setBackground(model.get(SearchBoxProperties.BACKGROUND));
         } else if (SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST == propertyKey) {
-            ImageViewCompat.setImageTintList(voiceSearchButton,
+            ImageViewCompat.setImageTintList(
+                    voiceSearchButton,
                     model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
             ImageViewCompat.setImageTintList(
                     lensButton, model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
@@ -52,7 +51,8 @@ class SearchBoxViewBinder
             voiceSearchButton.setImageDrawable(
                     model.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
         } else if (SearchBoxProperties.VOICE_SEARCH_VISIBILITY == propertyKey) {
-            voiceSearchButton.setVisibility(model.get(SearchBoxProperties.VOICE_SEARCH_VISIBILITY)
+            voiceSearchButton.setVisibility(
+                    model.get(SearchBoxProperties.VOICE_SEARCH_VISIBILITY)
                             ? View.VISIBLE
                             : View.GONE);
         } else if (SearchBoxProperties.LENS_VISIBILITY == propertyKey) {
@@ -65,9 +65,9 @@ class SearchBoxViewBinder
                     model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 searchBoxTextView.setHandwritingDelegatorCallback(
-                        ()
-                                -> model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK)
-                                           .onClick(searchBoxTextView));
+                        () ->
+                                model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK)
+                                        .onClick(searchBoxTextView));
             }
         } else if (SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER == propertyKey) {
             searchBoxTextView.addTextChangedListener(
@@ -76,9 +76,11 @@ class SearchBoxViewBinder
             searchBoxTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT));
         } else if (SearchBoxProperties.SEARCH_HINT_VISIBILITY == propertyKey) {
             boolean isHintVisible = model.get(SearchBoxProperties.SEARCH_HINT_VISIBILITY);
-            searchBoxTextView.setHint(isHintVisible ? view.getContext().getString(
-                                              org.chromium.chrome.R.string.omnibox_empty_hint)
-                                                    : null);
+            searchBoxTextView.setHint(
+                    isHintVisible
+                            ? view.getContext()
+                                    .getString(org.chromium.chrome.R.string.omnibox_empty_hint)
+                            : null);
         } else if (SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK == propertyKey) {
             voiceSearchButton.setOnClickListener(
                     model.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
@@ -94,7 +96,8 @@ class SearchBoxViewBinder
                     (MarginLayoutParams) searchBoxContainer.getLayoutParams();
             marginLayoutParams.topMargin = model.get(SearchBoxProperties.SEARCH_BOX_TOP_MARGIN);
         } else if (SearchBoxProperties.SEARCH_BOX_END_PADDING == propertyKey) {
-            searchBoxContainer.setPadding(searchBoxContainer.getPaddingLeft(),
+            searchBoxContainer.setPadding(
+                    searchBoxContainer.getPaddingLeft(),
                     searchBoxContainer.getPaddingTop(),
                     model.get(SearchBoxProperties.SEARCH_BOX_END_PADDING),
                     searchBoxContainer.getPaddingBottom());
@@ -102,8 +105,9 @@ class SearchBoxViewBinder
             searchBoxTextView.setTranslationX(
                     model.get(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X));
         } else if (SearchBoxProperties.SEARCH_BOX_TEXT_SIZE == propertyKey) {
-            searchBoxTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                model.get(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE));
+            searchBoxTextView.setTextSize(
+                    TypedValue.COMPLEX_UNIT_SP,
+                    model.get(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE));
         } else if (SearchBoxProperties.BUTTONS_HEIGHT == propertyKey) {
             int height = model.get(SearchBoxProperties.BUTTONS_HEIGHT);
             ViewGroup.LayoutParams layoutParams = voiceSearchButton.getLayoutParams();

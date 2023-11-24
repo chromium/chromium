@@ -48,15 +48,17 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Manages interactions with the VR Shell.
- */
+/** Manages interactions with the VR Shell. */
 @JNINamespace("vr")
 public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener {
     private static final String TAG = "VrShellDelegate";
 
-    @IntDef({EnterVRResult.NOT_NECESSARY, EnterVRResult.CANCELLED, EnterVRResult.REQUESTED,
-            EnterVRResult.SUCCEEDED})
+    @IntDef({
+        EnterVRResult.NOT_NECESSARY,
+        EnterVRResult.CANCELLED,
+        EnterVRResult.REQUESTED,
+        EnterVRResult.SUCCEEDED
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface EnterVRResult {
         int NOT_NECESSARY = 0;
@@ -91,8 +93,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
     // Gets run when the user exits VR mode by clicking the Gear button.
     private Runnable mSettingsButtonListener;
 
-    @VisibleForTesting
-    protected boolean mTestWorkaroundDontCancelVrEntryOnResume;
+    @VisibleForTesting protected boolean mTestWorkaroundDontCancelVrEntryOnResume;
 
     private long mNativeVrShellDelegate;
 
@@ -122,18 +123,14 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         sInstance.shutdownVr(true, true);
     }
 
-    /**
-     * Called when the native library is first available.
-     */
+    /** Called when the native library is first available. */
     public static void onNativeLibraryAvailable() {
         VrModule.ensureNativeLoaded();
         VrModuleProvider.registerJni();
         VrShellDelegateJni.get().onLibraryAvailable();
     }
 
-    /**
-     * Whether or not we are currently in VR.
-     */
+    /** Whether or not we are currently in VR. */
     public static boolean isInVr() {
         if (sInstance == null) return false;
         return sInstance.mInVr;
@@ -150,27 +147,21 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
 
     public static void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
         if (isInMultiWindowMode && isInVr()) {
-            sInstance.shutdownVr(true /* disableVrMode */, true /* stayingInChrome */);
+            sInstance.shutdownVr(/* disableVrMode= */ true, /* stayingInChrome= */ true);
         }
     }
 
-    /**
-     * Called when the {@link Activity} becomes visible.
-     */
+    /** Called when the {@link Activity} becomes visible. */
     public static void onActivityShown(Activity activity) {
         if (sInstance != null && sInstance.mActivity == activity) sInstance.onActivityShown();
     }
 
-    /**
-     * Called when the {@link Activity} is hidden.
-     */
+    /** Called when the {@link Activity} is hidden. */
     public static void onActivityHidden(Activity activity) {
         if (sInstance != null && sInstance.mActivity == activity) sInstance.onActivityHidden();
     }
 
-    /**
-     * Asynchronously enable VR mode.
-     */
+    /** Asynchronously enable VR mode. */
     public static void setVrModeEnabled(Activity activity, boolean enabled) {
         ensureLifecycleObserverInitialized();
         if (sVrModeEnabledSupplier == null) sVrModeEnabledSupplier = new ObservableSupplierImpl<>();
@@ -214,7 +205,8 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
     }
 
     private static boolean activitySupportsPresentation(Activity activity) {
-        return activity instanceof ChromeTabbedActivity || activity instanceof WebappActivity
+        return activity instanceof ChromeTabbedActivity
+                || activity instanceof WebappActivity
                 || (activity instanceof CustomTabActivity
                         && !getVrDaydreamApi().isDaydreamCurrentViewer());
     }
@@ -300,7 +292,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
             case ActivityState.RESUMED:
                 if (!activitySupportsPresentation(activity)) return;
                 if (!(activity instanceof ChromeActivity)) return;
-                swapHostActivity((ChromeActivity) activity, true /* disableVrMode */);
+                swapHostActivity((ChromeActivity) activity, /* disableVrMode= */ true);
                 onResume();
                 break;
             default:
@@ -313,14 +305,14 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
     private void swapHostActivity(ChromeActivity activity, boolean disableVrMode) {
         assert mActivity != null;
         if (mActivity == activity) return;
-        if (mInVr) shutdownVr(disableVrMode, false /* stayingInChrome */);
+        if (mInVr) shutdownVr(disableVrMode, /* stayingInChrome= */ false);
         mActivity = activity;
     }
 
     private void maybeSetPresentResult(boolean result) {
         if (mNativeVrShellDelegate == 0 || !mRequestedWebVr) return;
-        VrShellDelegateJni.get().setPresentResult(
-                mNativeVrShellDelegate, VrShellDelegate.this, result);
+        VrShellDelegateJni.get()
+                .setPresentResult(mNativeVrShellDelegate, VrShellDelegate.this, result);
         mRequestedWebVr = false;
     }
 
@@ -365,8 +357,9 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
     }
 
     public boolean canRequestRecordAudioPermission() {
-        return mActivity.getWindowAndroid().canRequestPermission(
-                android.Manifest.permission.RECORD_AUDIO);
+        return mActivity
+                .getWindowAndroid()
+                .canRequestPermission(android.Manifest.permission.RECORD_AUDIO);
     }
 
     public static ObservableSupplier<Boolean> getVrModeEnabledSupplier() {
@@ -414,8 +407,10 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         // Restore system UI visibility.
         if (mRestoreSystemUiVisibility) {
             int flags = mActivity.getWindow().getDecorView().getSystemUiVisibility();
-            mActivity.getWindow().getDecorView().setSystemUiVisibility(
-                    flags & ~VrDelegate.VR_SYSTEM_UI_FLAGS);
+            mActivity
+                    .getWindow()
+                    .getDecorView()
+                    .setSystemUiVisibility(flags & ~VrDelegate.VR_SYSTEM_UI_FLAGS);
         }
         mRestoreSystemUiVisibility = false;
         Supplier<CompositorViewHolder> compositorViewHolderSupplier =
@@ -456,9 +451,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         }
     }
 
-    /**
-     * Enters VR Shell if necessary, displaying browser UI and tab contents in VR.
-     */
+    /** Enters VR Shell if necessary, displaying browser UI and tab contents in VR. */
     private @EnterVRResult int enterVrInternal() {
         if (mPaused) return EnterVRResult.CANCELLED;
         if (mInVr) return EnterVRResult.NOT_NECESSARY;
@@ -472,7 +465,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
     /* package */ void exitWebVRPresent() {
         if (!mInVr) return;
 
-        shutdownVr(true /* disableVrMode */, true /* stayingInChrome */);
+        shutdownVr(/* disableVrMode= */ true, /* stayingInChrome= */ true);
     }
 
     @VisibleForTesting
@@ -558,9 +551,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         restoreWindowMode();
     }
 
-    /**
-     * Exits VR Shell, performing all necessary cleanup.
-     */
+    /** Exits VR Shell, performing all necessary cleanup. */
     /* package */ void shutdownVr(boolean disableVrMode, boolean stayingInChrome) {
         if (VrDelegate.DEBUG_LOGS) Log.i(TAG, "shuttdown VR");
         cancelPendingVrEntry();
@@ -586,34 +577,32 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         destroyVrShell();
     }
 
-    /**
-     * Returns the callback for the user-triggered close button to exit VR mode.
-     */
+    /** Returns the callback for the user-triggered close button to exit VR mode. */
     /* package */ Runnable getVrCloseButtonListener() {
         if (mCloseButtonListener != null) return mCloseButtonListener;
-        mCloseButtonListener = new Runnable() {
-            @Override
-            public void run() {
-                shutdownVr(true /* disableVrMode */, true /* stayingInChrome */);
-            }
-        };
+        mCloseButtonListener =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        shutdownVr(/* disableVrMode= */ true, /* stayingInChrome= */ true);
+                    }
+                };
         return mCloseButtonListener;
     }
 
-    /**
-     * Returns the callback for the user-triggered close button to exit VR mode.
-     */
+    /** Returns the callback for the user-triggered close button to exit VR mode. */
     /* package */ Runnable getVrSettingsButtonListener() {
         if (mSettingsButtonListener != null) return mSettingsButtonListener;
-        mSettingsButtonListener = new Runnable() {
-            @Override
-            public void run() {
-                shutdownVr(true /* disableVrMode */, false /* stayingInChrome */);
+        mSettingsButtonListener =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        shutdownVr(/* disableVrMode= */ true, /* stayingInChrome= */ false);
 
-                // Launch Daydream settings.
-                GvrUiLayout.launchOrInstallGvrApp(mActivity);
-            }
-        };
+                        // Launch Daydream settings.
+                        GvrUiLayout.launchOrInstallGvrApp(mActivity);
+                    }
+                };
         return mSettingsButtonListener;
     }
 
@@ -624,9 +613,14 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
         if (tabModelSelector == null) return false;
         try {
-            mVrShell = new VrShell(mActivity, this, tabModelSelector,
-                    /* tabCreatorManager= */ mActivity, mActivity.getWindowAndroid(),
-                    mActivity.getActivityTab());
+            mVrShell =
+                    new VrShell(
+                            mActivity,
+                            this,
+                            tabModelSelector,
+                            /* tabCreatorManager= */ mActivity,
+                            mActivity.getWindowAndroid(),
+                            mActivity.getActivityTab());
         } catch (VrUnsupportedException e) {
             return false;
         } finally {
@@ -636,8 +630,9 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
 
     private void addVrViews() {
         FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
-        LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        LayoutParams params =
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         decor.addView(mVrShell.getContainer(), params);
         mActivity.onEnterVr();
     }
@@ -648,9 +643,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         decor.removeView(mVrShell.getContainer());
     }
 
-    /**
-     * Clean up VrShell, and associated native objects.
-     */
+    /** Clean up VrShell, and associated native objects. */
     private void destroyVrShell() {
         if (mVrShell != null) {
             mVrShell.getContainer().setOnSystemUiVisibilityChangeListener(null);
@@ -690,7 +683,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
 
     private void destroy() {
         if (sInstance == null) return;
-        shutdownVr(false /* disableVrMode */, false /* stayingInChrome */);
+        shutdownVr(/* disableVrMode= */ false, /* stayingInChrome= */ false);
         if (mNativeVrShellDelegate != 0) {
             VrShellDelegateJni.get().destroy(mNativeVrShellDelegate, VrShellDelegate.this);
         }
@@ -701,10 +694,15 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
     @NativeMethods
     interface Natives {
         long init(VrShellDelegate caller);
+
         void onLibraryAvailable();
+
         void setPresentResult(long nativeVrShellDelegate, VrShellDelegate caller, boolean result);
+
         void onPause(long nativeVrShellDelegate, VrShellDelegate caller);
+
         void onResume(long nativeVrShellDelegate, VrShellDelegate caller);
+
         void destroy(long nativeVrShellDelegate, VrShellDelegate caller);
     }
 }

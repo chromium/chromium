@@ -38,9 +38,7 @@ import org.chromium.ui.resources.ResourceManager;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Layout defining the animation and positioning of the tabs during the edge swipe effect.
- */
+/** Layout defining the animation and positioning of the tabs during the edge swipe effect. */
 public class ToolbarSwipeLayout extends Layout {
     private static final boolean ANONYMIZE_NON_FOCUSED_TAB = true;
 
@@ -95,9 +93,12 @@ public class ToolbarSwipeLayout extends Layout {
      * @param updateHost          The {@link LayoutUpdateHost} view for this layout.
      * @param renderHost          The {@link LayoutRenderHost} view for this layout.
      */
-    public ToolbarSwipeLayout(Context context, LayoutUpdateHost updateHost,
+    public ToolbarSwipeLayout(
+            Context context,
+            LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            BrowserControlsStateProvider browserControlsStateProvider, LayoutManager layoutManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            LayoutManager layoutManager,
             TopUiThemeColorProvider topUiColorProvider) {
         super(context, updateHost, renderHost);
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
@@ -113,19 +114,31 @@ public class ToolbarSwipeLayout extends Layout {
         mRightTabSupplier = new ObservableSupplierImpl<>();
 
         if (mMoveToolbar) {
-            mLeftToolbarOverlay = new TopToolbarOverlayCoordinator(getContext(), layoutManager,
-                    (info) -> {
-                    }, mLeftTabSupplier, mBrowserControlsStateProvider,
-                    () -> mRenderHost.getResourceManager(), topUiColorProvider,
-                    LayoutType.TOOLBAR_SWIPE, true);
+            mLeftToolbarOverlay =
+                    new TopToolbarOverlayCoordinator(
+                            getContext(),
+                            layoutManager,
+                            (info) -> {},
+                            mLeftTabSupplier,
+                            mBrowserControlsStateProvider,
+                            () -> mRenderHost.getResourceManager(),
+                            topUiColorProvider,
+                            LayoutType.TOOLBAR_SWIPE,
+                            true);
             mLeftToolbarOverlay.setManualVisibility(true);
             layoutManager.addSceneOverlay(mLeftToolbarOverlay);
 
-            mRightToolbarOverlay = new TopToolbarOverlayCoordinator(getContext(), layoutManager,
-                    (info) -> {
-                    }, mRightTabSupplier, mBrowserControlsStateProvider,
-                    () -> mRenderHost.getResourceManager(), topUiColorProvider,
-                    LayoutType.TOOLBAR_SWIPE, true);
+            mRightToolbarOverlay =
+                    new TopToolbarOverlayCoordinator(
+                            getContext(),
+                            layoutManager,
+                            (info) -> {},
+                            mRightTabSupplier,
+                            mBrowserControlsStateProvider,
+                            () -> mRenderHost.getResourceManager(),
+                            topUiColorProvider,
+                            LayoutType.TOOLBAR_SWIPE,
+                            true);
             mRightToolbarOverlay.setManualVisibility(true);
             layoutManager.addSceneOverlay(mRightToolbarOverlay);
         }
@@ -144,8 +157,9 @@ public class ToolbarSwipeLayout extends Layout {
         // Likewise, when the android view is showing, the compositor controls do not draw and the
         // content needs to pretend it does to draw correctly.
         // TODO(mdjones): Remove toolbar_impact_height from tab_layer.cc so this makes more sense.
-        return mMoveToolbar ? ViewportMode.ALWAYS_FULLSCREEN
-                            : ViewportMode.ALWAYS_SHOWING_BROWSER_CONTROLS;
+        return mMoveToolbar
+                ? ViewportMode.ALWAYS_FULLSCREEN
+                : ViewportMode.ALWAYS_SHOWING_BROWSER_CONTROLS;
     }
 
     @Override
@@ -178,9 +192,11 @@ public class ToolbarSwipeLayout extends Layout {
             // - let the caller of the LayoutManager#switchToTab observe the LayoutState and close
             // the ntp tab in the #doneShowing event.
             Tab lastTab = mTabModelSelector.getTabById(mFromTabId);
-            if (UrlUtilities.isNTPUrl(lastTab.getUrl()) && !lastTab.canGoBack()
+            if (UrlUtilities.isNTPUrl(lastTab.getUrl())
+                    && !lastTab.canGoBack()
                     && !lastTab.canGoForward()) {
-                mTabModelSelector.getModel(lastTab.isIncognito())
+                mTabModelSelector
+                        .getModel(lastTab.isIncognito())
                         .closeTab(lastTab, tab, false, false, false);
             }
 
@@ -206,8 +222,10 @@ public class ToolbarSwipeLayout extends Layout {
         if (fromIndex == TabModel.INVALID_TAB_INDEX) return;
 
         // On RTL, edge-dragging to the left is the next tab.
-        int toIndex = (LocalizationUtils.isLayoutRtl() ^ dragFromLeftEdge) ? fromIndex - 1
-                                                                           : fromIndex + 1;
+        int toIndex =
+                (LocalizationUtils.isLayoutRtl() ^ dragFromLeftEdge)
+                        ? fromIndex - 1
+                        : fromIndex + 1;
 
         prepareSwipeTabAnimation(direction, fromIndex, toIndex);
     }
@@ -343,10 +361,11 @@ public class ToolbarSwipeLayout extends Layout {
 
         CompositorAnimator offsetAnimation =
                 CompositorAnimator.ofFloat(getAnimationHandler(), start, end, duration, null);
-        offsetAnimation.addUpdateListener(animator -> {
-            mOffset = animator.getAnimatedValue();
-            mOffsetTarget = mOffset;
-        });
+        offsetAnimation.addUpdateListener(
+                animator -> {
+                    mOffset = animator.getAnimatedValue();
+                    mOffsetTarget = mOffset;
+                });
         offsetAnimation.start();
     }
 
@@ -388,8 +407,10 @@ public class ToolbarSwipeLayout extends Layout {
             assert mRightTab != null;
             rightX = MathUtils.interpolate(0.0f, getWidth() + mSpaceBetweenTabs, progress);
             // The left tab must be aligned on the right if the image is smaller than the screen.
-            leftX = rightX - mSpaceBetweenTabs
-                    - Math.min(getWidth(), mLeftTab.getOriginalContentWidth());
+            leftX =
+                    rightX
+                            - mSpaceBetweenTabs
+                            - Math.min(getWidth(), mLeftTab.getOriginalContentWidth());
             // Compute final x post scale and ensure the tab's center point never passes the
             // center point of the screen.
             float screenCenterX = getWidth() / 2;
@@ -469,8 +490,11 @@ public class ToolbarSwipeLayout extends Layout {
     }
 
     @Override
-    protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            TabContentManager tabContentManager, ResourceManager resourceManager,
+    protected void updateSceneLayer(
+            RectF viewport,
+            RectF contentViewport,
+            TabContentManager tabContentManager,
+            ResourceManager resourceManager,
             BrowserControlsStateProvider browserControls) {
         super.updateSceneLayer(
                 viewport, contentViewport, tabContentManager, resourceManager, browserControls);
@@ -510,7 +534,8 @@ public class ToolbarSwipeLayout extends Layout {
                 TabModelUtils.getTabIndexById(mTabModelSelector.getCurrentModel(), toTabId);
         prepareSwipeTabAnimation(
                 fromTabIndex < toTabIndex ? ScrollDirection.LEFT : ScrollDirection.RIGHT,
-                fromTabIndex, toTabIndex);
+                fromTabIndex,
+                toTabIndex);
 
         mToTab = fromTabIndex < toTabIndex ? mRightTab : mLeftTab;
         float end = fromTabIndex < toTabIndex ? -getWidth() : getWidth();

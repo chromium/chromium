@@ -27,8 +27,11 @@ class TapFarFromPreviousSuppression extends ContextualSearchHeuristic {
      * @param y The y coordinate of the tap gesture.
      * @param wasSelectionEmptyBeforeTap Whether the selection was empty just before this tap.
      */
-    TapFarFromPreviousSuppression(ContextualSearchSelectionController controller,
-            @Nullable ContextualSearchTapState previousTapState, int x, int y,
+    TapFarFromPreviousSuppression(
+            ContextualSearchSelectionController controller,
+            @Nullable ContextualSearchTapState previousTapState,
+            int x,
+            int y,
             boolean wasSelectionEmptyBeforeTap) {
         mPxToDp = controller.getPxToDp();
         mPreviousTapState = previousTapState;

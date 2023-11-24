@@ -17,9 +17,7 @@ import org.chromium.components.webapps.WebApkDistributor;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Record WebAPKs uninstall UMA.
- */
+/** Record WebAPKs uninstall UMA. */
 public class WebApkUninstallUmaTracker {
     /** Makes recordings that were deferred in order to not load native. */
     public static void recordDeferredUma() {
@@ -41,8 +39,10 @@ public class WebApkUninstallUmaTracker {
                 if (uninstallTimestamp == 0) {
                     uninstallTimestamp = fallbackUninstallTimestamp;
                 }
-                WebApkUkmRecorder.recordWebApkUninstall(webappDataStorage.getWebApkManifestUrl(),
-                        WebApkDistributor.BROWSER, webappDataStorage.getWebApkVersionCode(),
+                WebApkUkmRecorder.recordWebApkUninstall(
+                        webappDataStorage.getWebApkManifestUrl(),
+                        WebApkDistributor.BROWSER,
+                        webappDataStorage.getWebApkVersionCode(),
                         webappDataStorage.getLaunchCount(),
                         uninstallTimestamp - webappDataStorage.getWebApkInstallTimestamp());
             }
@@ -55,8 +55,8 @@ public class WebApkUninstallUmaTracker {
 
     /** Sets WebAPK uninstall to be recorded next time that native is loaded. */
     public static void deferRecordWebApkUninstalled(String packageName) {
-        ChromeSharedPreferences.getInstance().addToStringSet(
-                ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, packageName);
+        ChromeSharedPreferences.getInstance()
+                .addToStringSet(ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, packageName);
         String webApkId = WebappIntentUtils.getIdForWebApkPackage(packageName);
         WebappRegistry.warmUpSharedPrefsForId(webApkId);
         WebappDataStorage webappDataStorage =

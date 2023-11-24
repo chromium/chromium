@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.historyreport;
 
 import java.io.PrintWriter;
 
-/**
- * Defines contract which has to be fulfilled by data provider on native side.
- */
+/** Defines contract which has to be fulfilled by data provider on native side. */
 public interface SearchJniBridge {
 
     /**
@@ -37,14 +35,10 @@ public interface SearchJniBridge {
      */
     UsageReport[] getUsageReportsBatch(int batchSize);
 
-    /**
-     * Removes usage reports from the internal buffer.
-     */
+    /** Removes usage reports from the internal buffer. */
     void removeUsageReports(UsageReport[] reports);
 
-    /**
-     * Clear the buffer of usage reports.
-     */
+    /** Clear the buffer of usage reports. */
     void clearUsageReports();
 
     /**
@@ -55,25 +49,18 @@ public interface SearchJniBridge {
      */
     boolean addHistoricVisitsToUsageReportsBuffer();
 
-    /**
-     * Observer on data changes.
-     */
+    /** Observer on data changes. */
     public static interface DataChangeObserver {
-        /**
-         * Called when data has been changed.
-         */
+        /** Called when data has been changed. */
         void onDataChanged();
-        /**
-         * Called when data has been cleared.
-         */
+
+        /** Called when data has been cleared. */
         void onDataCleared();
-        /**
-         * Called when usage reports can be reported to local indexing service.
-         */
+
+        /** Called when usage reports can be reported to local indexing service. */
         void startReportingTask();
-        /**
-         * Called when usage reports can't be reported to local indexing service any more.
-         */
+
+        /** Called when usage reports can't be reported to local indexing service any more. */
         void stopReportingTask();
     }
 

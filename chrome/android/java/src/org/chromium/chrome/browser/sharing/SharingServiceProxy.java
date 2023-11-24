@@ -14,9 +14,7 @@ import org.chromium.components.sync_device_info.FormFactor;
 
 import java.util.ArrayList;
 
-/**
- * JNI bridge for SharingServiceProxy.
- */
+/** JNI bridge for SharingServiceProxy. */
 public class SharingServiceProxy {
     private static SharingServiceProxy sInstance;
 
@@ -71,9 +69,7 @@ public class SharingServiceProxy {
         jni.sendSharedClipboardMessage(sNativeSharingServiceProxyAndroid, guid, text, callback);
     }
 
-    /**
-     * Matches definition in //components/sync_device_info/device_info.h.
-     */
+    /** Matches definition in //components/sync_device_info/device_info.h. */
     public static class DeviceInfo {
         private DeviceInfo() {}
 
@@ -84,8 +80,11 @@ public class SharingServiceProxy {
     }
 
     @CalledByNative
-    private static void createDeviceInfoAndAppendToList(ArrayList<DeviceInfo> deviceInfo,
-            String guid, String clientName, @FormFactor int formFactor,
+    private static void createDeviceInfoAndAppendToList(
+            ArrayList<DeviceInfo> deviceInfo,
+            String guid,
+            String clientName,
+            @FormFactor int formFactor,
             long lastUpdatedTimestampMillis) {
         DeviceInfo device = new DeviceInfo();
         device.guid = guid;
@@ -129,10 +128,18 @@ public class SharingServiceProxy {
     @NativeMethods
     interface Natives {
         void initSharingService(Profile profile);
-        void sendSharedClipboardMessage(long nativeSharingServiceProxyAndroid, String guid,
-                String text, Callback<Integer> callback);
-        void getDeviceCandidates(long nativeSharingServiceProxyAndroid,
-                ArrayList<DeviceInfo> deviceInfo, int requiredFeature);
+
+        void sendSharedClipboardMessage(
+                long nativeSharingServiceProxyAndroid,
+                String guid,
+                String text,
+                Callback<Integer> callback);
+
+        void getDeviceCandidates(
+                long nativeSharingServiceProxyAndroid,
+                ArrayList<DeviceInfo> deviceInfo,
+                int requiredFeature);
+
         void addDeviceCandidatesInitializedObserver(
                 long nativeSharingServiceProxyAndroid, Runnable runnable);
     }

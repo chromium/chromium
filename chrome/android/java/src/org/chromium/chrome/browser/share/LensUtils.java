@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
-/**
- * This class provides utilities for intenting into Google Lens.
- */
+/** This class provides utilities for intenting into Google Lens. */
 // TODO(crbug/1157496): Consolidate param-checks into a single function.
 public class LensUtils {
     private static final String MIN_AGSA_VERSION_FEATURE_PARAM_NAME = "minAgsaVersionName";
@@ -28,9 +26,7 @@ public class LensUtils {
 
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
 
-    /**
-     * See function for details.
-     */
+    /** See function for details. */
     private static boolean sFakePassableLensEnvironmentForTesting;
 
     /*
@@ -128,12 +124,14 @@ public class LensUtils {
                 && !(isIncognito
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
-                                DISABLE_ON_INCOGNITO_PARAM_NAME, true));
+                                DISABLE_ON_INCOGNITO_PARAM_NAME,
+                                true));
     }
 
     public static boolean isGoogleLensFeatureEnabledOnTablet() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, ENABLE_ON_TABLET_PARAM_NAME,
+                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                ENABLE_ON_TABLET_PARAM_NAME,
                 true);
     }
 
@@ -145,7 +143,8 @@ public class LensUtils {
     public static boolean orderShareImageBeforeLens() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP,
-                ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME, false);
+                ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME,
+                false);
     }
 
     public static boolean shouldLogUkmForLensContextMenuFeatures() {

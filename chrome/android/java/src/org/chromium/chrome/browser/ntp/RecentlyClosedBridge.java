@@ -22,40 +22,55 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class allows Java code to get and clear the list of recently closed entries.
- */
+/** This class allows Java code to get and clear the list of recently closed entries. */
 @JNINamespace("recent_tabs")
 public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     private long mNativeBridge;
     private final TabModelSelector mTabModelSelector;
 
-    @Nullable
-    private Runnable mEntriesUpdatedRunnable;
+    @Nullable private Runnable mEntriesUpdatedRunnable;
 
-    private static void addTabs(List<RecentlyClosedTab> tabs, int[] tabIds, long[] tabTimestamps,
-            String[] tabTitles, GURL[] tabUrls, String[] tabGroupIds) {
+    private static void addTabs(
+            List<RecentlyClosedTab> tabs,
+            int[] tabIds,
+            long[] tabTimestamps,
+            String[] tabTitles,
+            GURL[] tabUrls,
+            String[] tabGroupIds) {
         assert tabIds.length == tabTimestamps.length;
         assert tabIds.length == tabTitles.length;
         assert tabIds.length == tabUrls.length;
         assert tabIds.length == tabGroupIds.length;
         for (int i = 0; i < tabIds.length; i++) {
-            tabs.add(new RecentlyClosedTab(
-                    tabIds[i], tabTimestamps[i], tabTitles[i], tabUrls[i], tabGroupIds[i]));
+            tabs.add(
+                    new RecentlyClosedTab(
+                            tabIds[i], tabTimestamps[i], tabTitles[i], tabUrls[i], tabGroupIds[i]));
         }
     }
 
     @CalledByNative
-    private static void addTabToEntries(List<RecentlyClosedEntry> entries, int id, long timestamp,
-            String title, GURL url, String groupId) {
+    private static void addTabToEntries(
+            List<RecentlyClosedEntry> entries,
+            int id,
+            long timestamp,
+            String title,
+            GURL url,
+            String groupId) {
         RecentlyClosedTab tab = new RecentlyClosedTab(id, timestamp, title, url, groupId);
         entries.add(tab);
     }
 
     @CalledByNative
-    private static void addGroupToEntries(List<RecentlyClosedEntry> entries, int id,
-            long groupTimestamp, String groupTitle, int[] tabIds, long[] tabTimestamps,
-            String[] tabTitles, GURL[] tabUrls, String[] tabGroupIds) {
+    private static void addGroupToEntries(
+            List<RecentlyClosedEntry> entries,
+            int id,
+            long groupTimestamp,
+            String groupTitle,
+            int[] tabIds,
+            long[] tabTimestamps,
+            String[] tabTitles,
+            GURL[] tabUrls,
+            String[] tabGroupIds) {
         RecentlyClosedGroup group = new RecentlyClosedGroup(id, groupTimestamp, groupTitle);
 
         addTabs(group.getTabs(), tabIds, tabTimestamps, tabTitles, tabUrls, tabGroupIds);
@@ -64,9 +79,17 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @CalledByNative
-    private static void addBulkEventToEntries(List<RecentlyClosedEntry> entries, int id,
-            long eventTimestamp, String[] groupIds, String[] groupsTitles, int[] tabIds,
-            long[] tabTimestamps, String[] tabTitles, GURL[] tabUrls, String[] tabGroupIds) {
+    private static void addBulkEventToEntries(
+            List<RecentlyClosedEntry> entries,
+            int id,
+            long eventTimestamp,
+            String[] groupIds,
+            String[] groupsTitles,
+            int[] tabIds,
+            long[] tabTimestamps,
+            String[] tabTitles,
+            GURL[] tabUrls,
+            String[] tabGroupIds) {
         RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(id, eventTimestamp);
 
         assert groupIds.length == groupsTitles.length;
@@ -85,8 +108,10 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         if (tabIds.length < 1) return;
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
-        TabModelFilter filter = mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                tabModel.isIncognito());
+        TabModelFilter filter =
+                mTabModelSelector
+                        .getTabModelFilterProvider()
+                        .getTabModelFilter(tabModel.isIncognito());
         assert filter instanceof TabGroupModelFilter;
 
         TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
@@ -128,8 +153,9 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @Override
     public List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
         List<RecentlyClosedEntry> entries = new ArrayList<RecentlyClosedEntry>();
-        boolean received = RecentlyClosedBridgeJni.get().getRecentlyClosedEntries(
-                mNativeBridge, entries, maxEntryCount);
+        boolean received =
+                RecentlyClosedBridgeJni.get()
+                        .getRecentlyClosedEntries(mNativeBridge, entries, maxEntryCount);
         return received ? entries : null;
     }
 
@@ -137,15 +163,16 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     public boolean openRecentlyClosedTab(
             TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition) {
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
-        return RecentlyClosedBridgeJni.get().openRecentlyClosedTab(
-                mNativeBridge, tabModel, recentTab.getSessionId(), windowOpenDisposition);
+        return RecentlyClosedBridgeJni.get()
+                .openRecentlyClosedTab(
+                        mNativeBridge, tabModel, recentTab.getSessionId(), windowOpenDisposition);
     }
 
     @Override
     public boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry) {
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
-        return RecentlyClosedBridgeJni.get().openRecentlyClosedEntry(
-                mNativeBridge, tabModel, recentEntry.getSessionId());
+        return RecentlyClosedBridgeJni.get()
+                .openRecentlyClosedEntry(mNativeBridge, tabModel, recentEntry.getSessionId());
     }
 
     @Override
@@ -159,9 +186,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         RecentlyClosedBridgeJni.get().clearRecentlyClosedEntries(mNativeBridge);
     }
 
-    /**
-     * This method will be called every time the list of recently closed tabs is updated.
-     */
+    /** This method will be called every time the list of recently closed tabs is updated. */
     @CalledByNative
     private void onUpdated() {
         if (mEntriesUpdatedRunnable != null) mEntriesUpdatedRunnable.run();
@@ -171,14 +196,25 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long init(RecentlyClosedBridge caller, Profile profile);
+
         void destroy(long nativeRecentlyClosedTabsBridge);
-        boolean getRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge,
-                List<RecentlyClosedEntry> entries, int maxEntryCount);
-        boolean openRecentlyClosedTab(long nativeRecentlyClosedTabsBridge, TabModel tabModel,
-                int tabSessionId, int windowOpenDisposition);
+
+        boolean getRecentlyClosedEntries(
+                long nativeRecentlyClosedTabsBridge,
+                List<RecentlyClosedEntry> entries,
+                int maxEntryCount);
+
+        boolean openRecentlyClosedTab(
+                long nativeRecentlyClosedTabsBridge,
+                TabModel tabModel,
+                int tabSessionId,
+                int windowOpenDisposition);
+
         boolean openRecentlyClosedEntry(
                 long nativeRecentlyClosedTabsBridge, TabModel tabModel, int sessionId);
+
         boolean openMostRecentlyClosedEntry(long nativeRecentlyClosedTabsBridge, TabModel tabModel);
+
         void clearRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge);
     }
 }

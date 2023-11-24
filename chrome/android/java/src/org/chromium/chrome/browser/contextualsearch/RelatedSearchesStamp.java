@@ -36,8 +36,10 @@ class RelatedSearchesStamp {
     private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
-    private static final String NO_EXPERIMENT_STAMP = RELATED_SEARCHES_STAMP_VERSION
-            + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE + RELATED_SEARCHES_NO_EXPERIMENT;
+    private static final String NO_EXPERIMENT_STAMP =
+            RELATED_SEARCHES_STAMP_VERSION
+                    + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE
+                    + RELATED_SEARCHES_NO_EXPERIMENT;
 
     private final ContextualSearchPolicy mPolicy;
     private boolean mDisableDefaultAllowedLanguagesForTesting;
@@ -115,7 +117,8 @@ class RelatedSearchesStamp {
      * @return Whether the user could do a Related Searches request if Feature-enabled.
      */
     boolean isQualifiedForRelatedSearches(String basePageLanguage) {
-        return isLanguageQualified(basePageLanguage) && canSendUrlIfNeeded()
+        return isLanguageQualified(basePageLanguage)
+                && canSendUrlIfNeeded()
                 && canSendContentIfNeeded();
     }
 
@@ -130,8 +133,10 @@ class RelatedSearchesStamp {
         String currentStamp = searchUri.getQueryParameter(STAMP_PARAMETER);
         if (currentStamp == null || currentStamp.isEmpty()) return searchUri;
 
-        String chosenPositionCode = RELATED_SEARCHES_USER_INTERACTION
-                + RELATED_SEARCHES_SELECTED_POSITION + Integer.toString(suggestionIndex);
+        String chosenPositionCode =
+                RELATED_SEARCHES_USER_INTERACTION
+                        + RELATED_SEARCHES_SELECTED_POSITION
+                        + Integer.toString(suggestionIndex);
         return replaceQueryParam(searchUri, STAMP_PARAMETER, currentStamp + chosenPositionCode);
     }
 
@@ -178,8 +183,9 @@ class RelatedSearchesStamp {
     /** @return whether the runtime configuration has a URL sending permissions requirement. */
     private boolean isRelatedSearchesUrlNeeded() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.RELATED_SEARCHES,
-                       ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME, true)
+                        ChromeFeatureList.RELATED_SEARCHES,
+                        ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME,
+                        true)
                 || mPolicy.isMissingRelatedSearchesConfiguration();
     }
 
@@ -189,8 +195,9 @@ class RelatedSearchesStamp {
      */
     private boolean isRelatedSearchesContentNeeded() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.RELATED_SEARCHES,
-                       ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME, true)
+                        ChromeFeatureList.RELATED_SEARCHES,
+                        ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME,
+                        true)
                 || mPolicy.isMissingRelatedSearchesConfiguration();
     }
 
@@ -226,8 +233,9 @@ class RelatedSearchesStamp {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)) {
             return "";
         }
-        String allowedLanguages = ContextualSearchFieldTrial.getRelatedSearchesParam(
-                ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME);
+        String allowedLanguages =
+                ContextualSearchFieldTrial.getRelatedSearchesParam(
+                        ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME);
         // If there is no language found, we use default language list.
         if (TextUtils.isEmpty(allowedLanguages) && !mDisableDefaultAllowedLanguagesForTesting) {
             allowedLanguages =

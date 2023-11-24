@@ -20,9 +20,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLauncher {
     private static DeviceLockActivityLauncherImpl sLauncher;
 
-    /**
-     * Singleton instance getter
-     */
+    /** Singleton instance getter */
     public static DeviceLockActivityLauncherImpl get() {
         if (sLauncher == null) {
             sLauncher = new DeviceLockActivityLauncherImpl();

@@ -29,8 +29,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Informs the user on using a device lock to protect their privacy and data on the device. If
  * the device does not currently have a device lock, the user will be prompted to create one.
  */
-public class DeviceLockActivity
-        extends SynchronousInitializationActivity implements DeviceLockCoordinator.Delegate {
+public class DeviceLockActivity extends SynchronousInitializationActivity
+        implements DeviceLockCoordinator.Delegate {
     private static final String ARGUMENT_FRAGMENT_ARGS = "DeviceLockActivity.FragmentArgs";
     private static final String ARGUMENT_SELECTED_ACCOUNT =
             "DeviceLockActivity.FragmentArgs.SelectedAccount";
@@ -60,8 +60,11 @@ public class DeviceLockActivity
         super.onCreate(savedInstanceState);
         mFrameLayout = new FrameLayout(this);
         setContentView(mFrameLayout);
-        mWindowAndroid = new ActivityWindowAndroid(this, /* listenToActivityState= */ true,
-                IntentRequestTracker.createFromActivity(this));
+        mWindowAndroid =
+                new ActivityWindowAndroid(
+                        this,
+                        /* listenToActivityState= */ true,
+                        IntentRequestTracker.createFromActivity(this));
         mIntentRequestTracker = mWindowAndroid.getIntentRequestTracker();
 
         Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
@@ -70,15 +73,18 @@ public class DeviceLockActivity
         boolean requireDeviceLockReauthentication =
                 fragmentArgs.getBoolean(ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION, true);
         @Nullable
-        Account selectedAccount = selectedAccountName != null
-                ? AccountUtils.createAccountFromName(selectedAccountName)
-                : null;
+        Account selectedAccount =
+                selectedAccountName != null
+                        ? AccountUtils.createAccountFromName(selectedAccountName)
+                        : null;
 
-        ReauthenticatorBridge reauthenticatorBridge = requireDeviceLockReauthentication
-                ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge()
-                : null;
-        mDeviceLockCoordinator = new DeviceLockCoordinator(
-                this, mWindowAndroid, reauthenticatorBridge, this, selectedAccount);
+        ReauthenticatorBridge reauthenticatorBridge =
+                requireDeviceLockReauthentication
+                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge()
+                        : null;
+        mDeviceLockCoordinator =
+                new DeviceLockCoordinator(
+                        this, mWindowAndroid, reauthenticatorBridge, this, selectedAccount);
     }
 
     @CallSuper

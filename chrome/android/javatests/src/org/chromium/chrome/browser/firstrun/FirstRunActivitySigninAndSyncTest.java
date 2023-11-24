@@ -530,5 +530,5 @@ public class FirstRunActivitySigninAndSyncTest {
             spans[0].onClick(view);
         }
     }
-    ;
+
 }

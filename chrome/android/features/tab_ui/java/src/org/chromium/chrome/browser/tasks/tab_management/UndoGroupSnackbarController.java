@@ -58,50 +58,61 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param snackbarManager Manages the snackbar.
      */
-    public UndoGroupSnackbarController(@NonNull Context context,
-            @NonNull TabModelSelector tabModelSelector, @NonNull SnackbarManager snackbarManager) {
+    public UndoGroupSnackbarController(
+            @NonNull Context context,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull SnackbarManager snackbarManager) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mSnackbarManager = snackbarManager;
-        mTabGroupModelFilterObserver = new EmptyTabGroupModelFilterObserver() {
-            @Override
-            public void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
-                    List<Integer> originalRootId, String destinationGroupTitle) {
-                assert tabs.size() == tabOriginalIndex.size();
+        mTabGroupModelFilterObserver =
+                new EmptyTabGroupModelFilterObserver() {
+                    @Override
+                    public void didCreateGroup(
+                            List<Tab> tabs,
+                            List<Integer> tabOriginalIndex,
+                            List<Integer> originalRootId,
+                            String destinationGroupTitle) {
+                        assert tabs.size() == tabOriginalIndex.size();
 
-                List<TabUndoInfo> tabUndoInfo = new ArrayList<>();
-                for (int i = 0; i < tabs.size(); i++) {
-                    Tab tab = tabs.get(i);
-                    int index = tabOriginalIndex.get(i);
-                    int groupId = originalRootId.get(i);
+                        List<TabUndoInfo> tabUndoInfo = new ArrayList<>();
+                        for (int i = 0; i < tabs.size(); i++) {
+                            Tab tab = tabs.get(i);
+                            int index = tabOriginalIndex.get(i);
+                            int groupId = originalRootId.get(i);
 
-                    tabUndoInfo.add(new TabUndoInfo(tab, index, groupId, destinationGroupTitle));
-                }
-                showUndoGroupSnackbar(tabUndoInfo);
-            }
-        };
+                            tabUndoInfo.add(
+                                    new TabUndoInfo(tab, index, groupId, destinationGroupTitle));
+                        }
+                        showUndoGroupSnackbar(tabUndoInfo);
+                    }
+                };
 
-        ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                 false))
+        ((TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false))
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
-        ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                 true))
+        ((TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(true))
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
 
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                mSnackbarManager.dismissSnackbars(UndoGroupSnackbarController.this);
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        mSnackbarManager.dismissSnackbars(UndoGroupSnackbarController.this);
+                    }
+                };
 
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(mTabModelSelector) {
                     @Override
-                    public void didAddTab(Tab tab, @TabLaunchType int type,
-                            @TabCreationState int creationState, boolean markedForSelection) {
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
                         mSnackbarManager.dismissSnackbars(UndoGroupSnackbarController.this);
                     }
 
@@ -124,26 +135,31 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     public void destroy() {
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     false))
+            ((TabGroupModelFilter)
+                            mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false))
                     .removeTabGroupObserver(mTabGroupModelFilterObserver);
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     true))
+            ((TabGroupModelFilter)
+                            mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(true))
                     .removeTabGroupObserver(mTabGroupModelFilterObserver);
         }
         mTabModelSelectorTabModelObserver.destroy();
     }
 
     private void showUndoGroupSnackbar(List<TabUndoInfo> tabUndoInfo) {
-        int mergedGroupSize = mTabModelSelector.getTabModelFilterProvider()
-                                      .getCurrentTabModelFilter()
-                                      .getRelatedTabIds(tabUndoInfo.get(0).tab.getId())
-                                      .size();
+        int mergedGroupSize =
+                mTabModelSelector
+                        .getTabModelFilterProvider()
+                        .getCurrentTabModelFilter()
+                        .getRelatedTabIds(tabUndoInfo.get(0).tab.getId())
+                        .size();
         assert mergedGroupSize > 1;
 
         String content = String.format(Locale.getDefault(), "%d", mergedGroupSize);
         mSnackbarManager.showSnackbar(
-                Snackbar.make(content, this, Snackbar.TYPE_ACTION,
+                Snackbar.make(
+                                content,
+                                this,
+                                Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_TAB_GROUP_MANUAL_CREATION_UNDO)
                         .setTemplateText(mContext.getString(R.string.undo_bar_group_tabs_message))
                         .setAction(mContext.getString(R.string.undo), tabUndoInfo));
@@ -166,8 +182,8 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         assert data.size() != 0;
 
         TabGroupModelFilter tabGroupModelFilter =
-                (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                        .getCurrentTabModelFilter();
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
 
         // The new rootID will be the destination tab group being merged to. If that destination
         // tab group had no title previously, on undo it may inherit a title from the group that

@@ -39,9 +39,7 @@ import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/**
- * Representation of a Tab-like card in the Grid Tab Switcher.
- */
+/** Representation of a Tab-like card in the Grid Tab Switcher. */
 public class PseudoTab {
     private static final String TAG = "PseudoTab";
 
@@ -50,21 +48,18 @@ public class PseudoTab {
 
     @GuardedBy("sLock")
     private static final Map<Integer, PseudoTab> sAllTabs = new LinkedHashMap<>();
+
     private static final Object sLock = new Object();
     private static boolean sReadStateFile;
     private static List<PseudoTab> sAllTabsFromStateFile;
     private static PseudoTab sActiveTabFromStateFile;
 
-    /**
-     * An interface to get the title to be used for a tab.
-     */
+    /** An interface to get the title to be used for a tab. */
     public interface TitleProvider {
         String getTitle(Context context, PseudoTab tab);
     }
 
-    /**
-     * Construct from a tab ID. An earlier instance with the same ID can be returned.
-     */
+    /** Construct from a tab ID. An earlier instance with the same ID can be returned. */
     public static PseudoTab fromTabId(int tabId) {
         synchronized (sLock) {
             PseudoTab cached = sAllTabs.get(tabId);
@@ -89,7 +84,8 @@ public class PseudoTab {
                 if (cached.getTab() == tab) {
                     return cached;
                 } else {
-                    assert tab.getWebContents() == null || cached.getTab().getWebContents() == null
+                    assert tab.getWebContents() == null
+                            || cached.getTab().getWebContents() == null
                             || cached.getTab().getWebContents().getTopLevelNativeWindow() == null;
                     return new PseudoTab(tab);
                 }
@@ -387,7 +383,9 @@ public class PseudoTab {
         }
 
         Log.d(TAG, "All pre-native tabs: " + sAllTabsFromStateFile);
-        Log.i(TAG, "readAllPseudoTabsFromStateFile() took %dms",
+        Log.i(
+                TAG,
+                "readAllPseudoTabsFromStateFile() took %dms",
                 SystemClock.elapsedRealtime() - startMs);
     }
 }

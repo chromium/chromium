@@ -55,10 +55,11 @@ import org.chromium.ui.display.DisplayUtil;
 /**
  * An activity that talks with application and activity level delegates for async initialization.
  */
-public abstract class AsyncInitializationActivity
-        extends ChromeBaseAppCompatActivity implements ChromeActivityNativeDelegate, BrowserParts {
+public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatActivity
+        implements ChromeActivityNativeDelegate, BrowserParts {
     @VisibleForTesting
     public static final String FIRST_DRAW_COMPLETED_TIME_MS_UMA = "FirstDrawCompletedTime";
+
     protected final Handler mHandler;
 
     private final NativeInitializationController mNativeInitializationController =
@@ -72,8 +73,10 @@ public abstract class AsyncInitializationActivity
 
     /** Time at which onCreate is called. This is realtime, counted in ms since device boot. */
     private long mOnCreateTimestampMs;
+
     /** Time at which onPause is called. */
     private long mOnPauseTimestampMs;
+
     /**
      * Time at which onPause is called before the activity is recreated due to unfolding. The
      * timestamp is captured only if recreation starts when the activity is not in stopped state.
@@ -108,13 +111,14 @@ public abstract class AsyncInitializationActivity
 
     public AsyncInitializationActivity() {
         mHandler = new Handler();
-        mIntentRequestTracker = IntentRequestTracker.createFromDelegate(
-                new ActivityIntentRequestTrackerDelegate(this) {
-                    @Override
-                    public boolean onCallbackNotFoundError(String error) {
-                        return onIntentCallbackNotFoundError(error);
-                    }
-                });
+        mIntentRequestTracker =
+                IntentRequestTracker.createFromDelegate(
+                        new ActivityIntentRequestTrackerDelegate(this) {
+                            @Override
+                            public boolean onCallbackNotFoundError(String error) {
+                                return onIntentCallbackNotFoundError(error);
+                            }
+                        });
     }
 
     /** Get the tracker of this activity's intents. */
@@ -227,15 +231,18 @@ public abstract class AsyncInitializationActivity
     protected void performPostInflationStartup() {
         View firstDrawView = getViewToBeDrawnBeforeInitializingNative();
         assert firstDrawView != null;
-        FirstDrawDetector.waitForFirstDraw(firstDrawView, () -> {
-            mFirstDrawComplete = true;
-            StartSurfaceConfiguration.recordHistogram(FIRST_DRAW_COMPLETED_TIME_MS_UMA,
-                    SystemClock.elapsedRealtime() - getOnCreateTimestampMs(),
-                    isInstantStartEnabled());
-            if (!mStartupDelayed) {
-                onFirstDrawComplete();
-            }
-        });
+        FirstDrawDetector.waitForFirstDraw(
+                firstDrawView,
+                () -> {
+                    mFirstDrawComplete = true;
+                    StartSurfaceConfiguration.recordHistogram(
+                            FIRST_DRAW_COMPLETED_TIME_MS_UMA,
+                            SystemClock.elapsedRealtime() - getOnCreateTimestampMs(),
+                            isInstantStartEnabled());
+                    if (!mStartupDelayed) {
+                        onFirstDrawComplete();
+                    }
+                });
     }
 
     /**
@@ -256,8 +263,9 @@ public abstract class AsyncInitializationActivity
             if (url == null) return;
             // Blocking pre-connect for all off-the-record profiles.
             if (!IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
-                WarmupManager.getInstance().maybePreconnectUrlAndSubResources(
-                        Profile.getLastUsedRegularProfile(), url);
+                WarmupManager.getInstance()
+                        .maybePreconnectUrlAndSubResources(
+                                Profile.getLastUsedRegularProfile(), url);
             }
         } finally {
             TraceEvent.end("maybePreconnect");
@@ -265,24 +273,33 @@ public abstract class AsyncInitializationActivity
     }
 
     @Override
-    public void initializeCompositor() { }
+    public void initializeCompositor() {}
 
     @Override
-    public void initializeState() { }
+    public void initializeState() {}
 
     @CallSuper
     @Override
     public void finishNativeInitialization() {
         // Set up the initial orientation of the device.
         checkOrientation();
-        findViewById(android.R.id.content).addOnLayoutChangeListener(
-                new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                            int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        checkOrientation();
-                    }
-                });
+        findViewById(android.R.id.content)
+                .addOnLayoutChangeListener(
+                        new View.OnLayoutChangeListener() {
+                            @Override
+                            public void onLayoutChange(
+                                    View v,
+                                    int left,
+                                    int top,
+                                    int right,
+                                    int bottom,
+                                    int oldLeft,
+                                    int oldTop,
+                                    int oldRight,
+                                    int oldBottom) {
+                                checkOrientation();
+                            }
+                        });
         mNativeInitializationController.onNativeInitializationComplete();
         mLifecycleDispatcher.dispatchNativeInitializationFinished();
     }
@@ -300,7 +317,7 @@ public abstract class AsyncInitializationActivity
      * be called on that order.
      */
     @Override
-    @SuppressLint("MissingSuperCall")  // Called in onCreateInternal.
+    @SuppressLint("MissingSuperCall") // Called in onCreateInternal.
     protected final void onCreate(Bundle savedInstanceState) {
         TraceEvent.begin("AsyncInitializationActivity.onCreate()");
         onPreCreate();
@@ -415,9 +432,7 @@ public abstract class AsyncInitializationActivity
         overridePendingTransition(0, R.anim.no_anim);
     }
 
-    /**
-     * Call to begin loading the library, if it was delayed.
-     */
+    /** Call to begin loading the library, if it was delayed. */
     @CallSuper
     protected void startDelayedNativeInitialization() {
         assert mStartupDelayed;
@@ -466,9 +481,7 @@ public abstract class AsyncInitializationActivity
         return false;
     }
 
-    /**
-     * Whether or not the Activity was started up via a valid Intent.
-     */
+    /** Whether or not the Activity was started up via a valid Intent. */
     protected boolean isStartedUpCorrectly(Intent intent) {
         return true;
     }
@@ -484,15 +497,19 @@ public abstract class AsyncInitializationActivity
      * @return The timestamp for OnPause event before activity restarts due to unfolding in ms.
      */
     protected long getOnPauseBeforeFoldRecreateTimestampMs() {
-        try (TraceEvent e = TraceEvent.scoped("AsyncInit.getOnPauseBeforeFoldRecreateTimestampMs",
-                     Long.toString(mOnPauseBeforeFoldRecreateTimestampMs))) {
+        try (TraceEvent e =
+                TraceEvent.scoped(
+                        "AsyncInit.getOnPauseBeforeFoldRecreateTimestampMs",
+                        Long.toString(mOnPauseBeforeFoldRecreateTimestampMs))) {
             return mOnPauseBeforeFoldRecreateTimestampMs;
         }
     }
 
     protected void setOnPauseBeforeFoldRecreateTimestampMs() {
-        try (TraceEvent e = TraceEvent.scoped("AsyncInit.setOnPauseBeforeFoldRecreateTimestampMs",
-                     Long.toString(mOnPauseTimestampMs))) {
+        try (TraceEvent e =
+                TraceEvent.scoped(
+                        "AsyncInit.setOnPauseBeforeFoldRecreateTimestampMs",
+                        Long.toString(mOnPauseTimestampMs))) {
             mOnPauseBeforeFoldRecreateTimestampMs = mOnPauseTimestampMs;
         }
     }
@@ -504,9 +521,7 @@ public abstract class AsyncInitializationActivity
         return mSavedInstanceState;
     }
 
-    /**
-     * Resets the saved state and makes it unavailable for the rest of the activity lifecycle.
-     */
+    /** Resets the saved state and makes it unavailable for the rest of the activity lifecycle. */
     protected void resetSavedInstanceState() {
         mSavedInstanceState = null;
     }
@@ -520,10 +535,12 @@ public abstract class AsyncInitializationActivity
         // Since this activity is being started, the FRE should have been handled somehow already.
         Intent intent = getIntent();
         if (FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
-                    shouldPreferLightweightFre(intent), intent)
+                        shouldPreferLightweightFre(intent), intent)
                 && requiresFirstRunToBeCompleted(intent)) {
-            throw new IllegalStateException("The app has not completed the FRE yet "
-                    + getClass().getName() + " is trying to start.");
+            throw new IllegalStateException(
+                    "The app has not completed the FRE yet "
+                            + getClass().getName()
+                            + " is trying to start.");
         }
     }
 
@@ -655,7 +672,7 @@ public abstract class AsyncInitializationActivity
     }
 
     @Override
-    public void onNewIntentWithNative(Intent intent) { }
+    public void onNewIntentWithNative(Intent intent) {}
 
     @Override
     public Intent getInitialIntent() {
@@ -670,7 +687,7 @@ public abstract class AsyncInitializationActivity
     }
 
     /**
-     * @return A {@link ActivityWindowAndroid} instance.  May be null if one was not created.
+     * @return A {@link ActivityWindowAndroid} instance. May be null if one was not created.
      */
     public @Nullable ActivityWindowAndroid getWindowAndroid() {
         return mWindowAndroid;
@@ -753,9 +770,7 @@ public abstract class AsyncInitializationActivity
         return mIsTablet;
     }
 
-    /**
-     * Returns whether the instant start is enabled.
-     */
+    /** Returns whether the instant start is enabled. */
     protected boolean isInstantStartEnabled() {
         return TabUiFeatureUtilities.supportInstantStart(isTablet(), this);
     }
@@ -798,8 +813,7 @@ public abstract class AsyncInitializationActivity
      * @param orientation One of {@link Configuration#ORIENTATION_PORTRAIT} or
      *                    {@link Configuration#ORIENTATION_LANDSCAPE}.
      */
-    protected void onOrientationChange(int orientation) {
-    }
+    protected void onOrientationChange(int orientation) {}
 
     private void checkOrientation() {
         WindowManager wm = getWindowManager();
@@ -832,9 +846,7 @@ public abstract class AsyncInitializationActivity
         mInitialLayoutInflationComplete = true;
     }
 
-    /**
-     * Returns whether initial inflation is complete.
-     */
+    /** Returns whether initial inflation is complete. */
     public boolean isInitialLayoutInflationComplete() {
         return mInitialLayoutInflationComplete;
     }
@@ -863,8 +875,9 @@ public abstract class AsyncInitializationActivity
             sBackInterceptedForTesting = true;
             return false;
         } else if (BuildConfig.IS_FOR_TEST) {
-            assert false : "moveTaskToBack must be intercepted or it will create flaky tests. "
-                           + "See #interceptMoveTaskToBackForTesting";
+            assert false
+                    : "moveTaskToBack must be intercepted or it will create flaky tests. "
+                            + "See #interceptMoveTaskToBackForTesting";
         }
         return super.moveTaskToBack(nonRoot);
     }
@@ -909,9 +922,12 @@ public abstract class AsyncInitializationActivity
         // See enableHardwareAcceleration()
         if (mSetWindowHWA) {
             mSetWindowHWA = false;
-            getWindow().setWindowManager(getWindow().getWindowManager(),
-                    getWindow().getAttributes().token, getComponentName().flattenToString(),
-                    true /* hardwareAccelerated */);
+            getWindow()
+                    .setWindowManager(
+                            getWindow().getWindowManager(),
+                            getWindow().getAttributes().token,
+                            getComponentName().flattenToString(),
+                            /* hardwareAccelerated= */ true);
         }
     }
 }

@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * A utitily class for launching the password leak check.
- */
+/** A utitily class for launching the password leak check. */
 public class PasswordCheckupLauncher {
     @CalledByNative
     private static void launchCheckupOnlineWithWindowAndroid(
@@ -35,8 +33,10 @@ public class PasswordCheckupLauncher {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
         if (PasswordManagerHelper.canUseUpm()) {
-            PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
-                    passwordCheckReferrer, SyncServiceFactory.get(),
+            PasswordManagerHelper.showPasswordCheckup(
+                    windowAndroid.getContext().get(),
+                    passwordCheckReferrer,
+                    SyncServiceFactory.get(),
                     getModalDialogManagerSupplier(windowAndroid));
             return;
         }

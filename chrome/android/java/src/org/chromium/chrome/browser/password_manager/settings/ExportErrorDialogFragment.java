@@ -33,8 +33,7 @@ public class ExportErrorDialogFragment extends DialogFragment {
          * An optional detailed description. Will be prefixed with "Details:" and displayed below
          * the main one.
          */
-        @Nullable
-        public String detailedDescription;
+        @Nullable public String detailedDescription;
     }
 
     // This handler is used to answer the user actions on the dialog.
@@ -70,8 +69,8 @@ public class ExportErrorDialogFragment extends DialogFragment {
         } else {
             detailedDescription.setVisibility(View.GONE);
         }
-        return new AlertDialog
-                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
+        return new AlertDialog.Builder(
+                        getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
                 .setTitle(R.string.password_settings_export_error_title)
                 .setPositiveButton(mParams.positiveButtonLabelId, mHandler)

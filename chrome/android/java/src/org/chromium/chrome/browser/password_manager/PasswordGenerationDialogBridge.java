@@ -10,9 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
-/**
- * JNI call glue between native password generation and Java objects.
- */
+/** JNI call glue between native password generation and Java objects. */
 public class PasswordGenerationDialogBridge {
     private long mNativePasswordGenerationDialogViewAndroid;
     private final PasswordGenerationDialogCoordinator mPasswordGenerationDialog;
@@ -34,9 +32,8 @@ public class PasswordGenerationDialogBridge {
     @CalledByNative
     public void showDialog(String generatedPassword, String explanationString) {
         mGeneratedPassword = generatedPassword;
-        mPasswordGenerationDialog.showDialog(generatedPassword,
-                explanationString,
-                this::onPasswordAcceptedOrRejected);
+        mPasswordGenerationDialog.showDialog(
+                generatedPassword, explanationString, this::onPasswordAcceptedOrRejected);
     }
 
     @CalledByNative
@@ -49,22 +46,29 @@ public class PasswordGenerationDialogBridge {
         if (mNativePasswordGenerationDialogViewAndroid == 0) return;
 
         if (accepted) {
-            PasswordGenerationDialogBridgeJni.get().passwordAccepted(
-                    mNativePasswordGenerationDialogViewAndroid, PasswordGenerationDialogBridge.this,
-                    mGeneratedPassword);
+            PasswordGenerationDialogBridgeJni.get()
+                    .passwordAccepted(
+                            mNativePasswordGenerationDialogViewAndroid,
+                            PasswordGenerationDialogBridge.this,
+                            mGeneratedPassword);
         } else {
-            PasswordGenerationDialogBridgeJni.get().passwordRejected(
-                    mNativePasswordGenerationDialogViewAndroid,
-                    PasswordGenerationDialogBridge.this);
+            PasswordGenerationDialogBridgeJni.get()
+                    .passwordRejected(
+                            mNativePasswordGenerationDialogViewAndroid,
+                            PasswordGenerationDialogBridge.this);
         }
         mPasswordGenerationDialog.dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
     @NativeMethods
     interface Natives {
-        void passwordAccepted(long nativePasswordGenerationDialogViewAndroid,
-                PasswordGenerationDialogBridge caller, String generatedPassword);
-        void passwordRejected(long nativePasswordGenerationDialogViewAndroid,
+        void passwordAccepted(
+                long nativePasswordGenerationDialogViewAndroid,
+                PasswordGenerationDialogBridge caller,
+                String generatedPassword);
+
+        void passwordRejected(
+                long nativePasswordGenerationDialogViewAndroid,
                 PasswordGenerationDialogBridge caller);
     }
 }

@@ -33,7 +33,8 @@ public class LocationPermissionUpdater {
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
-    public LocationPermissionUpdater(InstalledWebappPermissionManager permissionManager,
+    public LocationPermissionUpdater(
+            InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityClient trustedWebActivityClient,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPermissionManager = permissionManager;
@@ -57,8 +58,10 @@ public class LocationPermissionUpdater {
      */
     void checkPermission(Origin origin, String lastCommitedUrl, long callback) {
         mTrustedWebActivityClient.checkLocationPermission(
-                lastCommitedUrl, new TrustedWebActivityClient.PermissionCallback() {
+                lastCommitedUrl,
+                new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
+
                     @Override
                     public void onPermission(
                             ComponentName app, @ContentSettingValues int settingValue) {
@@ -78,7 +81,10 @@ public class LocationPermissionUpdater {
                 });
     }
 
-    private void updatePermission(Origin origin, long callback, ComponentName app,
+    private void updatePermission(
+            Origin origin,
+            long callback,
+            ComponentName app,
             @ContentSettingValues int settingValue) {
         boolean enabled = settingValue == ContentSettingValues.ALLOW;
         mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);

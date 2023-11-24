@@ -54,9 +54,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/**
- * Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes.
- */
+/** Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes. */
 public class TabListCoordinator
         implements PriceMessageService.PriceWelcomeMessageProvider, DestroyObserver {
     /**
@@ -137,37 +135,73 @@ public class TabListCoordinator
      * @param hasEmptyView A boolean to determine if we should show empty view in tab switcher.
      *                      Currently only valid for TabListMode.GRID and TabListMode.LIST.
      */
-    TabListCoordinator(@TabListMode int mode, Context context,
+    TabListCoordinator(
+            @TabListMode int mode,
+            Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            TabModelSelector tabModelSelector, @Nullable ThumbnailProvider thumbnailProvider,
-            @Nullable PseudoTab.TitleProvider titleProvider, boolean actionOnRelatedTabs,
-            @Nullable TabListMediator
-                    .GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            @Nullable TabListMediator.TabGridDialogHandler dialogHandler, @UiType int itemType,
+            TabModelSelector tabModelSelector,
+            @Nullable ThumbnailProvider thumbnailProvider,
+            @Nullable PseudoTab.TitleProvider titleProvider,
+            boolean actionOnRelatedTabs,
+            @Nullable
+                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
+            @UiType int itemType,
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
-            @Nullable TabSwitcherMediator
-                    .PriceWelcomeMessageController priceWelcomeMessageController,
-            @NonNull ViewGroup parentView, boolean attachToParent, String componentName,
-            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange) {
-        this(mode, context, browserControlsStateProvider, tabModelSelector, thumbnailProvider,
-                titleProvider, actionOnRelatedTabs, gridCardOnClickListenerProvider, dialogHandler,
-                itemType, selectionDelegateProvider, priceWelcomeMessageController, parentView,
-                attachToParent, componentName, rootView, onModelTokenChange, false, 0, 0, 0);
+            @Nullable
+                    TabSwitcherMediator.PriceWelcomeMessageController priceWelcomeMessageController,
+            @NonNull ViewGroup parentView,
+            boolean attachToParent,
+            String componentName,
+            @NonNull ViewGroup rootView,
+            @Nullable Callback<Object> onModelTokenChange) {
+        this(
+                mode,
+                context,
+                browserControlsStateProvider,
+                tabModelSelector,
+                thumbnailProvider,
+                titleProvider,
+                actionOnRelatedTabs,
+                gridCardOnClickListenerProvider,
+                dialogHandler,
+                itemType,
+                selectionDelegateProvider,
+                priceWelcomeMessageController,
+                parentView,
+                attachToParent,
+                componentName,
+                rootView,
+                onModelTokenChange,
+                false,
+                0,
+                0,
+                0);
     }
 
-    TabListCoordinator(@TabListMode int mode, Context context,
+    TabListCoordinator(
+            @TabListMode int mode,
+            Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            TabModelSelector tabModelSelector, @Nullable ThumbnailProvider thumbnailProvider,
-            @Nullable PseudoTab.TitleProvider titleProvider, boolean actionOnRelatedTabs,
-            @Nullable TabListMediator
-                    .GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            @Nullable TabListMediator.TabGridDialogHandler dialogHandler, @UiType int itemType,
+            TabModelSelector tabModelSelector,
+            @Nullable ThumbnailProvider thumbnailProvider,
+            @Nullable PseudoTab.TitleProvider titleProvider,
+            boolean actionOnRelatedTabs,
+            @Nullable
+                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
+            @UiType int itemType,
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
-            @Nullable TabSwitcherMediator
-                    .PriceWelcomeMessageController priceWelcomeMessageController,
-            @NonNull ViewGroup parentView, boolean attachToParent, String componentName,
-            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange,
-            boolean hasEmptyView, int emptyImageResId, int emptyHeadingStringResId,
+            @Nullable
+                    TabSwitcherMediator.PriceWelcomeMessageController priceWelcomeMessageController,
+            @NonNull ViewGroup parentView,
+            boolean attachToParent,
+            String componentName,
+            @NonNull ViewGroup rootView,
+            @Nullable Callback<Object> onModelTokenChange,
+            boolean hasEmptyView,
+            int emptyImageResId,
+            int emptyHeadingStringResId,
             int emptySubheadingStringResId) {
         mMode = mode;
         mItemType = itemType;
@@ -179,66 +213,105 @@ public class TabListCoordinator
 
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL) {
-            mAdapter.registerType(UiType.SELECTABLE, parent -> {
-                ViewGroup group = (ViewGroup) LayoutInflater.from(context).inflate(
-                        R.layout.selectable_tab_grid_card_item, parentView, false);
-                group.setClickable(true);
+            mAdapter.registerType(
+                    UiType.SELECTABLE,
+                    parent -> {
+                        ViewGroup group =
+                                (ViewGroup)
+                                        LayoutInflater.from(context)
+                                                .inflate(
+                                                        R.layout.selectable_tab_grid_card_item,
+                                                        parentView,
+                                                        false);
+                        group.setClickable(true);
 
-                return group;
-            }, TabGridViewBinder::bindSelectableTab);
+                        return group;
+                    },
+                    TabGridViewBinder::bindSelectableTab);
 
-            mAdapter.registerType(UiType.CLOSABLE, parent -> {
-                ViewGroup group = (ViewGroup) LayoutInflater.from(context).inflate(
-                        R.layout.closable_tab_grid_card_item, parentView, false);
-                group.setClickable(true);
-                return group;
-            }, TabGridViewBinder::bindClosableTab);
+            mAdapter.registerType(
+                    UiType.CLOSABLE,
+                    parent -> {
+                        ViewGroup group =
+                                (ViewGroup)
+                                        LayoutInflater.from(context)
+                                                .inflate(
+                                                        R.layout.closable_tab_grid_card_item,
+                                                        parentView,
+                                                        false);
+                        group.setClickable(true);
+                        return group;
+                    },
+                    TabGridViewBinder::bindClosableTab);
 
-            recyclerListener = (holder) -> {
-                int holderItemViewType = holder.getItemViewType();
+            recyclerListener =
+                    (holder) -> {
+                        int holderItemViewType = holder.getItemViewType();
 
-                if (holderItemViewType != UiType.CLOSABLE
-                        && holderItemViewType != UiType.SELECTABLE) {
-                    return;
-                }
+                        if (holderItemViewType != UiType.CLOSABLE
+                                && holderItemViewType != UiType.SELECTABLE) {
+                            return;
+                        }
 
-                ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
-                ImageView thumbnail = (ImageView) root.fastFindViewById(R.id.tab_thumbnail);
-                if (thumbnail == null) return;
+                        ViewLookupCachingFrameLayout root =
+                                (ViewLookupCachingFrameLayout) holder.itemView;
+                        ImageView thumbnail = (ImageView) root.fastFindViewById(R.id.tab_thumbnail);
+                        if (thumbnail == null) return;
 
-                thumbnail.setImageDrawable(null);
-            };
+                        thumbnail.setImageDrawable(null);
+                    };
         } else if (mMode == TabListMode.STRIP) {
-            mAdapter.registerType(UiType.STRIP, parent -> {
-                return (ViewGroup) LayoutInflater.from(context).inflate(
-                        R.layout.tab_strip_item, parentView, false);
-            }, TabStripViewBinder::bind);
+            mAdapter.registerType(
+                    UiType.STRIP,
+                    parent -> {
+                        return (ViewGroup)
+                                LayoutInflater.from(context)
+                                        .inflate(R.layout.tab_strip_item, parentView, false);
+                    },
+                    TabStripViewBinder::bind);
         } else if (mMode == TabListMode.LIST) {
-            mAdapter.registerType(UiType.CLOSABLE, parent -> {
-                ViewLookupCachingFrameLayout group =
-                        (ViewLookupCachingFrameLayout) LayoutInflater.from(context).inflate(
-                                R.layout.closable_tab_list_card_item, parentView, false);
-                group.setClickable(true);
+            mAdapter.registerType(
+                    UiType.CLOSABLE,
+                    parent -> {
+                        ViewLookupCachingFrameLayout group =
+                                (ViewLookupCachingFrameLayout)
+                                        LayoutInflater.from(context)
+                                                .inflate(
+                                                        R.layout.closable_tab_list_card_item,
+                                                        parentView,
+                                                        false);
+                        group.setClickable(true);
 
-                ImageView actionButton = (ImageView) group.fastFindViewById(R.id.end_button);
-                actionButton.setVisibility(View.VISIBLE);
-                Resources resources = group.getResources();
-                int closeButtonSize =
-                        (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
-                Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.btn_close);
-                Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
-                actionButton.setImageBitmap(bitmap);
+                        ImageView actionButton =
+                                (ImageView) group.fastFindViewById(R.id.end_button);
+                        actionButton.setVisibility(View.VISIBLE);
+                        Resources resources = group.getResources();
+                        int closeButtonSize =
+                                (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
+                        Bitmap bitmap =
+                                BitmapFactory.decodeResource(resources, R.drawable.btn_close);
+                        Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
+                        actionButton.setImageBitmap(bitmap);
 
-                return group;
-            }, TabListViewBinder::bindClosableListTab);
+                        return group;
+                    },
+                    TabListViewBinder::bindClosableListTab);
 
-            mAdapter.registerType(UiType.SELECTABLE, parent -> {
-                ViewGroup group = (ViewGroup) LayoutInflater.from(context).inflate(
-                        R.layout.selectable_tab_list_card_item, parentView, false);
-                group.setClickable(true);
+            mAdapter.registerType(
+                    UiType.SELECTABLE,
+                    parent -> {
+                        ViewGroup group =
+                                (ViewGroup)
+                                        LayoutInflater.from(context)
+                                                .inflate(
+                                                        R.layout.selectable_tab_list_card_item,
+                                                        parentView,
+                                                        false);
+                        group.setClickable(true);
 
-                return group;
-            }, TabListViewBinder::bindSelectableListTab);
+                        return group;
+                    },
+                    TabListViewBinder::bindSelectableListTab);
         } else {
             throw new IllegalArgumentException(
                     "Attempting to create a tab list UI with invalid mode");
@@ -247,21 +320,41 @@ public class TabListCoordinator
         // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
         // incognito profile) instead of always using regular profile. It works correctly now, but
         // it is not safe.
-        TabListFaviconProvider tabListFaviconProvider = new TabListFaviconProvider(
-                mContext, mMode == TabListMode.STRIP, R.dimen.default_favicon_corner_radius);
+        TabListFaviconProvider tabListFaviconProvider =
+                new TabListFaviconProvider(
+                        mContext,
+                        mMode == TabListMode.STRIP,
+                        R.dimen.default_favicon_corner_radius);
 
-        mMediator = new TabListMediator(context, mModel, mMode, tabModelSelector, thumbnailProvider,
-                titleProvider, tabListFaviconProvider, actionOnRelatedTabs,
-                selectionDelegateProvider, gridCardOnClickListenerProvider, dialogHandler,
-                priceWelcomeMessageController, componentName, itemType);
+        mMediator =
+                new TabListMediator(
+                        context,
+                        mModel,
+                        mMode,
+                        tabModelSelector,
+                        thumbnailProvider,
+                        titleProvider,
+                        tabListFaviconProvider,
+                        actionOnRelatedTabs,
+                        selectionDelegateProvider,
+                        gridCardOnClickListenerProvider,
+                        dialogHandler,
+                        priceWelcomeMessageController,
+                        componentName,
+                        itemType);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some contexts multiple TabListCoordinators are
             // created with the same parentView. Using attachToParent and subsequently trying to
             // locate the View with findViewById could then resolve to the wrong view. Instead use
             // LayoutInflater to return the inflated view and addView to circumvent the issue.
-            mRecyclerView = (TabListRecyclerView) LayoutInflater.from(context).inflate(
-                    R.layout.tab_list_recycler_view_layout, parentView, /*attachToParent=*/false);
+            mRecyclerView =
+                    (TabListRecyclerView)
+                            LayoutInflater.from(context)
+                                    .inflate(
+                                            R.layout.tab_list_recycler_view_layout,
+                                            parentView,
+                                            /* attachToParent= */ false);
             if (attachToParent) {
                 parentView.addView(mRecyclerView);
             }
@@ -270,10 +363,12 @@ public class TabListCoordinator
                 ViewGroup.LayoutParams layoutParams = mRecyclerView.getLayoutParams();
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 mRecyclerView.setLayoutParams(layoutParams);
-                final int cardWidthPx = context.getResources().getDimensionPixelSize(
-                        R.dimen.tab_carousel_card_width);
-                final int cardHeightPx = TabUtils.deriveGridCardHeight(
-                        cardWidthPx, mContext, mBrowserControlsStateProvider);
+                final int cardWidthPx =
+                        context.getResources()
+                                .getDimensionPixelSize(R.dimen.tab_carousel_card_width);
+                final int cardHeightPx =
+                        TabUtils.deriveGridCardHeight(
+                                cardWidthPx, mContext, mBrowserControlsStateProvider);
                 mMediator.setDefaultGridCardSize(new Size(cardWidthPx, cardHeightPx));
             }
 
@@ -295,19 +390,24 @@ public class TabListCoordinator
                         .getDecorView()
                         .getWindowVisibleDisplayFrame(frame);
                 updateGridCardLayout(frame.width());
-            } else if (mMode == TabListMode.STRIP || mMode == TabListMode.CAROUSEL
+            } else if (mMode == TabListMode.STRIP
+                    || mMode == TabListMode.CAROUSEL
                     || mMode == TabListMode.LIST) {
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(context,
-                        mMode == TabListMode.LIST ? LinearLayoutManager.VERTICAL
-                                                  : LinearLayoutManager.HORIZONTAL,
-                        false));
+                mRecyclerView.setLayoutManager(
+                        new LinearLayoutManager(
+                                context,
+                                mMode == TabListMode.LIST
+                                        ? LinearLayoutManager.VERTICAL
+                                        : LinearLayoutManager.HORIZONTAL,
+                                false));
             }
             mMediator.setRecyclerViewItemAnimationToggle(mRecyclerView::setDisableItemAnimations);
         }
 
         if (mMode == TabListMode.GRID) {
-            mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
-                    oldBottom) -> updateGridCardLayout(right - left);
+            mListLayoutListener =
+                    (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                            updateGridCardLayout(right - left);
         } else if (mMode == TabListMode.STRIP) {
             mTabStripSnapshotter =
                     new TabStripSnapshotter(onModelTokenChange, mModel, mRecyclerView);
@@ -327,8 +427,9 @@ public class TabListCoordinator
      * @param onLongPressTabItemEventListener to handle long press events on tabs.
      */
     public void setOnLongPressTabItemEventListener(
-            @Nullable TabGridItemTouchHelperCallback
-                    .OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
+            @Nullable
+                    TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
+                            onLongPressTabItemEventListener) {
         assert mMediator != null;
         mMediator.setOnLongPressTabItemEventListener(onLongPressTabItemEventListener);
     }
@@ -381,13 +482,14 @@ public class TabListCoordinator
             if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
                     && mItemType != UiType.SELECTABLE) {
                 TabGridItemTouchHelperCallback callback =
-                        (TabGridItemTouchHelperCallback) mMediator.getItemTouchHelperCallback(
-                                mContext.getResources().getDimension(
-                                        R.dimen.swipe_to_dismiss_threshold),
-                                mContext.getResources().getDimension(
-                                        R.dimen.tab_grid_merge_threshold),
-                                mContext.getResources().getDimension(
-                                        R.dimen.bottom_sheet_peek_height));
+                        (TabGridItemTouchHelperCallback)
+                                mMediator.getItemTouchHelperCallback(
+                                        mContext.getResources()
+                                                .getDimension(R.dimen.swipe_to_dismiss_threshold),
+                                        mContext.getResources()
+                                                .getDimension(R.dimen.tab_grid_merge_threshold),
+                                        mContext.getResources()
+                                                .getDimension(R.dimen.bottom_sheet_peek_height));
 
                 // Creates an instance of the ItemTouchHelper using TabGridItemTouchHelperCallback
                 // and attach a downsteam mOnItemTouchListener that watches for
@@ -400,41 +502,46 @@ public class TabListCoordinator
                 // See similar comments in TabGridItemTouchHelperCallback for more details.
                 mItemTouchHelper = new ItemTouchHelper(callback);
                 mItemTouchHelper.attachToRecyclerView(mRecyclerView);
-                mOnItemTouchListener = new OnItemTouchListener() {
-                    @Override
-                    public boolean onInterceptTouchEvent(
-                            RecyclerView recyclerView, MotionEvent event) {
-                        // There can be an edge case when adding the block action logic where
-                        // minimal movement not picked up by the mItemTouchHelper can result in
-                        // attempting to block an action that did have a DRAG event. Actually,
-                        // blocking the next event in this can result in an unexpected event
-                        // being consumed leading to an unexpected sequence of MotionEvents.
-                        // This bad sequence can then result in invalid UI & click state for
-                        // downstream touch handlers. This additional check ensures that for a
-                        // given action, if a block is requested it must be the UP motion that
-                        // ends the input.
-                        if (callback.shouldBlockAction()
-                                && (event.getActionMasked() == MotionEvent.ACTION_UP
-                                        || event.getActionMasked()
-                                                == MotionEvent.ACTION_POINTER_UP)) {
-                            return true;
-                        }
-                        return false;
-                    }
+                mOnItemTouchListener =
+                        new OnItemTouchListener() {
+                            @Override
+                            public boolean onInterceptTouchEvent(
+                                    RecyclerView recyclerView, MotionEvent event) {
+                                // There can be an edge case when adding the block action logic
+                                // where minimal movement not picked up by the mItemTouchHelper
+                                // can result in attempting to block an action that did have a
+                                // DRAG event.
+                                // Actually, blocking the next event in this can result in an
+                                // unexpected event being consumed leading to an unexpected
+                                // sequence of MotionEvents.
+                                // This bad sequence can then result in invalid UI & click state for
+                                // downstream touch handlers. This additional check ensures that for
+                                // a given action, if a block is requested it must be the UP
+                                // motion that ends the input.
+                                if (callback.shouldBlockAction()
+                                        && (event.getActionMasked() == MotionEvent.ACTION_UP
+                                                || event.getActionMasked()
+                                                        == MotionEvent.ACTION_POINTER_UP)) {
+                                    return true;
+                                }
+                                return false;
+                            }
 
-                    @Override
-                    public void onTouchEvent(RecyclerView recyclerView, MotionEvent event) {}
+                            @Override
+                            public void onTouchEvent(
+                                    RecyclerView recyclerView, MotionEvent event) {}
 
-                    @Override
-                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-                        // If a child component does not allow this recyclerView and any parent
-                        // components to intercept touch events, shouldBlockAction should be called
-                        // anyways to reset the tracking boolean. Otherwise, the original intercept
-                        // method will do the check.
-                        if (!disallowIntercept) return;
-                        callback.shouldBlockAction();
-                    }
-                };
+                            @Override
+                            public void onRequestDisallowInterceptTouchEvent(
+                                    boolean disallowIntercept) {
+                                // If a child component does not allow this recyclerView and any
+                                // parent components to intercept touch events, shouldBlockAction
+                                // should be called anyways to reset the tracking boolean.
+                                // Otherwise, the original intercept method will do the check.
+                                if (!disallowIntercept) return;
+                                callback.shouldBlockAction();
+                            }
+                        };
                 mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
             }
         }
@@ -445,8 +552,9 @@ public class TabListCoordinator
      * @return Whether a valid {@link Rect} is obtained.
      */
     boolean updateThumbnailLocation() {
-        Rect rect = mRecyclerView.getRectOfCurrentThumbnail(
-                mMediator.indexOfTab(mMediator.selectedTabId()), mMediator.selectedTabId());
+        Rect rect =
+                mRecyclerView.getRectOfCurrentThumbnail(
+                        mMediator.indexOfTab(mMediator.selectedTabId()), mMediator.selectedTabId());
         if (rect == null) return false;
         rect.offset(0, getTabListTopOffset());
         mThumbnailLocationOfCurrentTab.set(rect);
@@ -457,8 +565,9 @@ public class TabListCoordinator
         // Determine and set span count
         final GridLayoutManager layoutManager =
                 (GridLayoutManager) mRecyclerView.getLayoutManager();
-        boolean updatedSpan = mMediator.updateSpanCount(
-                layoutManager, mContext.getResources().getConfiguration().screenWidthDp);
+        boolean updatedSpan =
+                mMediator.updateSpanCount(
+                        layoutManager, mContext.getResources().getConfiguration().screenWidthDp);
         if (updatedSpan) {
             // Update the cards for the span change.
             ViewUtils.requestLayout(mRecyclerView, "TabListCoordinator#updateGridCardLayout");
@@ -497,10 +606,12 @@ public class TabListCoordinator
         Rect parentRect = new Rect();
         mRootView.getGlobalVisibleRect(parentRect);
         // Offset by CompositorViewHolder top offset and top toolbar height.
-        tabListRect.offset(0,
+        tabListRect.offset(
+                0,
                 -parentRect.top
-                        - (int) mContext.getResources().getDimension(
-                                R.dimen.toolbar_height_no_shadow));
+                        - (int)
+                                mContext.getResources()
+                                        .getDimension(R.dimen.toolbar_height_no_shadow));
         return tabListRect.top;
     }
 
@@ -618,9 +729,7 @@ public class TabListCoordinator
         mMediator.postHiding();
     }
 
-    /**
-     * Destroy any members that needs clean up.
-     */
+    /** Destroy any members that needs clean up. */
     @Override
     public void onDestroy() {
         mMediator.destroy();
@@ -652,7 +761,8 @@ public class TabListCoordinator
      * @see MVCListAdapter#registerType(int, MVCListAdapter.ViewBuilder,
      *         PropertyModelChangeProcessor.ViewBinder).
      */
-    <T extends View> void registerItemType(@UiType int typeId,
+    <T extends View> void registerItemType(
+            @UiType int typeId,
             MVCListAdapter.ViewBuilder<T> builder,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, T, PropertyKey> binder) {
         mAdapter.registerType(typeId, builder, binder);

@@ -33,7 +33,8 @@ public class SafeBrowsingPasswordReuseDialogBridge {
         mNativePasswordReuseDialogViewAndroid = nativePasswordReuseDialogViewAndroid;
         mWindowAndroid = windowAndroid;
         mDialogCoordinator =
-                new PasswordManagerDialogCoordinator(mWindowAndroid.getModalDialogManager(),
+                new PasswordManagerDialogCoordinator(
+                        mWindowAndroid.getModalDialogManager(),
                         mWindowAndroid.getActivity().get().findViewById(android.R.id.content),
                         BrowserControlsManagerSupplier.getValueOrNullFrom(mWindowAndroid));
     }
@@ -45,26 +46,39 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     }
 
     @CalledByNative
-    public void showDialog(String dialogTitle, String dialogDetails, String primaryButtonText,
+    public void showDialog(
+            String dialogTitle,
+            String dialogDetails,
+            String primaryButtonText,
             @Nullable String secondaryButtonText) {
         if (mWindowAndroid.getActivity().get() == null) return;
 
-        PasswordManagerDialogContents contents = createDialogContents(
-                dialogTitle, dialogDetails, primaryButtonText, secondaryButtonText);
+        PasswordManagerDialogContents contents =
+                createDialogContents(
+                        dialogTitle, dialogDetails, primaryButtonText, secondaryButtonText);
         contents.setPrimaryButtonFilled(secondaryButtonText != null);
 
         mDialogCoordinator.initialize(mWindowAndroid.getActivity().get(), contents);
         mDialogCoordinator.showDialog();
     }
 
-    private PasswordManagerDialogContents createDialogContents(String credentialLeakTitle,
-            String credentialLeakDetails, String positiveButton, @Nullable String negativeButton) {
-        Callback<Integer> onClick = negativeButton != null
-                ? this::onClickWithNegativeButtonEnabled
-                : this::onClickWithNegativeButtonDisabled;
+    private PasswordManagerDialogContents createDialogContents(
+            String credentialLeakTitle,
+            String credentialLeakDetails,
+            String positiveButton,
+            @Nullable String negativeButton) {
+        Callback<Integer> onClick =
+                negativeButton != null
+                        ? this::onClickWithNegativeButtonEnabled
+                        : this::onClickWithNegativeButtonDisabled;
 
-        return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
-                R.drawable.password_checkup_warning, positiveButton, negativeButton, onClick);
+        return new PasswordManagerDialogContents(
+                credentialLeakTitle,
+                credentialLeakDetails,
+                R.drawable.password_checkup_warning,
+                positiveButton,
+                negativeButton,
+                onClick);
     }
 
     @CalledByNative
@@ -77,8 +91,10 @@ public class SafeBrowsingPasswordReuseDialogBridge {
         // 0 indicates its C++ counterpart has already been destroyed.
         if (mNativePasswordReuseDialogViewAndroid == 0) return;
 
-        SafeBrowsingPasswordReuseDialogBridgeJni.get().close(
-                mNativePasswordReuseDialogViewAndroid, SafeBrowsingPasswordReuseDialogBridge.this);
+        SafeBrowsingPasswordReuseDialogBridgeJni.get()
+                .close(
+                        mNativePasswordReuseDialogViewAndroid,
+                        SafeBrowsingPasswordReuseDialogBridge.this);
     }
 
     private void onClickWithNegativeButtonEnabled(@DialogDismissalCause int dismissalCause) {
@@ -87,31 +103,37 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
-                SafeBrowsingPasswordReuseDialogBridgeJni.get().checkPasswords(
-                        mNativePasswordReuseDialogViewAndroid,
-                        SafeBrowsingPasswordReuseDialogBridge.this);
+                SafeBrowsingPasswordReuseDialogBridgeJni.get()
+                        .checkPasswords(
+                                mNativePasswordReuseDialogViewAndroid,
+                                SafeBrowsingPasswordReuseDialogBridge.this);
                 return;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
-                SafeBrowsingPasswordReuseDialogBridgeJni.get().ignore(
-                        mNativePasswordReuseDialogViewAndroid,
-                        SafeBrowsingPasswordReuseDialogBridge.this);
+                SafeBrowsingPasswordReuseDialogBridgeJni.get()
+                        .ignore(
+                                mNativePasswordReuseDialogViewAndroid,
+                                SafeBrowsingPasswordReuseDialogBridge.this);
                 return;
             default:
-                SafeBrowsingPasswordReuseDialogBridgeJni.get().close(
-                        mNativePasswordReuseDialogViewAndroid,
-                        SafeBrowsingPasswordReuseDialogBridge.this);
+                SafeBrowsingPasswordReuseDialogBridgeJni.get()
+                        .close(
+                                mNativePasswordReuseDialogViewAndroid,
+                                SafeBrowsingPasswordReuseDialogBridge.this);
         }
     }
 
     @NativeMethods
     interface Natives {
-        void checkPasswords(long nativePasswordReuseDialogViewAndroid,
+        void checkPasswords(
+                long nativePasswordReuseDialogViewAndroid,
                 SafeBrowsingPasswordReuseDialogBridge caller);
 
-        void ignore(long nativePasswordReuseDialogViewAndroid,
+        void ignore(
+                long nativePasswordReuseDialogViewAndroid,
                 SafeBrowsingPasswordReuseDialogBridge caller);
 
-        void close(long nativePasswordReuseDialogViewAndroid,
+        void close(
+                long nativePasswordReuseDialogViewAndroid,
                 SafeBrowsingPasswordReuseDialogBridge caller);
     }
 }

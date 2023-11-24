@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 
-/**
- * Manages the view interaction with the rest of the system.
- */
+/** Manages the view interaction with the rest of the system. */
 public interface NewTabPageManager extends SuggestionsUiDelegate {
     /** @return Whether the location bar is shown in the NTP. */
     boolean isLocationBarShownInNTP();

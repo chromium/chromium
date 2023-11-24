@@ -31,13 +31,20 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
      */
     public CreditCardAccessorySheetCoordinator(
             Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
-        super(context.getString(R.string.autofill_payment_methods),
+        super(
+                context.getString(R.string.autofill_payment_methods),
                 IconProvider.getIcon(context, R.drawable.infobar_autofill_cc),
                 context.getString(R.string.credit_card_accessory_sheet_toggle),
-                R.layout.credit_card_accessory_sheet, AccessoryTabType.CREDIT_CARDS,
+                R.layout.credit_card_accessory_sheet,
+                AccessoryTabType.CREDIT_CARDS,
                 scrollListener);
-        mMediator = new AccessorySheetTabMediator(mModel, AccessoryTabType.CREDIT_CARDS,
-                Type.CREDIT_CARD_INFO, AccessoryAction.MANAGE_CREDIT_CARDS, null);
+        mMediator =
+                new AccessorySheetTabMediator(
+                        mModel,
+                        AccessoryTabType.CREDIT_CARDS,
+                        Type.CREDIT_CARD_INFO,
+                        AccessoryAction.MANAGE_CREDIT_CARDS,
+                        null);
     }
 
     @Override

@@ -121,7 +121,7 @@ public class ManageDataLauncherActivity extends Activity {
         intent.putExtra(WebApkConstants.EXTRA_IS_WEBAPK, true);
 
         try {
-            startActivityForResult(intent, 0 /* requestCode */);
+            startActivityForResult(intent, /* requestCode= */ 0);
             finish();
         } catch (ActivityNotFoundException e) {
             handleNoSupportForLaunchSettings();

@@ -16,9 +16,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
 
-/**
- * A service to accept requests to take image file contents and decode them.
- */
+/** A service to accept requests to take image file contents and decode them. */
 public class DecoderServiceImpl extends DecoderService.Impl {
     private static final String TAG = "DecoderService";
 
@@ -35,10 +33,12 @@ public class DecoderServiceImpl extends DecoderService.Impl {
         }
 
         // The decoder service relies on PathUtils.
-        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
-            PathUtils.setPrivateDataDirectorySuffix(
-                    SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
-        });
+        PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    PathUtils.setPrivateDataDirectorySuffix(
+                            SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
+                });
 
         LibraryLoader.getInstance().ensureInitialized();
         mDecoder.initializeSandbox();

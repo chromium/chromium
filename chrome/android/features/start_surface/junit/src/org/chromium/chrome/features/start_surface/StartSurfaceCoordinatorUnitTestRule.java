@@ -87,18 +87,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Custom TestRule for tests using StartSurfaceCoordinator
- */
+/** Custom TestRule for tests using StartSurfaceCoordinator */
 public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
-    @Rule
-    public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
 
     private TabModelSelector mTabModelSelector;
     private ViewGroup mContainerView;
@@ -207,7 +201,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, Mockito.mock(FaviconHelper.Natives.class));
         mJniMocker.mock(
                 FeedServiceBridgeJni.TEST_HOOKS, Mockito.mock(FeedServiceBridge.Natives.class));
-        mJniMocker.mock(CookieControlsServiceBridgeJni.TEST_HOOKS,
+        mJniMocker.mock(
+                CookieControlsServiceBridgeJni.TEST_HOOKS,
                 Mockito.mock(CookieControlsServiceBridge.Natives.class));
         mJniMocker.mock(FeatureListJni.TEST_HOOKS, Mockito.mock(FeatureList.Natives.class));
     }
@@ -222,8 +217,10 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
         ViewGroup coordinatorView = Mockito.mock(ViewGroup.class);
         when(coordinatorView.generateLayoutParams(any()))
-                .thenReturn(new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                .thenReturn(
+                        new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
         when(coordinatorView.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view))
                 .thenReturn(Mockito.mock(TabGridDialogView.class));
         when(mActivity.findViewById(org.chromium.chrome.tab_ui.R.id.coordinator))
@@ -232,17 +229,21 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
     private void setUpCoordinator() {
         ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(mActivity, new ScrimCoordinator.SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {
-                        // Intentional noop
-                    }
+                new ScrimCoordinator(
+                        mActivity,
+                        new ScrimCoordinator.SystemUiScrimDelegate() {
+                            @Override
+                            public void setStatusBarScrimFraction(float scrimFraction) {
+                                // Intentional noop
+                            }
 
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {
-                        // Intentional noop
-                    }
-                }, mContainerView, Color.WHITE);
+                            @Override
+                            public void setNavigationBarScrimFraction(float scrimFraction) {
+                                // Intentional noop
+                            }
+                        },
+                        mContainerView,
+                        Color.WHITE);
 
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         BrowserControlsManager browserControlsManager = new BrowserControlsManager(mActivity, 0);
@@ -257,19 +258,35 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         when(voiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
         mIncognitoReauthControllerSupplier.set(Mockito.mock(IncognitoReauthController.class));
 
-        mCoordinator = new StartSurfaceCoordinator(mActivity, scrimCoordinator,
-                Mockito.mock(BottomSheetController.class), new OneshotSupplierImpl<>(),
-                new ObservableSupplierImpl<>(), false, windowAndroid, new PlaceholderJankTracker(),
-                mContainerView, new ObservableSupplierImpl<>(), mTabModelSelector,
-                browserControlsManager, snackbarManager, new ObservableSupplierImpl<>(),
-                ()
-                        -> omniboxStub,
-                tabContentManager, new FakeModalDialogManager(ModalDialogType.APP),
-                Mockito.mock(ChromeActivityNativeDelegate.class),
-                new ActivityLifecycleDispatcherImpl(mActivity), new MockTabCreatorManager(),
-                Mockito.mock(MenuOrKeyboardActionController.class),
-                new MultiWindowModeStateDispatcherImpl(mActivity), new ObservableSupplierImpl<>(),
-                new BackPressManager(), mIncognitoReauthControllerSupplier, null, mProfileSupplier);
+        mCoordinator =
+                new StartSurfaceCoordinator(
+                        mActivity,
+                        scrimCoordinator,
+                        Mockito.mock(BottomSheetController.class),
+                        new OneshotSupplierImpl<>(),
+                        new ObservableSupplierImpl<>(),
+                        false,
+                        windowAndroid,
+                        new PlaceholderJankTracker(),
+                        mContainerView,
+                        new ObservableSupplierImpl<>(),
+                        mTabModelSelector,
+                        browserControlsManager,
+                        snackbarManager,
+                        new ObservableSupplierImpl<>(),
+                        () -> omniboxStub,
+                        tabContentManager,
+                        new FakeModalDialogManager(ModalDialogType.APP),
+                        Mockito.mock(ChromeActivityNativeDelegate.class),
+                        new ActivityLifecycleDispatcherImpl(mActivity),
+                        new MockTabCreatorManager(),
+                        Mockito.mock(MenuOrKeyboardActionController.class),
+                        new MultiWindowModeStateDispatcherImpl(mActivity),
+                        new ObservableSupplierImpl<>(),
+                        new BackPressManager(),
+                        mIncognitoReauthControllerSupplier,
+                        null,
+                        mProfileSupplier);
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);

@@ -11,9 +11,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Extracts a {@link TabState} from a {@link Tab}.
- */
+/** Extracts a {@link TabState} from a {@link Tab}. */
 public class TabStateExtractor {
     private static Map<Integer, TabState> sTabStatesForTesting;
 
@@ -35,9 +33,10 @@ public class TabStateExtractor {
         tabState.tabLaunchTypeAtCreation = tab.getTabLaunchTypeAtCreation();
         // Don't save the actual default theme color because it could change on night mode state
         // changed.
-        tabState.themeColor = tab.isThemingAllowed() && !tab.isNativePage()
-                ? tab.getThemeColor()
-                : TabState.UNSPECIFIED_THEME_COLOR;
+        tabState.themeColor =
+                tab.isThemingAllowed() && !tab.isNativePage()
+                        ? tab.getThemeColor()
+                        : TabState.UNSPECIFIED_THEME_COLOR;
         tabState.rootId = tab.getRootId();
         tabState.userAgent = tab.getUserAgent();
         tabState.lastNavigationCommittedTimestampMillis =
@@ -71,10 +70,12 @@ public class TabStateExtractor {
         } else {
             Referrer referrer = pendingLoadParams.getReferrer();
             return WebContentsStateBridge.createSingleNavigationStateAsByteBuffer(
-                    pendingLoadParams.getUrl(), referrer != null ? referrer.getUrl() : null,
+                    pendingLoadParams.getUrl(),
+                    referrer != null ? referrer.getUrl() : null,
                     // Policy will be ignored for null referrer url, 0 is just a placeholder.
                     referrer != null ? referrer.getPolicy() : 0,
-                    pendingLoadParams.getInitiatorOrigin(), tab.isIncognito());
+                    pendingLoadParams.getInitiatorOrigin(),
+                    tab.isIncognito());
         }
     }
 

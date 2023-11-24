@@ -134,7 +134,6 @@ class ContextualSearchFakeServer
             mIsVisible = false;
         }
     }
-    ;
 
     private ContentsObserver mContentsObserver;
 

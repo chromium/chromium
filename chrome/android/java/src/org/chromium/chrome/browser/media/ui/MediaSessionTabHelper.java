@@ -28,37 +28,37 @@ import org.chromium.url.GURL;
  */
 public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     private Tab mTab;
-    @VisibleForTesting
-    MediaSessionHelper mMediaSessionHelper;
+    @VisibleForTesting MediaSessionHelper mMediaSessionHelper;
 
     @VisibleForTesting
-    final TabObserver mTabObserver = new EmptyTabObserver() {
-        @Override
-        public void onContentChanged(Tab tab) {
-            assert tab == mTab;
-            maybeCreateOrUpdateMediaSessionHelper();
-        }
+    final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onContentChanged(Tab tab) {
+                    assert tab == mTab;
+                    maybeCreateOrUpdateMediaSessionHelper();
+                }
 
-        @Override
-        public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
-            assert tab == mTab;
-            mMediaSessionHelper.updateFavicon(icon);
-        }
+                @Override
+                public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
+                    assert tab == mTab;
+                    mMediaSessionHelper.updateFavicon(icon);
+                }
 
-        @Override
-        public void onDestroyed(Tab tab) {
-            assert mTab == tab;
+                @Override
+                public void onDestroyed(Tab tab) {
+                    assert mTab == tab;
 
-            if (mMediaSessionHelper != null) mMediaSessionHelper.destroy();
-            mTab.removeObserver(this);
-            mTab = null;
-        }
+                    if (mMediaSessionHelper != null) mMediaSessionHelper.destroy();
+                    mTab.removeObserver(this);
+                    mTab = null;
+                }
 
-        @Override
-        public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-            // Intentionally do nothing to prevent automatic observer removal on detachment.
-        }
-    };
+                @Override
+                public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                    // Intentionally do nothing to prevent automatic observer removal on detachment.
+                }
+            };
 
     @VisibleForTesting
     MediaSessionTabHelper(Tab tab) {

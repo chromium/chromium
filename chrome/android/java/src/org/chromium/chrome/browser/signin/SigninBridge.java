@@ -39,12 +39,9 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
-/**
- * The bridge regroups methods invoked by native code to interact with Android Signin UI.
- */
+/** The bridge regroups methods invoked by native code to interact with Android Signin UI. */
 final class SigninBridge {
-    @VisibleForTesting
-    static final int ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT = 3;
+    @VisibleForTesting static final int ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT = 3;
 
     /**
      * Launches {@link SyncConsentActivity}.
@@ -60,9 +57,7 @@ final class SigninBridge {
         }
     }
 
-    /**
-     * Opens account management screen.
-     */
+    /** Opens account management screen. */
     @CalledByNative
     private static void openAccountManagementScreen(
             WindowAndroid windowAndroid, @GAIAServiceType int gaiaServiceType) {
@@ -73,15 +68,14 @@ final class SigninBridge {
         }
     }
 
-    /**
-     * Opens account picker bottom sheet.
-     */
+    /** Opens account picker bottom sheet. */
     @VisibleForTesting
     @CalledByNative
     static void openAccountPickerBottomSheet(WindowAndroid windowAndroid, String continueUrl) {
         ThreadUtils.assertOnUiThread();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        SigninManager signinManager =
+                IdentityServicesProvider.get()
+                        .getSigninManager(Profile.getLastUsedRegularProfile());
         if (!signinManager.isSyncOptInAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
@@ -118,11 +112,16 @@ final class SigninBridge {
                 TabModelSelectorSupplier.from(windowAndroid);
         assert tabModelSelectorSupplier.hasValue() : "No TabModelSelector available.";
         final TabModel regularTabModel =
-                tabModelSelectorSupplier.get().getModel(/*incognito=*/false);
-        new AccountPickerBottomSheetCoordinator(windowAndroid, bottomSheetController,
-                new WebSigninAccountPickerDelegate(TabModelUtils.getCurrentTab(regularTabModel),
-                        new WebSigninBridge.Factory(), continueUrl),
-                new AccountPickerBottomSheetStrings() {}, DeviceLockActivityLauncherImpl.get());
+                tabModelSelectorSupplier.get().getModel(/* incognito= */ false);
+        new AccountPickerBottomSheetCoordinator(
+                windowAndroid,
+                bottomSheetController,
+                new WebSigninAccountPickerDelegate(
+                        TabModelUtils.getCurrentTab(regularTabModel),
+                        new WebSigninBridge.Factory(),
+                        continueUrl),
+                new AccountPickerBottomSheetStrings() {},
+                DeviceLockActivityLauncherImpl.get());
     }
 
     private SigninBridge() {}

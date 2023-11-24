@@ -16,9 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
 
-/**
- * Properties of the {@link TabSelectionEditorAction}.
- */
+/** Properties of the {@link TabSelectionEditorAction}. */
 public class TabSelectionEditorActionProperties {
     public static final ReadableIntPropertyKey MENU_ITEM_ID = new ReadableIntPropertyKey();
     public static final ReadableIntPropertyKey SHOW_MODE = new ReadableIntPropertyKey();
@@ -41,9 +39,7 @@ public class TabSelectionEditorActionProperties {
     public static final WritableObjectPropertyKey<ColorStateList> TEXT_TINT =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * Tint for the icon.
-     */
+    /** Tint for the icon. */
     public static final WritableObjectPropertyKey<ColorStateList> ICON_TINT =
             new WritableObjectPropertyKey<>();
 

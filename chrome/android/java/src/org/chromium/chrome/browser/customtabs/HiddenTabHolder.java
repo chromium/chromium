@@ -63,6 +63,7 @@ public class HiddenTabHolder {
         // This WindowAndroid is "owned" by the Tab and should be destroyed when it is no longer
         // needed by the Tab or when the Tab is destroyed.
         private WindowAndroid mOwnedWindowAndroid;
+
         public HiddenTabObserver(WindowAndroid ownedWindowAndroid) {
             mOwnedWindowAndroid = ownedWindowAndroid;
         }
@@ -183,8 +184,12 @@ public class HiddenTabHolder {
      * @param referrer The referrer to use for |url|.
      * @return The hidden tab, or null.
      */
-    @Nullable Tab takeHiddenTab(@Nullable CustomTabsSessionToken session, boolean ignoreFragments,
-            String url, @Nullable String referrer) {
+    @Nullable
+    Tab takeHiddenTab(
+            @Nullable CustomTabsSessionToken session,
+            boolean ignoreFragments,
+            String url,
+            @Nullable String referrer) {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.takeHiddenTab")) {
             if (mSpeculation == null || session == null) return null;
             if (!session.equals(mSpeculation.session)) return null;
@@ -195,9 +200,10 @@ public class HiddenTabHolder {
 
             mSpeculation = null;
 
-            boolean urlsMatch = ignoreFragments
-                    ? UrlUtilities.urlsMatchIgnoringFragments(speculatedUrl, url)
-                    : TextUtils.equals(speculatedUrl, url);
+            boolean urlsMatch =
+                    ignoreFragments
+                            ? UrlUtilities.urlsMatchIgnoringFragments(speculatedUrl, url)
+                            : TextUtils.equals(speculatedUrl, url);
 
             if (referrer == null) referrer = "";
 
@@ -213,14 +219,15 @@ public class HiddenTabHolder {
     /** Cancels the speculation for a given session, or any session if null. */
     void destroyHiddenTab(@Nullable CustomTabsSessionToken session) {
         if (mSpeculation == null) return;
-        if (session!= null && !session.equals(mSpeculation.session)) return;
+        if (session != null && !session.equals(mSpeculation.session)) return;
 
         mSpeculation.tab.destroy();
         mSpeculation = null;
     }
 
     /** Gets the url of the current hidden tab, if it exists. */
-    @Nullable String getSpeculatedUrl(CustomTabsSessionToken session) {
+    @Nullable
+    String getSpeculatedUrl(CustomTabsSessionToken session) {
         if (mSpeculation == null || !mSpeculation.session.equals(session)) {
             return null;
         }
@@ -236,7 +243,8 @@ public class HiddenTabHolder {
         return mSpeculation != null ? mSpeculation.tab : null;
     }
 
-    @Nullable SpeculationParams getSpeculationParamsForTesting() {
+    @Nullable
+    SpeculationParams getSpeculationParamsForTesting() {
         return mSpeculation;
     }
 }

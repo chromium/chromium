@@ -14,9 +14,7 @@ import com.google.vr.ndk.base.GvrApi;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 
-/**
- * A wrapper for DaydreamApi.
- */
+/** A wrapper for DaydreamApi. */
 public class VrDaydreamApi {
     private DaydreamApi mDaydreamApi;
 

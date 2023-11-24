@@ -45,9 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A helper class that provides additional Chrome-specific share functionality.
- */
+/** A helper class that provides additional Chrome-specific share functionality. */
 public class ShareHelper extends org.chromium.components.browser_ui.share.ShareHelper {
     private static final String TAG = "AndroidShare";
     // TODO(https://crbug.com/1420388): Remove when Android OS provides this string.
@@ -58,8 +56,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     // The max number of custom actions supported for custom actions.
     private static final int MAX_CUSTOM_ACTION_SUPPORTED = 5;
     private static final int CUSTOM_ACTION_REQUEST_CODE_BASE = 112;
-    @VisibleForTesting
-    static final String EXTRA_SHARE_CUSTOM_ACTION = "EXTRA_SHARE_CUSTOM_ACTION";
+    @VisibleForTesting static final String EXTRA_SHARE_CUSTOM_ACTION = "EXTRA_SHARE_CUSTOM_ACTION";
 
     private ShareHelper() {}
 
@@ -82,10 +79,13 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      * @param customActionProvider List of custom actions for Android share sheet.
      */
-    public static void shareWithSystemShareSheetUi(ShareParams params, @Nullable Profile profile,
-            boolean saveLastUsed, @Nullable ChromeCustomShareAction.Provider customActionProvider) {
+    public static void shareWithSystemShareSheetUi(
+            ShareParams params,
+            @Nullable Profile profile,
+            boolean saveLastUsed,
+            @Nullable ChromeCustomShareAction.Provider customActionProvider) {
         assert (customActionProvider == null || ChooserActionHelper.isSupported())
-            : "Custom action is not supported.";
+                : "Custom action is not supported.";
 
         recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
         if (saveLastUsed) {
@@ -104,8 +104,11 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
-    public static void shareDirectly(@NonNull ShareParams params, @NonNull ComponentName component,
-            @Nullable Profile profile, boolean saveLastUsed) {
+    public static void shareDirectly(
+            @NonNull ShareParams params,
+            @NonNull ComponentName component,
+            @Nullable Profile profile,
+            boolean saveLastUsed) {
         // Save the component directly without using a SaveComponentCallback.
         if (saveLastUsed) {
             setLastShareComponentName(profile, component);
@@ -127,7 +130,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * Convenience method to create an Intent to retrieve all the apps that support sharing text.
      */
     public static List<ResolveInfo> getCompatibleAppsForSharingText() {
-        return PackageManagerUtils.queryIntentActivities(getShareTextAppCompatibilityIntent(),
+        return PackageManagerUtils.queryIntentActivities(
+                getShareTextAppCompatibilityIntent(),
                 PackageManager.MATCH_DEFAULT_ONLY | PackageManager.GET_RESOLVED_FILTER);
     }
 
@@ -141,22 +145,19 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
                 PackageManager.MATCH_DEFAULT_ONLY | PackageManager.GET_RESOLVED_FILTER);
     }
 
-    /**
-     * Gets the {@link ComponentName} of the app that was used to last share.
-     */
+    /** Gets the {@link ComponentName} of the app that was used to last share. */
     public static @Nullable ComponentName getLastShareComponentName() {
         SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
-        String name = preferencesManager.readString(
-                ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME, null);
+        String name =
+                preferencesManager.readString(
+                        ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME, null);
         if (name == null) {
             return null;
         }
         return ComponentName.unflattenFromString(name);
     }
 
-    /**
-     * Convenience method to retrieve the most recent app that support sharing text.
-     */
+    /** Convenience method to retrieve the most recent app that support sharing text. */
     public static Pair<Drawable, CharSequence> getShareableIconAndNameForText() {
         return getShareableIconAndName(getShareTextAppCompatibilityIntent());
     }
@@ -230,15 +231,18 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     @VisibleForTesting
     public static void setLastShareComponentName(Profile profile, ComponentName component) {
-        ChromeSharedPreferences.getInstance().writeString(
-                ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME,
-                component.flattenToString());
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME,
+                        component.flattenToString());
         if (profile != null) {
             ShareHistoryBridge.addShareEntry(profile, component.flattenToString());
         }
     }
 
-    private static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
+    private static void sendChooserIntent(
+            WindowAndroid window,
+            Intent sharingIntent,
             @Nullable TargetChosenCallback callback,
             ChromeCustomShareAction.Provider customActions) {
         new CustomActionChosenReceiver(callback, customActions)
@@ -265,14 +269,13 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         return intent;
     }
 
-    /**
-     * Helper class for injecting extras into the sharing intents.
-     */
+    /** Helper class for injecting extras into the sharing intents. */
     private static class CustomActionChosenReceiver extends TargetChosenReceiver {
         private final ChromeCustomShareAction.Provider mCustomActionProvider;
         private final Map<String, Runnable> mActionsMap = new HashMap<>();
 
-        protected CustomActionChosenReceiver(@Nullable TargetChosenCallback callback,
+        protected CustomActionChosenReceiver(
+                @Nullable TargetChosenCallback callback,
                 @Nullable ChromeCustomShareAction.Provider customActionProvider) {
             super(callback);
             mCustomActionProvider = customActionProvider;
@@ -294,15 +297,15 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             List<ChromeCustomShareAction> chromeCustomShareActions =
                     mCustomActionProvider.getCustomActions();
             assert chromeCustomShareActions.size() <= MAX_CUSTOM_ACTION_SUPPORTED
-                : "Max number of actions supported:"
-                  + MAX_CUSTOM_ACTION_SUPPORTED;
+                    : "Max number of actions supported:" + MAX_CUSTOM_ACTION_SUPPORTED;
 
             List<Parcelable> chooserActions = new ArrayList<>();
             Activity activity = window.getActivity().get();
 
             // Use different request code to avoid pending intent don't collision.
-            int requestCode = activity.getTaskId() * MAX_CUSTOM_ACTION_SUPPORTED
-                    + CUSTOM_ACTION_REQUEST_CODE_BASE;
+            int requestCode =
+                    activity.getTaskId() * MAX_CUSTOM_ACTION_SUPPORTED
+                            + CUSTOM_ACTION_REQUEST_CODE_BASE;
             for (var action : chromeCustomShareActions) {
                 Parcelable chooserAction = createChooserAction(action, activity, requestCode++);
                 chooserActions.add(chooserAction);
@@ -373,9 +376,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         }
     }
 
-    /**
-     * Helper class used to build Android custom action.
-     */
+    /** Helper class used to build Android custom action. */
     @VisibleForTesting
     public static class ChooserActionHelper {
         static boolean isSupported() {

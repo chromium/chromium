@@ -46,9 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-/**
- * A {@link TabObserver} that also handles custom tabs specific logging and messaging.
- */
+/** A {@link TabObserver} that also handles custom tabs specific logging and messaging. */
 @ActivityScope
 public class CustomTabObserver extends EmptyTabObserver {
     private final CustomTabsConnection mCustomTabsConnection;
@@ -71,8 +69,7 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     // true/false if the mayLaunchUrl API was used and the speculation was used/not used. null if
     // the API was not used.
-    @Nullable
-    private Boolean mUsedHiddenTabSpeculation;
+    @Nullable private Boolean mUsedHiddenTabSpeculation;
 
     // The time page load started in the most recent Custom Tab launch.
     private long mPageLoadStartedRealtimeMillis;
@@ -95,27 +92,37 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     private class LargestContentfulPaintObserver implements PageLoadMetrics.Observer {
         @Override
-        public void onLargestContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartMicros, long largestContentfulPaintMs,
+        public void onLargestContentfulPaint(
+                WebContents webContents,
+                long navigationId,
+                long navigationStartMicros,
+                long largestContentfulPaintMs,
                 long largestContentfulPaintSize) {
             recordLargestContentfulPaint(navigationStartMicros / 1000 + largestContentfulPaintMs);
             PageLoadMetrics.removeObserver(mLCPObserver);
             mLCPObserver = null;
         }
-    };
+    }
 
     @Inject
-    public CustomTabObserver(@Named(APP_CONTEXT) Context appContext,
-            BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection) {
+    public CustomTabObserver(
+            @Named(APP_CONTEXT) Context appContext,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabsConnection connection) {
         mOpenedByChrome = intentDataProvider.isOpenedByChrome();
         mCustomTabsConnection = mOpenedByChrome ? null : connection;
         mSession = intentDataProvider.getSession();
-        if (!mOpenedByChrome && mCustomTabsConnection.shouldSendNavigationInfoForSession(mSession)
+        if (!mOpenedByChrome
+                && mCustomTabsConnection.shouldSendNavigationInfoForSession(mSession)
                 && !mCustomTabsConnection.isCCTAPIDeprecated("bitmap")) {
-            float desiredWidth = appContext.getResources().getDimensionPixelSize(
-                    R.dimen.custom_tabs_screenshot_width);
-            float desiredHeight = appContext.getResources().getDimensionPixelSize(
-                    R.dimen.custom_tabs_screenshot_height);
+            float desiredWidth =
+                    appContext
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.custom_tabs_screenshot_width);
+            float desiredHeight =
+                    appContext
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.custom_tabs_screenshot_height);
             Rect bounds = TabUtils.estimateContentSize(appContext);
             if (bounds.width() == 0 || bounds.height() == 0) {
                 mContentBitmapWidth = Math.round(desiredWidth);
@@ -213,14 +220,24 @@ public class CustomTabObserver extends EmptyTabObserver {
                 // failed/aborted page loads.
                 RecordHistogram.recordCustomTimesHistogram(
                         histogramPrefix + ".IntentToFirstNavigationStartTime.ZoomedOut",
-                        timeToPageLoadStartedMs, 50, DateUtils.MINUTE_IN_MILLIS * 10, 50);
+                        timeToPageLoadStartedMs,
+                        50,
+                        DateUtils.MINUTE_IN_MILLIS * 10,
+                        50);
                 RecordHistogram.recordCustomTimesHistogram(
                         histogramPrefix + ".IntentToFirstNavigationStartTime.ZoomedIn",
-                        timeToPageLoadStartedMs, 200, DateUtils.SECOND_IN_MILLIS, 100);
+                        timeToPageLoadStartedMs,
+                        200,
+                        DateUtils.SECOND_IN_MILLIS,
+                        100);
             }
             // Same bounds and bucket count as PLT histograms.
-            RecordHistogram.recordCustomTimesHistogram(histogramPrefix + ".IntentToPageLoadedTime",
-                    timeToPageLoadFinishedMs, 10, DateUtils.MINUTE_IN_MILLIS * 10, 100);
+            RecordHistogram.recordCustomTimesHistogram(
+                    histogramPrefix + ".IntentToPageLoadedTime",
+                    timeToPageLoadFinishedMs,
+                    10,
+                    DateUtils.MINUTE_IN_MILLIS * 10,
+                    100);
 
             // Not all page loads go through a navigation commit (prerender for instance).
             if (mPageLoadStartedRealtimeMillis != 0) {
@@ -230,12 +247,18 @@ public class CustomTabObserver extends EmptyTabObserver {
                 // the median and ZoomedOut gives a good overview.
                 RecordHistogram.recordCustomTimesHistogram(
                         "CustomTabs.IntentToFirstCommitNavigationTime3.ZoomedIn",
-                        timeToFirstCommitMs, 200, DateUtils.SECOND_IN_MILLIS, 100);
+                        timeToFirstCommitMs,
+                        200,
+                        DateUtils.SECOND_IN_MILLIS,
+                        100);
                 // For ZoomedOut very rarely is it under 50ms and this range matches
                 // CustomTabs.IntentToFirstCommitNavigationTime2.ZoomedOut.
                 RecordHistogram.recordCustomTimesHistogram(
                         "CustomTabs.IntentToFirstCommitNavigationTime3.ZoomedOut",
-                        timeToFirstCommitMs, 50, DateUtils.MINUTE_IN_MILLIS * 10, 50);
+                        timeToFirstCommitMs,
+                        50,
+                        DateUtils.MINUTE_IN_MILLIS * 10,
+                        50);
             }
         }
         resetPageLoadTracking();
@@ -249,8 +272,7 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     private boolean wasWarmedUp() {
         if (mCustomTabsConnection == null) return false;
-        @CalledWarmup
-        int warmedState = mCustomTabsConnection.getWarmupState(mSession);
+        @CalledWarmup int warmedState = mCustomTabsConnection.getWarmupState(mSession);
         return warmedState == CalledWarmup.SESSION_NO_WARMUP_ALREADY_CALLED
                 || warmedState == CalledWarmup.SESSION_WARMUP
                 || warmedState == CalledWarmup.NO_SESSION_WARMUP;
@@ -259,8 +281,11 @@ public class CustomTabObserver extends EmptyTabObserver {
     @Override
     public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
         boolean firstNavigation = mFirstCommitRealtimeMillis == 0;
-        boolean isFirstMainFrameCommit = firstNavigation && navigation.hasCommitted()
-                && !navigation.isErrorPage() && !navigation.isSameDocument();
+        boolean isFirstMainFrameCommit =
+                firstNavigation
+                        && navigation.hasCommitted()
+                        && !navigation.isErrorPage()
+                        && !navigation.isSameDocument();
         if (!isFirstMainFrameCommit) return;
 
         mFirstCommitRealtimeMillis = SystemClock.elapsedRealtime();
@@ -360,8 +385,11 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (mCustomTabsConnection.isCCTAPIDeprecated("bitmap")) {
             mCustomTabsConnection.sendNavigationInfo(mSession, urlString, title, null);
         } else {
-            ShareImageFileUtils.captureScreenshotForContents(tab.getWebContents(),
-                    mContentBitmapWidth, mContentBitmapHeight, (Uri snapshotPath) -> {
+            ShareImageFileUtils.captureScreenshotForContents(
+                    tab.getWebContents(),
+                    mContentBitmapWidth,
+                    mContentBitmapHeight,
+                    (Uri snapshotPath) -> {
                         if (snapshotPath == null) return;
                         mCustomTabsConnection.sendNavigationInfo(
                                 mSession, urlString, title, snapshotPath);

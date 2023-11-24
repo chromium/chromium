@@ -10,9 +10,7 @@ import android.net.Uri;
 import org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner;
 import org.chromium.content_public.common.ContentUrlConstants;
 
-/**
- * An Instrumentation for android_browsertests that includes chrome:blank in the intent.
- */
+/** An Instrumentation for android_browsertests that includes chrome:blank in the intent. */
 public class ChromeBrowserTestsInstrumentationTestRunner
         extends NativeTestInstrumentationTestRunner {
     @Override

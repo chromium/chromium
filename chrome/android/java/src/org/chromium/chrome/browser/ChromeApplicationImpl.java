@@ -41,8 +41,8 @@ import org.chromium.url.GURL;
 public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
     /** Lock on creation of sComponent. */
     private static final Object sLock = new Object();
-    @Nullable
-    private static volatile ChromeAppComponent sComponent;
+
+    @Nullable private static volatile ChromeAppComponent sComponent;
 
     public ChromeApplicationImpl() {}
 
@@ -110,7 +110,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
         // The conditions are expressed using ranges to capture intermediate levels possibly added
         // to the API in the future.
         return (level >= Application.TRIM_MEMORY_RUNNING_LOW
-                       && level < Application.TRIM_MEMORY_UI_HIDDEN)
+                        && level < Application.TRIM_MEMORY_UI_HIDDEN)
                 || level >= Application.TRIM_MEMORY_MODERATE;
     }
 

@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
-/**
- * A helper to delay opening sync settings for an FRE advanced sync setup.
- */
+/** A helper to delay opening sync settings for an FRE advanced sync setup. */
 public final class FirstRunSignInProcessor {
     /**
      * If scheduleOpeningSettings() was previously called, this will open sync settings so the user
@@ -32,11 +30,9 @@ public final class FirstRunSignInProcessor {
         }
     }
 
-    /**
-     * Sets the preference to schedule opening sync settings after the FRE finishes.
-     */
+    /** Sets the preference to schedule opening sync settings after the FRE finishes. */
     public static void scheduleOpeningSettings() {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, true);
     }
 }

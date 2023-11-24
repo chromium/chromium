@@ -22,9 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Properties defined here reflect the visible state of the ManualFilling-components.
- */
+/** Properties defined here reflect the visible state of the ManualFilling-components. */
 class ManualFillingProperties {
     static final PropertyModel.WritableBooleanPropertyKey SHOW_WHEN_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("show_when_visible");
@@ -61,8 +59,14 @@ class ManualFillingProperties {
      * The state FLOATING_BAR must close the sheet but show the bar. To satisfy the FLOATING
      * property, the state will ensure that the keyboard can not affect it.
      */
-    @IntDef({HIDDEN, EXTENDING_KEYBOARD, WAITING_TO_REPLACE, REPLACING_KEYBOARD, FLOATING_BAR,
-            FLOATING_SHEET})
+    @IntDef({
+        HIDDEN,
+        EXTENDING_KEYBOARD,
+        WAITING_TO_REPLACE,
+        REPLACING_KEYBOARD,
+        FLOATING_BAR,
+        FLOATING_SHEET
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface KeyboardExtensionState {
         int HIDDEN = HIDDEN_SHEET; // == 4
@@ -74,9 +78,12 @@ class ManualFillingProperties {
     }
 
     static PropertyModel createFillingModel() {
-        return new PropertyModel
-                .Builder(SHOW_WHEN_VISIBLE, KEYBOARD_EXTENSION_STATE, PORTRAIT_ORIENTATION,
-                        SUPPRESSED_BY_BOTTOM_SHEET, SHOULD_EXTEND_KEYBOARD)
+        return new PropertyModel.Builder(
+                        SHOW_WHEN_VISIBLE,
+                        KEYBOARD_EXTENSION_STATE,
+                        PORTRAIT_ORIENTATION,
+                        SUPPRESSED_BY_BOTTOM_SHEET,
+                        SHOULD_EXTEND_KEYBOARD)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
                 .with(PORTRAIT_ORIENTATION, true)

@@ -27,8 +27,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * Allows the user to pick an account, sign in and enable sync. Started from Settings and various
  * sign-in promos. For more details see {@link SyncConsentFragmentBase}.
  */
-public class SyncConsentActivity
-        extends SynchronousInitializationActivity implements SyncConsentDelegate {
+public class SyncConsentActivity extends SynchronousInitializationActivity
+        implements SyncConsentDelegate {
     private static final String ARGUMENT_FRAGMENT_ARGS = "SigninActivity.FragmentArgs";
 
     private WindowAndroid mWindowAndroid;
@@ -51,8 +51,9 @@ public class SyncConsentActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mWindowAndroid != null) {
-            mWindowAndroid.getIntentRequestTracker().onActivityResult(
-                    requestCode, resultCode, data);
+            mWindowAndroid
+                    .getIntentRequestTracker()
+                    .onActivityResult(requestCode, resultCode, data);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -90,8 +91,11 @@ public class SyncConsentActivity
     @Override
     public WindowAndroid getWindowAndroid() {
         if (mWindowAndroid == null) {
-            mWindowAndroid = new ActivityWindowAndroid(this, /* listenToActivityState= */ true,
-                    IntentRequestTracker.createFromActivity(this));
+            mWindowAndroid =
+                    new ActivityWindowAndroid(
+                            this,
+                            /* listenToActivityState= */ true,
+                            IntentRequestTracker.createFromActivity(this));
         }
         return mWindowAndroid;
     }

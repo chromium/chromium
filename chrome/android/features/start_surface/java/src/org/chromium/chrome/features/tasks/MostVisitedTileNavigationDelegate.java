@@ -35,7 +35,7 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
      */
     public MostVisitedTileNavigationDelegate(
             Activity activity, Profile profile, Supplier<Tab> parentTabSupplier) {
-        super(activity, profile, /*host=*/null, /*tabModelSelector=*/null, /*tab=*/null);
+        super(activity, profile, /* host= */ null, /* tabModelSelector= */ null, /* tab= */ null);
         mParentTabSupplier = parentTabSupplier;
         mChromeAsyncTabLauncher = new ChromeAsyncTabLauncher(false);
     }
@@ -61,11 +61,13 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
                         new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
                         windowOpenDisposition
                                 == org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                        /*incognito=*/null, mParentTabSupplier.get());
+                        /* incognito= */ null,
+                        mParentTabSupplier.get());
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
                 ReturnToChromeUtil.handleLoadUrlFromStartSurface(
-                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK), true /*incognito*/,
+                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
+                        /* incognito= */ true,
                         mParentTabSupplier.get());
                 break;
             case WindowOpenDisposition.NEW_WINDOW:
@@ -86,7 +88,9 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
         // not on NTP.
         RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
                 .savePageLater(
-                        url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* userRequested */);
+                        url,
+                        OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
+                        /* userRequested= */ true);
     }
 
     private void openUrlInNewWindow(LoadUrlParams loadUrlParams) {

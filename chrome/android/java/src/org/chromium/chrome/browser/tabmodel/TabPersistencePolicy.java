@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 
 import java.io.File;
 
-/**
- * Policy that handles the Activity specific behaviors regarding the persistence of tab data.
- */
+/** Policy that handles the Activity specific behaviors regarding the persistence of tab data. */
 public interface TabPersistencePolicy {
 
     /**
@@ -73,9 +71,7 @@ public interface TabPersistencePolicy {
      */
     void setMergeInProgress(boolean isStarted);
 
-    /**
-     * Cancels any pending cleanups in progress.
-     */
+    /** Cancels any pending cleanups in progress. */
     void cancelCleanupInProgress();
 
     /**
@@ -112,9 +108,7 @@ public interface TabPersistencePolicy {
      */
     void notifyStateLoaded(int tabCountAtStartup);
 
-    /**
-     * Notify that persistent store has been destroyed.
-     */
+    /** Notify that persistent store has been destroyed. */
     void destroy();
 
     /**

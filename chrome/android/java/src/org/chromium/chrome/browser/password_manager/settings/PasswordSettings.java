@@ -64,10 +64,14 @@ import java.util.Locale;
  * to view saved passwords (just the username and URL), and to delete saved passwords.
  */
 public class PasswordSettings extends ChromeBaseSettingsFragment
-        implements PasswordListObserver, Preference.OnPreferenceClickListener,
-                   SyncService.SyncStateChangedListener {
-    @IntDef({TrustedVaultBannerState.NOT_SHOWN, TrustedVaultBannerState.OFFER_OPT_IN,
-            TrustedVaultBannerState.OPTED_IN})
+        implements PasswordListObserver,
+                Preference.OnPreferenceClickListener,
+                SyncService.SyncStateChangedListener {
+    @IntDef({
+        TrustedVaultBannerState.NOT_SHOWN,
+        TrustedVaultBannerState.OFFER_OPT_IN,
+        TrustedVaultBannerState.OPTED_IN
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface TrustedVaultBannerState {
         int NOT_SHOWN = 0;
@@ -128,9 +132,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
     private BottomSheetController mBottomSheetController;
 
-    /**
-     * For controlling the UX flow of exporting passwords.
-     */
+    /** For controlling the UX flow of exporting passwords. */
     private ExportFlow mExportFlow = new ExportFlow();
 
     public ExportFlow getExportFlowForTesting() {
@@ -139,27 +141,30 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        mExportFlow.onCreate(savedInstanceState, new ExportFlow.Delegate() {
-            @Override
-            public Activity getActivity() {
-                return PasswordSettings.this.getActivity();
-            }
+        mExportFlow.onCreate(
+                savedInstanceState,
+                new ExportFlow.Delegate() {
+                    @Override
+                    public Activity getActivity() {
+                        return PasswordSettings.this.getActivity();
+                    }
 
-            @Override
-            public FragmentManager getFragmentManager() {
-                return PasswordSettings.this.getFragmentManager();
-            }
+                    @Override
+                    public FragmentManager getFragmentManager() {
+                        return PasswordSettings.this.getFragmentManager();
+                    }
 
-            @Override
-            public int getViewId() {
-                return getView().getId();
-            }
+                    @Override
+                    public int getViewId() {
+                        return getView().getId();
+                    }
 
-            @Override
-            public void runCreateFileOnDiskIntent(Intent intent) {
-                startActivityForResult(intent, PASSWORD_EXPORT_INTENT_REQUEST_CODE);
-            }
-        }, PASSWORD_SETTINGS_EXPORT_METRICS_ID);
+                    @Override
+                    public void runCreateFileOnDiskIntent(Intent intent) {
+                        startActivityForResult(intent, PASSWORD_EXPORT_INTENT_REQUEST_CODE);
+                    }
+                },
+                PASSWORD_SETTINGS_EXPORT_METRICS_ID);
         getActivity().setTitle(R.string.password_manager_settings_title);
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         PasswordManagerHandlerProvider.getInstance().addObserver(this);
@@ -188,8 +193,8 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
         Bundle extras = getArguments();
         assert extras.containsKey(PasswordManagerHelper.MANAGE_PASSWORDS_REFERRER)
-            : "PasswordSettings must be launched with a manage-passwords-referrer fragment"
-                + "argument, but none was provided.";
+                : "PasswordSettings must be launched with a manage-passwords-referrer fragment"
+                        + "argument, but none was provided.";
         return extras.getInt(PasswordManagerHelper.MANAGE_PASSWORDS_REFERRER);
     }
 
@@ -232,7 +237,8 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.export_passwords) {
-            RecordHistogram.recordEnumeratedHistogram(mExportFlow.getExportEventHistogramName(),
+            RecordHistogram.recordEnumeratedHistogram(
+                    mExportFlow.getExportEventHistogramName(),
                     ExportFlow.PasswordExportEvent.EXPORT_OPTION_SELECTED,
                     ExportFlow.PasswordExportEvent.COUNT);
             mExportFlow.startExporting();
@@ -243,8 +249,8 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
             return true;
         }
         if (id == R.id.menu_id_targeted_help) {
-            getHelpAndFeedbackLauncher().show(
-                    getActivity(), getString(R.string.help_context_passwords), null);
+            getHelpAndFeedbackLauncher()
+                    .show(getActivity(), getString(R.string.help_context_passwords), null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -252,14 +258,14 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
 
     private void filterPasswords(String query) {
         mSearchQuery = query;
-        mHelpItem.setShowAsAction(mSearchQuery == null ? MenuItem.SHOW_AS_ACTION_IF_ROOM
-                                                       : MenuItem.SHOW_AS_ACTION_NEVER);
+        mHelpItem.setShowAsAction(
+                mSearchQuery == null
+                        ? MenuItem.SHOW_AS_ACTION_IF_ROOM
+                        : MenuItem.SHOW_AS_ACTION_NEVER);
         rebuildPasswordLists();
     }
 
-    /**
-     * Empty screen message when no passwords or exceptions are stored.
-     */
+    /** Empty screen message when no passwords or exceptions are stored. */
     private void displayEmptyScreenMessage() {
         TextMessagePreference emptyView = new TextMessagePreference(getStyledContext(), null);
         emptyView.setSummary(R.string.saved_passwords_none_text);
@@ -270,9 +276,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         getPreferenceScreen().addPreference(emptyView);
     }
 
-    /**
-     * Include a message when there's no match.
-     */
+    /** Include a message when there's no match. */
     private void displayPasswordNoResultScreenMessage() {
         Preference noResultView = new Preference(getStyledContext());
         noResultView.setLayoutResource(R.layout.password_no_result);
@@ -307,10 +311,12 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
 
         if (mTrustedVaultBannerState == TrustedVaultBannerState.OPTED_IN) {
-            createTrustedVaultBanner(R.string.android_trusted_vault_banner_sub_label_opted_in,
+            createTrustedVaultBanner(
+                    R.string.android_trusted_vault_banner_sub_label_opted_in,
                     this::openTrustedVaultInfoPage);
         } else if (mTrustedVaultBannerState == TrustedVaultBannerState.OFFER_OPT_IN) {
-            createTrustedVaultBanner(R.string.android_trusted_vault_banner_sub_label_offer_opt_in,
+            createTrustedVaultBanner(
+                    R.string.android_trusted_vault_banner_sub_label_offer_opt_in,
                     this::openTrustedVaultOptInDialog);
         }
         PasswordManagerHandlerProvider.getInstance()
@@ -335,9 +341,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
     }
 
-    /**
-     * Removes the message informing the user that there are no saved entries to display.
-     */
+    /** Removes the message informing the user that there are no saved entries to display. */
     private void resetNoEntriesTextMessage() {
         Preference message = getPreferenceScreen().findPreference(PREF_KEY_SAVED_PASSWORDS_NO_TEXT);
         if (message != null) {
@@ -370,9 +374,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
             passwordParent = getPreferenceScreen();
         }
         for (int i = 0; i < count; i++) {
-            SavedPasswordEntry saved = PasswordManagerHandlerProvider.getInstance()
-                                               .getPasswordManagerHandler()
-                                               .getSavedPasswordEntry(i);
+            SavedPasswordEntry saved =
+                    PasswordManagerHandlerProvider.getInstance()
+                            .getPasswordManagerHandler()
+                            .getSavedPasswordEntry(i);
             String url = saved.getUrl();
             String name = saved.getUserName();
             String password = saved.getPassword();
@@ -402,8 +407,9 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                 getPreferenceScreen().removePreference(passwordParent);
             } else {
                 displayPasswordNoResultScreenMessage();
-                getView().announceForAccessibility(
-                        getString(R.string.accessible_find_in_page_no_results));
+                getView()
+                        .announceForAccessibility(
+                                getString(R.string.accessible_find_in_page_no_results));
             }
         }
 
@@ -427,7 +433,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
         return !url.toLowerCase(Locale.ENGLISH).contains(mSearchQuery.toLowerCase(Locale.ENGLISH))
                 && !name.toLowerCase(Locale.getDefault())
-                            .contains(mSearchQuery.toLowerCase(Locale.getDefault()));
+                        .contains(mSearchQuery.toLowerCase(Locale.getDefault()));
     }
 
     @Override
@@ -450,9 +456,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         profileCategory.setOrder(ORDER_EXCEPTIONS);
         getPreferenceScreen().addPreference(profileCategory);
         for (int i = 0; i < count; i++) {
-            String exception = PasswordManagerHandlerProvider.getInstance()
-                                       .getPasswordManagerHandler()
-                                       .getSavedPasswordException(i);
+            String exception =
+                    PasswordManagerHandlerProvider.getInstance()
+                            .getPasswordManagerHandler()
+                            .getSavedPasswordException(i);
             Preference preference = new Preference(getStyledContext());
             preference.setTitle(exception);
             preference.setOnPreferenceClickListener(this);
@@ -516,8 +523,9 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference == mLinkPref) {
-            Intent intent = new Intent(
-                    Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
+            Intent intent =
+                    new Intent(
+                            Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
         } else {
@@ -525,7 +533,9 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                     !preference.getExtras().containsKey(PasswordSettings.PASSWORD_LIST_NAME);
             PasswordManagerHandlerProvider.getInstance()
                     .getPasswordManagerHandler()
-                    .showPasswordEntryEditingView(getActivity(), new SettingsLauncherImpl(),
+                    .showPasswordEntryEditingView(
+                            getActivity(),
+                            new SettingsLauncherImpl(),
                             preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID),
                             isBlockedCredential);
         }
@@ -540,22 +550,26 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         savePasswordsSwitch.setOrder(ORDER_SWITCH);
         savePasswordsSwitch.setSummaryOn(R.string.text_on);
         savePasswordsSwitch.setSummaryOff(R.string.text_off);
-        savePasswordsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, (boolean) newValue);
-            RecordHistogram.recordBooleanHistogram(
-                    "PasswordManager.Settings.ToggleOfferToSavePasswords", (boolean) newValue);
-            // TODO(http://crbug.com/1371422): Remove method and manage evictions from native code
-            // as this is covered by chrome://password-manager-internals page.
-            if ((boolean) newValue) PasswordManagerHelper.resetUpmUnenrollment();
-            return true;
-        });
-        savePasswordsSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
-                getProfile()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
-            }
-        });
+        savePasswordsSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    getPrefService()
+                            .setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, (boolean) newValue);
+                    RecordHistogram.recordBooleanHistogram(
+                            "PasswordManager.Settings.ToggleOfferToSavePasswords",
+                            (boolean) newValue);
+                    // TODO(http://crbug.com/1371422): Remove method and manage evictions from
+                    // native code as this is covered by chrome://password-manager-internals page.
+                    if ((boolean) newValue) PasswordManagerHelper.resetUpmUnenrollment();
+                    return true;
+                });
+        savePasswordsSwitch.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return getPrefService()
+                                .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+                    }
+                });
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             getPreferenceScreen().addPreference(savePasswordsSwitch);
@@ -576,19 +590,22 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         autoSignInSwitch.setTitle(R.string.passwords_auto_signin_title);
         autoSignInSwitch.setOrder(ORDER_AUTO_SIGNIN_CHECKBOX);
         autoSignInSwitch.setSummary(R.string.passwords_auto_signin_description);
-        autoSignInSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, (boolean) newValue);
-            RecordHistogram.recordBooleanHistogram(
-                    "PasswordManager.Settings.ToggleAutoSignIn", (boolean) newValue);
-            return true;
-        });
-        autoSignInSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
-                getProfile()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN);
-            }
-        });
+        autoSignInSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    getPrefService()
+                            .setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, (boolean) newValue);
+                    RecordHistogram.recordBooleanHistogram(
+                            "PasswordManager.Settings.ToggleAutoSignIn", (boolean) newValue);
+                    return true;
+                });
+        autoSignInSwitch.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return getPrefService()
+                                .isManagedPreference(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN);
+                    }
+                });
         getPreferenceScreen().addPreference(autoSignInSwitch);
         autoSignInSwitch.setChecked(
                 getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
@@ -601,13 +618,15 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         checkPasswords.setOrder(ORDER_CHECK_PASSWORDS);
         checkPasswords.setSummary(R.string.passwords_check_description);
         // Add a listener which launches a settings page for the leak password check
-        checkPasswords.setOnPreferenceClickListener(preference -> {
-            PasswordCheck passwordCheck =
-                    PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
-            passwordCheck.showUi(getStyledContext(), PasswordCheckReferrer.PASSWORD_SETTINGS);
-            // Return true to notify the click was handled.
-            return true;
-        });
+        checkPasswords.setOnPreferenceClickListener(
+                preference -> {
+                    PasswordCheck passwordCheck =
+                            PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
+                    passwordCheck.showUi(
+                            getStyledContext(), PasswordCheckReferrer.PASSWORD_SETTINGS);
+                    // Return true to notify the click was handled.
+                    return true;
+                });
         getPreferenceScreen().addPreference(checkPasswords);
     }
 
@@ -643,8 +662,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
         ForegroundColorSpan colorSpan =
                 new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorLink(getContext()));
-        SpannableString title = SpanApplier.applySpans(getString(R.string.manage_passwords_text),
-                new SpanApplier.SpanInfo("<link>", "</link>", colorSpan));
+        SpannableString title =
+                SpanApplier.applySpans(
+                        getString(R.string.manage_passwords_text),
+                        new SpanApplier.SpanInfo("<link>", "</link>", colorSpan));
         mLinkPref = new ChromeBasePreference(getStyledContext());
         mLinkPref.setKey(PREF_KEY_MANAGE_ACCOUNT_LINK);
         mLinkPref.setTitle(title);
@@ -704,8 +725,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     }
 
     private boolean openTrustedVaultInfoPage(Preference unused) {
-        Intent intent = new Intent(
-                Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getTrustedVaultLearnMoreURL()));
+        Intent intent =
+                new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(PasswordUIView.getTrustedVaultLearnMoreURL()));
         intent.setPackage(getActivity().getPackageName());
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.

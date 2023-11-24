@@ -45,9 +45,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = TabStripSceneLayerJni.get().init(TabStripSceneLayer.this,
-                    ChromeFeatureList.sTabStripRedesign.isEnabled(),
-                    TabUiFeatureUtilities.isTabStripButtonStyleDisabled());
+            mNativePtr =
+                    TabStripSceneLayerJni.get()
+                            .init(
+                                    TabStripSceneLayer.this,
+                                    ChromeFeatureList.sTabStripRedesign.isEnabled(),
+                                    TabUiFeatureUtilities.isTabStripButtonStyleDisabled());
         }
         // Set flag for testing
         if (!sTestFlag) {
@@ -57,8 +60,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        TabStripSceneLayerJni.get().setContentTree(
-                mNativePtr, TabStripSceneLayer.this, contentTree);
+        TabStripSceneLayerJni.get()
+                .setContentTree(mNativePtr, TabStripSceneLayer.this, contentTree);
     }
 
     /**
@@ -76,30 +79,45 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
      * @param hoveredTabId The ID of the hovered tab, if any. If no tab is hovered on, this ID will
      *         be invalid.
      */
-    public void pushAndUpdateStrip(StripLayoutHelperManager layoutHelper,
-            LayerTitleCache layerTitleCache, ResourceManager resourceManager,
-            StripLayoutTab[] stripLayoutTabsToRender, float yOffset, int selectedTabId,
+    public void pushAndUpdateStrip(
+            StripLayoutHelperManager layoutHelper,
+            LayerTitleCache layerTitleCache,
+            ResourceManager resourceManager,
+            StripLayoutTab[] stripLayoutTabsToRender,
+            float yOffset,
+            int selectedTabId,
             int hoveredTabId) {
         if (mNativePtr == 0) return;
         final boolean visible = yOffset > -layoutHelper.getHeight();
         // This will hide the tab strips if necessary.
-        TabStripSceneLayerJni.get().beginBuildingFrame(
-                mNativePtr, TabStripSceneLayer.this, visible);
+        TabStripSceneLayerJni.get()
+                .beginBuildingFrame(mNativePtr, TabStripSceneLayer.this, visible);
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
             pushButtonsAndBackground(layoutHelper, resourceManager, yOffset);
-            pushStripTabs(layoutHelper, layerTitleCache, resourceManager, stripLayoutTabsToRender,
-                    selectedTabId, hoveredTabId);
+            pushStripTabs(
+                    layoutHelper,
+                    layerTitleCache,
+                    resourceManager,
+                    stripLayoutTabsToRender,
+                    selectedTabId,
+                    hoveredTabId);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
 
-    private void pushButtonsAndBackground(StripLayoutHelperManager layoutHelper,
-            ResourceManager resourceManager, float yOffset) {
+    private void pushButtonsAndBackground(
+            StripLayoutHelperManager layoutHelper, ResourceManager resourceManager, float yOffset) {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
-        TabStripSceneLayerJni.get().updateTabStripLayer(mNativePtr, TabStripSceneLayer.this, width,
-                height, yOffset * mDpToPx, layoutHelper.getBackgroundColor());
+        TabStripSceneLayerJni.get()
+                .updateTabStripLayer(
+                        mNativePtr,
+                        TabStripSceneLayer.this,
+                        width,
+                        height,
+                        yOffset * mDpToPx,
+                        layoutHelper.getBackgroundColor());
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -121,12 +139,19 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         newTabButton.getOpacity(),
                         resourceManager);
         if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            TabStripSceneLayerJni.get().updateModelSelectorButton(mNativePtr,
-                    TabStripSceneLayer.this, modelSelectorButton.getResourceId(),
-                    modelSelectorButton.getX() * mDpToPx, modelSelectorButton.getY() * mDpToPx,
-                    modelSelectorButton.getWidth() * mDpToPx,
-                    modelSelectorButton.getHeight() * mDpToPx, modelSelectorButton.isIncognito(),
-                    modelSelectorButtonVisible, modelSelectorButton.getOpacity(), resourceManager);
+            TabStripSceneLayerJni.get()
+                    .updateModelSelectorButton(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            modelSelectorButton.getResourceId(),
+                            modelSelectorButton.getX() * mDpToPx,
+                            modelSelectorButton.getY() * mDpToPx,
+                            modelSelectorButton.getWidth() * mDpToPx,
+                            modelSelectorButton.getHeight() * mDpToPx,
+                            modelSelectorButton.isIncognito(),
+                            modelSelectorButtonVisible,
+                            modelSelectorButton.getOpacity(),
+                            resourceManager);
         } else {
             TabStripSceneLayerJni.get()
                     .updateModelSelectorButtonBackground(
@@ -156,22 +181,36 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         if (showLeftTabStripFade) {
             int leftFadeDrawable = layoutHelper.getLeftFadeDrawable();
-            TabStripSceneLayerJni.get().updateTabStripLeftFade(mNativePtr, TabStripSceneLayer.this,
-                    leftFadeDrawable, layoutHelper.getLeftFadeOpacity(), resourceManager,
-                    layoutHelper.getBackgroundColor());
+            TabStripSceneLayerJni.get()
+                    .updateTabStripLeftFade(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            leftFadeDrawable,
+                            layoutHelper.getLeftFadeOpacity(),
+                            resourceManager,
+                            layoutHelper.getBackgroundColor());
         }
 
         if (showRightTabStripFade) {
             int rightFadeDrawable = layoutHelper.getRightFadeDrawable();
-            TabStripSceneLayerJni.get().updateTabStripRightFade(mNativePtr, TabStripSceneLayer.this,
-                    rightFadeDrawable, layoutHelper.getRightFadeOpacity(), resourceManager,
-                    layoutHelper.getBackgroundColor());
+            TabStripSceneLayerJni.get()
+                    .updateTabStripRightFade(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            rightFadeDrawable,
+                            layoutHelper.getRightFadeOpacity(),
+                            resourceManager,
+                            layoutHelper.getBackgroundColor());
         }
     }
 
-    private void pushStripTabs(StripLayoutHelperManager layoutHelper,
-            LayerTitleCache layerTitleCache, ResourceManager resourceManager,
-            StripLayoutTab[] stripTabs, int selectedTabId, int hoveredTabId) {
+    private void pushStripTabs(
+            StripLayoutHelperManager layoutHelper,
+            LayerTitleCache layerTitleCache,
+            ResourceManager resourceManager,
+            StripLayoutTab[] stripTabs,
+            int selectedTabId,
+            int hoveredTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
 
         // TODO(https://crbug.com/1450380): Cleanup params, as some don't change and others are now
@@ -228,13 +267,23 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     public interface Natives {
-        long init(TabStripSceneLayer caller, boolean isTabStripRedesignEnabled,
+        long init(
+                TabStripSceneLayer caller,
+                boolean isTabStripRedesignEnabled,
                 boolean isTsrButtonStyleDisabled);
+
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
+
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
-        void updateTabStripLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int width, int height, float yOffset, @ColorInt int backgroundColor);
+
+        void updateTabStripLayer(
+                long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller,
+                int width,
+                int height,
+                float yOffset,
+                @ColorInt int backgroundColor);
 
         void updateNewTabButton(
                 long nativeTabStripSceneLayer,
@@ -251,9 +300,18 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float buttonAlpha,
                 ResourceManager resourceManager);
 
-        void updateModelSelectorButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int resourceId, float x, float y, float width, float height, boolean incognito,
-                boolean visible, float buttonAlpha, ResourceManager resourceManager);
+        void updateModelSelectorButton(
+                long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller,
+                int resourceId,
+                float x,
+                float y,
+                float width,
+                float height,
+                boolean incognito,
+                boolean visible,
+                float buttonAlpha,
+                ResourceManager resourceManager);
 
         void updateModelSelectorButtonBackground(
                 long nativeTabStripSceneLayer,
@@ -272,11 +330,20 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float buttonAlpha,
                 ResourceManager resourceManager);
 
-        void updateTabStripLeftFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int resourceId, float opacity, ResourceManager resourceManager,
+        void updateTabStripLeftFade(
+                long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller,
+                int resourceId,
+                float opacity,
+                ResourceManager resourceManager,
                 @ColorInt int leftFadeColor);
-        void updateTabStripRightFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
-                int resourceId, float opacity, ResourceManager resourceManager,
+
+        void updateTabStripRightFade(
+                long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller,
+                int resourceId,
+                float opacity,
+                ResourceManager resourceManager,
                 @ColorInt int rightFadeColor);
 
         void putStripTabLayer(

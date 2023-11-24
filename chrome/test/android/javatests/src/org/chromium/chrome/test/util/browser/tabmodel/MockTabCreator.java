@@ -52,7 +52,8 @@ public class MockTabCreator extends TabCreator {
                         0, mSelector.getModel(mIsIncognito).getProfile(), TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
         ((TabImpl) tab).initialize(null, null, loadUrlParams, null, null, false, null, false);
-        mSelector.getModel(mIsIncognito)
+        mSelector
+                .getModel(mIsIncognito)
                 .addTab(tab, position, type, TabCreationState.LIVE_IN_FOREGROUND);
         storeTabInfo(null, tab.getId());
         return tab;
@@ -68,7 +69,8 @@ public class MockTabCreator extends TabCreator {
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));
         if (state != null) TabTestUtils.restoreFieldsFromState(tab, state);
         ((TabImpl) tab).initialize(null, null, null, null, null, false, null, false);
-        mSelector.getModel(mIsIncognito)
+        mSelector
+                .getModel(mIsIncognito)
                 .addTab(tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
         storeTabInfo(state, id);
         return tab;

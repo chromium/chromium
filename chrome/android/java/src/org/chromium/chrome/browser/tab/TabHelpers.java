@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckUkmRecorder;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 
-/**
- * Helper class that initializes various tab UserData objects.
- */
+/** Helper class that initializes various tab UserData objects. */
 public final class TabHelpers {
     private TabHelpers() {}
 

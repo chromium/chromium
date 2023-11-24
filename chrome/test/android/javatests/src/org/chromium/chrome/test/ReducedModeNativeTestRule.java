@@ -29,7 +29,7 @@ public class ReducedModeNativeTestRule implements TestRule {
     private final boolean mAutoLoadNative;
 
     public ReducedModeNativeTestRule() {
-        this(true /*autoLoadNative*/);
+        this(/* autoLoadNative= */ true);
     }
 
     public ReducedModeNativeTestRule(boolean autoLoadNative) {
@@ -50,21 +50,25 @@ public class ReducedModeNativeTestRule implements TestRule {
     }
 
     public void loadNative() {
-        final BrowserParts parts = new EmptyBrowserParts() {
-            @Override
-            public void finishNativeInitialization() {
-                mNativeLoaded.set(true);
-            }
+        final BrowserParts parts =
+                new EmptyBrowserParts() {
+                    @Override
+                    public void finishNativeInitialization() {
+                        mNativeLoaded.set(true);
+                    }
 
-            @Override
-            public boolean startMinimalBrowser() {
-                return true;
-            }
-        };
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
-            ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
-        });
+                    @Override
+                    public boolean startMinimalBrowser() {
+                        return true;
+                    }
+                };
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    ChromeBrowserInitializer.getInstance()
+                            .handlePreNativeStartupAndLoadLibraries(parts);
+                    ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
+                });
         waitForNativeLoaded();
     }
 
@@ -74,11 +78,14 @@ public class ReducedModeNativeTestRule implements TestRule {
     }
 
     public void assertMinimalBrowserStarted() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("Native has not been started.",
-                    BrowserStartupController.getInstance().isNativeStarted());
-            Assert.assertFalse("The full browser is started instead of minimal browser.",
-                    BrowserStartupController.getInstance().isFullBrowserStarted());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Native has not been started.",
+                            BrowserStartupController.getInstance().isNativeStarted());
+                    Assert.assertFalse(
+                            "The full browser is started instead of minimal browser.",
+                            BrowserStartupController.getInstance().isFullBrowserStarted());
+                });
     }
 }

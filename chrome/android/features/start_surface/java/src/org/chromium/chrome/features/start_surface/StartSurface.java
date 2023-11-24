@@ -30,19 +30,13 @@ public interface StartSurface {
      */
     void initialize();
 
-    /**
-     * Called when activity is being destroyed.
-     */
+    /** Called when activity is being destroyed. */
     void destroy();
 
-    /**
-     * Show the Start surface homepage. Used only when refactor is enabled.
-     */
+    /** Show the Start surface homepage. Used only when refactor is enabled. */
     void show(boolean animate);
 
-    /**
-     * Hide the Start surface homepage. Used only when refactor is enabled.
-     */
+    /** Hide the Start surface homepage. Used only when refactor is enabled. */
     void hide(boolean animate);
 
     /**
@@ -51,14 +45,10 @@ public interface StartSurface {
      */
     void onHide();
 
-    /**
-     * Called before the tab switcher starts showing.
-     */
+    /** Called before the tab switcher starts showing. */
     void beforeShowTabSwitcherView();
 
-    /**
-     * Called before tab switcher starts hiding.
-     */
+    /** Called before tab switcher starts hiding. */
     void beforeHideTabSwitcherView();
 
     /**
@@ -102,9 +92,7 @@ public interface StartSurface {
      */
     void removeStateChangeObserver(StateObserver observer);
 
-    /**
-     * Defines an interface to pass out tab selecting event.
-     */
+    /** Defines an interface to pass out tab selecting event. */
     interface OnTabSelectingListener extends TabSwitcher.OnTabSelectingListener {}
 
     /**
@@ -113,33 +101,21 @@ public interface StartSurface {
      */
     void setOnTabSelectingListener(OnTabSelectingListener listener);
 
-    /**
-     * Called when native initialization is completed.
-     */
+    /** Called when native initialization is completed. */
     void initWithNative();
 
-    /**
-     * An observer that is notified when the tab switcher view state changes.
-     */
+    /** An observer that is notified when the tab switcher view state changes. */
     interface TabSwitcherViewObserver {
-        /**
-         * Called when tab switcher starts showing.
-         */
+        /** Called when tab switcher starts showing. */
         void startedShowing();
 
-        /**
-         * Called when tab switcher finishes showing.
-         */
+        /** Called when tab switcher finishes showing. */
         void finishedShowing();
 
-        /**
-         * Called when tab switcher starts hiding.
-         */
+        /** Called when tab switcher starts hiding. */
         void startedHiding();
 
-        /**
-         * Called when tab switcher finishes hiding.
-         */
+        /** Called when tab switcher finishes hiding. */
         void finishedHiding();
     }
 
@@ -300,8 +276,6 @@ public interface StartSurface {
      */
     int getTabSwitcherTabListModelSize();
 
-    /**
-     * Set the tab switcher's current RecyclerViewPosition.
-     */
+    /** Set the tab switcher's current RecyclerViewPosition. */
     void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
 }

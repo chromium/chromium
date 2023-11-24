@@ -44,10 +44,13 @@ public final class DefaultBrowserInfo {
      * Additions should be treated as APPEND ONLY to keep the UMA metric semantics the same over
      * time.
      */
-    @IntDef({MobileDefaultBrowserState.NO_DEFAULT, MobileDefaultBrowserState.CHROME_SYSTEM_DEFAULT,
-            MobileDefaultBrowserState.CHROME_INSTALLED_DEFAULT,
-            MobileDefaultBrowserState.OTHER_SYSTEM_DEFAULT,
-            MobileDefaultBrowserState.OTHER_INSTALLED_DEFAULT})
+    @IntDef({
+        MobileDefaultBrowserState.NO_DEFAULT,
+        MobileDefaultBrowserState.CHROME_SYSTEM_DEFAULT,
+        MobileDefaultBrowserState.CHROME_INSTALLED_DEFAULT,
+        MobileDefaultBrowserState.OTHER_SYSTEM_DEFAULT,
+        MobileDefaultBrowserState.OTHER_INSTALLED_DEFAULT
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface MobileDefaultBrowserState {
         int NO_DEFAULT = 0;
@@ -79,41 +82,47 @@ public final class DefaultBrowserInfo {
     /** Don't instantiate me. */
     private DefaultBrowserInfo() {}
 
-    /**
-     * Initialize an AsyncTask for getting menu title of opening a link in default browser.
-     */
+    /** Initialize an AsyncTask for getting menu title of opening a link in default browser. */
     public static void initBrowserFetcher() {
         synchronized (sDirCreationLock) {
             if (sDefaultBrowserFetcher == null) {
-                sDefaultBrowserFetcher = new BackgroundOnlyAsyncTask<ArrayList<String>>() {
-                    @Override
-                    protected ArrayList<String> doInBackground() {
-                        Context context = ContextUtils.getApplicationContext();
-                        ArrayList<String> menuTitles = new ArrayList<String>(2);
-                        // Store the package label of current application.
-                        menuTitles.add(getTitleFromPackageLabel(
-                                context, BuildInfo.getInstance().hostPackageLabel));
+                sDefaultBrowserFetcher =
+                        new BackgroundOnlyAsyncTask<ArrayList<String>>() {
+                            @Override
+                            protected ArrayList<String> doInBackground() {
+                                Context context = ContextUtils.getApplicationContext();
+                                ArrayList<String> menuTitles = new ArrayList<String>(2);
+                                // Store the package label of current application.
+                                menuTitles.add(
+                                        getTitleFromPackageLabel(
+                                                context, BuildInfo.getInstance().hostPackageLabel));
 
-                        PackageManager pm = context.getPackageManager();
-                        ResolveInfo info = PackageManagerUtils.resolveDefaultWebBrowserActivity();
+                                PackageManager pm = context.getPackageManager();
+                                ResolveInfo info =
+                                        PackageManagerUtils.resolveDefaultWebBrowserActivity();
 
-                        // Caches whether Chrome is set as a default browser on the device.
-                        boolean isDefault = info != null && info.match != 0
-                                && TextUtils.equals(
-                                        context.getPackageName(), info.activityInfo.packageName);
-                        ChromeSharedPreferences.getInstance().writeBoolean(
-                                ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, isDefault);
+                                // Caches whether Chrome is set as a default browser on the device.
+                                boolean isDefault =
+                                        info != null
+                                                && info.match != 0
+                                                && TextUtils.equals(
+                                                        context.getPackageName(),
+                                                        info.activityInfo.packageName);
+                                ChromeSharedPreferences.getInstance()
+                                        .writeBoolean(
+                                                ChromePreferenceKeys.CHROME_DEFAULT_BROWSER,
+                                                isDefault);
 
-                        // Check if there is a default handler for the Intent.  If so, store its
-                        // label.
-                        String packageLabel = null;
-                        if (info != null && info.match != 0 && info.loadLabel(pm) != null) {
-                            packageLabel = info.loadLabel(pm).toString();
-                        }
-                        menuTitles.add(getTitleFromPackageLabel(context, packageLabel));
-                        return menuTitles;
-                    }
-                };
+                                // Check if there is a default handler for the Intent.  If so, store
+                                // its label.
+                                String packageLabel = null;
+                                if (info != null && info.match != 0 && info.loadLabel(pm) != null) {
+                                    packageLabel = info.loadLabel(pm).toString();
+                                }
+                                menuTitles.add(getTitleFromPackageLabel(context, packageLabel));
+                                return menuTitles;
+                            }
+                        };
                 // USER_BLOCKING since we eventually .get() this.
                 sDefaultBrowserFetcher.executeWithTaskTraits(TaskTraits.USER_BLOCKING_MAY_BLOCK);
             }
@@ -137,17 +146,16 @@ public final class DefaultBrowserInfo {
         try {
             // If the Custom Tab was created by Chrome, Chrome should handle the action for the
             // overflow menu.
-            return forceChromeAsDefault ? sDefaultBrowserFetcher.get().get(0)
-                                        : sDefaultBrowserFetcher.get().get(1);
+            return forceChromeAsDefault
+                    ? sDefaultBrowserFetcher.get().get(0)
+                    : sDefaultBrowserFetcher.get().get(1);
         } catch (InterruptedException | ExecutionException e) {
-            return ContextUtils.getApplicationContext().getString(
-                    R.string.menu_open_in_product_default);
+            return ContextUtils.getApplicationContext()
+                    .getString(R.string.menu_open_in_product_default);
         }
     }
 
-    /**
-     * Log statistics about the current default browser to UMA.
-     */
+    /** Log statistics about the current default browser to UMA. */
     public static void logDefaultBrowserStats() {
         assert BrowserStartupController.getInstance().isFullBrowserStarted();
 
@@ -195,8 +203,10 @@ public final class DefaultBrowserInfo {
                             getSystemBrowserCountUmaName(info), info.systemCount);
                     RecordHistogram.recordCount100Histogram(
                             getDefaultBrowserCountUmaName(info), info.browserCount);
-                    RecordHistogram.recordEnumeratedHistogram("Mobile.DefaultBrowser.State",
-                            getDefaultBrowserUmaState(info), MobileDefaultBrowserState.NUM_ENTRIES);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Mobile.DefaultBrowser.State",
+                            getDefaultBrowserUmaState(info),
+                            MobileDefaultBrowserState.NUM_ENTRIES);
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } catch (RejectedExecutionException ex) {

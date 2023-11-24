@@ -54,12 +54,18 @@ public class SyncSettingsUtils {
         int EMAIL = 1;
     }
 
-    @IntDef({SyncError.NO_ERROR, SyncError.AUTH_ERROR, SyncError.PASSPHRASE_REQUIRED,
-            SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
-            SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
-            SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
-            SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS,
-            SyncError.CLIENT_OUT_OF_DATE, SyncError.SYNC_SETUP_INCOMPLETE, SyncError.OTHER_ERRORS})
+    @IntDef({
+        SyncError.NO_ERROR,
+        SyncError.AUTH_ERROR,
+        SyncError.PASSPHRASE_REQUIRED,
+        SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
+        SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
+        SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
+        SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS,
+        SyncError.CLIENT_OUT_OF_DATE,
+        SyncError.SYNC_SETUP_INCOMPLETE,
+        SyncError.OTHER_ERRORS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SyncError {
         int NO_ERROR = -1;
@@ -189,7 +195,8 @@ public class SyncSettingsUtils {
                 // Both these errors should be resolved by signing the user again.
                 return context.getString(R.string.auth_error_card_button);
             case SyncError.CLIENT_OUT_OF_DATE:
-                return context.getString(R.string.client_out_of_date_error_card_button,
+                return context.getString(
+                        R.string.client_out_of_date_error_card_button,
                         BuildInfo.getInstance().hostPackageLabel);
             case SyncError.PASSPHRASE_REQUIRED:
                 return context.getString(R.string.passphrase_required_error_card_button);
@@ -206,9 +213,7 @@ public class SyncSettingsUtils {
         }
     }
 
-    /**
-     * Return a short summary of the current sync status.
-     */
+    /** Return a short summary of the current sync status. */
     public static String getSyncStatusSummary(Context context, SyncService syncService) {
         if (syncService == null) {
             return context.getString(R.string.sync_off);
@@ -292,11 +297,10 @@ public class SyncSettingsUtils {
         }
     }
 
-    /**
-     * Returns an icon that represents the current sync state.
-     */
+    /** Returns an icon that represents the current sync state. */
     public static @Nullable Drawable getSyncStatusIcon(Context context, SyncService syncService) {
-        if (syncService == null || !syncService.hasSyncConsent()
+        if (syncService == null
+                || !syncService.hasSyncConsent()
                 || syncService.getSelectedTypes().isEmpty()
                 || syncService.isSyncDisabledByEnterprisePolicy()) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
@@ -339,8 +343,9 @@ public class SyncSettingsUtils {
                 new CustomTabsIntent.Builder().setShowTitle(false).build();
         customTabIntent.intent.setData(Uri.parse(url));
 
-        Intent intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
-                activity, customTabIntent.intent);
+        Intent intent =
+                LaunchIntentDispatcher.createCustomTabActivityIntent(
+                        activity, customTabIntent.intent);
         intent.setPackage(activity.getPackageName());
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
@@ -380,12 +385,13 @@ public class SyncSettingsUtils {
      *         Fragment.onActivityResult().
      * @param pendingIntentPromise promise that provides the intent to be started.
      */
-    private static void openTrustedVaultDialogForPendingIntent(Fragment fragment,
-            CoreAccountInfo accountInfo, int requestCode,
+    private static void openTrustedVaultDialogForPendingIntent(
+            Fragment fragment,
+            CoreAccountInfo accountInfo,
+            int requestCode,
             Promise<PendingIntent> pendingIntentPromise) {
         pendingIntentPromise.then(
-                (pendingIntent)
-                        -> {
+                (pendingIntent) -> {
                     try {
                         // startIntentSenderForResult() will fail if the fragment is
                         // already gone, see crbug.com/1362141.
@@ -393,18 +399,29 @@ public class SyncSettingsUtils {
                             return;
                         }
 
-                        fragment.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                        fragment.startIntentSenderForResult(
+                                pendingIntent.getIntentSender(),
                                 requestCode,
-                                /* fillInIntent */ null, /* flagsMask */ 0,
-                                /* flagsValues */ 0, /* extraFlags */ 0,
-                                /* options */ null);
+                                /* fillInIntent= */ null,
+                                /* flagsMask= */ 0,
+                                /* flagsValues= */ 0,
+                                /* extraFlags= */ 0,
+                                /* options= */ null);
                     } catch (IntentSender.SendIntentException exception) {
-                        Log.w(TAG, "Error sending trusted vault intent for code ", requestCode,
-                                ": ", exception);
+                        Log.w(
+                                TAG,
+                                "Error sending trusted vault intent for code ",
+                                requestCode,
+                                ": ",
+                                exception);
                     }
                 },
                 (exception) -> {
-                    Log.e(TAG, "Error opening trusted vault dialog for code ", requestCode, ": ",
+                    Log.e(
+                            TAG,
+                            "Error opening trusted vault dialog for code ",
+                            requestCode,
+                            ": ",
                             exception);
                 });
     }
@@ -420,9 +437,12 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultKeyRetrievalDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        TrustedVaultClient.get().recordKeyRetrievalTrigger(
-                TrustedVaultUserActionTriggerForUMA.SETTINGS);
-        openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
+        TrustedVaultClient.get()
+                .recordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA.SETTINGS);
+        openTrustedVaultDialogForPendingIntent(
+                fragment,
+                accountInfo,
+                requestCode,
                 TrustedVaultClient.get().createKeyRetrievalIntent(accountInfo));
     }
 
@@ -437,9 +457,13 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultRecoverabilityDegradedDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        TrustedVaultClient.get().recordRecoverabilityDegradedFixTrigger(
-                TrustedVaultUserActionTriggerForUMA.SETTINGS);
-        openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
+        TrustedVaultClient.get()
+                .recordRecoverabilityDegradedFixTrigger(
+                        TrustedVaultUserActionTriggerForUMA.SETTINGS);
+        openTrustedVaultDialogForPendingIntent(
+                fragment,
+                accountInfo,
+                requestCode,
                 TrustedVaultClient.get().createRecoverabilityDegradedIntent(accountInfo));
     }
 
@@ -453,7 +477,10 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultOptInDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
+        openTrustedVaultDialogForPendingIntent(
+                fragment,
+                accountInfo,
+                requestCode,
                 TrustedVaultClient.get().createOptInIntent(accountInfo));
     }
 
@@ -463,8 +490,10 @@ public class SyncSettingsUtils {
      * @param context The context where the toast will be shown.
      */
     public static void showSyncDisabledByAdministratorToast(Context context) {
-        Toast.makeText(context, context.getString(R.string.sync_is_disabled_by_administrator),
-                     Toast.LENGTH_LONG)
+        Toast.makeText(
+                        context,
+                        context.getString(R.string.sync_is_disabled_by_administrator),
+                        Toast.LENGTH_LONG)
                 .show();
     }
 

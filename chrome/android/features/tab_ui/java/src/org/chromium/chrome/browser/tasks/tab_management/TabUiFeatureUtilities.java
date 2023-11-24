@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.ui.base.DeviceFormFactor;
 
-/**
- * A class to handle the state of flags for tab_management.
- */
+/** A class to handle the state of flags for tab_management. */
 public class TabUiFeatureUtilities {
     private static final String TAG = "TabFeatureUtilities";
 
@@ -94,9 +92,7 @@ public class TabUiFeatureUtilities {
         return TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.getValue();
     }
 
-    /**
-     * Whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
-     */
+    /** Whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests. */
     public static boolean isTabSelectionEditorLongPressEntryEnabled() {
         return sTabSelectionEditorLongPressEntryEnabled;
     }
@@ -128,10 +124,11 @@ public class TabUiFeatureUtilities {
                 sIsTabToGtsAnimationEnabled = false;
             } else {
                 Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
-                sIsTabToGtsAnimationEnabled = ChromeFeatureList.sTabToGTSAnimation.isEnabled()
-                        && SysUtils.amountOfPhysicalMemoryKB() / 1024
-                                >= ZOOMING_MIN_MEMORY.getValue()
-                        && !shouldUseListMode(context);
+                sIsTabToGtsAnimationEnabled =
+                        ChromeFeatureList.sTabToGTSAnimation.isEnabled()
+                                && SysUtils.amountOfPhysicalMemoryKB() / 1024
+                                        >= ZOOMING_MIN_MEMORY.getValue()
+                                && !shouldUseListMode(context);
             }
         }
         return sIsTabToGtsAnimationEnabled;
@@ -141,7 +138,8 @@ public class TabUiFeatureUtilities {
      * @return Whether the instant start is supported.
      */
     public static boolean supportInstantStart(boolean isTablet, Context context) {
-        return ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
+        return ChromeFeatureList.sInstantStart.isEnabled()
+                && !isTablet
                 && !SysUtils.isLowEndDevice();
     }
 

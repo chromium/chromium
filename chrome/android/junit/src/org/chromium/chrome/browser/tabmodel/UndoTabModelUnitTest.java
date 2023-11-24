@@ -65,6 +65,7 @@ public class UndoTabModelUnitTest {
 
     /** Disable native calls from {@link TabModelJniBridge}. */
     @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private TabModelJniBridge.Natives mTabModelJniBridge;

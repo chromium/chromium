@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -126,18 +127,14 @@ public class WarmupManager {
 
     private int mToolbarContainerId;
     private ViewGroup mMainView;
-    @VisibleForTesting
-    WebContents mSpareWebContents;
+    @VisibleForTesting WebContents mSpareWebContents;
     private RenderProcessGoneObserver mObserver;
 
     // Stores a prebuilt tab. To load a URL, this can be used if available instead of creating one
     // from scratch.
-    @VisibleForTesting
-    Tab mSpareTab;
+    @VisibleForTesting Tab mSpareTab;
 
-    /**
-     * Returns true if SPARE_TAB feature is enabled.
-     */
+    /** Returns true if SPARE_TAB feature is enabled. */
     private static boolean isSpareTabEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.SPARE_TAB);
     }
@@ -157,10 +154,14 @@ public class WarmupManager {
      * These values are persisted to logs. Entries should not be renumbered and
      * numeric values should never be reused. See tools/metrics/histograms/enums.xml.
      */
-    @IntDef({SpareTabFinalStatus.TAB_CREATED_BUT_NOT_USED,
-            SpareTabFinalStatus.TAB_CREATION_IN_PROGRESS, SpareTabFinalStatus.TAB_USED,
-            SpareTabFinalStatus.TAB_CRASHED, SpareTabFinalStatus.TAB_DESTROYED,
-            SpareTabFinalStatus.NUM_ENTRIES})
+    @IntDef({
+        SpareTabFinalStatus.TAB_CREATED_BUT_NOT_USED,
+        SpareTabFinalStatus.TAB_CREATION_IN_PROGRESS,
+        SpareTabFinalStatus.TAB_USED,
+        SpareTabFinalStatus.TAB_CRASHED,
+        SpareTabFinalStatus.TAB_DESTROYED,
+        SpareTabFinalStatus.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SpareTabFinalStatus {
         int TAB_CREATED_BUT_NOT_USED = 0;
@@ -170,8 +171,8 @@ public class WarmupManager {
         int TAB_DESTROYED = 4;
         int NUM_ENTRIES = 5;
     }
-    @SpareTabFinalStatus
-    int mSpareTabFinalStatus;
+
+    @SpareTabFinalStatus int mSpareTabFinalStatus;
 
     /**
      * Records the spareTab final status.
@@ -182,9 +183,7 @@ public class WarmupManager {
                 "Android.SpareTab.FinalStatus", status, SpareTabFinalStatus.NUM_ENTRIES);
     }
 
-    /**
-     * Destroys the spare Tab if there is one and sets mSpareTab to null.
-     */
+    /** Destroys the spare Tab if there is one and sets mSpareTab to null. */
     public void destroySpareTab() {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.destroySpareTab")) {
             ThreadUtils.assertOnUiThread();
@@ -332,9 +331,7 @@ public class WarmupManager {
         return mSpareTab == tab;
     }
 
-    /**
-     * Removes the singleton instance for the WarmupManager for testing.
-     */
+    /** Removes the singleton instance for the WarmupManager for testing. */
     public static void deInitForTesting() {
         sWarmupManager = null;
     }
@@ -359,8 +356,8 @@ public class WarmupManager {
      * @param toolbarContainerId Id of the toolbar container.
      * @param toolbarId The toolbar's layout ID.
      */
-    public void initializeViewHierarchy(Context baseContext, int toolbarContainerId,
-            int toolbarId) {
+    public void initializeViewHierarchy(
+            Context baseContext, int toolbarContainerId, int toolbarId) {
         ThreadUtils.assertOnUiThread();
         if (mMainView != null && mToolbarContainerId == toolbarContainerId) return;
 
@@ -395,8 +392,10 @@ public class WarmupManager {
             FrameLayout contentHolder = new FrameLayout(context);
             var layoutInflater = LayoutInflater.from(context);
             layoutInflater.setFactory2(new AsyncAppCompatFactory());
-            ViewGroup mainView = (ViewGroup) LayoutInflaterUtils.inflate(
-                    layoutInflater, R.layout.main, contentHolder);
+            ViewGroup mainView =
+                    (ViewGroup)
+                            LayoutInflaterUtils.inflate(
+                                    layoutInflater, R.layout.main, contentHolder);
             if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {
                 ViewStub stub = (ViewStub) mainView.findViewById(R.id.control_container_stub);
                 stub.setLayoutResource(toolbarContainerId);
@@ -418,8 +417,9 @@ public class WarmupManager {
             Log.e(TAG, "Inflation exception.", e);
             // An exception caught here may indicate a real bug in production code. We report the
             // exceptions to monitor any spikes or stacks that point to Chrome code.
-            Throwable throwable = new Throwable(
-                    "This is not a crash. See https://crbug.com/1259276 for details.", e);
+            Throwable throwable =
+                    new Throwable(
+                            "This is not a crash. See https://crbug.com/1259276 for details.", e);
             ChromePureJavaExceptionReporter.reportJavaException(throwable);
             return null;
         }
@@ -470,9 +470,7 @@ public class WarmupManager {
         return preDm.xdpi == curDm.xdpi && preDm.ydpi == curDm.ydpi;
     }
 
-    /**
-     * Clears the inflated view hierarchy.
-     */
+    /** Clears the inflated view hierarchy. */
     public void clearViewHierarchy() {
         ThreadUtils.assertOnUiThread();
         mMainView = null;
@@ -489,7 +487,7 @@ public class WarmupManager {
             @Override
             protected Void doInBackground() {
                 try (TraceEvent e =
-                                TraceEvent.scoped("WarmupManager.prefetchDnsForUrlInBackground")) {
+                        TraceEvent.scoped("WarmupManager.prefetchDnsForUrlInBackground")) {
                     InetAddress.getByName(new URL(url).getHost());
                 } catch (MalformedURLException e) {
                     // We don't do anything with the result of the request, it
@@ -510,8 +508,7 @@ public class WarmupManager {
                     maybePreconnectUrlAndSubResources(profile, url);
                 }
             }
-        }
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /** Launches a background DNS query for a given URL.
@@ -536,7 +533,7 @@ public class WarmupManager {
      */
     public static void startPreconnectPredictorInitialization(Profile profile) {
         try (TraceEvent e =
-                        TraceEvent.scoped("WarmupManager.startPreconnectPredictorInitialization")) {
+                TraceEvent.scoped("WarmupManager.startPreconnectPredictorInitialization")) {
             ThreadUtils.assertOnUiThread();
             WarmupManagerJni.get().startPreconnectPredictorInitialization(profile);
         }
@@ -588,16 +585,17 @@ public class WarmupManager {
             ThreadUtils.assertOnUiThread();
             if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
 
-            mSpareWebContents = new WebContentsFactory().createWebContentsWithWarmRenderer(
-                    Profile.getLastUsedRegularProfile(), true /* initiallyHidden */);
+            mSpareWebContents =
+                    new WebContentsFactory()
+                            .createWebContentsWithWarmRenderer(
+                                    Profile.getLastUsedRegularProfile(),
+                                    /* initiallyHidden= */ true);
             mObserver = new RenderProcessGoneObserver();
             mSpareWebContents.addObserver(mObserver);
         }
     }
 
-    /**
-     * Destroys the spare WebContents if there is one.
-     */
+    /** Destroys the spare WebContents if there is one. */
     public void destroySpareWebContents() {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.destroySpareWebContents")) {
             ThreadUtils.assertOnUiThread();
@@ -645,6 +643,7 @@ public class WarmupManager {
     @NativeMethods
     interface Natives {
         void startPreconnectPredictorInitialization(Profile profile);
+
         void preconnectUrlAndSubresources(Profile profile, String url);
     }
 }

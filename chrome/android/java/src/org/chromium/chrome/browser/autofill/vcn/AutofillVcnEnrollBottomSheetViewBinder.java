@@ -37,15 +37,17 @@ import org.chromium.ui.modelutil.PropertyModel;
                     model.get(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.DESCRIPTION == propertyKey) {
-            view.mVirtualCardDescription.setText(getDescriptionSpan(
-                    model.get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)));
+            view.mVirtualCardDescription.setText(
+                    getDescriptionSpan(
+                            model.get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)));
             view.mVirtualCardDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
         } else if (AutofillVcnEnrollBottomSheetProperties.CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION
                 == propertyKey) {
             view.mCardContainer.setContentDescription(
-                    model.get(AutofillVcnEnrollBottomSheetProperties
-                                      .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION));
+                    model.get(
+                            AutofillVcnEnrollBottomSheetProperties
+                                    .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON == propertyKey) {
             view.mIssuerIcon.setImageBitmap(
@@ -59,11 +61,15 @@ import org.chromium.ui.modelutil.PropertyModel;
                     model.get(AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES == propertyKey) {
-            setLegalMessageOrHideIfEmpty(view.mContentView.getContext(), view.mGoogleLegalMessage,
+            setLegalMessageOrHideIfEmpty(
+                    view.mContentView.getContext(),
+                    view.mGoogleLegalMessage,
                     model.get(AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES == propertyKey) {
-            setLegalMessageOrHideIfEmpty(view.mContentView.getContext(), view.mIssuerLegalMessage,
+            setLegalMessageOrHideIfEmpty(
+                    view.mContentView.getContext(),
+                    view.mIssuerLegalMessage,
                     model.get(AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.ACCEPT_BUTTON_LABEL == propertyKey) {
@@ -79,10 +85,14 @@ import org.chromium.ui.modelutil.PropertyModel;
     // Returns the virtual card description text with a "learn more" link.
     private static SpannableString getDescriptionSpan(Description description) {
         SpannableString result = new SpannableString(new String());
-        if (description == null || description.mText == null || description.mText.isEmpty()
+        if (description == null
+                || description.mText == null
+                || description.mText.isEmpty()
                 || description.mLearnMoreLinkText == null
-                || description.mLearnMoreLinkText.isEmpty() || description.mLearnMoreLinkUrl == null
-                || description.mLearnMoreLinkUrl.isEmpty() || description.mLinkOpener == null) {
+                || description.mLearnMoreLinkText.isEmpty()
+                || description.mLearnMoreLinkUrl == null
+                || description.mLearnMoreLinkUrl.isEmpty()
+                || description.mLinkOpener == null) {
             return result;
         }
 
@@ -91,32 +101,45 @@ import org.chromium.ui.modelutil.PropertyModel;
 
         int learnMoreEnd = learnMoreStart + description.mLearnMoreLinkText.length();
         result = new SpannableString(description.mText);
-        result.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View view) {
-                description.mLinkOpener.openLink(
-                        description.mLearnMoreLinkUrl, description.mLearnMoreLinkType);
-            }
-        }, learnMoreStart, learnMoreEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        result.setSpan(
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        description.mLinkOpener.openLink(
+                                description.mLearnMoreLinkUrl, description.mLearnMoreLinkType);
+                    }
+                },
+                learnMoreStart,
+                learnMoreEnd,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return result;
     }
 
     // Returns a scaled bitmap.
     private static Bitmap scaleBitmap(IssuerIcon issuerIcon) {
-        return issuerIcon != null && issuerIcon.mBitmap != null && issuerIcon.mWidth > 0
+        return issuerIcon != null
+                        && issuerIcon.mBitmap != null
+                        && issuerIcon.mWidth > 0
                         && issuerIcon.mHeight > 0
                 ? Bitmap.createScaledBitmap(
-                        issuerIcon.mBitmap, issuerIcon.mWidth, issuerIcon.mHeight, /*filter=*/true)
+                        issuerIcon.mBitmap,
+                        issuerIcon.mWidth,
+                        issuerIcon.mHeight,
+                        /* filter= */ true)
                 : null;
     }
 
     // Returns the legal message text formatted with links.
     private static SpannableStringBuilder getLegalMessageSpan(
             Context context, LegalMessages legalMessages) {
-        return legalMessages != null && legalMessages.mLines != null
-                        && !legalMessages.mLines.isEmpty() && legalMessages.mLinkOpener != null
-                ? AutofillUiUtils.getSpannableStringForLegalMessageLines(context,
-                        legalMessages.mLines, /*underlineLinks=*/true,
+        return legalMessages != null
+                        && legalMessages.mLines != null
+                        && !legalMessages.mLines.isEmpty()
+                        && legalMessages.mLinkOpener != null
+                ? AutofillUiUtils.getSpannableStringForLegalMessageLines(
+                        context,
+                        legalMessages.mLines,
+                        /* underlineLinks= */ true,
                         (String url) -> {
                             legalMessages.mLinkOpener.openLink(url, legalMessages.mLinkType);
                         })

@@ -32,9 +32,7 @@ public class PushMessagingServiceObserver {
      * PushMessagingServiceObserver.
      */
     public interface Listener {
-        /**
-         * Called when a push message has been handled.
-         */
+        /** Called when a push message has been handled. */
         void onMessageHandled();
     }
 

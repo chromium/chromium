@@ -12,9 +12,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
-/**
- * Class responsible for scheduling and canceling offline page related background tasks.
- */
+/** Class responsible for scheduling and canceling offline page related background tasks. */
 public class BackgroundScheduler {
     static final long NO_DELAY = 0;
     private static final boolean OVERWRITE = true;
@@ -30,8 +28,10 @@ public class BackgroundScheduler {
 
     /** Cancels a background tasks. */
     public void cancel() {
-        BackgroundTaskSchedulerFactory.getScheduler().cancel(
-                ContextUtils.getApplicationContext(), TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID);
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .cancel(
+                        ContextUtils.getApplicationContext(),
+                        TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID);
     }
 
     /** Schedules a background task for provided triggering conditions. */
@@ -50,16 +50,22 @@ public class BackgroundScheduler {
         scheduleImpl(triggerConditions, delayStartMs, DateUtils.WEEK_IN_MILLIS, !OVERWRITE);
     }
 
-    protected void scheduleImpl(TriggerConditions triggerConditions, long delayStartMs,
-            long executionDeadlineMs, boolean overwrite) {
+    protected void scheduleImpl(
+            TriggerConditions triggerConditions,
+            long delayStartMs,
+            long executionDeadlineMs,
+            boolean overwrite) {
         PersistableBundle taskExtras = new PersistableBundle();
         TaskExtrasPacker.packTimeInBundle(taskExtras);
         TaskExtrasPacker.packTriggerConditionsInBundle(taskExtras, triggerConditions);
 
         TaskInfo taskInfo =
-                TaskInfo.createOneOffTask(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID, delayStartMs,
+                TaskInfo.createOneOffTask(
+                                TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID,
+                                delayStartMs,
                                 executionDeadlineMs)
-                        .setRequiredNetworkType(triggerConditions.requireUnmeteredNetwork()
+                        .setRequiredNetworkType(
+                                triggerConditions.requireUnmeteredNetwork()
                                         ? TaskInfo.NetworkType.UNMETERED
                                         : TaskInfo.NetworkType.ANY)
                         .setUpdateCurrent(overwrite)
@@ -68,7 +74,7 @@ public class BackgroundScheduler {
                         .setRequiresCharging(triggerConditions.requirePowerConnected())
                         .build();
 
-        BackgroundTaskSchedulerFactory.getScheduler().schedule(
-                ContextUtils.getApplicationContext(), taskInfo);
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 }

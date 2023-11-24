@@ -24,9 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A utility class to take a feedback-formatted screenshot of an {@link Activity}.
- */
+/** A utility class to take a feedback-formatted screenshot of an {@link Activity}. */
 @JNINamespace("chrome::android")
 public final class ScreenshotTask implements ScreenshotSource {
     /**
@@ -83,12 +81,14 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         // If neither the compositor nor the Android view screenshot tasks were kicked off, admit
         // defeat and return a {@code null} screenshot.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                onBitmapReceived(null);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        onBitmapReceived(null);
+                    }
+                });
     }
 
     @Override
@@ -122,8 +122,12 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);
-        ScreenshotTaskJni.get().grabWindowSnapshotAsync(
-                this, ((ChromeActivity) activity).getWindowAndroid(), rect.width(), rect.height());
+        ScreenshotTaskJni.get()
+                .grabWindowSnapshotAsync(
+                        this,
+                        ((ChromeActivity) activity).getWindowAndroid(),
+                        rect.width(),
+                        rect.height());
 
         return true;
     }
@@ -131,15 +135,19 @@ public final class ScreenshotTask implements ScreenshotSource {
     private boolean takeAndroidViewScreenshot(@Nullable final Activity activity) {
         if (activity == null) return false;
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap = UiUtils.generateScaledScreenshot(
-                        activity.getWindow().getDecorView().getRootView(),
-                        MAX_FEEDBACK_SCREENSHOT_DIMENSION, Bitmap.Config.ARGB_8888);
-                onBitmapReceived(bitmap);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bitmap =
+                                UiUtils.generateScaledScreenshot(
+                                        activity.getWindow().getDecorView().getRootView(),
+                                        MAX_FEEDBACK_SCREENSHOT_DIMENSION,
+                                        Bitmap.Config.ARGB_8888);
+                        onBitmapReceived(bitmap);
+                    }
+                });
 
         return true;
     }

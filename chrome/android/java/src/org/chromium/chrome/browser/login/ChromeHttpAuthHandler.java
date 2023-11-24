@@ -69,14 +69,18 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
 
     @Override
     public void cancel() {
-        ChromeHttpAuthHandlerJni.get().cancelAuth(
-                mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
+        ChromeHttpAuthHandlerJni.get()
+                .cancelAuth(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
     }
 
     @Override
     public void proceed(String username, String password) {
-        ChromeHttpAuthHandlerJni.get().setAuth(
-                mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this, username, password);
+        ChromeHttpAuthHandlerJni.get()
+                .setAuth(
+                        mNativeChromeHttpAuthHandler,
+                        ChromeHttpAuthHandler.this,
+                        username,
+                        password);
     }
 
     /** Return whether the auth dialog is being shown. */
@@ -101,8 +105,9 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         }
         mTab = tab;
         mTab.addObserver(this);
-        String messageBody = ChromeHttpAuthHandlerJni.get().getMessageBody(
-                mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
+        String messageBody =
+                ChromeHttpAuthHandlerJni.get()
+                        .getMessageBody(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
         mLoginPrompt = new LoginPrompt(activity, messageBody, null, this);
         // In case the autofill data arrives before the prompt is created.
         if (mAutofillUsername != null && mAutofillPassword != null) {
@@ -144,10 +149,14 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
 
     @NativeMethods
     interface Natives {
-        void setAuth(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller,
-                String username, String password);
+        void setAuth(
+                long nativeChromeHttpAuthHandler,
+                ChromeHttpAuthHandler caller,
+                String username,
+                String password);
 
         void cancelAuth(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
+
         String getMessageBody(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
     }
 }

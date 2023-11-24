@@ -42,24 +42,23 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Handles the Tabbed mode specific behaviors of tab persistence.
- */
+/** Handles the Tabbed mode specific behaviors of tab persistence. */
 public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     private static final String TAG = "tabmodel";
 
     /** <M53 The name of the file where the old tab metadata file is saved per directory. */
-    @VisibleForTesting
-    static final String LEGACY_SAVED_STATE_FILE = "tab_state";
+    @VisibleForTesting static final String LEGACY_SAVED_STATE_FILE = "tab_state";
 
     /** Prevents two copies of the Migration task from being created. */
     private static final Object MIGRATION_LOCK = new Object();
+
     /**
      * Prevents two clean up tasks from getting created simultaneously. Also protects against
      * incorrectly interleaving create/run/cancel on the task.
      */
     private static final Object CLEAN_UP_TASK_LOCK = new Object();
+
     /** Tracks whether tabs from two TabPersistentStores tabs are being merged together. */
     // TODO(crbug.com/1082936): Transit AtomicBoolean to an AtomicInteger to keep track the task id
     //        of activity being merged.
@@ -157,34 +156,39 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     public boolean performInitialization(TaskRunner taskRunner) {
         ThreadUtils.assertOnUiThread();
 
-        final boolean hasRunLegacyMigration = ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
+        final boolean hasRunLegacyMigration =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
         final boolean hasRunMultiInstanceMigration =
-                ChromeSharedPreferences.getInstance().readBoolean(
-                        ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false);
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION,
+                                false);
 
         if (hasRunLegacyMigration && hasRunMultiInstanceMigration) return false;
 
         synchronized (MIGRATION_LOCK) {
             if (sMigrationTask != null) return true;
-            sMigrationTask = new BackgroundOnlyAsyncTask<Void>() {
-                @Override
-                protected Void doInBackground() {
-                    if (!hasRunLegacyMigration) {
-                        performLegacyMigration();
-                    }
+            sMigrationTask =
+                    new BackgroundOnlyAsyncTask<Void>() {
+                        @Override
+                        protected Void doInBackground() {
+                            if (!hasRunLegacyMigration) {
+                                performLegacyMigration();
+                            }
 
-                    // It's possible that the legacy migration ran in the past but the preference
-                    // wasn't set, because the legacy migration hasn't always set a preference upon
-                    // completion. If the legacy migration has already been performed,
-                    // performLecacyMigration() will exit early without renaming the metadata file,
-                    // so the multi-instance migration is still necessary.
-                    if (!hasRunMultiInstanceMigration) {
-                        performMultiInstanceMigration();
-                    }
-                    return null;
-                }
-            }.executeOnTaskRunner(taskRunner);
+                            // It's possible that the legacy migration ran in the past but the
+                            // preference wasn't set, because the legacy migration hasn't always
+                            // set a preference upon completion. If the legacy migration has
+                            // already been performed, performLecacyMigration() will exit early
+                            // without renaming the metadata file, so the multi-instance migration
+                            // is still necessary.
+                            if (!hasRunMultiInstanceMigration) {
+                                performMultiInstanceMigration();
+                            }
+                            return null;
+                        }
+                    }.executeOnTaskRunner(taskRunner);
             return true;
         }
     }
@@ -250,8 +254,9 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             // Skip the directory we're migrating to.
             if (i == 0) continue;
 
-            File otherStateDir = new File(
-                    TabStateDirectory.getOrCreateBaseStateDirectory(), Integer.toString(i));
+            File otherStateDir =
+                    new File(
+                            TabStateDirectory.getOrCreateBaseStateDirectory(), Integer.toString(i));
             if (otherStateDir == null || !otherStateDir.exists()) continue;
 
             // Rename tab state file.
@@ -303,13 +308,14 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     private void setLegacyFileMigrationPref() {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, true);
     }
 
     private void setMultiInstanceFileMigrationPref() {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(
+                        ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, true);
     }
 
     @Override
@@ -410,8 +416,9 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         if (metadataFile.exists()) {
             DataInputStream stream = null;
             try {
-                stream = new DataInputStream(
-                        new BufferedInputStream(new FileInputStream(metadataFile)));
+                stream =
+                        new DataInputStream(
+                                new BufferedInputStream(new FileInputStream(metadataFile)));
                 TabPersistentStore.readSavedMetadataFile(stream, null, tabIds);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);

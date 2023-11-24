@@ -68,7 +68,8 @@ public final class ReadingListUtils {
             @NonNull BookmarkId bookmarkId,
             @BookmarkType int bookmarkType,
             @NonNull Profile profile) {
-        if (bookmarkId == null || bookmarkId.getType() != BookmarkType.NORMAL
+        if (bookmarkId == null
+                || bookmarkId.getType() != BookmarkType.NORMAL
                 || bookmarkType != BookmarkType.READING_LIST) {
             return false;
         }
@@ -78,7 +79,10 @@ public final class ReadingListUtils {
         List<BookmarkId> bookmarkIds = new ArrayList<>();
         bookmarkIds.add(bookmarkId);
         List<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
-        typeSwapBookmarksIfNecessary(bookmarkModel, bookmarkIds, typeSwappedBookmarks,
+        typeSwapBookmarksIfNecessary(
+                bookmarkModel,
+                bookmarkIds,
+                typeSwappedBookmarks,
                 bookmarkModel.getReadingListFolder());
 
         assert typeSwappedBookmarks.size() == 1;
@@ -108,8 +112,10 @@ public final class ReadingListUtils {
      * @param newParentId The new parentId to use, the {@link BookmarkType} of this is used to
      *         determine if type-swapping is necessary.
      */
-    public static void typeSwapBookmarksIfNecessary(BookmarkModel bookmarkModel,
-            List<BookmarkId> bookmarksToMove, List<BookmarkId> typeSwappedBookmarks,
+    public static void typeSwapBookmarksIfNecessary(
+            BookmarkModel bookmarkModel,
+            List<BookmarkId> bookmarksToMove,
+            List<BookmarkId> typeSwappedBookmarks,
             BookmarkId newParentId) {
         List<BookmarkId> outputList = new ArrayList<>();
         while (!bookmarksToMove.isEmpty()) {
@@ -122,12 +128,16 @@ public final class ReadingListUtils {
             BookmarkItem existingBookmark = bookmarkModel.getBookmarkById(bookmarkId);
             BookmarkId newBookmark = null;
             if (newParentId.getType() == BookmarkType.NORMAL) {
-                newBookmark = bookmarkModel.addBookmark(newParentId,
-                        bookmarkModel.getChildCount(newParentId), existingBookmark.getTitle(),
-                        existingBookmark.getUrl());
+                newBookmark =
+                        bookmarkModel.addBookmark(
+                                newParentId,
+                                bookmarkModel.getChildCount(newParentId),
+                                existingBookmark.getTitle(),
+                                existingBookmark.getUrl());
             } else if (newParentId.getType() == BookmarkType.READING_LIST) {
-                newBookmark = bookmarkModel.addToReadingList(
-                        existingBookmark.getTitle(), existingBookmark.getUrl());
+                newBookmark =
+                        bookmarkModel.addToReadingList(
+                                existingBookmark.getTitle(), existingBookmark.getUrl());
             }
 
             if (newBookmark == null) {
@@ -154,7 +164,7 @@ public final class ReadingListUtils {
      */
     public static void showReadingList(boolean isIncognito) {
         BookmarkUtils.showBookmarkManager(
-                null, new BookmarkId(0, BookmarkType.READING_LIST), /*isIncognito=*/isIncognito);
+                null, new BookmarkId(0, BookmarkType.READING_LIST), /* isIncognito= */ isIncognito);
     }
 
     /** For cases where we don't want to mock the entire bookmarks save flow infra. */

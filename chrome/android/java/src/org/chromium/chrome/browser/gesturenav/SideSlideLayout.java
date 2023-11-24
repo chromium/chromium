@@ -35,13 +35,17 @@ public class SideSlideLayout extends ViewGroup {
      * Classes that wish to be notified when the swipe gesture correctly
      * triggers navigation should implement this interface.
      */
-    public interface OnNavigateListener { void onNavigate(boolean isForward); }
+    public interface OnNavigateListener {
+        void onNavigate(boolean isForward);
+    }
 
     /**
      * Classes that wish to be notified when a reset is triggered should
      * implement this interface.
      */
-    public interface OnResetListener { void onReset(); }
+    public interface OnResetListener {
+        void onReset();
+    }
 
     // Swipe offset in dips from the border of the view before applying physical tension
     // effect. The actual arrow bubble position is capped at a value three times as this
@@ -97,33 +101,35 @@ public class SideSlideLayout extends ViewGroup {
     // True while swiped to a distance where, if released, the navigation would be triggered.
     private boolean mWillNavigate;
 
-    private final AnimationListener mNavigateListener = new AnimationListener() {
-        @Override
-        public void onAnimationStart(Animation animation) {}
+    private final AnimationListener mNavigateListener =
+            new AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
 
-        @Override
-        public void onAnimationRepeat(Animation animation) {}
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
 
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            mArrowView.setFaded(false, false);
-            mArrowView.setVisibility(View.INVISIBLE);
-            if (!mNavigating) reset();
-            hideCloseIndicator();
-        }
-    };
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mArrowView.setFaded(false, false);
+                    mArrowView.setVisibility(View.INVISIBLE);
+                    if (!mNavigating) reset();
+                    hideCloseIndicator();
+                }
+            };
 
-    private final Animation mAnimateToStartPosition = new Animation() {
-        @Override
-        public void applyTransformation(float interpolatedTime, Transformation t) {
-            int targetTop = mFrom + (int) ((mOriginalOffset - mFrom) * interpolatedTime);
-            int offset = targetTop - mArrowView.getLeft();
-            mTotalMotion += offset;
+    private final Animation mAnimateToStartPosition =
+            new Animation() {
+                @Override
+                public void applyTransformation(float interpolatedTime, Transformation t) {
+                    int targetTop = mFrom + (int) ((mOriginalOffset - mFrom) * interpolatedTime);
+                    int offset = targetTop - mArrowView.getLeft();
+                    mTotalMotion += offset;
 
-            float progress = Math.min(1.f, getOverscroll() / mTotalDragDistance);
-            setTargetOffsetLeftAndRight(offset);
-        }
-    };
+                    float progress = Math.min(1.f, getOverscroll() / mTotalDragDistance);
+                    setTargetOffsetLeftAndRight(offset);
+                }
+            };
 
     public SideSlideLayout(Context context) {
         super(context);
@@ -138,46 +144,45 @@ public class SideSlideLayout extends ViewGroup {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         mArrowView = (NavigationBubble) layoutInflater.inflate(R.layout.navigation_bubble, null);
-        mArrowView.getTextView().setText(
-                getResources().getString(R.string.overscroll_navigation_close_chrome,
-                        getContext().getString(R.string.app_name)));
+        mArrowView
+                .getTextView()
+                .setText(
+                        getResources()
+                                .getString(
+                                        R.string.overscroll_navigation_close_chrome,
+                                        getContext().getString(R.string.app_name)));
         mArrowViewWidth = mCircleWidth;
         addView(mArrowView);
 
         // The absolute offset has to take into account that the circle starts at an offset
         mTotalDragDistance = RAW_SWIPE_LIMIT_DP * getResources().getDisplayMetrics().density;
 
-        mAnimateToStartPosition.setAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
+        mAnimateToStartPosition.setAnimationListener(
+                new AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                reset();
-            }
-        });
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        reset();
+                    }
+                });
     }
 
-    /**
-     * Set the listener to be notified when the navigation is triggered.
-     */
+    /** Set the listener to be notified when the navigation is triggered. */
     public void setOnNavigationListener(OnNavigateListener listener) {
         mListener = listener;
     }
 
-    /**
-     * Set the reset listener to be notified when a reset is triggered.
-     */
+    /** Set the reset listener to be notified when a reset is triggered. */
     public void setOnResetListener(OnResetListener listener) {
         mResetListener = listener;
     }
 
-    /**
-     * Stop navigation.
-     */
+    /** Stop navigation. */
     public void stopNavigating() {
         setNavigating(false);
     }
@@ -241,14 +246,18 @@ public class SideSlideLayout extends ViewGroup {
         final int height = getMeasuredHeight();
         final int arrowWidth = mArrowView.getMeasuredWidth();
         final int arrowHeight = mArrowView.getMeasuredHeight();
-        mArrowView.layout(mCurrentTargetOffset, height / 2 - arrowHeight / 2,
-                mCurrentTargetOffset + arrowWidth, height / 2 + arrowHeight / 2);
+        mArrowView.layout(
+                mCurrentTargetOffset,
+                height / 2 - arrowHeight / 2,
+                mCurrentTargetOffset + arrowWidth,
+                height / 2 + arrowHeight / 2);
     }
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mArrowView.measure(MeasureSpec.makeMeasureSpec(mArrowViewWidth, MeasureSpec.EXACTLY),
+        mArrowView.measure(
+                MeasureSpec.makeMeasureSpec(mArrowViewWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(mCircleWidth, MeasureSpec.EXACTLY));
     }
 
@@ -299,7 +308,7 @@ public class SideSlideLayout extends ViewGroup {
                 Math.max(0, Math.min(extraOs, slingshotDist * 2) / slingshotDist);
         float tensionPercent =
                 (float) ((tensionSlingshotPercent / 4) - Math.pow((tensionSlingshotPercent / 4), 2))
-                * 2f;
+                        * 2f;
 
         if (mArrowView.getVisibility() != View.VISIBLE) mArrowView.setVisibility(View.VISIBLE);
 
@@ -381,9 +390,7 @@ public class SideSlideLayout extends ViewGroup {
         mArrowView.startAnimation(mAnimateToStartPosition);
     }
 
-    /**
-     * Reset the effect, clearing any active animations.
-     */
+    /** Reset the effect, clearing any active animations. */
     public void reset() {
         mIsBeingDragged = false;
         setNavigating(false);

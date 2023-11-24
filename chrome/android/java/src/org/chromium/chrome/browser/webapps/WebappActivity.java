@@ -22,9 +22,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 
-/**
- * Displays a webapp in a nearly UI-less Chrome (InfoBars still appear).
- */
+/** Displays a webapp in a nearly UI-less Chrome (InfoBars still appear). */
 public class WebappActivity extends BaseCustomTabActivity {
     public static final String WEBAPP_SCHEME = "webapp";
 
@@ -92,8 +90,10 @@ public class WebappActivity extends BaseCustomTabActivity {
 
     @Override
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
-        return new WebappLaunchCauseMetrics(this,
-                mWebappActivityCoordinator == null ? null
-                                                   : mWebappActivityCoordinator.getWebappInfo());
+        return new WebappLaunchCauseMetrics(
+                this,
+                mWebappActivityCoordinator == null
+                        ? null
+                        : mWebappActivityCoordinator.getWebappInfo());
     }
 }

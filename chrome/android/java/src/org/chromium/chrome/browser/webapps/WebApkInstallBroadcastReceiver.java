@@ -38,8 +38,7 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
 
     private static final String NOTIFICATION_ID = "WebApkInstallNotification.notification_id";
     private static final String WEBAPK_START_URL = "WebApkInstallNotification.start_url";
-    @VisibleForTesting
-    static final String RETRY_PROTO = "WebApkInstallNotification.retry_proto";
+    @VisibleForTesting static final String RETRY_PROTO = "WebApkInstallNotification.retry_proto";
 
     private WebApkInstallCoordinatorBridge mBridge;
 
@@ -83,7 +82,7 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         for (StatusBarNotification sbn : nm.getActiveNotifications()) {
             if ((WebApkInstallService.WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX + id)
-                            .equals(sbn.getTag())) {
+                    .equals(sbn.getTag())) {
                 return ((BitmapDrawable) sbn.getNotification().getLargeIcon().loadDrawable(context))
                         .getBitmap();
             }
@@ -91,8 +90,12 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
         return null;
     }
 
-    static PendingIntentProvider createPendingIntent(Context context, String notificationId,
-            String url, String action, byte[] serializedProto) {
+    static PendingIntentProvider createPendingIntent(
+            Context context,
+            String notificationId,
+            String url,
+            String action,
+            byte[] serializedProto) {
         Intent intent = new Intent(action);
         intent.setClass(context, WebApkInstallBroadcastReceiver.class);
         intent.putExtra(NOTIFICATION_ID, notificationId);

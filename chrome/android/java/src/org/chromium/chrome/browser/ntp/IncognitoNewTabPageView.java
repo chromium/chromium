@@ -20,9 +20,7 @@ import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
-/**
- * The New Tab Page for use in the incognito profile.
- */
+/** The New Tab Page for use in the incognito profile. */
 public class IncognitoNewTabPageView extends FrameLayout {
     private IncognitoNewTabPageManager mManager;
     private boolean mFirstShow = true;
@@ -33,9 +31,7 @@ public class IncognitoNewTabPageView extends FrameLayout {
     private int mSnapshotHeight;
     private int mSnapshotScrollY;
 
-    /**
-     * Manages the view interaction with the rest of the system.
-     */
+    /** Manages the view interaction with the rest of the system. */
     interface IncognitoNewTabPageManager {
         /** Loads a page explaining details about incognito mode in the current tab. */
         void loadIncognitoLearnMore();
@@ -88,12 +84,13 @@ public class IncognitoNewTabPageView extends FrameLayout {
         }
 
         mDescriptionView = (IncognitoDescriptionView) viewStub.inflate();
-        mDescriptionView.setLearnMoreOnclickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mManager.loadIncognitoLearnMore();
-            }
-        });
+        mDescriptionView.setLearnMoreOnclickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mManager.loadIncognitoLearnMore();
+                    }
+                });
 
         // Inflate the correct cookie/tracking protection card.
         ViewStub cardStub = findViewById(R.id.cookie_card_stub);
@@ -144,8 +141,10 @@ public class IncognitoNewTabPageView extends FrameLayout {
     boolean shouldCaptureThumbnail() {
         if (getWidth() == 0 || getHeight() == 0) return false;
 
-        return mManager.shouldCaptureThumbnail() || getWidth() != mSnapshotWidth
-                || getHeight() != mSnapshotHeight || mScrollView.getScrollY() != mSnapshotScrollY;
+        return mManager.shouldCaptureThumbnail()
+                || getWidth() != mSnapshotWidth
+                || getHeight() != mSnapshotHeight
+                || mScrollView.getScrollY() != mSnapshotScrollY;
     }
 
     boolean shouldShowRevampedIncognitoNTP() {

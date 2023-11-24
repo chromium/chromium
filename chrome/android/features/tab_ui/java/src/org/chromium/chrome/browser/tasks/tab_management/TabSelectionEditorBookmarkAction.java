@@ -20,16 +20,12 @@ import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
 
-/**
- * Bookmark action for the {@link TabSelectionEditorMenu}.
- */
+/** Bookmark action for the {@link TabSelectionEditorMenu}. */
 public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
     private Activity mActivity;
     private TabSelectionEditorBookmarkActionDelegate mDelegate;
 
-    /**
-     * Interface for passing params on bookmark action.
-     */
+    /** Interface for passing params on bookmark action. */
     public interface TabSelectionEditorBookmarkActionDelegate {
         /**
          * Bookmark selected tabs and show snackbar.
@@ -48,8 +44,11 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(Activity activity, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition) {
+    public static TabSelectionEditorAction createAction(
+            Activity activity,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition) {
         Drawable drawable = AppCompatResources.getDrawable(activity, R.drawable.btn_star);
         TabSelectionEditorBookmarkActionDelegate delegate =
                 new TabSelectionEditorBookmarkActionDelegateImpl();
@@ -57,12 +56,21 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
                 activity, showMode, buttonType, iconPosition, drawable, delegate);
     }
 
-    private TabSelectionEditorBookmarkAction(Activity activity, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition, Drawable drawable,
+    private TabSelectionEditorBookmarkAction(
+            Activity activity,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition,
+            Drawable drawable,
             TabSelectionEditorBookmarkActionDelegate delegate) {
-        super(R.id.tab_selection_editor_bookmark_menu_item, showMode, buttonType, iconPosition,
+        super(
+                R.id.tab_selection_editor_bookmark_menu_item,
+                showMode,
+                buttonType,
+                iconPosition,
                 R.plurals.tab_selection_editor_bookmark_tabs_action_button,
-                R.plurals.accessibility_tab_selection_editor_bookmark_tabs_action_button, drawable);
+                R.plurals.accessibility_tab_selection_editor_bookmark_tabs_action_button,
+                drawable);
         mActivity = activity;
         mDelegate = delegate;
     }
@@ -74,18 +82,20 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
                 Activity activity, List<Tab> tabs, SnackbarManager snackbarManager) {
             BookmarkModel bookmarkModel =
                     BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-            bookmarkModel.finishLoadingBookmarkModel(() -> {
-                BookmarkUtils.addBookmarksOnMultiSelect(
-                        activity, bookmarkModel, tabs, snackbarManager);
-            });
+            bookmarkModel.finishLoadingBookmarkModel(
+                    () -> {
+                        BookmarkUtils.addBookmarksOnMultiSelect(
+                                activity, bookmarkModel, tabs, snackbarManager);
+                    });
         }
     }
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        int size = editorSupportsActionOnRelatedTabs()
-                ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
-                : tabIds.size();
+        int size =
+                editorSupportsActionOnRelatedTabs()
+                        ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
+                        : tabIds.size();
         setEnabledAndItemCount(!tabIds.isEmpty(), size);
     }
 

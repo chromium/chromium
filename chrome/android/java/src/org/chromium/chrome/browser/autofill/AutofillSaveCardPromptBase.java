@@ -42,14 +42,10 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
     private SpannableStringBuilder mSpannableStringBuilder;
 
     interface AutofillSaveCardPromptBaseDelegate {
-        /**
-         * Called when a link is clicked.
-         */
+        /** Called when a link is clicked. */
         void onLinkClicked(String url);
 
-        /**
-         * Called whenever the dialog is dismissed.
-         */
+        /** Called whenever the dialog is dismissed. */
         void onPromptDismissed();
 
         /**
@@ -69,17 +65,23 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
      * @param confirmButtonLabel The text of confirm button.
      * @param filledConfirmButton Whether to use a button of filled style.
      */
-    protected AutofillSaveCardPromptBase(Context context,
-            AutofillSaveCardPromptBaseDelegate delegate, @LayoutRes int contentLayoutId,
-            @LayoutRes int customTitleLayoutId, String title, @DrawableRes int titleIcon,
-            String confirmButtonLabel, boolean filledConfirmButton) {
+    protected AutofillSaveCardPromptBase(
+            Context context,
+            AutofillSaveCardPromptBaseDelegate delegate,
+            @LayoutRes int contentLayoutId,
+            @LayoutRes int customTitleLayoutId,
+            String title,
+            @DrawableRes int titleIcon,
+            String confirmButtonLabel,
+            boolean filledConfirmButton) {
         mBaseDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
         mDialogView = inflater.inflate(R.layout.autofill_save_card_base_layout, null);
         boolean useCustomTitleView =
                 ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK)
-                && customTitleLayoutId != Resources.ID_NULL;
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK)
+                        && customTitleLayoutId != Resources.ID_NULL;
 
         if (useCustomTitleView) {
             ViewStub stub = mDialogView.findViewById(R.id.title_with_icon_stub);
@@ -98,15 +100,19 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getResources(),
                                 R.string.cancel)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                        .with(ModalDialogProperties.BUTTON_STYLES,
-                                filledConfirmButton ? ModalDialogProperties.ButtonStyles
-                                                              .PRIMARY_FILLED_NEGATIVE_OUTLINE
-                                                    : ModalDialogProperties.ButtonStyles
-                                                              .PRIMARY_OUTLINE_NEGATIVE_OUTLINE);
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                filledConfirmButton
+                                        ? ModalDialogProperties.ButtonStyles
+                                                .PRIMARY_FILLED_NEGATIVE_OUTLINE
+                                        : ModalDialogProperties.ButtonStyles
+                                                .PRIMARY_OUTLINE_NEGATIVE_OUTLINE);
 
         updateTitleView(useCustomTitleView, title, titleIcon, builder, context);
         mDialogModel = builder.build();
@@ -146,8 +152,12 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
      * @param builder The PropertyModel.Builder instance.
      * @param context The {@link Context} to inflate layout xml.
      */
-    private void updateTitleView(boolean useCustomTitleView, String title,
-            @DrawableRes int titleIcon, PropertyModel.Builder builder, Context context) {
+    private void updateTitleView(
+            boolean useCustomTitleView,
+            String title,
+            @DrawableRes int titleIcon,
+            PropertyModel.Builder builder,
+            Context context) {
         if (useCustomTitleView) {
             TextView titleView = (TextView) mDialogView.findViewById(R.id.title);
             titleView.setText(title);
@@ -177,12 +187,16 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
         mSpannableStringBuilder.append(line.text);
         for (final LegalMessageLine.Link link : line.links) {
             String url = link.url;
-            mSpannableStringBuilder.setSpan(new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    mBaseDelegate.onLinkClicked(url);
-                }
-            }, link.start + offset, link.end + offset, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            mSpannableStringBuilder.setSpan(
+                    new ClickableSpan() {
+                        @Override
+                        public void onClick(View view) {
+                            mBaseDelegate.onLinkClicked(url);
+                        }
+                    },
+                    link.start + offset,
+                    link.end + offset,
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
     }
 

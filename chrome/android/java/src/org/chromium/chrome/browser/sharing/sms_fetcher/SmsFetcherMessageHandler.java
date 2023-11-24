@@ -24,9 +24,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
-/**
- * Handles Sms Fetcher messages and notifications for Android.
- */
+/** Handles Sms Fetcher messages and notifications for Android. */
 public class SmsFetcherMessageHandler {
     private static final String NOTIFICATION_ACTION_CONFIRM = "sms_fetcher_notification.confirm";
     private static final String NOTIFICATION_ACTION_CANCEL = "sms_fetcher_notification.cancel";
@@ -36,9 +34,7 @@ public class SmsFetcherMessageHandler {
     private static String sTopOrigin;
     private static String sEmbeddedOrigin;
 
-    /**
-     * Handles the interaction of an incoming notification when an expected SMS arrives.
-     */
+    /** Handles the interaction of an incoming notification when an expected SMS arrives. */
     public static final class NotificationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -46,7 +42,8 @@ public class SmsFetcherMessageHandler {
             boolean nativeIsDestroyed = sSmsFetcherMessageHandlerAndroid == 0;
             RecordHistogram.recordBooleanHistogram(
                     "Sharing.SmsFetcherTapWithChromeDestroyed", nativeIsDestroyed);
-            SharingNotificationUtil.dismissNotification(NotificationConstants.GROUP_SMS_FETCHER,
+            SharingNotificationUtil.dismissNotification(
+                    NotificationConstants.GROUP_SMS_FETCHER,
                     NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING);
             // This could happen if the user manually swipes away Chrome from the task switcher or
             // the OS decides to destroy Chrome due to lack of memory etc. In these cases we just
@@ -55,13 +52,15 @@ public class SmsFetcherMessageHandler {
             switch (action) {
                 case NOTIFICATION_ACTION_CONFIRM:
                     if (DEBUG) Log.d(TAG, "Notification confirmed");
-                    SmsFetcherMessageHandlerJni.get().onConfirm(
-                            sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
+                    SmsFetcherMessageHandlerJni.get()
+                            .onConfirm(
+                                    sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
                     break;
                 case NOTIFICATION_ACTION_CANCEL:
                     if (DEBUG) Log.d(TAG, "Notification canceled");
-                    SmsFetcherMessageHandlerJni.get().onDismiss(
-                            sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
+                    SmsFetcherMessageHandlerJni.get()
+                            .onDismiss(
+                                    sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
                     break;
             }
         }
@@ -81,11 +80,15 @@ public class SmsFetcherMessageHandler {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
             if (embeddedOrigin == null) {
-                return resources.getString(R.string.sms_fetcher_notification_title_simple_string,
-                        oneTimeCode, topOrigin);
+                return resources.getString(
+                        R.string.sms_fetcher_notification_title_simple_string,
+                        oneTimeCode,
+                        topOrigin);
             }
-            return resources.getString(R.string.sms_fetcher_notification_title_simple_string,
-                    oneTimeCode, embeddedOrigin);
+            return resources.getString(
+                    R.string.sms_fetcher_notification_title_simple_string,
+                    oneTimeCode,
+                    embeddedOrigin);
         }
         return resources.getString(
                 R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
@@ -109,8 +112,10 @@ public class SmsFetcherMessageHandler {
         }
         return embeddedOrigin == null
                 ? resources.getString(R.string.sms_fetcher_notification_text, topOrigin)
-                : resources.getString(R.string.sms_fetcher_notification_text_for_embedded_frame,
-                        topOrigin, embeddedOrigin);
+                : resources.getString(
+                        R.string.sms_fetcher_notification_text_for_embedded_frame,
+                        topOrigin,
+                        embeddedOrigin);
     }
 
     /**
@@ -125,41 +130,54 @@ public class SmsFetcherMessageHandler {
      * @param smsFetcherMessageHandlerAndroid The native handler
      */
     @CalledByNative
-    private static void showNotification(String oneTimeCode, String topOrigin,
-            String embeddedOrigin, String clientName, long smsFetcherMessageHandlerAndroid) {
+    private static void showNotification(
+            String oneTimeCode,
+            String topOrigin,
+            String embeddedOrigin,
+            String clientName,
+            long smsFetcherMessageHandlerAndroid) {
         sTopOrigin = topOrigin;
         sEmbeddedOrigin = embeddedOrigin;
         sSmsFetcherMessageHandlerAndroid = smsFetcherMessageHandlerAndroid;
         Context context = ContextUtils.getApplicationContext();
-        RecordHistogram.recordBooleanHistogram("Sharing.SmsFetcherScreenOnAndUnlocked",
+        RecordHistogram.recordBooleanHistogram(
+                "Sharing.SmsFetcherScreenOnAndUnlocked",
                 DeviceConditions.isCurrentlyScreenOnAndUnlocked(context));
-        PendingIntentProvider confirmIntent = PendingIntentProvider.getBroadcast(context,
-                /*requestCode=*/0,
-                new Intent(context, NotificationReceiver.class)
-                        .setAction(NOTIFICATION_ACTION_CONFIRM),
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntentProvider cancelIntent = PendingIntentProvider.getBroadcast(context,
-                /*requestCode=*/0,
-                new Intent(context, NotificationReceiver.class)
-                        .setAction(NOTIFICATION_ACTION_CANCEL),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider confirmIntent =
+                PendingIntentProvider.getBroadcast(
+                        context,
+                        /* requestCode= */ 0,
+                        new Intent(context, NotificationReceiver.class)
+                                .setAction(NOTIFICATION_ACTION_CONFIRM),
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider cancelIntent =
+                PendingIntentProvider.getBroadcast(
+                        context,
+                        /* requestCode= */ 0,
+                        new Intent(context, NotificationReceiver.class)
+                                .setAction(NOTIFICATION_ACTION_CANCEL),
+                        PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SMS_FETCHER,
                 NotificationConstants.GROUP_SMS_FETCHER,
                 NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING,
-                /*contentIntent=*/null,
-                /*deleteIntent=*/cancelIntent, confirmIntent, cancelIntent,
+                /* contentIntent= */ null,
+                /* deleteIntent= */ cancelIntent,
+                confirmIntent,
+                cancelIntent,
                 getNotificationTitle(oneTimeCode, topOrigin, embeddedOrigin, clientName),
                 getNotificationText(oneTimeCode, topOrigin, embeddedOrigin, clientName),
-                R.drawable.ic_chrome, /*largeIconId=*/0,
+                R.drawable.ic_chrome,
+                /* largeIconId= */ 0,
                 R.color.default_icon_color_accent1_baseline,
-                /*startsActivity=*/false);
+                /* startsActivity= */ false);
     }
 
     @CalledByNative
     private static void dismissNotification() {
-        SharingNotificationUtil.dismissNotification(NotificationConstants.GROUP_SMS_FETCHER,
+        SharingNotificationUtil.dismissNotification(
+                NotificationConstants.GROUP_SMS_FETCHER,
                 NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING);
     }
 
@@ -173,6 +191,7 @@ public class SmsFetcherMessageHandler {
     @NativeMethods
     interface Natives {
         void onConfirm(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
+
         void onDismiss(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
     }
 }

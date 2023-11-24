@@ -91,9 +91,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}.
- */
+/** A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}. */
 public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
@@ -153,7 +151,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param intentDataProvider Contains intent information used to start the Activity.
      * @param tabController Activity tab controller.
      */
-    public BaseCustomTabRootUiCoordinator(@NonNull AppCompatActivity activity,
+    public BaseCustomTabRootUiCoordinator(
+            @NonNull AppCompatActivity activity,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ActivityTabProvider tabProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
@@ -176,7 +175,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
+            @ActivityType int activityType,
+            @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
@@ -187,20 +187,47 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull BackPressManager backPressManager,
             @NonNull Supplier<CustomTabActivityTabController> tabController) {
-        super(activity, null, shareDelegateSupplier, tabProvider,
-                profileSupplier, bookmarkModelSupplier, tabBookmarkerSupplier,
-                contextualSearchManagerSupplier, tabModelSelectorSupplier,
-                new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(), () -> null,
-                browserControlsManager, windowAndroid,
-                activityLifecycleDispatcher, layoutManagerSupplier, menuOrKeyboardActionController,
-                activityThemeColorSupplier, modalDialogManagerSupplier, appMenuBlocker,
-                supportsAppMenuSupplier, supportsFindInPage, tabCreatorManagerSupplier,
-                fullscreenManager, compositorViewHolderSupplier, tabContentManagerSupplier,
-                snackbarManagerSupplier, activityType,
-                isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
-                statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(),
-                ephemeralTabCoordinatorSupplier, false, backPressManager, null);
+        super(
+                activity,
+                null,
+                shareDelegateSupplier,
+                tabProvider,
+                profileSupplier,
+                bookmarkModelSupplier,
+                tabBookmarkerSupplier,
+                contextualSearchManagerSupplier,
+                tabModelSelectorSupplier,
+                new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>(),
+                () -> null,
+                browserControlsManager,
+                windowAndroid,
+                activityLifecycleDispatcher,
+                layoutManagerSupplier,
+                menuOrKeyboardActionController,
+                activityThemeColorSupplier,
+                modalDialogManagerSupplier,
+                appMenuBlocker,
+                supportsAppMenuSupplier,
+                supportsFindInPage,
+                tabCreatorManagerSupplier,
+                fullscreenManager,
+                compositorViewHolderSupplier,
+                tabContentManagerSupplier,
+                snackbarManagerSupplier,
+                activityType,
+                isInOverviewModeSupplier,
+                isWarmOnResumeSupplier,
+                appMenuDelegate,
+                statusBarColorProvider,
+                intentRequestTracker,
+                new OneshotSupplierImpl<>(),
+                ephemeralTabCoordinatorSupplier,
+                false,
+                backPressManager,
+                null);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
@@ -213,8 +240,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 appId = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);
             }
             String browserName = activity.getResources().getString(R.string.app_name);
-            mBrandingController = new BrandingController(
-                    activity, appId, browserName, new ChromePureJavaExceptionReporter());
+            mBrandingController =
+                    new BrandingController(
+                            activity, appId, browserName, new ChromePureJavaExceptionReporter());
         }
         mTabController = tabController;
     }
@@ -240,25 +268,33 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mIntentDataProvider.get().isPartialCustomTab()) {
             Callback<Runnable> softInputCallback;
             if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-                softInputCallback = ((
-                        PartialCustomTabDisplayManager) mCustomTabHeightStrategy)::onShowSoftInput;
+                softInputCallback =
+                        ((PartialCustomTabDisplayManager) mCustomTabHeightStrategy)
+                                ::onShowSoftInput;
             } else {
-                softInputCallback = ((PartialCustomTabBottomSheetStrategy)
-                                mCustomTabHeightStrategy)::onShowSoftInput;
+                softInputCallback =
+                        ((PartialCustomTabBottomSheetStrategy) mCustomTabHeightStrategy)
+                                ::onShowSoftInput;
             }
 
-            mTabController.get().registerTabObserver(
-                    new PartialCustomTabTabObserver(softInputCallback));
-            mTabController.get().registerTabObserver(new EmptyTabObserver() {
-                @Override
-                public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                    BaseCustomTabActivity baseActivity = (BaseCustomTabActivity) mActivity;
-                    assert baseActivity != null;
-                    baseActivity.getContextualSearchManagerSupplier()
-                            .get()
-                            .setCanHideAndroidBrowserControls(false);
-                }
-            });
+            mTabController
+                    .get()
+                    .registerTabObserver(new PartialCustomTabTabObserver(softInputCallback));
+            mTabController
+                    .get()
+                    .registerTabObserver(
+                            new EmptyTabObserver() {
+                                @Override
+                                public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                                    BaseCustomTabActivity baseActivity =
+                                            (BaseCustomTabActivity) mActivity;
+                                    assert baseActivity != null;
+                                    baseActivity
+                                            .getContextualSearchManagerSupplier()
+                                            .get()
+                                            .setCanHideAndroidBrowserControls(false);
+                                }
+                            });
         }
     }
 
@@ -269,15 +305,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         maybeCreatePageInsightsComponent();
 
         if (ReengagementNotificationController.isEnabled()) {
-            new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable(profile -> {
-                assert profile != null : "Unexpectedly null profile from TabModel.";
-                if (profile == null) return;
-                Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-                ReengagementNotificationController controller =
-                        new ReengagementNotificationController(
-                                mActivity, tracker, ReengagementActivity.class);
-                controller.tryToReengageTheUser();
-            }));
+            new OneShotCallback<>(
+                    mProfileSupplier,
+                    mCallbackController.makeCancelable(
+                            profile -> {
+                                assert profile != null : "Unexpectedly null profile from TabModel.";
+                                if (profile == null) return;
+                                Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+                                ReengagementNotificationController controller =
+                                        new ReengagementNotificationController(
+                                                mActivity, tracker, ReengagementActivity.class);
+                                controller.tryToReengageTheUser();
+                            }));
         }
     }
 
@@ -295,12 +334,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         ViewStub containerStub = mActivity.findViewById(R.id.page_insights_hub_container_stub);
         if (containerStub != null) containerStub.inflate();
-        var controller = BottomSheetControllerFactory.createFullWidthBottomSheetController(
-                this::getScrimCoordinator,
-                (v)
-                        -> mPageInsightsCoordinator.initView(v),
-                mActivity.getWindow(), mWindowAndroid.getKeyboardDelegate(),
-                () -> mActivity.findViewById(R.id.page_insights_hub_container));
+        var controller =
+                BottomSheetControllerFactory.createFullWidthBottomSheetController(
+                        this::getScrimCoordinator,
+                        (v) -> mPageInsightsCoordinator.initView(v),
+                        mActivity.getWindow(),
+                        mWindowAndroid.getKeyboardDelegate(),
+                        () -> mActivity.findViewById(R.id.page_insights_hub_container));
 
         mPageInsightsCoordinator =
                 new PageInsightsCoordinator(
@@ -321,18 +361,19 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         this::isPageInsightsHubEnabled,
                         this::getPageInsightsConfig);
 
-        mContextualSearchObserver = new ContextualSearchObserver() {
-            @Override
-            public void onShowContextualSearch(
-                    @Nullable GSAContextDisplaySelection selectionContext) {
-                mPageInsightsCoordinator.onBottomUiStateChanged(true);
-            }
+        mContextualSearchObserver =
+                new ContextualSearchObserver() {
+                    @Override
+                    public void onShowContextualSearch(
+                            @Nullable GSAContextDisplaySelection selectionContext) {
+                        mPageInsightsCoordinator.onBottomUiStateChanged(true);
+                    }
 
-            @Override
-            public void onHideContextualSearch() {
-                mPageInsightsCoordinator.onBottomUiStateChanged(false);
-            }
-        };
+                    @Override
+                    public void onHideContextualSearch() {
+                        mPageInsightsCoordinator.onBottomUiStateChanged(false);
+                    }
+                };
         mContextualSearchManagerSupplier.get().addObserver(mContextualSearchObserver);
     }
 
@@ -366,13 +407,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         showRegularOverviewIntent.putExtra(IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, true);
         IntentUtils.addTrustedIntentExtras(showRegularOverviewIntent);
 
-        return new IncognitoReauthCoordinatorFactory(mActivity, mTabModelSelectorSupplier.get(),
-                mModalDialogManagerSupplier.get(), new IncognitoReauthManager(),
+        return new IncognitoReauthCoordinatorFactory(
+                mActivity,
+                mTabModelSelectorSupplier.get(),
+                mModalDialogManagerSupplier.get(),
+                new IncognitoReauthManager(),
                 new SettingsLauncherImpl(),
-                /*incognitoReauthTopToolbarDelegate= */ null,
-                /*layoutManager=*/null,
-                /*showRegularOverviewIntent= */ showRegularOverviewIntent,
-                /*isTabbedActivity= */ false);
+                /* incognitoReauthTopToolbarDelegate= */ null,
+                /* layoutManager= */ null,
+                /* showRegularOverviewIntent= */ showRegularOverviewIntent,
+                /* isTabbedActivity= */ false);
     }
 
     @Override
@@ -392,17 +436,19 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         super.onPreInflationStartup();
 
         BrowserServicesIntentDataProvider intentDataProvider = mIntentDataProvider.get();
-        assert intentDataProvider
-                != null : "IntentDataProvider needs to be non-null after preInflationStartup";
+        assert intentDataProvider != null
+                : "IntentDataProvider needs to be non-null after preInflationStartup";
 
-        mCustomTabHeightStrategy = CustomTabHeightStrategy.createStrategy(mActivity,
-                intentDataProvider,
-                () -> mCompositorViewHolderSupplier.get(),
-                () -> mTabModelSelectorSupplier.get().getCurrentTab(),
-                CustomTabsConnection.getInstance(),
-                mActivityLifecycleDispatcher,
-                mFullscreenManager,
-                DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
+        mCustomTabHeightStrategy =
+                CustomTabHeightStrategy.createStrategy(
+                        mActivity,
+                        intentDataProvider,
+                        () -> mCompositorViewHolderSupplier.get(),
+                        () -> mTabModelSelectorSupplier.get().getCurrentTab(),
+                        CustomTabsConnection.getInstance(),
+                        mActivityLifecycleDispatcher,
+                        mFullscreenManager,
+                        DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
 
         if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity)) {
             mMinimizedCustomTabIPHController =
@@ -452,7 +498,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             View coord = mActivity.findViewById(R.id.coordinator);
             int[] location = new int[2];
             coord.getLocationOnScreen(location);
-            return new Rect(location[0], location[1], location[0] + coord.getWidth(),
+            return new Rect(
+                    location[0],
+                    location[1],
+                    location[0] + coord.getWidth(),
                     location[1] + coord.getHeight());
         }
         return super.getAppRectOnScreen();
@@ -529,9 +578,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mCustomTabHeightStrategy.handleCloseAnimation(finishRunnable);
     }
 
-    /**
-     * Runs a set of deferred startup tasks.
-     */
+    /** Runs a set of deferred startup tasks. */
     void onDeferredStartup() {
         new OneShotCallback<>(
                 mProfileSupplier,

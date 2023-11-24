@@ -30,17 +30,18 @@ public class IncognitoLockSettings {
 
     private boolean mIsChromeTriggered;
 
-    @Nullable
-    private IncognitoReauthManager mIncognitoReauthManager;
+    @Nullable private IncognitoReauthManager mIncognitoReauthManager;
 
     /**
      * Represents the state of the Incognito lock setting that gets changed by the user.
      * DO NOT reorder items in this interface, because it's mirrored to UMA
      * (as IncognitoReauthToggleValueType).
      */
-    @IntDef({IncognitoReauthToggleValueType.SETTING_DISABLED,
-            IncognitoReauthToggleValueType.SETTING_ENABLED,
-            IncognitoReauthToggleValueType.NUM_ENTRIES})
+    @IntDef({
+        IncognitoReauthToggleValueType.SETTING_DISABLED,
+        IncognitoReauthToggleValueType.SETTING_ENABLED,
+        IncognitoReauthToggleValueType.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface IncognitoReauthToggleValueType {
         int SETTING_DISABLED = 0;
@@ -68,14 +69,17 @@ public class IncognitoLockSettings {
             return;
         }
 
-        mIncognitoReauthPreference.setLinkClickDelegate(() -> {
-            activity.startActivity(IncognitoReauthSettingUtils.getSystemSecuritySettingsIntent());
-        });
+        mIncognitoReauthPreference.setLinkClickDelegate(
+                () -> {
+                    activity.startActivity(
+                            IncognitoReauthSettingUtils.getSystemSecuritySettingsIntent());
+                });
 
-        mIncognitoReauthPreference.setOnPreferenceChangeListener((preference, newValue) -> {
-            onIncognitoReauthPreferenceChange((boolean) newValue);
-            return true;
-        });
+        mIncognitoReauthPreference.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    onIncognitoReauthPreferenceChange((boolean) newValue);
+                    return true;
+                });
         updateIncognitoReauthPreferenceIfNeeded(activity);
     }
 

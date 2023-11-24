@@ -94,14 +94,19 @@ class ContextualSearchRequest {
      * @param searchUrlFull The URL for the full search to present in the overlay, or empty.
      * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
      */
-    ContextualSearchRequest(String searchTerm, @Nullable String alternateTerm, @Nullable String mid,
-            boolean isLowPriorityEnabled, @Nullable String searchUrlFull,
+    ContextualSearchRequest(
+            String searchTerm,
+            @Nullable String alternateTerm,
+            @Nullable String mid,
+            boolean isLowPriorityEnabled,
+            @Nullable String searchUrlFull,
             @Nullable String searchUrlPreload) {
         mWasPrefetch = isLowPriorityEnabled;
         mIsFullSearchUrlProvided = isGoogleUrl(searchUrlFull);
-        mNormalPriorityUri = mIsFullSearchUrlProvided
-                ? Uri.parse(searchUrlFull)
-                : getUriTemplate(searchTerm, alternateTerm, mid, false);
+        mNormalPriorityUri =
+                mIsFullSearchUrlProvided
+                        ? Uri.parse(searchUrlFull)
+                        : getUriTemplate(searchTerm, alternateTerm, mid, false);
         if (isLowPriorityEnabled) {
             if (isGoogleUrl(searchUrlPreload)) {
                 mLowPriorityUri = Uri.parse(searchUrlPreload);
@@ -115,9 +120,7 @@ class ContextualSearchRequest {
         mIsLowPriority = isLowPriorityEnabled;
     }
 
-    /**
-     * Sets an indicator that the normal-priority URL should be used for this search request.
-     */
+    /** Sets an indicator that the normal-priority URL should be used for this search request. */
     void setNormalPriority() {
         mIsLowPriority = false;
     }
@@ -136,9 +139,7 @@ class ContextualSearchRequest {
         return mWasPrefetch;
     }
 
-    /**
-     * Sets that this search request has failed.
-     */
+    /** Sets that this search request has failed. */
     void setHasFailed() {
         mHasFailedLowPriorityLoad = true;
     }
@@ -155,8 +156,9 @@ class ContextualSearchRequest {
      * @return either the low-priority or normal-priority URL for this search request.
      */
     String getSearchUrl() {
-        return mIsLowPriority && mLowPriorityUri != null ? mLowPriorityUri.toString()
-                                                         : mNormalPriorityUri.toString();
+        return mIsLowPriority && mLowPriorityUri != null
+                ? mLowPriorityUri.toString()
+                : mNormalPriorityUri.toString();
     }
 
     /**
@@ -180,8 +182,11 @@ class ContextualSearchRequest {
 
         URL url;
         try {
-            url = new URL(
-                    searchUrl.replaceAll(CTXS_PARAM_PATTERN, CTXR_PARAM).replaceAll(PF_PARAM, ""));
+            url =
+                    new URL(
+                            searchUrl
+                                    .replaceAll(CTXS_PARAM_PATTERN, CTXR_PARAM)
+                                    .replaceAll(PF_PARAM, ""));
         } catch (MalformedURLException e) {
             url = null;
         }
@@ -236,15 +241,22 @@ class ContextualSearchRequest {
      *         {@code query} and {@code alternateTerm} inserted as parameters and contextual
      *         search and prefetch parameters conditionally set.
      */
-    protected Uri getUriTemplate(String query, @Nullable String alternateTerm, @Nullable String mid,
+    protected Uri getUriTemplate(
+            String query,
+            @Nullable String alternateTerm,
+            @Nullable String mid,
             boolean shouldPrefetch) {
         // TODO(https://crbug.com/783819): Avoid parsing the GURL as a Uri, and update
         // makeKPTriggeringUri to operate on GURLs.
-        Uri uri = Uri.parse(
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
-                        .getUrlForContextualSearchQuery(
-                                query, alternateTerm, shouldPrefetch, CTXS_TWO_REQUEST_PROTOCOL)
-                        .getSpec());
+        Uri uri =
+                Uri.parse(
+                        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                                .getUrlForContextualSearchQuery(
+                                        query,
+                                        alternateTerm,
+                                        shouldPrefetch,
+                                        CTXS_TWO_REQUEST_PROTOCOL)
+                                .getSpec());
         if (!TextUtils.isEmpty(mid)) uri = makeKPTriggeringUri(uri, mid);
         return uri;
     }

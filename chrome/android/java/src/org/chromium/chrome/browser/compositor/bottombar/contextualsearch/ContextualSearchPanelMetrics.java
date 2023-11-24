@@ -29,8 +29,7 @@ public class ContextualSearchPanelMetrics {
     private boolean mHasExitedMaximized;
     private boolean mIsSerpNavigation;
     private boolean mWasActivatedByTap;
-    @ResolvedSearchTerm.CardTag
-    private int mCardTag;
+    @ResolvedSearchTerm.CardTag private int mCardTag;
     private boolean mWasQuickActionShown;
     private int mQuickActionCategory;
     private boolean mWasQuickActionClicked;
@@ -45,8 +44,10 @@ public class ContextualSearchPanelMetrics {
     private long mSearchRequestStartTimeNs;
     // The current set of heuristics that should be logged with results seen when the panel closes.
     private ContextualSearchHeuristics mResultsSeenExperiments;
+
     /** Whether the Search was prefetched or not. */
     private boolean mWasPrefetch;
+
     /**
      * Whether we were able to start painting the document in the Content View so the user could
      * actually see the SRP.
@@ -60,18 +61,23 @@ public class ContextualSearchPanelMetrics {
      * @param reason The reason for the state change.
      * @param profile The current {@link Profile}.
      */
-    public void onPanelStateChanged(@PanelState int fromState, @PanelState int toState,
-            @StateChangeReason int reason, Profile profile) {
+    public void onPanelStateChanged(
+            @PanelState int fromState,
+            @PanelState int toState,
+            @StateChangeReason int reason,
+            Profile profile) {
         // Note: the logging within this function includes the promo, unless specifically
         // excluded.
         boolean isStartingSearch = isStartingNewContextualSearch(toState, reason);
         boolean isEndingSearch = isEndingContextualSearch(fromState, toState, isStartingSearch);
         boolean isChained = isStartingSearch && isOngoingContextualSearch(fromState);
         boolean isSameState = fromState == toState;
-        boolean isFirstExitFromPeeking = fromState == PanelState.PEEKED && !mHasExitedPeeking
-                && (!isSameState || isStartingSearch);
-        boolean isFirstExitFromExpanded = fromState == PanelState.EXPANDED && !mHasExitedExpanded
-                && !isSameState;
+        boolean isFirstExitFromPeeking =
+                fromState == PanelState.PEEKED
+                        && !mHasExitedPeeking
+                        && (!isSameState || isStartingSearch);
+        boolean isFirstExitFromExpanded =
+                fromState == PanelState.EXPANDED && !mHasExitedExpanded && !isSameState;
         boolean isFirstExitFromMaximized =
                 fromState == PanelState.MAXIMIZED && !mHasExitedMaximized && !isSameState;
 
@@ -85,8 +91,8 @@ public class ContextualSearchPanelMetrics {
 
             ContextualSearchUma.logCardTagSeen(mWasSearchContentViewSeen, mCardTag);
             if (mWasQuickActionShown) {
-                ContextualSearchUma.logQuickActionResultsSeen(mWasSearchContentViewSeen,
-                        mQuickActionCategory);
+                ContextualSearchUma.logQuickActionResultsSeen(
+                        mWasSearchContentViewSeen, mQuickActionCategory);
                 ContextualSearchUma.logQuickActionClicked(
                         mWasQuickActionClicked, mQuickActionCategory);
             }
@@ -103,7 +109,7 @@ public class ContextualSearchPanelMetrics {
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
             if (mWasSearchContentViewSeen) {
-                ContextualSearchUma.logAllSearches(/* wasRelatedSearches */ false);
+                ContextualSearchUma.logAllSearches(/* wasRelatedSearches= */ false);
             }
             ContextualSearchUma.logCountedSearches(
                     mWasSearchContentViewSeen, mDidFirstNonEmptyPaint, mWasPrefetch);
@@ -149,23 +155,17 @@ public class ContextualSearchPanelMetrics {
         }
     }
 
-    /**
-     * Sets that the contextual search involved the promo.
-     */
+    /** Sets that the contextual search involved the promo. */
     public void setDidSearchInvolvePromo() {
         mDidSearchInvolvePromo = true;
     }
 
-    /**
-     * Sets that the Search Content View was seen.
-     */
+    /** Sets that the Search Content View was seen. */
     public void setWasSearchContentViewSeen() {
         mWasSearchContentViewSeen = true;
     }
 
-    /**
-     * Sets whether the promo is active.
-     */
+    /** Sets whether the promo is active. */
     public void setIsPromoActive(boolean shown) {
         mIsPromoActive = shown;
     }
@@ -186,23 +186,17 @@ public class ContextualSearchPanelMetrics {
         if (mWasQuickActionShown) mQuickActionCategory = quickActionCategory;
     }
 
-    /**
-     * Sets |mWasQuickActionClicked| to true.
-     */
+    /** Sets |mWasQuickActionClicked| to true. */
     public void setWasQuickActionClicked() {
         mWasQuickActionClicked = true;
     }
 
-    /**
-     * Should be called when the panel first starts showing due to a tap.
-     */
+    /** Should be called when the panel first starts showing due to a tap. */
     public void onPanelTriggeredFromTap() {
         mPanelTriggerTimeFromTapNs = System.nanoTime();
     }
 
-    /**
-     * Called to record the time when a search request started, for resolve and prefetch timing.
-     */
+    /** Called to record the time when a search request started, for resolve and prefetch timing. */
     public void onSearchRequestStarted() {
         mSearchRequestStartTimeNs = System.nanoTime();
     }

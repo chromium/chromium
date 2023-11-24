@@ -70,9 +70,7 @@ public abstract class ContextualSearchContext {
     // The Related Searches stamp - non-empty when Related Searches are being requested.
     private String mRelatedSearchesStamp;
 
-    /**
-     * Constructs a context that tracks the selection and some amount of page content.
-     */
+    /** Constructs a context that tracks the selection and some amount of page content. */
     ContextualSearchContext() {
         mNativePointer = ContextualSearchContextJni.get().init(this);
         mHasSetResolveProperties = false;
@@ -88,12 +86,15 @@ public abstract class ContextualSearchContext {
      * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that
      *        the user can read fluently, or an empty string.
      */
-    void setResolveProperties(@NonNull String homeCountry, boolean doSendBasePageUrl,
-            @NonNull String targetLanguage, @NonNull String fluentLanguages) {
+    void setResolveProperties(
+            @NonNull String homeCountry,
+            boolean doSendBasePageUrl,
+            @NonNull String targetLanguage,
+            @NonNull String fluentLanguages) {
         // TODO(donnd): consider making this a constructor variation.
         mHasSetResolveProperties = true;
-        ContextualSearchContextJni.get().setResolveProperties(
-                getNativePointer(), this, homeCountry, doSendBasePageUrl);
+        ContextualSearchContextJni.get()
+                .setResolveProperties(getNativePointer(), this, homeCountry, doSendBasePageUrl);
         mTargetLanguage = targetLanguage;
         mFluentLanguages = fluentLanguages;
     }
@@ -139,7 +140,8 @@ public abstract class ContextualSearchContext {
         mSurroundingText = surroundingText;
         mSelectionStartOffset = startOffset;
         mSelectionEndOffset = endOffset;
-        if (startOffset == endOffset && startOffset <= surroundingText.length()
+        if (startOffset == endOffset
+                && startOffset <= surroundingText.length()
                 && !hasAnalyzedTap()) {
             analyzeTap(startOffset);
         }
@@ -195,7 +197,8 @@ public abstract class ContextualSearchContext {
      * @return The text content that follows the selection (one side of the surrounding text).
      */
     String getTextContentFollowingSelection() {
-        if (mSurroundingText != null && mSelectionEndOffset > 0
+        if (mSurroundingText != null
+                && mSelectionEndOffset > 0
                 && mSelectionEndOffset <= mSurroundingText.length()) {
             return mSurroundingText.substring(mSelectionEndOffset);
         } else {
@@ -223,8 +226,8 @@ public abstract class ContextualSearchContext {
     void prepareToResolve(boolean isExactSearch, String relatedSearchesStamp) {
         mSelectionBeingResolved = getCurrentSelection();
         mRelatedSearchesStamp = relatedSearchesStamp;
-        ContextualSearchContextJni.get().prepareToResolve(
-                mNativePointer, this, isExactSearch, relatedSearchesStamp);
+        ContextualSearchContextJni.get()
+                .prepareToResolve(mNativePointer, this, isExactSearch, relatedSearchesStamp);
     }
 
     /**
@@ -238,16 +241,18 @@ public abstract class ContextualSearchContext {
         // Fully track the selection as it changes.
         mSelectionStartOffset += startAdjust;
         mSelectionEndOffset += endAdjust;
-        ContextualSearchContextJni.get().adjustSelection(
-                getNativePointer(), this, startAdjust, endAdjust);
+        ContextualSearchContextJni.get()
+                .adjustSelection(getNativePointer(), this, startAdjust, endAdjust);
         // Notify of changes.
         onSelectionChanged();
     }
 
     /** Returns the current selection, or an empty string if there is no valid selection. */
     private String getCurrentSelection() {
-        if (TextUtils.isEmpty(mSurroundingText) || mSelectionEndOffset < mSelectionStartOffset
-                || mSelectionStartOffset < 0 || mSelectionEndOffset > mSurroundingText.length()) {
+        if (TextUtils.isEmpty(mSurroundingText)
+                || mSelectionEndOffset < mSelectionStartOffset
+                || mSelectionStartOffset < 0
+                || mSelectionEndOffset > mSurroundingText.length()) {
             return "";
         }
         return mSurroundingText.substring(mSelectionStartOffset, mSelectionEndOffset);
@@ -255,16 +260,16 @@ public abstract class ContextualSearchContext {
 
     /** @return the current selection, or an empty string if data is invalid or nothing selected. */
     String getSelection() {
-        if (TextUtils.isEmpty(mSurroundingText) || mSelectionEndOffset < mSelectionStartOffset
-                || mSelectionStartOffset < 0 || mSelectionEndOffset > mSurroundingText.length()) {
+        if (TextUtils.isEmpty(mSurroundingText)
+                || mSelectionEndOffset < mSelectionStartOffset
+                || mSelectionStartOffset < 0
+                || mSelectionEndOffset > mSurroundingText.length()) {
             return "";
         }
         return mSurroundingText.substring(mSelectionStartOffset, mSelectionEndOffset);
     }
 
-    /**
-     * Notifies this instance that the selection has been changed.
-     */
+    /** Notifies this instance that the selection has been changed. */
     abstract void onSelectionChanged();
 
     /**
@@ -291,15 +296,18 @@ public abstract class ContextualSearchContext {
      *        the user can read fluently, or an empty string.
      */
     @VisibleForTesting
-    void setTranslationLanguages(@NonNull String detectedLanguage, @NonNull String targetLanguage,
+    void setTranslationLanguages(
+            @NonNull String detectedLanguage,
+            @NonNull String targetLanguage,
             @NonNull String fluentLanguages) {
         // Set redundant languages to empty strings.
         fluentLanguages = targetLanguage.equals(fluentLanguages) ? "" : fluentLanguages;
         // The target language is essential in order to provide results the user can read, and if
         // not specified the server may fallback onto a guess based on location, which isn't
         // always a good experience.
-        ContextualSearchContextJni.get().setTranslationLanguages(
-                mNativePointer, this, detectedLanguage, targetLanguage, fluentLanguages);
+        ContextualSearchContextJni.get()
+                .setTranslationLanguages(
+                        mNativePointer, this, detectedLanguage, targetLanguage, fluentLanguages);
     }
 
     // ============================================================================================
@@ -311,7 +319,8 @@ public abstract class ContextualSearchContext {
      */
     @VisibleForTesting
     boolean hasValidTappedText() {
-        return !TextUtils.isEmpty(mSurroundingText) && mTapOffset >= 0
+        return !TextUtils.isEmpty(mSurroundingText)
+                && mTapOffset >= 0
                 && mTapOffset <= mSurroundingText.length();
     }
 
@@ -320,7 +329,8 @@ public abstract class ContextualSearchContext {
      */
     @VisibleForTesting
     boolean hasValidSelection() {
-        return !TextUtils.isEmpty(mSurroundingText) && mSelectionStartOffset != INVALID_OFFSET
+        return !TextUtils.isEmpty(mSurroundingText)
+                && mSelectionStartOffset != INVALID_OFFSET
                 && mSelectionEndOffset != INVALID_OFFSET
                 && mSelectionStartOffset < mSelectionEndOffset
                 && mSelectionEndOffset < mSurroundingText.length();
@@ -442,22 +452,40 @@ public abstract class ContextualSearchContext {
     interface Natives {
         @NativeClassQualifiedName("NativeContextualSearchContext")
         long init(ContextualSearchContext caller);
+
         @NativeClassQualifiedName("NativeContextualSearchContext")
         void destroy(long nativeContextualSearchContext, ContextualSearchContext caller);
+
         @NativeClassQualifiedName("NativeContextualSearchContext")
-        void setResolveProperties(long nativeContextualSearchContext,
-                ContextualSearchContext caller, String homeCountry, boolean doSendBasePageUrl);
+        void setResolveProperties(
+                long nativeContextualSearchContext,
+                ContextualSearchContext caller,
+                String homeCountry,
+                boolean doSendBasePageUrl);
+
         @NativeClassQualifiedName("NativeContextualSearchContext")
-        void adjustSelection(long nativeContextualSearchContext, ContextualSearchContext caller,
-                int startAdjust, int endAdjust);
+        void adjustSelection(
+                long nativeContextualSearchContext,
+                ContextualSearchContext caller,
+                int startAdjust,
+                int endAdjust);
+
         @NativeClassQualifiedName("NativeContextualSearchContext")
         String detectLanguage(long nativeContextualSearchContext, ContextualSearchContext caller);
+
         @NativeClassQualifiedName("NativeContextualSearchContext")
-        void setTranslationLanguages(long nativeContextualSearchContext,
-                ContextualSearchContext caller, String detectedLanguage, String targetLanguage,
+        void setTranslationLanguages(
+                long nativeContextualSearchContext,
+                ContextualSearchContext caller,
+                String detectedLanguage,
+                String targetLanguage,
                 String fluentLanguages);
+
         @NativeClassQualifiedName("NativeContextualSearchContext")
-        void prepareToResolve(long nativeContextualSearchContext, ContextualSearchContext caller,
-                boolean isExactSearch, String relatedSearchesStamp);
+        void prepareToResolve(
+                long nativeContextualSearchContext,
+                ContextualSearchContext caller,
+                boolean isExactSearch,
+                String relatedSearchesStamp);
     }
 }

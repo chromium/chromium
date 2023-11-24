@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.permissions.BluetoothChooserAndroidDelegate;
 
-/**
- *  The implementation of {@link BluetoothChooserAndroidDelegate} for Chrome.
- */
+/** The implementation of {@link BluetoothChooserAndroidDelegate} for Chrome. */
 public class ChromeBluetoothChooserAndroidDelegate implements BluetoothChooserAndroidDelegate {
     private Profile mProfile;
 
@@ -22,9 +20,7 @@ public class ChromeBluetoothChooserAndroidDelegate implements BluetoothChooserAn
         mProfile = profile;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public AutocompleteSchemeClassifier createAutocompleteSchemeClassifier() {
         return new ChromeAutocompleteSchemeClassifier(mProfile);

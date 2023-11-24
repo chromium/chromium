@@ -29,9 +29,10 @@ import java.util.function.Consumer;
  *
  * <p>This mediator sends UI events (OnUiShown, OnUiAccepted, etc.) to the bridge.
  */
-/*package*/ class AutofillSaveCardBottomSheetMediator
-        extends EmptyBottomSheetObserver implements AutofillSaveCardBottomSheetContent.Delegate,
-                                                    TabModelObserver, LayoutStateObserver {
+/*package*/ class AutofillSaveCardBottomSheetMediator extends EmptyBottomSheetObserver
+        implements AutofillSaveCardBottomSheetContent.Delegate,
+                TabModelObserver,
+                LayoutStateObserver {
     private final AutofillSaveCardBottomSheetContent mBottomSheetContent;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
@@ -53,10 +54,14 @@ import java.util.function.Consumer;
      * @param onUiLegalMessageUrlClicked Called when a legal message url was clicked.
      * @param bridge The bridge to signal UI flow events (OnUiShown, OnUiAccepted, etc.) to.
      */
-    AutofillSaveCardBottomSheetMediator(AutofillSaveCardBottomSheetContent bottomSheetContent,
-            AutofillSaveCardUiInfo uiInfo, BottomSheetController bottomSheetController,
-            LayoutStateProvider layoutStateProvider, TabModel tabModel,
-            Consumer<String> onUiLegalMessageUrlClicked, AutofillSaveCardBottomSheetBridge bridge) {
+    AutofillSaveCardBottomSheetMediator(
+            AutofillSaveCardBottomSheetContent bottomSheetContent,
+            AutofillSaveCardUiInfo uiInfo,
+            BottomSheetController bottomSheetController,
+            LayoutStateProvider layoutStateProvider,
+            TabModel tabModel,
+            Consumer<String> onUiLegalMessageUrlClicked,
+            AutofillSaveCardBottomSheetBridge bridge) {
         mBottomSheetContent = bottomSheetContent;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProvider = layoutStateProvider;
@@ -73,7 +78,7 @@ import java.util.function.Consumer;
 
     /** Requests to show the bottom sheet content. */
     void requestShowContent() {
-        if (mBottomSheetController.requestShowContent(mBottomSheetContent, /*animate=*/true)) {
+        if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
             mBridge.onUiShown();
         } else {
             mBridge.onUiIgnored();
@@ -82,7 +87,7 @@ import java.util.function.Consumer;
 
     /** Hide the bottom sheet (if showing) and clean up observers. */
     void destroy() {
-        mBottomSheetController.hideContent(mBottomSheetContent, /*animate=*/false);
+        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
         mBottomSheetController.removeObserver(this);
         mLayoutStateProvider.removeObserver(this);
         mTabModel.removeObserver(this);
@@ -105,14 +110,14 @@ import java.util.function.Consumer;
     @Override
     public void didClickConfirm() {
         mBottomSheetController.hideContent(
-                mBottomSheetContent, /*animate=*/true, StateChangeReason.INTERACTION_COMPLETE);
+                mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
         finish(AutofillSaveCardBottomSheetBridge::onUiAccepted);
     }
 
     @Override
     public void didClickCancel() {
         mBottomSheetController.hideContent(
-                mBottomSheetContent, /*animate=*/true, StateChangeReason.INTERACTION_COMPLETE);
+                mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
         finish(AutofillSaveCardBottomSheetBridge::onUiCanceled);
     }
 

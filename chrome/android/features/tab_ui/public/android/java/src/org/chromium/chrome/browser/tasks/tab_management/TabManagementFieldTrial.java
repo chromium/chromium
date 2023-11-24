@@ -16,8 +16,10 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 public class TabManagementFieldTrial {
     private static final String DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM = "timeout_ms";
     public static final IntCachedFieldTrialParameter DELAY_TEMP_STRIP_TIMEOUT_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL,
-                    DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM, 1000);
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL,
+                    DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM,
+                    1000);
 
     // Field trial parameter for enabling folio for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_ENABLE_FOLIO_PARAM = "enable_folio";
@@ -30,8 +32,10 @@ public class TabManagementFieldTrial {
     // Field trial parameter for enabling detached for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_ENABLE_DETACHED_PARAM = "enable_detached";
     public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_ENABLE_DETACHED =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_ENABLE_DETACHED_PARAM, false);
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_STRIP_REDESIGN,
+                    TAB_STRIP_REDESIGN_ENABLE_DETACHED_PARAM,
+                    false);
 
     /**
      * @return Whether Folio for tab strip redesign is enabled.

@@ -40,7 +40,9 @@ public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleConte
     @NativeMethods("stack_unwinder")
     interface Natives {
         long getCreateMemoryRegionsMapFunction();
+
         long getCreateNativeUnwinderFunction();
+
         long getCreateLibunwindstackUnwinderFunction();
     }
 }

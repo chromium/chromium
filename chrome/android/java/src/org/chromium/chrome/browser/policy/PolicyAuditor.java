@@ -15,15 +15,16 @@ import org.chromium.content_public.browser.WebContents;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Base class for policy auditors providing an empty implementation.
- */
+/** Base class for policy auditors providing an empty implementation. */
 public class PolicyAuditor {
-    /**
-     * Events that a policy administrator may want to track.
-     */
-    @IntDef({AuditEvent.OPEN_URL_SUCCESS, AuditEvent.OPEN_URL_FAILURE, AuditEvent.OPEN_URL_BLOCKED,
-            AuditEvent.OPEN_POPUP_URL_SUCCESS, AuditEvent.AUTOFILL_SELECTED})
+    /** Events that a policy administrator may want to track. */
+    @IntDef({
+        AuditEvent.OPEN_URL_SUCCESS,
+        AuditEvent.OPEN_URL_FAILURE,
+        AuditEvent.OPEN_URL_BLOCKED,
+        AuditEvent.OPEN_POPUP_URL_SUCCESS,
+        AuditEvent.AUTOFILL_SELECTED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AuditEvent {
         int OPEN_URL_SUCCESS = 0;
@@ -33,9 +34,7 @@ public class PolicyAuditor {
         int AUTOFILL_SELECTED = 4;
     }
 
-    /**
-     * Make it non-obvious to accidentally instantiate this outside of ChromeApplicationImpl.
-     */
+    /** Make it non-obvious to accidentally instantiate this outside of ChromeApplicationImpl. */
     protected PolicyAuditor() {}
 
     public void notifyAuditEvent(

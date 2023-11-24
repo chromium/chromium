@@ -32,9 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Takes care of reparenting a Tab object from one Activity to another.
- */
+/** Takes care of reparenting a Tab object from one Activity to another. */
 public class ReparentingTask implements UserData {
     public static final String TAG = "ReparentingTask";
 
@@ -97,7 +95,10 @@ public class ReparentingTask implements UserData {
      * @param finalizeCallback A callback that will be called after the tab is attached to the new
      *                         host activity in {@link #attachAndFinishReparenting}.
      */
-    public void begin(Context context, Intent intent, Bundle startActivityOptions,
+    public void begin(
+            Context context,
+            Intent intent,
+            Bundle startActivityOptions,
             Runnable finalizeCallback) {
         setupIntent(context, intent, finalizeCallback);
         context.startActivity(intent, startActivityOptions);
@@ -122,7 +123,8 @@ public class ReparentingTask implements UserData {
             intent.setData(Uri.parse(mTab.getUrl().getSpec()));
         }
         if (mTab.isIncognito()) {
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID,
+            intent.putExtra(
+                    Browser.EXTRA_APPLICATION_ID,
                     ContextUtils.getApplicationContext().getPackageName());
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         }
@@ -131,8 +133,8 @@ public class ReparentingTask implements UserData {
         // Add the tab to AsyncTabParamsManager before removing it from the current model to
         // ensure the global count of tabs is correct. See https://crbug.com/611806.
         IntentHandler.setTabId(intent, mTab.getId());
-        AsyncTabParamsManagerSingleton.getInstance().add(
-                mTab.getId(), new TabReparentingParams(mTab, finalizeCallback));
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(mTab.getId(), new TabReparentingParams(mTab, finalizeCallback));
 
         detach();
     }

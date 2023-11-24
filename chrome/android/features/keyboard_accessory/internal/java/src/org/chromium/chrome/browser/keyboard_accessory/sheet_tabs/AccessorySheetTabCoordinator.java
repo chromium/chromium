@@ -37,9 +37,7 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
 
     protected final PropertyModel mModel;
 
-    /**
-     * Provides the icon used for a sheet. Simplifies mocking in controller tests.
-     */
+    /** Provides the icon used for a sheet. Simplifies mocking in controller tests. */
     public static class IconProvider {
         private static Drawable sIconForTesting;
 
@@ -69,17 +67,23 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
      * @param tabType The type of this tab as used in histograms.
      * @param scrollListener An optional listener that will be bound to an inflated recycler view.
      */
-    AccessorySheetTabCoordinator(String title, Drawable icon, String contentDescription,
-            @LayoutRes int layout, @AccessoryTabType int tabType,
+    AccessorySheetTabCoordinator(
+            String title,
+            Drawable icon,
+            String contentDescription,
+            @LayoutRes int layout,
+            @AccessoryTabType int tabType,
             @Nullable RecyclerView.OnScrollListener scrollListener) {
-        mTab = new KeyboardAccessoryData.Tab(
-                title, icon, contentDescription, layout, tabType, this);
+        mTab =
+                new KeyboardAccessoryData.Tab(
+                        title, icon, contentDescription, layout, tabType, this);
         mScrollListener = scrollListener;
-        mModel = new PropertyModel.Builder(AccessorySheetTabProperties.ALL_KEYS)
-                         .with(ITEMS, new AccessorySheetTabItemsModel())
-                         .with(SCROLL_LISTENER, scrollListener)
-                         .with(IS_DEFAULT_A11Y_FOCUS_REQUESTED, false)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(AccessorySheetTabProperties.ALL_KEYS)
+                        .with(ITEMS, new AccessorySheetTabItemsModel())
+                        .with(SCROLL_LISTENER, scrollListener)
+                        .with(IS_DEFAULT_A11Y_FOCUS_REQUESTED, false)
+                        .build();
     }
 
     @CallSuper

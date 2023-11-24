@@ -11,9 +11,7 @@ import android.widget.FrameLayout;
 
 import org.chromium.components.payments.InputProtector;
 
-/**
- * A FrameLayout implementation used to ignore user input based on an InputProtector.
- */
+/** A FrameLayout implementation used to ignore user input based on an InputProtector. */
 public class PaymentHandlerContentFrameLayout extends FrameLayout {
     private InputProtector mInputProtector;
 
@@ -26,9 +24,7 @@ public class PaymentHandlerContentFrameLayout extends FrameLayout {
         super(context, atts);
     }
 
-    /**
-     * Set the input protector to be used for touch interception.
-     */
+    /** Set the input protector to be used for touch interception. */
     public void setInputProtector(InputProtector inputProtector) {
         mInputProtector = inputProtector;
     }

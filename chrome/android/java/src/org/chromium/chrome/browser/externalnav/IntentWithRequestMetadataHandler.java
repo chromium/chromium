@@ -24,9 +24,7 @@ import java.util.Arrays;
  * launched intent will be invalidated if a new one comes.
  */
 public class IntentWithRequestMetadataHandler {
-    /**
-     * Extra to record the token associated with the URL request metadata.
-     */
+    /** Extra to record the token associated with the URL request metadata. */
     public static final String EXTRA_REQUEST_METADATA_TOKEN =
             "org.chromium.chrome.browser.request_metadata_token";
 
@@ -37,9 +35,7 @@ public class IntentWithRequestMetadataHandler {
     private byte[] mIntentToken;
     private String mUri;
 
-    /**
-     * Class representing the URL request metadata that can be retrieved later.
-     */
+    /** Class representing the URL request metadata that can be retrieved later. */
     public static class RequestMetadata {
         private final boolean mHasUserGesture;
         private final boolean mIsRendererIntiated;
@@ -56,11 +52,9 @@ public class IntentWithRequestMetadataHandler {
         public boolean hasUserGesture() {
             return mHasUserGesture;
         }
-    };
+    }
 
-    /**
-     * Get the singleton instance of this object.
-     */
+    /** Get the singleton instance of this object. */
     public static IntentWithRequestMetadataHandler getInstance() {
         synchronized (INSTANCE_LOCK) {
             if (sIntentWithRequestMetadataHandler == null) {
@@ -96,7 +90,8 @@ public class IntentWithRequestMetadataHandler {
         if (mIntentToken == null || mUri == null) return null;
         byte[] bytes = IntentUtils.safeGetByteArrayExtra(intent, EXTRA_REQUEST_METADATA_TOKEN);
         RequestMetadata result = null;
-        if ((bytes != null) && Arrays.equals(bytes, mIntentToken)
+        if ((bytes != null)
+                && Arrays.equals(bytes, mIntentToken)
                 && mUri.equals(IntentHandler.getUrlFromIntent(intent))) {
             result = mRequestMetadata;
         }
@@ -104,9 +99,7 @@ public class IntentWithRequestMetadataHandler {
         return result;
     }
 
-    /**
-     * Clear the stored metadata.
-     */
+    /** Clear the stored metadata. */
     public void clear() {
         mIntentToken = null;
         mUri = null;

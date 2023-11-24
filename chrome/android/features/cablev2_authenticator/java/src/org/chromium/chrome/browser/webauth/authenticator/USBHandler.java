@@ -145,7 +145,11 @@ class USBHandler implements Closeable {
         mBufferUsed = 0;
         mBufferOffset = 0;
 
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> { this.readLoop(); });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    this.readLoop();
+                });
     }
 
     /**
@@ -222,7 +226,8 @@ class USBHandler implements Closeable {
 
     /* Reads a non-negative int32 from the given offset. */
     private static int getNonNegativeS32(byte[] message, int offset) {
-        return (((int) message[offset + 0]) & 0xff) | ((((int) message[offset + 1]) & 0xff) << 8)
+        return (((int) message[offset + 0]) & 0xff)
+                | ((((int) message[offset + 1]) & 0xff) << 8)
                 | ((((int) message[offset + 2]) & 0xff) << 16)
                 | ((((int) message[offset + 3]) & 0x7f) << 24);
     }
@@ -249,7 +254,7 @@ class USBHandler implements Closeable {
             return;
         }
 
-        for (;;) {
+        for (; ; ) {
             // The next message must be a synchronisation message, either
             // because it's the first message, or because the loop below
             // encountered a message type other than |COAOA_MSG| and there's
@@ -270,7 +275,7 @@ class USBHandler implements Closeable {
             }
 
             // Read messages until EOF or desync.
-            for (;;) {
+            for (; ; ) {
                 if (!readAll(msgHeader)) {
                     return;
                 }
@@ -282,7 +287,11 @@ class USBHandler implements Closeable {
                         return;
                     }
                     System.arraycopy(msgHeader, 0, syncMessage, 0, msgHeader.length);
-                    System.arraycopy(restOfSyncMessage, 0, syncMessage, msgHeader.length,
+                    System.arraycopy(
+                            restOfSyncMessage,
+                            0,
+                            syncMessage,
+                            msgHeader.length,
                             restOfSyncMessage.length);
                     break;
                 }
@@ -350,4 +359,4 @@ class USBHandler implements Closeable {
         // null then an error occurred.
         void onUSBData(byte[] data);
     }
-};
+}

@@ -24,15 +24,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
 
-/**
- * Almost empty implementation to mock a TabModel. It only handles tab creation and queries.
- */
+/** Almost empty implementation to mock a TabModel. It only handles tab creation and queries. */
 public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     /**
      * Used to create different kinds of Tabs.  If a MockTabModelDelegate is not provided, regular
      * Tabs are produced.
      */
-    public interface MockTabModelDelegate  {
+    public interface MockTabModelDelegate {
         /**
          * Creates a Tab.
          * @param id ID of the Tab.
@@ -65,7 +63,10 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
                         ? new MockTab(id, mProfile)
                         : mDelegate.createTab(id, isIncognito());
 
-        addTab(tab, TabModel.INVALID_TAB_INDEX, TabLaunchType.FROM_CHROME_UI,
+        addTab(
+                tab,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);
         return tab;
     }

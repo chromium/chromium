@@ -85,16 +85,16 @@ public class FullscreenVideoPictureInPictureController {
 
     // Components names that won't trigger the pip mode. Use cases like notification clicks won't
     // trigger pip.
-    private static final Set<String> NO_PIP_COMPONENT_NAMES = Collections.singleton(
-            NotificationIntentInterceptor.TrampolineActivity.class.getName());
+    private static final Set<String> NO_PIP_COMPONENT_NAMES =
+            Collections.singleton(NotificationIntentInterceptor.TrampolineActivity.class.getName());
 
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
+
     /** Current observers, if any. */
-    @Nullable
-    DismissActivityOnTabChangeObserver mActivityTabObserver;
-    @Nullable
-    FullscreenManager.Observer mFullscreenListener;
+    @Nullable DismissActivityOnTabChangeObserver mActivityTabObserver;
+
+    @Nullable FullscreenManager.Observer mFullscreenListener;
 
     private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
@@ -109,8 +109,10 @@ public class FullscreenVideoPictureInPictureController {
     /** Wall clock time when we last entered Picture in Picture */
     private long mLastOnEnteredTimeMillis;
 
-    public FullscreenVideoPictureInPictureController(Activity activity,
-            ActivityTabProvider activityTabProvider, FullscreenManager fullscreenManager) {
+    public FullscreenVideoPictureInPictureController(
+            Activity activity,
+            ActivityTabProvider activityTabProvider,
+            FullscreenManager fullscreenManager) {
         mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
@@ -121,9 +123,7 @@ public class FullscreenVideoPictureInPictureController {
         if (mListenForAutoEnterability) addObserversIfNeeded();
     }
 
-    /**
-     * Convenience method to get the {@link WebContents} from the active Tab.
-     */
+    /** Convenience method to get the {@link WebContents} from the active Tab. */
     private @Nullable WebContents getWebContents() {
         Tab tab = mActivityTabProvider.get();
         if (tab == null) return null;
@@ -159,8 +159,9 @@ public class FullscreenVideoPictureInPictureController {
             return MetricsAttemptResult.NO_SYSTEM_SUPPORT;
         }
 
-        if (!mActivity.getPackageManager().hasSystemFeature(
-                    PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+        if (!mActivity
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             Log.d(TAG, "Activity does not have PiP feature.");
             return MetricsAttemptResult.NO_FEATURE;
         }
@@ -193,8 +194,8 @@ public class FullscreenVideoPictureInPictureController {
     }
 
     private boolean canStartPipBasedOnRecentTasks() {
-        return AndroidTaskUtils
-                .getRecentAppTasksMatchingComponentNames(mActivity, NO_PIP_COMPONENT_NAMES)
+        return AndroidTaskUtils.getRecentAppTasksMatchingComponentNames(
+                        mActivity, NO_PIP_COMPONENT_NAMES)
                 .isEmpty();
     }
 
@@ -232,8 +233,12 @@ public class FullscreenVideoPictureInPictureController {
         try {
             if (!mActivity.enterPictureInPictureMode(builder.build())) return;
         } catch (IllegalStateException | IllegalArgumentException e) {
-            Log.e(TAG, "Error entering PiP with bounds (%d, %d): %s", bounds.width(),
-                    bounds.height(), e);
+            Log.e(
+                    TAG,
+                    "Error entering PiP with bounds (%d, %d): %s",
+                    bounds.width(),
+                    bounds.height(),
+                    e);
             return;
         }
     }
@@ -259,10 +264,11 @@ public class FullscreenVideoPictureInPictureController {
         // We don't want InfoBars displaying while in PiP, they cover too much content.
         getInfoBarContainerForTab(activityTab).setHidden(true);
 
-        mOnLeavePipCallbacks.add(() -> {
-            webContents.setHasPersistentVideo(false);
-            getInfoBarContainerForTab(activityTab).setHidden(false);
-        });
+        mOnLeavePipCallbacks.add(
+                () -> {
+                    webContents.setHasPersistentVideo(false);
+                    getInfoBarContainerForTab(activityTab).setHidden(false);
+                });
 
         // Setup observers to dismiss the Activity on events that should end PiP.  In auto-enter
         // mode, these might be registered already.
@@ -273,8 +279,9 @@ public class FullscreenVideoPictureInPictureController {
         Rect rect = webContents.getFullscreenVideoSize();
         if (rect == null || rect.width() == 0 || rect.height() == 0) return null;
 
-        float videoAspectRatio = MathUtils.clamp(
-                rect.width() / (float) rect.height(), MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
+        float videoAspectRatio =
+                MathUtils.clamp(
+                        rect.width() / (float) rect.height(), MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
 
         int windowWidth = activity.getWindow().getDecorView().getWidth();
         int windowHeight = activity.getWindow().getDecorView().getHeight();
@@ -353,12 +360,13 @@ public class FullscreenVideoPictureInPictureController {
         }
 
         if (mFullscreenListener == null) {
-            mFullscreenListener = new FullscreenManager.Observer() {
-                @Override
-                public void onExitFullscreen(Tab tab) {
-                    dismissActivityIfNeeded(mActivity, MetricsEndReason.LEFT_FULLSCREEN);
-                }
-            };
+            mFullscreenListener =
+                    new FullscreenManager.Observer() {
+                        @Override
+                        public void onExitFullscreen(Tab tab) {
+                            dismissActivityIfNeeded(mActivity, MetricsEndReason.LEFT_FULLSCREEN);
+                        }
+                    };
 
             mFullscreenManager.addObserver(mFullscreenListener);
         }
@@ -446,8 +454,10 @@ public class FullscreenVideoPictureInPictureController {
         // `isPipSessionActive()` will be false, or (b) try to close PiP properly.  We also don't
         // try to pro-rate the exit delay; it's short and arbitrary anyway.
         if (SystemClock.elapsedRealtime() - mLastOnEnteredTimeMillis < MIN_EXIT_DELAY_MILLIS) {
-            PostTask.postDelayedTask(TaskTraits.UI_USER_BLOCKING,
-                    () -> dismissActivityIfNeeded(activity, reason), MIN_EXIT_DELAY_MILLIS);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_USER_BLOCKING,
+                    () -> dismissActivityIfNeeded(activity, reason),
+                    MIN_EXIT_DELAY_MILLIS);
             return;
         }
 
@@ -485,9 +495,7 @@ public class FullscreenVideoPictureInPictureController {
                     new DismissActivityOnWebContentsObserver(mActivity, mWebContents);
         }
 
-        /**
-         * Clean up everything, and unregister `this`.
-         */
+        /** Clean up everything, and unregister `this`. */
         public void cleanup() {
             cleanupWebContentsObserver();
             if (mTab != null) {
@@ -562,9 +570,7 @@ public class FullscreenVideoPictureInPictureController {
             mTabEventObserver = new DismissActivityOnTabEventObserver(mActivity, mCurrentTab);
         }
 
-        /**
-         * Called to clean up everything, and unregister `this`.
-         */
+        /** Called to clean up everything, and unregister `this`. */
         public void cleanup() {
             if (mTabEventObserver != null) {
                 mTabEventObserver.cleanup();
@@ -615,9 +621,7 @@ public class FullscreenVideoPictureInPictureController {
             mWebContents.addObserver(this);
         }
 
-        /**
-         * Unregister us from `mWebContents`.
-         */
+        /** Unregister us from `mWebContents`. */
         public void cleanup() {
             mWebContents.removeObserver(this);
         }

@@ -64,9 +64,7 @@ public class ColdStartTracker implements ActivityStateListener {
         ApplicationStatus.registerStateListenerForAllActivities(this);
     }
 
-    /**
-     * Must be called after {@link ApplicationStatus} is initialized.
-     */
+    /** Must be called after {@link ApplicationStatus} is initialized. */
     public static void initialize() {
         assert sColdStartTracker == null;
         sColdStartTracker = new ColdStartTracker();

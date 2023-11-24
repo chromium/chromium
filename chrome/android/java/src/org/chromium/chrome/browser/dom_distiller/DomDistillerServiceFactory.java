@@ -23,9 +23,7 @@ public class DomDistillerServiceFactory {
     private static final ProfileKeyedMap<DomDistillerService> sServiceMap =
             new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
-    /**
-     * Returns Java DomDistillerService for given Profile.
-     */
+    /** Returns Java DomDistillerService for given Profile. */
     public static DomDistillerService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         return sServiceMap.getForProfile(

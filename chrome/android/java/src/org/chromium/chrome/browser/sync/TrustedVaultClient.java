@@ -25,13 +25,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
-/**
- * Client used to communicate with GmsCore about sync encryption keys.
- */
+/** Client used to communicate with GmsCore about sync encryption keys. */
 public class TrustedVaultClient {
-    /**
-     * Interface to downstream functionality.
-     */
+    /** Interface to downstream functionality. */
     public interface Backend {
         /**
          * Reads and returns available encryption keys without involving any user action.
@@ -104,9 +100,7 @@ public class TrustedVaultClient {
         Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo);
     }
 
-    /**
-     * Trivial backend implementation that is always empty.
-     */
+    /** Trivial backend implementation that is always empty. */
     public static class EmptyBackend implements Backend {
         @Override
         public Promise<List<byte[]>> fetchKeys(CoreAccountInfo accountInfo) {
@@ -144,7 +138,7 @@ public class TrustedVaultClient {
         public Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
             return Promise.rejected();
         }
-    };
+    }
 
     private static TrustedVaultClient sInstance;
 
@@ -204,8 +198,8 @@ public class TrustedVaultClient {
      */
     public void notifyRecoverabilityChanged() {
         for (long nativeTrustedVaultClientAndroid : mNativeTrustedVaultClientAndroidSet) {
-            TrustedVaultClientJni.get().notifyRecoverabilityChanged(
-                    nativeTrustedVaultClientAndroid);
+            TrustedVaultClientJni.get()
+                    .notifyRecoverabilityChanged(nativeTrustedVaultClientAndroid);
         }
     }
 
@@ -252,24 +246,18 @@ public class TrustedVaultClient {
         get().mNativeTrustedVaultClientAndroidSet.remove(nativeTrustedVaultClientAndroid);
     }
 
-    /**
-     * Records TrustedVaultKeyRetrievalTrigger histogram.
-     */
+    /** Records TrustedVaultKeyRetrievalTrigger histogram. */
     public void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger) {
         TrustedVaultClientJni.get().recordKeyRetrievalTrigger(trigger);
     }
 
-    /**
-     * Records TrustedVaultRecoverabilityDegradedFixTrigger histogram.
-     */
+    /** Records TrustedVaultRecoverabilityDegradedFixTrigger histogram. */
     public void recordRecoverabilityDegradedFixTrigger(
             @TrustedVaultUserActionTriggerForUMA int trigger) {
         TrustedVaultClientJni.get().recordRecoverabilityDegradedFixTrigger(trigger);
     }
 
-    /**
-     * Convenience function to check if a native client has been registered.
-     */
+    /** Convenience function to check if a native client has been registered. */
     private static boolean isNativeRegistered(long nativeTrustedVaultClientAndroid) {
         return get().mNativeTrustedVaultClientAndroidSet.contains(nativeTrustedVaultClientAndroid);
     }
@@ -283,15 +271,21 @@ public class TrustedVaultClient {
             long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
-        Consumer<List<byte[]>> responseCb = keys -> {
-            if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
-                // Native already unregistered, no response needed.
-                return;
-            }
-            TrustedVaultClientJni.get().fetchKeysCompleted(nativeTrustedVaultClientAndroid,
-                    requestId, accountInfo.getGaiaId(), keys.toArray(new byte[0][]));
-        };
-        get().mBackend.fetchKeys(accountInfo)
+        Consumer<List<byte[]>> responseCb =
+                keys -> {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                        // Native already unregistered, no response needed.
+                        return;
+                    }
+                    TrustedVaultClientJni.get()
+                            .fetchKeysCompleted(
+                                    nativeTrustedVaultClientAndroid,
+                                    requestId,
+                                    accountInfo.getGaiaId(),
+                                    keys.toArray(new byte[0][]));
+                };
+        get().mBackend
+                .fetchKeys(accountInfo)
                 .then(responseCb::accept, exception -> responseCb.accept(new ArrayList<byte[]>()));
     }
 
@@ -304,14 +298,16 @@ public class TrustedVaultClient {
             long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
-        Consumer<Boolean> responseCallback = succeeded -> {
-            if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
-                // Native already unregistered, no response needed.
-                return;
-            }
-            TrustedVaultClientJni.get().markLocalKeysAsStaleCompleted(
-                    nativeTrustedVaultClientAndroid, requestId, succeeded);
-        };
+        Consumer<Boolean> responseCallback =
+                succeeded -> {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                        // Native already unregistered, no response needed.
+                        return;
+                    }
+                    TrustedVaultClientJni.get()
+                            .markLocalKeysAsStaleCompleted(
+                                    nativeTrustedVaultClientAndroid, requestId, succeeded);
+                };
         get().mBackend
                 .markLocalKeysAsStale(accountInfo)
                 // If an exception occurred, it's unknown whether the operation made any
@@ -328,14 +324,16 @@ public class TrustedVaultClient {
             long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
-        Consumer<Boolean> responseCallback = isDegraded -> {
-            if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
-                // Native already unregistered, no response needed.
-                return;
-            }
-            TrustedVaultClientJni.get().getIsRecoverabilityDegradedCompleted(
-                    nativeTrustedVaultClientAndroid, requestId, isDegraded);
-        };
+        Consumer<Boolean> responseCallback =
+                isDegraded -> {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                        // Native already unregistered, no response needed.
+                        return;
+                    }
+                    TrustedVaultClientJni.get()
+                            .getIsRecoverabilityDegradedCompleted(
+                                    nativeTrustedVaultClientAndroid, requestId, isDegraded);
+                };
 
         get().mBackend
                 .getIsRecoverabilityDegraded(accountInfo)
@@ -349,24 +347,31 @@ public class TrustedVaultClient {
      * method addTrustedRecoveryMethodCompleted().
      */
     @CalledByNative
-    private static void addTrustedRecoveryMethod(long nativeTrustedVaultClientAndroid,
-            int requestId, CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
+    private static void addTrustedRecoveryMethod(
+            long nativeTrustedVaultClientAndroid,
+            int requestId,
+            CoreAccountInfo accountInfo,
+            byte[] publicKey,
+            int methodTypeHint) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
-        Consumer<Boolean> responseCallback = success -> {
-            if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
-                // Native already unregistered, no response needed.
-                return;
-            }
-            RecordHistogram.recordBooleanHistogram(
-                    "Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded", success);
-            TrustedVaultClientJni.get().addTrustedRecoveryMethodCompleted(
-                    nativeTrustedVaultClientAndroid, requestId);
-        };
+        Consumer<Boolean> responseCallback =
+                success -> {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                        // Native already unregistered, no response needed.
+                        return;
+                    }
+                    RecordHistogram.recordBooleanHistogram(
+                            "Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded", success);
+                    TrustedVaultClientJni.get()
+                            .addTrustedRecoveryMethodCompleted(
+                                    nativeTrustedVaultClientAndroid, requestId);
+                };
 
-        get().mBackend.addTrustedRecoveryMethod(accountInfo, publicKey, methodTypeHint)
-                .then(unused
-                        -> responseCallback.accept(true),
+        get().mBackend
+                .addTrustedRecoveryMethod(accountInfo, publicKey, methodTypeHint)
+                .then(
+                        unused -> responseCallback.accept(true),
                         exception -> responseCallback.accept(false));
     }
 
@@ -374,14 +379,21 @@ public class TrustedVaultClient {
     interface Natives {
         void fetchKeysCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, String gaiaId, byte[][] keys);
+
         void markLocalKeysAsStaleCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean succeeded);
+
         void getIsRecoverabilityDegradedCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean isDegraded);
+
         void addTrustedRecoveryMethodCompleted(long nativeTrustedVaultClientAndroid, int requestId);
+
         void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
+
         void notifyRecoverabilityChanged(long nativeTrustedVaultClientAndroid);
+
         void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger);
+
         void recordRecoverabilityDegradedFixTrigger(
                 @TrustedVaultUserActionTriggerForUMA int trigger);
     }

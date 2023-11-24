@@ -29,17 +29,21 @@ import org.chromium.ui.widget.Toast;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * ToolbarDragDrop Coordinator owns the view and the model change processor.
- */
+/** ToolbarDragDrop Coordinator owns the view and the model change processor. */
 public class ToolbarDragDropCoordinator implements OnDragListener {
     /**
      * Java Enum of AndroidToolbarDropType used for histogram recording for
      * Android.DragDrop.ToOmnibox.DropType. This is used for histograms and should therefore
      * be treated as append-only.
      */
-    @IntDef({DropType.INVALID, DropType.TEXT, DropType.CHROME_TEXT, DropType.CHROME_LINK,
-            DropType.CHROME_IMAGE, DropType.NUM_ENTRIES})
+    @IntDef({
+        DropType.INVALID,
+        DropType.TEXT,
+        DropType.CHROME_TEXT,
+        DropType.CHROME_LINK,
+        DropType.CHROME_IMAGE,
+        DropType.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface DropType {
         int INVALID = 0;
@@ -62,9 +66,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
     private Supplier<TemplateUrlService> mTemplateUrlServiceSupplier;
 
     interface OnDropCallback {
-        /**
-         * Handles parsing DragEvents on a drop to the Omnibox
-         */
+        /** Handles parsing DragEvents on a drop to the Omnibox */
         void parseDragEvent(DragEvent event);
     }
 
@@ -78,14 +80,17 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
      * drop.
      *
      */
-    public ToolbarDragDropCoordinator(FrameLayout targetView,
-            AutocompleteDelegate autocompleteDelegate, OmniboxStub omniboxStub,
+    public ToolbarDragDropCoordinator(
+            FrameLayout targetView,
+            AutocompleteDelegate autocompleteDelegate,
+            OmniboxStub omniboxStub,
             Supplier<TemplateUrlService> templateUrlServiceSupplier) {
         // TargetView is inflated in order to have the onDragListener attached before it is visible
         mTargetView = targetView;
-        mModel = new PropertyModel.Builder(TargetViewProperties.ALL_KEYS)
-                         .with(TargetViewProperties.TARGET_VIEW_VISIBLE, View.GONE)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(TargetViewProperties.ALL_KEYS)
+                        .with(TargetViewProperties.TARGET_VIEW_VISIBLE, View.GONE)
+                        .build();
         mAutocompleteDelegate = autocompleteDelegate;
         mTargetViewDragListener = new TargetViewDragListener(mModel, this::parseDragEvent);
         mModel.set(TargetViewProperties.ON_DRAG_LISTENER, mTargetViewDragListener);
@@ -112,9 +117,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
         }
     }
 
-    /**
-     * Destroy the Toolbar Drag and Drop Coordinator and its components.
-     */
+    /** Destroy the Toolbar Drag and Drop Coordinator and its components. */
     public void destroy() {
         mModel.set(TargetViewProperties.ON_DRAG_LISTENER, null);
         mTargetView.setVisibility(View.GONE);
@@ -126,9 +129,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
         return event.getClipDescription().filterMimeTypes(MimeTypeUtils.TEXT_MIME_TYPE) != null;
     }
 
-    /**
-     * Handles parsing DragEvents on a drop to the Omnibox.
-     */
+    /** Handles parsing DragEvents on a drop to the Omnibox. */
     @VisibleForTesting
     void parseDragEvent(DragEvent event) {
         if (event.getClipDescription().filterMimeTypes(MimeTypeUtils.IMAGE_MIME_TYPE) != null) {
@@ -146,11 +147,16 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
             String[] postData = urlService.getImageUrlAndPostContent();
             // TODO(crbug.com/1473127): Pass in correct imageByteArray to AutocompleteDelegate
             byte[] imageByteArray = new byte[0];
-            mAutocompleteDelegate.loadUrlWithPostData(postData[0], PageTransition.GENERATED,
-                    SystemClock.uptimeMillis(), postData[1], imageByteArray);
+            mAutocompleteDelegate.loadUrlWithPostData(
+                    postData[0],
+                    PageTransition.GENERATED,
+                    SystemClock.uptimeMillis(),
+                    postData[1],
+                    imageByteArray);
             recordDropType(DropType.CHROME_IMAGE);
         } else if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TEXT)) {
-            mOmniboxStub.setUrlBarFocus(true,
+            mOmniboxStub.setUrlBarFocus(
+                    true,
                     event.getClipData()
                             .getItemAt(0)
                             .coerceToText(mTargetView.getContext())
@@ -167,7 +173,10 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
              */
             String url = event.getClipData().getItemAt(0).getIntent().getData().toString();
             mAutocompleteDelegate.loadUrl(
-                    url, PageTransition.TYPED, SystemClock.uptimeMillis(), /*openInNewTab=*/false);
+                    url,
+                    PageTransition.TYPED,
+                    SystemClock.uptimeMillis(),
+                    /* openInNewTab= */ false);
             recordDropType(DropType.CHROME_LINK);
         } else {
             // case where dragged object is not from Chrome
@@ -176,7 +185,8 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                 handleErrorToast();
                 recordDropType(DropType.INVALID);
             } else {
-                mOmniboxStub.setUrlBarFocus(true,
+                mOmniboxStub.setUrlBarFocus(
+                        true,
                         event.getClipData()
                                 .getItemAt(0)
                                 .coerceToText(mTargetView.getContext())

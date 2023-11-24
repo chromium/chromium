@@ -62,9 +62,7 @@ public class QueryTileSection {
     private float mAnimationPercent;
     private boolean mNeedReload = true;
 
-    /**
-     * Represents the information needed to launch a search query when clicking on a tile.
-     */
+    /** Represents the information needed to launch a search query when clicking on a tile. */
     public static class QueryInfo {
         public final String queryText;
         public final List<String> searchParams;
@@ -76,7 +74,9 @@ public class QueryTileSection {
     }
 
     /** Constructor. */
-    public QueryTileSection(ViewGroup queryTileSectionView, Profile profile,
+    public QueryTileSection(
+            ViewGroup queryTileSectionView,
+            Profile profile,
             Callback<QueryInfo> performSearchQueryCallback) {
         mQueryTileSectionView = queryTileSectionView;
         mSubmitQueryCallback = performSearchQueryCallback;
@@ -84,13 +84,20 @@ public class QueryTileSection {
         mTileProvider = TileProviderFactory.getForProfile(profile);
         TileConfig tileConfig = new TileConfig.Builder().setUmaPrefix(UMA_PREFIX).build();
         mTileUmaLogger = new TileUmaLogger(UMA_PREFIX);
-        mTileCoordinator = ImageTileCoordinatorFactory.create(mQueryTileSectionView.getContext(),
-                tileConfig, this::onTileClicked, this::getVisuals);
-        mQueryTileSectionView.addView(mTileCoordinator.getView(),
+        mTileCoordinator =
+                ImageTileCoordinatorFactory.create(
+                        mQueryTileSectionView.getContext(),
+                        tileConfig,
+                        this::onTileClicked,
+                        this::getVisuals);
+        mQueryTileSectionView.addView(
+                mTileCoordinator.getView(),
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         mImageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool());
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool());
         reloadTiles();
     }
 
@@ -145,12 +152,18 @@ public class QueryTileSection {
         // TODO(crbug.com/1077086): Probably need a bigger width to start with or pass the exact
         // width. Also may need to update on orientation change.
         if (mTileWidth == null) {
-            mTileWidth = mQueryTileSectionView.getResources().getDimensionPixelSize(
-                    R.dimen.tile_ideal_width);
+            mTileWidth =
+                    mQueryTileSectionView
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.tile_ideal_width);
         }
 
-        fetchImage((QueryTile) tile, mTileWidth,
-                bitmap -> { callback.onResult(Arrays.asList(bitmap)); });
+        fetchImage(
+                (QueryTile) tile,
+                mTileWidth,
+                bitmap -> {
+                    callback.onResult(Arrays.asList(bitmap));
+                });
     }
 
     private void fetchImage(QueryTile queryTile, int size, Callback<Bitmap> callback) {
@@ -160,9 +173,13 @@ public class QueryTileSection {
         }
 
         GURL url = queryTile.urls.get(0);
-        ImageFetcher.Params params = ImageFetcher.Params.createWithExpirationInterval(url,
-                ImageFetcher.QUERY_TILE_UMA_CLIENT_NAME, size, size,
-                QueryTileConstants.IMAGE_EXPIRATION_INTERVAL_MINUTES);
+        ImageFetcher.Params params =
+                ImageFetcher.Params.createWithExpirationInterval(
+                        url,
+                        ImageFetcher.QUERY_TILE_UMA_CLIENT_NAME,
+                        size,
+                        size,
+                        QueryTileConstants.IMAGE_EXPIRATION_INTERVAL_MINUTES);
         mImageFetcher.fetchImage(params, callback);
     }
 
@@ -174,13 +191,17 @@ public class QueryTileSection {
     public static int getMaxRowsForMostVisitedTiles(Context context) {
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
         int screenHeightDp = DisplayUtil.pxToDp(display, display.getDisplayHeight());
-        int smallScreenHeightThresholdDp = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.QUERY_TILES, VARIATION_SMALL_SCREEN_HEIGHT_THRESHOLD_DP,
-                DEFAULT_SMALL_SCREEN_HEIGHT_THRESHOLD_DP);
+        int smallScreenHeightThresholdDp =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.QUERY_TILES,
+                        VARIATION_SMALL_SCREEN_HEIGHT_THRESHOLD_DP,
+                        DEFAULT_SMALL_SCREEN_HEIGHT_THRESHOLD_DP);
         boolean isSmallScreen = screenHeightDp < smallScreenHeightThresholdDp;
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.QUERY_TILES,
-                isSmallScreen ? MOST_VISITED_MAX_ROWS_SMALL_SCREEN
-                              : MOST_VISITED_MAX_ROWS_NORMAL_SCREEN,
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.QUERY_TILES,
+                isSmallScreen
+                        ? MOST_VISITED_MAX_ROWS_SMALL_SCREEN
+                        : MOST_VISITED_MAX_ROWS_NORMAL_SCREEN,
                 DEFAULT_MOST_VISITED_MAX_ROWS);
     }
 }

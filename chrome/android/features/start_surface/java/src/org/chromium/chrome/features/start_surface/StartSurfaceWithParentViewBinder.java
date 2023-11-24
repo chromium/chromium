@@ -20,9 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class StartSurfaceWithParentViewBinder {
     private static final long FADE_IN_DURATION_MS = 50;
 
-    /**
-     * The view holder holds the parent view and the tasks surface view.
-     */
+    /** The view holder holds the parent view and the tasks surface view. */
     public static class ViewHolder {
         public final ViewGroup parentView;
         public final View tasksSurfaceView;

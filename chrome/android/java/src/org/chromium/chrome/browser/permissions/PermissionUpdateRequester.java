@@ -38,14 +38,20 @@ class PermissionUpdateRequester implements PermissionCallback {
     private ActivityStateListener mActivityStateListener;
 
     @CalledByNative
-    private static PermissionUpdateRequester create(long nativePtr, WebContents webContents,
-            String[] requiredPermissions, String[] optionalPermissions) {
+    private static PermissionUpdateRequester create(
+            long nativePtr,
+            WebContents webContents,
+            String[] requiredPermissions,
+            String[] optionalPermissions) {
         return new PermissionUpdateRequester(
                 nativePtr, webContents, requiredPermissions, optionalPermissions);
     }
 
-    private PermissionUpdateRequester(long nativePtr, WebContents webContents,
-            String[] requiredPermissions, String[] optionalPermissions) {
+    private PermissionUpdateRequester(
+            long nativePtr,
+            WebContents webContents,
+            String[] requiredPermissions,
+            String[] optionalPermissions) {
         mNativePtr = nativePtr;
         mWebContents = webContents;
 
@@ -77,8 +83,9 @@ class PermissionUpdateRequester implements PermissionCallback {
 
         boolean canRequestAllPermissions = true;
         for (int i = 0; i < mAndroidPermisisons.length; i++) {
-            canRequestAllPermissions &= (windowAndroid.hasPermission(mAndroidPermisisons[i])
-                    || windowAndroid.canRequestPermission(mAndroidPermisisons[i]));
+            canRequestAllPermissions &=
+                    (windowAndroid.hasPermission(mAndroidPermisisons[i])
+                            || windowAndroid.canRequestPermission(mAndroidPermisisons[i]));
         }
 
         Activity activity = windowAndroid.getActivity().get();
@@ -90,22 +97,24 @@ class PermissionUpdateRequester implements PermissionCallback {
                 return;
             }
 
-            mActivityStateListener = new ActivityStateListener() {
-                @Override
-                public void onActivityStateChange(Activity activity, int newState) {
-                    if (newState == ActivityState.DESTROYED) {
-                        ApplicationStatus.unregisterActivityStateListener(this);
-                        mActivityStateListener = null;
+            mActivityStateListener =
+                    new ActivityStateListener() {
+                        @Override
+                        public void onActivityStateChange(Activity activity, int newState) {
+                            if (newState == ActivityState.DESTROYED) {
+                                ApplicationStatus.unregisterActivityStateListener(this);
+                                mActivityStateListener = null;
 
-                        PermissionUpdateRequesterJni.get().onPermissionResult(mNativePtr, false);
-                    } else if (newState == ActivityState.RESUMED) {
-                        ApplicationStatus.unregisterActivityStateListener(this);
-                        mActivityStateListener = null;
+                                PermissionUpdateRequesterJni.get()
+                                        .onPermissionResult(mNativePtr, false);
+                            } else if (newState == ActivityState.RESUMED) {
+                                ApplicationStatus.unregisterActivityStateListener(this);
+                                mActivityStateListener = null;
 
-                        notifyPermissionResult();
-                    }
-                }
-            };
+                                notifyPermissionResult();
+                            }
+                        }
+                    };
             ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
 
             Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);

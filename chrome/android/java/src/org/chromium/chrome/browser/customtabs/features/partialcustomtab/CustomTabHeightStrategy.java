@@ -22,9 +22,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
-/**
- * The default strategy for setting the height of the custom tab.
- */
+/** The default strategy for setting the height of the custom tab. */
 public class CustomTabHeightStrategy implements FindToolbarObserver {
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -43,29 +41,48 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                 @CustomTabsCallback.ActivityLayoutState int state);
     }
 
-    public static CustomTabHeightStrategy createStrategy(Activity activity,
+    public static CustomTabHeightStrategy createStrategy(
+            Activity activity,
             BrowserServicesIntentDataProvider intentData,
-            Supplier<TouchEventProvider> touchEventProvider, Supplier<Tab> tab,
+            Supplier<TouchEventProvider> touchEventProvider,
+            Supplier<Tab> tab,
             CustomTabsConnection connection,
-            ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            FullscreenManager fullscreenManager,
             boolean isTablet) {
         if (!intentData.isPartialCustomTab()) {
             return new CustomTabHeightStrategy();
         }
 
         CustomTabsSessionToken session = intentData.getSession();
-        OnResizedCallback resizeCallback = (height, width)
-                -> connection.onResized(session, height, width);
-        OnActivityLayoutCallback layoutCallback = (left, top, right, bottom, state)
-                -> connection.onActivityLayout(session, left, top, right, bottom, state);
+        OnResizedCallback resizeCallback =
+                (height, width) -> connection.onResized(session, height, width);
+        OnActivityLayoutCallback layoutCallback =
+                (left, top, right, bottom, state) ->
+                        connection.onActivityLayout(session, left, top, right, bottom, state);
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            return new PartialCustomTabDisplayManager(activity, intentData, touchEventProvider, tab,
-                    resizeCallback, layoutCallback, lifecycleDispatcher, fullscreenManager,
+            return new PartialCustomTabDisplayManager(
+                    activity,
+                    intentData,
+                    touchEventProvider,
+                    tab,
+                    resizeCallback,
+                    layoutCallback,
+                    lifecycleDispatcher,
+                    fullscreenManager,
                     isTablet);
         } else {
-            return new PartialCustomTabBottomSheetStrategy(activity, intentData,
-                    touchEventProvider, tab, resizeCallback, layoutCallback,
-                    lifecycleDispatcher, fullscreenManager, isTablet, /*startMaximized=*/false,
+            return new PartialCustomTabBottomSheetStrategy(
+                    activity,
+                    intentData,
+                    touchEventProvider,
+                    tab,
+                    resizeCallback,
+                    layoutCallback,
+                    lifecycleDispatcher,
+                    fullscreenManager,
+                    isTablet,
+                    /* startMaximized= */ false,
                     new PartialCustomTabHandleStrategyFactory());
         }
     }
@@ -75,9 +92,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
      */
     public void onPostInflationStartup() {}
 
-    /**
-     * Returns false if we didn't change the Window background color, true otherwise.
-     */
+    /** Returns false if we didn't change the Window background color, true otherwise. */
     public boolean changeBackgroundColorForResizing() {
         return false;
     }
@@ -116,8 +131,6 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     @Override
     public void onFindToolbarHidden() {}
 
-    /**
-     * Destroy the height strategy object.
-     */
+    /** Destroy the height strategy object. */
     public void destroy() {}
 }

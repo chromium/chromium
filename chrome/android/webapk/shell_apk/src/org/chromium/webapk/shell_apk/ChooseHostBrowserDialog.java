@@ -160,7 +160,6 @@ public class ChooseHostBrowserDialog {
                 });
         dialog.show();
     }
-    ;
 
     /** Returns a list of BrowserItem for all of the installed browsers. */
     private static List<BrowserItem> getBrowserInfosForHostBrowserSelection(

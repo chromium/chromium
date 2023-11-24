@@ -12,9 +12,6 @@ import org.jni_zero.JNINamespace;
  */
 @JNINamespace("vr")
 public class VrShellDelegate {
-     /**
-     * Called when the native library is first available.
-     */
-    public static void onNativeLibraryAvailable() {
-    }
+    /** Called when the native library is first available. */
+    public static void onNativeLibraryAvailable() {}
 }

@@ -60,8 +60,7 @@ public class CustomTabActivityTabFactory {
 
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
 
-    @Nullable
-    private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
+    @Nullable private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
 
     @Inject
     public CustomTabActivityTabFactory(

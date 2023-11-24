@@ -23,6 +23,7 @@ public interface Player {
     interface Delegate {
         /** Returns the BottomSheetController that will manage the bottom sheets. */
         BottomSheetController getBottomSheetController();
+
         /** Returns true if highlighting is supported. */
         boolean isHighlightingSupported();
 
@@ -31,8 +32,10 @@ public interface Player {
 
         /** Returns the supplier for the "highlighting enabled" setting. */
         ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier();
+
         /** Returns the supplier for the list of voices to show in the voice menu. */
         ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier();
+
         /** Returns the supplier for the current language's selected voice. */
         ObservableSupplier<String> getVoiceIdSupplier();
 
@@ -44,8 +47,10 @@ public interface Player {
 
         /** Play a short example of the specified voice. */
         void previewVoice(PlaybackVoice voice);
+
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();
+
         /** Returns the Activity in which the player UI should live. */
         Activity getActivity();
 
@@ -92,9 +97,7 @@ public interface Player {
     /** Stop playback and stop tracking players. */
     default void destroy() {}
 
-    /**
-     * Show the mini player, called when playback is requested.
-     */
+    /** Show the mini player, called when playback is requested. */
     default void playTabRequested() {}
 
     /**

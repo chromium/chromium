@@ -29,8 +29,8 @@ import java.util.HashMap;
  */
 public class KeyboardAccessoryTabLayoutCoordinator {
     private final PropertyModel mModel =
-            new PropertyModel
-                    .Builder(TABS, ACTIVE_TAB, TAB_SELECTION_CALLBACKS, BUTTON_SELECTION_CALLBACKS)
+            new PropertyModel.Builder(
+                            TABS, ACTIVE_TAB, TAB_SELECTION_CALLBACKS, BUTTON_SELECTION_CALLBACKS)
                     .with(TABS, new ListModel<>())
                     .with(ACTIVE_TAB, null)
                     .build();
@@ -38,24 +38,23 @@ public class KeyboardAccessoryTabLayoutCoordinator {
 
     private final HashMap<View, TemporarySheetOpenerBindings> mBindings = new HashMap<>();
 
-    private final SheetOpenerCallbacks mSheetOpenerCallbacks = new SheetOpenerCallbacks() {
-        @Override
-        public void onViewBound(View view) {
-            if (!mBindings.containsKey(view)) {
-                mBindings.put(view, new TemporarySheetOpenerBindings(view));
-            }
-        }
+    private final SheetOpenerCallbacks mSheetOpenerCallbacks =
+            new SheetOpenerCallbacks() {
+                @Override
+                public void onViewBound(View view) {
+                    if (!mBindings.containsKey(view)) {
+                        mBindings.put(view, new TemporarySheetOpenerBindings(view));
+                    }
+                }
 
-        @Override
-        public void onViewUnbound(View view) {
-            TemporarySheetOpenerBindings binding = mBindings.remove(view);
-            if (binding != null) binding.destroy();
-        }
-    };
+                @Override
+                public void onViewUnbound(View view) {
+                    TemporarySheetOpenerBindings binding = mBindings.remove(view);
+                    if (binding != null) binding.destroy();
+                }
+            };
 
-    /**
-     * This observer gets notified when a tab get selected, reselected or when any tab changes.
-     */
+    /** This observer gets notified when a tab get selected, reselected or when any tab changes. */
     public interface AccessoryTabObserver {
         /**
          * Called when the active tab changes.
@@ -97,9 +96,11 @@ public class KeyboardAccessoryTabLayoutCoordinator {
         private ViewPager.OnPageChangeListener mOnPageChangeListener;
 
         TemporarySheetOpenerBindings(View view) {
-            mMcp = PropertyModelChangeProcessor.create(mModel,
-                    (KeyboardAccessoryButtonGroupView) view,
-                    KeyboardAccessoryButtonGroupViewBinder::bind);
+            mMcp =
+                    PropertyModelChangeProcessor.create(
+                            mModel,
+                            (KeyboardAccessoryButtonGroupView) view,
+                            KeyboardAccessoryButtonGroupViewBinder::bind);
             mOnPageChangeListener = new ViewPager.SimpleOnPageChangeListener();
             mMediator.addPageChangeListener(mOnPageChangeListener);
         }
@@ -123,8 +124,10 @@ public class KeyboardAccessoryTabLayoutCoordinator {
             PropertyModel model, KeyboardAccessoryTabLayoutView inflatedView) {
         KeyboardAccessoryTabLayoutViewBinder tabViewBinder =
                 new KeyboardAccessoryTabLayoutViewBinder();
-        model.get(TABS).addObserver(
-                new ListModelChangeProcessor<>(model.get(TABS), inflatedView, tabViewBinder));
+        model.get(TABS)
+                .addObserver(
+                        new ListModelChangeProcessor<>(
+                                model.get(TABS), inflatedView, tabViewBinder));
         return tabViewBinder;
     }
 
@@ -140,14 +143,14 @@ public class KeyboardAccessoryTabLayoutCoordinator {
             PropertyModel model, KeyboardAccessoryButtonGroupView inflatedView) {
         KeyboardAccessoryButtonGroupViewBinder buttonGroupViewBinder =
                 new KeyboardAccessoryButtonGroupViewBinder();
-        model.get(TABS).addObserver(new ListModelChangeProcessor<>(
-                model.get(TABS), inflatedView, buttonGroupViewBinder));
+        model.get(TABS)
+                .addObserver(
+                        new ListModelChangeProcessor<>(
+                                model.get(TABS), inflatedView, buttonGroupViewBinder));
         return buttonGroupViewBinder;
     }
 
-    /**
-     * Creates a new Tab Layout component that isn't assigned to any view yet.
-     */
+    /** Creates a new Tab Layout component that isn't assigned to any view yet. */
     public KeyboardAccessoryTabLayoutCoordinator() {
         mMediator = new KeyboardAccessoryTabLayoutMediator(mModel);
     }
@@ -158,7 +161,9 @@ public class KeyboardAccessoryTabLayoutCoordinator {
      */
     public void assignNewView(TabLayout tabLayout) {
         mMediator.addPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        PropertyModelChangeProcessor.create(mModel, (KeyboardAccessoryTabLayoutView) tabLayout,
+        PropertyModelChangeProcessor.create(
+                mModel,
+                (KeyboardAccessoryTabLayoutView) tabLayout,
                 KeyboardAccessoryTabLayoutViewBinder::bind);
     }
 

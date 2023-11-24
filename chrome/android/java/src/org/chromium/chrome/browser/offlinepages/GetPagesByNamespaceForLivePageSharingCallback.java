@@ -40,8 +40,10 @@ public class GetPagesByNamespaceForLivePageSharingCallback
         }
         // Otherwise, save the page within Live Page Sharing namespace and share it using content
         // URI.
-        mBridge.savePage(mTab.getWebContents(),
-                new ClientId(OfflinePageBridge.LIVE_PAGE_SHARING_NAMESPACE,
+        mBridge.savePage(
+                mTab.getWebContents(),
+                new ClientId(
+                        OfflinePageBridge.LIVE_PAGE_SHARING_NAMESPACE,
                         Integer.toString(mTab.getId())),
                 new SavePageAndShareCallback(mTab.getWindowAndroid(), mShareCallback, mBridge));
     }

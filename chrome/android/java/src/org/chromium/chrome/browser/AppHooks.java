@@ -51,9 +51,7 @@ import java.util.List;
 public abstract class AppHooks {
     private static AppHooksImpl sInstanceForTesting;
 
-    /**
-     * Sets a mocked instance for testing.
-     */
+    /** Sets a mocked instance for testing. */
     public static void setInstanceForTesting(AppHooksImpl instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
@@ -146,9 +144,7 @@ public abstract class AppHooks {
         return new RevenueStats();
     }
 
-    /**
-     * Returns a new instance of VariationsSession.
-     */
+    /** Returns a new instance of VariationsSession. */
     public VariationsSession createVariationsSession() {
         return new VariationsSession();
     }
@@ -209,28 +205,24 @@ public abstract class AppHooks {
     public int isGoogleApiAvailableWithMinApkVersion(int minApkVersion) {
         int apkVersion =
                 PackageUtils.getPackageVersion(GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE);
-        return apkVersion < 0                ? ConnectionResult.SERVICE_MISSING
-                : apkVersion < minApkVersion ? ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED
-                                             : ConnectionResult.SUCCESS;
+        return apkVersion < 0
+                ? ConnectionResult.SERVICE_MISSING
+                : apkVersion < minApkVersion
+                        ? ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED
+                        : ConnectionResult.SUCCESS;
     }
 
-    /**
-     * Returns a new {@link TrustedVaultClient.Backend} instance.
-     */
+    /** Returns a new {@link TrustedVaultClient.Backend} instance. */
     public TrustedVaultClient.Backend createSyncTrustedVaultClientBackend() {
         return new TrustedVaultClient.EmptyBackend();
     }
 
-    /**
-     * Returns the URL to the WebAPK creation/update server.
-     */
+    /** Returns the URL to the WebAPK creation/update server. */
     public String getWebApkServerUrl() {
         return "";
     }
 
-    /**
-     * Returns a Chime Delegate if the chime module is defined.
-     */
+    /** Returns a Chime Delegate if the chime module is defined. */
     public ChimeDelegate getChimeDelegate() {
         return new ChimeDelegate();
     }

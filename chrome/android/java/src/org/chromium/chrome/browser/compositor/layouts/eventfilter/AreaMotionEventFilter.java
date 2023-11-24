@@ -22,6 +22,7 @@ public class AreaMotionEventFilter extends MotionEventFilter {
 
     /** Whether a hover enter or move event has occurred inside of the specified area. */
     private boolean mHasHoverEnterOrMoveEventInArea;
+
     /** Whether a hover exit event has occurred from the specified area. */
     private boolean mHoverExitedArea;
 
@@ -56,8 +57,12 @@ public class AreaMotionEventFilter extends MotionEventFilter {
      * @param autoOffset            Whether or not to offset touch events.
      * @param useDefaultLongPress   Whether or not to use the default long press behavior.
      */
-    public AreaMotionEventFilter(Context context, MotionEventHandler handler, RectF triggerRect,
-            boolean autoOffset, boolean useDefaultLongPress) {
+    public AreaMotionEventFilter(
+            Context context,
+            MotionEventHandler handler,
+            RectF triggerRect,
+            boolean autoOffset,
+            boolean useDefaultLongPress) {
         super(context, handler, autoOffset, useDefaultLongPress);
         setEventArea(triggerRect);
     }

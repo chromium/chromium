@@ -26,9 +26,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A preference that displays Personalized Sync Promo when the user is not syncing.
- */
+/** A preference that displays Personalized Sync Promo when the user is not syncing. */
 public class SyncPromoPreference extends Preference
         implements SignInStateObserver, ProfileDataCache.Observer, AccountsChangeObserver {
     @Retention(RetentionPolicy.SOURCE)
@@ -47,9 +45,7 @@ public class SyncPromoPreference extends Preference
     private @State int mState;
     private @Nullable SyncPromoController mSyncPromoController;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SyncPromoPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.sync_promo_view_settings);
@@ -107,9 +103,10 @@ public class SyncPromoPreference extends Preference
     private void setState(@State int state) {
         if (mState == state) return;
 
-        final boolean hasStateChangedFromHiddenToShown = mState == State.PROMO_HIDDEN
-                && (state == State.PERSONALIZED_SIGNIN_PROMO
-                        || state == State.PERSONALIZED_SYNC_PROMO);
+        final boolean hasStateChangedFromHiddenToShown =
+                mState == State.PROMO_HIDDEN
+                        && (state == State.PERSONALIZED_SIGNIN_PROMO
+                                || state == State.PERSONALIZED_SYNC_PROMO);
         if (hasStateChangedFromHiddenToShown) {
             mSyncPromoController.increasePromoShowCount();
         }

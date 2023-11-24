@@ -470,9 +470,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
@@ -509,9 +507,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void
             testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled_animationsEnabled() {
@@ -602,9 +598,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

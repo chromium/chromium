@@ -46,7 +46,9 @@ public class MinimizedCardDialogFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(
                 org.chromium.chrome.R.layout.custom_tabs_minimized_card, container, false);

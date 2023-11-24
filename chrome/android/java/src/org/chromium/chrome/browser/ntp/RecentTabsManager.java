@@ -39,18 +39,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Provides the domain logic and data for RecentTabsPage and RecentTabsRowAdapter.
- */
-public class RecentTabsManager implements SyncService.SyncStateChangedListener, SignInStateObserver,
-                                          ProfileDataCache.Observer, AccountsChangeObserver {
-    /**
-     * Implement this to receive updates when the page contents change.
-     */
+/** Provides the domain logic and data for RecentTabsPage and RecentTabsRowAdapter. */
+public class RecentTabsManager
+        implements SyncService.SyncStateChangedListener,
+                SignInStateObserver,
+                ProfileDataCache.Observer,
+                AccountsChangeObserver {
+    /** Implement this to receive updates when the page contents change. */
     interface UpdatedCallback {
-        /**
-         * Called when the list of recently closed tabs or foreign sessions changes.
-         */
+        /** Called when the list of recently closed tabs or foreign sessions changes. */
         void onUpdated();
     }
 
@@ -85,6 +82,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * used to de-duplicate as update would otherwise result in incorrect metrics.
      */
     private final Map<Integer, Boolean> mTabSessionIdsRestored = new HashMap<>();
+
     private final Map<Integer, Boolean> mGroupSessionIdsRestored = new HashMap<>();
     private final Map<Integer, Boolean> mBulkSessionIdsRestored = new HashMap<>();
 
@@ -97,8 +95,12 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * @param context the Android context this manager will work in.
      * @param showHistoryManager Runnable showing history manager UI.
      */
-    public RecentTabsManager(Tab tab, TabModelSelector tabModelSelector, Profile profile,
-            Context context, Runnable showHistoryManager) {
+    public RecentTabsManager(
+            Tab tab,
+            TabModelSelector tabModelSelector,
+            Profile profile,
+            Context context,
+            Runnable showHistoryManager) {
         mProfile = profile;
         mActiveTab = tab;
         mTabModelSelector = tabModelSelector;
@@ -106,9 +108,10 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mForeignSessionHelper = new ForeignSessionHelper(profile);
         mPrefs = new RecentTabsPagePrefs(profile);
         mFaviconHelper = new FaviconHelper();
-        mRecentlyClosedTabManager = sRecentlyClosedTabManagerForTests != null
-                ? sRecentlyClosedTabManagerForTests
-                : new RecentlyClosedBridge(profile, tabModelSelector);
+        mRecentlyClosedTabManager =
+                sRecentlyClosedTabManagerForTests != null
+                        ? sRecentlyClosedTabManagerForTests
+                        : new RecentlyClosedBridge(profile, tabModelSelector);
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
@@ -238,8 +241,8 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * @param tab The tab to open.
      * @param windowDisposition The WindowOpenDisposition flag.
      */
-    public void openForeignSessionTab(ForeignSession session, ForeignSessionTab tab,
-            int windowDisposition) {
+    public void openForeignSessionTab(
+            ForeignSession session, ForeignSessionTab tab, int windowDisposition) {
         if (mIsDestroyed) return;
         RecordUserAction.record("MobileRecentTabManagerTabFromOtherDeviceOpened");
         RecordUserAction.record("MobileCrossDeviceTabOpenedOrSent");
@@ -270,7 +273,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         if (mIsDestroyed) return;
 
         assert !(entry instanceof RecentlyClosedTab)
-            : "Opening a RecentlyClosedTab should use openRecentlyClosedTab().";
+                : "Opening a RecentlyClosedTab should use openRecentlyClosedTab().";
 
         if (entry instanceof RecentlyClosedGroup) {
             mGroupSessionIdsRestored.put(entry.getSessionId(), true);
@@ -282,9 +285,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mRecentlyClosedTabManager.openRecentlyClosedEntry(getTabModel(), entry);
     }
 
-    /**
-     * Opens the history page.
-     */
+    /** Opens the history page. */
     public void openHistoryPage() {
         if (mIsDestroyed) return;
         mShowHistoryManager.run();
@@ -387,9 +388,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mForeignSessionHelper.deleteForeignSession(session);
     }
 
-    /**
-     * Clears the list of recently closed tabs.
-     */
+    /** Clears the list of recently closed tabs. */
     public void clearRecentlyClosedEntries() {
         if (mIsDestroyed) return;
         RecordUserAction.record("MobileRecentTabManagerRecentTabsCleared");
@@ -433,7 +432,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         }
 
         if (!mForeignSessions.isEmpty()) {
-          return SyncPromoState.NO_PROMO;
+            return SyncPromoState.NO_PROMO;
         }
 
         // TODO(crbug.com/1341324): PROMO_FOR_SYNC_TURNED_OFF_STATE should only
@@ -449,18 +448,16 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
 
         final boolean hasSyncPromoStateChangedtoShown =
                 (mPromoState == SyncPromoState.NO_PROMO
-                        || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
-                && (newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
-                        || newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
+                                || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
+                        && (newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
+                                || newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         if (hasSyncPromoStateChangedtoShown) {
             mSyncPromoController.increasePromoShowCount();
         }
         mPromoState = newState;
     }
 
-    /**
-     * Sets up the sync promo view.
-     */
+    /** Sets up the sync promo view. */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
         mSyncPromoController.setUpSyncPromoView(mProfileDataCache, view, null);
     }

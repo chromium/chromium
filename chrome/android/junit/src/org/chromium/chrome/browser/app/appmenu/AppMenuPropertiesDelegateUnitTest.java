@@ -1601,7 +1601,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                     .withAutoDarkEnabled();
         }
     }
-    ;
 
     private void setMenuOptions(MenuOptions options) {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);

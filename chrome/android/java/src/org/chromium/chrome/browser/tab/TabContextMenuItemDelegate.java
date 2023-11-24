@@ -58,12 +58,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManager;
 
-    /**
-     * Builds a {@link TabContextMenuItemDelegate} instance.
-     */
-    public TabContextMenuItemDelegate(Tab tab, TabModelSelector tabModelSelector,
+    /** Builds a {@link TabContextMenuItemDelegate} instance. */
+    public TabContextMenuItemDelegate(
+            Tab tab,
+            TabModelSelector tabModelSelector,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            Runnable contextMenuCopyLinkObserver, Supplier<SnackbarManager> snackbarManager) {
+            Runnable contextMenuCopyLinkObserver,
+            Supplier<SnackbarManager> snackbarManager) {
         mTab = (TabImpl) tab;
         mTabModelSelector = tabModelSelector;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -96,8 +97,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public boolean isOpenInOtherWindowSupported() {
-        return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(
-                TabUtils.getActivity(mTab));
+        return MultiWindowUtils.getInstance()
+                .isOpenInOtherWindowSupported(TabUtils.getActivity(mTab));
     }
 
     @Override
@@ -182,7 +183,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         if (MailTo.isMailTo(url.getSpec())) {
-            intent.putExtra(ContactsContract.Intents.Insert.EMAIL,
+            intent.putExtra(
+                    ContactsContract.Intents.Insert.EMAIL,
                     MailTo.parse(url.getSpec()).getTo().split(",")[0]);
         } else if (UrlUtilities.isTelScheme(url)) {
             intent.putExtra(ContactsContract.Intents.Insert.PHONE, UrlUtilities.getTelNumber(url));
@@ -205,17 +207,23 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab,
+    public void onOpenInNewTab(
+            GURL url,
+            Referrer referrer,
+            boolean navigateToTab,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
-        mTabModelSelector.openNewTab(loadUrlParams,
-                navigateToTab ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
-                              : TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                mTab, isIncognito());
+        mTabModelSelector.openNewTab(
+                loadUrlParams,
+                navigateToTab
+                        ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                        : TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                mTab,
+                isIncognito());
     }
 
     @Override
@@ -224,15 +232,21 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
-        mTabModelSelector.openNewTab(loadUrlParams,
-                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, mTab, isIncognito());
+        mTabModelSelector.openNewTab(
+                loadUrlParams,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                mTab,
+                isIncognito());
     }
 
     @Override
     public void onOpenInNewIncognitoTab(GURL url) {
         RecordUserAction.record("MobileNewTabOpened");
-        mTabModelSelector.openNewTab(new LoadUrlParams(url.getSpec()),
-                TabLaunchType.FROM_LONGPRESS_FOREGROUND, mTab, true);
+        mTabModelSelector.openNewTab(
+                new LoadUrlParams(url.getSpec()),
+                TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                mTab,
+                true);
     }
 
     @Override
@@ -290,7 +304,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                             .savePageLater(
                                     url.getSpec(),
                                     OfflinePageBridge.BOOKMARK_NAMESPACE,
-                                    /*userRequested*/ true);
+                                    /* userRequested= */ true);
                 });
     }
 
@@ -331,7 +345,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
         if (isIncognito) {
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID,
+            intent.putExtra(
+                    Browser.EXTRA_APPLICATION_ID,
                     ContextUtils.getApplicationContext().getPackageName());
             IntentUtils.addTrustedIntentExtras(intent);
             IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_EXTERNAL_APP);

@@ -25,11 +25,10 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Computes and records metrics for what caused Chrome to be launched.
- */
-public abstract class LaunchCauseMetrics implements ApplicationStatus.ApplicationStateListener,
-                                                    ApplicationStatus.ActivityStateListener {
+/** Computes and records metrics for what caused Chrome to be launched. */
+public abstract class LaunchCauseMetrics
+        implements ApplicationStatus.ApplicationStateListener,
+                ApplicationStatus.ActivityStateListener {
     private static final boolean DEBUG = false;
     private static final String TAG = "LaunchCauseMetrics";
 
@@ -47,6 +46,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
 
     @SuppressLint("StaticFieldLeak")
     private static Activity sLastResumedActivity;
+
     private static ApplicationStatus.ActivityStateListener sAppActivityListener;
 
     // State pertaining to the current launch, reset when Chrome is backgrounded,
@@ -122,15 +122,16 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     public LaunchCauseMetrics(final Activity activity) {
         mActivity = activity;
         if (sAppActivityListener == null) {
-            sAppActivityListener = new ApplicationStatus.ActivityStateListener() {
-                @Override
-                public void onActivityStateChange(Activity activity, int newState) {
-                    if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
-                    if (newState == ActivityState.DESTROYED) {
-                        if (activity == sLastResumedActivity) sLastResumedActivity = null;
-                    }
-                }
-            };
+            sAppActivityListener =
+                    new ApplicationStatus.ActivityStateListener() {
+                        @Override
+                        public void onActivityStateChange(Activity activity, int newState) {
+                            if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
+                            if (newState == ActivityState.DESTROYED) {
+                                if (activity == sLastResumedActivity) sLastResumedActivity = null;
+                            }
+                        }
+                    };
             ApplicationStatus.registerStateListenerForAllActivities(sAppActivityListener);
             if (ApplicationStatus.getStateForApplication()
                     == ApplicationState.HAS_RUNNING_ACTIVITIES) {
@@ -169,9 +170,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         mBetweenLaunchState = new BetweenLaunchState();
     }
 
-    /**
-     * Computes and returns what the cause of the Chrome launch was.
-     */
+    /** Computes and returns what the cause of the Chrome launch was. */
     protected abstract @LaunchCause int computeIntentLaunchCause();
 
     /**
@@ -185,9 +184,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         return LaunchCause.OTHER;
     }
 
-    /**
-     * Returns true if an intent has been received since the last launch of Chrome.
-     */
+    /** Returns true if an intent has been received since the last launch of Chrome. */
     protected boolean didReceiveIntent() {
         return mPerLaunchState.mReceivedIntent;
     }
@@ -206,8 +203,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         if (!sRecordedLaunchCause) {
             sRecordedLaunchCause = true;
 
-            @LaunchCause
-            int cause = LaunchCause.OTHER;
+            @LaunchCause int cause = LaunchCause.OTHER;
 
             if (mPerLaunchState.mReceivedIntent) {
                 cause = computeIntentLaunchCause();
@@ -223,8 +219,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         } else if (mPerLaunchState.mOtherChromeActivityLastFocused) {
             // Handle the case where we're intentionally transitioning between two Chrome
             // Activities while Chrome is in the foreground, and want to count that as a Launch.
-            @LaunchCause
-            int cause = getIntentionalTransitionCauseOrOther();
+            @LaunchCause int cause = getIntentionalTransitionCauseOrOther();
             if (cause != LaunchCause.OTHER) {
                 if (DEBUG) logLaunchCause(cause);
                 RecordHistogram.recordEnumeratedHistogram(

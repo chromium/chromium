@@ -8,14 +8,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
 
-/**
- * A class that tracks the Home surface NTP.
- */
+/** A class that tracks the Home surface NTP. */
 public class HomeSurfaceTracker {
-    @Nullable
-    private Tab mHomeSurfaceTab;
-    @Nullable
-    private Tab mLastActiveTabToTrack;
+    @Nullable private Tab mHomeSurfaceTab;
+    @Nullable private Tab mLastActiveTabToTrack;
 
     public HomeSurfaceTracker() {}
 
@@ -43,9 +39,7 @@ public class HomeSurfaceTracker {
         return mLastActiveTabToTrack;
     }
 
-    /**
-     * Returns whether the given Tab is the Tab of home surface NTP.
-     */
+    /** Returns whether the given Tab is the Tab of home surface NTP. */
     public boolean isHomeSurfaceTab(Tab tab) {
         if (tab == null || mHomeSurfaceTab == null) return false;
 

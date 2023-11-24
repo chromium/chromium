@@ -67,8 +67,13 @@ import java.lang.annotation.RetentionPolicy;
     /** A token held while the payment sheet is obscuring all visible tabs. */
     private TabObscuringHandler.Token mTabObscuringToken;
 
-    @IntDef({CloseReason.OTHERS, CloseReason.USER, CloseReason.ACTIVITY_DIED,
-            CloseReason.INSECURE_NAVIGATION, CloseReason.FAIL_LOAD})
+    @IntDef({
+        CloseReason.OTHERS,
+        CloseReason.USER,
+        CloseReason.ACTIVITY_DIED,
+        CloseReason.INSECURE_NAVIGATION,
+        CloseReason.FAIL_LOAD
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CloseReason {
         int OTHERS = 0;
@@ -93,11 +98,18 @@ import java.lang.annotation.RetentionPolicy;
      * @param tabObscuringHandler Handles the obscuring of tabs.
      * @param activity The current android {@link Activity}.
      */
-    /* package */ PaymentHandlerMediator(PropertyModel model, Runnable hider,
-            WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents,
-            PaymentHandlerUiObserver observer, View tabView, int toolbarViewHeightPx,
-            BottomSheetController sheetController, TabObscuringHandler tabObscuringHandler,
-            Activity activity, InputProtector inputProtector) {
+    /* package */ PaymentHandlerMediator(
+            PropertyModel model,
+            Runnable hider,
+            WebContents paymentRequestWebContents,
+            WebContents paymentHandlerWebContents,
+            PaymentHandlerUiObserver observer,
+            View tabView,
+            int toolbarViewHeightPx,
+            BottomSheetController sheetController,
+            TabObscuringHandler tabObscuringHandler,
+            Activity activity,
+            InputProtector inputProtector) {
         super(paymentHandlerWebContents);
         assert paymentHandlerWebContents != null;
         mTabView = tabView;
@@ -113,15 +125,17 @@ import java.lang.annotation.RetentionPolicy;
         mTabObscuringHandler = tabObscuringHandler;
         mInputProtector = inputProtector;
 
-        mActivityStateListener = new ActivityStateListener() {
-            @Override
-            public void onActivityStateChange(Activity activity, @ActivityState int newState) {
-                if (newState == ActivityState.DESTROYED) {
-                    mCloseReason = CloseReason.ACTIVITY_DIED;
-                    mHandler.post(mHider);
-                }
-            }
-        };
+        mActivityStateListener =
+                new ActivityStateListener() {
+                    @Override
+                    public void onActivityStateChange(
+                            Activity activity, @ActivityState int newState) {
+                        if (newState == ActivityState.DESTROYED) {
+                            mCloseReason = CloseReason.ACTIVITY_DIED;
+                            mHandler.post(mHider);
+                        }
+                    }
+                };
         ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
     }
 
@@ -130,8 +144,16 @@ import java.lang.annotation.RetentionPolicy;
     // TODO(crbug.com/1057825): It should listen to the BottomSheet container's layout change
     // instead of the Tab View layout change for better encapsulation.
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
     }
 
@@ -204,19 +226,23 @@ import java.lang.annotation.RetentionPolicy;
 
         switch (mCloseReason) {
             case CloseReason.INSECURE_NAVIGATION:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
                         PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
                 break;
             case CloseReason.USER:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
                         PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
                 break;
             case CloseReason.FAIL_LOAD:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
                         PaymentEventResponseType.PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME);
                 break;
             case CloseReason.ACTIVITY_DIED:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                        mPaymentRequestWebContents,
                         PaymentEventResponseType.PAYMENT_HANDLER_ACTIVITY_DIED);
                 break;
             case CloseReason.OTHERS:
@@ -237,7 +263,7 @@ import java.lang.annotation.RetentionPolicy;
 
         ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
         if (coordinator != null && coordinator.isShowingScrim()) {
-            coordinator.hideScrim(/*animate=*/true);
+            coordinator.hideScrim(/* animate= */ true);
         }
     }
 
@@ -265,21 +291,26 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void closeUIForInsecureNavigation() {
-        mHandler.post(() -> {
-            mCloseReason = CloseReason.INSECURE_NAVIGATION;
-            mHider.run();
-        });
+        mHandler.post(
+                () -> {
+                    mCloseReason = CloseReason.INSECURE_NAVIGATION;
+                    mHider.run();
+                });
     }
 
     // Implement WebContentsObserver:
     @Override
-    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
+    public void didFailLoad(
+            boolean isInPrimaryMainFrame,
+            int errorCode,
+            GURL failingUrl,
             @LifecycleState int rfhLifecycleState) {
         if (!isInPrimaryMainFrame) return;
-        mHandler.post(() -> {
-            mCloseReason = CloseReason.FAIL_LOAD;
-            mHider.run();
-        });
+        mHandler.post(
+                () -> {
+                    mCloseReason = CloseReason.FAIL_LOAD;
+                    mHider.run();
+                });
     }
 
     // Implement PaymentHandlerToolbarObserver:

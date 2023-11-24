@@ -12,9 +12,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorShareAction.TabSelectionEditorShareActionState;
 
-/**
- * Metrics helper class for the Tab UI module.
- */
+/** Metrics helper class for the Tab UI module. */
 public class TabUiMetricsHelper {
     /**
      * The last time the Tab Selection Editor was shown across all instances, null if never shown
@@ -24,17 +22,20 @@ public class TabUiMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({TabSelectionEditorActionMetricGroups.BOOKMARK,
-            TabSelectionEditorActionMetricGroups.CLOSE, TabSelectionEditorActionMetricGroups.GROUP,
-            TabSelectionEditorActionMetricGroups.SELECT_ALL,
-            TabSelectionEditorActionMetricGroups.DESELECT_ALL,
-            TabSelectionEditorActionMetricGroups.SHARE_TAB,
-            TabSelectionEditorActionMetricGroups.SHARE_TABS,
-            TabSelectionEditorActionMetricGroups.UNGROUP,
-            TabSelectionEditorActionMetricGroups.PROVIDER_GROUP,
-            TabSelectionEditorActionMetricGroups.PROVIDER_UNGROUP,
-            TabSelectionEditorActionMetricGroups.UNSELECTED,
-            TabSelectionEditorActionMetricGroups.SELECTED})
+    @IntDef({
+        TabSelectionEditorActionMetricGroups.BOOKMARK,
+        TabSelectionEditorActionMetricGroups.CLOSE,
+        TabSelectionEditorActionMetricGroups.GROUP,
+        TabSelectionEditorActionMetricGroups.SELECT_ALL,
+        TabSelectionEditorActionMetricGroups.DESELECT_ALL,
+        TabSelectionEditorActionMetricGroups.SHARE_TAB,
+        TabSelectionEditorActionMetricGroups.SHARE_TABS,
+        TabSelectionEditorActionMetricGroups.UNGROUP,
+        TabSelectionEditorActionMetricGroups.PROVIDER_GROUP,
+        TabSelectionEditorActionMetricGroups.PROVIDER_UNGROUP,
+        TabSelectionEditorActionMetricGroups.UNSELECTED,
+        TabSelectionEditorActionMetricGroups.SELECTED
+    })
     public @interface TabSelectionEditorActionMetricGroups {
         int BOOKMARK = 0;
         int CLOSE = 1;
@@ -52,9 +53,11 @@ public class TabUiMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({TabSelectionEditorExitMetricGroups.CLOSED,
-            TabSelectionEditorExitMetricGroups.CLOSED_AUTOMATICALLY,
-            TabSelectionEditorExitMetricGroups.CLOSED_BY_USER})
+    @IntDef({
+        TabSelectionEditorExitMetricGroups.CLOSED,
+        TabSelectionEditorExitMetricGroups.CLOSED_AUTOMATICALLY,
+        TabSelectionEditorExitMetricGroups.CLOSED_BY_USER
+    })
     public @interface TabSelectionEditorExitMetricGroups {
         int CLOSED = 0;
         int CLOSED_AUTOMATICALLY = 1;
@@ -63,8 +66,10 @@ public class TabUiMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({TabSelectionEditorOpenMetricGroups.OPEN_FROM_GRID,
-            TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG})
+    @IntDef({
+        TabSelectionEditorOpenMetricGroups.OPEN_FROM_GRID,
+        TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG
+    })
     public @interface TabSelectionEditorOpenMetricGroups {
         int OPEN_FROM_GRID = 0;
         int OPEN_FROM_DIALOG = 1;
@@ -74,14 +79,17 @@ public class TabUiMetricsHelper {
     public static void recordEditorTimeSinceLastShownHistogram() {
         long timestampMillis = System.currentTimeMillis();
         if (sLastShownTimestampMillis != null) {
-            RecordHistogram.recordTimesHistogram("Android.TabMultiSelectV2.TimeSinceLastShown",
+            RecordHistogram.recordTimesHistogram(
+                    "Android.TabMultiSelectV2.TimeSinceLastShown",
                     timestampMillis - sLastShownTimestampMillis);
         }
         sLastShownTimestampMillis = timestampMillis;
     }
 
     public static void recordShareStateHistogram(@TabSelectionEditorShareActionState int action) {
-        RecordHistogram.recordEnumeratedHistogram("Android.TabMultiSelectV2.SharingState", action,
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.TabMultiSelectV2.SharingState",
+                action,
                 TabSelectionEditorShareActionState.NUM_ENTRIES);
     }
 
@@ -129,8 +137,10 @@ public class TabUiMetricsHelper {
                 RecordUserAction.record("TabMultiSelect.TabSelected");
                 break;
             default:
-                assert false : "Unexpected TabSelectionEditorActionMetricGroups value " + actionId
-                               + " when calling recordSelectionEditorActionMetrics.";
+                assert false
+                        : "Unexpected TabSelectionEditorActionMetricGroups value "
+                                + actionId
+                                + " when calling recordSelectionEditorActionMetrics.";
         }
     }
 
@@ -147,8 +157,10 @@ public class TabUiMetricsHelper {
                 RecordUserAction.record("TabMultiSelectV2.ClosedByUser");
                 break;
             default:
-                assert false : "Unexpected TabSelectionEditorExitMetricGroups value of " + actionId
-                               + " when calling recordSelectionEditorExitMetrics with V2 enabled.";
+                assert false
+                        : "Unexpected TabSelectionEditorExitMetricGroups value of "
+                                + actionId
+                                + " when calling recordSelectionEditorExitMetrics with V2 enabled.";
         }
     }
 
@@ -162,8 +174,10 @@ public class TabUiMetricsHelper {
                 RecordUserAction.record("TabMultiSelectV2.OpenFromDialog");
                 break;
             default:
-                assert false : "Unexpected TabSelectionEditorOpenMetricGroups value of " + actionId
-                               + " when calling recordSelectionEditorOpenMetrics with V2 enabled.";
+                assert false
+                        : "Unexpected TabSelectionEditorOpenMetricGroups value of "
+                                + actionId
+                                + " when calling recordSelectionEditorOpenMetrics with V2 enabled.";
         }
     }
 }

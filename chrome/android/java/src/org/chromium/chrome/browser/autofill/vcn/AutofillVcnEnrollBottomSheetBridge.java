@@ -37,7 +37,7 @@ import java.util.LinkedList;
 @JNINamespace("autofill")
 /*package*/ class AutofillVcnEnrollBottomSheetBridge
         implements AutofillVcnEnrollBottomSheetCoordinator.Delegate,
-                   AutofillVcnEnrollBottomSheetProperties.LinkOpener {
+                AutofillVcnEnrollBottomSheetProperties.LinkOpener {
     private long mNativeAutofillVcnEnrollBottomSheetBridge;
     private Context mContext;
     private AutofillVcnEnrollBottomSheetCoordinator mCoordinator;
@@ -77,12 +77,19 @@ import java.util.LinkedList;
      */
     @CalledByNative
     @VisibleForTesting
-    boolean requestShowContent(long nativeAutofillVcnEnrollBottomSheetBridge,
-            WebContents webContents, String messageText, String descriptionText,
-            String learnMoreLinkText, String cardContainerAccessibilityDescription,
-            Bitmap issuerIconBitmap, String cardLabel, String cardDescription,
+    boolean requestShowContent(
+            long nativeAutofillVcnEnrollBottomSheetBridge,
+            WebContents webContents,
+            String messageText,
+            String descriptionText,
+            String learnMoreLinkText,
+            String cardContainerAccessibilityDescription,
+            Bitmap issuerIconBitmap,
+            String cardLabel,
+            String cardDescription,
             LinkedList<LegalMessageLine> googleLegalMessages,
-            LinkedList<LegalMessageLine> issuerLegalMessages, String acceptButtonLabel,
+            LinkedList<LegalMessageLine> issuerLegalMessages,
+            String acceptButtonLabel,
             String cancelButtonLabel) {
         if (webContents == null || webContents.isDestroyed()) return false;
 
@@ -101,43 +108,62 @@ import java.util.LinkedList;
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS)
                         .with(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT, messageText)
-                        .with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
-                                new Description(descriptionText, learnMoreLinkText,
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
+                                new Description(
+                                        descriptionText,
+                                        learnMoreLinkText,
                                         ChromeStringConstants
                                                 .AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
                                         VirtualCardEnrollmentLinkType
                                                 .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
-                                        /*linkOpener=*/this))
-                        .with(AutofillVcnEnrollBottomSheetProperties
+                                        /* linkOpener= */ this))
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties
                                         .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
                                 cardContainerAccessibilityDescription)
-                        .with(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
-                                new IssuerIcon(issuerIconBitmap, cardIconSpecs.getWidth(),
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
+                                new IssuerIcon(
+                                        issuerIconBitmap,
+                                        cardIconSpecs.getWidth(),
                                         cardIconSpecs.getHeight()))
                         .with(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL, cardLabel)
-                        .with(AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION,
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION,
                                 cardDescription)
-                        .with(AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES,
-                                new LegalMessages(googleLegalMessages,
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES,
+                                new LegalMessages(
+                                        googleLegalMessages,
                                         VirtualCardEnrollmentLinkType
                                                 .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK,
-                                        /*linkOpener=*/this))
-                        .with(AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES,
-                                new LegalMessages(issuerLegalMessages,
+                                        /* linkOpener= */ this))
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES,
+                                new LegalMessages(
+                                        issuerLegalMessages,
                                         VirtualCardEnrollmentLinkType
                                                 .VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
-                                        /*linkOpener=*/this))
-                        .with(AutofillVcnEnrollBottomSheetProperties.ACCEPT_BUTTON_LABEL,
+                                        /* linkOpener= */ this))
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.ACCEPT_BUTTON_LABEL,
                                 acceptButtonLabel)
-                        .with(AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL,
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL,
                                 cancelButtonLabel);
 
-        mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(mContext, modelBuilder,
-                mLayoutStateProviderForTesting != null ? mLayoutStateProviderForTesting
-                                                       : LayoutManagerProvider.from(window),
-                mTabModelSelectorSupplierForTesting != null ? mTabModelSelectorSupplierForTesting
-                                                            : TabModelSelectorSupplier.from(window),
-                /*delegate=*/this);
+        mCoordinator =
+                new AutofillVcnEnrollBottomSheetCoordinator(
+                        mContext,
+                        modelBuilder,
+                        mLayoutStateProviderForTesting != null
+                                ? mLayoutStateProviderForTesting
+                                : LayoutManagerProvider.from(window),
+                        mTabModelSelectorSupplierForTesting != null
+                                ? mTabModelSelectorSupplierForTesting
+                                : TabModelSelectorSupplier.from(window),
+                        /* delegate= */ this);
 
         return mCoordinator.requestShowContent(window);
     }
@@ -154,20 +180,22 @@ import java.util.LinkedList;
     // AutofillVcnEnrollBottomSheetProperties.LinkOpener:
     @Override
     public void openLink(String url, @VirtualCardEnrollmentLinkType int linkType) {
-        new CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(
-                mContext, Uri.parse(url));
+        new CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+                .launchUrl(mContext, Uri.parse(url));
 
         if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
-        AutofillVcnEnrollBottomSheetBridgeJni.get().recordLinkClickMetric(
-                mNativeAutofillVcnEnrollBottomSheetBridge, linkType);
+        AutofillVcnEnrollBottomSheetBridgeJni.get()
+                .recordLinkClickMetric(mNativeAutofillVcnEnrollBottomSheetBridge, linkType);
     }
 
     // AutofillVcnEnrollBottomSheetCoordinator.Delegate:
     @Override
     public void onAccept() {
         if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
-        AutofillVcnEnrollBottomSheetBridgeJni.get().onAccept(
-                mNativeAutofillVcnEnrollBottomSheetBridge);
+        AutofillVcnEnrollBottomSheetBridgeJni.get()
+                .onAccept(mNativeAutofillVcnEnrollBottomSheetBridge);
         mNativeAutofillVcnEnrollBottomSheetBridge = 0;
     }
 
@@ -175,8 +203,8 @@ import java.util.LinkedList;
     @Override
     public void onCancel() {
         if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
-        AutofillVcnEnrollBottomSheetBridgeJni.get().onCancel(
-                mNativeAutofillVcnEnrollBottomSheetBridge);
+        AutofillVcnEnrollBottomSheetBridgeJni.get()
+                .onCancel(mNativeAutofillVcnEnrollBottomSheetBridge);
         mNativeAutofillVcnEnrollBottomSheetBridge = 0;
     }
 
@@ -184,8 +212,8 @@ import java.util.LinkedList;
     @Override
     public void onDismiss() {
         if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
-        AutofillVcnEnrollBottomSheetBridgeJni.get().onDismiss(
-                mNativeAutofillVcnEnrollBottomSheetBridge);
+        AutofillVcnEnrollBottomSheetBridgeJni.get()
+                .onDismiss(mNativeAutofillVcnEnrollBottomSheetBridge);
         mNativeAutofillVcnEnrollBottomSheetBridge = 0;
     }
 
@@ -201,8 +229,11 @@ import java.util.LinkedList;
     @NativeMethods
     interface Natives {
         void onAccept(long nativeAutofillVCNEnrollBottomSheetBridge);
+
         void onCancel(long nativeAutofillVCNEnrollBottomSheetBridge);
+
         void onDismiss(long nativeAutofillVCNEnrollBottomSheetBridge);
+
         void recordLinkClickMetric(long nativeAutofillVCNEnrollBottomSheetBridge, int linkType);
     }
 }

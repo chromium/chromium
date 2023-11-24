@@ -32,11 +32,9 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
 
-/**
- * The view to describle incognito mode.
- */
-public class LegacyIncognitoDescriptionView
-        extends LinearLayout implements IncognitoDescriptionView {
+/** The view to describle incognito mode. */
+public class LegacyIncognitoDescriptionView extends LinearLayout
+        implements IncognitoDescriptionView {
     private int mWidthDp;
     private int mHeightDp;
 
@@ -100,8 +98,12 @@ public class LegacyIncognitoDescriptionView
         mHeader = findViewById(R.id.new_tab_incognito_title);
         mSubtitle = findViewById(R.id.new_tab_incognito_subtitle);
         mLearnMore = findViewById(R.id.learn_more);
-        mParagraphs = new TextView[] {mSubtitle, findViewById(R.id.new_tab_incognito_features),
-                findViewById(R.id.new_tab_incognito_warning)};
+        mParagraphs =
+                new TextView[] {
+                    mSubtitle,
+                    findViewById(R.id.new_tab_incognito_features),
+                    findViewById(R.id.new_tab_incognito_warning)
+                };
         mBulletpointsContainer = findViewById(R.id.new_tab_incognito_bulletpoints_container);
 
         adjustView();
@@ -164,12 +166,20 @@ public class LegacyIncognitoDescriptionView
         // them.
         text = text.replaceAll(" *</?ul>\\n?", "");
 
-        view.setText(SpanApplier.applySpans(text,
-                new SpanApplier.SpanInfo("<em>", "</em>",
-                        new ForegroundColorSpan(getContext().getColor(R.color.incognito_emphasis))),
-                new SpanApplier.SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(getContext())),
-                new SpanApplier.SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(getContext())),
-                new SpanApplier.SpanInfo("<li3>", "</li3>", new ChromeBulletSpan(getContext()))));
+        view.setText(
+                SpanApplier.applySpans(
+                        text,
+                        new SpanApplier.SpanInfo(
+                                "<em>",
+                                "</em>",
+                                new ForegroundColorSpan(
+                                        getContext().getColor(R.color.incognito_emphasis))),
+                        new SpanApplier.SpanInfo(
+                                "<li1>", "</li1>", new ChromeBulletSpan(getContext())),
+                        new SpanApplier.SpanInfo(
+                                "<li2>", "</li2>", new ChromeBulletSpan(getContext())),
+                        new SpanApplier.SpanInfo(
+                                "<li3>", "</li3>", new ChromeBulletSpan(getContext()))));
     }
 
     /** Adjusts the paddings, margins, and the orientation of bulletpoints. */
@@ -192,14 +202,17 @@ public class LegacyIncognitoDescriptionView
 
             // The subtitle is sized automatically, but not wider than CONTENT_WIDTH_DP.
             mSubtitle.setLayoutParams(
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
             mSubtitle.setMaxWidth(dpToPx(getContext(), CONTENT_WIDTH_DP));
 
             // The bulletpoints container takes the same width as subtitle. Since the width can
             // not be directly measured at this stage, we must calculate it manually.
-            mBulletpointsContainer.getLayoutParams().width = dpToPx(
-                    getContext(), Math.min(CONTENT_WIDTH_DP, mWidthDp - 2 * paddingHorizontalDp));
+            mBulletpointsContainer.getLayoutParams().width =
+                    dpToPx(
+                            getContext(),
+                            Math.min(CONTENT_WIDTH_DP, mWidthDp - 2 * paddingHorizontalDp));
         } else {
             // Large padding.
             paddingHorizontalDp = 0; // Should not be necessary on a screen this large.
@@ -212,8 +225,9 @@ public class LegacyIncognitoDescriptionView
             bulletpointsArrangedHorizontally = true;
 
             int contentWidthPx = dpToPx(getContext(), CONTENT_WIDTH_DP);
-            mSubtitle.setLayoutParams(new LinearLayout.LayoutParams(
-                    contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
+            mSubtitle.setLayoutParams(
+                    new LinearLayout.LayoutParams(
+                            contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
             mBulletpointsContainer.getLayoutParams().width = contentWidthPx;
         }
 
@@ -228,19 +242,25 @@ public class LegacyIncognitoDescriptionView
         int paddingTop;
         int paddingBottom;
         paddingTop = paddingBottom = dpToPx(getContext(), paddingVerticalDp);
-        mContainer.setPadding(dpToPx(getContext(), paddingHorizontalDp), paddingTop,
-                dpToPx(getContext(), paddingHorizontalDp), paddingBottom);
+        mContainer.setPadding(
+                dpToPx(getContext(), paddingHorizontalDp),
+                paddingTop,
+                dpToPx(getContext(), paddingHorizontalDp),
+                paddingBottom);
 
         // Total space between adjacent paragraphs (Including margins, paddings, etc.)
-        int totalSpaceBetweenViews = getContext().getResources().getDimensionPixelSize(
-                R.dimen.incognito_ntp_total_space_between_views);
+        int totalSpaceBetweenViews =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.incognito_ntp_total_space_between_views);
 
         for (TextView paragraph : mParagraphs) {
             // If bulletpoints are arranged horizontally, there should be space between them.
-            int rightMarginPx = (bulletpointsArrangedHorizontally
-                                        && paragraph == mBulletpointsContainer.getChildAt(0))
-                    ? dpToPx(getContext(), BULLETPOINTS_HORIZONTAL_SPACING_DP)
-                    : 0;
+            int rightMarginPx =
+                    (bulletpointsArrangedHorizontally
+                                    && paragraph == mBulletpointsContainer.getChildAt(0))
+                            ? dpToPx(getContext(), BULLETPOINTS_HORIZONTAL_SPACING_DP)
+                            : 0;
 
             ((LinearLayout.LayoutParams) paragraph.getLayoutParams())
                     .setMargins(0, totalSpaceBetweenViews, rightMarginPx, 0);
@@ -251,12 +271,18 @@ public class LegacyIncognitoDescriptionView
         // is not that tall, and already has some space. We want to have a
         // totalSpaceBetweenViews tall gap between the learn more text and the adjacent
         // elements. So add the difference as an additional margin.
-        int innerSpacing = (int) ((getContext().getResources().getDimensionPixelSize(
-                                           R.dimen.min_touch_target_size)
-                                          - mLearnMore.getTextSize())
-                / 2);
-        int learnMoreSpacingTop = totalSpaceBetweenViews - innerSpacing
-                - dpToPx(getContext(), BULLETPOINTS_MARGIN_BOTTOM_DP);
+        int innerSpacing =
+                (int)
+                        ((getContext()
+                                                .getResources()
+                                                .getDimensionPixelSize(
+                                                        R.dimen.min_touch_target_size)
+                                        - mLearnMore.getTextSize())
+                                / 2);
+        int learnMoreSpacingTop =
+                totalSpaceBetweenViews
+                        - innerSpacing
+                        - dpToPx(getContext(), BULLETPOINTS_MARGIN_BOTTOM_DP);
         int learnMoreSpacingBottom =
                 dpToPx(getContext(), COOKIES_CONTROL_MARGIN_TOP_DP) - innerSpacing;
 
@@ -288,8 +314,10 @@ public class LegacyIncognitoDescriptionView
 
     /** Adjust the "Learn More" link. */
     private void adjustLearnMore() {
-        final String subtitleText = getContext().getResources().getString(
-                R.string.new_tab_otr_subtitle_with_reading_list);
+        final String subtitleText =
+                getContext()
+                        .getResources()
+                        .getString(R.string.new_tab_otr_subtitle_with_reading_list);
         boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
 
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);
@@ -308,10 +336,11 @@ public class LegacyIncognitoDescriptionView
         concatenatedText.append(getContext().getResources().getString(R.string.learn_more));
         SpannableString textWithLearnMoreLink = new SpannableString(concatenatedText.toString());
 
-        NoUnderlineClickableSpan span = new NoUnderlineClickableSpan(
-                getContext(), R.color.modern_blue_300, (view) -> mLearnMore.callOnClick());
+        NoUnderlineClickableSpan span =
+                new NoUnderlineClickableSpan(
+                        getContext(), R.color.modern_blue_300, (view) -> mLearnMore.callOnClick());
         textWithLearnMoreLink.setSpan(
-                span, subtitleText.length() + 1, textWithLearnMoreLink.length(), 0 /* flags */);
+                span, subtitleText.length() + 1, textWithLearnMoreLink.length(), /* flags= */ 0);
         mSubtitle.setText(textWithLearnMoreLink);
         mSubtitle.setMovementMethod(LinkMovementMethod.getInstance());
     }
@@ -361,8 +390,9 @@ public class LegacyIncognitoDescriptionView
                 break;
             case CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING:
                 iconRes = R.drawable.settings_cog;
-                addition = resources.getString(
-                        R.string.new_tab_otr_cookie_controls_controlled_tooltip_text);
+                addition =
+                        resources.getString(
+                                R.string.new_tab_otr_cookie_controls_controlled_tooltip_text);
                 break;
             default:
                 return;

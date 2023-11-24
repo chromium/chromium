@@ -28,61 +28,54 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Defines the core action of a {@link TabSelectionEditorMenuItem}.
- */
+/** Defines the core action of a {@link TabSelectionEditorMenuItem}. */
 public abstract class TabSelectionEditorAction {
     @IntDef({ShowMode.MENU_ONLY, ShowMode.IF_ROOM, ShowMode.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ShowMode {
-        /**
-         * Never show an ActionView, only show a menu item.
-         */
+        /** Never show an ActionView, only show a menu item. */
         int MENU_ONLY = 0;
+
         /**
          * Only show an ActionView if there is room. Priority is based on ordering amongst other
          * {@link MenuItem}s.
          */
         int IF_ROOM = 1;
+
         int NUM_ENTRIES = 2;
     }
 
     @IntDef({ButtonType.TEXT, ButtonType.ICON, ButtonType.ICON_AND_TEXT, ButtonType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
-        /**
-         * Show text in the ActionView.
-         */
+        /** Show text in the ActionView. */
         int TEXT = 0;
-        /**
-         * Show an icon in the ActionView. If an action has no icon then nothing will be shown.
-         */
+
+        /** Show an icon in the ActionView. If an action has no icon then nothing will be shown. */
         int ICON = 1;
+
         /**
          * Shows an icon and text for the ActionView. If an action has no icon this is equivalent to
          * {@code TEXT}.
          */
         int ICON_AND_TEXT = 2;
+
         int NUM_ENTRIES = 3;
     }
 
     @IntDef({IconPosition.START, IconPosition.END, IconPosition.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface IconPosition {
-        /**
-         * Show icon at the start in the ActionView.
-         */
+        /** Show icon at the start in the ActionView. */
         int START = 0;
-        /**
-         * Show icon at the end in the ActionView.
-         */
+
+        /** Show icon at the end in the ActionView. */
         int END = 1;
+
         int NUM_ENTRIES = 2;
     }
 
-    /**
-     * Observer for watching if an action is being taken.
-     */
+    /** Observer for watching if an action is being taken. */
     public interface ActionObserver {
         // TODO(ckitagawa): Determine if this can be removed or moved to post processing.
 
@@ -98,24 +91,16 @@ public abstract class TabSelectionEditorAction {
      * Delegate for handling additional selection and control actions for the TabSelectionEditor.
      */
     public interface ActionDelegate {
-        /**
-         * Selects all tabs in the current selection editor.
-         */
+        /** Selects all tabs in the current selection editor. */
         void selectAll();
 
-        /**
-         * Clears all selected tabs.
-         */
+        /** Clears all selected tabs. */
         void deselectAll();
 
-        /**
-         * Whether all the tabs in the editor are selected.
-         */
+        /** Whether all the tabs in the editor are selected. */
         boolean areAllTabsSelected();
 
-        /**
-         * Hides the selection editor.
-         */
+        /** Hides the selection editor. */
         void hideByAction();
 
         /**
@@ -123,9 +108,7 @@ public abstract class TabSelectionEditorAction {
          */
         void syncRecyclerViewPosition();
 
-        /**
-         * Retrieves the SnackbarManager for the selection editor.
-         */
+        /** Retrieves the SnackbarManager for the selection editor. */
         SnackbarManager getSnackbarManager();
     }
 
@@ -136,17 +119,24 @@ public abstract class TabSelectionEditorAction {
     private SelectionDelegate<Integer> mSelectionDelegate;
     private Boolean mEditorSupportsActionOnRelatedTabs;
 
-    public TabSelectionEditorAction(int menuItemId, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition, int titleResourceId,
-            @Nullable Integer contentDescriptionResourceId, @Nullable Drawable icon) {
+    public TabSelectionEditorAction(
+            int menuItemId,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition,
+            int titleResourceId,
+            @Nullable Integer contentDescriptionResourceId,
+            @Nullable Drawable icon) {
         assert showMode >= ShowMode.MENU_ONLY && showMode < ShowMode.NUM_ENTRIES;
         assert buttonType >= ButtonType.TEXT && buttonType < ButtonType.NUM_ENTRIES;
         assert iconPosition >= IconPosition.START && iconPosition < IconPosition.NUM_ENTRIES;
 
         final String expectedResourceourceTypeName = "plurals";
-        boolean titleIsPlural = expectedResourceourceTypeName.equals(
-                ContextUtils.getApplicationContext().getResources().getResourceTypeName(
-                        titleResourceId));
+        boolean titleIsPlural =
+                expectedResourceourceTypeName.equals(
+                        ContextUtils.getApplicationContext()
+                                .getResources()
+                                .getResourceTypeName(titleResourceId));
 
         mModel =
                 new PropertyModel.Builder(TabSelectionEditorActionProperties.ACTION_KEYS)
@@ -156,27 +146,32 @@ public abstract class TabSelectionEditorAction {
                         .with(TabSelectionEditorActionProperties.ICON_POSITION, iconPosition)
                         .with(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID, titleResourceId)
                         .with(TabSelectionEditorActionProperties.TITLE_IS_PLURAL, titleIsPlural)
-                        .with(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
+                        .with(
+                                TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
                                 contentDescriptionResourceId)
                         .with(TabSelectionEditorActionProperties.ICON, icon)
                         .with(TabSelectionEditorActionProperties.ENABLED, false)
                         .with(TabSelectionEditorActionProperties.ITEM_COUNT, 0)
-                        .with(TabSelectionEditorActionProperties.TEXT_TINT,
+                        .with(
+                                TabSelectionEditorActionProperties.TEXT_TINT,
                                 ColorStateList.valueOf(Color.TRANSPARENT))
-                        .with(TabSelectionEditorActionProperties.ICON_TINT,
+                        .with(
+                                TabSelectionEditorActionProperties.ICON_TINT,
                                 ColorStateList.valueOf(Color.TRANSPARENT))
                         .with(TabSelectionEditorActionProperties.ON_CLICK_LISTENER, this::perform)
                         .with(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU, true)
-                        .with(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE,
+                        .with(
+                                TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE,
                                 this::onSelectionStateChange)
                         .build();
 
         if (contentDescriptionResourceId == null) return;
 
         assert expectedResourceourceTypeName.equals(
-                ContextUtils.getApplicationContext().getResources().getResourceTypeName(
-                        contentDescriptionResourceId))
-            : "Quantity strings (plurals) with one integer format argument is needed";
+                        ContextUtils.getApplicationContext()
+                                .getResources()
+                                .getResourceTypeName(contentDescriptionResourceId))
+                : "Quantity strings (plurals) with one integer format argument is needed";
     }
 
     /**
@@ -240,8 +235,10 @@ public abstract class TabSelectionEditorAction {
         assert mTabModelSelector != null;
         assert mSelectionDelegate != null;
 
-        List<Tab> tabs = editorSupportsActionOnRelatedTabs() ? getTabsAndRelatedTabsFromSelection()
-                                                             : getTabsFromSelection();
+        List<Tab> tabs =
+                editorSupportsActionOnRelatedTabs()
+                        ? getTabsAndRelatedTabsFromSelection()
+                        : getTabsFromSelection();
         if (shouldNotifyObserversOfAction()) {
             for (ActionObserver obs : mObsevers) {
                 obs.preProcessSelectedTabs(tabs);
@@ -256,7 +253,8 @@ public abstract class TabSelectionEditorAction {
         }
         if (!performAction(tabs)) {
             return false;
-        };
+        }
+
         if (shouldHideEditorAfterAction()) {
             mActionDelegate.hideByAction();
             TabUiMetricsHelper.recordSelectionEditorExitMetrics(
@@ -274,9 +272,11 @@ public abstract class TabSelectionEditorAction {
      * @param editorSupportsActionOnRelatedTabs whether the TabSelectionEditor supports actions on
      *                                          related tabs.
      */
-    void configure(@NonNull TabModelSelector tabModelSelector,
+    void configure(
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull SelectionDelegate<Integer> selectionDelegate,
-            @NonNull ActionDelegate actionDelegate, boolean editorSupportsActionOnRelatedTabs) {
+            @NonNull ActionDelegate actionDelegate,
+            boolean editorSupportsActionOnRelatedTabs) {
         mTabModelSelector = tabModelSelector;
         mSelectionDelegate = selectionDelegate;
         mActionDelegate = actionDelegate;
@@ -315,8 +315,8 @@ public abstract class TabSelectionEditorAction {
 
     protected List<Tab> getTabsAndRelatedTabsFromSelection() {
         TabGroupModelFilter filter =
-                (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                        .getCurrentTabModelFilter();
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
 
         List<Tab> tabs = new ArrayList<>();
         for (int tabId : mSelectionDelegate.getSelectedItems()) {
@@ -328,8 +328,8 @@ public abstract class TabSelectionEditorAction {
     public static int getTabCountIncludingRelatedTabs(
             TabModelSelector tabModelSelector, List<Integer> tabIds) {
         TabGroupModelFilter filter =
-                (TabGroupModelFilter) tabModelSelector.getTabModelFilterProvider()
-                        .getCurrentTabModelFilter();
+                (TabGroupModelFilter)
+                        tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
 
         int tabCount = 0;
         for (int tabId : tabIds) {

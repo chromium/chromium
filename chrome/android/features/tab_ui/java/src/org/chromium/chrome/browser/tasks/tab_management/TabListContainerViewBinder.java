@@ -38,9 +38,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ViewBinder for TabListRecyclerView.
- */
+/** ViewBinder for TabListRecyclerView. */
 class TabListContainerViewBinder {
     /**
      * Bind the given model to the given view, updating the payload in propertyKey.
@@ -60,11 +58,13 @@ class TabListContainerViewBinder {
         } else if (BLOCK_TOUCH_INPUT == propertyKey) {
             view.setBlockTouchInput(model.get(BLOCK_TOUCH_INPUT));
         } else if (IS_INCOGNITO == propertyKey) {
-            int primaryBackgroundColor = ChromeColors.getPrimaryBackgroundColor(
-                    view.getContext(), model.get(IS_INCOGNITO));
+            int primaryBackgroundColor =
+                    ChromeColors.getPrimaryBackgroundColor(
+                            view.getContext(), model.get(IS_INCOGNITO));
             view.setBackgroundColor(primaryBackgroundColor);
-            view.setToolbarHairlineColor(ThemeUtils.getToolbarHairlineColor(
-                    view.getContext(), primaryBackgroundColor, model.get(IS_INCOGNITO)));
+            view.setToolbarHairlineColor(
+                    ThemeUtils.getToolbarHairlineColor(
+                            view.getContext(), primaryBackgroundColor, model.get(IS_INCOGNITO)));
         } else if (VISIBILITY_LISTENER == propertyKey) {
             view.setVisibilityListener(model.get(VISIBILITY_LISTENER));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
@@ -133,33 +133,37 @@ class TabListContainerViewBinder {
                     .getWindowVisibleDisplayFrame(frame);
             width = frame.width();
             // Remove toolbar height from height.
-            height = frame.height()
-                    - Math.round(browserControlsStateProvider.getTopVisibleContentOffset());
+            height =
+                    frame.height()
+                            - Math.round(browserControlsStateProvider.getTopVisibleContentOffset());
         }
         if (width <= 0 || height <= 0) return 0;
 
-        @TabListCoordinator.TabListMode
-        int mode = model.get(MODE);
+        @TabListCoordinator.TabListMode int mode = model.get(MODE);
         LinearLayoutManager layoutManager = (LinearLayoutManager) view.getLayoutManager();
         if (mode == TabListCoordinator.TabListMode.GRID) {
             GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
             int cardWidth = width / gridLayoutManager.getSpanCount();
-            int cardHeight = TabUtils.deriveGridCardHeight(
-                    cardWidth, view.getContext(), browserControlsStateProvider);
+            int cardHeight =
+                    TabUtils.deriveGridCardHeight(
+                            cardWidth, view.getContext(), browserControlsStateProvider);
             return Math.max(0, height / 2 - cardHeight / 2);
         }
         if (mode == TabListCoordinator.TabListMode.CAROUSEL) {
-            return Math.max(0,
+            return Math.max(
+                    0,
                     width / 2
-                            - view.getContext().getResources().getDimensionPixelSize(
-                                      R.dimen.tab_carousel_card_width)
+                            - view.getContext()
+                                            .getResources()
+                                            .getDimensionPixelSize(R.dimen.tab_carousel_card_width)
                                     / 2);
         }
         if (mode == TabListCoordinator.TabListMode.LIST) {
             // Avoid divide by 0 when there are no tabs.
             if (layoutManager.getItemCount() == 0) return 0;
 
-            return Math.max(0,
+            return Math.max(
+                    0,
                     height / 2
                             - view.computeVerticalScrollRange() / layoutManager.getItemCount() / 2);
         }

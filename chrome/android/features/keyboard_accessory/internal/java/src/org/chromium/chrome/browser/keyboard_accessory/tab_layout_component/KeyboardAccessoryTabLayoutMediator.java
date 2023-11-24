@@ -33,9 +33,9 @@ import java.util.Set;
  */
 class KeyboardAccessoryTabLayoutMediator
         implements TabLayout.OnTabSelectedListener,
-                   KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener,
-                   PropertyObservable.PropertyObserver<PropertyKey>,
-                   KeyboardAccessoryCoordinator.TabSwitchingDelegate {
+                KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener,
+                PropertyObservable.PropertyObserver<PropertyKey>,
+                KeyboardAccessoryCoordinator.TabSwitchingDelegate {
     private final PropertyModel mModel;
     private @Nullable AccessoryTabObserver mAccessoryTabObserver;
     private Set<ViewPager.OnPageChangeListener> mPageChangeListeners = new HashSet<>();

@@ -79,10 +79,13 @@ import java.util.List;
  * The Mediator that is responsible for resetting the tab grid or carousel based on visibility and
  * model changes.
  */
-class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
-                                     TabListMediator.GridCardOnClickListenerProvider,
-                                     PriceMessageService.PriceWelcomeMessageReviewActionProvider,
-                                     TabSwitcherCustomViewManager.Delegate, BackPressHandler {
+class TabSwitcherMediator
+        implements TabSwitcher.Controller,
+                TabListRecyclerView.VisibilityListener,
+                TabListMediator.GridCardOnClickListenerProvider,
+                PriceMessageService.PriceWelcomeMessageReviewActionProvider,
+                TabSwitcherCustomViewManager.Delegate,
+                BackPressHandler {
     private static final String TAG = "TabSwitcherMediator";
 
     private static final int DEFAULT_SOFT_CLEANUP_DELAY_MS = 3_000;
@@ -125,13 +128,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
                 @Override
                 public void onIncognitoReauthSuccess() {
-                    assert mTabModelSelector.getTabModelFilterProvider()
-                            .getCurrentTabModelFilter()
-                            .isIncognito()
-                        : "The incognito re-auth controller only affects Incognito tab list.";
-                    mResetHandler.resetWithTabList(mTabModelSelector.getTabModelFilterProvider()
-                                                           .getCurrentTabModelFilter(),
-                            false, mShowTabsInMruOrder);
+                    assert mTabModelSelector
+                                    .getTabModelFilterProvider()
+                                    .getCurrentTabModelFilter()
+                                    .isIncognito()
+                            : "The incognito re-auth controller only affects Incognito tab list.";
+                    mResetHandler.resetWithTabList(
+                            mTabModelSelector
+                                    .getTabModelFilterProvider()
+                                    .getCurrentTabModelFilter(),
+                            false,
+                            mShowTabsInMruOrder);
                     setInitialScrollIndexOffset();
                     requestAccessibilityFocusOnCurrentTab();
                 }
@@ -145,8 +152,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private Integer mCleanupDelayMsForTesting;
     private OneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
-    private TabSelectionEditorCoordinator
-            .TabSelectionEditorController mTabSelectionEditorController;
+    private TabSelectionEditorCoordinator.TabSelectionEditorController
+            mTabSelectionEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     private PriceMessageService mPriceMessageService;
 
@@ -162,9 +169,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * signals the mediator for removal.
      */
     private @Nullable View mCustomView;
-    /**
-     * A back press {@link Runnable} that can be supplied by clients when adding a custom view.
-     */
+
+    /** A back press {@link Runnable} that can be supplied by clients when adding a custom view. */
     private @Nullable Runnable mCustomViewBackPressRunnable;
 
     /**
@@ -186,17 +192,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private boolean mIsTransitionInProgress;
     private boolean mIsTabSwitcherShowing;
 
-    @Nullable
-    private LayoutStateProvider mLayoutStateProvider;
-    @Nullable
-    private LayoutStateObserver mLayoutStateObserver;
+    @Nullable private LayoutStateProvider mLayoutStateProvider;
+    @Nullable private LayoutStateObserver mLayoutStateObserver;
     // The layout type of the last active layout which was shown before showing the TAB_SWITCHER
     // layout.
     private @LayoutType int mLastActiveLayoutType;
 
-    /**
-     * Interface to delegate resetting the tab grid.
-     */
+    /** Interface to delegate resetting the tab grid. */
     interface ResetHandler {
         /**
          * Reset the tab grid with the given {@link TabList}, which can be null.
@@ -216,9 +218,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
          */
         boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode, boolean mruMode);
 
-        /**
-         * Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}.
-         */
+        /** Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}. */
         void softCleanup();
 
         /**
@@ -229,9 +229,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         void hardCleanup();
     }
 
-    /**
-     * Interface to control message items in grid tab switcher.
-     */
+    /** Interface to control message items in grid tab switcher. */
     interface MessageItemsController {
         /**
          * Remove all the message items in the model list. Right now this is used when all tabs are
@@ -246,9 +244,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         void restoreAllAppendedMessage();
     }
 
-    /**
-     * An interface to control price welcome message in grid tab switcher.
-     */
+    /** An interface to control price welcome message in grid tab switcher. */
     interface PriceWelcomeMessageController {
         /**
          * Remove the price welcome message item in the model list. Right now this is used when
@@ -293,16 +289,23 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * @param layoutStateProviderSupplier {@link OneshotSupplier<LayoutStateProvider>} to provide
      *         layout state changes.
      */
-    TabSwitcherMediator(Context context, ResetHandler resetHandler,
-            PropertyModel containerViewModel, TabModelSelector tabModelSelector,
-            BrowserControlsStateProvider browserControlsStateProvider, ViewGroup containerView,
-            TabContentManager tabContentManager, MessageItemsController messageItemsController,
+    TabSwitcherMediator(
+            Context context,
+            ResetHandler resetHandler,
+            PropertyModel containerViewModel,
+            TabModelSelector tabModelSelector,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            ViewGroup containerView,
+            TabContentManager tabContentManager,
+            MessageItemsController messageItemsController,
             PriceWelcomeMessageController priceWelcomeMessageController,
-            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher, @TabListMode int mode,
+            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @TabListMode int mode,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
-            @Nullable OneshotSupplier<TabGridDialogMediator.DialogController>
-                    tabGridDialogControllerSupplier,
+            @Nullable
+                    OneshotSupplier<TabGridDialogMediator.DialogController>
+                            tabGridDialogControllerSupplier,
             Runnable onTabSwitcherShownCallback,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mResetHandler = resetHandler;
@@ -330,181 +333,208 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (incognitoReauthControllerSupplier != null) {
             mCallbackController = new CallbackController();
             incognitoReauthControllerSupplier.onAvailable(
-                    mCallbackController.makeCancelable((incognitoReauthController) -> {
-                        mIncognitoReauthController = incognitoReauthController;
-                        mIncognitoReauthController.addIncognitoReauthCallback(
-                                mIncognitoReauthCallback);
-                    }));
+                    mCallbackController.makeCancelable(
+                            (incognitoReauthController) -> {
+                                mIncognitoReauthController = incognitoReauthController;
+                                mIncognitoReauthController.addIncognitoReauthCallback(
+                                        mIncognitoReauthCallback);
+                            }));
         }
 
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                mShouldIgnoreNextSelect = true;
-                mIndexInNewModelWhenSwitched = newModel.index();
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        mShouldIgnoreNextSelect = true;
+                        mIndexInNewModelWhenSwitched = newModel.index();
 
-                TabList currentTabModelFilter =
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-                mContainerViewModel.set(IS_INCOGNITO, currentTabModelFilter.isIncognito());
-                notifyBackPressStateChangedInternal();
-                if (mTabGridDialogControllerSupplier != null
-                        && mTabGridDialogControllerSupplier.hasValue()) {
-                    mTabGridDialogControllerSupplier.get().hideDialog(false);
-                }
-                if (!mContainerViewModel.get(IS_VISIBLE)) return;
+                        TabList currentTabModelFilter =
+                                mTabModelSelector
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter();
+                        mContainerViewModel.set(IS_INCOGNITO, currentTabModelFilter.isIncognito());
+                        notifyBackPressStateChangedInternal();
+                        if (mTabGridDialogControllerSupplier != null
+                                && mTabGridDialogControllerSupplier.hasValue()) {
+                            mTabGridDialogControllerSupplier.get().hideDialog(false);
+                        }
+                        if (!mContainerViewModel.get(IS_VISIBLE)) return;
 
-                if (clearIncognitoTabListForReauth()) return;
-                mResetHandler.resetWithTabList(currentTabModelFilter, false, mShowTabsInMruOrder);
-                setInitialScrollIndexOffset();
-                requestAccessibilityFocusOnCurrentTab();
-            }
-        };
+                        if (clearIncognitoTabListForReauth()) return;
+                        mResetHandler.resetWithTabList(
+                                currentTabModelFilter, false, mShowTabsInMruOrder);
+                        setInitialScrollIndexOffset();
+                        requestAccessibilityFocusOnCurrentTab();
+                    }
+                };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        mTabModelObserver = new TabModelObserver() {
-            @Override
-            public void didAddTab(Tab tab, int type, @TabCreationState int creationState,
-                    boolean markedForSelection) {
-                // TODO(wychen): move didAddTab and didSelectTab to another observer and inject
-                //  after restoreCompleted.
-                if (!mTabModelSelector.isTabStateInitialized()) {
-                    return;
-                }
-                mShouldIgnoreNextSelect = false;
-            }
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        // TODO(wychen): move didAddTab and didSelectTab to another observer and
+                        // inject
+                        //  after restoreCompleted.
+                        if (!mTabModelSelector.isTabStateInitialized()) {
+                            return;
+                        }
+                        mShouldIgnoreNextSelect = false;
+                    }
 
-            @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                if (!mTabModelSelector.isTabStateInitialized()) {
-                    return;
-                }
-                notifyBackPressStateChangedInternal();
-                if (type == TabSelectionType.FROM_CLOSE || mShouldIgnoreNextSelect
-                        || type == TabSelectionType.FROM_UNDO) {
-                    mShouldIgnoreNextSelect = false;
-                    return;
-                }
-                if (mIsSelectingInTabSwitcher) {
-                    mIsSelectingInTabSwitcher = false;
+                    @Override
+                    public void didSelectTab(Tab tab, int type, int lastId) {
+                        if (!mTabModelSelector.isTabStateInitialized()) {
+                            return;
+                        }
+                        notifyBackPressStateChangedInternal();
+                        if (type == TabSelectionType.FROM_CLOSE
+                                || mShouldIgnoreNextSelect
+                                || type == TabSelectionType.FROM_UNDO) {
+                            mShouldIgnoreNextSelect = false;
+                            return;
+                        }
+                        if (mIsSelectingInTabSwitcher) {
+                            mIsSelectingInTabSwitcher = false;
 
-                    // Use TabSelectionType.From_USER to filter the new tab creation case.
-                    if (type == TabSelectionType.FROM_USER) recordUserSwitchedTab(tab, lastId);
-                }
+                            // Use TabSelectionType.From_USER to filter the new tab creation case.
+                            if (type == TabSelectionType.FROM_USER)
+                                recordUserSwitchedTab(tab, lastId);
+                        }
 
-                if (mContainerViewModel.get(IS_VISIBLE)) {
-                    onTabSelecting(tab.getId(), false);
-                }
-            }
+                        if (mContainerViewModel.get(IS_VISIBLE)) {
+                            onTabSelecting(tab.getId(), false);
+                        }
+                    }
 
-            @Override
-            public void restoreCompleted() {
-                if (!mContainerViewModel.get(IS_VISIBLE)) return;
+                    @Override
+                    public void restoreCompleted() {
+                        if (!mContainerViewModel.get(IS_VISIBLE)) return;
 
-                mResetHandler.resetWithTabList(
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                        false, mShowTabsInMruOrder);
-                setInitialScrollIndexOffset();
-            }
+                        mResetHandler.resetWithTabList(
+                                mTabModelSelector
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter(),
+                                false,
+                                mShowTabsInMruOrder);
+                        setInitialScrollIndexOffset();
+                    }
 
-            @Override
-            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                if (mTabModelSelector.getCurrentModel().getCount() == 1) {
-                    messageItemsController.removeAllAppendedMessage();
-                } else if (mPriceMessageService != null
-                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
-                    priceWelcomeMessageController.removePriceWelcomeMessage();
-                }
-            }
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        if (mTabModelSelector.getCurrentModel().getCount() == 1) {
+                            messageItemsController.removeAllAppendedMessage();
+                        } else if (mPriceMessageService != null
+                                && mPriceMessageService.getBindingTabId() == tab.getId()) {
+                            priceWelcomeMessageController.removePriceWelcomeMessage();
+                        }
+                    }
 
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                if (mTabModelSelector.getCurrentModel().getCount() == 1) {
-                    messageItemsController.restoreAllAppendedMessage();
-                }
-                if (mPriceMessageService != null
-                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
-                    priceWelcomeMessageController.restorePriceWelcomeMessage();
-                }
-                notifyBackPressStateChangedInternal();
-            }
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        if (mTabModelSelector.getCurrentModel().getCount() == 1) {
+                            messageItemsController.restoreAllAppendedMessage();
+                        }
+                        if (mPriceMessageService != null
+                                && mPriceMessageService.getBindingTabId() == tab.getId()) {
+                            priceWelcomeMessageController.restorePriceWelcomeMessage();
+                        }
+                        notifyBackPressStateChangedInternal();
+                    }
 
-            @Override
-            public void tabPendingClosure(Tab tab) {
-                notifyBackPressStateChangedInternal();
-            }
+                    @Override
+                    public void tabPendingClosure(Tab tab) {
+                        notifyBackPressStateChangedInternal();
+                    }
 
-            @Override
-            public void onFinishingTabClosure(Tab tab) {
-                // If tab is closed by the site itself rather than user's input,
-                // tabPendingClosure & tabClosureCommitted won't be called.
-                notifyBackPressStateChangedInternal();
-            }
+                    @Override
+                    public void onFinishingTabClosure(Tab tab) {
+                        // If tab is closed by the site itself rather than user's input,
+                        // tabPendingClosure & tabClosureCommitted won't be called.
+                        notifyBackPressStateChangedInternal();
+                    }
 
-            @Override
-            public void tabRemoved(Tab tab) {
-                notifyBackPressStateChangedInternal();
-            }
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        notifyBackPressStateChangedInternal();
+                    }
 
-            @Override
-            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
-                notifyBackPressStateChangedInternal();
-            }
+                    @Override
+                    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                        notifyBackPressStateChangedInternal();
+                    }
 
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                // TODO(crbug.com/1157578): Auto update the PriceMessageService instead of
-                // updating it based on the client caller.
-                if (mPriceMessageService != null
-                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
-                    mPriceMessageService.invalidateMessage();
-                }
-            }
-        };
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        // TODO(crbug.com/1157578): Auto update the PriceMessageService instead of
+                        // updating it based on the client caller.
+                        if (mPriceMessageService != null
+                                && mPriceMessageService.getBindingTabId() == tab.getId()) {
+                            mPriceMessageService.invalidateMessage();
+                        }
+                    }
+                };
 
-        mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
-            @Override
-            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return;
+        mBrowserControlsObserver =
+                new BrowserControlsStateProvider.Observer() {
+                    @Override
+                    public void onControlsOffsetChanged(
+                            int topOffset,
+                            int topControlsMinHeightOffset,
+                            int bottomOffset,
+                            int bottomControlsMinHeightOffset,
+                            boolean needsAnimate) {
+                        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return;
 
-                updateTopControlsProperties();
-            }
+                        updateTopControlsProperties();
+                    }
 
-            @Override
-            public void onTopControlsHeightChanged(
-                    int topControlsHeight, int topControlsMinHeight) {
-                if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return;
+                    @Override
+                    public void onTopControlsHeightChanged(
+                            int topControlsHeight, int topControlsMinHeight) {
+                        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return;
 
-                updateTopControlsProperties();
-            }
+                        updateTopControlsProperties();
+                    }
 
-            @Override
-            public void onBottomControlsHeightChanged(
-                    int bottomControlsHeight, int bottomControlsMinHeight) {
-                mContainerViewModel.set(BOTTOM_CONTROLS_HEIGHT, bottomControlsHeight);
-            }
-        };
+                    @Override
+                    public void onBottomControlsHeightChanged(
+                            int bottomControlsHeight, int bottomControlsMinHeight) {
+                        mContainerViewModel.set(BOTTOM_CONTROLS_HEIGHT, bottomControlsHeight);
+                    }
+                };
 
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
 
         if (mTabModelSelector.getModels().isEmpty()) {
-            TabModelSelectorObserver selectorObserver = new TabModelSelectorObserver() {
-                @Override
-                public void onChange() {
-                    assert !mTabModelSelector.getModels().isEmpty();
-                    assert mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false)
-                            != null;
-                    assert mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(true)
-                            != null;
-                    mTabModelSelector.removeObserver(this);
-                    mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(
-                            mTabModelObserver);
-                }
-            };
+            TabModelSelectorObserver selectorObserver =
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onChange() {
+                            assert !mTabModelSelector.getModels().isEmpty();
+                            assert mTabModelSelector
+                                            .getTabModelFilterProvider()
+                                            .getTabModelFilter(false)
+                                    != null;
+                            assert mTabModelSelector
+                                            .getTabModelFilterProvider()
+                                            .getTabModelFilter(true)
+                                    != null;
+                            mTabModelSelector.removeObserver(this);
+                            mTabModelSelector
+                                    .getTabModelFilterProvider()
+                                    .addTabModelFilterObserver(mTabModelObserver);
+                        }
+                    };
             mTabModelSelector.addObserver(selectorObserver);
         } else {
-            mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(
-                    mTabModelObserver);
+            mTabModelSelector
+                    .getTabModelFilterProvider()
+                    .addTabModelFilterObserver(mTabModelObserver);
         }
 
         mContainerViewModel.set(VISIBILITY_LISTENER, this);
@@ -522,7 +552,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
 
         if (mMode == TabListMode.GRID) {
-            mContainerViewModel.set(BOTTOM_PADDING,
+            mContainerViewModel.set(
+                    BOTTOM_PADDING,
                     (int) context.getResources().getDimension(R.dimen.tab_grid_bottom_padding));
             if (backPressManager != null && BackPressManager.isEnabled()) {
                 assert !mIsStartSurfaceEnabled || mIsStartSurfaceRefactorEnabled;
@@ -534,37 +565,39 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mContainerView = containerView;
 
         mSoftClearTabListRunnable = mResetHandler::softCleanup;
-        mClearTabListRunnable = () -> {
-            mResetHandler.hardCleanup();
-            mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
-        };
+        mClearTabListRunnable =
+                () -> {
+                    mResetHandler.hardCleanup();
+                    mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
+                };
         mHandler = new Handler();
         mTabContentManager = tabContentManager;
 
         mShowTabsInMruOrder = TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
 
-        mMultiWindowModeObserver = isInMultiWindowMode -> {
-            if (isInMultiWindowMode) {
-                messageItemsController.removeAllAppendedMessage();
-            } else {
-                messageItemsController.restoreAllAppendedMessage();
-            }
-        };
+        mMultiWindowModeObserver =
+                isInMultiWindowMode -> {
+                    if (isInMultiWindowMode) {
+                        messageItemsController.removeAllAppendedMessage();
+                    } else {
+                        messageItemsController.restoreAllAppendedMessage();
+                    }
+                };
         mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
         notifyBackPressStateChangedInternal();
 
         mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;
         if (mTabGridDialogControllerSupplier != null) {
-            mTabGridDialogControllerSupplier.onAvailable((tabGridDialogController) -> {
-                tabGridDialogController.getHandleBackPressChangedSupplier().addObserver(
-                        mNotifyBackPressedCallback);
-            });
+            mTabGridDialogControllerSupplier.onAvailable(
+                    (tabGridDialogController) -> {
+                        tabGridDialogController
+                                .getHandleBackPressChangedSupplier()
+                                .addObserver(mNotifyBackPressedCallback);
+                    });
         }
     }
 
-    /**
-     * Called after native initialization is completed.
-     */
+    /** Called after native initialization is completed. */
     public void initWithNative(@Nullable SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
     }
@@ -574,12 +607,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * @param controller the controller to use.
      */
     public void setTabSelectionEditorController(
-            @Nullable TabSelectionEditorCoordinator
-                    .TabSelectionEditorController tabSelectionEditorController) {
+            @Nullable
+                    TabSelectionEditorCoordinator.TabSelectionEditorController
+                            tabSelectionEditorController) {
         if (tabSelectionEditorController != null) {
             mTabSelectionEditorController = tabSelectionEditorController;
-            mTabSelectionEditorController.getHandleBackPressChangedSupplier().addObserver(
-                    mNotifyBackPressedCallback);
+            mTabSelectionEditorController
+                    .getHandleBackPressChangedSupplier()
+                    .addObserver(mNotifyBackPressedCallback);
         }
     }
 
@@ -668,12 +703,16 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 RecordHistogram.recordSparseHistogram(
                         "Tabs.TabOffsetOfSwitch." + TabSwitcherCoordinator.COMPONENT_NAME, 0);
             } else {
-                int fromIndex = mTabModelSelector.getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter()
-                                        .indexOf(fromTab);
-                int toIndex = mTabModelSelector.getTabModelFilterProvider()
-                                      .getCurrentTabModelFilter()
-                                      .indexOf(tab);
+                int fromIndex =
+                        mTabModelSelector
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter()
+                                .indexOf(fromTab);
+                int toIndex =
+                        mTabModelSelector
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter()
+                                .indexOf(tab);
 
                 if (fromIndex != toIndex) {
                     // Only log when you switch a tab page directly from tab switcher.
@@ -707,9 +746,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 && !mTabModelSelector.getCurrentModel().getProfile().isOffTheRecord()
                 && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
                         Profile.getLastUsedRegularProfile())) {
-            RecordUserAction.record("Commerce.TabGridSwitched."
-                    + (ShoppingPersistedTabData.hasPriceDrop(tab) ? "HasPriceDrop"
-                                                                  : "NoPriceDrop"));
+            RecordUserAction.record(
+                    "Commerce.TabGridSwitched."
+                            + (ShoppingPersistedTabData.hasPriceDrop(tab)
+                                    ? "HasPriceDrop"
+                                    : "NoPriceDrop"));
         }
     }
 
@@ -735,12 +776,12 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     @Override
     public void prepareHideTabSwitcherView() {
-        hideTabSwitcherViewInternal(/*animate=*/false, /*skipVisibility=*/true);
+        hideTabSwitcherViewInternal(/* animate= */ false, /* skipVisibility= */ true);
     }
 
     @Override
     public void hideTabSwitcherView(boolean animate) {
-        hideTabSwitcherViewInternal(animate, /*skipVisibility=*/false);
+        hideTabSwitcherViewInternal(animate, /* skipVisibility= */ false);
     }
 
     private void hideTabSwitcherViewInternal(boolean animate, boolean skipVisibility) {
@@ -771,9 +812,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         boolean quick = false;
         if (!mTabModelSelector.isTabStateInitialized()) return quick;
         if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)) {
-            quick = mResetHandler.resetWithTabList(
-                    mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(), false,
-                    mShowTabsInMruOrder);
+            quick =
+                    mResetHandler.resetWithTabList(
+                            mTabModelSelector
+                                    .getTabModelFilterProvider()
+                                    .getCurrentTabModelFilter(),
+                            false,
+                            mShowTabsInMruOrder);
         }
         setInitialScrollIndexOffset();
 
@@ -822,7 +867,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
                     allTabs = PseudoTab.getAllPseudoTabsFromStateFile(mContext);
                 }
-                mResetHandler.resetWithTabs(allTabs,
+                mResetHandler.resetWithTabs(
+                        allTabs,
                         TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext),
                         mShowTabsInMruOrder);
             }
@@ -906,7 +952,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return false;
         }
 
-        if (mTabGridDialogControllerSupplier != null && mTabGridDialogControllerSupplier.hasValue()
+        if (mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()
                 && mTabGridDialogControllerSupplier.get().handleBackPressed()) {
             return true;
         }
@@ -947,7 +994,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return true;
         }
 
-        if (mTabGridDialogControllerSupplier != null && mTabGridDialogControllerSupplier.hasValue()
+        if (mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()
                 && mTabGridDialogControllerSupplier.get().isVisible()) {
             return true;
         }
@@ -1017,8 +1065,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         // The grid tab switcher for tablets translates up over top of the browser controls, causing
         // the custom view to do the same.
         if (mIsTablet) {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT);
             params.topMargin = getToolbarHeight();
 
             mContainerView.addView(customView, params);
@@ -1039,15 +1089,16 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      */
     @Override
     public void removeCustomView(@NonNull View customView) {
-        assert mCustomView
-                != null : "No client previously passed a custom view that needs removal.";
+        assert mCustomView != null
+                : "No client previously passed a custom view that needs removal.";
         mContainerView.removeView(customView);
         mCustomView = null;
         mCustomViewBackPressRunnable = null;
         notifyBackPressStateChangedInternal();
         mResetHandler.resetWithTabList(
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                /*quickMode=*/false, mShowTabsInMruOrder);
+                /* quickMode= */ false,
+                mShowTabsInMruOrder);
     }
 
     /**
@@ -1073,34 +1124,30 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
     }
 
-    /**
-     * Set the delay for soft cleanup.
-     */
+    /** Set the delay for soft cleanup. */
     void setSoftCleanupDelayForTesting(int timeoutMs) {
         mSoftCleanupDelayMsForTesting = timeoutMs;
         ResettersForTesting.register(() -> mSoftCleanupDelayMsForTesting = null);
     }
 
-    /**
-     * Set the delay for lazy cleanup.
-     */
+    /** Set the delay for lazy cleanup. */
     void setCleanupDelayForTesting(int timeoutMs) {
         mCleanupDelayMsForTesting = timeoutMs;
         ResettersForTesting.register(() -> mCleanupDelayMsForTesting = null);
     }
 
-    /**
-     * Destroy any members that needs clean up.
-     */
+    /** Destroy any members that needs clean up. */
     public void destroy() {
         if (mTabSelectionEditorController != null) {
-            mTabSelectionEditorController.getHandleBackPressChangedSupplier().removeObserver(
-                    mNotifyBackPressedCallback);
+            mTabSelectionEditorController
+                    .getHandleBackPressChangedSupplier()
+                    .removeObserver(mNotifyBackPressedCallback);
         }
 
         if (mTabGridDialogControllerSupplier != null
                 && mTabGridDialogControllerSupplier.hasValue()) {
-            mTabGridDialogControllerSupplier.get()
+            mTabGridDialogControllerSupplier
+                    .get()
                     .getHandleBackPressChangedSupplier()
                     .removeObserver(mNotifyBackPressedCallback);
         }
@@ -1119,8 +1166,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
-        mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
-                mTabModelObserver);
+        mTabModelSelector
+                .getTabModelFilterProvider()
+                .removeTabModelFilterObserver(mTabModelObserver);
         mMultiWindowModeStateDispatcher.removeObserver(mMultiWindowModeObserver);
     }
 
@@ -1137,12 +1185,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return;
         }
 
-        if (mTabModelSelector.isIncognitoSelected() && mIncognitoReauthController != null
+        if (mTabModelSelector.isIncognitoSelected()
+                && mIncognitoReauthController != null
                 && mIncognitoReauthController.isReauthPageShowing()) {
             return;
         }
 
-        mContainerViewModel.set(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
+        mContainerViewModel.set(
+                TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index());
     }
 
@@ -1190,7 +1240,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     private List<Tab> getRelatedTabs(int tabId) {
-        return mTabModelSelector.getTabModelFilterProvider()
+        return mTabModelSelector
+                .getTabModelFilterProvider()
                 .getCurrentTabModelFilter()
                 .getRelatedTabList(tabId);
     }
@@ -1262,12 +1313,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mLayoutStateProvider = layoutStateProvider;
         mLastActiveLayoutType = mLayoutStateProvider.getActiveLayoutType();
         if (mLayoutStateObserver == null) {
-            mLayoutStateObserver = new LayoutStateObserver() {
-                @Override
-                public void onFinishedHiding(int layoutType) {
-                    mLastActiveLayoutType = layoutType;
-                }
-            };
+            mLayoutStateObserver =
+                    new LayoutStateObserver() {
+                        @Override
+                        public void onFinishedHiding(int layoutType) {
+                            mLastActiveLayoutType = layoutType;
+                        }
+                    };
         }
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }

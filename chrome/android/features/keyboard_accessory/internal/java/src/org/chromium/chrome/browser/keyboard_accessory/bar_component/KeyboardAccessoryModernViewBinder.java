@@ -65,14 +65,20 @@ class KeyboardAccessoryModernViewBinder {
             TraceEvent.begin("BarItemChipViewHolder#bind");
             int iconId = item.getSuggestion().getIconId();
             if (item.getFeatureForIPH() != null) {
-                if (item.getFeatureForIPH().equals(
-                            FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)) {
+                if (item.getFeatureForIPH()
+                        .equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)) {
                     if (iconId != 0) {
-                        showHelpBubble(item.getFeatureForIPH(), chipView.getStartIconViewRect(),
-                                chipView.getContext(), mRootViewForIPH,
+                        showHelpBubble(
+                                item.getFeatureForIPH(),
+                                chipView.getStartIconViewRect(),
+                                chipView.getContext(),
+                                mRootViewForIPH,
                                 item.getSuggestion().getItemTag());
                     } else {
-                        showHelpBubble(item.getFeatureForIPH(), chipView, mRootViewForIPH,
+                        showHelpBubble(
+                                item.getFeatureForIPH(),
+                                chipView,
+                                mRootViewForIPH,
                                 item.getSuggestion().getItemTag());
                     }
                 } else {
@@ -106,30 +112,41 @@ class KeyboardAccessoryModernViewBinder {
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
             if (item.getSuggestion().getItemTag() != null
                     && !item.getSuggestion().getItemTag().isEmpty()) {
-                chipView.getPrimaryTextView().setContentDescription(
-                        item.getSuggestion().getLabel() + " " + item.getSuggestion().getItemTag());
+                chipView.getPrimaryTextView()
+                        .setContentDescription(
+                                item.getSuggestion().getLabel()
+                                        + " "
+                                        + item.getSuggestion().getItemTag());
             } else {
-                chipView.getPrimaryTextView().setContentDescription(
-                        item.getSuggestion().getLabel());
+                chipView.getPrimaryTextView()
+                        .setContentDescription(item.getSuggestion().getLabel());
             }
             chipView.getSecondaryTextView().setText(item.getSuggestion().getSublabel());
-            chipView.getSecondaryTextView().setVisibility(
-                    item.getSuggestion().getSublabel().isEmpty() ? View.GONE : View.VISIBLE);
+            chipView.getSecondaryTextView()
+                    .setVisibility(
+                            item.getSuggestion().getSublabel().isEmpty()
+                                    ? View.GONE
+                                    : View.VISIBLE);
             KeyboardAccessoryData.Action action = item.getAction();
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
-            chipView.setOnClickListener(view -> {
-                item.maybeEmitEventForIPH();
-                action.getCallback().onResult(action);
-            });
+            chipView.setOnClickListener(
+                    view -> {
+                        item.maybeEmitEventForIPH();
+                        action.getCallback().onResult(action);
+                    });
             if (action.getLongPressCallback() != null) {
-                chipView.setOnLongClickListener(view -> {
-                    action.getLongPressCallback().onResult(action);
-                    return true; // Click event consumed!
-                });
+                chipView.setOnLongClickListener(
+                        view -> {
+                            action.getLongPressCallback().onResult(action);
+                            return true; // Click event consumed!
+                        });
             }
             chipView.setIcon(
-                    getCardIcon(chipView.getContext(), item.getSuggestion().getCustomIconUrl(),
-                            iconId, AutofillUiUtils.CardIconSize.SMALL,
+                    getCardIcon(
+                            chipView.getContext(),
+                            item.getSuggestion().getCustomIconUrl(),
+                            iconId,
+                            AutofillUiUtils.CardIconSize.SMALL,
                             /* showCustomIcon= */ true),
                     /* tintWithTextColor= */ false);
             TraceEvent.end("BarItemChipViewHolder#bind");
@@ -178,10 +195,14 @@ class KeyboardAccessoryModernViewBinder {
             modernView.setObfuscatedLastChildAt(model.get(OBFUSCATED_CHILD_AT_CALLBACK));
         } else if (propertyKey == SHOW_SWIPING_IPH) {
             RectProvider swipingIphRectProvider = modernView.getSwipingIphRect();
-            if (model.get(SHOW_SWIPING_IPH) && swipingIphRectProvider != null
+            if (model.get(SHOW_SWIPING_IPH)
+                    && swipingIphRectProvider != null
                     && hasShownAnyAutofillIphBefore()) {
-                showHelpBubble(FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
-                        swipingIphRectProvider, modernView.getContext(), modernView.mBarItemsView);
+                showHelpBubble(
+                        FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
+                        swipingIphRectProvider,
+                        modernView.getContext(),
+                        modernView.mBarItemsView);
             }
         } else if (propertyKey == HAS_SUGGESTIONS) {
             modernView.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));

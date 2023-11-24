@@ -11,9 +11,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Provides configuration details for suggestions.
- */
+/** Provides configuration details for suggestions. */
 public final class SuggestionsConfig {
     @IntDef({TileStyle.MODERN, TileStyle.MODERN_CONDENSED})
     @Retention(RetentionPolicy.SOURCE)
@@ -31,12 +29,11 @@ public final class SuggestionsConfig {
 
     private SuggestionsConfig() {}
 
-    /**
-     * Returns the current tile style, that depends on the enabled features and the screen size.
-     */
+    /** Returns the current tile style, that depends on the enabled features and the screen size. */
     public static @TileStyle int getTileStyle(UiConfig uiConfig) {
-        return uiConfig.getCurrentDisplayStyle().isSmall() ? TileStyle.MODERN_CONDENSED
-                                                           : TileStyle.MODERN;
+        return uiConfig.getCurrentDisplayStyle().isSmall()
+                ? TileStyle.MODERN_CONDENSED
+                : TileStyle.MODERN;
     }
 
     /**

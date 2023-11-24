@@ -24,7 +24,9 @@ public abstract class StripStacker {
      * @param outVisualOrderedTabs The new list of tabs, ordered from back (low z-index) to front
      *                             (high z-index) visually.
      */
-    public void createVisualOrdering(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
+    public void createVisualOrdering(
+            int selectedIndex,
+            StripLayoutTab[] indexOrderedTabs,
             StripLayoutTab[] outVisualOrderedTabs) {
         // TODO(https://crbug.com/1446515): Stacking order can be ignored for TSR.
         assert indexOrderedTabs.length == outVisualOrderedTabs.length;
@@ -49,8 +51,11 @@ public abstract class StripStacker {
      * @param tabCreating Whether a tab is being created.
      * @param cachedTabWidth Whether The ideal tab width.
      */
-    public abstract void setTabOffsets(StripLayoutTab[] indexOrderedTabs, boolean tabClosing,
-            boolean tabCreating, float cachedTabWidth);
+    public abstract void setTabOffsets(
+            StripLayoutTab[] indexOrderedTabs,
+            boolean tabClosing,
+            boolean tabCreating,
+            float cachedTabWidth);
 
     /**
      * Computes the X offset for the new tab button.
@@ -64,19 +69,45 @@ public abstract class StripStacker {
      * @param touchTargetOffset Touch target offset applied to the button position.
      * @return The x offset for the new tab button.
      */
-    public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs, float tabOverlapWidth,
-            float stripLeftMargin, float stripRightMargin, float stripWidth, float buttonWidth,
-            float touchTargetOffset, float cachedTabWidth, boolean animate) {
+    public float computeNewTabButtonOffset(
+            StripLayoutTab[] indexOrderedTabs,
+            float tabOverlapWidth,
+            float stripLeftMargin,
+            float stripRightMargin,
+            float stripWidth,
+            float buttonWidth,
+            float touchTargetOffset,
+            float cachedTabWidth,
+            boolean animate) {
         return LocalizationUtils.isLayoutRtl()
-                ? computeNewTabButtonOffsetRtl(indexOrderedTabs, stripLeftMargin, stripRightMargin,
-                        stripWidth, buttonWidth, touchTargetOffset, animate)
-                : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth, stripLeftMargin,
-                        stripRightMargin, stripWidth, touchTargetOffset, cachedTabWidth, animate);
+                ? computeNewTabButtonOffsetRtl(
+                        indexOrderedTabs,
+                        stripLeftMargin,
+                        stripRightMargin,
+                        stripWidth,
+                        buttonWidth,
+                        touchTargetOffset,
+                        animate)
+                : computeNewTabButtonOffsetLtr(
+                        indexOrderedTabs,
+                        tabOverlapWidth,
+                        stripLeftMargin,
+                        stripRightMargin,
+                        stripWidth,
+                        touchTargetOffset,
+                        cachedTabWidth,
+                        animate);
     }
 
-    private float computeNewTabButtonOffsetLtr(StripLayoutTab[] indexOrderedTabs,
-            float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
-            float touchTargetOffset, float cachedTabWidth, boolean animate) {
+    private float computeNewTabButtonOffsetLtr(
+            StripLayoutTab[] indexOrderedTabs,
+            float tabOverlapWidth,
+            float stripLeftMargin,
+            float stripRightMargin,
+            float stripWidth,
+            float touchTargetOffset,
+            float cachedTabWidth,
+            boolean animate) {
         float rightEdge = stripLeftMargin;
         for (StripLayoutTab tab : indexOrderedTabs) {
             if (tab.isDying()) continue;
@@ -109,9 +140,14 @@ public abstract class StripStacker {
         return rightEdge;
     }
 
-    private float computeNewTabButtonOffsetRtl(StripLayoutTab[] indexOrderedTabs,
-            float stripLeftMargin, float stripRightMargin, float stripWidth,
-            float newTabButtonWidth, float touchTargetOffset, boolean animate) {
+    private float computeNewTabButtonOffsetRtl(
+            StripLayoutTab[] indexOrderedTabs,
+            float stripLeftMargin,
+            float stripRightMargin,
+            float stripWidth,
+            float newTabButtonWidth,
+            float touchTargetOffset,
+            boolean animate) {
         float leftEdge = stripWidth - stripRightMargin;
 
         for (StripLayoutTab tab : indexOrderedTabs) {

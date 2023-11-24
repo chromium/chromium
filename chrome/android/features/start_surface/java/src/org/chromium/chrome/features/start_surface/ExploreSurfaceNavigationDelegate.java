@@ -29,10 +29,12 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
 
     @Override
     public @Nullable Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
-        Tab newTab = ReturnToChromeUtil.handleLoadUrlFromStartSurface(loadUrlParams,
-                windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
-                mParentTabSupplier.get());
+        Tab newTab =
+                ReturnToChromeUtil.handleLoadUrlFromStartSurface(
+                        loadUrlParams,
+                        windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                        windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
+                        mParentTabSupplier.get());
         assert newTab != null;
         RecordUserAction.record("ContentSuggestions.Feed.CardAction.Open.StartSurface");
         return newTab;

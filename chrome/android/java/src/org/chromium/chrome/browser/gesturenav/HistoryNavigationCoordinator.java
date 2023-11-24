@@ -108,8 +108,12 @@ public class HistoryNavigationCoordinator
             Supplier<TouchEventProvider> touchEventProvider,
             LayoutManager layoutManager) {
         mOverscrollGlowOverlay = new OverscrollGlowOverlay(window, parentView, requestRunnable);
-        mNavigationLayout = new HistoryNavigationLayout(parentView.getContext(), this::isNativePage,
-                mOverscrollGlowOverlay, (direction) -> mNavigationHandler.navigate(direction));
+        mNavigationLayout =
+                new HistoryNavigationLayout(
+                        parentView.getContext(),
+                        this::isNativePage,
+                        mOverscrollGlowOverlay,
+                        (direction) -> mNavigationHandler.navigate(direction));
 
         mParentView = parentView;
         mActivityLifecycleDispatcher = lifecycleDispatcher;
@@ -120,23 +124,25 @@ public class HistoryNavigationCoordinator
         // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
         parentView.addView(mNavigationLayout);
 
-        mCurrentTabObserver = new CurrentTabObserver(tabSupplier,
-                new EmptyTabObserver() {
-                    @Override
-                    public void onContentChanged(Tab tab) {
-                        updateNavigationHandler();
-                    }
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onContentChanged(Tab tab) {
+                                updateNavigationHandler();
+                            }
 
-                    @Override
-                    public void onDestroyed(Tab tab) {
-                        mTab = null;
-                        updateNavigationHandler();
-                    }
-                },
-                (tab) -> {
-                    mTab = tab;
-                    updateNavigationHandler();
-                });
+                            @Override
+                            public void onDestroyed(Tab tab) {
+                                mTab = null;
+                                updateNavigationHandler();
+                            }
+                        },
+                        (tab) -> {
+                            mTab = tab;
+                            updateNavigationHandler();
+                        });
 
         // TODO(jinsukkim): Update NavigationHandler when its homepage is shown rather than
         //     StartSurface becomes available. The former is the better signal for the update.
@@ -172,7 +178,8 @@ public class HistoryNavigationCoordinator
     }
 
     private static boolean isDetached(Tab tab) {
-        return tab == null || tab.getWebContents() == null
+        return tab == null
+                || tab.getWebContents() == null
                 || tab.getWebContents().getTopLevelNativeWindow() == null;
     }
 
@@ -205,9 +212,7 @@ public class HistoryNavigationCoordinator
         if (mEnabled != oldEnabled) updateNavigationHandler();
     }
 
-    /**
-     * Initialize or reset {@link NavigationHandler} using the enabled state.
-     */
+    /** Initialize or reset {@link NavigationHandler} using the enabled state. */
     private void updateNavigationHandler() {
         // Check against |mActivityLifecycleDisptacher|/|mTouchEventProvider| prevents the flow
         // after the destruction.
@@ -227,16 +232,18 @@ public class HistoryNavigationCoordinator
         }
     }
 
-    /**
-     * Initialize {@link NavigationHandler} object.
-     */
+    /** Initialize {@link NavigationHandler} object. */
     private void initNavigationHandler() {
         PropertyModel model =
                 new PropertyModel.Builder(GestureNavigationProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
                 model, mNavigationLayout, GestureNavigationViewBinder::bind);
-        mNavigationHandler = new NavigationHandler(
-                model, mNavigationLayout, mBackActionDelegate, mNavigationLayout::willNavigate);
+        mNavigationHandler =
+                new NavigationHandler(
+                        model,
+                        mNavigationLayout,
+                        mBackActionDelegate,
+                        mNavigationLayout::willNavigate);
         mTouchEventProvider.get().addTouchEventObserver(mNavigationHandler);
     }
 
@@ -250,9 +257,7 @@ public class HistoryNavigationCoordinator
     @Override
     public void onPauseWithNative() {}
 
-    /**
-     * Starts preparing an edge swipe gesture.
-     */
+    /** Starts preparing an edge swipe gesture. */
     public void startGesture() {
         // Simulates the initial onDown event to update the internal state.
         if (mNavigationHandler != null) mNavigationHandler.onDown();
@@ -279,9 +284,7 @@ public class HistoryNavigationCoordinator
         if (mNavigationHandler != null) mNavigationHandler.release(allowNav);
     }
 
-    /**
-     * Resets a gesture as the result of the successful navigation or cancellation.
-     */
+    /** Resets a gesture as the result of the successful navigation or cancellation. */
     public void reset() {
         if (mNavigationHandler != null) mNavigationHandler.reset();
     }
@@ -299,9 +302,7 @@ public class HistoryNavigationCoordinator
         }
     }
 
-    /**
-     * Destroy HistoryNavigationCoordinator object.
-     */
+    /** Destroy HistoryNavigationCoordinator object. */
     public void destroy() {
         if (mCurrentTabObserver != null) {
             mCurrentTabObserver.destroy();

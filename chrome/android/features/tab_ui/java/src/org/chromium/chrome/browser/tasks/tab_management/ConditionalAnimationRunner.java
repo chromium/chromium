@@ -37,6 +37,7 @@ public class ConditionalAnimationRunner {
      * example, the new tab animation uses a null bitmap.
      */
     private boolean mBitmapSet;
+
     private Bitmap mBitmap;
 
     /**
@@ -44,6 +45,7 @@ public class ConditionalAnimationRunner {
      * are both valid values and we want to wait for this to be set to non-null before proceeding.
      */
     private Boolean mTabListCanShowQuickly;
+
     private boolean mLayoutCompleted;
 
     private AnimationRunner mAnimationRunner;
@@ -87,9 +89,7 @@ public class ConditionalAnimationRunner {
         maybeRunAnimation();
     }
 
-    /**
-     * Set that the first layout completed and may run the animation.
-     */
+    /** Set that the first layout completed and may run the animation. */
     void setLayoutCompleted() {
         if (mAnimationRunner == null) return;
 
@@ -108,7 +108,8 @@ public class ConditionalAnimationRunner {
     private void runAnimation() {
         AnimationRunner animationRunner = mAnimationRunner;
         mAnimationRunner = null;
-        animationRunner.run(mBitmap,
+        animationRunner.run(
+                mBitmap,
                 mTabListCanShowQuickly == null ? false : mTabListCanShowQuickly.booleanValue());
 
         // Release the bitmap as it is expensive to keep around.

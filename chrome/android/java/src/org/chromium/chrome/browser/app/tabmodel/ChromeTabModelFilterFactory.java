@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegatePro
 import javax.inject.Inject;
 import javax.inject.Named;
 
-/**
- * Glue code that decides which concrete {@link TabModelFilterFactory} should be used.
- */
+/** Glue code that decides which concrete {@link TabModelFilterFactory} should be used. */
 @ActivityScope
 public class ChromeTabModelFilterFactory implements TabModelFilterFactory {
     private Context mContext;

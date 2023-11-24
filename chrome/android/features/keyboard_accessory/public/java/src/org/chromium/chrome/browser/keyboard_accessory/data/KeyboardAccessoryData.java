@@ -18,9 +18,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Interfaces in this class are used to pass data into keyboard accessory component.
- */
+/** Interfaces in this class are used to pass data into keyboard accessory component. */
 public class KeyboardAccessoryData {
     /**
      * Describes a tab which should be displayed as a small icon at the start of the keyboard
@@ -35,9 +33,7 @@ public class KeyboardAccessoryData {
         private final @Nullable Listener mListener;
         private final PropertyProvider<Drawable> mIconProvider = new PropertyProvider<>();
 
-        /**
-         * A Tab's Listener get's notified when e.g. the Tab was assigned a view.
-         */
+        /** A Tab's Listener get's notified when e.g. the Tab was assigned a view. */
         public interface Listener {
             /**
              * Triggered when the tab was successfully created.
@@ -46,14 +42,17 @@ public class KeyboardAccessoryData {
              */
             void onTabCreated(ViewGroup view);
 
-            /**
-             * Triggered when the tab becomes visible to the user.
-             */
+            /** Triggered when the tab becomes visible to the user. */
             void onTabShown();
         }
 
-        public Tab(String title, Drawable icon, String contentDescription, @LayoutRes int tabLayout,
-                @AccessoryTabType int recordingType, @Nullable Listener listener) {
+        public Tab(
+                String title,
+                Drawable icon,
+                String contentDescription,
+                @LayoutRes int tabLayout,
+                @AccessoryTabType int recordingType,
+                @Nullable Listener listener) {
             mTitle = title;
             mIcon = icon;
             mContentDescription = contentDescription;
@@ -197,7 +196,10 @@ public class KeyboardAccessoryData {
         private final Callback<Boolean> mCallback;
         private final @AccessoryAction int mType;
 
-        public OptionToggle(String displayText, boolean enabled, @AccessoryAction int type,
+        public OptionToggle(
+                String displayText,
+                boolean enabled,
+                @AccessoryAction int type,
                 Callback<Boolean> callback) {
             mDisplayText = displayText;
             mEnabled = enabled;
@@ -212,17 +214,17 @@ public class KeyboardAccessoryData {
         public boolean isEnabled() {
             return mEnabled;
         }
+
         public Callback<Boolean> getCallback() {
             return mCallback;
         }
+
         public @AccessoryAction int getActionType() {
             return mType;
         }
     }
 
-    /**
-     * Represents a Passkey (name and ID), to be shown on the manual fallback UI.
-     */
+    /** Represents a Passkey (name and ID), to be shown on the manual fallback UI. */
     public static final class PasskeySection {
         private final String mDisplayName;
         private final Runnable mSelectPasskeyCallback;
@@ -247,9 +249,7 @@ public class KeyboardAccessoryData {
             return mDisplayName;
         }
 
-        /**
-         * Invokes the stored callback. To be called when the user taps on the chip.
-         */
+        /** Invokes the stored callback. To be called when the user taps on the chip. */
         public void triggerSelection() {
             mSelectPasskeyCallback.run();
         }
@@ -316,9 +316,7 @@ public class KeyboardAccessoryData {
         }
     }
 
-    /**
-     * Represents a Promo Code Offer to be shown on the manual fallback UI.
-     */
+    /** Represents a Promo Code Offer to be shown on the manual fallback UI. */
     public static final class PromoCodeInfo {
         private UserInfoField mPromoCode;
         private String mDetailsText;
@@ -342,9 +340,7 @@ public class KeyboardAccessoryData {
         }
     }
 
-    /**
-     * Represents a command below the suggestions, such as "Manage password...".
-     */
+    /** Represents a command below the suggestions, such as "Manage password...". */
     public static final class FooterCommand {
         private final String mDisplayText;
         private final Callback<FooterCommand> mCallback;
@@ -368,9 +364,7 @@ public class KeyboardAccessoryData {
             return mDisplayText;
         }
 
-        /**
-         * Invokes the stored callback. To be called when the user taps on the footer command.
-         */
+        /** Invokes the stored callback. To be called when the user taps on the footer command. */
         public void execute() {
             mCallback.onResult(this);
         }
@@ -415,9 +409,7 @@ public class KeyboardAccessoryData {
             return mToggle;
         }
 
-        /**
-         * Returns the title of the accessory sheet. This text is also used for accessibility.
-         */
+        /** Returns the title of the accessory sheet. This text is also used for accessibility. */
         public String getTitle() {
             return mTitle;
         }
@@ -429,30 +421,22 @@ public class KeyboardAccessoryData {
             return mWarning;
         }
 
-        /**
-         * Returns the list of {@link UserInfo} to be shown on the accessory sheet.
-         */
+        /** Returns the list of {@link UserInfo} to be shown on the accessory sheet. */
         public List<UserInfo> getUserInfoList() {
             return mUserInfoList;
         }
 
-        /**
-         * Returns the list of {@link PasskeySection} to be shown on the accessory sheet.
-         */
+        /** Returns the list of {@link PasskeySection} to be shown on the accessory sheet. */
         public List<PasskeySection> getPasskeySectionList() {
             return mPasskeySectionList;
         }
 
-        /**
-         * Returns the list of {@link PromoCodeInfo} to be shown on the accessory sheet.
-         */
+        /** Returns the list of {@link PromoCodeInfo} to be shown on the accessory sheet. */
         public List<PromoCodeInfo> getPromoCodeInfoList() {
             return mPromoCodeInfoList;
         }
 
-        /**
-         * Returns the list of {@link FooterCommand} to be shown on the accessory sheet.
-         */
+        /** Returns the list of {@link FooterCommand} to be shown on the accessory sheet. */
         public List<FooterCommand> getFooterCommands() {
             return mFooterCommands;
         }

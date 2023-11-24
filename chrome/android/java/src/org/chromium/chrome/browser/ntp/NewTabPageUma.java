@@ -104,10 +104,12 @@ public class NewTabPageUma {
      * ContentSuggestionsUIUpdateResult2 enum in enums.xml. Do not remove or change existing
      * values other than NUM_UI_UPDATE_RESULTS.
      */
-    @IntDef({ContentSuggestionsUIUpdateResult.SUCCESS_APPENDED,
-            ContentSuggestionsUIUpdateResult.SUCCESS_REPLACED,
-            ContentSuggestionsUIUpdateResult.FAIL_ALL_SEEN,
-            ContentSuggestionsUIUpdateResult.FAIL_DISABLED})
+    @IntDef({
+        ContentSuggestionsUIUpdateResult.SUCCESS_APPENDED,
+        ContentSuggestionsUIUpdateResult.SUCCESS_REPLACED,
+        ContentSuggestionsUIUpdateResult.FAIL_ALL_SEEN,
+        ContentSuggestionsUIUpdateResult.FAIL_DISABLED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContentSuggestionsUIUpdateResult {
         /**
@@ -134,10 +136,13 @@ public class NewTabPageUma {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused. This maps directly to
     // the ContentSuggestionsDisplayStatus enum defined in tools/metrics/enums.xml.
-    @IntDef({ContentSuggestionsDisplayStatus.VISIBLE, ContentSuggestionsDisplayStatus.COLLAPSED,
-            ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY,
-            ContentSuggestionsDisplayStatus.DISABLED,
-            ContentSuggestionsDisplayStatus.DISABLED_BY_DSE})
+    @IntDef({
+        ContentSuggestionsDisplayStatus.VISIBLE,
+        ContentSuggestionsDisplayStatus.COLLAPSED,
+        ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY,
+        ContentSuggestionsDisplayStatus.DISABLED,
+        ContentSuggestionsDisplayStatus.DISABLED_BY_DSE
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ContentSuggestionsDisplayStatus {
         int VISIBLE = 0;
@@ -187,7 +192,8 @@ public class NewTabPageUma {
             }
         }
         if (isNtp) {
-            BrowserUiUtils.recordModuleClickHistogram(BrowserUiUtils.HostSurface.NEW_TAB_PAGE,
+            BrowserUiUtils.recordModuleClickHistogram(
+                    BrowserUiUtils.HostSurface.NEW_TAB_PAGE,
                     BrowserUiUtils.ModuleTypeOnStartAndNTP.OMNIBOX);
         }
     }
@@ -213,12 +219,9 @@ public class NewTabPageUma {
         mTabModelSelector.addObserver(mTabCreationRecorder);
     }
 
-    /**
-     * Records Content Suggestions Display Status when NTPs opened.
-     */
+    /** Records Content Suggestions Display Status when NTPs opened. */
     public void recordContentSuggestionsDisplayStatus(Profile profile) {
-        @ContentSuggestionsDisplayStatus
-        int status = ContentSuggestionsDisplayStatus.VISIBLE;
+        @ContentSuggestionsDisplayStatus int status = ContentSuggestionsDisplayStatus.VISIBLE;
         if (!UserPrefs.get(profile).getBoolean(Pref.ENABLE_SNIPPETS)) {
             // Disabled by policy.
             status = ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY;
@@ -232,8 +235,10 @@ public class NewTabPageUma {
             status = ContentSuggestionsDisplayStatus.COLLAPSED;
         }
 
-        RecordHistogram.recordEnumeratedHistogram("ContentSuggestions.Feed.DisplayStatusOnOpen",
-                status, ContentSuggestionsDisplayStatus.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "ContentSuggestions.Feed.DisplayStatusOnOpen",
+                status,
+                ContentSuggestionsDisplayStatus.NUM_ENTRIES);
     }
 
     /**

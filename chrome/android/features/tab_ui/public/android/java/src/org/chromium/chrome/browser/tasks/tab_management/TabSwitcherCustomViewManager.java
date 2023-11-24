@@ -9,9 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * A class that supplies custom view to TabSwitcher from other non tab switcher clients.
- */
+/** A class that supplies custom view to TabSwitcher from other non tab switcher clients. */
 public class TabSwitcherCustomViewManager {
     /**
      * An interface for tab switcher, via which it can listen for signals concerning
@@ -29,8 +27,11 @@ public class TabSwitcherCustomViewManager {
          * @param clearTabList      A boolean to indicate whether we should clear the tab list when
          *                          showing the custom view.
          */
-        void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable,
+        void addCustomView(
+                @NonNull View customView,
+                @Nullable Runnable backPressRunnable,
                 boolean clearTabList);
+
         /**
          * This is fired when the same client has made the view unavailable for it to be shown
          * any longer.

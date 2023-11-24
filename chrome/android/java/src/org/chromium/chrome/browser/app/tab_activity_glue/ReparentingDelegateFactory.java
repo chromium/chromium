@@ -18,7 +18,8 @@ public class ReparentingDelegateFactory {
      *         dependencies for {@link ReparentingTask} to reparent a Tab.
      */
     public static ReparentingTask.Delegate createReparentingTaskDelegate(
-            final CompositorViewHolder compositorViewHolder, final WindowAndroid windowAndroid,
+            final CompositorViewHolder compositorViewHolder,
+            final WindowAndroid windowAndroid,
             TabDelegateFactory tabDelegateFactory) {
         return new ReparentingTask.Delegate() {
             @Override

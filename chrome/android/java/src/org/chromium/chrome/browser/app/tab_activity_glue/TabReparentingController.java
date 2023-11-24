@@ -49,7 +49,7 @@ public class TabReparentingController {
     }
 
     /**
-
+     *
      * Prepares the tabs for reparenting by,
      * 1. Informing the {@link TabModelSelector} that reparenting is in progress.
      * 2. Detaching each tab from the models.
@@ -103,10 +103,12 @@ public class TabReparentingController {
 
         // TODO(https://crbug.com/1252526): Remove logging once root cause of bug is identified &
         //  fixed.
-        Log.i(TAG,
+        Log.i(
+                TAG,
                 "#prepareTabsForReparenting, num tabs awaiting reparenting: "
                         + tabsAwaitingReparenting
-                        + ", num tabs still loading: " + tabsStillLoading);
+                        + ", num tabs still loading: "
+                        + tabsStillLoading);
     }
 
     protected static void populateComprehensiveTabsFromModel(TabModel model, List<Tab> outputTabs) {

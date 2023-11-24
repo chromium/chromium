@@ -76,9 +76,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-/**
- * Utilities for requesting desktop sites support.
- */
+/** Utilities for requesting desktop sites support. */
 public class RequestDesktopUtils {
     private static final double MAX_RECORDED_SCREEN_SIZE_INCHES = 15.2;
     private static final String SITE_WILDCARD = "*";
@@ -167,10 +165,14 @@ public class RequestDesktopUtils {
 
         if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge().recordEventWithIntegerMetric(tab.getWebContents(),
-                "Android.UserRequestedUserAgentChange", "UserAgentType",
-                isDesktop ? UserAgentRequestType.REQUEST_DESKTOP
-                          : UserAgentRequestType.REQUEST_MOBILE);
+        new UkmRecorder.Bridge()
+                .recordEventWithIntegerMetric(
+                        tab.getWebContents(),
+                        "Android.UserRequestedUserAgentChange",
+                        "UserAgentType",
+                        isDesktop
+                                ? UserAgentRequestType.REQUEST_DESKTOP
+                                : UserAgentRequestType.REQUEST_MOBILE);
     }
 
     /**
@@ -181,9 +183,12 @@ public class RequestDesktopUtils {
     public static void recordScreenOrientationChangedUkm(boolean isLandscape, @Nullable Tab tab) {
         if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge().recordEventWithIntegerMetric(tab.getWebContents(),
-                "Android.ScreenRotation", "TargetDeviceOrientation",
-                isLandscape ? DeviceOrientation2.LANDSCAPE : DeviceOrientation2.PORTRAIT);
+        new UkmRecorder.Bridge()
+                .recordEventWithIntegerMetric(
+                        tab.getWebContents(),
+                        "Android.ScreenRotation",
+                        "TargetDeviceOrientation",
+                        isLandscape ? DeviceOrientation2.LANDSCAPE : DeviceOrientation2.PORTRAIT);
     }
 
     /**
@@ -200,13 +205,17 @@ public class RequestDesktopUtils {
         String domainWildcardPattern =
                 WebsitePreferenceBridge.toDomainWildcardPattern(url.getSpec());
         // Clear subdomain level exception if any.
-        WebsitePreferenceBridge.setContentSettingCustomScope(profile,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, url.getHost(),
-                /*secondaryPattern*/ SITE_WILDCARD, ContentSettingValues.DEFAULT);
+        WebsitePreferenceBridge.setContentSettingCustomScope(
+                profile,
+                ContentSettingsType.REQUEST_DESKTOP_SITE,
+                url.getHost(),
+                /* secondaryPattern= */ SITE_WILDCARD,
+                ContentSettingValues.DEFAULT);
 
         @ContentSettingValues
-        int defaultValue = WebsitePreferenceBridge.getDefaultContentSetting(
-                profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
+        int defaultValue =
+                WebsitePreferenceBridge.getDefaultContentSetting(
+                        profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
         assert defaultValue == ContentSettingValues.ALLOW
                 || defaultValue == ContentSettingValues.BLOCK;
         boolean rdsGlobalSetting = defaultValue == ContentSettingValues.ALLOW;
@@ -218,7 +227,7 @@ public class RequestDesktopUtils {
         // profile.
         if (!isIncognito && useDesktopUserAgent == rdsGlobalSetting) {
             if (ContentFeatureMap.isEnabled(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+                    ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
                 // To support the window setting, keep the domain settings when the window setting
                 // is ON.
                 PrefService prefService = UserPrefs.get(profile);
@@ -231,9 +240,12 @@ public class RequestDesktopUtils {
         }
 
         // Set or remove a domain level exception.
-        WebsitePreferenceBridge.setContentSettingCustomScope(profile,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, domainWildcardPattern,
-                /*secondaryPattern*/ SITE_WILDCARD, contentSettingValue);
+        WebsitePreferenceBridge.setContentSettingCustomScope(
+                profile,
+                ContentSettingsType.REQUEST_DESKTOP_SITE,
+                domainWildcardPattern,
+                /* secondaryPattern= */ SITE_WILDCARD,
+                contentSettingValue);
     }
 
     /**
@@ -280,29 +292,34 @@ public class RequestDesktopUtils {
 
         // Ascertain if the device is assigned to the control group in the Finch experiment based on
         // the status of the Finch flag.
-        boolean isControlGroup = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL);
+        boolean isControlGroup =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL);
 
-        String feature = isControlGroup ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
-                                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS;
+        String feature =
+                isControlGroup
+                        ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
+                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS;
 
         // If the device is part of an opt-in experiment arm, avoid default-enabling the setting.
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    feature, PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
+                feature, PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
             return false;
         }
 
         // Check whether default-on for low end devices is disabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES, true)
+                        feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES, true)
                 && SysUtils.isLowEndDevice()) {
             return false;
         }
 
         // If the device does not meet the memory threshold, avoid default-enabling the setting.
-        int memoryLimitMB = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
-                PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT,
-                DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB);
+        int memoryLimitMB =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        feature,
+                        PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT,
+                        DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB);
         if (memoryLimitMB != 0
                 && SysUtils.amountOfPhysicalMemoryKB()
                         < memoryLimitMB * ConversionUtils.KILOBYTES_PER_MEGABYTE) {
@@ -312,7 +329,7 @@ public class RequestDesktopUtils {
 
         // Check whether default-on for x86 devices is disabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, true)
+                        feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, true)
                 && !isCpuArchitectureArm()) {
             updateNoLongerInCohort();
             return false;
@@ -321,8 +338,9 @@ public class RequestDesktopUtils {
         // Check whether manufacturer is in allow list.
         if (sDefaultEnabledManufacturerAllowlist == null) {
             sDefaultEnabledManufacturerAllowlist = new HashSet<>();
-            String allowListStr = ChromeFeatureList.getFieldTrialParamByFeature(
-                    feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST);
+            String allowListStr =
+                    ChromeFeatureList.getFieldTrialParamByFeature(
+                            feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST);
             if (!TextUtils.isEmpty(allowListStr)) {
                 Collections.addAll(sDefaultEnabledManufacturerAllowlist, allowListStr.split(","));
             }
@@ -344,14 +362,16 @@ public class RequestDesktopUtils {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         boolean isOnExternalDisplay =
                 !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_EXTERNAL_DISPLAY, false)
-                && isOnExternalDisplay(context);
-        double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(feature,
-                PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
+                                feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_EXTERNAL_DISPLAY, false)
+                        && isOnExternalDisplay(context);
+        double screenSizeThreshold =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                        feature,
+                        PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                        DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
         if (!isOnExternalDisplay && displaySizeInInches < screenSizeThreshold) {
             if (sharedPreferencesManager.contains(
-                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
+                    ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
                 silentlyReportingCrashes(
                         context, displaySizeInInches, "Display size falls below threshold");
             }
@@ -361,18 +381,21 @@ public class RequestDesktopUtils {
 
         // If the smallest screen size in dp is below threshold, avoid default-enabling the setting.
         if (context.getResources().getConfiguration().smallestScreenWidthDp
-                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
+                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        feature,
                         PARAM_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH,
                         DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP)) {
             updateNoLongerInCohort();
             return false;
         }
 
-        boolean previouslyDefaultEnabled = sharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false);
-        boolean previouslyUpdatedByUser = sharedPreferencesManager.contains(
-                SingleCategorySettingsConstants
-                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+        boolean previouslyDefaultEnabled =
+                sharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false);
+        boolean previouslyUpdatedByUser =
+                sharedPreferencesManager.contains(
+                        SingleCategorySettingsConstants
+                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
 
         boolean inCohort = !previouslyUpdatedByUser && !isOnExternalDisplay;
         boolean wouldEnable = !previouslyDefaultEnabled && inCohort;
@@ -387,10 +410,13 @@ public class RequestDesktopUtils {
         if (inCohort
                 || sharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
-            int cohortId = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    feature, PARAM_GLOBAL_DEFAULTS_COHORT_ID, DEFAULT_GLOBAL_DEFAULTS_COHORT_ID);
+            int cohortId =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            feature,
+                            PARAM_GLOBAL_DEFAULTS_COHORT_ID,
+                            DEFAULT_GLOBAL_DEFAULTS_COHORT_ID);
             maybeRegisterSyntheticFieldTrials(
-                    isControlGroup, screenSizeThreshold, cohortId, /*isOptInArm*/ false);
+                    isControlGroup, screenSizeThreshold, cohortId, /* isOptInArm= */ false);
         }
 
         // Should enable the setting only in the enabled (not control) experiment group.
@@ -404,17 +430,28 @@ public class RequestDesktopUtils {
         }
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
         Configuration config = context.getResources().getConfiguration();
-        String logMessage = String.format(Locale.US,
-                message + ", silently reporting crashes for debugging, displaySizeInInches: %.1f "
-                        + "displayWidth: %d displayHeight: %d xdpi: %.1f ydpi: %.1f densityDpi: %d "
-                        + "screenWidthDp: %d screenHeightDp: %d onExternalDisplay: %b",
-                displaySizeInInches, display.getDisplayWidth(), display.getDisplayHeight(),
-                display.getXdpi(), display.getYdpi(), config.densityDpi, config.screenWidthDp,
-                config.screenHeightDp, isOnExternalDisplay(context));
+        String logMessage =
+                String.format(
+                        Locale.US,
+                        message
+                                + ", silently reporting crashes for debugging, displaySizeInInches: %.1f "
+                                + "displayWidth: %d displayHeight: %d xdpi: %.1f ydpi: %.1f densityDpi: %d "
+                                + "screenWidthDp: %d screenHeightDp: %d onExternalDisplay: %b",
+                        displaySizeInInches,
+                        display.getDisplayWidth(),
+                        display.getDisplayHeight(),
+                        display.getXdpi(),
+                        display.getYdpi(),
+                        config.densityDpi,
+                        config.screenWidthDp,
+                        config.screenHeightDp,
+                        isOnExternalDisplay(context));
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String previousDisplaySpec = sharedPreferencesManager.readString(
-                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
-                "");
+        String previousDisplaySpec =
+                sharedPreferencesManager.readString(
+                        ChromePreferenceKeys
+                                .DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
+                        "");
         if (!previousDisplaySpec.isEmpty()) {
             logMessage += " " + previousDisplaySpec;
         }
@@ -428,13 +465,21 @@ public class RequestDesktopUtils {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
         Configuration config = context.getResources().getConfiguration();
-        String displaySpec = String.format(Locale.US,
-                "lastDisplaySizeInInches: %.1f lastDisplayWidth: %d lastDisplayHeight: %d "
-                        + "lastXdpi: %.1f lastYdpi: %.1f lastDensityDpi: %d "
-                        + "lastScreenWidthDp: %d lastScreenHeightDp: %d lastOnExternalDisplay: %b",
-                displaySizeInInches, display.getDisplayWidth(), display.getDisplayHeight(),
-                display.getXdpi(), display.getYdpi(), config.densityDpi, config.screenWidthDp,
-                config.screenHeightDp, isOnExternalDisplay(context));
+        String displaySpec =
+                String.format(
+                        Locale.US,
+                        "lastDisplaySizeInInches: %.1f lastDisplayWidth: %d lastDisplayHeight: %d "
+                                + "lastXdpi: %.1f lastYdpi: %.1f lastDensityDpi: %d "
+                                + "lastScreenWidthDp: %d lastScreenHeightDp: %d lastOnExternalDisplay: %b",
+                        displaySizeInInches,
+                        display.getDisplayWidth(),
+                        display.getDisplayHeight(),
+                        display.getXdpi(),
+                        display.getYdpi(),
+                        config.densityDpi,
+                        config.screenWidthDp,
+                        config.screenHeightDp,
+                        isOnExternalDisplay(context));
         sharedPreferencesManager.writeString(
                 ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
                 displaySpec);
@@ -443,7 +488,7 @@ public class RequestDesktopUtils {
     private static void updateNoLongerInCohort() {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
+                ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
             // The client was previous qualified for the experiment; but is no longer qualified
             // due to finch param change.
             sharedPreferencesManager.writeBoolean(
@@ -467,8 +512,9 @@ public class RequestDesktopUtils {
 
         WebsitePreferenceBridge.setCategoryEnabled(
                 profile, ContentSettingsType.REQUEST_DESKTOP_SITE, true);
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(
+                        ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, true);
         return true;
     }
 
@@ -490,7 +536,7 @@ public class RequestDesktopUtils {
         }
         PrefService prefService = UserPrefs.get(profile);
         if (prefService.isDefaultValuePreference(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
-            prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, /*newValue*/ true);
+            prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, /* newValue= */ true);
         }
     }
 
@@ -506,13 +552,13 @@ public class RequestDesktopUtils {
      */
     public static boolean maybeDisableGlobalSetting(Profile profile) {
         if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE)) {
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE)) {
             return false;
         }
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         if ((ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)
-                    || ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL))
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL))
                 && sharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
                         true)) {
@@ -523,7 +569,7 @@ public class RequestDesktopUtils {
                 ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT);
         // Do not downgrade if the global setting was not default-enabled.
         if (!sharedPreferencesManager.readBoolean(
-                    ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false)) {
+                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false)) {
             return false;
         }
 
@@ -533,8 +579,8 @@ public class RequestDesktopUtils {
 
         // Do not disable the global setting if it was previously updated by the user.
         if (sharedPreferencesManager.contains(
-                    SingleCategorySettingsConstants
-                            .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)) {
+                SingleCategorySettingsConstants
+                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)) {
             return false;
         }
         WebsitePreferenceBridge.setCategoryEnabled(
@@ -555,8 +601,8 @@ public class RequestDesktopUtils {
         if (messageDispatcher == null) return false;
 
         // Present the message only if the global setting has been default-enabled.
-        if (!ChromeSharedPreferences.getInstance().contains(
-                    ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING)) {
+        if (!ChromeSharedPreferences.getInstance()
+                .contains(ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING)) {
             return false;
         }
 
@@ -564,43 +610,52 @@ public class RequestDesktopUtils {
         // setting is default-enabled, it could be possible that the user subsequently disabled the
         // setting. Present the message only if the setting is enabled.
         if (!WebsitePreferenceBridge.isCategoryEnabled(
-                    profile, ContentSettingsType.REQUEST_DESKTOP_SITE)) {
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE)) {
             return false;
         }
 
         // Do not show the message if disabled through Finch.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
-                    PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON, true)) {
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON,
+                true)) {
             return false;
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (!tracker.shouldTriggerHelpUI(
-                    FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE)) {
+                FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE)) {
             return false;
         }
 
         Resources resources = context.getResources();
         PropertyModel message =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.DESKTOP_SITE_GLOBAL_DEFAULT_OPT_OUT)
-                        .with(MessageBannerProperties.TITLE,
+                        .with(
+                                MessageBannerProperties.TITLE,
                                 resources.getString(R.string.rds_global_default_on_message_title))
-                        .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                        .with(
+                                MessageBannerProperties.ICON_RESOURCE_ID,
                                 R.drawable.ic_desktop_windows)
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                        .with(
+                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(R.string.rds_global_default_on_message_button))
-                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    SiteSettingsHelper.showCategorySettings(context, profile,
+                                    SiteSettingsHelper.showCategorySettings(
+                                            context,
+                                            profile,
                                             SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
                                     tracker.notifyEvent(
                                             EventConstants.DESKTOP_SITE_DEFAULT_ON_PRIMARY_ACTION);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
-                        .with(MessageBannerProperties.ON_DISMISSED,
+                        .with(
+                                MessageBannerProperties.ON_DISMISSED,
                                 (dismissReason) -> {
                                     if (dismissReason == DismissReason.GESTURE) {
                                         tracker.notifyEvent(
@@ -635,22 +690,27 @@ public class RequestDesktopUtils {
 
         // Ascertain if the device is assigned to the control group in the Finch experiment based on
         // the status of the Finch flag.
-        boolean isControlGroup = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL);
+        boolean isControlGroup =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL);
 
-        String feature = isControlGroup ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
-                                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS;
+        String feature =
+                isControlGroup
+                        ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
+                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS;
 
         // Present the message only if opt-in is enabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    feature, PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
+                feature, PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
             return false;
         }
 
         // Present the message only if the device meets the memory threshold.
-        int memoryLimitMB = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
-                PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT,
-                DEFAULT_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT_THRESHOLD_MB);
+        int memoryLimitMB =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        feature,
+                        PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT,
+                        DEFAULT_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT_THRESHOLD_MB);
         if (memoryLimitMB != 0
                 && SysUtils.amountOfPhysicalMemoryKB()
                         < memoryLimitMB * ConversionUtils.KILOBYTES_PER_MEGABYTE) {
@@ -659,14 +719,15 @@ public class RequestDesktopUtils {
 
         // Check whether opt-in for x86 devices is disabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    feature, PARAM_GLOBAL_SETTING_OPT_IN_ON_X86_DEVICES, true)
+                        feature, PARAM_GLOBAL_SETTING_OPT_IN_ON_X86_DEVICES, true)
                 && !isCpuArchitectureArm()) {
             return false;
         }
 
         // If the smallest screen size in dp is below threshold, avoid presenting the message.
         if (context.getResources().getConfiguration().smallestScreenWidthDp
-                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
+                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        feature,
                         PARAM_GLOBAL_SETTING_OPT_IN_SMALLEST_SCREEN_WIDTH,
                         DEFAULT_GLOBAL_SETTING_OPT_IN_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP)) {
             return false;
@@ -674,27 +735,35 @@ public class RequestDesktopUtils {
 
         // Present the message only if the desktop site global setting is off.
         if (WebsitePreferenceBridge.isCategoryEnabled(
-                    profile, ContentSettingsType.REQUEST_DESKTOP_SITE)) {
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE)) {
             return false;
         }
 
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
-        boolean previouslyUpdatedByUser = sharedPreferencesManager.contains(
-                SingleCategorySettingsConstants
-                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+        boolean previouslyUpdatedByUser =
+                sharedPreferencesManager.contains(
+                        SingleCategorySettingsConstants
+                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
 
-        double minScreenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                feature, PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
-                DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES);
-        double maxScreenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                feature, PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES,
-                DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES);
+        double minScreenSizeThreshold =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                        feature,
+                        PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
+                        DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES);
+        double maxScreenSizeThreshold =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                        feature,
+                        PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES,
+                        DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES);
 
-        boolean inCohort = !previouslyUpdatedByUser && displaySizeInInches >= minScreenSizeThreshold
-                && displaySizeInInches < maxScreenSizeThreshold
-                && TrackerFactory.getTrackerForProfile(profile).wouldTriggerHelpUI(
-                        FeatureConstants.REQUEST_DESKTOP_SITE_OPT_IN_FEATURE);
+        boolean inCohort =
+                !previouslyUpdatedByUser
+                        && displaySizeInInches >= minScreenSizeThreshold
+                        && displaySizeInInches < maxScreenSizeThreshold
+                        && TrackerFactory.getTrackerForProfile(profile)
+                                .wouldTriggerHelpUI(
+                                        FeatureConstants.REQUEST_DESKTOP_SITE_OPT_IN_FEATURE);
         if (inCohort) {
             // Store a SharedPreferences key to tag the device as qualified for the feature
             // experiment for ongoing tracking in both enabled and control groups.
@@ -703,11 +772,14 @@ public class RequestDesktopUtils {
         }
 
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)) {
-            int cohortId = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    feature, PARAM_GLOBAL_DEFAULTS_COHORT_ID, DEFAULT_GLOBAL_DEFAULTS_COHORT_ID);
+                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)) {
+            int cohortId =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            feature,
+                            PARAM_GLOBAL_DEFAULTS_COHORT_ID,
+                            DEFAULT_GLOBAL_DEFAULTS_COHORT_ID);
             maybeRegisterSyntheticFieldTrials(
-                    isControlGroup, minScreenSizeThreshold, cohortId, /*isOptInArm*/ true);
+                    isControlGroup, minScreenSizeThreshold, cohortId, /* isOptInArm= */ true);
         }
 
         // Should show the opt-in message only in the enabled (not control) experiment group.
@@ -725,8 +797,11 @@ public class RequestDesktopUtils {
      *         current activity tab.
      * @return Whether the opt-in message was shown.
      */
-    public static boolean maybeShowGlobalSettingOptInMessage(double displaySizeInInches,
-            Profile profile, MessageDispatcher messageDispatcher, Context context,
+    public static boolean maybeShowGlobalSettingOptInMessage(
+            double displaySizeInInches,
+            Profile profile,
+            MessageDispatcher messageDispatcher,
+            Context context,
             ObservableSupplier<Tab> currentTabSupplier) {
         if (messageDispatcher == null) return false;
 
@@ -742,22 +817,28 @@ public class RequestDesktopUtils {
         Resources resources = context.getResources();
         PropertyModel message =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.DESKTOP_SITE_GLOBAL_OPT_IN)
-                        .with(MessageBannerProperties.TITLE,
+                        .with(
+                                MessageBannerProperties.TITLE,
                                 resources.getString(R.string.rds_global_opt_in_message_title))
-                        .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                        .with(
+                                MessageBannerProperties.ICON_RESOURCE_ID,
                                 R.drawable.ic_desktop_windows)
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                        .with(
+                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(R.string.yes))
-                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
                                     onGlobalSettingOptInMessageClicked(profile, currentTabSupplier);
                                     tracker.notifyEvent(
                                             EventConstants.DESKTOP_SITE_OPT_IN_PRIMARY_ACTION);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
-                        .with(MessageBannerProperties.ON_DISMISSED,
+                        .with(
+                                MessageBannerProperties.ON_DISMISSED,
                                 (dismissReason) -> {
                                     if (dismissReason == DismissReason.GESTURE) {
                                         tracker.notifyEvent(
@@ -793,30 +874,34 @@ public class RequestDesktopUtils {
         }
 
         Resources resources = context.getResources();
-        Controller modalDialogController = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {
-                if (buttonType == ButtonType.POSITIVE) {
-                    modalDialogManager.dismissDialog(
-                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                }
-            }
+        Controller modalDialogController =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        if (buttonType == ButtonType.POSITIVE) {
+                            modalDialogManager.dismissDialog(
+                                    model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                        }
+                    }
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                tracker.dismissed(FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE);
-            }
-        };
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {
+                        tracker.dismissed(FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE);
+                    }
+                };
         PropertyModel dialog =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, modalDialogController)
-                        .with(ModalDialogProperties.TITLE,
+                        .with(
+                                ModalDialogProperties.TITLE,
                                 resources.getString(
                                         R.string.rds_app_menu_user_education_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 resources.getString(
                                         R.string.rds_app_menu_user_education_dialog_message))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources.getString(R.string.got_it))
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
@@ -824,9 +909,7 @@ public class RequestDesktopUtils {
         return true;
     }
 
-    /**
-     * Record event for feature engagement on desktop site settings page open.
-     */
+    /** Record event for feature engagement on desktop site settings page open. */
     public static void notifyRequestDesktopSiteSettingsPageOpened() {
         TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                 .notifyEvent(EventConstants.DESKTOP_SITE_SETTINGS_PAGE_OPENED);
@@ -911,20 +994,27 @@ public class RequestDesktopUtils {
         String thresholdAsString = String.valueOf(screenSizeThreshold).replace('.', '_');
         String baseGroupName = DEFAULT_ON_GROUP_NAME_PREFIX + thresholdAsString + "_" + cohortId;
 
-        String syntheticFeatureName = isControlGroup
-                ? GLOBAL_DEFAULTS_CONTROL_COHORT_NAME + cohortId
-                : GLOBAL_DEFAULTS_ENABLED_COHORT_NAME + cohortId;
+        String syntheticFeatureName =
+                isControlGroup
+                        ? GLOBAL_DEFAULTS_CONTROL_COHORT_NAME + cohortId
+                        : GLOBAL_DEFAULTS_ENABLED_COHORT_NAME + cohortId;
 
         if (!isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
-                    baseGroupName + ENABLED_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    syntheticFeatureName,
+                    baseGroupName + ENABLED_GROUP_SUFFIX,
+                    SyntheticTrialAnnotationMode.CURRENT_LOG);
         } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
-                    baseGroupName + CONTROL_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    syntheticFeatureName,
+                    baseGroupName + CONTROL_GROUP_SUFFIX,
+                    SyntheticTrialAnnotationMode.CURRENT_LOG);
         }
 
         String syntheticFeatureNameForUma = GLOBAL_DEFAULTS_COHORT_NAME + cohortId;
-        UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureNameForUma, baseGroupName,
+        UmaSessionStats.registerSyntheticFieldTrial(
+                syntheticFeatureNameForUma,
+                baseGroupName,
                 SyntheticTrialAnnotationMode.CURRENT_LOG);
     }
 
@@ -933,23 +1023,29 @@ public class RequestDesktopUtils {
         String thresholdAsString = String.valueOf(screenSizeThreshold).replace('.', '_');
         String baseGroupName =
                 (isOptInArm ? OPT_IN_GROUP_NAME_PREFIX : DEFAULT_ON_GROUP_NAME_PREFIX)
-                + thresholdAsString;
+                        + thresholdAsString;
 
-        String syntheticFeatureName = isControlGroup
-                ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL_SYNTHETIC
-                : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_SYNTHETIC;
+        String syntheticFeatureName =
+                isControlGroup
+                        ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL_SYNTHETIC
+                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_SYNTHETIC;
         if (isOptInArm) {
-            syntheticFeatureName = isControlGroup
-                    ? ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_CONTROL_SYNTHETIC
-                    : ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_SYNTHETIC;
+            syntheticFeatureName =
+                    isControlGroup
+                            ? ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_CONTROL_SYNTHETIC
+                            : ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_SYNTHETIC;
         }
 
         if (!isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
-                    baseGroupName + ENABLED_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    syntheticFeatureName,
+                    baseGroupName + ENABLED_GROUP_SUFFIX,
+                    SyntheticTrialAnnotationMode.CURRENT_LOG);
         } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
-                    baseGroupName + CONTROL_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    syntheticFeatureName,
+                    baseGroupName + CONTROL_GROUP_SUFFIX,
+                    SyntheticTrialAnnotationMode.CURRENT_LOG);
         }
     }
 
@@ -969,9 +1065,7 @@ public class RequestDesktopUtils {
         sDisplayMetrics = displayMetrics;
     }
 
-    /**
-     * Check if the CPU architecture is ARM.
-     */
+    /** Check if the CPU architecture is ARM. */
     private static boolean isCpuArchitectureArm() {
         String[] abiStrings = Build.SUPPORTED_ABIS;
         if (abiStrings == null || abiStrings.length == 0) {

@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.layouts.eventfilter;
 
-/**
- * Interface that describes motion event callbacks.
- */
+/** Interface that describes motion event callbacks. */
 public interface MotionEventHandler {
     /**
      * Called on down touch event.
@@ -18,9 +16,7 @@ public interface MotionEventHandler {
      */
     void onDown(float x, float y, boolean fromMouse, int buttons);
 
-    /**
-     * Called on up or cancel touch event.
-     */
+    /** Called on up or cancel touch event. */
     void onUpOrCancel();
 
     /**
@@ -90,8 +86,6 @@ public interface MotionEventHandler {
      */
     void onHoverMove(float x, float y);
 
-    /**
-     * Called on hover exit event.
-     */
+    /** Called on hover exit event. */
     void onHoverExit();
 }

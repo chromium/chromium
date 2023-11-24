@@ -19,18 +19,18 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-/**
- * Utility methods for the Minimized Custom Tab feature.
- */
+/** Utility methods for the Minimized Custom Tab feature. */
 public class MinimizedFeatureUtils {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({MinimizedFeatureAvailability.AVAILABLE,
-            MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL,
-            MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE,
-            MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE,
-            MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION,
-            MinimizedFeatureAvailability.NUM_ENTRIES})
+    @IntDef({
+        MinimizedFeatureAvailability.AVAILABLE,
+        MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL,
+        MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE,
+        MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE,
+        MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION,
+        MinimizedFeatureAvailability.NUM_ENTRIES
+    })
     @VisibleForTesting
     @interface MinimizedFeatureAvailability {
         int AVAILABLE = 0;
@@ -59,8 +59,7 @@ public class MinimizedFeatureUtils {
             return sIsMinimizedCustomTabAvailable;
         }
 
-        @MinimizedFeatureAvailability
-        int availability;
+        @MinimizedFeatureAvailability int availability;
 
         if (VERSION.SDK_INT < VERSION_CODES.O) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL;
@@ -80,8 +79,10 @@ public class MinimizedFeatureUtils {
             sIsMinimizedCustomTabAvailable = ChromeFeatureList.sCctMinimized.isEnabled();
         }
 
-        RecordHistogram.recordEnumeratedHistogram("CustomTabs.MinimizedFeatureAvailability",
-                availability, MinimizedFeatureAvailability.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.MinimizedFeatureAvailability",
+                availability,
+                MinimizedFeatureAvailability.NUM_ENTRIES);
         ResettersForTesting.register(() -> sIsMinimizedCustomTabAvailable = null);
         return sIsMinimizedCustomTabAvailable;
     }

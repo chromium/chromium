@@ -36,9 +36,11 @@ import java.util.Set;
  * {@link TabSelectionEditorActionViewLayout} for Action views. The menu contains a list of
  * {@link TabSelectionEditorMenuItem}s which hold optional action views if room is available.
  */
-public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
-                                               SelectionDelegate.SelectionObserver<Integer>,
-                                               ActionViewLayoutDelegate {
+public class TabSelectionEditorMenu
+        implements ListMenu,
+                OnItemClickListener,
+                SelectionDelegate.SelectionObserver<Integer>,
+                ActionViewLayoutDelegate {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListItemType.MENU_ITEM})
     public static @interface ListItemType {
@@ -66,17 +68,20 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
         mActionViewLayout = actionViewLayout;
 
         mModelList = new ModelList();
-        mAdapter = new ModelListAdapter(mModelList) {
-            @Override
-            public boolean isEnabled(int position) {
-                // For accessibility on Android Q and earlier even if the View for the item is
-                // disabled the list item may behave as though it is enabled. Pass back the model
-                // state for isEnabled() queries. This is also necessary in some testing frameworks
-                // such as Espresso.
-                return mModelList.get(position).model.get(
-                        TabSelectionEditorActionProperties.ENABLED);
-            }
-        };
+        mAdapter =
+                new ModelListAdapter(mModelList) {
+                    @Override
+                    public boolean isEnabled(int position) {
+                        // For accessibility on Android Q and earlier even if the View for the item
+                        // is disabled the list item may behave as though it is enabled. Pass back
+                        // the model state for isEnabled() queries. This is also necessary in some
+                        // testing frameworks such as Espresso.
+                        return mModelList
+                                .get(position)
+                                .model
+                                .get(TabSelectionEditorActionProperties.ENABLED);
+                    }
+                };
         registerItemTypes();
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.app_menu_layout, null);
         mListView = mContentView.findViewById(R.id.app_menu_list);
@@ -89,9 +94,10 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
     }
 
     private void registerItemTypes() {
-        mAdapter.registerType(ListItemType.MENU_ITEM,
-            new LayoutViewBuilder(R.layout.list_menu_item),
-            TabSelectionEditorMenuAdapter::bindMenuItem);
+        mAdapter.registerType(
+                ListItemType.MENU_ITEM,
+                new LayoutViewBuilder(R.layout.list_menu_item),
+                TabSelectionEditorMenuAdapter::bindMenuItem);
     }
 
     private ListItem buildListItem(int menuItemId) {
@@ -138,9 +144,7 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
         return mMenuItems.get(menuItemId);
     }
 
-    /**
-     * Clears all items in the menu.
-     */
+    /** Clears all items in the menu. */
     public void clear() {
         mMenuItems.clear();
         mModelList.clear();
@@ -158,23 +162,20 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
         }
     }
 
-    /**
-     * {@link OnItemClickListener} implementation.
-     */
+    /** {@link OnItemClickListener} implementation. */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         TabSelectionEditorMenuItem item =
-                mMenuItems.get(((ListItem) mAdapter.getItem(position))
-                                       .model.get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
+                mMenuItems.get(
+                        ((ListItem) mAdapter.getItem(position))
+                                .model.get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
 
         if (!item.onClick()) return;
 
         if (item.shouldDismissMenu()) mActionViewLayout.dismissMenu();
     }
 
-    /**
-     * {@link ActionViewLayoutDelegate} implementation.
-     */
+    /** {@link ActionViewLayoutDelegate} implementation. */
     @Override
     public void setVisibleActionViews(Set<TabSelectionEditorMenuItem> visibleActions) {
         if (mModelList.size() == visibleActions.size()) {
@@ -203,9 +204,7 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
         mListView.invalidateViews();
     }
 
-    /**
-     * {@link ListMenu} implementation.
-     */
+    /** {@link ListMenu} implementation. */
     @Override
     public View getContentView() {
         return mContentView;

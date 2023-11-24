@@ -74,9 +74,9 @@ public class FullscreenManagerTest {
     private static final String LONG_HTML_WITH_AUTO_FOCUS_INPUT_TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
                     "<html><body style='height:10000px;'><p>The text input is focused automatically"
-                        + " on load. The browser controls should not hide when page is"
-                        + " scrolled.</p><br/><input id=\"input_text\" type=\"text\" autofocus/>"
-                        + "</body></html>");
+                            + " on load. The browser controls should not hide when page is"
+                            + " scrolled.</p><br/><input id=\"input_text\" type=\"text\" autofocus/>"
+                            + "</body></html>");
 
     private static final String LONG_HTML_TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
@@ -90,38 +90,38 @@ public class FullscreenManagerTest {
     private static final String LONG_FULLSCREEN_API_HTML_TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head>  <meta name=\"viewport\"     content=\"width=device-width,"
-                        + " initial-scale=1.0, maximum-scale=1.0\" />  <script>    function"
-                        + " toggleFullScreen() {      if (document.webkitIsFullScreen) {       "
-                        + " document.webkitCancelFullScreen();      } else {       "
-                        + " document.body.webkitRequestFullScreen();      }    };  </script> "
-                        + " <style>    body:-webkit-full-screen { background: red; width: 100%; } "
-                        + " </style></head><body style='height:10000px;'"
-                        + " onclick='toggleFullScreen();'></body></html>");
+                            + " initial-scale=1.0, maximum-scale=1.0\" />  <script>    function"
+                            + " toggleFullScreen() {      if (document.webkitIsFullScreen) {       "
+                            + " document.webkitCancelFullScreen();      } else {       "
+                            + " document.body.webkitRequestFullScreen();      }    };  </script> "
+                            + " <style>    body:-webkit-full-screen { background: red; width: 100%; } "
+                            + " </style></head><body style='height:10000px;'"
+                            + " onclick='toggleFullScreen();'></body></html>");
     private static final String LONG_FULLSCREEN_API_HTML_WITH_OPTIONS_TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head>  <meta name=\"viewport\"     content=\"width=device-width,"
-                        + " initial-scale=1.0, maximum-scale=1.0\" />  <script>    var mode = 0;   "
-                        + " function toggleFullScreen() {      if (mode == 0) {       "
-                        + " document.body.requestFullscreen({navigationUI: \"show\"});       "
-                        + " mode++;      } else if (mode == 2) {       "
-                        + " document.body.requestFullscreen({navigationUI: \"hide\"});       "
-                        + " mode++;      } else if (mode == 1 || mode == 3) {       "
-                        + " document.exitFullscreen();        mode++;      }    };  </script> "
-                        + " <style>    body:-webkit-full-screen { background: red; width: 100%; } "
-                        + " </style></head><body style='height:10000px;'"
-                        + " onclick='toggleFullScreen();'></body></html>");
+                            + " initial-scale=1.0, maximum-scale=1.0\" />  <script>    var mode = 0;   "
+                            + " function toggleFullScreen() {      if (mode == 0) {       "
+                            + " document.body.requestFullscreen({navigationUI: \"show\"});       "
+                            + " mode++;      } else if (mode == 2) {       "
+                            + " document.body.requestFullscreen({navigationUI: \"hide\"});       "
+                            + " mode++;      } else if (mode == 1 || mode == 3) {       "
+                            + " document.exitFullscreen();        mode++;      }    };  </script> "
+                            + " <style>    body:-webkit-full-screen { background: red; width: 100%; } "
+                            + " </style></head><body style='height:10000px;'"
+                            + " onclick='toggleFullScreen();'></body></html>");
     private static final String SCROLL_OFFSET_TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head>  <meta name=viewport content='width=device-width,"
-                        + " initial-scale=1.0'></head><body style='margin: 0; height: 200vh'>  <div"
-                        + " style='width: 150vw'>wide</div>  <script>    load_promise = new"
-                        + " Promise(r => {onload = r});    resize_promise = null;    reached_bottom"
-                        + " = () => {      return Math.abs(        (se => se.scrollHeight -"
-                        + " (se.scrollTop + visualViewport.offsetTop +         "
-                        + " visualViewport.height))(document.scrollingElement)      ) < 1;    };   "
-                        + " start_listening_for_on_resize = () => {      resize_promise = new"
-                        + " Promise(r => {onresize = r});      return true;    };  </script></body>"
-                        + "</html>");
+                            + " initial-scale=1.0'></head><body style='margin: 0; height: 200vh'>  <div"
+                            + " style='width: 150vw'>wide</div>  <script>    load_promise = new"
+                            + " Promise(r => {onload = r});    resize_promise = null;    reached_bottom"
+                            + " = () => {      return Math.abs(        (se => se.scrollHeight -"
+                            + " (se.scrollTop + visualViewport.offsetTop +         "
+                            + " visualViewport.height))(document.scrollingElement)      ) < 1;    };   "
+                            + " start_listening_for_on_resize = () => {      resize_promise = new"
+                            + " Promise(r => {onresize = r});      return true;    };  </script></body>"
+                            + "</html>");
 
     private static final String FULLSCREEN_WITH_SELECTION_POPUP =
             UrlUtils.encodeHtmlDataUri(

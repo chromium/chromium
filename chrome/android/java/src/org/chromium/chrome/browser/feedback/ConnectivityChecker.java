@@ -26,9 +26,7 @@ import java.net.ProtocolException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-/**
- * A utility class for checking if the device is currently connected to the Internet.
- */
+/** A utility class for checking if the device is currently connected to the Internet. */
 @JNINamespace("chrome::android")
 public final class ConnectivityChecker {
     private static final String TAG = "feedback";
@@ -42,7 +40,8 @@ public final class ConnectivityChecker {
     private static String sHttpsNoContentUrl = DEFAULT_HTTPS_NO_CONTENT_URL;
 
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
-            NetworkTrafficAnnotationTag.createComplete("android_feedback_connectivity_checker",
+            NetworkTrafficAnnotationTag.createComplete(
+                    "android_feedback_connectivity_checker",
                     "semantics {"
                             + "  sender: 'Feedback Connectivity Checker'"
                             + "  description:"
@@ -77,13 +76,9 @@ public final class ConnectivityChecker {
                             + "    'not contain any additional data.'"
                             + "}");
 
-    /**
-     * A callback for whether the device is currently connected to the Internet.
-     */
+    /** A callback for whether the device is currently connected to the Internet. */
     public interface ConnectivityCheckerCallback {
-        /**
-         * Called when the result of the connectivity check is ready.
-         */
+        /** Called when the result of the connectivity check is ready. */
         void onResult(int result);
     }
 
@@ -94,12 +89,14 @@ public final class ConnectivityChecker {
     }
 
     private static void postResult(final ConnectivityCheckerCallback callback, final int result) {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                callback.onResult(result);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onResult(result);
+                    }
+                });
     }
 
     /**
@@ -142,8 +139,8 @@ public final class ConnectivityChecker {
             protected Integer doInBackground() {
                 try {
                     HttpURLConnection conn =
-                            (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
-                                    url, TRAFFIC_ANNOTATION);
+                            (HttpURLConnection)
+                                    ChromiumNetworkAdapter.openConnection(url, TRAFFIC_ANNOTATION);
                     conn.setInstanceFollowRedirects(false);
                     conn.setRequestMethod("GET");
                     conn.setDoInput(false);
@@ -171,8 +168,7 @@ public final class ConnectivityChecker {
             protected void onPostExecute(Integer result) {
                 callback.onResult(result);
             }
-        }
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
@@ -191,8 +187,11 @@ public final class ConnectivityChecker {
      * @param timeoutMs number of milliseconds to wait before giving up waiting for a connection.
      * @param callback the callback which will get the result.
      */
-    public static void checkConnectivityChromeNetworkStack(Profile profile, boolean useHttps,
-            int timeoutMs, ConnectivityCheckerCallback callback) {
+    public static void checkConnectivityChromeNetworkStack(
+            Profile profile,
+            boolean useHttps,
+            int timeoutMs,
+            ConnectivityCheckerCallback callback) {
         String url = useHttps ? sHttpsNoContentUrl : sHttpNoContentUrl;
         checkConnectivityChromeNetworkStack(profile, url, timeoutMs, callback);
     }
@@ -201,8 +200,9 @@ public final class ConnectivityChecker {
     static void checkConnectivityChromeNetworkStack(
             Profile profile, String url, long timeoutMs, ConnectivityCheckerCallback callback) {
         ThreadUtils.assertOnUiThread();
-        ConnectivityCheckerJni.get().checkConnectivity(
-                profile, url, timeoutMs, callback, TRAFFIC_ANNOTATION.getHashCode());
+        ConnectivityCheckerJni.get()
+                .checkConnectivity(
+                        profile, url, timeoutMs, callback, TRAFFIC_ANNOTATION.getHashCode());
     }
 
     @CalledByNative
@@ -214,8 +214,13 @@ public final class ConnectivityChecker {
 
     @NativeMethods
     interface Natives {
-        void checkConnectivity(Profile profile, String url, long timeoutMs,
-                ConnectivityCheckerCallback callback, int annotationHashCode);
+        void checkConnectivity(
+                Profile profile,
+                String url,
+                long timeoutMs,
+                ConnectivityCheckerCallback callback,
+                int annotationHashCode);
+
         boolean isUrlValid(String url);
     }
 }

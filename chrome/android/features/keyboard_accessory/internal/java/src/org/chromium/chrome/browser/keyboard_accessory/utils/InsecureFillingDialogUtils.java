@@ -42,7 +42,7 @@ public class InsecureFillingDialogUtils {
         messageView.setText(R.string.passwords_not_secure_filling_details);
 
         builder.setView(dialogBody).setPositiveButton(R.string.ok, null).create().show();
-    };
+    }
 
     private InsecureFillingDialogUtils() {}
 }

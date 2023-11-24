@@ -26,10 +26,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 class ExploreSurfaceViewBinder {
     public static void bind(PropertyModel model, ViewGroup parentView, PropertyKey propertyKey) {
         if (propertyKey == IS_EXPLORE_SURFACE_VISIBLE) {
-            setVisibility(parentView, model,
+            setVisibility(
+                    parentView,
+                    model,
                     model.get(IS_EXPLORE_SURFACE_VISIBLE) && model.get(IS_SHOWING_OVERVIEW));
         } else if (propertyKey == IS_SHOWING_OVERVIEW) {
-            setVisibility(parentView, model,
+            setVisibility(
+                    parentView,
+                    model,
                     model.get(IS_EXPLORE_SURFACE_VISIBLE) && model.get(IS_SHOWING_OVERVIEW));
         } else if (propertyKey == TOP_MARGIN) {
             setTopMargin(model);

@@ -284,8 +284,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         // from TabModelSelector.
         int tabId =
                 nextTabId != Tab.INVALID_TAB_ID ? nextTabId : mTabModelSelector.getCurrentTabId();
-        @LayoutType
-        int nextLayoutType = mLayoutStateProvider.getNextLayoutType();
+        @LayoutType int nextLayoutType = mLayoutStateProvider.getNextLayoutType();
         if (nextLayoutType == LayoutType.BROWSING) {
             // During fade and translate animations the composited scene layer is visible. At the
             // end of the animation a composited tab will be fully visible. To ensure continuity
@@ -362,8 +361,15 @@ public class HubLayout extends Layout implements HubLayoutController {
     }
 
     @Override
-    public void onTabCreated(long time, int tabId, int tabIndex, int sourceTabId,
-            boolean newIsIncognito, boolean background, float originX, float originY) {
+    public void onTabCreated(
+            long time,
+            int tabId,
+            int tabIndex,
+            int sourceTabId,
+            boolean newIsIncognito,
+            boolean background,
+            float originX,
+            float originY) {
         super.onTabCreated(
                 time, tabId, tabIndex, sourceTabId, newIsIncognito, background, originX, originY);
 
@@ -463,8 +469,11 @@ public class HubLayout extends Layout implements HubLayoutController {
     }
 
     @Override
-    protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            TabContentManager tabContentManager, ResourceManager resourceManager,
+    protected void updateSceneLayer(
+            RectF viewport,
+            RectF contentViewport,
+            TabContentManager tabContentManager,
+            ResourceManager resourceManager,
             BrowserControlsStateProvider browserControls) {
         ensureSceneLayersExist();
         super.updateSceneLayer(

@@ -167,8 +167,8 @@ public class UpdateStatusProvider {
             return;
         }
 
-        ChromeSharedPreferences.getInstance().writeString(
-                ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, currentlyUsedVersion);
+        ChromeSharedPreferences.getInstance()
+                .writeString(ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, currentlyUsedVersion);
         mStatus.latestUnsupportedVersion = currentlyUsedVersion;
         pingObservers();
     }
@@ -256,8 +256,7 @@ public class UpdateStatusProvider {
         }
 
         private UpdateStatus getTestStatus() {
-            @UpdateState
-            Integer forcedUpdateState = UpdateConfigs.getMockUpdateState();
+            @UpdateState Integer forcedUpdateState = UpdateConfigs.getMockUpdateState();
             if (forcedUpdateState == null) return null;
 
             UpdateStatus status = new UpdateStatus();
@@ -273,8 +272,9 @@ public class UpdateStatusProvider {
                     break;
                 case UpdateState.UNSUPPORTED_OS_VERSION:
                     status.latestUnsupportedVersion =
-                            ChromeSharedPreferences.getInstance().readString(
-                                    ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
+                            ChromeSharedPreferences.getInstance()
+                                    .readString(
+                                            ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
                     break;
             }
 
@@ -288,20 +288,22 @@ public class UpdateStatusProvider {
                 status.updateUrl = MarketURLGetter.getMarketUrl();
                 status.latestVersion = VersionNumberGetter.getInstance().getLatestKnownVersion();
 
-                boolean allowedToUpdate = checkForSufficientStorage()
-                        // Disable the version update check for automotive. See b/297925838.
-                        && !BuildInfo.getInstance().isAutomotive
-                        && PackageUtils.isPackageInstalled(
-                                GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE);
+                boolean allowedToUpdate =
+                        checkForSufficientStorage()
+                                // Disable the version update check for automotive. See b/297925838.
+                                && !BuildInfo.getInstance().isAutomotive
+                                && PackageUtils.isPackageInstalled(
+                                        GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE);
                 status.updateState =
                         allowedToUpdate ? UpdateState.UPDATE_AVAILABLE : UpdateState.NONE;
 
-                ChromeSharedPreferences.getInstance().removeKey(
-                        ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION);
+                ChromeSharedPreferences.getInstance()
+                        .removeKey(ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION);
             } else if (!VersionNumberGetter.isCurrentOsVersionSupported()) {
                 status.updateState = UpdateState.UNSUPPORTED_OS_VERSION;
-                status.latestUnsupportedVersion = ChromeSharedPreferences.getInstance().readString(
-                        ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
+                status.latestUnsupportedVersion =
+                        ChromeSharedPreferences.getInstance()
+                                .readString(ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
             } else {
                 status.updateState = UpdateState.NONE;
             }

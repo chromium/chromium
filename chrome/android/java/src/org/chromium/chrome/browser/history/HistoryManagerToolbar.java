@@ -20,9 +20,7 @@ import org.chromium.components.prefs.PrefService;
 
 import java.util.List;
 
-/**
- * The SelectionToolbar for the browsing history UI.
- */
+/** The SelectionToolbar for the browsing history UI. */
 public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     private HistoryManager mManager;
     private PrefService mPrefService;
@@ -74,9 +72,12 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
             // may not be a view associated with it.
             View deleteButton = findViewById(R.id.selection_mode_delete_menu_id);
             if (deleteButton != null) {
-                deleteButton.setContentDescription(getResources().getQuantityString(
-                        R.plurals.accessibility_remove_selected_items,
-                        numSelected, numSelected));
+                deleteButton.setContentDescription(
+                        getResources()
+                                .getQuantityString(
+                                        R.plurals.accessibility_remove_selected_items,
+                                        numSelected,
+                                        numSelected));
             }
 
             // The copy link option should only be visible when one item is selected.
@@ -95,9 +96,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
                 mManager.shouldShowInfoButton(), mManager.shouldShowInfoHeaderIfAvailable());
     }
 
-    /**
-     * Should be called when the user's sign in state changes.
-     */
+    /** Should be called when the user's sign in state changes. */
     public void onSignInStateChange() {
         updateMenuItemVisibility();
         updateInfoMenuItem(

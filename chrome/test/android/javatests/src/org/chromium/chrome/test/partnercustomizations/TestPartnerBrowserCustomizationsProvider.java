@@ -52,13 +52,12 @@ public class TestPartnerBrowserCustomizationsProvider extends ContentProvider {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         mUriMatcher.addURI(authority, "homepage", URI_MATCH_HOMEPAGE);
         mUriMatcher.addURI(authority, "disableincognitomode", URI_MATCH_DISABLE_INCOGNITO_MODE);
-        mUriMatcher.addURI(authority, "disablebookmarksediting",
-                URI_MATCH_DISABLE_BOOKMARKS_EDITING);
+        mUriMatcher.addURI(
+                authority, "disablebookmarksediting", URI_MATCH_DISABLE_BOOKMARKS_EDITING);
     }
 
     private void setIncognitoModeDisabled(Bundle bundle) {
-        mDisableIncognitoModeFlag =
-                bundle.getBoolean(INCOGNITO_MODE_DISABLED_KEY, false) ? 1 : 0;
+        mDisableIncognitoModeFlag = bundle.getBoolean(INCOGNITO_MODE_DISABLED_KEY, false) ? 1 : 0;
     }
 
     private void setBookmarksEditingDisabled(Bundle bundle) {
@@ -83,29 +82,35 @@ public class TestPartnerBrowserCustomizationsProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         Log.d(mTag, "query called: " + uri);
 
         switch (mUriMatcher.match(uri)) {
             case URI_MATCH_HOMEPAGE:
-            {
-                MatrixCursor cursor = new MatrixCursor(new String[] {"homepage"}, 1);
-                cursor.addRow(new Object[] {HOMEPAGE_URI});
-                return cursor;
-            }
+                {
+                    MatrixCursor cursor = new MatrixCursor(new String[] {"homepage"}, 1);
+                    cursor.addRow(new Object[] {HOMEPAGE_URI});
+                    return cursor;
+                }
             case URI_MATCH_DISABLE_INCOGNITO_MODE:
-            {
-                MatrixCursor cursor = new MatrixCursor(new String[] {"disableincognitomode"}, 1);
-                cursor.addRow(new Object[] {mDisableIncognitoModeFlag});
-                return cursor;
-            }
+                {
+                    MatrixCursor cursor =
+                            new MatrixCursor(new String[] {"disableincognitomode"}, 1);
+                    cursor.addRow(new Object[] {mDisableIncognitoModeFlag});
+                    return cursor;
+                }
             case URI_MATCH_DISABLE_BOOKMARKS_EDITING:
-            {
-                MatrixCursor cursor = new MatrixCursor(new String[] {"disablebookmarksediting"}, 1);
-                cursor.addRow(new Object[] {mDisableBookmarksEditingFlag});
-                return cursor;
-            }
+                {
+                    MatrixCursor cursor =
+                            new MatrixCursor(new String[] {"disablebookmarksediting"}, 1);
+                    cursor.addRow(new Object[] {mDisableBookmarksEditingFlag});
+                    return cursor;
+                }
             default:
                 return null;
         }
@@ -135,5 +140,4 @@ public class TestPartnerBrowserCustomizationsProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         throw new UnsupportedOperationException();
     }
-
 }

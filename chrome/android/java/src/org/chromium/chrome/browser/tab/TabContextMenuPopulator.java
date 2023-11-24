@@ -15,12 +15,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
-/**
- * A simple wrapper around a {@link ContextMenuPopulator} to handle observer notification.
- */
+/** A simple wrapper around a {@link ContextMenuPopulator} to handle observer notification. */
 public class TabContextMenuPopulator implements ContextMenuPopulator {
-    @Nullable
-    private final ContextMenuPopulator mPopulator;
+    @Nullable private final ContextMenuPopulator mPopulator;
     private final TabImpl mTab;
 
     /**

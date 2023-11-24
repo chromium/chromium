@@ -85,11 +85,19 @@ public class LaunchMetrics {
             @DisplayMode.EnumType
             int displayMode =
                     (webappInfo == null) ? DisplayMode.UNDEFINED : webappInfo.displayMode();
-            LaunchMetricsJni.get().recordLaunch(
-                    launch.mIsShortcut, launch.mUrl, launch.mSource, displayMode, webContents);
+            LaunchMetricsJni.get()
+                    .recordLaunch(
+                            launch.mIsShortcut,
+                            launch.mUrl,
+                            launch.mSource,
+                            displayMode,
+                            webContents);
             if (webappInfo != null && webappInfo.isForWebApk()) {
-                WebApkUkmRecorder.recordWebApkLaunch(webappInfo.manifestUrl(),
-                        webappInfo.distributor(), webappInfo.webApkVersionCode(), launch.mSource);
+                WebApkUkmRecorder.recordWebApkLaunch(
+                        webappInfo.manifestUrl(),
+                        webappInfo.distributor(),
+                        webappInfo.webApkVersionCode(),
+                        launch.mSource);
             }
         }
         sHomeScreenLaunches.clear();
@@ -106,8 +114,8 @@ public class LaunchMetrics {
         if (homepageGurl.isEmpty()) {
             assert !showHomeButton : "Homepage should be disabled for an empty GURL";
         }
-        LaunchMetricsJni.get().recordHomePageLaunchMetrics(
-                showHomeButton, homepageIsNtp, homepageGurl);
+        LaunchMetricsJni.get()
+                .recordHomePageLaunchMetrics(showHomeButton, homepageIsNtp, homepageGurl);
     }
 
     /**
@@ -132,8 +140,13 @@ public class LaunchMetrics {
 
     @NativeMethods
     interface Natives {
-        void recordLaunch(boolean isShortcut, String url, int source,
-                @DisplayMode.EnumType int displayMode, WebContents webContents);
+        void recordLaunch(
+                boolean isShortcut,
+                String url,
+                int source,
+                @DisplayMode.EnumType int displayMode,
+                WebContents webContents);
+
         void recordHomePageLaunchMetrics(
                 boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl);
     }

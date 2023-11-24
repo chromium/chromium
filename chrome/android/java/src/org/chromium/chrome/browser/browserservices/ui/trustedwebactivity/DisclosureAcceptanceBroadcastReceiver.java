@@ -41,7 +41,8 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
 
     /** Constructor used by the Android framework. */
     public DisclosureAcceptanceBroadcastReceiver() {
-        this(new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
+        this(
+                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
                 new BrowserServicesStore(ChromeSharedPreferences.getInstance()));
     }
 
@@ -54,7 +55,9 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent == null || !intent.hasExtra(TAG_EXTRA) || !intent.hasExtra(ID_EXTRA)
+        if (intent == null
+                || !intent.hasExtra(TAG_EXTRA)
+                || !intent.hasExtra(ID_EXTRA)
                 || !intent.hasExtra(PACKAGE_EXTRA)) {
             Log.w(TAG, "Started with null or incomplete Intent.");
             return;

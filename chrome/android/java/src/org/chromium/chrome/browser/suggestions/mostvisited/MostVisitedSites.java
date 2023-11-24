@@ -14,13 +14,9 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/**
- * Methods to provide most recent urls, titles and thumbnails.
- */
+/** Methods to provide most recent urls, titles and thumbnails. */
 public interface MostVisitedSites {
-    /**
-     * An interface for handling events in {@link MostVisitedSites}.
-     */
+    /** An interface for handling events in {@link MostVisitedSites}. */
     interface Observer {
         /** This is called when the list of most visited URLs is initially available or updated. */
         void onSiteSuggestionsAvailable(List<SiteSuggestion> siteSuggestions);
@@ -34,9 +30,7 @@ public interface MostVisitedSites {
         void onIconMadeAvailable(GURL siteUrl);
     }
 
-    /**
-     * An interface to provide {@link MostVisitedSites} with platform-specific home page data.
-     */
+    /** An interface to provide {@link MostVisitedSites} with platform-specific home page data. */
     interface HomepageClient {
         /**
          * @return True if homepage tile should be shown.
@@ -52,9 +46,7 @@ public interface MostVisitedSites {
         String getHomepageUrl();
     }
 
-    /**
-     * This instance must not be used after calling destroy().
-     */
+    /** This instance must not be used after calling destroy(). */
     void destroy();
 
     /**
@@ -65,14 +57,10 @@ public interface MostVisitedSites {
      */
     void setObserver(Observer observer, int numSites);
 
-    /**
-     * Blocklists a URL from the most visited URLs list.
-     */
+    /** Blocklists a URL from the most visited URLs list. */
     void addBlocklistedUrl(GURL url);
 
-    /**
-     * Removes a URL from the most visited URLs blocklist.
-     */
+    /** Removes a URL from the most visited URLs blocklist. */
     void removeBlocklistedUrl(GURL url);
 
     /**

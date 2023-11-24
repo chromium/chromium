@@ -11,9 +11,7 @@ import androidx.test.uiautomator.UiObject2;
 
 import java.util.List;
 
-/**
- * Locator wrapper around UiAutomator BySelector that supports indexing into found nodes.
- */
+/** Locator wrapper around UiAutomator BySelector that supports indexing into found nodes. */
 class BySelectorIndexUi2Locator implements IUi2Locator {
     private final BySelectorUi2Locator mSelectorLocator;
     private final int mIndex;
@@ -49,6 +47,10 @@ class BySelectorIndexUi2Locator implements IUi2Locator {
     @Override
     public String toString() {
         return "BySelectorIndexLocator{"
-                + "mSelectorLocator=" + mSelectorLocator + ", mIndex=" + mIndex + '}';
+                + "mSelectorLocator="
+                + mSelectorLocator
+                + ", mIndex="
+                + mIndex
+                + '}';
     }
 }

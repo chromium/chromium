@@ -51,9 +51,7 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-/**
- * Handles the Custom Tab specific behaviors of tab persistence.
- */
+/** Handles the Custom Tab specific behaviors of tab persistence. */
 @ActivityScope
 public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
@@ -81,7 +79,8 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private boolean mDestroyed;
 
     @Inject
-    public CustomTabTabPersistencePolicy(Activity activity,
+    public CustomTabTabPersistencePolicy(
+            Activity activity,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
         mTaskId = activity.getTaskId();
         mShouldRestore = (savedInstanceStateSupplier.get() != null);
@@ -186,12 +185,10 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     @Override
-    public void setTabContentManager(TabContentManager cache) {
-    }
+    public void setTabContentManager(TabContentManager cache) {}
 
     @Override
-    public void notifyStateLoaded(int tabCountAtStartup) {
-    }
+    public void notifyStateLoaded(int tabCountAtStartup) {}
 
     @Override
     public void destroy() {
@@ -203,9 +200,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         mTaskRunner = taskRunner;
     }
 
-    /**
-     * Triggers an async deletion of the tab state metadata file.
-     */
+    /** Triggers an async deletion of the tab state metadata file. */
     public void deleteMetadataStateFileAsync() {
         assert mTaskRunner != null;
         mTaskRunner.postTask(
@@ -229,17 +224,19 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
      */
     protected static List<File> getMetadataFilesForDeletion(
             long currentTimeMillis, List<File> allMetadataFiles) {
-        Collections.sort(allMetadataFiles, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                long lhsModifiedTime = lhs.lastModified();
-                long rhsModifiedTime = rhs.lastModified();
+        Collections.sort(
+                allMetadataFiles,
+                new Comparator<File>() {
+                    @Override
+                    public int compare(File lhs, File rhs) {
+                        long lhsModifiedTime = lhs.lastModified();
+                        long rhsModifiedTime = rhs.lastModified();
 
-                // Sort such that older files (those with an lower timestamp number) are at the
-                // end of the sorted listed.
-                return Long.compare(rhsModifiedTime, lhsModifiedTime);
-            }
-        });
+                        // Sort such that older files (those with an lower timestamp number) are at
+                        // the end of the sorted listed.
+                        return Long.compare(rhsModifiedTime, lhsModifiedTime);
+                    }
+                });
 
         List<File> stateFilesApplicableForDeletion = new ArrayList<File>();
         for (int i = 0; i < allMetadataFiles.size(); i++) {
@@ -336,8 +333,8 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             mUnreferencedTabIds.addAll(allTabIds);
             mUnreferencedTabIds.removeAll(allReferencedTabIds);
 
-            mDeletableMetadataFiles = getMetadataFilesForDeletion(
-                    System.currentTimeMillis(), metadataFiles);
+            mDeletableMetadataFiles =
+                    getMetadataFilesForDeletion(System.currentTimeMillis(), metadataFiles);
             return null;
         }
 
@@ -401,8 +398,9 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         private void getTabsFromStateFile(SparseBooleanArray tabIds, File metadataFile) {
             DataInputStream stream = null;
             try {
-                stream = new DataInputStream(
-                        new BufferedInputStream(new FileInputStream(metadataFile)));
+                stream =
+                        new DataInputStream(
+                                new BufferedInputStream(new FileInputStream(metadataFile)));
                 TabPersistentStore.readSavedMetadataFile(stream, null, tabIds);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);

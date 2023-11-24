@@ -12,9 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
-/**
- * This ViewPager disables all animations - swipes and smooth transitions.
- */
+/** This ViewPager disables all animations - swipes and smooth transitions. */
 class NoSwipeViewPager extends ViewPager {
     public NoSwipeViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

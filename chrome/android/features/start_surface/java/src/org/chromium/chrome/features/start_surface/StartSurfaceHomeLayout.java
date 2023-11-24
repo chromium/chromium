@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.features.tasks.TasksView;
 
-/**
- * A {@link Layout} that shows Start Surface home view.
- */
+/** A {@link Layout} that shows Start Surface home view. */
 public class StartSurfaceHomeLayout extends Layout {
     private static final String TRACE_SHOW_START_SURFACE =
             "StartSurfaceHomeLayout.Show.StartSurface";
@@ -44,8 +42,11 @@ public class StartSurfaceHomeLayout extends Layout {
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The parent {@link LayoutRenderHost}.
      */
-    public StartSurfaceHomeLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface) {
+    public StartSurfaceHomeLayout(
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            StartSurface startSurface) {
         super(context, updateHost, renderHost);
         mStartSurface = startSurface;
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
@@ -123,8 +124,15 @@ public class StartSurfaceHomeLayout extends Layout {
     }
 
     @Override
-    public void onTabCreated(long time, int id, int index, int sourceId, boolean newIsIncognito,
-            boolean background, float originX, float originY) {
+    public void onTabCreated(
+            long time,
+            int id,
+            int index,
+            int sourceId,
+            boolean newIsIncognito,
+            boolean background,
+            float originX,
+            float originY) {
         super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
         if (!background || newIsIncognito || !mIsShown) {
             return;
@@ -136,8 +144,13 @@ public class StartSurfaceHomeLayout extends Layout {
             mBackgroundTabAnimation.end();
         }
         float dpToPx = getContext().getResources().getDisplayMetrics().density;
-        mBackgroundTabAnimation = BackgroundTabAnimation.create(this, startSurfaceView,
-                originX * dpToPx, originY * dpToPx, getOrientation() == Orientation.PORTRAIT);
+        mBackgroundTabAnimation =
+                BackgroundTabAnimation.create(
+                        this,
+                        startSurfaceView,
+                        originX * dpToPx,
+                        originY * dpToPx,
+                        getOrientation() == Orientation.PORTRAIT);
         mBackgroundTabAnimation.start();
     }
 

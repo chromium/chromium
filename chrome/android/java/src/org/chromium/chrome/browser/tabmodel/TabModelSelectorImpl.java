@@ -36,8 +36,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     public static final int CUSTOM_TABS_SELECTOR_INDEX = -1;
 
     /** Flag set to false when the asynchronous loading of tabs is finished. */
-    private final AtomicBoolean mSessionRestoreInProgress =
-            new AtomicBoolean(true);
+    private final AtomicBoolean mSessionRestoreInProgress = new AtomicBoolean(true);
 
     // Type of the Activity for this tab model. Used by sync to determine how to handle restore
     // on cold start.
@@ -86,8 +85,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         super.markTabStateInitialized();
         if (!mSessionRestoreInProgress.getAndSet(false)) return;
 
-        // This is the first time we set
-        // |mSessionRestoreInProgress|, so we need to broadcast.
+        // This is the first time we set |mSessionRestoreInProgress|, so we need to broadcast.
         TabModelImpl model = (TabModelImpl) getModel(false);
 
         if (model != null) {
@@ -146,20 +144,23 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     }
 
     @VisibleForTesting
-    void onNativeLibraryReadyInternal(TabContentManager tabContentProvider, TabModel normalModel,
+    void onNativeLibraryReadyInternal(
+            TabContentManager tabContentProvider,
+            TabModel normalModel,
             IncognitoTabModel incognitoModel) {
         mTabContentManager = tabContentProvider;
         initialize(normalModel, incognitoModel);
 
-        addObserver(new TabModelSelectorObserver() {
-            @Override
-            public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                // Only invalidate if the tab exists in the currently selected model.
-                if (TabModelUtils.getTabById(getCurrentModel(), tab.getId()) != null) {
-                    mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
-                }
-            }
-        });
+        addObserver(
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                        // Only invalidate if the tab exists in the currently selected model.
+                        if (TabModelUtils.getTabById(getCurrentModel(), tab.getId()) != null) {
+                            mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
+                        }
+                    }
+                });
 
         new TabModelSelectorTabObserver(this) {
             @Override
@@ -196,8 +197,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     @Override
     public void openMostRecentlyClosedEntry(TabModel tabModel) {
-        assert tabModel
-                == getModel(false) : "Trying to restore a tab from an off-the-record tab model.";
+        assert tabModel == getModel(false)
+                : "Trying to restore a tab from an off-the-record tab model.";
         mRecentlyClosedBridge.openMostRecentlyClosedEntry(tabModel);
     }
 
@@ -227,17 +228,22 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             // Make the call to notifyDataSetChanged() after any delayed events
             // have had a chance to fire. Otherwise, this may result in some
             // drawing to occur before animations have a chance to work.
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    notifyChanged();
-                    // The tab model has changed to regular and all the visual elements wrt regular
-                    // mode is in-place. We can now signal the re-auth to hide the dialog.
-                    if (mIncognitoReauthDialogDelegate != null && !newModel.isIncognito()) {
-                        mIncognitoReauthDialogDelegate.onAfterRegularTabModelChanged();
-                    }
-                }
-            });
+            new Handler()
+                    .post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    notifyChanged();
+                                    // The tab model has changed to regular and all the visual
+                                    // elements wrt regular mode is in-place. We can now signal
+                                    // the re-auth to hide the dialog.
+                                    if (mIncognitoReauthDialogDelegate != null
+                                            && !newModel.isIncognito()) {
+                                        mIncognitoReauthDialogDelegate
+                                                .onAfterRegularTabModelChanged();
+                                    }
+                                }
+                            });
         }
     }
 
@@ -256,8 +262,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         boolean isFromExternalApp =
                 tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
         if (mVisibleTab != null && mVisibleTab != tab && !mVisibleTab.needsReload()) {
-            boolean attached = mVisibleTab.getWebContents() != null
-                    && mVisibleTab.getWebContents().getTopLevelNativeWindow() != null;
+            boolean attached =
+                    mVisibleTab.getWebContents() != null
+                            && mVisibleTab.getWebContents().getTopLevelNativeWindow() != null;
             if (mVisibleTab.isInitialized() && attached) {
                 // TODO(dtrainor): Once we figure out why we can't grab a snapshot from the current
                 // tab when we have other tabs loading from external apps remove the checks for

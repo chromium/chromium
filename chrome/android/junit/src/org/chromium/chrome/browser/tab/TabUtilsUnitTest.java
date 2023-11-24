@@ -25,7 +25,6 @@ import android.util.Size;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.chromium.chrome.browser.automotive.AutomotiveUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +41,7 @@ import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.automotive.AutomotiveUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;

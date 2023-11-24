@@ -30,7 +30,8 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
      * Creates a new visibility delegate.
      * @param activity A {@link WeakReference} to an {@link Activity}.
      */
-    public ChromeKeyboardVisibilityDelegate(WeakReference<Activity> activity,
+    public ChromeKeyboardVisibilityDelegate(
+            WeakReference<Activity> activity,
             @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
         super(activity);
         mManualFillingComponentSupplier = manualFillingComponentSupplier;

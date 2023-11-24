@@ -85,9 +85,7 @@ public class RevampedIncognitoNewTabPageTest {
                 });
     }
 
-    /**
-     * Test cookie controls toggle defaults to on if cookie controls mode is on.
-     */
+    /** Test cookie controls toggle defaults to on if cookie controls mode is on. */
     @Test
     @SmallTest
     public void testCookieControlsToggleStartsOn() throws Exception {

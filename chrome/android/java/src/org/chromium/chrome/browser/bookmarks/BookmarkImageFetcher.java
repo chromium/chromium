@@ -131,8 +131,8 @@ public class BookmarkImageFetcher {
     public void fetchFaviconForBookmark(BookmarkItem item, Callback<Drawable> callback) {
         mLargeIconBridge.getLargeIconForUrl(
                 item.getUrl(),
-                /*minSize*/ mFaviconFetchSize,
-                /*desiredSize*/ mFaviconSize,
+                /* minSize= */ mFaviconFetchSize,
+                /* desiredSize= */ mFaviconSize,
                 (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) -> {
                     callback.onResult(
                             FaviconUtils.getIconDrawableWithoutFilter(

@@ -18,9 +18,7 @@ import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * This class glues RedirectHandler instances to Tabs.
- */
+/** This class glues RedirectHandler instances to Tabs. */
 public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserData {
     private static final Class<RedirectHandlerTabHelper> USER_DATA_KEY =
             RedirectHandlerTabHelper.class;
@@ -109,9 +107,7 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
         // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
-    /**
-     * Wrapper around RedirectHandler#updateIntent() that supplies //chrome-level params.
-     */
+    /** Wrapper around RedirectHandler#updateIntent() that supplies //chrome-level params. */
     public static void updateIntentInTab(Tab tab, @Nullable Intent intent) {
         boolean isCustomTab = false;
         boolean sendToExternalHandler = false;
@@ -119,10 +115,11 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
         if (intent != null) {
             isCustomTab = LaunchIntentDispatcher.isCustomTabIntent(intent);
             sendToExternalHandler = CustomTabsIntent.isSendToExternalDefaultHandlerEnabled(intent);
-            startedTabbedChromeTask = IntentUtils.safeGetBooleanExtra(
-                    intent, IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, false);
+            startedTabbedChromeTask =
+                    IntentUtils.safeGetBooleanExtra(
+                            intent, IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, false);
         }
-        RedirectHandlerTabHelper.getOrCreateHandlerFor(tab).updateIntent(
-                intent, isCustomTab, sendToExternalHandler, startedTabbedChromeTask);
+        RedirectHandlerTabHelper.getOrCreateHandlerFor(tab)
+                .updateIntent(intent, isCustomTab, sendToExternalHandler, startedTabbedChromeTask);
     }
 }

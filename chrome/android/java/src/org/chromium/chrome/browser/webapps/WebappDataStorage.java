@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.webapps;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -142,17 +143,13 @@ public class WebappDataStorage {
      * Overridden in tests to inject mocked objects.
      */
     public static class Factory {
-        /**
-         * Generates a WebappDataStorage instance for a specified web app.
-         */
+        /** Generates a WebappDataStorage instance for a specified web app. */
         public WebappDataStorage create(final String webappId) {
             return new WebappDataStorage(webappId);
         }
     }
 
-    /**
-     * Clock used to generate the current time in millseconds for setting last used time.
-     */
+    /** Clock used to generate the current time in millseconds for setting last used time. */
     public static class Clock {
         /**
          * @return Current time in milliseconds.
@@ -170,18 +167,14 @@ public class WebappDataStorage {
         return sFactory.create(webappId);
     }
 
-    /**
-     * Sets the clock used to get the current time.
-     */
+    /** Sets the clock used to get the current time. */
     public static void setClockForTests(Clock clock) {
         var oldValue = sClock;
         sClock = clock;
         ResettersForTesting.register(() -> sClock = oldValue);
     }
 
-    /**
-     * Sets the factory used to generate WebappDataStorage objects.
-     */
+    /** Sets the factory used to generate WebappDataStorage objects. */
     public static void setFactoryForTests(Factory factory) {
         var oldValue = sFactory;
         sFactory = factory;
@@ -207,8 +200,7 @@ public class WebappDataStorage {
                 assert callback != null;
                 callback.onDataRetrieved(result);
             }
-        }
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
@@ -231,10 +223,14 @@ public class WebappDataStorage {
 
         // Use "standalone" as the default display mode as this was the original assumed default for
         // all web apps.
-        return ShortcutHelper.createWebappShortcutIntent(mId, mPreferences.getString(KEY_URL, null),
-                mPreferences.getString(KEY_SCOPE, null), mPreferences.getString(KEY_NAME, null),
+        return ShortcutHelper.createWebappShortcutIntent(
+                mId,
+                mPreferences.getString(KEY_URL, null),
+                mPreferences.getString(KEY_SCOPE, null),
+                mPreferences.getString(KEY_NAME, null),
                 mPreferences.getString(KEY_SHORT_NAME, null),
-                mPreferences.getString(KEY_ICON, null), version,
+                mPreferences.getString(KEY_ICON, null),
+                version,
                 mPreferences.getInt(KEY_DISPLAY_MODE, DisplayMode.STANDALONE),
                 mPreferences.getInt(KEY_ORIENTATION, ScreenOrientationLockType.DEFAULT),
                 mPreferences.getLong(KEY_THEME_COLOR, ColorUtils.INVALID_COLOR),
@@ -283,7 +279,8 @@ public class WebappDataStorage {
                 editor.putString(KEY_WEBAPK_MANIFEST_URL, info.manifestUrl());
                 editor.putString(KEY_WEBAPK_MANIFEST_ID, info.manifestId());
                 editor.putInt(KEY_WEBAPK_VERSION_CODE, info.webApkVersionCode());
-                editor.putLong(KEY_WEBAPK_INSTALL_TIMESTAMP,
+                editor.putLong(
+                        KEY_WEBAPK_INSTALL_TIMESTAMP,
                         fetchWebApkInstallTimestamp(info.webApkPackageName()));
             } else {
                 editor.putString(KEY_NAME, info.name());
@@ -347,16 +344,12 @@ public class WebappDataStorage {
         // Don't clear fields which can be fetched from WebAPK manifest.
     }
 
-    /**
-     * Returns the scope stored in this object, or URL_INVALID if it is not stored.
-     */
+    /** Returns the scope stored in this object, or URL_INVALID if it is not stored. */
     public String getScope() {
         return mPreferences.getString(KEY_SCOPE, URL_INVALID);
     }
 
-    /**
-     * Returns the URL stored in this object, or URL_INVALID if it is not stored.
-     */
+    /** Returns the URL stored in this object, or URL_INVALID if it is not stored. */
     public String getUrl() {
         return mPreferences.getString(KEY_URL, URL_INVALID);
     }
@@ -376,9 +369,7 @@ public class WebappDataStorage {
         return mId;
     }
 
-    /**
-     * Returns the last used time, in milliseconds, of this object, or -1 if it is not stored.
-     */
+    /** Returns the last used time, in milliseconds, of this object, or -1 if it is not stored. */
     public long getLastUsedTimeMs() {
         return mPreferences.getLong(KEY_LAST_USED, TIMESTAMP_INVALID);
     }
@@ -400,16 +391,12 @@ public class WebappDataStorage {
         mPreferences.edit().putString(KEY_WEBAPK_PACKAGE_NAME, webApkPackageName).apply();
     }
 
-    /**
-     * Updates the last used time of this object.
-     */
+    /** Updates the last used time of this object. */
     void updateLastUsedTime() {
         mPreferences.edit().putLong(KEY_LAST_USED, sClock.currentTimeMillis()).apply();
     }
 
-    /**
-     * Returns the package name if the data is for a WebAPK, null otherwise.
-     */
+    /** Returns the package name if the data is for a WebAPK, null otherwise. */
     public String getWebApkPackageName() {
         return mPreferences.getString(KEY_WEBAPK_PACKAGE_NAME, null);
     }
@@ -419,7 +406,8 @@ public class WebappDataStorage {
      * was updated.
      */
     void updateTimeOfLastCheckForUpdatedWebManifest() {
-        mPreferences.edit()
+        mPreferences
+                .edit()
                 .putLong(KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME, sClock.currentTimeMillis())
                 .apply();
     }
@@ -432,11 +420,10 @@ public class WebappDataStorage {
         return mPreferences.getLong(KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME, TIMESTAMP_INVALID);
     }
 
-    /**
-     * Updates when the last WebAPK update request finished (successfully or unsuccessfully).
-     */
+    /** Updates when the last WebAPK update request finished (successfully or unsuccessfully). */
     void updateTimeOfLastWebApkUpdateRequestCompletion() {
-        mPreferences.edit()
+        mPreferences
+                .edit()
                 .putLong(KEY_LAST_UPDATE_REQUEST_COMPLETE_TIME, sClock.currentTimeMillis())
                 .apply();
     }
@@ -449,30 +436,22 @@ public class WebappDataStorage {
         return mPreferences.getLong(KEY_LAST_UPDATE_REQUEST_COMPLETE_TIME, TIMESTAMP_INVALID);
     }
 
-    /**
-     * Updates whether the last update request to WebAPK Server succeeded.
-     */
+    /** Updates whether the last update request to WebAPK Server succeeded. */
     void updateDidLastWebApkUpdateRequestSucceed(boolean success) {
         mPreferences.edit().putBoolean(KEY_DID_LAST_UPDATE_REQUEST_SUCCEED, success).apply();
     }
 
-    /**
-     * Returns whether the last update request to WebAPK Server succeeded.
-     */
+    /** Returns whether the last update request to WebAPK Server succeeded. */
     boolean getDidLastWebApkUpdateRequestSucceed() {
         return mPreferences.getBoolean(KEY_DID_LAST_UPDATE_REQUEST_SUCCEED, false);
     }
 
-    /**
-     * Updates the `hash` of the last accepted identity update that was approved.
-     */
+    /** Updates the `hash` of the last accepted identity update that was approved. */
     public void updateLastWebApkUpdateHashAccepted(String hash) {
         mPreferences.edit().putString(KEY_LAST_UPDATE_HASH_ACCEPTED, hash).apply();
     }
 
-    /**
-     * Returns the `hash` of the last accepted identity update that was approved.
-     */
+    /** Returns the `hash` of the last accepted identity update that was approved. */
     String getLastWebApkUpdateHashAccepted() {
         return mPreferences.getString(KEY_LAST_UPDATE_HASH_ACCEPTED, "");
     }
@@ -597,11 +576,13 @@ public class WebappDataStorage {
         if (pendingUpdateFilePath == null) return;
 
         mPreferences.edit().remove(KEY_PENDING_UPDATE_FILE_PATH).apply();
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            if (!new File(pendingUpdateFilePath).delete()) {
-                Log.d(TAG, "Failed to delete file " + pendingUpdateFilePath);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    if (!new File(pendingUpdateFilePath).delete()) {
+                        Log.d(TAG, "Failed to delete file " + pendingUpdateFilePath);
+                    }
+                });
     }
 
     /**
@@ -624,73 +605,58 @@ public class WebappDataStorage {
 
     protected WebappDataStorage(String webappId) {
         mId = webappId;
-        mPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                SHARED_PREFS_FILE_PREFIX + webappId, Context.MODE_PRIVATE);
+        mPreferences =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                SHARED_PREFS_FILE_PREFIX + webappId, Context.MODE_PRIVATE);
     }
 
-    /**
-     * Fetches the timestamp that the WebAPK was installed from the PackageManager.
-     */
+    /** Fetches the timestamp that the WebAPK was installed from the PackageManager. */
     private long fetchWebApkInstallTimestamp(String webApkPackageName) {
         PackageInfo packageInfo = PackageUtils.getPackageInfo(webApkPackageName, 0);
         return packageInfo == null ? 0 : packageInfo.firstInstallTime;
     }
 
-    /**
-     * Returns the timestamp when the WebAPK was installed.
-     */
+    /** Returns the timestamp when the WebAPK was installed. */
     public long getWebApkInstallTimestamp() {
         return mPreferences.getLong(KEY_WEBAPK_INSTALL_TIMESTAMP, 0);
     }
 
-    /**
-     * Sets the timestamp when the WebAPK was uninstalled to the current time.
-     */
+    /** Sets the timestamp when the WebAPK was uninstalled to the current time. */
     public void setWebApkUninstallTimestamp() {
-        mPreferences.edit()
+        mPreferences
+                .edit()
                 .putLong(KEY_WEBAPK_UNINSTALL_TIMESTAMP, sClock.currentTimeMillis())
                 .apply();
     }
 
-    /**
-     * Returns the timestamp when the WebAPK was uninstalled.
-     */
+    /** Returns the timestamp when the WebAPK was uninstalled. */
     public long getWebApkUninstallTimestamp() {
         return mPreferences.getLong(KEY_WEBAPK_UNINSTALL_TIMESTAMP, 0);
     }
 
-    /**
-     * Increments the number of times that the webapp was launched.
-     */
+    /** Increments the number of times that the webapp was launched. */
     public void incrementLaunchCount() {
         int launchCount = getLaunchCount();
         mPreferences.edit().putInt(KEY_LAUNCH_COUNT, launchCount + 1).apply();
     }
 
-    /**
-     * Returns the number of times that the webapp was launched.
-     */
+    /** Returns the number of times that the webapp was launched. */
     public int getLaunchCount() {
         return mPreferences.getInt(KEY_LAUNCH_COUNT, 0);
     }
 
-    /**
-     * Returns cached Web Manifest URL.
-     */
+    /** Returns cached Web Manifest URL. */
     public String getWebApkManifestUrl() {
         return mPreferences.getString(KEY_WEBAPK_MANIFEST_URL, null);
     }
 
-    /**
-     * Returns cached Web Manifest ID.
-     */
+    /** Returns cached Web Manifest ID. */
     public String getWebApkManifestId() {
         return mPreferences.getString(KEY_WEBAPK_MANIFEST_ID, null);
     }
 
-    /**
-     * Returns cached WebAPK version code.
-     */
+    /** Returns cached WebAPK version code. */
     public int getWebApkVersionCode() {
         return mPreferences.getInt(KEY_WEBAPK_VERSION_CODE, 0);
     }

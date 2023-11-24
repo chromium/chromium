@@ -23,8 +23,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * with the parent chromeActivity.
  */
 public class BookmarkTestRule implements TestRule {
-    @Nullable
-    private BookmarkActivity mBookmarkActivity;
+    @Nullable private BookmarkActivity mBookmarkActivity;
 
     @Override
     public Statement apply(Statement statement, Description description) {
@@ -40,31 +39,29 @@ public class BookmarkTestRule implements TestRule {
         };
     }
 
-    /**
-     * Shows the bookmark manager on screen.
-     */
+    /** Shows the bookmark manager on screen. */
     public void showBookmarkManager(ChromeActivity chromeActivity) {
         // BookmarkActivity is only opened on phone, it is a native page on tablet.
         if (chromeActivity.isTablet()) {
             showBookmarkManagerInternal(chromeActivity);
         } else {
-            mBookmarkActivity = ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(), BookmarkActivity.class,
-                    () -> showBookmarkManagerInternal(chromeActivity));
+            mBookmarkActivity =
+                    ActivityTestUtils.waitForActivity(
+                            InstrumentationRegistry.getInstrumentation(),
+                            BookmarkActivity.class,
+                            () -> showBookmarkManagerInternal(chromeActivity));
         }
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 
-    /**
-     * Returns the bookmark activity.
-     */
+    /** Returns the bookmark activity. */
     public @Nullable BookmarkActivity getBookmarkActivity() {
         return mBookmarkActivity;
     }
 
     private void showBookmarkManagerInternal(ChromeActivity chromeActivity) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> BookmarkUtils.showBookmarkManager(chromeActivity, /*isIncognito=*/false));
+                () -> BookmarkUtils.showBookmarkManager(chromeActivity, /* isIncognito= */ false));
     }
 
     /**

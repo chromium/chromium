@@ -69,9 +69,13 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
      */
     @CalledByNative
     void show(String message, String action) {
-        Snackbar snackBar = Snackbar.make(message, this, Snackbar.TYPE_ACTION,
-                                            Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED)
-                                    .setAction(action, /*objectData=*/null);
+        Snackbar snackBar =
+                Snackbar.make(
+                                message,
+                                this,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED)
+                        .setAction(action, /* objectData= */ null);
         // Wrap the message text if it doesn't fit on a single line. The action text will not wrap
         // though.
         snackBar.setSingleLine(false);
@@ -89,6 +93,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     @NativeMethods
     public interface Natives {
         void onActionClicked(long nativeAutofillSnackbarViewAndroid);
+
         void onDismissed(long nativeAutofillSnackbarViewAndroid);
     }
 }

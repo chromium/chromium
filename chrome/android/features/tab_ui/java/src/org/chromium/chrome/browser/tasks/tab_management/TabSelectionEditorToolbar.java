@@ -24,16 +24,13 @@ import org.chromium.ui.widget.ChromeImageButton;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Handles toolbar functionality for TabSelectionEditor.
- */
+/** Handles toolbar functionality for TabSelectionEditor. */
 class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
     private Context mContext;
     private ChromeImageButton mMenuButton;
     private TabSelectionEditorActionViewLayout mActionViewLayout;
-    @ColorInt
-    private int mBackgroundColor;
+    @ColorInt private int mBackgroundColor;
     private RelatedTabCountProvider mRelatedTabCountProvider;
 
     public interface RelatedTabCountProvider {
@@ -63,16 +60,19 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
 
         // Move the number roll view into a LinearLayout to manage spacing.
         LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT, 0.0f);
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        0.0f);
         params.gravity = Gravity.CENTER_VERTICAL;
         ((ViewGroup) mNumberRollView.getParent()).removeView(mNumberRollView);
         mActionViewLayout.addView(mNumberRollView, 0, params);
     }
 
     private void showNavigationButton() {
-        TintedDrawable navigationIconDrawable = TintedDrawable.constructTintedDrawable(
-                getContext(), R.drawable.ic_arrow_back_white_24dp);
+        TintedDrawable navigationIconDrawable =
+                TintedDrawable.constructTintedDrawable(
+                        getContext(), R.drawable.ic_arrow_back_white_24dp);
         final @ColorInt int lightIconColor =
                 SemanticColorUtils.getDefaultIconColorInverse(getContext());
         navigationIconDrawable.setTint(lightIconColor);
@@ -89,7 +89,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         if (mRelatedTabCountProvider == null) return;
 
         int selectedCount = mRelatedTabCountProvider.getRelatedTabCount(selectedItems);
-        mNumberRollView.setNumber(selectedCount, /*animate=*/true);
+        mNumberRollView.setNumber(selectedCount, /* animate= */ true);
     }
 
     @Override

@@ -44,9 +44,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Caches the flags that Chrome might require before native is loaded in a later next run.
- */
+/** Caches the flags that Chrome might require before native is loaded in a later next run. */
 public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
 
@@ -58,10 +56,11 @@ public class ChromeCachedFlags {
      * A list of field trial parameters that will be cached when starting minimal browser mode. See
      * {@link #cacheMinimalBrowserFlags()}.
      */
-    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS = List.of(
-            // This is used by CustomTabsConnection implementation, which does not
-            // necessarily start chrome.
-            CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
+    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS =
+            List.of(
+                    // This is used by CustomTabsConnection implementation, which does not
+                    // necessarily start chrome.
+                    CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
 
     /**
      * @return The {@link ChromeCachedFlags} singleton.
@@ -162,8 +161,8 @@ public class ChromeCachedFlags {
             omissions.add(trial.getFeatureName() + ":" + trial.getParameterName());
         }
         assert omissions.isEmpty()
-            : "The following trials are not correctly cached: "
-                + TextUtils.join(", ", omissions);
+                : "The following trials are not correctly cached: "
+                        + TextUtils.join(", ", omissions);
     }
 
     /**
@@ -203,18 +202,17 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
     }
 
-    /**
-     * Caches the trial group of the reached code profiler feature to be using on next startup.
-     */
+    /** Caches the trial group of the reached code profiler feature to be using on next startup. */
     private static void cacheReachedCodeProfilerTrialGroup() {
         // Make sure that the existing value is saved in a static variable before overwriting it.
         if (sReachedCodeProfilerTrialGroup == null) {
             getReachedCodeProfilerTrialGroup();
         }
 
-        ChromeSharedPreferences.getInstance().writeString(
-                ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
-                FieldTrialList.findFullName(ChromeFeatureList.REACHED_CODE_PROFILER));
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
+                        FieldTrialList.findFullName(ChromeFeatureList.REACHED_CODE_PROFILER));
     }
 
     /**
@@ -223,8 +221,9 @@ public class ChromeCachedFlags {
     @CalledByNative
     public static String getReachedCodeProfilerTrialGroup() {
         if (sReachedCodeProfilerTrialGroup == null) {
-            sReachedCodeProfilerTrialGroup = ChromeSharedPreferences.getInstance().readString(
-                    ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, "");
+            sReachedCodeProfilerTrialGroup =
+                    ChromeSharedPreferences.getInstance()
+                            .readString(ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, "");
         }
 
         return sReachedCodeProfilerTrialGroup;
@@ -232,14 +231,17 @@ public class ChromeCachedFlags {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void cacheMinimalBrowserFlagsTimeFromNativeTime() {
-        ChromeSharedPreferences.getInstance().writeLong(
-                ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
-                System.currentTimeMillis());
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
+                        System.currentTimeMillis());
     }
 
     public static long getLastCachedMinimalBrowserFlagsTimeMillis() {
-        return ChromeSharedPreferences.getInstance().readLong(
-                ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS, 0);
+        return ChromeSharedPreferences.getInstance()
+                .readLong(
+                        ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
+                        0);
     }
 
     @CalledByNative

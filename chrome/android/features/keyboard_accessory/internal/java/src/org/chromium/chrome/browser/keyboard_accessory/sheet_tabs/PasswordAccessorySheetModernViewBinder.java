@@ -46,9 +46,7 @@ class PasswordAccessorySheetModernViewBinder {
         return null;
     }
 
-    /**
-     * Holds a clickable {@link ChipView} that represents a Passkey.
-     */
+    /** Holds a clickable {@link ChipView} that represents a Passkey. */
     static class PasskeyChipViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.PasskeySection, ViewGroup> {
         PasskeyChipViewHolder(ViewGroup parent) {
@@ -65,9 +63,7 @@ class PasswordAccessorySheetModernViewBinder {
         }
     }
 
-    /**
-     * Holds a TextView that represents a list entry.
-     */
+    /** Holds a TextView that represents a list entry. */
     static class PasswordInfoViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.UserInfo, PasswordAccessoryInfoView> {
         String mFaviconRequestOrigin;
@@ -100,8 +96,9 @@ class PasswordAccessorySheetModernViewBinder {
         }
 
         void bindChipView(ChipView chip, UserInfoField field, Context context) {
-            chip.getPrimaryTextView().setTransformationMethod(
-                    field.isObfuscated() ? new PasswordTransformationMethod() : null);
+            chip.getPrimaryTextView()
+                    .setTransformationMethod(
+                            field.isObfuscated() ? new PasswordTransformationMethod() : null);
             chip.getPrimaryTextView().setText(field.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
             View.OnClickListener listener = null;

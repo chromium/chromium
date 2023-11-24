@@ -24,9 +24,7 @@ import org.chromium.payments.mojom.ItemType;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.url.mojom.Url;
 
-/**
- * A converter that deals with the parameters and result for GetDetails calls.
- */
+/** A converter that deals with the parameters and result for GetDetails calls. */
 public class GetDetailsConverter {
     private static final String TAG = "DigitalGoods";
 
@@ -57,9 +55,7 @@ public class GetDetailsConverter {
 
     private GetDetailsConverter() {}
 
-    /**
-     * Converts the parameters to the getDetails.
-     */
+    /** Converts the parameters to the getDetails. */
     static Bundle convertParams(String[] itemIds) {
         Bundle args = new Bundle();
         args.putStringArray(GetDetailsConverter.PARAM_GET_DETAILS_ITEM_IDS, itemIds);
@@ -175,10 +171,19 @@ public class GetDetailsConverter {
      * This would be used by the client app and is here only to help testing.
      */
     @VisibleForTesting
-    static Bundle createItemDetailsBundle(String id, String title, String desc, String currency,
-            String value, String type, String iconUrl, @Nullable String subsPeriod,
-            @Nullable String freeTrialPeriod, @Nullable String introPriceCurrency,
-            @Nullable String introPriceValue, @Nullable String intoPricePeriod,
+    static Bundle createItemDetailsBundle(
+            String id,
+            String title,
+            String desc,
+            String currency,
+            String value,
+            String type,
+            String iconUrl,
+            @Nullable String subsPeriod,
+            @Nullable String freeTrialPeriod,
+            @Nullable String introPriceCurrency,
+            @Nullable String introPriceValue,
+            @Nullable String intoPricePeriod,
             int introPriceCycles) {
         Bundle bundle = createItemDetailsBundle(id, title, desc, currency, value);
 
@@ -195,9 +200,7 @@ public class GetDetailsConverter {
         return bundle;
     }
 
-    /**
-     * Like the above method, but provides {@code null} for all optional parameters.
-     */
+    /** Like the above method, but provides {@code null} for all optional parameters. */
     @VisibleForTesting
     static Bundle createItemDetailsBundle(
             String id, String title, String desc, String currency, String value) {

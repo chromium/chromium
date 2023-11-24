@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omaha.metrics;
 
 import org.chromium.base.metrics.RecordHistogram;
+
 /** A helper class for creating and saving histograms related to update success. */
 class HistogramUtils {
     /**

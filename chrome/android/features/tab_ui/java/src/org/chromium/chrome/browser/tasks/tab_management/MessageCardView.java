@@ -34,14 +34,12 @@ class MessageCardView extends LinearLayout {
         void fetchIconDrawable(Callback<Drawable> drawable);
     }
 
-    /**
-     * An interface to handle the review action.
-     */
-    public interface ReviewActionProvider { void review(); }
+    /** An interface to handle the review action. */
+    public interface ReviewActionProvider {
+        void review();
+    }
 
-    /**
-     * An interface to handle the dismiss action.
-     */
+    /** An interface to handle the dismiss action. */
     public interface DismissActionProvider {
         void dismiss(@MessageService.MessageType int messageType);
     }
@@ -68,8 +66,10 @@ class MessageCardView extends LinearLayout {
             int closeButtonSize =
                     (int) getResources().getDimension(R.dimen.tab_grid_close_button_size);
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.btn_close);
-            sCloseButtonBitmapWeakRef = new WeakReference<>(
-                    Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true));
+            sCloseButtonBitmapWeakRef =
+                    new WeakReference<>(
+                            Bitmap.createScaledBitmap(
+                                    bitmap, closeButtonSize, closeButtonSize, true));
         }
         mCloseButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
     }
@@ -142,8 +142,11 @@ class MessageCardView extends LinearLayout {
                 params.setMargins(0, 0, 0, 0);
             }
         } else {
-            int margin = (int) getContext().getResources().getDimension(
-                    R.dimen.tab_grid_iph_item_description_margin);
+            int margin =
+                    (int)
+                            getContext()
+                                    .getResources()
+                                    .getDimension(R.dimen.tab_grid_iph_item_description_margin);
             removeView(mIcon);
             params.setMargins(margin, 0, 0, 0);
         }
@@ -161,9 +164,10 @@ class MessageCardView extends LinearLayout {
             return;
         }
         // Set dynamic color.
-        final int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                ? R.dimen.default_elevation_2
-                : R.dimen.card_elevation;
+        final int elevationDimenId =
+                ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                        ? R.dimen.default_elevation_2
+                        : R.dimen.card_elevation;
         GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
         gradientDrawable.setColor(ChromeColors.getSurfaceColor(getContext(), elevationDimenId));
     }
@@ -175,9 +179,9 @@ class MessageCardView extends LinearLayout {
     void updateMessageCardColor(boolean isIncognito) {
         setBackground(isIncognito);
         MessageCardViewUtils.setDescriptionTextAppearance(
-                mDescription, isIncognito, /*isLargeMessageCard=*/false);
+                mDescription, isIncognito, /* isLargeMessageCard= */ false);
         MessageCardViewUtils.setActionButtonTextAppearance(
-                mActionButton, isIncognito, /*isLargeMessageCard=*/false);
+                mActionButton, isIncognito, /* isLargeMessageCard= */ false);
         MessageCardViewUtils.setCloseButtonTint(mCloseButton, isIncognito);
     }
 }

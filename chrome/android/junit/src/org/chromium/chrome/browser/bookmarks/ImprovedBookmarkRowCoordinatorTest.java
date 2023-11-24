@@ -136,7 +136,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
                 model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
     }
 
-
     @Test
     public void testShoppingCoordinator() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);

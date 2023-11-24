@@ -29,9 +29,7 @@ public class MotionEventFilter extends EventFilter {
     private LongPressRunnable mLongPressRunnable = new LongPressRunnable();
     private Handler mLongPressHandler = new Handler();
 
-    /**
-     * A runnable to send a delayed long press.
-     */
+    /** A runnable to send a delayed long press. */
     private class LongPressRunnable implements Runnable {
         private MotionEvent mInitialEvent;
         private boolean mIsPending;
@@ -63,16 +61,12 @@ public class MotionEventFilter extends EventFilter {
         }
     }
 
-    /**
-     * Creates a {@link MotionEventFilter} with offset touch events.
-     */
+    /** Creates a {@link MotionEventFilter} with offset touch events. */
     public MotionEventFilter(Context context, MotionEventHandler handler) {
         this(context, handler, true);
     }
 
-    /**
-     * Creates a {@link MotionEventFilter} with default long press behavior.
-     */
+    /** Creates a {@link MotionEventFilter} with default long press behavior. */
     public MotionEventFilter(Context context, MotionEventHandler handler, boolean autoOffset) {
         this(context, handler, autoOffset, true);
     }
@@ -83,7 +77,10 @@ public class MotionEventFilter extends EventFilter {
      *                            any more events after a long press. If false, use a custom
      *                            implementation that will send events after a long press.
      */
-    public MotionEventFilter(Context context, MotionEventHandler handler, boolean autoOffset,
+    public MotionEventFilter(
+            Context context,
+            MotionEventHandler handler,
+            boolean autoOffset,
             boolean useDefaultLongPress) {
         super(context, autoOffset);
         assert handler != null;
@@ -93,78 +90,107 @@ public class MotionEventFilter extends EventFilter {
         mHandler = handler;
         context.getResources();
 
-        mDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-            private float mOnScrollBeginX;
-            private float mOnScrollBeginY;
+        mDetector =
+                new GestureDetector(
+                        context,
+                        new GestureDetector.SimpleOnGestureListener() {
+                            private float mOnScrollBeginX;
+                            private float mOnScrollBeginY;
 
-            @Override
-            public boolean onScroll(
-                    MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                if (!mSeenFirstScrollEvent) {
-                    // Remove the touch slop region from the first scroll event to avoid a
-                    // jump.
-                    mSeenFirstScrollEvent = true;
-                    float distance =
-                            (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-                    if (distance > 0.0f) {
-                        float ratio = Math.max(0, distance - mScaledTouchSlop) / distance;
-                        mOnScrollBeginX = e1.getX() + distanceX * (1.0f - ratio);
-                        mOnScrollBeginY = e1.getY() + distanceY * (1.0f - ratio);
-                        distanceX *= ratio;
-                        distanceY *= ratio;
-                    }
-                }
-                if (mSingleInput) {
-                    // distanceX/Y only represent the distance since the last event, not the total
-                    // distance for the full scroll.  Calculate the total distance here.
-                    float totalX = e2.getX() - mOnScrollBeginX;
-                    float totalY = e2.getY() - mOnScrollBeginY;
-                    mHandler.drag(e2.getX() * mPxToDp, e2.getY() * mPxToDp, -distanceX * mPxToDp,
-                            -distanceY * mPxToDp, totalX * mPxToDp, totalY * mPxToDp);
-                }
-                return true;
-            }
+                            @Override
+                            public boolean onScroll(
+                                    MotionEvent e1,
+                                    MotionEvent e2,
+                                    float distanceX,
+                                    float distanceY) {
+                                if (!mSeenFirstScrollEvent) {
+                                    // Remove the touch slop region from the first scroll event to
+                                    // avoid a jump.
+                                    mSeenFirstScrollEvent = true;
+                                    float distance =
+                                            (float)
+                                                    Math.sqrt(
+                                                            distanceX * distanceX
+                                                                    + distanceY * distanceY);
+                                    if (distance > 0.0f) {
+                                        float ratio =
+                                                Math.max(0, distance - mScaledTouchSlop) / distance;
+                                        mOnScrollBeginX = e1.getX() + distanceX * (1.0f - ratio);
+                                        mOnScrollBeginY = e1.getY() + distanceY * (1.0f - ratio);
+                                        distanceX *= ratio;
+                                        distanceY *= ratio;
+                                    }
+                                }
+                                if (mSingleInput) {
+                                    // distanceX/Y only represent the distance since the last event,
+                                    // not the total
+                                    // distance for the full scroll.  Calculate the total distance
+                                    // here.
+                                    float totalX = e2.getX() - mOnScrollBeginX;
+                                    float totalY = e2.getY() - mOnScrollBeginY;
+                                    mHandler.drag(
+                                            e2.getX() * mPxToDp,
+                                            e2.getY() * mPxToDp,
+                                            -distanceX * mPxToDp,
+                                            -distanceY * mPxToDp,
+                                            totalX * mPxToDp,
+                                            totalY * mPxToDp);
+                                }
+                                return true;
+                            }
 
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                /* Android's GestureDector calls listener.onSingleTapUp on MotionEvent.ACTION_UP
-                 * during long press, so we need to explicitly not call handler.click if a
-                 * long press has been detected.
-                 */
-                if (mSingleInput && !mInLongPress) {
-                    mHandler.click(e.getX() * mPxToDp, e.getY() * mPxToDp,
-                            e.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE, mButtons);
-                }
-                return true;
-            }
+                            @Override
+                            public boolean onSingleTapUp(MotionEvent e) {
+                                /* Android's GestureDector calls listener.onSingleTapUp on MotionEvent.ACTION_UP
+                                 * during long press, so we need to explicitly not call handler.click if a
+                                 * long press has been detected.
+                                 */
+                                if (mSingleInput && !mInLongPress) {
+                                    mHandler.click(
+                                            e.getX() * mPxToDp,
+                                            e.getY() * mPxToDp,
+                                            e.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE,
+                                            mButtons);
+                                }
+                                return true;
+                            }
 
-            @Override
-            public boolean onFling(
-                    MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (mSingleInput) {
-                    mHandler.fling(e1.getX() * mPxToDp, e1.getY() * mPxToDp, velocityX * mPxToDp,
-                            velocityY * mPxToDp);
-                }
-                return true;
-            }
+                            @Override
+                            public boolean onFling(
+                                    MotionEvent e1,
+                                    MotionEvent e2,
+                                    float velocityX,
+                                    float velocityY) {
+                                if (mSingleInput) {
+                                    mHandler.fling(
+                                            e1.getX() * mPxToDp,
+                                            e1.getY() * mPxToDp,
+                                            velocityX * mPxToDp,
+                                            velocityY * mPxToDp);
+                                }
+                                return true;
+                            }
 
-            @Override
-            public boolean onDown(MotionEvent e) {
-                mButtons = e.getButtonState();
-                mInLongPress = false;
-                mSeenFirstScrollEvent = false;
-                if (mSingleInput) {
-                    mHandler.onDown(e.getX() * mPxToDp, e.getY() * mPxToDp,
-                            e.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE, mButtons);
-                }
-                return true;
-            }
+                            @Override
+                            public boolean onDown(MotionEvent e) {
+                                mButtons = e.getButtonState();
+                                mInLongPress = false;
+                                mSeenFirstScrollEvent = false;
+                                if (mSingleInput) {
+                                    mHandler.onDown(
+                                            e.getX() * mPxToDp,
+                                            e.getY() * mPxToDp,
+                                            e.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE,
+                                            mButtons);
+                                }
+                                return true;
+                            }
 
-            @Override
-            public void onLongPress(MotionEvent e) {
-                longPress(e);
-            }
-        });
+                            @Override
+                            public void onLongPress(MotionEvent e) {
+                                longPress(e);
+                            }
+                        });
 
         mDetector.setIsLongpressEnabled(mUseDefaultLongPress);
     }
@@ -231,8 +257,12 @@ public class MotionEventFilter extends EventFilter {
         // index 0 and 1 works here.
         // This might need some rework if 3 fingers event are supported.
         if (e.getPointerCount() > 1) {
-            mHandler.onPinch(e.getX(0) * mPxToDp, e.getY(0) * mPxToDp, e.getX(1) * mPxToDp,
-                    e.getY(1) * mPxToDp, action == MotionEvent.ACTION_POINTER_DOWN);
+            mHandler.onPinch(
+                    e.getX(0) * mPxToDp,
+                    e.getY(0) * mPxToDp,
+                    e.getX(1) * mPxToDp,
+                    e.getY(1) * mPxToDp,
+                    action == MotionEvent.ACTION_POINTER_DOWN);
             mDetector.setIsLongpressEnabled(false);
             mSingleInput = false;
         } else {

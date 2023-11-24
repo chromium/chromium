@@ -40,13 +40,10 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link FacilitatedPaymentBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FacilitatedPaymentBottomSheetBridgeTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private ManagedBottomSheetController mBottomSheetController;
+    @Mock private WebContents mWebContents;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
 
     private FacilitatedPaymentBottomSheetBridge mFacilitatedPaymentBottomSheetBridge;
     private WindowAndroid mWindow;
@@ -57,8 +54,7 @@ public class FacilitatedPaymentBottomSheetBridgeTest {
         Context mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mFacilitatedPaymentBottomSheetBridge =
-                new FacilitatedPaymentBottomSheetBridge();
+        mFacilitatedPaymentBottomSheetBridge = new FacilitatedPaymentBottomSheetBridge();
     }
 
     @After
@@ -76,8 +72,7 @@ public class FacilitatedPaymentBottomSheetBridgeTest {
 
         verify(mBottomSheetController)
                 .requestShowContent(
-                        any(FacilitatedPaymentBottomSheetContent.class),
-                        /*animate=*/eq(true));
+                        any(FacilitatedPaymentBottomSheetContent.class), /* animate= */ eq(true));
     }
 
     @Test
@@ -90,7 +85,7 @@ public class FacilitatedPaymentBottomSheetBridgeTest {
         ArgumentCaptor<FacilitatedPaymentBottomSheetContent> contentCaptor =
                 ArgumentCaptor.forClass(FacilitatedPaymentBottomSheetContent.class);
         verify(mBottomSheetController)
-                .requestShowContent(contentCaptor.capture(), /*animate=*/anyBoolean());
+                .requestShowContent(contentCaptor.capture(), /* animate= */ anyBoolean());
         FacilitatedPaymentBottomSheetContent content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
         assertThat(content.getSheetContentDescriptionStringId(), equalTo(R.string.ok));

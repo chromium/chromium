@@ -16,9 +16,7 @@ import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
 
-/**
- * Ungroup action for the {@link TabSelectionEditorMenu}.
- */
+/** Ungroup action for the {@link TabSelectionEditorMenu}. */
 public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
     /**
      * Create an action for ungrouping tabs.
@@ -27,23 +25,34 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
-            @ButtonType int buttonType, @IconPosition int iconPosition) {
+    public static TabSelectionEditorAction createAction(
+            Context context,
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition) {
         Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_widgets);
         return new TabSelectionEditorUngroupAction(showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabSelectionEditorUngroupAction(@ShowMode int showMode, @ButtonType int buttonType,
-            @IconPosition int iconPosition, Drawable drawable) {
-        super(R.id.tab_selection_editor_ungroup_menu_item, showMode, buttonType, iconPosition,
+    private TabSelectionEditorUngroupAction(
+            @ShowMode int showMode,
+            @ButtonType int buttonType,
+            @IconPosition int iconPosition,
+            Drawable drawable) {
+        super(
+                R.id.tab_selection_editor_ungroup_menu_item,
+                showMode,
+                buttonType,
+                iconPosition,
                 R.plurals.tab_selection_editor_ungroup_tabs,
-                R.plurals.accessibility_tab_selection_editor_ungroup_tabs, drawable);
+                R.plurals.accessibility_tab_selection_editor_ungroup_tabs,
+                drawable);
     }
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter;
+                instanceof TabGroupModelFilter;
         // assert !editorSupportsActionOnRelatedTabs()
         //     : "Ungrouping is not supported when actions apply to related tabs.";
 
@@ -53,13 +62,15 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
     @Override
     public boolean performAction(List<Tab> tabs) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter;
+                instanceof TabGroupModelFilter;
         assert !editorSupportsActionOnRelatedTabs()
-            : "Ungrouping is not supported when actions apply to related tabs.";
+                : "Ungrouping is not supported when actions apply to related tabs.";
 
-        TabGroupModelFilter filter = (TabGroupModelFilter) getTabModelSelector()
-                                             .getTabModelFilterProvider()
-                                             .getCurrentTabModelFilter();
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        getTabModelSelector()
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
         for (Tab tab : tabs) {
             filter.moveTabOutOfGroup(tab.getId());
         }

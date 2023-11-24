@@ -40,12 +40,16 @@ public class RecentTabCountDrawable extends DrawableWrapper {
      * @param context The context for getting resources.
      */
     public RecentTabCountDrawable(Context context) {
-        super(UiUtils.getTintedDrawable(context, R.drawable.ic_recent_tabs_bulk_20dp,
-                R.color.default_icon_color_tint_list));
+        super(
+                UiUtils.getTintedDrawable(
+                        context,
+                        R.drawable.ic_recent_tabs_bulk_20dp,
+                        R.color.default_icon_color_tint_list));
 
         mTextPaint = new TextPaint();
-        setTint(AppCompatResources.getColorStateList(
-                context, R.color.default_icon_color_tint_list));
+        setTint(
+                AppCompatResources.getColorStateList(
+                        context, R.color.default_icon_color_tint_list));
 
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Align.CENTER);
@@ -91,8 +95,11 @@ public class RecentTabCountDrawable extends DrawableWrapper {
             // Constants are based on X/Y position in the icon from the redlines the UX designer
             // provided.
             final int textX = bounds.left + Math.round(0.583f * bounds.width());
-            final int textY = bounds.top + Math.round(14.0f / 24.0f * bounds.height())
-                    + (mTextBounds.bottom - mTextBounds.top) / 2 - mTextBounds.bottom;
+            final int textY =
+                    bounds.top
+                            + Math.round(14.0f / 24.0f * bounds.height())
+                            + (mTextBounds.bottom - mTextBounds.top) / 2
+                            - mTextBounds.bottom;
 
             canvas.drawText(textString, textX, textY, mTextPaint);
         }

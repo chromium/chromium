@@ -41,18 +41,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Mediator for handling {@link TasksSurface}-related logic.
- */
+/** Mediator for handling {@link TasksSurface}-related logic. */
 class TasksSurfaceMediator implements TabSwitcherViewObserver {
-    @Nullable
-    private OmniboxStub mOmniboxStub;
+    @Nullable private OmniboxStub mOmniboxStub;
     private final IncognitoCookieControlsManager mIncognitoCookieControlsManager;
     private IncognitoCookieControlsManager.Observer mIncognitoCookieControlsObserver;
     private final PropertyModel mModel;
 
-    TasksSurfaceMediator(PropertyModel model, View.OnClickListener incognitoLearnMoreClickListener,
-            IncognitoCookieControlsManager incognitoCookieControlsManager, boolean isTabCarousel) {
+    TasksSurfaceMediator(
+            PropertyModel model,
+            View.OnClickListener incognitoLearnMoreClickListener,
+            IncognitoCookieControlsManager incognitoCookieControlsManager,
+            boolean isTabCarousel) {
         mModel = model;
         mModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
         mModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, isTabCarousel);
@@ -75,68 +75,82 @@ class TasksSurfaceMediator implements TabSwitcherViewObserver {
         mOmniboxStub = omniboxStub;
         assert mOmniboxStub != null;
 
-        mModel.set(FAKE_SEARCH_BOX_CLICK_LISTENER, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mOmniboxStub.setUrlBarFocus(
-                        true, null, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP);
-                RecordUserAction.record("TasksSurface.FakeBox.Tapped");
-            }
-        });
-        mModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        mModel.set(
+                FAKE_SEARCH_BOX_CLICK_LISTENER,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOmniboxStub.setUrlBarFocus(
+                                true, null, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP);
+                        RecordUserAction.record("TasksSurface.FakeBox.Tapped");
+                    }
+                });
+        mModel.set(
+                FAKE_SEARCH_BOX_TEXT_WATCHER,
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() == 0) return;
-                mOmniboxStub.setUrlBarFocus(
-                        true, s.toString(), OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS);
-                RecordUserAction.record("TasksSurface.FakeBox.LongPressed");
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s.length() == 0) return;
+                        mOmniboxStub.setUrlBarFocus(
+                                true,
+                                s.toString(),
+                                OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS);
+                        RecordUserAction.record("TasksSurface.FakeBox.LongPressed");
 
-                // This won't cause infinite loop since we checked s.length() == 0 above.
-                s.clear();
-            }
-        });
-        mModel.set(VOICE_SEARCH_BUTTON_CLICK_LISTENER, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (feedReliabilityLogger != null) {
-                    feedReliabilityLogger.onVoiceSearch();
-                }
-                mOmniboxStub.getVoiceRecognitionHandler().startVoiceRecognition(
-                        VoiceRecognitionHandler.VoiceInteractionSource.TASKS_SURFACE);
-                RecordUserAction.record("TasksSurface.FakeBox.VoiceSearch");
-            }
-        });
+                        // This won't cause infinite loop since we checked s.length() == 0 above.
+                        s.clear();
+                    }
+                });
+        mModel.set(
+                VOICE_SEARCH_BUTTON_CLICK_LISTENER,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (feedReliabilityLogger != null) {
+                            feedReliabilityLogger.onVoiceSearch();
+                        }
+                        mOmniboxStub
+                                .getVoiceRecognitionHandler()
+                                .startVoiceRecognition(
+                                        VoiceRecognitionHandler.VoiceInteractionSource
+                                                .TASKS_SURFACE);
+                        RecordUserAction.record("TasksSurface.FakeBox.VoiceSearch");
+                    }
+                });
 
-        mModel.set(LENS_BUTTON_CLICK_LISTENER, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LensMetrics.recordClicked(LensEntryPoint.TASKS_SURFACE);
-                mOmniboxStub.startLens(LensEntryPoint.TASKS_SURFACE);
-            }
-        });
+        mModel.set(
+                LENS_BUTTON_CLICK_LISTENER,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LensMetrics.recordClicked(LensEntryPoint.TASKS_SURFACE);
+                        mOmniboxStub.startLens(LensEntryPoint.TASKS_SURFACE);
+                    }
+                });
 
-        mIncognitoCookieControlsObserver = new IncognitoCookieControlsManager.Observer() {
-            @Override
-            public void onUpdate(boolean checked, @CookieControlsEnforcement int enforcement) {
-                mModel.set(INCOGNITO_COOKIE_CONTROLS_TOGGLE_ENFORCEMENT, enforcement);
-                mModel.set(INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED, checked);
-            }
-        };
+        mIncognitoCookieControlsObserver =
+                new IncognitoCookieControlsManager.Observer() {
+                    @Override
+                    public void onUpdate(
+                            boolean checked, @CookieControlsEnforcement int enforcement) {
+                        mModel.set(INCOGNITO_COOKIE_CONTROLS_TOGGLE_ENFORCEMENT, enforcement);
+                        mModel.set(INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED, checked);
+                    }
+                };
         mIncognitoCookieControlsManager.addObserver(mIncognitoCookieControlsObserver);
         mModel.set(
                 INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED_LISTENER, mIncognitoCookieControlsManager);
         mModel.set(INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER, mIncognitoCookieControlsManager);
     }
 
-    /**
-     * Called to initialize this Mediator.
-     */
+    /** Called to initialize this Mediator. */
     void initialize() {
         mIncognitoCookieControlsManager.initialize();
     }

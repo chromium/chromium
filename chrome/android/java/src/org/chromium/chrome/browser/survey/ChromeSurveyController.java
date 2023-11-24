@@ -71,8 +71,12 @@ public class ChromeSurveyController {
                         .build();
         MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(
                 activity.getResources(), message);
-        MessageSurveyUiDelegate messageDelegate = new MessageSurveyUiDelegate(
-                message, messageDispatcher, tabModelSelector, ChromeSurveyController::isUMAEnabled);
+        MessageSurveyUiDelegate messageDelegate =
+                new MessageSurveyUiDelegate(
+                        message,
+                        messageDispatcher,
+                        tabModelSelector,
+                        ChromeSurveyController::isUMAEnabled);
         SurveyClient client =
                 SurveyClientFactory.getInstance().createClient(config, messageDelegate, profile);
         if (client == null) return null;

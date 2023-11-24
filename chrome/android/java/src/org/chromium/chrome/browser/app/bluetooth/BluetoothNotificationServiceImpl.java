@@ -25,10 +25,12 @@ public class BluetoothNotificationServiceImpl extends BluetoothNotificationServi
                     return IntentHandler.createTrustedBringTabToFrontIntent(
                             tabId, IntentHandler.BringToFrontSource.NOTIFICATION);
                 }
+
                 @Override
                 public void stopSelf() {
                     getService().stopSelf();
                 }
+
                 @Override
                 public void stopSelf(int startId) {
                     getService().stopSelf(startId);
@@ -39,9 +41,10 @@ public class BluetoothNotificationServiceImpl extends BluetoothNotificationServi
 
     @Override
     public void onCreate() {
-        mManager = new BluetoothNotificationManager(
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
-                mManagerDelegate);
+        mManager =
+                new BluetoothNotificationManager(
+                        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
+                        mManagerDelegate);
         super.onCreate();
     }
 

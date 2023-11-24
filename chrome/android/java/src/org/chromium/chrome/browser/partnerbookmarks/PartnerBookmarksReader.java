@@ -21,9 +21,7 @@ import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/**
- * Reads bookmarks from the partner content provider (if any).
- */
+/** Reads bookmarks from the partner content provider (if any). */
 public class PartnerBookmarksReader {
     private static final String TAG = "PartnerBMReader";
     private static Set<FaviconUpdateObserver> sFaviconUpdateObservers = new HashSet<>();
@@ -51,18 +49,20 @@ public class PartnerBookmarksReader {
     // progress, as well as whether or not we've finished reading bookmarks from this class so we
     // don't end up shutting the bookmark reader down prematurely.
     private final Object mProgressLock = new Object();
+
     @GuardedBy("mProgressLock")
     private int mNumFaviconsInProgress;
+
     @GuardedBy("mProgressLock")
     private boolean mShutDown;
+
     @GuardedBy("mProgressLock")
     private boolean mFaviconsFetchedFromServer;
+
     private boolean mFinishedReading;
     private boolean mFinishedResolvingBrowserCustomizations;
 
-    /**
-     * Observer for listeners to receive updates when changes are made to the favicon cache.
-     */
+    /** Observer for listeners to receive updates when changes are made to the favicon cache. */
     public interface FaviconUpdateObserver {
         /**
          * Called when a favicon has been updated, so observers can update their view if necessary.
@@ -71,9 +71,7 @@ public class PartnerBookmarksReader {
          */
         void onUpdateFavicon(String url);
 
-        /**
-         * Called when all favicon loading for the partner bookmarks has completed.
-         */
+        /** Called when all favicon loading for the partner bookmarks has completed. */
         void onCompletedFaviconLoading();
     }
 
@@ -102,13 +100,14 @@ public class PartnerBookmarksReader {
         if (!browserCustomizations.isInitialized()) {
             browserCustomizations.initializeAsync(context);
         }
-        browserCustomizations.setOnInitializeAsyncFinished(() -> {
-            if (browserCustomizations.isBookmarksEditingDisabled()) {
-                PartnerBookmarksReaderJni.get().disablePartnerBookmarksEditing();
-            }
-            mFinishedResolvingBrowserCustomizations = true;
-            maybeMarkCreationComplete();
-        });
+        browserCustomizations.setOnInitializeAsyncFinished(
+                () -> {
+                    if (browserCustomizations.isBookmarksEditingDisabled()) {
+                        PartnerBookmarksReaderJni.get().disablePartnerBookmarksEditing();
+                    }
+                    mFinishedResolvingBrowserCustomizations = true;
+                    maybeMarkCreationComplete();
+                });
     }
 
     /**
@@ -131,9 +130,7 @@ public class PartnerBookmarksReader {
         sFaviconUpdateObservers.remove(observer);
     }
 
-    /**
-     * Asynchronously read bookmarks from the partner content provider
-     */
+    /** Asynchronously read bookmarks from the partner content provider */
     public void readBookmarks() {
         if (mNativePartnerBookmarksReader == 0) {
             assert false : "readBookmarks called after PartnerBookmarksReaderJni.get().destroy.";
@@ -152,38 +149,55 @@ public class PartnerBookmarksReader {
      * @param touchicon .PNG blob for icon.
      * @return          NATIVE id of a bookmark
      */
-    private long onBookmarkPush(String url, String title, boolean isFolder, long parentId,
-            byte[] favicon, byte[] touchicon) {
-        FetchFaviconCallback callback = new FetchFaviconCallback() {
-            @Override
-            public void onFaviconFetched(@FaviconFetchResult int result) {
-                synchronized (mProgressLock) {
-                    if (result == FaviconFetchResult.SUCCESS_FROM_SERVER) {
-                        // If we've fetched a new favicon from a server, store a flag to indicate
-                        // this so we can refresh bookmarks when all favicons are fetched.
-                        mFaviconsFetchedFromServer = true;
-                        for (FaviconUpdateObserver observer : sFaviconUpdateObservers) {
-                            observer.onUpdateFavicon(
-                                    PartnerBookmarksReaderJni.get().getNativeUrlString(url));
+    private long onBookmarkPush(
+            String url,
+            String title,
+            boolean isFolder,
+            long parentId,
+            byte[] favicon,
+            byte[] touchicon) {
+        FetchFaviconCallback callback =
+                new FetchFaviconCallback() {
+                    @Override
+                    public void onFaviconFetched(@FaviconFetchResult int result) {
+                        synchronized (mProgressLock) {
+                            if (result == FaviconFetchResult.SUCCESS_FROM_SERVER) {
+                                // If we've fetched a new favicon from a server, store a flag to
+                                // indicate this so we can refresh bookmarks when all favicons are
+                                // fetched.
+                                mFaviconsFetchedFromServer = true;
+                                for (FaviconUpdateObserver observer : sFaviconUpdateObservers) {
+                                    observer.onUpdateFavicon(
+                                            PartnerBookmarksReaderJni.get()
+                                                    .getNativeUrlString(url));
+                                }
+                            }
+                            mFaviconThrottle.onFaviconFetched(url, result);
+                            --mNumFaviconsInProgress;
+                            if (canShutdown()) shutDown();
                         }
                     }
-                    mFaviconThrottle.onFaviconFetched(url, result);
-                    --mNumFaviconsInProgress;
-                    if (canShutdown()) shutDown();
-                }
-            }
 
-            @Override
-            public void onFaviconFetch() {
-                synchronized (mProgressLock) {
-                    ++mNumFaviconsInProgress;
-                }
-            }
-        };
-        return PartnerBookmarksReaderJni.get().addPartnerBookmark(mNativePartnerBookmarksReader,
-                PartnerBookmarksReader.this, url, title, isFolder, parentId, favicon, touchicon,
-                mFaviconThrottle.shouldFetchFromServerIfNecessary(url),
-                ViewUtils.dpToPx(mContext, DESIRED_FAVICON_SIZE_DP), callback);
+                    @Override
+                    public void onFaviconFetch() {
+                        synchronized (mProgressLock) {
+                            ++mNumFaviconsInProgress;
+                        }
+                    }
+                };
+        return PartnerBookmarksReaderJni.get()
+                .addPartnerBookmark(
+                        mNativePartnerBookmarksReader,
+                        PartnerBookmarksReader.this,
+                        url,
+                        title,
+                        isFolder,
+                        parentId,
+                        favicon,
+                        touchicon,
+                        mFaviconThrottle.shouldFetchFromServerIfNecessary(url),
+                        ViewUtils.dpToPx(mContext, DESIRED_FAVICON_SIZE_DP),
+                        callback);
     }
 
     /**
@@ -200,13 +214,15 @@ public class PartnerBookmarksReader {
 
     private void maybeMarkCreationComplete() {
         if (!mFinishedReading || !mFinishedResolvingBrowserCustomizations) return;
-        PartnerBookmarksReaderJni.get().partnerBookmarksCreationComplete(
-                mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
+        PartnerBookmarksReaderJni.get()
+                .partnerBookmarksCreationComplete(
+                        mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
     }
 
     @GuardedBy("mProgressLock")
     private boolean canShutdown() {
-        return mNumFaviconsInProgress == 0 && mFinishedReading
+        return mNumFaviconsInProgress == 0
+                && mFinishedReading
                 && mFinishedResolvingBrowserCustomizations;
     }
 
@@ -228,8 +244,8 @@ public class PartnerBookmarksReader {
                     observer.onCompletedFaviconLoading();
                 }
             }
-            PartnerBookmarksReaderJni.get().destroy(
-                    mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
+            PartnerBookmarksReaderJni.get()
+                    .destroy(mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
             mNativePartnerBookmarksReader = 0;
             mShutDown = true;
         }
@@ -269,8 +285,11 @@ public class PartnerBookmarksReader {
 
                 // Check for duplicate URLs.
                 if (!bookmark.mIsFolder && urlSet.contains(bookmark.mUrl)) {
-                    Log.i(TAG,
-                            "More than one bookmark pointing to " + bookmark.mUrl + ". "
+                    Log.i(
+                            TAG,
+                            "More than one bookmark pointing to "
+                                    + bookmark.mUrl
+                                    + ". "
                                     + "Keeping only the first one for consistency with Chromium.");
                     continue;
                 }
@@ -339,8 +358,13 @@ public class PartnerBookmarksReader {
                 try {
                     synchronized (mRootSync) {
                         bookmark.mNativeId =
-                                onBookmarkPush(bookmark.mUrl, bookmark.mTitle, bookmark.mIsFolder,
-                                        bookmark.mParentId, bookmark.mFavicon, bookmark.mTouchicon);
+                                onBookmarkPush(
+                                        bookmark.mUrl,
+                                        bookmark.mTitle,
+                                        bookmark.mIsFolder,
+                                        bookmark.mParentId,
+                                        bookmark.mFavicon,
+                                        bookmark.mTouchicon);
                     }
                 } catch (IllegalArgumentException e) {
                     Log.w(TAG, "Error inserting bookmark " + bookmark.mTitle, e);
@@ -354,7 +378,8 @@ public class PartnerBookmarksReader {
             if (bookmark.mIsFolder) {
                 for (PartnerBookmark entry : bookmark.mEntries) {
                     if (entry.mParent != bookmark) {
-                        Log.w(TAG,
+                        Log.w(
+                                TAG,
                                 "Hierarchy error in bookmark '" + bookmark.mTitle + "'. Skipping.");
                         continue;
                     }
@@ -370,14 +395,27 @@ public class PartnerBookmarksReader {
         long init(PartnerBookmarksReader caller);
 
         void reset(long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+
         void destroy(long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
-        long addPartnerBookmark(long nativePartnerBookmarksReader, PartnerBookmarksReader caller,
-                String url, String title, boolean isFolder, long parentId, byte[] favicon,
-                byte[] touchicon, boolean fetchUncachedFaviconsFromServer, int desiredFaviconSizePx,
+
+        long addPartnerBookmark(
+                long nativePartnerBookmarksReader,
+                PartnerBookmarksReader caller,
+                String url,
+                String title,
+                boolean isFolder,
+                long parentId,
+                byte[] favicon,
+                byte[] touchicon,
+                boolean fetchUncachedFaviconsFromServer,
+                int desiredFaviconSizePx,
                 FetchFaviconCallback callback);
+
         void partnerBookmarksCreationComplete(
                 long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+
         String getNativeUrlString(String url);
+
         void disablePartnerBookmarksEditing();
     }
 }

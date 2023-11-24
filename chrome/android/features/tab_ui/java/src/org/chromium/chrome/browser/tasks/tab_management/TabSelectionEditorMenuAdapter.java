@@ -23,11 +23,17 @@ import org.chromium.ui.modelutil.PropertyModel;
  * {@link TabSelectionEditorMenu} and {@link TabSelectionEditorMenuItem}'s {@link ListItem} to a
  * menu view.
  */
-public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.ViewBinder<
-        PropertyListModel<PropertyModel, PropertyKey>, TabSelectionEditorMenu, PropertyKey> {
+public class TabSelectionEditorMenuAdapter
+        implements ListModelChangeProcessor.ViewBinder<
+                PropertyListModel<PropertyModel, PropertyKey>,
+                TabSelectionEditorMenu,
+                PropertyKey> {
     @Override
-    public void onItemsInserted(PropertyListModel<PropertyModel, PropertyKey> actionModels,
-            TabSelectionEditorMenu menu, int index, int count) {
+    public void onItemsInserted(
+            PropertyListModel<PropertyModel, PropertyKey> actionModels,
+            TabSelectionEditorMenu menu,
+            int index,
+            int count) {
         // TODO(ckitagawa): After initial configuration adding more items always results in items
         // being appended to the end of the menu. Realistically this should never occur, but
         // consider handling or asserting.
@@ -45,8 +51,11 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
     }
 
     @Override
-    public void onItemsRemoved(PropertyListModel<PropertyModel, PropertyKey> actionModels,
-            TabSelectionEditorMenu menu, int index, int count) {
+    public void onItemsRemoved(
+            PropertyListModel<PropertyModel, PropertyKey> actionModels,
+            TabSelectionEditorMenu menu,
+            int index,
+            int count) {
         if (actionModels.size() != 0) {
             throw new IllegalArgumentException("Partial removal of items is not supported");
         }
@@ -54,12 +63,19 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
     }
 
     @Override
-    public void onItemsChanged(PropertyListModel<PropertyModel, PropertyKey> actionModels,
-            TabSelectionEditorMenu menu, int index, int count, PropertyKey key) {
+    public void onItemsChanged(
+            PropertyListModel<PropertyModel, PropertyKey> actionModels,
+            TabSelectionEditorMenu menu,
+            int index,
+            int count,
+            PropertyKey key) {
         for (int i = index; i < index + count; i++) {
-            onItemChanged(actionModels.get(i),
-                    menu.getMenuItem(actionModels.get(i).get(
-                            TabSelectionEditorActionProperties.MENU_ITEM_ID)),
+            onItemChanged(
+                    actionModels.get(i),
+                    menu.getMenuItem(
+                            actionModels
+                                    .get(i)
+                                    .get(TabSelectionEditorActionProperties.MENU_ITEM_ID)),
                     key);
         }
     }
@@ -74,7 +90,8 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
     }
 
     private void bindAllProperties(PropertyModel actionModel, TabSelectionEditorMenuItem menuItem) {
-        menuItem.initActionView(actionModel.get(TabSelectionEditorActionProperties.SHOW_MODE),
+        menuItem.initActionView(
+                actionModel.get(TabSelectionEditorActionProperties.SHOW_MODE),
                 actionModel.get(TabSelectionEditorActionProperties.BUTTON_TYPE));
         for (PropertyKey key : TabSelectionEditorActionProperties.ACTION_KEYS) {
             bindMenuItemProperty(actionModel, menuItem, key);
@@ -94,7 +111,8 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
             updateContentDescription(actionModel, menuItem);
         } else if (key == TabSelectionEditorActionProperties.ICON_POSITION
                 || key == TabSelectionEditorActionProperties.ICON) {
-            menuItem.setIcon(actionModel.get(TabSelectionEditorActionProperties.ICON_POSITION),
+            menuItem.setIcon(
+                    actionModel.get(TabSelectionEditorActionProperties.ICON_POSITION),
                     actionModel.get(TabSelectionEditorActionProperties.ICON));
         } else if (key == TabSelectionEditorActionProperties.ENABLED) {
             menuItem.setEnabled(actionModel.get(TabSelectionEditorActionProperties.ENABLED));
@@ -118,9 +136,10 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
     }
 
     private void updateTitle(PropertyModel actionModel, TabSelectionEditorMenuItem menuItem) {
-        int itemCount = actionModel.get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL)
-                ? actionModel.get(TabSelectionEditorActionProperties.ITEM_COUNT)
-                : -1;
+        int itemCount =
+                actionModel.get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL)
+                        ? actionModel.get(TabSelectionEditorActionProperties.ITEM_COUNT)
+                        : -1;
         menuItem.setTitle(
                 actionModel.get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID), itemCount);
     }

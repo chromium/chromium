@@ -19,9 +19,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}.
- */
+/** This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}. */
 class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
     private TabSelectionEditorToolbar mToolbar;
     private ViewGroup mParentView;
@@ -46,18 +44,27 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
      * @param selectionDelegate The {@link SelectionDelegate} that will inform the toolbar of
      *                            selection changes.
      */
-    void initialize(ViewGroup parentView, RecyclerView recyclerView, RecyclerView.Adapter adapter,
+    void initialize(
+            ViewGroup parentView,
+            RecyclerView recyclerView,
+            RecyclerView.Adapter adapter,
             SelectionDelegate<Integer> selectionDelegate) {
         mIsInitialized = true;
         initializeRecyclerView(adapter, recyclerView);
-        mToolbar = (TabSelectionEditorToolbar) initializeToolbar(
-                R.layout.tab_selection_editor_toolbar, selectionDelegate, 0, 0, 0, null, true);
+        mToolbar =
+                (TabSelectionEditorToolbar)
+                        initializeToolbar(
+                                R.layout.tab_selection_editor_toolbar,
+                                selectionDelegate,
+                                0,
+                                0,
+                                0,
+                                null,
+                                true);
         mParentView = parentView;
     }
 
-    /**
-     * Add and shows the layout in the parent view.
-     */
+    /** Add and shows the layout in the parent view. */
     public void show() {
         assert mIsInitialized;
         mIsShowing = true;
@@ -65,9 +72,7 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
         mParentView.addView(this);
     }
 
-    /**
-     * Remove and hides the layout from parent view.
-     */
+    /** Remove and hides the layout from parent view. */
     public void hide() {
         assert mIsInitialized && mIsShowing;
         mIsShowing = false;
@@ -82,9 +87,7 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
         return mToolbar;
     }
 
-    /**
-     * Destroy any members that needs clean up.
-     */
+    /** Destroy any members that needs clean up. */
     public void destroy() {
         super.onDestroyed();
     }

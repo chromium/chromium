@@ -55,10 +55,17 @@ class KeyboardAccessoryProperties {
             ANIMATION_LISTENER = new WritableObjectPropertyKey<>("animation_listener");
 
     static PropertyModel.Builder defaultModelBuilder() {
-        return new PropertyModel
-                .Builder(DISABLE_ANIMATIONS_FOR_TESTING, BAR_ITEMS, VISIBLE, SKIP_CLOSING_ANIMATION,
-                        BOTTOM_OFFSET_PX, SHEET_OPENER_ITEM, OBFUSCATED_CHILD_AT_CALLBACK,
-                        SHOW_SWIPING_IPH, HAS_SUGGESTIONS, ANIMATION_LISTENER)
+        return new PropertyModel.Builder(
+                        DISABLE_ANIMATIONS_FOR_TESTING,
+                        BAR_ITEMS,
+                        VISIBLE,
+                        SKIP_CLOSING_ANIMATION,
+                        BOTTOM_OFFSET_PX,
+                        SHEET_OPENER_ITEM,
+                        OBFUSCATED_CHILD_AT_CALLBACK,
+                        SHOW_SWIPING_IPH,
+                        HAS_SUGGESTIONS,
+                        ANIMATION_LISTENER)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)
@@ -81,6 +88,7 @@ class KeyboardAccessoryProperties {
             int TAB_LAYOUT = 2;
             int ACTION_CHIP = 3;
         }
+
         private @Type int mType;
         private final @Nullable Action mAction;
         private final @StringRes int mCaptionId;
@@ -146,6 +154,7 @@ class KeyboardAccessoryProperties {
             return typeName + ": " + mAction;
         }
     }
+
     /**
      * This {@link BarItem} is used to render Autofill suggestions into the accessory bar.
      * For that, it needs (in addition to an {@link Action}) the held {@link AutofillSuggestion}.

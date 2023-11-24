@@ -33,9 +33,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * Controls the bottom system navigation bar color for the provided {@link Window}.
- */
+/** Controls the bottom system navigation bar color for the provided {@link Window}. */
 @RequiresApi(Build.VERSION_CODES.O_MR1)
 class TabbedNavigationBarColorController {
     private final Window mWindow;
@@ -69,7 +67,9 @@ class TabbedNavigationBarColorController {
      * @param fullscreenManager The {@link FullscreenManager} used to determine if fullscreen is
      *                          enabled
      */
-    TabbedNavigationBarColorController(Window window, TabModelSelector tabModelSelector,
+    TabbedNavigationBarColorController(
+            Window window,
+            TabModelSelector tabModelSelector,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
@@ -83,25 +83,28 @@ class TabbedNavigationBarColorController {
                 mContext.getResources().getBoolean(R.bool.window_light_navigation_bar);
 
         mTabModelSelector = tabModelSelector;
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                updateNavigationBarColor();
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        updateNavigationBarColor();
+                    }
+                };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
-        mFullscreenObserver = new FullscreenManager.Observer() {
-            @Override
-            public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-                mIsInFullscreen = true;
-                updateNavigationBarColor();
-            }
-            @Override
-            public void onExitFullscreen(Tab tab) {
-                mIsInFullscreen = false;
-                updateNavigationBarColor();
-            }
-        };
+        mFullscreenObserver =
+                new FullscreenManager.Observer() {
+                    @Override
+                    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                        mIsInFullscreen = true;
+                        updateNavigationBarColor();
+                    }
+
+                    @Override
+                    public void onExitFullscreen(Tab tab) {
+                        mIsInFullscreen = false;
+                        updateNavigationBarColor();
+                    }
+                };
         mFullScreenManager.addObserver(mFullscreenObserver);
         layoutManagerSupplier.addObserver(
                 mCallbackController.makeCancelable(this::setLayoutManager));
@@ -112,9 +115,7 @@ class TabbedNavigationBarColorController {
         updateNavigationBarColor();
     }
 
-    /**
-     * Destroy this {@link TabbedNavigationBarColorController} instance.
-     */
+    /** Destroy this {@link TabbedNavigationBarColorController} instance. */
     public void destroy() {
         if (mTabModelSelector != null) mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         if (mLayoutManager != null) {
@@ -138,24 +139,26 @@ class TabbedNavigationBarColorController {
 
         mLayoutManager = layoutManager;
         mLayoutStateObserver =
-                new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
-                    @Override
-                    public void onStartedShowing(int layoutType) {
-                        mOverviewModeHiding = false;
-                        updateNavigationBarColor();
-                    }
+                new FilterLayoutStateObserver(
+                        LayoutType.TAB_SWITCHER,
+                        new LayoutStateObserver() {
+                            @Override
+                            public void onStartedShowing(int layoutType) {
+                                mOverviewModeHiding = false;
+                                updateNavigationBarColor();
+                            }
 
-                    @Override
-                    public void onStartedHiding(int layoutType) {
-                        mOverviewModeHiding = true;
-                        updateNavigationBarColor();
-                    }
+                            @Override
+                            public void onStartedHiding(int layoutType) {
+                                mOverviewModeHiding = true;
+                                updateNavigationBarColor();
+                            }
 
-                    @Override
-                    public void onFinishedHiding(int layoutType) {
-                        mOverviewModeHiding = false;
-                    }
-                });
+                            @Override
+                            public void onFinishedHiding(int layoutType) {
+                                mOverviewModeHiding = false;
+                            }
+                        });
         mLayoutManager.addObserver(mLayoutStateObserver);
         updateNavigationBarColor();
     }
@@ -198,8 +201,9 @@ class TabbedNavigationBarColorController {
         mWindow.setNavigationBarColor(
                 applyCurrentScrimToColor(getNavigationBarColor(mForceDarkNavigationBarColor)));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mWindow.setNavigationBarDividerColor(applyCurrentScrimToColor(
-                    getNavigationBarDividerColor(mForceDarkNavigationBarColor)));
+            mWindow.setNavigationBarDividerColor(
+                    applyCurrentScrimToColor(
+                            getNavigationBarDividerColor(mForceDarkNavigationBarColor)));
         }
 
         // Adjust the color of navigation bar icons based on color state of the navigation bar.

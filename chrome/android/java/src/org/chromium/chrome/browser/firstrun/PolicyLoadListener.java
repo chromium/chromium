@@ -56,7 +56,8 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
      * @param appRestrictionInfo Class that provides whether app restriction is found on device.
      * @param policyServiceSupplier Supplier of PolicyService that this class listened to.
      */
-    public PolicyLoadListener(FirstRunAppRestrictionInfo appRestrictionInfo,
+    public PolicyLoadListener(
+            FirstRunAppRestrictionInfo appRestrictionInfo,
             OneshotSupplier<PolicyService> policyServiceSupplier) {
         mCallbackController = new CallbackController();
         mMightHavePoliciesSupplier = new OneshotSupplierImpl<>();
@@ -69,9 +70,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
                 mCallbackController.makeCancelable(this::onPolicyServiceAvailable));
     }
 
-    /**
-     * Cancel all unfinished callback and remove observer for policy service if any.
-     */
+    /** Cancel all unfinished callback and remove observer for policy service if any. */
     public void destroy() {
         mCallbackController.destroy();
         if (mPolicyServiceObserver != null) {
@@ -90,19 +89,21 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
         return mMightHavePoliciesSupplier.get();
     }
 
-    /**
-     * Check status for internal signals. If loading completes, mark loading is finished.
-     */
+    /** Check status for internal signals. If loading completes, mark loading is finished. */
     private void setSupplierIfDecidable() {
         // Early return if policy value has been set.
         if (mMightHavePoliciesSupplier.get() != null) return;
 
         boolean confirmedNoAppRestriction = mHasRestriction != null && !mHasRestriction;
-        boolean policyServiceInitialized = (mPolicyServiceSupplier.get() != null
-                && mPolicyServiceSupplier.get().isInitializationComplete());
-        Log.i(TAG,
-                "#setSupplierIfDecidable() confirmedNoAppRestriction:" + confirmedNoAppRestriction
-                        + " policyServiceInitialized:" + policyServiceInitialized);
+        boolean policyServiceInitialized =
+                (mPolicyServiceSupplier.get() != null
+                        && mPolicyServiceSupplier.get().isInitializationComplete());
+        Log.i(
+                TAG,
+                "#setSupplierIfDecidable() confirmedNoAppRestriction:"
+                        + confirmedNoAppRestriction
+                        + " policyServiceInitialized:"
+                        + policyServiceInitialized);
         if (confirmedNoAppRestriction) {
             // No app restriction is found.
             mMightHavePoliciesSupplier.set(false);
@@ -128,17 +129,19 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
         if (policyService.isInitializationComplete()) {
             setSupplierIfDecidable();
         } else {
-            mPolicyServiceObserver = new Observer() {
-                @Override
-                public void onPolicyServiceInitialized() {
-                    Log.i(TAG,
-                            "#onPolicyServiceInitialized() "
-                                    + policyService.isInitializationComplete());
-                    policyService.removeObserver(mPolicyServiceObserver);
-                    mPolicyServiceObserver = null;
-                    setSupplierIfDecidable();
-                }
-            };
+            mPolicyServiceObserver =
+                    new Observer() {
+                        @Override
+                        public void onPolicyServiceInitialized() {
+                            Log.i(
+                                    TAG,
+                                    "#onPolicyServiceInitialized() "
+                                            + policyService.isInitializationComplete());
+                            policyService.removeObserver(mPolicyServiceObserver);
+                            mPolicyServiceObserver = null;
+                            setSupplierIfDecidable();
+                        }
+                    };
             policyService.addObserver(mPolicyServiceObserver);
         }
     }

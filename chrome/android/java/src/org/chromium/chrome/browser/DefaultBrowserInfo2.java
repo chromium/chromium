@@ -51,8 +51,13 @@ public final class DefaultBrowserInfo2 {
         public final int systemCount;
 
         /** Creates an instance of the {@link DefaultInfo} class. */
-        public DefaultInfo(boolean isChromeSystem, boolean isChromeDefault, boolean isDefaultSystem,
-                boolean hasDefault, int browserCount, int systemCount) {
+        public DefaultInfo(
+                boolean isChromeSystem,
+                boolean isChromeDefault,
+                boolean isDefaultSystem,
+                boolean hasDefault,
+                int browserCount,
+                int systemCount) {
             this.isChromeSystem = isChromeSystem;
             this.isChromeDefault = isChromeDefault;
             this.isDefaultSystem = isDefaultSystem;
@@ -171,8 +176,13 @@ public final class DefaultBrowserInfo2 {
 
             browserCount = uniquePackages.size();
 
-            return new DefaultInfo(isChromeSystem, isChromeDefault, isDefaultSystem, hasDefault,
-                    browserCount, systemCount);
+            return new DefaultInfo(
+                    isChromeSystem,
+                    isChromeDefault,
+                    isDefaultSystem,
+                    hasDefault,
+                    browserCount,
+                    systemCount);
         }
 
         @Override

@@ -53,8 +53,9 @@ class DisableablePromoTapCounter {
      */
     private DisableablePromoTapCounter(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
-        setRawCounter(prefsManager.readInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_TRIGGERED_PROMO_COUNT));
+        setRawCounter(
+                prefsManager.readInt(
+                        ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_TRIGGERED_PROMO_COUNT));
     }
 
     /**
@@ -64,9 +65,7 @@ class DisableablePromoTapCounter {
         return mCounter >= 0;
     }
 
-    /**
-     * Disables the counter.
-     */
+    /** Disables the counter. */
     void disable() {
         if (isEnabled()) setRawCounter(getToggledCounter(mCounter));
     }
@@ -80,17 +79,13 @@ class DisableablePromoTapCounter {
         return getToggledCounter(mCounter);
     }
 
-    /**
-     * Increments the counter.
-     */
+    /** Increments the counter. */
     void increment() {
         assert isEnabled();
         setRawCounter(getCount() + 1);
     }
 
-    /**
-     * Resets the counter to zero and enabled.
-     */
+    /** Resets the counter to zero and enabled. */
     @VisibleForTesting
     void reset() {
         setRawCounter(0);
@@ -105,9 +100,7 @@ class DisableablePromoTapCounter {
         writeRawCounter();
     }
 
-    /**
-     * Writes the current counter's raw value to persistent storage.
-     */
+    /** Writes the current counter's raw value to persistent storage. */
     private void writeRawCounter() {
         mPrefsManager.writeInt(
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_TRIGGERED_PROMO_COUNT, mCounter);

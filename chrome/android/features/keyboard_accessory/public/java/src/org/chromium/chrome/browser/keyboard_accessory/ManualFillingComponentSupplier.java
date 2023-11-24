@@ -29,9 +29,7 @@ public class ManualFillingComponentSupplier
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
-    /**
-     * Constructs a ManualFillingComponentSupplier and attaches it to the {@link WindowAndroid}
-     */
+    /** Constructs a ManualFillingComponentSupplier and attaches it to the {@link WindowAndroid} */
     public ManualFillingComponentSupplier() {
         super(KEY);
     }

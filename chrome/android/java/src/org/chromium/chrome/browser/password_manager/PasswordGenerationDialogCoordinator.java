@@ -33,19 +33,24 @@ public class PasswordGenerationDialogCoordinator {
 
         Activity activity = windowAndroid.getActivity().get();
         assert activity != null;
-        mCustomView = (PasswordGenerationDialogCustomView) LayoutInflater.from(activity).inflate(
-                R.layout.password_generation_dialog, null);
+        mCustomView =
+                (PasswordGenerationDialogCustomView)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.password_generation_dialog, null);
     }
 
-    public void showDialog(String generatedPassword, String saveExplanationText,
+    public void showDialog(
+            String generatedPassword,
+            String saveExplanationText,
             Callback<Boolean> onPasswordAcceptedOrRejected) {
         PasswordGenerationDialogMediator.initializeState(
                 mModel, generatedPassword, saveExplanationText);
         PasswordGenerationDialogViewBinder.bind(mModel, mCustomView);
 
-        mDialogModel = PasswordGenerationDialogMediator
-                               .createDialogModelBuilder(onPasswordAcceptedOrRejected, mCustomView)
-                               .build();
+        mDialogModel =
+                PasswordGenerationDialogMediator.createDialogModelBuilder(
+                                onPasswordAcceptedOrRejected, mCustomView)
+                        .build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 

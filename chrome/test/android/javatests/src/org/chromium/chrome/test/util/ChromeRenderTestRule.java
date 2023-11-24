@@ -53,8 +53,11 @@ import org.chromium.ui.test.util.RenderTestRule;
  * </pre>
  */
 public class ChromeRenderTestRule extends RenderTestRule {
-    protected ChromeRenderTestRule(int revision, @RenderTestRule.Corpus String corpus,
-            String description, boolean failOnUnsupportedConfigs,
+    protected ChromeRenderTestRule(
+            int revision,
+            @RenderTestRule.Corpus String corpus,
+            String description,
+            boolean failOnUnsupportedConfigs,
             @RenderTestRule.Component String component) {
         super(revision, corpus, description, failOnUnsupportedConfigs, component);
     }
@@ -67,9 +70,7 @@ public class ChromeRenderTestRule extends RenderTestRule {
         TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view));
     }
 
-    /**
-     * Builder to create a ChromeRenderTestRule.
-     */
+    /** Builder to create a ChromeRenderTestRule. */
     public static class Builder extends RenderTestRule.BaseBuilder<Builder> {
         @Override
         public ChromeRenderTestRule build() {
@@ -77,9 +78,7 @@ public class ChromeRenderTestRule extends RenderTestRule {
                     mRevision, mCorpus, mDescription, mFailOnUnsupportedConfigs, mBugComponent);
         }
 
-        /**
-         * Creates a Builder with the default public corpus.
-         */
+        /** Creates a Builder with the default public corpus. */
         public static Builder withPublicCorpus() {
             return new Builder().setCorpus(Corpus.ANDROID_RENDER_TESTS_PUBLIC);
         }

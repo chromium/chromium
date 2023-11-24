@@ -99,5 +99,5 @@ public class InstallHostBrowserDialog {
                 });
         dialog.show();
     }
-    ;
+
 }

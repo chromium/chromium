@@ -14,9 +14,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
-/**
- * Exposes helper functions to be used in tests to instrument tab interaction.
- */
+/** Exposes helper functions to be used in tests to instrument tab interaction. */
 public class TabTestUtils {
     /**
      * @return The observers registered for the given tab.
@@ -69,17 +67,24 @@ public class TabTestUtils {
         if (!show && isShowing) {
             SadTab.get(tab).removeIfPresent();
         } else if (show && !isShowing) {
-            SadTab sadTab = new SadTab(tab) {
-                @Override
-                public View createView(Context context, Runnable suggestionAction,
-                        Runnable buttonAction, boolean showSendFeedbackView, boolean isIncognito) {
-                    return new View(context);
-                }
-            };
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                SadTab.initForTesting(tab, sadTab);
-                sadTab.show(((TabImpl) tab).getThemedApplicationContext(), () -> {}, () -> {});
-            });
+            SadTab sadTab =
+                    new SadTab(tab) {
+                        @Override
+                        public View createView(
+                                Context context,
+                                Runnable suggestionAction,
+                                Runnable buttonAction,
+                                boolean showSendFeedbackView,
+                                boolean isIncognito) {
+                            return new View(context);
+                        }
+                    };
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SadTab.initForTesting(tab, sadTab);
+                        sadTab.show(
+                                ((TabImpl) tab).getThemedApplicationContext(), () -> {}, () -> {});
+                    });
         }
     }
 
@@ -148,15 +153,18 @@ public class TabTestUtils {
      *                            //ui/base/mojo/window_open_disposition.mojom.
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
-    public static void openNewTab(Tab tab, GURL url, String extraHeaders,
-            ResourceRequestBody postData, int disposition, boolean isRendererInitiated) {
-        getTabWebContentsDelegate(tab).openNewTab(
-                url, extraHeaders, postData, disposition, isRendererInitiated);
+    public static void openNewTab(
+            Tab tab,
+            GURL url,
+            String extraHeaders,
+            ResourceRequestBody postData,
+            int disposition,
+            boolean isRendererInitiated) {
+        getTabWebContentsDelegate(tab)
+                .openNewTab(url, extraHeaders, postData, disposition, isRendererInitiated);
     }
 
-    /**
-     * Show {@link org.chromium.chrome.browser.infobar.FrameBustBlockInfoBar}.
-     */
+    /** Show {@link org.chromium.chrome.browser.infobar.FrameBustBlockInfoBar}. */
     public static void showFramebustBlockInfobarForTesting(Tab tab, String url) {
         getTabWebContentsDelegate(tab).showFramebustBlockInfobarForTesting(url);
     }

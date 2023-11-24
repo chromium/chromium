@@ -28,8 +28,12 @@ public final class UserInfoField {
      * @param callback Called when the user taps the suggestions.
      */
     @Deprecated
-    public UserInfoField(String displayText, String a11yDescription, String id,
-            boolean isObfuscated, Callback<UserInfoField> callback) {
+    public UserInfoField(
+            String displayText,
+            String a11yDescription,
+            String id,
+            boolean isObfuscated,
+            Callback<UserInfoField> callback) {
         this(displayText, displayText, a11yDescription, id, isObfuscated, callback);
     }
 
@@ -41,8 +45,13 @@ public final class UserInfoField {
      * @param isObfuscated If true, the displayed caption is transformed into stars.
      * @param callback Called when the user taps the suggestions.
      */
-    private UserInfoField(String displayText, String textToFill, String a11yDescription, String id,
-            boolean isObfuscated, Callback<UserInfoField> callback) {
+    private UserInfoField(
+            String displayText,
+            String textToFill,
+            String a11yDescription,
+            String id,
+            boolean isObfuscated,
+            Callback<UserInfoField> callback) {
         mDisplayText = displayText;
         mTextToFill = textToFill;
         mA11yDescription = a11yDescription;
@@ -51,33 +60,25 @@ public final class UserInfoField {
         mCallback = callback;
     }
 
-    /**
-     * Returns the text to be displayed on the UI.
-     */
+    /** Returns the text to be displayed on the UI. */
     @CalledByNative
     public String getDisplayText() {
         return mDisplayText;
     }
 
-    /**
-     * Returns the text to be filled in the form field.
-     */
+    /** Returns the text to be filled in the form field. */
     @CalledByNative
     public String getTextToFill() {
         return mTextToFill;
     }
 
-    /**
-     * Returns a translated description that can be used for accessibility.
-     */
+    /** Returns a translated description that can be used for accessibility. */
     @CalledByNative
     public String getA11yDescription() {
         return mA11yDescription;
     }
 
-    /**
-     * Returns an ID representing this object for filling purposes. May be empty.
-     */
+    /** Returns an ID representing this object for filling purposes. May be empty. */
     @CalledByNative
     public String getId() {
         return mId;
@@ -101,16 +102,12 @@ public final class UserInfoField {
         return mIsObfuscated;
     }
 
-    /**
-     * The delegate is called when the Item is selected by a user.
-     */
+    /** The delegate is called when the Item is selected by a user. */
     public void triggerSelection() {
         if (mCallback != null) mCallback.onResult(this);
     }
 
-    /**
-     * Builder for the {@link UserInfoField}.
-     */
+    /** Builder for the {@link UserInfoField}. */
     public static final class Builder {
         private String mDisplayText;
         private String mTextToFill;

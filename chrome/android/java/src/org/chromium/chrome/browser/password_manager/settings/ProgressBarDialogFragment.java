@@ -39,12 +39,14 @@ public class ProgressBarDialogFragment extends DialogFragment {
         MaterialProgressBar bar =
                 (MaterialProgressBar) dialog.findViewById(R.id.passwords_progress_bar);
         bar.setIndeterminate(true);
-        return new AlertDialog
-                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
+        return new AlertDialog.Builder(
+                        getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
                 .setNegativeButton(R.string.cancel, mHandler)
-                .setTitle(getActivity().getResources().getString(
-                        R.string.settings_passwords_preparing_export))
+                .setTitle(
+                        getActivity()
+                                .getResources()
+                                .getString(R.string.settings_passwords_preparing_export))
                 .create();
     }
 

@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.url.GURL;
 
-/**
- * Test rule for homepage related tests that remove related shared prefs after test cases.
- */
+/** Test rule for homepage related tests that remove related shared prefs after test cases. */
 public class HomepageTestRule implements TestRule {
     private final SharedPreferencesManager mManager;
 

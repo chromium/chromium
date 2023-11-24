@@ -41,12 +41,14 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Interface to get access to components concerning tab management.
- */
+/** Interface to get access to components concerning tab management. */
 public interface TabManagementDelegate {
-    @IntDef({TabSwitcherType.GRID, TabSwitcherType.CAROUSEL, TabSwitcherType.SINGLE,
-            TabSwitcherType.NONE})
+    @IntDef({
+        TabSwitcherType.GRID,
+        TabSwitcherType.CAROUSEL,
+        TabSwitcherType.SINGLE,
+        TabSwitcherType.NONE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabSwitcherType {
         int GRID = 0;
@@ -69,10 +71,15 @@ public interface TabManagementDelegate {
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      * @return The {@link TabSwitcherLayout}.
      */
-    Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutStateProvider layoutStateProvider, LayoutRenderHost renderHost,
-            BrowserControlsStateProvider browserControlsStateProvider, TabSwitcher tabSwitcher,
-            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator);
+    Layout createTabSwitcherLayout(
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutStateProvider layoutStateProvider,
+            LayoutRenderHost renderHost,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            TabSwitcher tabSwitcher,
+            ViewGroup tabSwitcherScrimAnchor,
+            ScrimCoordinator scrimCoordinator);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.
@@ -97,7 +104,8 @@ public interface TabManagementDelegate {
      *                                    the layout state changes.
      * @return The {@link TabSwitcher}.
      */
-    TabSwitcher createGridTabSwitcher(@NonNull Activity activity,
+    TabSwitcher createGridTabSwitcher(
+            @NonNull Activity activity,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
@@ -106,7 +114,8 @@ public interface TabManagementDelegate {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull ViewGroup containerView,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView,
+            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ViewGroup rootView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
@@ -132,7 +141,8 @@ public interface TabManagementDelegate {
      * @param modalDialogManager Manages modal dialogs.
      * @return The {@link TabSwitcher}.
      */
-    TabSwitcher createCarouselTabSwitcher(@NonNull Activity activity,
+    TabSwitcher createCarouselTabSwitcher(
+            @NonNull Activity activity,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
@@ -141,7 +151,8 @@ public interface TabManagementDelegate {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull ViewGroup containerView,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView,
+            @NonNull ScrimCoordinator scrimCoordinator,
+            @NonNull ViewGroup rootView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager);
@@ -167,7 +178,9 @@ public interface TabManagementDelegate {
      * @param snackbarManager Manages the display of snackbars.
      * @return The {@link TabGroupUi}.
      */
-    TabGroupUi createTabGroupUi(@NonNull Activity activity, @NonNull ViewGroup parentView,
+    TabGroupUi createTabGroupUi(
+            @NonNull Activity activity,
+            @NonNull ViewGroup parentView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull IncognitoStateProvider incognitoStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
@@ -176,7 +189,8 @@ public interface TabManagementDelegate {
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager, @NonNull ViewGroup rootView,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull ViewGroup rootView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
@@ -195,7 +209,8 @@ public interface TabManagementDelegate {
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @return the {@link TabSuggestions} for the activity
      */
-    TabSuggestions createTabSuggestions(@NonNull Context context,
+    TabSuggestions createTabSuggestions(
+            @NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher);
 }

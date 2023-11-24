@@ -17,9 +17,7 @@ import org.chromium.base.ContextUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Controller for Remote Web Debugging (Developer Tools).
- */
+/** Controller for Remote Web Debugging (Developer Tools). */
 public class DevToolsServer {
     private static final String DEBUG_PERMISSION_SIFFIX = ".permission.DEBUG";
 
@@ -47,14 +45,15 @@ public class DevToolsServer {
     }
 
     public boolean isRemoteDebuggingEnabled() {
-        return DevToolsServerJni.get().isRemoteDebuggingEnabled(
-                DevToolsServer.this, mNativeDevToolsServer);
+        return DevToolsServerJni.get()
+                .isRemoteDebuggingEnabled(DevToolsServer.this, mNativeDevToolsServer);
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled, @Security int security) {
         boolean allowDebugPermission = security == Security.ALLOW_DEBUG_PERMISSION;
-        DevToolsServerJni.get().setRemoteDebuggingEnabled(
-                DevToolsServer.this, mNativeDevToolsServer, enabled, allowDebugPermission);
+        DevToolsServerJni.get()
+                .setRemoteDebuggingEnabled(
+                        DevToolsServer.this, mNativeDevToolsServer, enabled, allowDebugPermission);
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled) {
@@ -66,16 +65,22 @@ public class DevToolsServer {
         String debugPermissionName =
                 ContextUtils.getApplicationContext().getPackageName() + DEBUG_PERMISSION_SIFFIX;
         return ApiCompatibilityUtils.checkPermission(
-                       ContextUtils.getApplicationContext(), debugPermissionName, pid, uid)
+                        ContextUtils.getApplicationContext(), debugPermissionName, pid, uid)
                 == PackageManager.PERMISSION_GRANTED;
     }
 
     @NativeMethods
     interface Natives {
         long initRemoteDebugging(DevToolsServer caller, String socketNamePrefix);
+
         void destroyRemoteDebugging(DevToolsServer caller, long devToolsServer);
+
         boolean isRemoteDebuggingEnabled(DevToolsServer caller, long devToolsServer);
-        void setRemoteDebuggingEnabled(DevToolsServer caller, long devToolsServer, boolean enabled,
+
+        void setRemoteDebuggingEnabled(
+                DevToolsServer caller,
+                long devToolsServer,
+                boolean enabled,
                 boolean allowDebugPermission);
     }
 }

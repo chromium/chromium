@@ -27,8 +27,9 @@ class AccessorySheetViewBinder {
     static void bind(PropertyModel model, View sheetView, PropertyKey propertyKey) {
         AccessorySheetView view = (AccessorySheetView) sheetView;
         if (propertyKey == TABS) {
-            view.setAdapter(AccessorySheetCoordinator.createTabViewAdapter(
-                    model.get(TABS), view.getViewPager()));
+            view.setAdapter(
+                    AccessorySheetCoordinator.createTabViewAdapter(
+                            model.get(TABS), view.getViewPager()));
         } else if (propertyKey == VISIBLE) {
             view.bringToFront(); // Ensure toolbars and other containers are overlaid.
             view.setVisibility(model.get(VISIBLE) ? View.VISIBLE : View.GONE);

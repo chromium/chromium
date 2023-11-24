@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
-/**
- * The line item on the bill.
- */
+/** The line item on the bill. */
 public class LineItem {
     private final String mLabel;
     private final String mCurrency;

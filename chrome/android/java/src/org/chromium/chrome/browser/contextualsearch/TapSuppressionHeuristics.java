@@ -19,12 +19,16 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
      * @param y The y position of the Tap.
      * @param wasSelectionEmptyBeforeTap Whether the selection was empty before this tap.
      */
-    TapSuppressionHeuristics(ContextualSearchSelectionController selectionController,
-            @Nullable ContextualSearchTapState previousTapState, int x, int y,
+    TapSuppressionHeuristics(
+            ContextualSearchSelectionController selectionController,
+            @Nullable ContextualSearchTapState previousTapState,
+            int x,
+            int y,
             boolean wasSelectionEmptyBeforeTap) {
         super();
-        mHeuristics.add(new TapFarFromPreviousSuppression(
-                selectionController, previousTapState, x, y, wasSelectionEmptyBeforeTap));
+        mHeuristics.add(
+                new TapFarFromPreviousSuppression(
+                        selectionController, previousTapState, x, y, wasSelectionEmptyBeforeTap));
     }
 
     @Override
@@ -34,9 +38,7 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
         }
     }
 
-    /**
-     * Logs the condition state for all the Tap suppression heuristics.
-     */
+    /** Logs the condition state for all the Tap suppression heuristics. */
     void logConditionState() {
         // TODO(donnd): consider doing this logging automatically in the constructor rather than
         // leaving this an optional separate method.

@@ -24,8 +24,14 @@ class CustomTabCaptureStateToken {
     private final @DrawableRes int mSecurityIconRes;
     private @Nullable final Object mAnimationToken;
     private final int mViewWidth;
-    public CustomTabCaptureStateToken(String url, String title, @ColorInt int backgroundColor,
-            @DrawableRes int securityIconRes, boolean isInAnimation, int viewWidth) {
+
+    public CustomTabCaptureStateToken(
+            String url,
+            String title,
+            @ColorInt int backgroundColor,
+            @DrawableRes int securityIconRes,
+            boolean isInAnimation,
+            int viewWidth) {
         mUrl = url;
         mTitle = title;
         mBackgroundColor = backgroundColor;

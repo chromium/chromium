@@ -17,9 +17,7 @@ import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 
-/**
- * Contains functionality needed for Chrome to host WebAPKs.
- */
+/** Contains functionality needed for Chrome to host WebAPKs. */
 public class ChromeWebApkHost {
     /** Time in milliseconds to wait for {@link WebApkServiceClient} to finish. */
     private static final long WAIT_FOR_WORK_DISCONNECT_SERVICE_DELAY_MS = 1000;
@@ -27,8 +25,8 @@ public class ChromeWebApkHost {
     private static ApplicationStatus.ApplicationStateListener sListener;
 
     public static void init() {
-        WebApkValidator.init(ChromeWebApkHostSignature.EXPECTED_SIGNATURE,
-                ChromeWebApkHostSignature.PUBLIC_KEY);
+        WebApkValidator.init(
+                ChromeWebApkHostSignature.EXPECTED_SIGNATURE, ChromeWebApkHostSignature.PUBLIC_KEY);
         if (CommandLine.getInstance().hasSwitch(SKIP_WEBAPK_VERIFICATION)) {
             // Tell the WebApkValidator to work for all WebAPKs.
             WebApkValidator.setDisableValidation(true);
@@ -39,25 +37,27 @@ public class ChromeWebApkHost {
      * Checks whether Chrome is the runtime host of the WebAPK asynchronously. Accesses the
      * ApplicationStateListener needs to be called on UI thread.
      */
-    public static void checkChromeBacksWebApkAsync(String webApkPackageName,
+    public static void checkChromeBacksWebApkAsync(
+            String webApkPackageName,
             WebApkIdentityServiceClient.CheckBrowserBacksWebApkCallback callback) {
         ThreadUtils.assertOnUiThread();
 
         if (sListener == null) {
             // Registers an application listener to disconnect all connections to WebAPKs
             // when Chrome is stopped.
-            sListener = new ApplicationStatus.ApplicationStateListener() {
-                @Override
-                public void onApplicationStateChange(int newState) {
-                    if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
-                            || newState == ApplicationState.HAS_DESTROYED_ACTIVITIES) {
-                        disconnectFromAllServices(false /* waitForPendingWork */);
+            sListener =
+                    new ApplicationStatus.ApplicationStateListener() {
+                        @Override
+                        public void onApplicationStateChange(int newState) {
+                            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
+                                    || newState == ApplicationState.HAS_DESTROYED_ACTIVITIES) {
+                                disconnectFromAllServices(/* waitForPendingWork= */ false);
 
-                        ApplicationStatus.unregisterApplicationStateListener(sListener);
-                        sListener = null;
-                    }
-                }
-            };
+                                ApplicationStatus.unregisterApplicationStateListener(sListener);
+                                sListener = null;
+                            }
+                        }
+                    };
             ApplicationStatus.registerApplicationStateListener(sListener);
         }
 
@@ -69,7 +69,8 @@ public class ChromeWebApkHost {
     /** Disconnect from all of the services of all WebAPKs. */
     public static void disconnectFromAllServices(boolean waitForPendingWork) {
         if (waitForPendingWork && WebApkServiceClient.hasPendingWork()) {
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
                     ChromeWebApkHost::disconnectFromAllServicesImpl,
                     WAIT_FOR_WORK_DISCONNECT_SERVICE_DELAY_MS);
         } else {

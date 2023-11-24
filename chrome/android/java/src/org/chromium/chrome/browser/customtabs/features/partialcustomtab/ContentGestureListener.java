@@ -107,8 +107,10 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
         }
 
         // Stop if the scroll is not vertical, except when the tab was already being dragged.
-        float slope = Math.abs(distanceX) > 0f ? Math.abs(distanceY) / Math.abs(distanceX)
-                                               : MIN_VERTICAL_SCROLL_SLOPE;
+        float slope =
+                Math.abs(distanceX) > 0f
+                        ? Math.abs(distanceY) / Math.abs(distanceX)
+                        : MIN_VERTICAL_SCROLL_SLOPE;
         if (!isMovingTab && slope < MIN_VERTICAL_SCROLL_SLOPE) {
             mVelocityTracker.clear();
             return false;

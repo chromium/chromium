@@ -46,9 +46,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-/**
- * Controller to manage desktop site settings in-product-help messages to users.
- */
+/** Controller to manage desktop site settings in-product-help messages to users. */
 public class DesktopSiteSettingsIPHController {
     private final UserEducationHelper mUserEducationHelper;
     private final WindowAndroid mWindowAndroid;
@@ -124,8 +122,9 @@ public class DesktopSiteSettingsIPHController {
         String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE;
         if (perSiteIPHPreChecksFailed(tab, tracker, featureName)) return;
 
-        var siteExceptions = mWebsitePreferenceBridge.getContentSettingsExceptions(
-                profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
+        var siteExceptions =
+                mWebsitePreferenceBridge.getContentSettingsExceptions(
+                        profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
         // Do not trigger the IPH if the user has already added any site-level exceptions. By
         // default, `siteExceptions` will hold one entry representing the wildcard for all sites,
         // for the default content setting.
@@ -135,9 +134,10 @@ public class DesktopSiteSettingsIPHController {
 
         boolean isTabUsingDesktopUserAgent =
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
-        int textId = isTabUsingDesktopUserAgent
-                ? R.string.rds_site_settings_generic_iph_text_mobile
-                : R.string.rds_site_settings_generic_iph_text_desktop;
+        int textId =
+                isTabUsingDesktopUserAgent
+                        ? R.string.rds_site_settings_generic_iph_text_mobile
+                        : R.string.rds_site_settings_generic_iph_text_desktop;
 
         requestShowPerSiteIPH(featureName, textId, new Object[] {tab.getUrl().getHost()});
     }

@@ -34,14 +34,14 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
     private final CustomTabActivityNavigationController mNavigationController;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-    @Nullable
-    private IncognitoCustomTabHost mIncognitoTabHost;
+    @Nullable private IncognitoCustomTabHost mIncognitoTabHost;
 
     private final IncognitoTabHostRegistry mIncognitoTabHostRegistry;
     private final IncognitoCctProfileManager mIncognitoCctProfileManager;
 
     @Inject
-    public CustomTabIncognitoManager(Activity activity,
+    public CustomTabIncognitoManager(
+            Activity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabActivityNavigationController navigationController,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -86,8 +86,8 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
     }
 
     private void maybeCreateIncognitoTabSnapshotController() {
-        if (!CommandLine.getInstance().hasSwitch(
-                    ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
+        if (!CommandLine.getInstance()
+                .hasSwitch(ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             new IncognitoCustomTabSnapshotController(
                     mActivity, () -> mIntentDataProvider.isIncognito());
         }

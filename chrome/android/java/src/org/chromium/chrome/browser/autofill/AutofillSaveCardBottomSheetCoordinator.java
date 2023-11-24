@@ -39,19 +39,29 @@ public class AutofillSaveCardBottomSheetCoordinator {
      * @param uiInfo The assets (icons and text) displayed in the bottom sheet.
      * @param bridge The bridge to signal UI flow events (OnUiShown, OnUiAccepted, etc.) to.
      */
-    public AutofillSaveCardBottomSheetCoordinator(Context context,
-            BottomSheetController bottomSheetController, LayoutStateProvider layoutStateProvider,
-            TabModel tabModel, AutofillSaveCardUiInfo uiInfo,
+    public AutofillSaveCardBottomSheetCoordinator(
+            Context context,
+            BottomSheetController bottomSheetController,
+            LayoutStateProvider layoutStateProvider,
+            TabModel tabModel,
+            AutofillSaveCardUiInfo uiInfo,
             AutofillSaveCardBottomSheetBridge bridge) {
         mContext = context;
         mBridge = bridge;
-        mMediator = new AutofillSaveCardBottomSheetMediator(
-                new AutofillSaveCardBottomSheetContent(context), uiInfo, bottomSheetController,
-                layoutStateProvider, tabModel, this::launchCctOnLegalMessageClick, bridge);
+        mMediator =
+                new AutofillSaveCardBottomSheetMediator(
+                        new AutofillSaveCardBottomSheetContent(context),
+                        uiInfo,
+                        bottomSheetController,
+                        layoutStateProvider,
+                        tabModel,
+                        this::launchCctOnLegalMessageClick,
+                        bridge);
     }
 
     @VisibleForTesting
-    /*package*/ AutofillSaveCardBottomSheetCoordinator(Context context,
+    /*package*/ AutofillSaveCardBottomSheetCoordinator(
+            Context context,
             AutofillSaveCardBottomSheetBridge bridge,
             AutofillSaveCardBottomSheetMediator mediator) {
         mContext = context;
@@ -70,8 +80,10 @@ public class AutofillSaveCardBottomSheetCoordinator {
 
     @VisibleForTesting
     /* package */ void launchCctOnLegalMessageClick(String url) {
-        new CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(
-                mContext, Uri.parse(url));
+        new CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+                .launchUrl(mContext, Uri.parse(url));
     }
 
     /** Destroys this component hiding the bottom sheet if needed. */

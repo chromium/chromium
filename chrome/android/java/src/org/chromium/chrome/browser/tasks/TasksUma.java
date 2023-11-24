@@ -13,9 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * This class collects UMA statistics for tab group creation or complex tab navigation patterns.
- */
+/** This class collects UMA statistics for tab group creation or complex tab navigation patterns. */
 public class TasksUma {
     private static final String TAG = "TasksUma";
 

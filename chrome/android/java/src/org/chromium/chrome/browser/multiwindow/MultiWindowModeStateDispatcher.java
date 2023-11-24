@@ -16,9 +16,7 @@ import android.os.Bundle;
  * with the backing activity.
  */
 public interface MultiWindowModeStateDispatcher {
-    /**
-     * An observer to be notified when multi-window mode changes.
-     */
+    /** An observer to be notified when multi-window mode changes. */
     interface MultiWindowModeObserver {
         /**
          * @param isInMultiWindowMode Whether the activity backing this state dispatcher is

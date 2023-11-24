@@ -19,6 +19,7 @@ public interface ReadAloudPlaybackHooks {
     interface CreatePlaybackCallback {
         /** Called if createPlayback() succeeds. */
         void onSuccess(Playback playback);
+
         /** Called if createPlayback() fails. */
         void onFailure(Throwable t);
     }

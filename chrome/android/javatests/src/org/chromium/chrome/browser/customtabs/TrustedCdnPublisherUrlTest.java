@@ -200,8 +200,8 @@ public class TrustedCdnPublisherUrlTest {
     public void testRtl() throws Exception {
         String publisher =
                 "\u200e\u202b\u0645\u0648\u0642\u0639\u002e\u0648\u0632\u0627\u0631"
-                    + "\u0629\u002d\u0627\u0644\u0623\u062a\u0635\u0627\u0644\u0627\u062a\u002e\u0645"
-                    + "\u0635\u0631\u202c\u200e";
+                        + "\u0629\u002d\u0627\u0644\u0623\u062a\u0635\u0627\u0644\u0627\u062a\u002e\u0645"
+                        + "\u0635\u0631\u202c\u200e";
         runTrustedCdnPublisherUrlTest(
                 "http://xn--4gbrim.xn----rmckbbajlc6dj7bxne2c.xn--wgbh1c/",
                 "com.example.test",

@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * This class provides for native code to manage a Bad Flags {@link Snackbar}.
- */
+/** This class provides for native code to manage a Bad Flags {@link Snackbar}. */
 @JNINamespace("chrome")
 public class BadFlagsSnackbarManager {
     /**
