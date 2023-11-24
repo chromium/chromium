@@ -78,10 +78,9 @@ std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeOptionalStringKey(
     return {true, absl::nullopt};
   }
   if (value->is_none()) {
-    return {!(base::FeatureList::IsEnabled(device::kWebAuthnNoNullInJSON) &&
-              (base::FeatureList::IsEnabled(
-                   device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
-               user != JSONUser::kRemoteDesktop)),
+    return {!base::FeatureList::IsEnabled(
+                device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) &&
+                user == JSONUser::kRemoteDesktop,
             absl::nullopt};
   }
   std::string decoded;
@@ -293,10 +292,9 @@ OptionalAuthenticatorAttachmentFromValue(const base::Value* value,
     return device::AuthenticatorAttachment::kAny;
   }
   if (value->is_none()) {
-    if (base::FeatureList::IsEnabled(device::kWebAuthnNoNullInJSON) &&
-        (base::FeatureList::IsEnabled(
-             device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
-         user != JSONUser::kRemoteDesktop)) {
+    if (base::FeatureList::IsEnabled(
+            device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
+        user != JSONUser::kRemoteDesktop) {
       return absl::nullopt;
     }
     return device::AuthenticatorAttachment::kAny;

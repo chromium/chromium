@@ -55,10 +55,6 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForHybrid);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
 
-// Don't allow the old style JSON where values could be `null`.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNoNullInJSON);
-
 // Require up-to-date JSON formatting in remote-desktop contexts.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop);
