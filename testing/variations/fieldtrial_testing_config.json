@@ -20290,6 +20290,77 @@
             ]
         }
     ],
+    "V8WasmMoreAggressiveCodeCaching": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "3_CacheAfter5Sec",
+                    "params": {
+                        "WebAssemblyCodeCachingHardThreshold": "100000",
+                        "WebAssemblyCodeCachingThreshold": "1000",
+                        "WebAssemblyCodeCachingTimeoutMs": "5000"
+                    },
+                    "enable_features": [
+                        "WebAssemblyMoreAggressiveCodeCaching"
+                    ]
+                },
+                {
+                    "name": "1_ReducedThreshold",
+                    "params": {
+                        "WebAssemblyCodeCachingHardThreshold": "100000",
+                        "WebAssemblyCodeCachingThreshold": "100000",
+                        "WebAssemblyCodeCachingTimeoutMs": "0"
+                    },
+                    "enable_features": [
+                        "WebAssemblyMoreAggressiveCodeCaching"
+                    ]
+                },
+                {
+                    "name": "2_CacheAfter30Sec",
+                    "params": {
+                        "WebAssemblyCodeCachingHardThreshold": "1000000",
+                        "WebAssemblyCodeCachingThreshold": "1000",
+                        "WebAssemblyCodeCachingTimeoutMs": "30000"
+                    },
+                    "enable_features": [
+                        "WebAssemblyMoreAggressiveCodeCaching"
+                    ]
+                },
+                {
+                    "name": "4_CacheAfter2Sec",
+                    "params": {
+                        "WebAssemblyCodeCachingHardThreshold": "1000000",
+                        "WebAssemblyCodeCachingThreshold": "1",
+                        "WebAssemblyCodeCachingTimeoutMs": "2000"
+                    },
+                    "enable_features": [
+                        "WebAssemblyMoreAggressiveCodeCaching"
+                    ]
+                },
+                {
+                    "name": "5_CacheAfter1Sec",
+                    "params": {
+                        "WebAssemblyCodeCachingHardThreshold": "10000",
+                        "WebAssemblyCodeCachingThreshold": "1",
+                        "WebAssemblyCodeCachingTimeoutMs": "1000"
+                    },
+                    "enable_features": [
+                        "WebAssemblyMoreAggressiveCodeCaching"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8WasmTurboshaft": [
         {
             "platforms": [
