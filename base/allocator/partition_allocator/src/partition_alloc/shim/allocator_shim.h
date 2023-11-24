@@ -81,9 +81,6 @@ struct AllocatorDispatch {
   using GetSizeEstimateFn = size_t(const AllocatorDispatch* self,
                                    void* address,
                                    void* context);
-  using GoodSizeFn = size_t(const AllocatorDispatch* self,
-                            size_t size,
-                            void* context);
   using ClaimedAddressFn = bool(const AllocatorDispatch* self,
                                 void* address,
                                 void* context);
@@ -123,7 +120,6 @@ struct AllocatorDispatch {
   ReallocFn* const realloc_function;
   FreeFn* const free_function;
   GetSizeEstimateFn* const get_size_estimate_function;
-  GoodSizeFn* const good_size_function;
   // claimed_address, batch_malloc, batch_free, free_definite_size and
   // try_free_default are specific to the OSX and iOS allocators.
   ClaimedAddressFn* const claimed_address_function;

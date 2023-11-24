@@ -426,10 +426,6 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 }
 
 #if BUILDFLAG(IS_APPLE)
-size_t PartitionGoodSize(const AllocatorDispatch*, size_t size, void* context) {
-  return Allocator()->AllocationCapacityFromRequestedSize(size);
-}
-
 bool PartitionClaimedAddress(const AllocatorDispatch*,
                              void* address,
                              void* context) {
@@ -718,10 +714,8 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &allocator_shim::internal::
         PartitionGetSizeEstimate,  // get_size_estimate_function
 #if BUILDFLAG(IS_APPLE)
-    &allocator_shim::internal::PartitionGoodSize,        // good_size
     &allocator_shim::internal::PartitionClaimedAddress,  // claimed_address
 #else
-    nullptr,  // good_size
     nullptr,  // claimed_address
 #endif
     &allocator_shim::internal::PartitionBatchMalloc,  // batch_malloc_function

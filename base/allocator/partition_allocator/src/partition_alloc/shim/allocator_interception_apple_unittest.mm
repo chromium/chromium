@@ -55,12 +55,7 @@ TEST_F(AllocatorInterceptionTest, ShimNewMallocZones) {
       reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
 
   malloc_zone_t new_zone;
-  // Uninitialized: this is not a problem, because `ShimNewMalloc()` will just
-  // copy a member from this struct, not use it, which is why its pointer in
-  // `new_zone` must be valid, but its content can be meaningless.
-  malloc_introspection_t introspection;
   memset(&new_zone, 1, sizeof(malloc_zone_t));
-  new_zone.introspect = &introspection;
   malloc_zone_register(&new_zone);
   EXPECT_NE(new_zone.malloc, default_malloc_zone->malloc);
   ShimNewMallocZones();

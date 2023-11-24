@@ -194,12 +194,6 @@ struct DispatcherImpl {
     return self->next->get_size_estimate_function(self->next, address, context);
   }
 
-  static size_t GoodSizeFn(const AllocatorDispatch* self,
-                           size_t size,
-                           void* context) {
-    return self->next->good_size_function(self->next, size, context);
-  }
-
   static bool ClaimedAddressFn(const AllocatorDispatch* self,
                                void* address,
                                void* context) {
@@ -317,7 +311,6 @@ AllocatorDispatch DispatcherImpl<ObserverTypes...>::allocator_dispatch_ = {
     &ReallocFn,
     &FreeFn,
     &GetSizeEstimateFn,
-    &GoodSizeFn,
     &ClaimedAddressFn,
     &BatchMallocFn,
     &BatchFreeFn,
