@@ -130,8 +130,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.UI_THEME_SETTING,
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS,
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE
-        );
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE);
     }
 
     static List<KeyPrefix> getPrefixesInUse() {
@@ -150,7 +149,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_STARRED_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX
-        );
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX);
     }
 }

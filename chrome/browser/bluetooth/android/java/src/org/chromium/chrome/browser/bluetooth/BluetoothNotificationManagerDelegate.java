@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.bluetooth;
 
 import android.content.Intent;
 
-/**
- * Delegate for {@link BluetoothNotificationManager}.
- */
+/** Delegate for {@link BluetoothNotificationManager}. */
 public interface BluetoothNotificationManagerDelegate {
     /**
      * Creates an Intent to bring an Activity for a particular Tab back to the
@@ -18,9 +16,7 @@ public interface BluetoothNotificationManagerDelegate {
      */
     Intent createTrustedBringTabToFrontIntent(int tabId);
 
-    /**
-     * Stops the service.
-     */
+    /** Stops the service. */
     void stopSelf();
 
     /**

@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * ScreenshotShareSheetDialog is the main view for sharing non edited screenshots.
- */
+/** ScreenshotShareSheetDialog is the main view for sharing non edited screenshots. */
 public class ScreenshotShareSheetDialog extends DialogFragment {
     private Bitmap mScreenshot;
     private WindowAndroid mWindowAndroid;
@@ -29,9 +27,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     private ChromeOptionShareCallback mChromeOptionShareCallback;
     private @Nullable Callback<Runnable> mInstallCallback;
 
-    /**
-     * The ScreenshotShareSheetDialog constructor.
-     */
+    /** The ScreenshotShareSheetDialog constructor. */
     public ScreenshotShareSheetDialog() {}
 
     /**
@@ -42,7 +38,10 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
      * @param chromeOptionShareCallback the callback to trigger on share.
      * @param installCallback the callback to trigger on install.
      */
-    public void init(Bitmap screenshot, WindowAndroid windowAndroid, String shareUrl,
+    public void init(
+            Bitmap screenshot,
+            WindowAndroid windowAndroid,
+            String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             @Nullable Callback<Runnable> installCallback) {
         mScreenshot = screenshot;
@@ -57,7 +56,8 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         // Do not recreate this dialog when activity restarts and the previous activity is gone.
-        if (mWindowAndroid == null || mWindowAndroid.getActivity().get() == null
+        if (mWindowAndroid == null
+                || mWindowAndroid.getActivity().get() == null
                 || mWindowAndroid.getActivity().get().isDestroyed()
                 || mWindowAndroid.getActivity().get().isFinishing()) {
             dismiss();
@@ -69,13 +69,21 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new FullscreenAlertDialog.Builder(getActivity());
         ScreenshotShareSheetView screenshotShareSheetView =
-                (ScreenshotShareSheetView) getActivity().getLayoutInflater().inflate(
-                        R.layout.screenshot_share_sheet, null);
+                (ScreenshotShareSheetView)
+                        getActivity()
+                                .getLayoutInflater()
+                                .inflate(R.layout.screenshot_share_sheet, null);
         builder.setView(screenshotShareSheetView);
 
-        new ScreenshotShareSheetCoordinator(getActivity(), mScreenshot,
-                this::dismissAllowingStateLoss, screenshotShareSheetView, mWindowAndroid, mShareUrl,
-                mChromeOptionShareCallback, mInstallCallback);
+        new ScreenshotShareSheetCoordinator(
+                getActivity(),
+                mScreenshot,
+                this::dismissAllowingStateLoss,
+                screenshotShareSheetView,
+                mWindowAndroid,
+                mShareUrl,
+                mChromeOptionShareCallback,
+                mInstallCallback);
         return builder.create();
     }
 }

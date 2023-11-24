@@ -53,7 +53,8 @@ class OptionalButtonMediator {
     }
 
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
-        mModel.set(OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,
+        mModel.set(
+                OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,
                 onBeforeHideTransitionCallback);
     }
 
@@ -66,7 +67,8 @@ class OptionalButtonMediator {
     }
 
     public void setIsAnimationAllowedPredicate(BooleanSupplier isAnimationAllowedPredicate) {
-        mModel.set(OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE,
+        mModel.set(
+                OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE,
                 isAnimationAllowedPredicate);
     }
 }

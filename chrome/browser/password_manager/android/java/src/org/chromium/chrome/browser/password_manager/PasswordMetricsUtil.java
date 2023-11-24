@@ -11,20 +11,21 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * This class should contain helpers for recording Password Manager metrics.
- */
+/** This class should contain helpers for recording Password Manager metrics. */
 public class PasswordMetricsUtil {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({PasswordMigrationWarningUserActions.GOT_IT,
-            PasswordMigrationWarningUserActions.MORE_OPTIONS,
-            PasswordMigrationWarningUserActions.SYNC, PasswordMigrationWarningUserActions.EXPORT,
-            PasswordMigrationWarningUserActions.CANCEL,
-            PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION,
-            PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS,
-            PasswordMigrationWarningUserActions.DISMISS_EMPTY_SHEET_OBSOLETE,
-            PasswordMigrationWarningUserActions.COUNT})
+    @IntDef({
+        PasswordMigrationWarningUserActions.GOT_IT,
+        PasswordMigrationWarningUserActions.MORE_OPTIONS,
+        PasswordMigrationWarningUserActions.SYNC,
+        PasswordMigrationWarningUserActions.EXPORT,
+        PasswordMigrationWarningUserActions.CANCEL,
+        PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION,
+        PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS,
+        PasswordMigrationWarningUserActions.DISMISS_EMPTY_SHEET_OBSOLETE,
+        PasswordMigrationWarningUserActions.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordMigrationWarningUserActions {
         int GOT_IT = 0;
@@ -37,15 +38,18 @@ public class PasswordMetricsUtil {
         int DISMISS_EMPTY_SHEET_OBSOLETE = 7;
         int COUNT = 8;
     }
+
     public static final String PASSWORD_MIGRATION_WARNING_USER_ACTIONS =
             "PasswordManager.PasswordMigrationWarning.UserAction";
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED,
-            PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_BY_USER_INTERACTION,
-            PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION,
-            PasswordMigrationWarningSheetStateAtClosing.COUNT})
+    @IntDef({
+        PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED,
+        PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_BY_USER_INTERACTION,
+        PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION,
+        PasswordMigrationWarningSheetStateAtClosing.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordMigrationWarningSheetStateAtClosing {
         int FULL_SHEET_CLOSED = 0;
@@ -53,6 +57,7 @@ public class PasswordMetricsUtil {
         int EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION = 2;
         int COUNT = 3;
     }
+
     public static final String PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING =
             "PasswordManager.PasswordMigrationWarning.SheetStateAtClosing";
     public static final String PASSWORD_MIGRATION_WARNING_EMPTY_SHEET_TRIGGER =
@@ -60,10 +65,15 @@ public class PasswordMetricsUtil {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({HistogramExportResult.SUCCESS, HistogramExportResult.USER_ABORTED,
-            HistogramExportResult.WRITE_FAILED, HistogramExportResult.NO_CONSUMER,
-            HistogramExportResult.NO_SCREEN_LOCK_SET_UP, HistogramExportResult.ACTIVITY_DESTROYED,
-            HistogramExportResult.NUM_ENTRIES})
+    @IntDef({
+        HistogramExportResult.SUCCESS,
+        HistogramExportResult.USER_ABORTED,
+        HistogramExportResult.WRITE_FAILED,
+        HistogramExportResult.NO_CONSUMER,
+        HistogramExportResult.NO_SCREEN_LOCK_SET_UP,
+        HistogramExportResult.ACTIVITY_DESTROYED,
+        HistogramExportResult.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface HistogramExportResult {
         int SUCCESS = 0;
@@ -95,7 +105,9 @@ public class PasswordMetricsUtil {
      */
     public static void logPasswordMigrationWarningUserAction(
             @PasswordMigrationWarningUserActions int result) {
-        RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS, result,
+        RecordHistogram.recordEnumeratedHistogram(
+                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                result,
                 PasswordMigrationWarningUserActions.COUNT);
     }
 
@@ -108,7 +120,9 @@ public class PasswordMetricsUtil {
      */
     public static void logPasswordsExportResult(
             String callerMetricsId, @HistogramExportResult int result) {
-        RecordHistogram.recordEnumeratedHistogram(callerMetricsId + EXPORT_RESULT_HISTOGRAM_SUFFIX,
-                result, HistogramExportResult.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                callerMetricsId + EXPORT_RESULT_HISTOGRAM_SUFFIX,
+                result,
+                HistogramExportResult.NUM_ENTRIES);
     }
 }

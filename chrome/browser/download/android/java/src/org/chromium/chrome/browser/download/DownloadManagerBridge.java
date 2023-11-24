@@ -33,18 +33,14 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.util.concurrent.RejectedExecutionException;
 
-/**
- * A wrapper for Android DownloadManager to provide utility functions.
- */
+/** A wrapper for Android DownloadManager to provide utility functions. */
 public class DownloadManagerBridge {
     private static final String TAG = "DownloadDelegate";
     private static final String DOWNLOAD_DIRECTORY = "Download";
     private static final String DOWNLOAD_ID_MAPPINGS_FILE_NAME = "download_id_mappings";
     private static final Object sLock = new Object();
 
-    /**
-     * Result for querying the Android DownloadManager.
-     */
+    /** Result for querying the Android DownloadManager. */
     public static class DownloadQueryResult {
         public final long downloadId;
         public int downloadStatus;
@@ -90,17 +86,30 @@ public class DownloadManagerBridge {
      * @see android.app.DownloadManager#addCompletedDownload(String, String, boolean, String,
      * String, long, boolean)
      */
-    public static long addCompletedDownload(String fileName, String description, String mimeType,
-            String filePath, long fileSizeBytes, GURL originalUrl, GURL referer,
+    public static long addCompletedDownload(
+            String fileName,
+            String description,
+            String mimeType,
+            String filePath,
+            long fileSizeBytes,
+            GURL originalUrl,
+            GURL referer,
             String downloadGuid) {
         assert !ThreadUtils.runningOnUiThread();
         assert VERSION.SDK_INT < VERSION_CODES.Q
-            : "addCompletedDownload is deprecated in Q, may cause crash.";
+                : "addCompletedDownload is deprecated in Q, may cause crash.";
         long downloadId = getDownloadIdForDownloadGuid(downloadGuid);
         if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID) return downloadId;
 
-        downloadId = DownloadUtils.addCompletedDownload(
-                fileName, description, mimeType, filePath, fileSizeBytes, originalUrl, referer);
+        downloadId =
+                DownloadUtils.addCompletedDownload(
+                        fileName,
+                        description,
+                        mimeType,
+                        filePath,
+                        fileSizeBytes,
+                        originalUrl,
+                        referer);
         if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID) {
             addDownloadIdMapping(downloadId, downloadGuid);
         }
@@ -114,17 +123,22 @@ public class DownloadManagerBridge {
      */
     @CalledByNative
     public static void removeCompletedDownload(String downloadGuid, boolean externallyRemoved) {
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            long downloadId = removeDownloadIdMapping(downloadGuid);
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    long downloadId = removeDownloadIdMapping(downloadGuid);
 
-            // Let Android DownloadManager to remove download only if the user removed the file in
-            // Chrome. If the user renamed or moved the file, Chrome should keep it intact.
-            if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID && !externallyRemoved) {
-                DownloadManager manager =
-                        (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
-                manager.remove(downloadId);
-            }
-        });
+                    // Let Android DownloadManager to remove download only if the user removed the
+                    // file in Chrome. If the user renamed or moved the file, Chrome should keep
+                    // it intact.
+                    if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID
+                            && !externallyRemoved) {
+                        DownloadManager manager =
+                                (DownloadManager)
+                                        getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+                        manager.remove(downloadId);
+                    }
+                });
     }
 
     /**
@@ -178,10 +192,14 @@ public class DownloadManagerBridge {
                         c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_TITLE));
                 result.failureReason =
                         c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
-                result.lastModifiedTime = c.getLong(
-                        c.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
-                result.bytesDownloaded = c.getLong(
-                        c.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                result.lastModifiedTime =
+                        c.getLong(
+                                c.getColumnIndexOrThrow(
+                                        DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
+                result.bytesDownloaded =
+                        c.getLong(
+                                c.getColumnIndexOrThrow(
+                                        DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                 result.bytesTotal =
                         c.getLong(c.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                 String localUri =
@@ -213,8 +231,8 @@ public class DownloadManagerBridge {
     /** @return The android DownloadManager's download ID for the given download. */
     public static long getDownloadIdForDownloadGuid(String downloadGuid) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return getSharedPreferences().getLong(
-                    downloadGuid, DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID);
+            return getSharedPreferences()
+                    .getLong(downloadGuid, DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID);
         }
     }
 
@@ -259,8 +277,8 @@ public class DownloadManagerBridge {
      * @return the SharedPreferences instance.
      */
     private static SharedPreferences getSharedPreferences() {
-        return ContextUtils.getApplicationContext().getSharedPreferences(
-                DOWNLOAD_ID_MAPPINGS_FILE_NAME, Context.MODE_PRIVATE);
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(DOWNLOAD_ID_MAPPINGS_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     private static Context getContext() {
@@ -272,36 +290,53 @@ public class DownloadManagerBridge {
      * to the android's DownloadManager if the download is not a content URI.
      */
     @CalledByNative
-    private static void addCompletedDownload(String fileName, String description,
-            String originalMimeType, String filePath, long fileSizeBytes, GURL originalUrl,
-            GURL referrer, String downloadGuid, long callbackId) {
+    private static void addCompletedDownload(
+            String fileName,
+            String description,
+            String originalMimeType,
+            String filePath,
+            long fileSizeBytes,
+            GURL originalUrl,
+            GURL referrer,
+            String downloadGuid,
+            long callbackId) {
         final String mimeType =
                 MimeUtils.remapGenericMimeType(originalMimeType, originalUrl.getSpec(), fileName);
-        AsyncTask<Long> task = new AsyncTask<Long>() {
-            @Override
-            protected Long doInBackground() {
-                long downloadId = DownloadConstants.INVALID_DOWNLOAD_ID;
-                // On Android Q-, add the completed download to Android download manager.
-                if (!ContentUriUtils.isContentUri(filePath)
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    downloadId = addCompletedDownload(fileName, description, mimeType, filePath,
-                            fileSizeBytes, originalUrl, referrer, downloadGuid);
-                }
-                return downloadId;
-            }
+        AsyncTask<Long> task =
+                new AsyncTask<Long>() {
+                    @Override
+                    protected Long doInBackground() {
+                        long downloadId = DownloadConstants.INVALID_DOWNLOAD_ID;
+                        // On Android Q-, add the completed download to Android download manager.
+                        if (!ContentUriUtils.isContentUri(filePath)
+                                && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                            downloadId =
+                                    addCompletedDownload(
+                                            fileName,
+                                            description,
+                                            mimeType,
+                                            filePath,
+                                            fileSizeBytes,
+                                            originalUrl,
+                                            referrer,
+                                            downloadGuid);
+                        }
+                        return downloadId;
+                    }
 
-            @Override
-            protected void onPostExecute(Long downloadId) {
-                DownloadManagerBridgeJni.get().onAddCompletedDownloadDone(callbackId, downloadId);
-            }
-        };
+                    @Override
+                    protected void onPostExecute(Long downloadId) {
+                        DownloadManagerBridgeJni.get()
+                                .onAddCompletedDownloadDone(callbackId, downloadId);
+                    }
+                };
         try {
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } catch (RejectedExecutionException e) {
             // Reaching thread limit, update will be reschduled for the next run.
             Log.e(TAG, "Thread limit reached, reschedule notification update later.");
-            DownloadManagerBridgeJni.get().onAddCompletedDownloadDone(
-                    callbackId, DownloadConstants.INVALID_DOWNLOAD_ID);
+            DownloadManagerBridgeJni.get()
+                    .onAddCompletedDownloadDone(callbackId, DownloadConstants.INVALID_DOWNLOAD_ID);
         }
     }
 
@@ -316,9 +351,7 @@ public class DownloadManagerBridge {
         }
     }
 
-    /**
-     * Async task to query download status from Android DownloadManager
-     */
+    /** Async task to query download status from Android DownloadManager */
     private static class DownloadQueryTask extends AsyncTask<DownloadQueryResult> {
         private final long mDownloadId;
         private final Callback<DownloadQueryResult> mCallback;
@@ -339,9 +372,7 @@ public class DownloadManagerBridge {
         }
     }
 
-    /**
-     * Async task to enqueue a download request into DownloadManager.
-     */
+    /** Async task to enqueue a download request into DownloadManager. */
     private static class EnqueueNewDownloadTask extends AsyncTask<Boolean> {
         private final DownloadEnqueueRequest mEnqueueRequest;
         private final Callback<DownloadEnqueueResponse> mCallback;

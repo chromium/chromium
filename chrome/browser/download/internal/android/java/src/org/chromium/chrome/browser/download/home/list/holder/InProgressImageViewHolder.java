@@ -23,22 +23,23 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class InProgressImageViewHolder extends InProgressViewHolder {
     private final ImageView mPlaceholder;
 
-    /**
-     * Creates a new {@link InProgressViewHolder} instance.
-     */
+    /** Creates a new {@link InProgressViewHolder} instance. */
     public static InProgressImageViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_in_progress_image_item, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_in_progress_image_item, null);
         return new InProgressImageViewHolder(view);
     }
 
     /** Constructor. */
     public InProgressImageViewHolder(View view) {
-        super(view, true /* constrainCaption */);
+        super(view, /* constrainCaption= */ true);
 
         mPlaceholder = view.findViewById(R.id.placeholder);
-        mPlaceholder.setImageDrawable(AutoAnimatorDrawable.wrap(AppCompatResources.getDrawable(
-                view.getContext(), R.drawable.async_image_view_waiting)));
+        mPlaceholder.setImageDrawable(
+                AutoAnimatorDrawable.wrap(
+                        AppCompatResources.getDrawable(
+                                view.getContext(), R.drawable.async_image_view_waiting)));
     }
 
     // InProgressViewHolder implementation.

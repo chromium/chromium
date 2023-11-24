@@ -14,15 +14,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
-/**
- * App Menu helper that handles hiding and showing menu items based on activity state.
- */
+/** App Menu helper that handles hiding and showing menu items based on activity state. */
 public interface AppMenuPropertiesDelegate {
     int INVALID_ITEM_ID = -1;
 
-    /**
-     * Provides unique custom item view type across all custom binders.
-     */
+    /** Provides unique custom item view type across all custom binders. */
     public interface CustomItemViewTypeProvider {
         /**
          * Return custom item view type from menu item id.
@@ -32,9 +28,7 @@ public interface AppMenuPropertiesDelegate {
         int fromMenuItemId(int id);
     }
 
-    /**
-     * Called when the containing activity is being destroyed.
-     */
+    /** Called when the containing activity is being destroyed. */
     void destroy();
 
     /**
@@ -82,9 +76,7 @@ public interface AppMenuPropertiesDelegate {
     /** Notify the delegate that menu was shown. */
     void onMenuShown();
 
-    /**
-     * Notify the delegate that menu was dismissed.
-     */
+    /** Notify the delegate that menu was dismissed. */
     void onMenuDismissed();
 
     /**

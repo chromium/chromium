@@ -62,32 +62,39 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * Internal state about the survey message state. Mostly used for debugging / troubleshooting.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({State.NOT_STARTED, State.REQUESTED, State.ENQUEUED, State.ACCEPTED, State.DISMISSED,
-            State.NOT_PRESENTED})
+    @IntDef({
+        State.NOT_STARTED,
+        State.REQUESTED,
+        State.ENQUEUED,
+        State.ACCEPTED,
+        State.DISMISSED,
+        State.NOT_PRESENTED
+    })
     @interface State {
-        /**
-         * State after Instance created, before {@link #showSurveyInvitation} is called.
-         */
+        /** State after Instance created, before {@link #showSurveyInvitation} is called. */
         int NOT_STARTED = 0;
-        /**
-         * State after {@link #showSurveyInvitation} is called, before message is enqueued.
-         */
+
+        /** State after {@link #showSurveyInvitation} is called, before message is enqueued. */
         int REQUESTED = 1;
+
         /**
          * State after  {@link MessageDispatcher#enqueueWindowScopedMessage}, before message is
          * dismissed / accepted.
          */
         int ENQUEUED = 2;
+
         /**
          * State after message is presented and dismissed by  {@link MessageDispatcher}. The
          * instance will no longer switch into any other state.
          */
         int DISMISSED = 3;
+
         /**
          * State after message is presented and accepted by the user. The instance will no longer
          * switch into any other state.
          */
         int ACCEPTED = 4;
+
         /**
          * State after message is failed to present. This happened at any point and before survey is
          * presented. Once survey is presented, it should end up as either {@link #DISMISSED} or
@@ -108,6 +115,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * #showSurveyInvitation is called, or the delegate class is teared down.
      */
     private @Nullable Runnable mOnSurveyAccepted;
+
     private @Nullable Runnable mOnSurveyDeclined;
     private @Nullable Runnable mOnSurveyPresentationFailed;
 
@@ -128,8 +136,10 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * @param modelSelector TabModel selector used to retrieve tab information. Used to decide if
      *         current tab is fully loaded and not in incognito.
      */
-    public MessageSurveyUiDelegate(@NonNull PropertyModel customModel,
-            @NonNull MessageDispatcher messageDispatcher, @NonNull TabModelSelector modelSelector,
+    public MessageSurveyUiDelegate(
+            @NonNull PropertyModel customModel,
+            @NonNull MessageDispatcher messageDispatcher,
+            @NonNull TabModelSelector modelSelector,
             Supplier<Boolean> crashUploadPermissionSupplier) {
         mMessageModel = customModel;
         mTabModelSelector = modelSelector;
@@ -167,7 +177,9 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
     }
 
     @Override
-    public void showSurveyInvitation(Runnable onSurveyAccepted, Runnable onSurveyDeclined,
+    public void showSurveyInvitation(
+            Runnable onSurveyAccepted,
+            Runnable onSurveyDeclined,
             Runnable onSurveyPresentationFailed) {
         assert mState == State.NOT_STARTED : "showSurveyInvitation should only be called once.";
 
@@ -225,14 +237,15 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         // Wait until tab model has an active tab.
         if (mTabModelSelector.getCurrentTab() == null) {
             removeLoadingTabReferences();
-            mTabModelSelectorObserver = new TabModelSelectorObserver() {
-                @Override
-                public void onChange() {
-                    mTabModelSelector.removeObserver(this);
-                    mTabModelSelectorObserver = null;
-                    showSurveyIfReady();
-                }
-            };
+            mTabModelSelectorObserver =
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onChange() {
+                            mTabModelSelector.removeObserver(this);
+                            mTabModelSelectorObserver = null;
+                            showSurveyIfReady();
+                        }
+                    };
             mTabModelSelector.addObserver(mTabModelSelectorObserver);
             return;
         }
@@ -252,38 +265,43 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         // Wrap calls with callbacks from #showSurveyInvitations.
         Supplier<Integer> wrappedOnAcceptAction =
                 mMessageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION);
-        mMessageModel.set(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {
-            mState = State.ACCEPTED;
-            runIfNotNull(mOnSurveyAccepted);
-            if (wrappedOnAcceptAction != null) {
-                wrappedOnAcceptAction.get();
-            }
-            destroy();
-            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-        });
+        mMessageModel.set(
+                MessageBannerProperties.ON_PRIMARY_ACTION,
+                () -> {
+                    mState = State.ACCEPTED;
+                    runIfNotNull(mOnSurveyAccepted);
+                    if (wrappedOnAcceptAction != null) {
+                        wrappedOnAcceptAction.get();
+                    }
+                    destroy();
+                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                });
         Callback<Integer> wrappedOnDismissCallback =
                 mMessageModel.get(MessageBannerProperties.ON_DISMISSED);
-        mMessageModel.set(MessageBannerProperties.ON_DISMISSED, (reason) -> {
-            if (reason != DismissReason.PRIMARY_ACTION) {
-                runIfNotNull(mOnSurveyDeclined);
-                mState = State.DISMISSED;
-            }
-            if (wrappedOnDismissCallback != null) {
-                wrappedOnDismissCallback.onResult(reason);
-            }
-            destroy();
-        });
+        mMessageModel.set(
+                MessageBannerProperties.ON_DISMISSED,
+                (reason) -> {
+                    if (reason != DismissReason.PRIMARY_ACTION) {
+                        runIfNotNull(mOnSurveyDeclined);
+                        mState = State.DISMISSED;
+                    }
+                    if (wrappedOnDismissCallback != null) {
+                        wrappedOnDismissCallback.onResult(reason);
+                    }
+                    destroy();
+                });
 
         // Dismiss the message when the original tab in which the message is shown is
         // hidden. This prevents the prompt from being shown if the tab is opened after being
         // hidden for a duration in which the survey expired. See crbug.com/1249055 for details.
-        mDismissMessageTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                tab.removeObserver(this);
-                dismissMessage(DismissReason.TAB_SWITCHED);
-            }
-        };
+        mDismissMessageTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onHidden(Tab tab, @TabHidingType int type) {
+                        tab.removeObserver(this);
+                        dismissMessage(DismissReason.TAB_SWITCHED);
+                    }
+                };
         mSurveyPromptTab.addObserver(mDismissMessageTabObserver);
 
         mMessageDispatcher.enqueueWindowScopedMessage(mMessageModel, false);
@@ -298,28 +316,29 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
             return true;
         }
 
-        mLoadingTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-                if (!isTabReadyForSurvey(mLoadingTab) || !isInteractable) return;
-                removeLoadingTabReferences();
-                showSurveyIfReady();
-            }
+        mLoadingTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                        if (!isTabReadyForSurvey(mLoadingTab) || !isInteractable) return;
+                        removeLoadingTabReferences();
+                        showSurveyIfReady();
+                    }
 
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (!isTabReadyForSurvey(mLoadingTab)) return;
-                removeLoadingTabReferences();
-                showSurveyIfReady();
-            }
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        if (!isTabReadyForSurvey(mLoadingTab)) return;
+                        removeLoadingTabReferences();
+                        showSurveyIfReady();
+                    }
 
-            @Override
-            public void onHidden(Tab tab, /*@TabHidingType*/ int type) {
-                // A prompt shouldn't appear on a tab that the user has left.
-                removeLoadingTabReferences();
-                cancel();
-            }
-        };
+                    @Override
+                    public void onHidden(Tab tab, /*@TabHidingType*/ int type) {
+                        // A prompt shouldn't appear on a tab that the user has left.
+                        removeLoadingTabReferences();
+                        cancel();
+                    }
+                };
 
         mLoadingTab.addObserver(mLoadingTabObserver);
         return false;

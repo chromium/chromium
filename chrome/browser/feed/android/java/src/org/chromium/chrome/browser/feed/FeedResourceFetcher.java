@@ -22,9 +22,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementation of ResourceFetcher methods.
- */
+/** Implementation of ResourceFetcher methods. */
 public class FeedResourceFetcher implements ResourceFetcher {
     @JNINamespace("feed::android")
     public static class FeedResponse implements Response {
@@ -72,19 +70,30 @@ public class FeedResourceFetcher implements ResourceFetcher {
 
     @Override
     public void fetch(Request request, ResponseCallback responseCallback) {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            List<String> headerNamesAndValues = new ArrayList<String>(request.headers.size() * 2);
-            for (Header header : request.headers) {
-                headerNamesAndValues.add(header.name);
-                headerNamesAndValues.add(header.value);
-            }
-            FeedSurfaceScopeDependencyProviderImplJni.get().fetchResource(new GURL(request.uri),
-                    request.method,
-                    headerNamesAndValues.toArray(new String[headerNamesAndValues.size()]),
-                    request.postData, (NetworkResponse response) -> {
-                        responseCallback.onResponse(new FeedResponse(
-                                response.success, response.statusCode, null, response.rawData));
-                    });
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    List<String> headerNamesAndValues =
+                            new ArrayList<String>(request.headers.size() * 2);
+                    for (Header header : request.headers) {
+                        headerNamesAndValues.add(header.name);
+                        headerNamesAndValues.add(header.value);
+                    }
+                    FeedSurfaceScopeDependencyProviderImplJni.get()
+                            .fetchResource(
+                                    new GURL(request.uri),
+                                    request.method,
+                                    headerNamesAndValues.toArray(
+                                            new String[headerNamesAndValues.size()]),
+                                    request.postData,
+                                    (NetworkResponse response) -> {
+                                        responseCallback.onResponse(
+                                                new FeedResponse(
+                                                        response.success,
+                                                        response.statusCode,
+                                                        null,
+                                                        response.rawData));
+                                    });
+                });
     }
 }

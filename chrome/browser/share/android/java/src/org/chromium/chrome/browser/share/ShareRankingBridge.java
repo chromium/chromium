@@ -17,16 +17,37 @@ import java.util.List;
  * ShareHistory object.
  */
 public class ShareRankingBridge {
-    public static void rank(Profile profile, String type, List<String> available, int fold,
-            int length, boolean persist, Callback<List<String>> onDone) {
+    public static void rank(
+            Profile profile,
+            String type,
+            List<String> available,
+            int fold,
+            int length,
+            boolean persist,
+            Callback<List<String>> onDone) {
         assert profile != null;
-        ShareRankingBridgeJni.get().rank(profile, type, available.toArray(), fold, length, persist,
-                result -> { onDone.onResult(Arrays.asList(result)); });
+        ShareRankingBridgeJni.get()
+                .rank(
+                        profile,
+                        type,
+                        available.toArray(),
+                        fold,
+                        length,
+                        persist,
+                        result -> {
+                            onDone.onResult(Arrays.asList(result));
+                        });
     }
 
     @NativeMethods
     public interface Natives {
-        void rank(Profile profile, String type, Object[] available, int fold, int length,
-                boolean persist, Callback<String[]> onDone);
+        void rank(
+                Profile profile,
+                String type,
+                Object[] available,
+                int fold,
+                int length,
+                boolean persist,
+                Callback<String[]> onDone);
     }
 }

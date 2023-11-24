@@ -84,16 +84,20 @@ class PasswordEditDialogCoordinator {
             @NonNull WindowAndroid windowAndroid, @NonNull Delegate delegate) {
         Context context = windowAndroid.getContext().get();
 
-        return new PasswordEditDialogCoordinator(context, windowAndroid.getModalDialogManager(),
-                createPasswordEditDialogView(context), delegate);
+        return new PasswordEditDialogCoordinator(
+                context,
+                windowAndroid.getModalDialogManager(),
+                createPasswordEditDialogView(context),
+                delegate);
     }
 
     private static PasswordEditDialogView createPasswordEditDialogView(Context context) {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-                ? (PasswordEditDialogWithDetailsView) LayoutInflater.from(context).inflate(
-                        R.layout.password_edit_dialog_with_details, null)
-                : (UsernameSelectionConfirmationView) LayoutInflater.from(context).inflate(
-                        R.layout.password_edit_dialog, null);
+                ? (PasswordEditDialogWithDetailsView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.password_edit_dialog_with_details, null)
+                : (UsernameSelectionConfirmationView)
+                        LayoutInflater.from(context).inflate(R.layout.password_edit_dialog, null);
     }
 
     /**
@@ -106,16 +110,19 @@ class PasswordEditDialogCoordinator {
      * @param delegate The delegate to be called with results of interaction.
      */
     @VisibleForTesting
-    PasswordEditDialogCoordinator(@NonNull Context context,
+    PasswordEditDialogCoordinator(
+            @NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull PasswordEditDialogView dialogView, @NonNull Delegate delegate) {
+            @NonNull PasswordEditDialogView dialogView,
+            @NonNull Delegate delegate) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDialogView = dialogView;
         mIsDialogWithDetailsFeatureEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS);
-        mMediator = new PasswordEditDialogMediator(
-                mModalDialogManager, mContext.getResources(), delegate);
+        mMediator =
+                new PasswordEditDialogMediator(
+                        mModalDialogManager, mContext.getResources(), delegate);
     }
 
     /**
@@ -131,8 +138,11 @@ class PasswordEditDialogCoordinator {
      * @param account The account name where the password will be saved. When the user is not signed
      *         in the account is null.
      */
-    void showPasswordEditDialog(@NonNull String[] savedUsernames, @NonNull String username,
-            @NonNull String password, @Nullable String account) {
+    void showPasswordEditDialog(
+            @NonNull String[] savedUsernames,
+            @NonNull String username,
+            @NonNull String password,
+            @Nullable String account) {
         List<String> savedUsernameList = Arrays.asList(savedUsernames);
         boolean update = isUpdate(savedUsernameList, username);
         // The Save password dialog has only user-entered username in the spinner's list.
@@ -140,9 +150,11 @@ class PasswordEditDialogCoordinator {
         List<String> displayUsernamesList = update ? savedUsernameList : Arrays.asList(username);
 
         mDialogModel =
-                createModalDialogModel(getTitle(savedUsernameList, displayUsernamesList, username),
-                        update ? R.string.password_manager_update_button
-                               : R.string.password_manager_save_button);
+                createModalDialogModel(
+                        getTitle(savedUsernameList, displayUsernamesList, username),
+                        update
+                                ? R.string.password_manager_update_button
+                                : R.string.password_manager_save_button);
         mDialogViewModel = createDialogViewModel(displayUsernamesList, username, password, account);
 
         mMediator.initialize(mDialogViewModel, mDialogModel, Arrays.asList(savedUsernames));
@@ -152,9 +164,11 @@ class PasswordEditDialogCoordinator {
         PropertyModelChangeProcessor.create(
                 mDialogViewModel, mDialogView, PasswordEditDialogViewBinder::bind);
 
-        mModalDialogManager.showDialog(mDialogModel,
-                mIsDialogWithDetailsFeatureEnabled ? ModalDialogManager.ModalDialogType.APP
-                                                   : ModalDialogManager.ModalDialogType.TAB);
+        mModalDialogManager.showDialog(
+                mDialogModel,
+                mIsDialogWithDetailsFeatureEnabled
+                        ? ModalDialogManager.ModalDialogType.APP
+                        : ModalDialogManager.ModalDialogType.TAB);
     }
 
     /**
@@ -171,8 +185,10 @@ class PasswordEditDialogCoordinator {
     void showLegacyPasswordEditDialog(
             @NonNull String[] usernames, int selectedUsernameIndex, @Nullable String account) {
         List<String> savedUsernameList = Arrays.asList(usernames);
-        mDialogModel = createModalDialogModel(
-                R.string.confirm_username_dialog_title, R.string.password_manager_update_button);
+        mDialogModel =
+                createModalDialogModel(
+                        R.string.confirm_username_dialog_title,
+                        R.string.password_manager_update_button);
         mDialogViewModel = createLegacyDialogViewModel(savedUsernameList, selectedUsernameIndex);
 
         mMediator.initialize(mDialogViewModel, mDialogModel, savedUsernameList);
@@ -188,15 +204,19 @@ class PasswordEditDialogCoordinator {
     private PropertyModel createDialogViewModel(
             List<String> displayedUsernames, String username, String password, String account) {
         return new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
-                .with(PasswordEditDialogProperties.USERNAMES,
+                .with(
+                        PasswordEditDialogProperties.USERNAMES,
                         removeEmptyStrings(displayedUsernames))
                 .with(PasswordEditDialogProperties.PASSWORD, password)
-                .with(PasswordEditDialogProperties.FOOTER,
+                .with(
+                        PasswordEditDialogProperties.FOOTER,
                         mContext.getString(getEditPasswordDialogFooterId(account), account))
                 .with(PasswordEditDialogProperties.USERNAME, username)
-                .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
+                .with(
+                        PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
                         mMediator::handleUsernameChanged)
-                .with(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
+                .with(
+                        PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
                         mMediator::handlePasswordChanged)
                 .build();
     }
@@ -206,7 +226,8 @@ class PasswordEditDialogCoordinator {
         return new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                 .with(PasswordEditDialogProperties.USERNAMES, displayedUsernames)
                 .with(PasswordEditDialogProperties.USERNAME_INDEX, selectedUsernameIndex)
-                .with(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
+                .with(
+                        PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
                         mMediator::handleUsernameSelected)
                 .build();
     }
@@ -220,15 +241,22 @@ class PasswordEditDialogCoordinator {
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mMediator)
                         .with(ModalDialogProperties.TITLE, resources, title)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
                                 positiveButtonText)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.password_generation_dialog_cancel_button)
-                        .with(ModalDialogProperties.BUTTON_STYLES,
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         if (mIsDialogWithDetailsFeatureEnabled) {
-            dialogModeBuilder.with(ModalDialogProperties.TITLE_ICON, mContext,
+            dialogModeBuilder.with(
+                    ModalDialogProperties.TITLE_ICON,
+                    mContext,
                     resourceProvider.getPasswordManagerIcon());
         }
         return dialogModeBuilder.build();

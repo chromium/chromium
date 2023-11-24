@@ -55,9 +55,7 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
-/**
- * Saves and restores {@link TabState} to and from files.
- */
+/** Saves and restores {@link TabState} to and from files. */
 public class TabStateFileManager {
     // Different variants will be experimented with and each variant will have
     // a different prefix.
@@ -93,12 +91,13 @@ public class TabStateFileManager {
 
     private static final int MAX_CONCURRENT_FLATBUFFER_MIGRATIONS = 1;
 
-    /**
-     * Enum representing the exception that occurred during {@link restoreTabState}.
-     */
-    @IntDef({RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION,
-            RestoreTabStateException.CLOSED_BY_INTERRUPT_EXCEPTION,
-            RestoreTabStateException.IO_EXCEPTION, RestoreTabStateException.NUM_ENTRIES})
+    /** Enum representing the exception that occurred during {@link restoreTabState}. */
+    @IntDef({
+        RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION,
+        RestoreTabStateException.CLOSED_BY_INTERRUPT_EXCEPTION,
+        RestoreTabStateException.IO_EXCEPTION,
+        RestoreTabStateException.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RestoreTabStateException {
         int FILE_NOT_FOUND_EXCEPTION = 0;
@@ -208,8 +207,10 @@ public class TabStateFileManager {
 
     private static void recordRestoreTabStateException(
             @RestoreTabStateException int restoreTabStateException) {
-        RecordHistogram.recordEnumeratedHistogram("Tabs.RestoreTabStateException",
-                restoreTabStateException, RestoreTabStateException.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Tabs.RestoreTabStateException",
+                restoreTabStateException,
+                RestoreTabStateException.NUM_ENTRIES);
     }
 
     /**
@@ -262,13 +263,19 @@ public class TabStateFileManager {
             } else {
                 // If not, we can mmap the file directly, saving time and copies into the java heap.
                 FileChannel channel = input.getChannel();
-                tabState.contentsState = new WebContentsState(
-                        channel.map(MapMode.READ_ONLY, channel.position(), size));
+                tabState.contentsState =
+                        new WebContentsState(
+                                channel.map(MapMode.READ_ONLY, channel.position(), size));
                 // Skip ahead to avoid re-reading data that mmap'd.
                 long skipped = input.skip(size);
                 if (skipped != size) {
-                    Log.e(TAG,
-                            "Only skipped " + skipped + " bytes when " + size + " should've "
+                    Log.e(
+                            TAG,
+                            "Only skipped "
+                                    + skipped
+                                    + " bytes when "
+                                    + size
+                                    + " should've "
                                     + "been skipped. Tab restore may fail.");
                 }
             }
@@ -289,9 +296,11 @@ public class TabStateFileManager {
 
                 // Could happen if reading a version of a TabState that does not include the
                 // version id.
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read saved state version id from tab state. Assuming "
-                                + "version " + tabState.contentsState.version());
+                                + "version "
+                                + tabState.contentsState.version());
             }
             try {
                 // Skip obsolete sync ID.
@@ -302,7 +311,8 @@ public class TabStateFileManager {
                 boolean shouldPreserveNotUsed = stream.readBoolean();
             } catch (EOFException eof) {
                 // Could happen if reading a version of TabState without this flag set.
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read shouldPreserve flag from tab state. "
                                 + "Assuming shouldPreserve is false");
             }
@@ -312,7 +322,8 @@ public class TabStateFileManager {
             } catch (EOFException eof) {
                 // Could happen if reading a version of TabState without a theme color.
                 tabState.themeColor = TabState.UNSPECIFIED_THEME_COLOR;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read theme color from tab state. "
                                 + "Assuming theme color is TabState#UNSPECIFIED_THEME_COLOR");
             }
@@ -324,7 +335,8 @@ public class TabStateFileManager {
                 }
             } catch (EOFException eof) {
                 tabState.tabLaunchTypeAtCreation = null;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read tab launch type at creation from tab state. "
                                 + "Assuming tab launch type is null");
             }
@@ -332,7 +344,8 @@ public class TabStateFileManager {
                 tabState.rootId = stream.readInt();
             } catch (EOFException eof) {
                 tabState.rootId = Tab.INVALID_TAB_ID;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read tab root id from tab state. "
                                 + "Assuming root id is Tab.INVALID_TAB_ID");
             }
@@ -340,7 +353,8 @@ public class TabStateFileManager {
                 tabState.userAgent = stream.readInt();
             } catch (EOFException eof) {
                 tabState.userAgent = TabUserAgent.UNSET;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read tab user agent from tab state. "
                                 + "Assuming user agent is TabUserAgent.UNSET");
             }
@@ -348,7 +362,8 @@ public class TabStateFileManager {
                 tabState.lastNavigationCommittedTimestampMillis = stream.readLong();
             } catch (EOFException eof) {
                 tabState.lastNavigationCommittedTimestampMillis = TabState.TIMESTAMP_NOT_SET;
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Failed to read last navigation committed timestamp from tab state."
                                 + " Assuming last navigation committed timestamp is"
                                 + " TabState.TIMESTAMP_NOT_SET");
@@ -435,8 +450,10 @@ public class TabStateFileManager {
             if (encrypted) {
                 Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
                 if (cipher != null) {
-                    dataOutputStream = new DataOutputStream(new BufferedOutputStream(
-                            new CipherOutputStream(fileOutputStream, cipher)));
+                    dataOutputStream =
+                            new DataOutputStream(
+                                    new BufferedOutputStream(
+                                            new CipherOutputStream(fileOutputStream, cipher)));
                 } else {
                     // If cipher is null, getRandomBytes failed, which means encryption is
                     // meaningless. Therefore, do not save anything. This will cause users
@@ -591,8 +608,9 @@ public class TabStateFileManager {
     public static Pair<Integer, Boolean> parseInfoFromFilename(String name) {
         try {
             if (name.startsWith(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO)) {
-                int id = Integer.parseInt(
-                        name.substring(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO.length()));
+                int id =
+                        Integer.parseInt(
+                                name.substring(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO.length()));
                 return Pair.create(id, true);
             } else if (name.startsWith(SAVED_TAB_STATE_FILE_PREFIX)) {
                 int id = Integer.parseInt(name.substring(SAVED_TAB_STATE_FILE_PREFIX.length()));

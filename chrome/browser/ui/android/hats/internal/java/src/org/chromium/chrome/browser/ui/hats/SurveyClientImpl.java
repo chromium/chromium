@@ -27,12 +27,11 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Impl for SurveyClient interface.
- */
+/** Impl for SurveyClient interface. */
 // TODO(crbug/1400731): Add metrics and refine the logging in this class.
 class SurveyClientImpl implements SurveyClient {
     private static final String TAG = "SurveyClient";
+
     /**
      * When set, bypass the AsyncTask to read throttler in the background, and ignore whether the
      * current activity is alive. Set for unit testing / native tests.
@@ -74,16 +73,20 @@ class SurveyClientImpl implements SurveyClient {
     }
 
     @Override
-    public void showSurvey(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
-            Map<String, Boolean> surveyPsdBitValues, Map<String, String> surveyPsdStringValues) {
+    public void showSurvey(
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Map<String, Boolean> surveyPsdBitValues,
+            Map<String, String> surveyPsdStringValues) {
         showSurveyImpl(activity, lifecycleDispatcher, surveyPsdStringValues, surveyPsdBitValues);
     }
 
-    /**
-     * Kick off the survey presentation flow.
-     */
-    private void showSurveyImpl(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
-            Map<String, String> surveyPsdStringValues, Map<String, Boolean> surveyPsdBitValues) {
+    /** Kick off the survey presentation flow. */
+    private void showSurveyImpl(
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Map<String, String> surveyPsdStringValues,
+            Map<String, Boolean> surveyPsdBitValues) {
         if (!configurationAllowsSurveys()) return;
 
         mActivityRef = new WeakReference<>(activity);
@@ -92,22 +95,17 @@ class SurveyClientImpl implements SurveyClient {
         showSurveyIfEligible();
     }
 
-    /**
-     * Generate the key-value pairs of survey PSD based on the config and given value fields.
-     */
+    /** Generate the key-value pairs of survey PSD based on the config and given value fields. */
     private void generateSurveyPsd(
             Map<String, String> surveyPsdStringValues, Map<String, Boolean> surveyPsdBitValues) {
-        assert surveyPsdStringValues.size()
-                == mConfig.mPsdStringDataFields.length
-            : "StringValues have a different size with fields.";
-        assert surveyPsdBitValues.size()
-                == mConfig.mPsdBitDataFields.length
-            : "BitValues have a different size with fields.";
+        assert surveyPsdStringValues.size() == mConfig.mPsdStringDataFields.length
+                : "StringValues have a different size with fields.";
+        assert surveyPsdBitValues.size() == mConfig.mPsdBitDataFields.length
+                : "BitValues have a different size with fields.";
 
         for (var stringField : mConfig.mPsdStringDataFields) {
             assert surveyPsdStringValues.containsKey(stringField)
-                : "Undefined string fields: "
-                    + stringField;
+                    : "Undefined string fields: " + stringField;
             mAggregatedSurveyPsd.put(stringField, surveyPsdStringValues.get(stringField));
         }
         for (var bitField : mConfig.mPsdBitDataFields) {
@@ -121,17 +119,18 @@ class SurveyClientImpl implements SurveyClient {
             startSurveyDownload(true);
             return;
         }
-        AsyncTask<Boolean> throttlerTask = new AsyncTask<>() {
-            @Override
-            protected Boolean doInBackground() {
-                return mThrottler.canShowSurvey();
-            }
+        AsyncTask<Boolean> throttlerTask =
+                new AsyncTask<>() {
+                    @Override
+                    protected Boolean doInBackground() {
+                        return mThrottler.canShowSurvey();
+                    }
 
-            @Override
-            protected void onPostExecute(Boolean canShowSurvey) {
-                startSurveyDownload(canShowSurvey);
-            }
-        };
+                    @Override
+                    protected void onPostExecute(Boolean canShowSurvey) {
+                        startSurveyDownload(canShowSurvey);
+                    }
+                };
         throttlerTask.executeWithTaskTraits(TaskTraits.BEST_EFFORT_MAY_BLOCK);
     }
 
@@ -140,8 +139,11 @@ class SurveyClientImpl implements SurveyClient {
             Log.d(TAG, "Survey can't be shown");
             return;
         }
-        mController.downloadSurvey(mActivityRef.get(), mConfig.mTriggerId,
-                this::onSurveyDownloadSucceeded, this::onSurveyDownloadFailed);
+        mController.downloadSurvey(
+                mActivityRef.get(),
+                mConfig.mTriggerId,
+                this::onSurveyDownloadSucceeded,
+                this::onSurveyDownloadFailed);
     }
 
     private void onSurveyDownloadSucceeded() {
@@ -150,27 +152,29 @@ class SurveyClientImpl implements SurveyClient {
 
         // Dismiss the survey prompt if it is expired.
         if (mLifecycleDispatcher != null) {
-            mLifecycleObserver = new PauseResumeWithNativeObserver() {
-                @Override
-                public void onResumeWithNative() {
-                    if (mController.isSurveyExpired(mConfig.mTriggerId)) {
-                        mUiDelegate.dismiss();
-                    }
-                }
+            mLifecycleObserver =
+                    new PauseResumeWithNativeObserver() {
+                        @Override
+                        public void onResumeWithNative() {
+                            if (mController.isSurveyExpired(mConfig.mTriggerId)) {
+                                mUiDelegate.dismiss();
+                            }
+                        }
 
-                @Override
-                public void onPauseWithNative() {}
-            };
+                        @Override
+                        public void onPauseWithNative() {}
+                    };
             mLifecycleDispatcher.register(mLifecycleObserver);
         }
 
         // Dismiss the survey as soon as the crash upload permission changed.
-        mOnCrashUploadPermissionChangeCallback = permitted -> {
-            if (!permitted) {
-                // TODO(crbug/1482447): Dismiss the on going survey if possible.
-                mUiDelegate.dismiss();
-            }
-        };
+        mOnCrashUploadPermissionChangeCallback =
+                permitted -> {
+                    if (!permitted) {
+                        // TODO(crbug/1482447): Dismiss the on going survey if possible.
+                        mUiDelegate.dismiss();
+                    }
+                };
         mCrashUploadPermissionSupplier.addObserver(mOnCrashUploadPermissionChangeCallback);
 
         mUiDelegate.showSurveyInvitation(
@@ -193,8 +197,12 @@ class SurveyClientImpl implements SurveyClient {
             return;
         }
         mThrottler.recordSurveyPromptDisplayed();
-        mController.showSurveyIfAvailable(mActivityRef.get(), mConfig.mTriggerId, 0,
-                mLifecycleDispatcher, mAggregatedSurveyPsd);
+        mController.showSurveyIfAvailable(
+                mActivityRef.get(),
+                mConfig.mTriggerId,
+                0,
+                mLifecycleDispatcher,
+                mAggregatedSurveyPsd);
         if (mLifecycleDispatcher != null && mLifecycleObserver != null) {
             mLifecycleDispatcher.unregister(mLifecycleObserver);
             mLifecycleObserver = null;

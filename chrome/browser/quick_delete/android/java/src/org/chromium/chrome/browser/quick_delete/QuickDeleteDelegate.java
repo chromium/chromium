@@ -20,9 +20,7 @@ import org.chromium.components.sync.SyncService;
  * deletion.
  */
 abstract class QuickDeleteDelegate {
-    /**
-     * A data-structure to hold the strings for the Browsing history row in the dialog.
-     */
+    /** A data-structure to hold the strings for the Browsing history row in the dialog. */
     static class DomainVisitsData {
         final String mLastVisitedDomain;
         final int mDomainsCount;
@@ -46,8 +44,9 @@ abstract class QuickDeleteDelegate {
      * @return A boolean indicating whether the user is signed in or not.
      */
     static boolean isSignedIn(@NonNull Profile profile) {
-        return IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
-                ConsentLevel.SIGNIN);
+        return IdentityServicesProvider.get()
+                .getIdentityManager(profile)
+                .hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 
     /**
@@ -58,7 +57,8 @@ abstract class QuickDeleteDelegate {
      */
     static boolean isSyncingHistory(@NonNull Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        return syncService != null && syncService.isSyncFeatureEnabled()
+        return syncService != null
+                && syncService.isSyncFeatureEnabled()
                 && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 

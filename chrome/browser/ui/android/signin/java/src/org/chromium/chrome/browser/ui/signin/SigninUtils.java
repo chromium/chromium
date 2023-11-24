@@ -15,9 +15,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.components.signin.AccountUtils;
 
-/**
- * Helper functions for sign-in and accounts.
- */
+/** Helper functions for sign-in and accounts. */
 public final class SigninUtils {
     private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
     private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
@@ -74,13 +72,12 @@ public final class SigninUtils {
         return context.getString(R.string.sync_promo_continue_as, profileData.getAccountEmail());
     }
 
-    /**
-     * Returns the accessibility label for the the account picker.
-     */
+    /** Returns the accessibility label for the the account picker. */
     public static String getChooseAccountLabel(
             final Context context, DisplayableProfileData profileData) {
         if (profileData.hasDisplayableEmailAddress()) {
-            return context.getString(R.string.signin_account_picker_description_with_email,
+            return context.getString(
+                    R.string.signin_account_picker_description_with_email,
                     profileData.getAccountEmail());
         }
         return context.getString(R.string.signin_account_picker_description);

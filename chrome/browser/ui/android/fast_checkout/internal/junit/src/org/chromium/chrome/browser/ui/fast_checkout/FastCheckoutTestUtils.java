@@ -12,22 +12,43 @@ import org.chromium.components.autofill.VirtualCardEnrollmentState;
 /** A collection of helper methods for FastCheckout tests. */
 class FastCheckoutTestUtils {
     /** Creates a detailed {@link FastCheckoutAutofillProfile}. */
-    static FastCheckoutAutofillProfile createDetailedProfile(String guid, String name,
-            String streetAddress, String city, String postalCode, String email,
+    static FastCheckoutAutofillProfile createDetailedProfile(
+            String guid,
+            String name,
+            String streetAddress,
+            String city,
+            String postalCode,
+            String email,
             String phoneNumber) {
-        return new FastCheckoutAutofillProfile(guid,
-                /* isLocal= */ true, /* honorificPrefix= */ "", name,
-                /* companyName= */ "", /* streetAddress= */ streetAddress,
-                /* region= */ "", /* locality= */ "", /* dependentLocality= */ "",
-                /* postalCode= */ postalCode, /* sortingCode= */ "",
-                /* countryCode= */ "", /* countryName= */ "", phoneNumber, email,
+        return new FastCheckoutAutofillProfile(
+                guid,
+                /* isLocal= */ true,
+                /* honorificPrefix= */ "",
+                name,
+                /* companyName= */ "",
+                /* streetAddress= */ streetAddress,
+                /* region= */ "",
+                /* locality= */ "",
+                /* dependentLocality= */ "",
+                /* postalCode= */ postalCode,
+                /* sortingCode= */ "",
+                /* countryCode= */ "",
+                /* countryName= */ "",
+                phoneNumber,
+                email,
                 /* languageCode= */ "en-US");
     }
 
     /** Creates a simple {@link FastCheckoutAutofillProfile}.  */
     static FastCheckoutAutofillProfile createDummyProfile(String name, String email) {
-        return createDetailedProfile(/*guid=*/"", name, /*streetAddress=*/"", /*city=*/"",
-                /*postalCode=*/"", email, /*phoneNumber=*/"");
+        return createDetailedProfile(
+                /* guid= */ "",
+                name,
+                /* streetAddress= */ "",
+                /* city= */ "",
+                /* postalCode= */ "",
+                email,
+                /* phoneNumber= */ "");
     }
 
     /** Creates a detailed {@link FastCheckoutCreditCard}. */

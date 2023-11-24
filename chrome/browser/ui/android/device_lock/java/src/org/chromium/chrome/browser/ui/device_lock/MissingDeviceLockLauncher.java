@@ -72,8 +72,8 @@ public class MissingDeviceLockLauncher {
                         MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent.COUNT);
                 mMissingDeviceLockCoordinator = null;
             }
-            ChromeSharedPreferences.getInstance().writeBoolean(
-                    ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
+            ChromeSharedPreferences.getInstance()
+                    .writeBoolean(ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
             return null;
         }
 
@@ -82,14 +82,16 @@ public class MissingDeviceLockLauncher {
                 && ChromeSharedPreferences.getInstance()
                         .readBoolean(
                                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false)) {
-            Callback<Boolean> onContinueWithoutDeviceLock = (wipeAllData)
-                    -> ensureSignOutAndDeleteSensitiveData(
-                            ()
-                                    -> mMissingDeviceLockCoordinator.hideDialog(
-                                            DialogDismissalCause.POSITIVE_BUTTON_CLICKED),
-                            wipeAllData);
-            mMissingDeviceLockCoordinator = new MissingDeviceLockCoordinator(
-                    onContinueWithoutDeviceLock, mContext, mModalDialogManager);
+            Callback<Boolean> onContinueWithoutDeviceLock =
+                    (wipeAllData) ->
+                            ensureSignOutAndDeleteSensitiveData(
+                                    () ->
+                                            mMissingDeviceLockCoordinator.hideDialog(
+                                                    DialogDismissalCause.POSITIVE_BUTTON_CLICKED),
+                                    wipeAllData);
+            mMissingDeviceLockCoordinator =
+                    new MissingDeviceLockCoordinator(
+                            onContinueWithoutDeviceLock, mContext, mModalDialogManager);
             mMissingDeviceLockCoordinator.showDialog();
             return mMissingDeviceLockCoordinator;
         }
@@ -109,26 +111,31 @@ public class MissingDeviceLockLauncher {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
 
-        signinManager.runAfterOperationInProgress(() -> {
-            if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null) {
-                signinManager.signOut(SignoutReason.DEVICE_LOCK_REMOVED_ON_AUTOMOTIVE, () -> {
-                    if (!wipeAllData) {
-                        deletePasswordsAndCreditCards();
+        signinManager.runAfterOperationInProgress(
+                () -> {
+                    if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null) {
+                        signinManager.signOut(
+                                SignoutReason.DEVICE_LOCK_REMOVED_ON_AUTOMOTIVE,
+                                () -> {
+                                    if (!wipeAllData) {
+                                        deletePasswordsAndCreditCards();
+                                    }
+                                    wipeDataCallback.run();
+                                },
+                                wipeAllData);
+                    } else {
+                        if (wipeAllData) {
+                            signinManager.wipeSyncUserData(
+                                    wipeDataCallback, DataWipeOption.WIPE_ALL_PROFILE_DATA);
+                        } else {
+                            deletePasswordsAndCreditCards();
+                            wipeDataCallback.run();
+                        }
                     }
-                    wipeDataCallback.run();
-                }, wipeAllData);
-            } else {
-                if (wipeAllData) {
-                    signinManager.wipeSyncUserData(
-                            wipeDataCallback, DataWipeOption.WIPE_ALL_PROFILE_DATA);
-                } else {
-                    deletePasswordsAndCreditCards();
-                    wipeDataCallback.run();
-                }
-            }
-            ChromeSharedPreferences.getInstance().writeBoolean(
-                    ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false);
-        });
+                    ChromeSharedPreferences.getInstance()
+                            .writeBoolean(
+                                    ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false);
+                });
     }
 
     void setPasswordStoreBridgeForTesting(PasswordStoreBridge passwordStoreBridge) {

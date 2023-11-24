@@ -19,9 +19,8 @@ import org.chromium.ui.base.ViewUtils;
 
 class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
     private DividerView mDividerView;
-    /**
-     * Constructor for inflating from XML.
-     */
+
+    /** Constructor for inflating from XML. */
     public HistoryClustersItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -34,15 +33,17 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
         mEndButtonView.setVisibility(VISIBLE);
         mEndButtonView.setImageResource(R.drawable.btn_delete_24dp);
         mEndButtonView.setContentDescription(getContext().getString((R.string.remove)));
-        ImageViewCompat.setImageTintList(mEndButtonView,
+        ImageViewCompat.setImageTintList(
+                mEndButtonView,
                 AppCompatResources.getColorStateList(
                         getContext(), R.color.default_icon_color_secondary_tint_list));
         mEndButtonView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        mEndButtonView.setPaddingRelative(getResources().getDimensionPixelSize(
-                                                  R.dimen.visit_item_remove_button_lateral_padding),
+        mEndButtonView.setPaddingRelative(
+                getResources()
+                        .getDimensionPixelSize(R.dimen.visit_item_remove_button_lateral_padding),
                 getPaddingTop(),
-                getResources().getDimensionPixelSize(
-                        R.dimen.visit_item_remove_button_lateral_padding),
+                getResources()
+                        .getDimensionPixelSize(R.dimen.visit_item_remove_button_lateral_padding),
                 getPaddingBottom());
     }
 
@@ -63,8 +64,11 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
 
     void setTitleText(CharSequence text) {
         mTitleView.setText(text);
-        SelectableListUtils.setContentDescriptionContext(getContext(), mEndButtonView,
-                text.toString(), SelectableListUtils.ContentDescriptionSource.REMOVE_BUTTON);
+        SelectableListUtils.setContentDescriptionContext(
+                getContext(),
+                mEndButtonView,
+                text.toString(),
+                SelectableListUtils.ContentDescriptionSource.REMOVE_BUTTON);
     }
 
     void setHostText(CharSequence text) {

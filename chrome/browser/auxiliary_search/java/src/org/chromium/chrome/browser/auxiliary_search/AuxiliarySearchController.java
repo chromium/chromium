@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 
-/**
- * This Controller for the auxiliary search.
- */
+/** This Controller for the auxiliary search. */
 public interface AuxiliarySearchController extends PauseResumeWithNativeObserver {
     /**
      * Registers to the given lifecycle dispatcher.

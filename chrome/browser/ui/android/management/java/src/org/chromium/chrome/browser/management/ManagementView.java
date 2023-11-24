@@ -36,8 +36,7 @@ public class ManagementView extends ScrollView {
     private TextView mExtensionReportUsername;
     private TextView mExtensionReportVersion;
 
-    @Nullable
-    private UiConfig mUiConfig;
+    @Nullable private UiConfig mUiConfig;
 
     /** Constructor for inflating from XML. */
     public ManagementView(Context context, AttributeSet attrs) {
@@ -110,16 +109,15 @@ public class ManagementView extends ScrollView {
         mLearnMore.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    /**
-     * Adjusts Title, Description, and Learn More link based on management status.
-     */
+    /** Adjusts Title, Description, and Learn More link based on management status. */
     private void adjustView() {
         if (mIsManaged) {
             if (TextUtils.isEmpty(mManagerName)) {
                 mTitle.setText(getResources().getString(R.string.management_subtitle));
             } else {
-                mTitle.setText(getResources().getString(
-                        R.string.management_subtitle_managed_by, mManagerName));
+                mTitle.setText(
+                        getResources()
+                                .getString(R.string.management_subtitle_managed_by, mManagerName));
             }
         } else {
             mTitle.setText(getResources().getString(R.string.management_not_managed_subtitle));
@@ -142,10 +140,12 @@ public class ManagementView extends ScrollView {
     private void configureWideDisplayStyle() {
         if (mUiConfig == null) {
             final int minPadding = getResources().getDimensionPixelSize(R.dimen.cm_padding);
-            final int minWidePadding = getResources().getDimensionPixelSize(R.dimen.cm_padding_wide);
+            final int minWidePadding =
+                    getResources().getDimensionPixelSize(R.dimen.cm_padding_wide);
 
             mUiConfig = new UiConfig(mManagementContainer);
-            ViewResizer.createAndAttach(mManagementContainer, mUiConfig, minPadding, minWidePadding);
+            ViewResizer.createAndAttach(
+                    mManagementContainer, mUiConfig, minPadding, minWidePadding);
         } else {
             mUiConfig.updateDisplayStyle();
         }

@@ -50,8 +50,11 @@ public class GoogleFontService {
 
         for (TypefaceRequest request : requests) {
             FontRequest fontRequest =
-                    new FontRequest("com.google.android.gms.fonts", "com.google.android.gms",
-                            request.toQuery(), R.array.ui_com_google_android_gms_fonts_certs);
+                    new FontRequest(
+                            "com.google.android.gms.fonts",
+                            "com.google.android.gms",
+                            request.toQuery(),
+                            R.array.ui_com_google_android_gms_fonts_certs);
 
             FontsContractCompat.FontRequestCallback fetchingCallback =
                     new FontsContractCompat.FontRequestCallback() {
@@ -75,8 +78,10 @@ public class GoogleFontService {
         }
     }
 
-    private void onResultsUpdated(Map<TypefaceRequest, TypefaceResponse> resultsMap,
-            int nbExpectedResults, GoogleFontRequestCallback callback,
+    private void onResultsUpdated(
+            Map<TypefaceRequest, TypefaceResponse> resultsMap,
+            int nbExpectedResults,
+            GoogleFontRequestCallback callback,
             HandlerThread handlerThread) {
         if (resultsMap.size() != nbExpectedResults) {
             // Still missing results, wait for more to come in.
@@ -85,9 +90,11 @@ public class GoogleFontService {
 
         // Make sure the results are returned on the main thread, and exit the
         // worker thread.
-        new Handler(Looper.getMainLooper()).post(() -> {
-            callback.onResponsesReceived(resultsMap);
-        });
+        new Handler(Looper.getMainLooper())
+                .post(
+                        () -> {
+                            callback.onResponsesReceived(resultsMap);
+                        });
         handlerThread.quitSafely();
     }
 

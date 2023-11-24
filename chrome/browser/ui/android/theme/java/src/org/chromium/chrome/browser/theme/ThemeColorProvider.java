@@ -14,13 +14,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
-/**
- * An abstract class that provides the current theme color.
- */
+/** An abstract class that provides the current theme color. */
 public abstract class ThemeColorProvider {
-    /**
-     * An interface to be notified about changes to the theme color.
-     */
+    /** An interface to be notified about changes to the theme color. */
     public interface ThemeColorObserver {
         /**
          * @param color The new color the observer should use.
@@ -29,9 +25,7 @@ public abstract class ThemeColorProvider {
         void onThemeColorChanged(int color, boolean shouldAnimate);
     }
 
-    /**
-     * An interface to be notified about changes to the tint.
-     */
+    /** An interface to be notified about changes to the tint. */
     public interface TintObserver {
         /**
          * @param tint The new tint the observer should use.
@@ -115,9 +109,7 @@ public abstract class ThemeColorProvider {
         return mBrandedColorScheme != null ? mBrandedColorScheme : BrandedColorScheme.APP_DEFAULT;
     }
 
-    /**
-     * Clears out the observer lists.
-     */
+    /** Clears out the observer lists. */
     public void destroy() {
         mThemeColorObservers.clear();
         mTintObservers.clear();

@@ -21,18 +21,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class InProgressVideoViewHolder extends InProgressViewHolder {
     private final TextView mTitle;
 
-    /**
-     * Creates a new {@link InProgressViewHolder} instance.
-     */
+    /** Creates a new {@link InProgressViewHolder} instance. */
     public static InProgressVideoViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_in_progress_video_item, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_in_progress_video_item, null);
         return new InProgressVideoViewHolder(view);
     }
 
     /** Constructor. */
     public InProgressVideoViewHolder(View view) {
-        super(view, false /* constrainCaption */);
+        super(view, /* constrainCaption= */ false);
         mTitle = view.findViewById(R.id.title);
     }
 

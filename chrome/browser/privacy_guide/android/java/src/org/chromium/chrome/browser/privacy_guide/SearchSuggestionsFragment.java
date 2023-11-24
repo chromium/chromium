@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * Controls the behaviour of the search suggestions privacy guide page.
- */
+/** Controls the behaviour of the search suggestions privacy guide page. */
 public class SearchSuggestionsFragment extends PrivacyGuideBasePage {
     @Override
     public View onCreateView(
@@ -30,9 +28,10 @@ public class SearchSuggestionsFragment extends PrivacyGuideBasePage {
         searchSuggestionsSwitch.setChecked(
                 PrivacyGuideUtils.isSearchSuggestionsEnabled(getProfile()));
 
-        searchSuggestionsSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            PrivacyGuideMetricsDelegate.recordMetricsOnSearchSuggestionsChange(isChecked);
-            UserPrefs.get(getProfile()).setBoolean(Pref.SEARCH_SUGGEST_ENABLED, isChecked);
-        });
+        searchSuggestionsSwitch.setOnCheckedChangeListener(
+                (button, isChecked) -> {
+                    PrivacyGuideMetricsDelegate.recordMetricsOnSearchSuggestionsChange(isChecked);
+                    UserPrefs.get(getProfile()).setBoolean(Pref.SEARCH_SUGGEST_ENABLED, isChecked);
+                });
     }
 }

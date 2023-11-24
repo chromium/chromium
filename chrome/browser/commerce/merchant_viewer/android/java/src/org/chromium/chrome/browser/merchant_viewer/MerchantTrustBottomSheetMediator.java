@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,15 +60,20 @@ public class MerchantTrustBottomSheetMediator {
     private Drawable mFaviconDrawableForTesting;
 
     /** Creates a new instance. */
-    MerchantTrustBottomSheetMediator(Context context, WindowAndroid windowAndroid,
-            MerchantTrustMetrics metrics, ObservableSupplier<Profile> profileSupplier,
+    MerchantTrustBottomSheetMediator(
+            Context context,
+            WindowAndroid windowAndroid,
+            MerchantTrustMetrics metrics,
+            ObservableSupplier<Profile> profileSupplier,
             FaviconHelper faviconHelper) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mMetrics = metrics;
-        mTopControlsHeightDp = (int) (mContext.getResources().getDimensionPixelSize(
-                                              R.dimen.toolbar_height_no_shadow)
-                / mWindowAndroid.getDisplay().getDipScale());
+        mTopControlsHeightDp =
+                (int)
+                        (mContext.getResources()
+                                        .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                                / mWindowAndroid.getDisplay().getDipScale());
         mFaviconHelper = faviconHelper;
         mFaviconSize =
                 mContext.getResources().getDimensionPixelSize(R.dimen.preview_tab_favicon_size);
@@ -75,92 +81,111 @@ public class MerchantTrustBottomSheetMediator {
     }
 
     void setupSheetWebContents(ThinWebView thinWebView, PropertyModel toolbarModel) {
-        assert mWebContentsObserver == null && mWebContentsDelegate == null
+        assert mWebContentsObserver == null
+                && mWebContentsDelegate == null
                 && mToolbarModel == null;
         mToolbarModel = toolbarModel;
 
         createWebContents();
 
-        mWebContentsObserver = new WebContentsObserver(mWebContents) {
-            private GURL mCurrentUrl;
+        mWebContentsObserver =
+                new WebContentsObserver(mWebContents) {
+                    private GURL mCurrentUrl;
 
-            @Override
-            public void loadProgressChanged(float progress) {
-                if (mToolbarModel != null) {
-                    mToolbarModel.set(BottomSheetToolbarProperties.LOAD_PROGRESS, progress);
-                }
-            }
-
-            @Override
-            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                mMetrics.recordNavigateLinkOnBottomSheet();
-                if (!navigation.isSameDocument() && (navigation.getUrl() != null)) {
-                    GURL url = navigation.getUrl();
-                    if (url.equals(mCurrentUrl)) return;
-                    mCurrentUrl = url;
-                    loadFavicon(url);
-                }
-            }
-
-            @Override
-            public void titleWasSet(String title) {
-                if (!MerchantViewerConfig.doesTrustSignalsSheetUsePageTitle()) return;
-                mToolbarModel.set(BottomSheetToolbarProperties.TITLE, title);
-            }
-
-            @Override
-            public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                if (navigation.hasCommitted()) {
-                    mToolbarModel.set(
-                            BottomSheetToolbarProperties.URL, mWebContents.get().getVisibleUrl());
-                }
-            }
-        };
-
-        mWebContentsDelegate = new WebContentsDelegateAndroid() {
-            @Override
-            public void visibleSSLStateChanged() {
-                if (mToolbarModel == null) return;
-                int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
-                mToolbarModel.set(BottomSheetToolbarProperties.SECURITY_ICON,
-                        getSecurityIconResource(securityLevel));
-                mToolbarModel.set(BottomSheetToolbarProperties.URL, mWebContents.getVisibleUrl());
-            }
-
-            @Override
-            public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
-                    int disposition, boolean isRendererInitiated) {
-                loadUrl(url);
-            }
-
-            @Override
-            public boolean shouldCreateWebContents(GURL targetUrl) {
-                loadUrl(targetUrl);
-                return false;
-            }
-
-            @Override
-            public void loadingStateChanged(boolean shouldShowLoadingUI) {
-                boolean isLoading = mWebContents != null && mWebContents.isLoading();
-                if (isLoading) {
-                    if (mToolbarModel == null) return;
-                    mToolbarModel.set(BottomSheetToolbarProperties.LOAD_PROGRESS, 0);
-                    mToolbarModel.set(BottomSheetToolbarProperties.PROGRESS_VISIBLE, true);
-                } else {
-                    // Make sure the progress bar is visible for a few frames.
-                    new Handler().postDelayed(() -> {
+                    @Override
+                    public void loadProgressChanged(float progress) {
                         if (mToolbarModel != null) {
-                            mToolbarModel.set(BottomSheetToolbarProperties.PROGRESS_VISIBLE, false);
+                            mToolbarModel.set(BottomSheetToolbarProperties.LOAD_PROGRESS, progress);
                         }
-                    }, HIDE_PROGRESS_BAR_DELAY_MS);
-                }
-            }
+                    }
 
-            @Override
-            public int getTopControlsHeight() {
-                return mTopControlsHeightDp;
-            }
-        };
+                    @Override
+                    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        mMetrics.recordNavigateLinkOnBottomSheet();
+                        if (!navigation.isSameDocument() && (navigation.getUrl() != null)) {
+                            GURL url = navigation.getUrl();
+                            if (url.equals(mCurrentUrl)) return;
+                            mCurrentUrl = url;
+                            loadFavicon(url);
+                        }
+                    }
+
+                    @Override
+                    public void titleWasSet(String title) {
+                        if (!MerchantViewerConfig.doesTrustSignalsSheetUsePageTitle()) return;
+                        mToolbarModel.set(BottomSheetToolbarProperties.TITLE, title);
+                    }
+
+                    @Override
+                    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        if (navigation.hasCommitted()) {
+                            mToolbarModel.set(
+                                    BottomSheetToolbarProperties.URL,
+                                    mWebContents.get().getVisibleUrl());
+                        }
+                    }
+                };
+
+        mWebContentsDelegate =
+                new WebContentsDelegateAndroid() {
+                    @Override
+                    public void visibleSSLStateChanged() {
+                        if (mToolbarModel == null) return;
+                        int securityLevel =
+                                SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
+                        mToolbarModel.set(
+                                BottomSheetToolbarProperties.SECURITY_ICON,
+                                getSecurityIconResource(securityLevel));
+                        mToolbarModel.set(
+                                BottomSheetToolbarProperties.URL, mWebContents.getVisibleUrl());
+                    }
+
+                    @Override
+                    public void openNewTab(
+                            GURL url,
+                            String extraHeaders,
+                            ResourceRequestBody postData,
+                            int disposition,
+                            boolean isRendererInitiated) {
+                        loadUrl(url);
+                    }
+
+                    @Override
+                    public boolean shouldCreateWebContents(GURL targetUrl) {
+                        loadUrl(targetUrl);
+                        return false;
+                    }
+
+                    @Override
+                    public void loadingStateChanged(boolean shouldShowLoadingUI) {
+                        boolean isLoading = mWebContents != null && mWebContents.isLoading();
+                        if (isLoading) {
+                            if (mToolbarModel == null) return;
+                            mToolbarModel.set(BottomSheetToolbarProperties.LOAD_PROGRESS, 0);
+                            mToolbarModel.set(BottomSheetToolbarProperties.PROGRESS_VISIBLE, true);
+                        } else {
+                            // Make sure the progress bar is visible for a few frames.
+                            Runnable runnable =
+                                    () -> {
+                                        if (mToolbarModel != null) {
+                                            mToolbarModel.set(
+                                                    BottomSheetToolbarProperties.PROGRESS_VISIBLE,
+                                                    false);
+                                        }
+                                    };
+
+                            PostTask.postDelayedTask(
+                                    TaskTraits.UI_USER_VISIBLE,
+                                    runnable,
+                                    HIDE_PROGRESS_BAR_DELAY_MS);
+                        }
+                    }
+
+                    @Override
+                    public int getTopControlsHeight() {
+                        return mTopControlsHeightDp;
+                    }
+                };
         if ((mWebContentView != null) && (mWebContentView.getParent() != null)) {
             ((ViewGroup) mWebContentView.getParent()).removeView(mWebContentView);
         }
@@ -192,8 +217,12 @@ public class MerchantTrustBottomSheetMediator {
         mWebContentView = ContentView.createContentView(mContext, null, mWebContents);
         final ViewAndroidDelegate delegate =
                 ViewAndroidDelegate.createBasicDelegate(mWebContentView);
-        mWebContents.initialize(VersionInfo.getProductVersion(), delegate, mWebContentView,
-                mWindowAndroid, WebContents.createDefaultInternalsHolder());
+        mWebContents.initialize(
+                VersionInfo.getProductVersion(),
+                delegate,
+                mWebContentView,
+                mWindowAndroid,
+                WebContents.createDefaultInternalsHolder());
         ContentUtils.setUserAgentOverride(mWebContents, false);
     }
 
@@ -256,22 +285,28 @@ public class MerchantTrustBottomSheetMediator {
         // wrong non-null bitmap for the first navigation within bottom sheet, so we use Google icon
         // directly for valid urls.
         if (isValidUrl(url) || (profile == null)) {
-            mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE,
+            mToolbarModel.set(
+                    BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE,
                     getDefaultFaviconDrawable(url));
             return;
         }
-        mFaviconHelper.getLocalFaviconImageForURL(profile, url, mFaviconSize, (bitmap, iconUrl) -> {
-            Drawable drawable;
-            if (mFaviconDrawableForTesting != null) {
-                drawable = mFaviconDrawableForTesting;
-            } else if (bitmap != null) {
-                drawable =
-                        FaviconUtils.createRoundedBitmapDrawable(mContext.getResources(), bitmap);
-            } else {
-                drawable = getDefaultFaviconDrawable(url);
-            }
-            mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, drawable);
-        });
+        mFaviconHelper.getLocalFaviconImageForURL(
+                profile,
+                url,
+                mFaviconSize,
+                (bitmap, iconUrl) -> {
+                    Drawable drawable;
+                    if (mFaviconDrawableForTesting != null) {
+                        drawable = mFaviconDrawableForTesting;
+                    } else if (bitmap != null) {
+                        drawable =
+                                FaviconUtils.createRoundedBitmapDrawable(
+                                        mContext.getResources(), bitmap);
+                    } else {
+                        drawable = getDefaultFaviconDrawable(url);
+                    }
+                    mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, drawable);
+                });
     }
 
     // Used when we cannot find a favicon for the url. If url is valid, we use the Google icon.

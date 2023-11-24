@@ -87,7 +87,7 @@ public final class FullScreenSyncPromoUtil {
         }
 
         if (!TextUtils.isEmpty(
-                    UserPrefs.get(profile).getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME))) {
+                UserPrefs.get(profile).getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME))) {
             // Don't show if user has manually signed out.
             return false;
         }
@@ -108,8 +108,8 @@ public final class FullScreenSyncPromoUtil {
                 identityManager.findExtendedAccountInfoByEmailAddress(
                         coreAccountInfos.get(0).getEmail());
         if (!(firstAccount != null
-                    && firstAccount.getAccountCapabilities().canOfferExtendedSyncPromos()
-                            == Tribool.TRUE)) {
+                && firstAccount.getAccountCapabilities().canOfferExtendedSyncPromos()
+                        == Tribool.TRUE)) {
             // Show promo only when CanOfferExtendedSyncPromos capability for the first account
             // is fetched and true.
             return false;

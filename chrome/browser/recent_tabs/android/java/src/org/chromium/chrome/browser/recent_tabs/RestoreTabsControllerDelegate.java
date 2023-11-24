@@ -9,9 +9,7 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 
 import java.util.List;
 
-/**
- * An interface of methods that perform actions related to the restore tabs promo.
- */
+/** An interface of methods that perform actions related to the restore tabs promo. */
 public interface RestoreTabsControllerDelegate {
     /**
      * Action to perform when the restore tabs promo should be shown.
@@ -20,9 +18,7 @@ public interface RestoreTabsControllerDelegate {
      */
     public void showPromo(List<ForeignSession> sessions);
 
-    /**
-     * Action to perform when the restore tabs promo is done showing.
-     */
+    /** Action to perform when the restore tabs promo is done showing. */
     public void onDismissed();
 
     /**
@@ -30,9 +26,7 @@ public interface RestoreTabsControllerDelegate {
      */
     public BooleanCachedFieldTrialParameter getSkipFeatureEngagementParam();
 
-    /**
-     * Get the tab switcher's current tab list model size.
-     */
+    /** Get the tab switcher's current tab list model size. */
     public int getGTSTabListModelSize();
 
     /**

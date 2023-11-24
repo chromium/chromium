@@ -75,7 +75,9 @@ public class UserEducationHelper {
     private void showIPH(Tracker tracker, IPHCommand iphCommand) {
         // Activity was destroyed; don't show IPH.
         View anchorView = iphCommand.anchorView;
-        if (mActivity == null || mActivity.isFinishing() || mActivity.isDestroyed()
+        if (mActivity == null
+                || mActivity.isFinishing()
+                || mActivity.isDestroyed()
                 || anchorView == null) {
             iphCommand.onBlockedCallback.run();
             return;
@@ -93,8 +95,9 @@ public class UserEducationHelper {
 
         HighlightParams highlightParams = iphCommand.highlightParams;
         TextBubble textBubble = null;
-        TriggerDetails triggerDetails = new TriggerDetails(
-                tracker.shouldTriggerHelpUI(featureName), /*shouldShowSnooze=*/false);
+        TriggerDetails triggerDetails =
+                new TriggerDetails(
+                        tracker.shouldTriggerHelpUI(featureName), /* shouldShowSnooze= */ false);
 
         assert (triggerDetails != null);
         if (!triggerDetails.shouldTriggerIph) {
@@ -111,18 +114,28 @@ public class UserEducationHelper {
         assert (!contentString.isEmpty());
         assert (!accessibilityString.isEmpty());
 
-        textBubble = new TextBubble(mActivity, anchorView, contentString, accessibilityString,
-                !iphCommand.removeArrow, viewRectProvider != null ? viewRectProvider : rectProvider,
-                ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        textBubble =
+                new TextBubble(
+                        mActivity,
+                        anchorView,
+                        contentString,
+                        accessibilityString,
+                        !iphCommand.removeArrow,
+                        viewRectProvider != null ? viewRectProvider : rectProvider,
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
-        textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
-            if (featureName != null) tracker.dismissed(featureName);
-            iphCommand.onDismissCallback.run();
-            if (highlightParams != null) {
-                ViewHighlighter.turnOffHighlight(anchorView);
-            }
-        }, ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
+        textBubble.addOnDismissListener(
+                () ->
+                        mHandler.postDelayed(
+                                () -> {
+                                    if (featureName != null) tracker.dismissed(featureName);
+                                    iphCommand.onDismissCallback.run();
+                                    if (highlightParams != null) {
+                                        ViewHighlighter.turnOffHighlight(anchorView);
+                                    }
+                                },
+                                ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
         textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
 
         if (highlightParams != null) {

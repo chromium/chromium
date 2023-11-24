@@ -40,12 +40,15 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** Business logic for this overlay. */
     private final TopToolbarOverlayMediator mMediator;
 
-    public TopToolbarOverlayCoordinator(Context context, LayoutManager layoutManager,
+    public TopToolbarOverlayCoordinator(
+            Context context,
+            LayoutManager layoutManager,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
-            TopUiThemeColorProvider topUiThemeColorProvider, int layoutsToShowOn,
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            int layoutsToShowOn,
             boolean isVisibilityManuallyControlled) {
         mModel =
                 new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
@@ -64,9 +67,17 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
         mChangeProcessor =
                 layoutManager.createCompositorMCP(mModel, mSceneLayer, TopToolbarSceneLayer::bind);
 
-        mMediator = new TopToolbarOverlayMediator(mModel, context, layoutManager,
-                progressInfoCallback, tabSupplier, browserControlsStateProvider,
-                topUiThemeColorProvider, layoutsToShowOn, isVisibilityManuallyControlled);
+        mMediator =
+                new TopToolbarOverlayMediator(
+                        mModel,
+                        context,
+                        layoutManager,
+                        progressInfoCallback,
+                        tabSupplier,
+                        browserControlsStateProvider,
+                        topUiThemeColorProvider,
+                        layoutsToShowOn,
+                        isVisibilityManuallyControlled);
     }
 
     /**

@@ -14,17 +14,13 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-/**
- * Helper class for recording password check UKM metrics
- */
+/** Helper class for recording password check UKM metrics */
 public class PasswordCheckUkmRecorder extends EmptyTabObserver {
     public static final String PASSWORD_CHECK_PACKAGE =
             "org.chromium.chrome.browser.password_check.";
     public static final String PASSWORD_CHANGE_TYPE = "PASSWORD_CHANGE_TYPE";
 
-    /**
-     * Creates {@link PasswordCheckUkmRecorder} instance.
-     */
+    /** Creates {@link PasswordCheckUkmRecorder} instance. */
     public static void createForTab(Tab tab) {
         new PasswordCheckUkmRecorder(tab);
     }
@@ -48,9 +44,12 @@ public class PasswordCheckUkmRecorder extends EmptyTabObserver {
 
     private void recordPasswordChange(
             WebContents webContents, @PasswordChangeType int passwordChangeType) {
-        new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
-                "PasswordManager.PasswordChangeTriggered", "PasswordChangeType",
-                passwordChangeType);
+        new UkmRecorder.Bridge()
+                .recordEventWithIntegerMetric(
+                        webContents,
+                        "PasswordManager.PasswordChangeTriggered",
+                        "PasswordChangeType",
+                        passwordChangeType);
     }
 
     @Override
@@ -65,7 +64,8 @@ public class PasswordCheckUkmRecorder extends EmptyTabObserver {
         }
 
         if (intent.hasExtra(PASSWORD_CHECK_PACKAGE + PASSWORD_CHANGE_TYPE)) {
-            recordPasswordChange(tab.getWebContents(),
+            recordPasswordChange(
+                    tab.getWebContents(),
                     intent.getExtras().getInt(PASSWORD_CHECK_PACKAGE + PASSWORD_CHANGE_TYPE));
             intent.removeExtra(PASSWORD_CHECK_PACKAGE + PASSWORD_CHANGE_TYPE);
         }

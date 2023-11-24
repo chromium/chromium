@@ -55,9 +55,7 @@ public class InstanceSwitcherCoordinator {
     @SuppressLint("StaticFieldLeak")
     static InstanceSwitcherCoordinator sPrevInstance;
 
-    /**
-     * Type of the entries shown on the dialog.
-     */
+    /** Type of the entries shown on the dialog. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({EntryType.INSTANCE, EntryType.COMMAND})
     private @interface EntryType {
@@ -93,18 +91,32 @@ public class InstanceSwitcherCoordinator {
      * @param newWindowEnabled True if the "New window" command needs to be enabled.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
      */
-    public static void showDialog(Context context, ModalDialogManager modalDialogManager,
-            LargeIconBridge iconBridge, Callback<InstanceInfo> openCallback,
-            Callback<InstanceInfo> closeCallback, Runnable newWindowAction,
-            boolean newWindowEnabled, List<InstanceInfo> instanceInfo) {
-        new InstanceSwitcherCoordinator(context, modalDialogManager, iconBridge, openCallback,
-                closeCallback, newWindowAction)
+    public static void showDialog(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            LargeIconBridge iconBridge,
+            Callback<InstanceInfo> openCallback,
+            Callback<InstanceInfo> closeCallback,
+            Runnable newWindowAction,
+            boolean newWindowEnabled,
+            List<InstanceInfo> instanceInfo) {
+        new InstanceSwitcherCoordinator(
+                        context,
+                        modalDialogManager,
+                        iconBridge,
+                        openCallback,
+                        closeCallback,
+                        newWindowAction)
                 .show(instanceInfo, newWindowEnabled);
     }
 
-    private InstanceSwitcherCoordinator(Context context, ModalDialogManager modalDialogManager,
-            LargeIconBridge iconBridge, Callback<InstanceInfo> openCallback,
-            Callback<InstanceInfo> closeCallback, Runnable newWindowAction) {
+    private InstanceSwitcherCoordinator(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            LargeIconBridge iconBridge,
+            Callback<InstanceInfo> openCallback,
+            Callback<InstanceInfo> closeCallback,
+            Runnable newWindowAction) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOpenCallback = openCallback;
@@ -115,13 +127,17 @@ public class InstanceSwitcherCoordinator {
 
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
-        adapter.registerType(EntryType.INSTANCE,
-                parentView
-                -> LayoutInflater.from(mContext).inflate(R.layout.instance_switcher_item, null),
+        adapter.registerType(
+                EntryType.INSTANCE,
+                parentView ->
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.instance_switcher_item, null),
                 InstanceSwitcherItemViewBinder::bind);
-        adapter.registerType(EntryType.COMMAND,
-                parentView
-                -> LayoutInflater.from(mContext).inflate(R.layout.instance_switcher_cmd_item, null),
+        adapter.registerType(
+                EntryType.COMMAND,
+                parentView ->
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.instance_switcher_cmd_item, null),
                 InstanceSwitcherItemViewBinder::bind);
         mDialogView = LayoutInflater.from(context).inflate(R.layout.instance_switcher_dialog, null);
         ListView listView = (ListView) mDialogView.findViewById(R.id.list_view);
@@ -145,21 +161,23 @@ public class InstanceSwitcherCoordinator {
 
     private PropertyModel createDialog(
             View dialogView, ModelList modelList, List<InstanceInfo> items) {
-        ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
-            @Override
-            public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-                sPrevInstance = null;
-            }
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onDismiss(
+                            PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                        sPrevInstance = null;
+                    }
 
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {
-                switch (buttonType) {
-                    case ModalDialogProperties.ButtonType.NEGATIVE:
-                        dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-                        break;
-                }
-            }
-        };
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        switch (buttonType) {
+                            case ModalDialogProperties.ButtonType.NEGATIVE:
+                                dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                                break;
+                        }
+                    }
+                };
         Resources resources = mContext.getResources();
         String title = resources.getString(R.string.instance_switcher_header);
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -169,7 +187,8 @@ public class InstanceSwitcherCoordinator {
                 .with(ModalDialogProperties.TITLE, title)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, null)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
-                .with(ModalDialogProperties.DIALOG_STYLES,
+                .with(
+                        ModalDialogProperties.DIALOG_STYLES,
                         ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE)
                 .build();
     }
@@ -184,7 +203,8 @@ public class InstanceSwitcherCoordinator {
                         .with(InstanceSwitcherItemProperties.DESC, desc)
                         .with(InstanceSwitcherItemProperties.CURRENT, currentIndicator)
                         .with(InstanceSwitcherItemProperties.INSTANCE_ID, item.instanceId)
-                        .with(InstanceSwitcherItemProperties.CLICK_LISTENER,
+                        .with(
+                                InstanceSwitcherItemProperties.CLICK_LISTENER,
                                 (view) -> switchToInstance(item));
         if (!currentIndicator) buildMoreMenu(builder, item);
         PropertyModel model = builder.build();
@@ -210,27 +230,32 @@ public class InstanceSwitcherCoordinator {
     private void buildMoreMenu(PropertyModel.Builder builder, InstanceInfo item) {
         ModelList moreMenu = new ModelList();
         moreMenu.add(buildMenuListItem(R.string.instance_switcher_close_window, 0, 0));
-        ListMenu.Delegate moreMenuDelegate = (model) -> {
-            int textId = model.get(ListMenuItemProperties.TITLE_ID);
-            if (textId == R.string.instance_switcher_close_window) {
-                if (canSkipConfirm(item)) {
-                    removeInstance(item);
-                } else {
-                    showConfirmationMessage(item);
-                }
-            }
-        };
+        ListMenu.Delegate moreMenuDelegate =
+                (model) -> {
+                    int textId = model.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId == R.string.instance_switcher_close_window) {
+                        if (canSkipConfirm(item)) {
+                            removeInstance(item);
+                        } else {
+                            showConfirmationMessage(item);
+                        }
+                    }
+                };
         BasicListMenu listMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(mContext, moreMenu, moreMenuDelegate);
         listMenu.addContentViewClickRunnable(
-                () -> { RecordUserAction.record("Android.WindowManager.SecondaryMenu"); });
+                () -> {
+                    RecordUserAction.record("Android.WindowManager.SecondaryMenu");
+                });
         builder.with(InstanceSwitcherItemProperties.MORE_MENU, () -> listMenu);
     }
 
     private void switchToInstance(InstanceInfo item) {
         if (item.type == InstanceInfo.Type.CURRENT || item.type == InstanceInfo.Type.ADJACENT) {
-            Toast.makeText(mContext, R.string.instance_switcher_already_running_foreground,
-                         Toast.LENGTH_LONG)
+            Toast.makeText(
+                            mContext,
+                            R.string.instance_switcher_already_running_foreground,
+                            Toast.LENGTH_LONG)
                     .show();
             return;
         }
@@ -262,14 +287,14 @@ public class InstanceSwitcherCoordinator {
     private static boolean canSkipConfirm(InstanceInfo item) {
         // Unrestorable, invisible instance can be deleted without confirmation.
         if (UiUtils.totalTabCount(item) == 0 && item.type == InstanceInfo.Type.OTHER) return true;
-        return ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, false);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, false);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void setSkipCloseConfirmation() {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, true);
     }
 
     private void showConfirmationMessage(InstanceInfo item) {
@@ -291,19 +316,21 @@ public class InstanceSwitcherCoordinator {
 
         TextView positiveButton = (TextView) dialog.findViewById(R.id.positive_button);
         positiveButton.setText(res.getString(R.string.close));
-        positiveButton.setOnClickListener(v -> {
-            assert mItemToDelete != null;
-            CheckBox skipConfirm = (CheckBox) dialog.findViewById(R.id.no_more_check);
-            if (skipConfirm.isChecked()) setSkipCloseConfirmation();
-            dialog.dismiss();
-            removeInstance(mItemToDelete);
-        });
+        positiveButton.setOnClickListener(
+                v -> {
+                    assert mItemToDelete != null;
+                    CheckBox skipConfirm = (CheckBox) dialog.findViewById(R.id.no_more_check);
+                    if (skipConfirm.isChecked()) setSkipCloseConfirmation();
+                    dialog.dismiss();
+                    removeInstance(mItemToDelete);
+                });
         TextView negativeButton = (TextView) dialog.findViewById(R.id.negative_button);
         negativeButton.setText(res.getString(R.string.cancel));
-        negativeButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-        });
+        negativeButton.setOnClickListener(
+                v -> {
+                    dialog.dismiss();
+                    dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                });
         dialog.show();
     }
 }

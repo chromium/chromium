@@ -249,8 +249,8 @@ public class LocationBarLayout extends FrameLayout {
                     // to setUrlFocusChangePercent() since it's driven by an animation. To avoid
                     // getting into a stale state, we call setUrlFocusChangePercent() again whenever
                     // the value of mUrlBarLaidOutAtFocusedWidth changes.
-                    if (mNativeInitialized && 
-                           urlBarLaidOutAtFocusedWidth != mUrlBarLaidOutAtFocusedWidth) {
+                    if (mNativeInitialized
+                            && urlBarLaidOutAtFocusedWidth != mUrlBarLaidOutAtFocusedWidth) {
                         mUrlBarLaidOutAtFocusedWidth = urlBarLaidOutAtFocusedWidth;
                         setUrlFocusChangePercent(
                                 mUrlFocusPercentage,

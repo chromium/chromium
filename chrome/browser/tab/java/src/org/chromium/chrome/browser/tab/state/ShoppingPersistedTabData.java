@@ -21,6 +21,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -76,16 +77,13 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final int MINIMUM_DROP_PERCENTAGE = 10;
     private static final int ONE_WEEK_MS = (int) TimeUnit.DAYS.toMillis(7);
 
-    @VisibleForTesting
-    public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
+    @VisibleForTesting public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
 
     private static final int NINETY_DAYS_SECONDS = (int) TimeUnit.DAYS.toSeconds(90);
 
-    @VisibleForTesting
-    public static final long NO_TRANSITIONS_OCCURRED = -1;
+    @VisibleForTesting public static final long NO_TRANSITIONS_OCCURRED = -1;
 
-    @VisibleForTesting
-    public static final long NO_PRICE_KNOWN = -1;
+    @VisibleForTesting public static final long NO_PRICE_KNOWN = -1;
 
     private static boolean sPriceTrackingWithOptimizationGuideForTesting;
 
@@ -102,8 +100,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
             new ObservableSupplierImpl<>();
 
-    @VisibleForTesting
-    protected EmptyTabObserver mUrlUpdatedObserver;
+    @VisibleForTesting protected EmptyTabObserver mUrlUpdatedObserver;
 
     @IntDef({PriceDropMethod.NONE, PriceDropMethod.LEGACY, PriceDropMethod.NEW})
     @Retention(RetentionPolicy.SOURCE)
@@ -113,8 +110,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         int NEW = 2;
     }
 
-    @VisibleForTesting
-    protected @PriceDropMethod int mPriceDropMethod = PriceDropMethod.NEW;
+    @VisibleForTesting protected @PriceDropMethod int mPriceDropMethod = PriceDropMethod.NEW;
 
     static {
         PersistedTabData.addSupportedMaintenanceClass(USER_DATA_KEY);
@@ -123,11 +119,13 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     // Lazy initialization of OptimizationGuideBridgeFactory
     private static class OptimizationGuideBridgeFactoryHolder {
         private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory;
+
         static {
             List<HintsProto.OptimizationType> optimizationTypes;
             if (isPriceTrackingWithOptimizationGuideEnabled(Profile.getLastUsedRegularProfile())) {
                 optimizationTypes =
-                        Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
+                        Arrays.asList(
+                                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
                                 HintsProto.OptimizationType.PRICE_TRACKING);
             } else {
                 optimizationTypes =
@@ -242,7 +240,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public ShoppingPersistedTabData(Tab tab) {
-        super(tab,
+        super(
+                tab,
                 PersistedTabDataConfiguration.get(ShoppingPersistedTabData.class, tab.isIncognito())
                         .getStorage(),
                 PersistedTabDataConfiguration.get(ShoppingPersistedTabData.class, tab.isIncognito())
@@ -267,47 +266,43 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (!navigationHandle.isInPrimaryMainFrame()) {
             return;
         }
-        OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory.create()
-                .canApplyOptimization(navigationHandle.getUrl(),
-                        HintsProto.OptimizationType.PRICE_TRACKING, (decision, metadata) -> {
-                            if (!tab.isInitialized()) {
-                                if (onCompleteForTesting != null) {
-                                    onCompleteForTesting.run();
-                                }
-                                return;
-                            }
-                            if (!tab.getUrl().equals(navigationHandle.getUrl())
-                                    || decision != OptimizationGuideDecision.TRUE) {
-                                if (onCompleteForTesting != null) {
-                                    onCompleteForTesting.run();
-                                }
-                                mPriceDropMetricsLogger.logPriceDropMetrics(
-                                        METRICS_IDENTIFIER_PREFIX,
-                                        getTimeSinceTabLastOpenedMs(tab));
-                                return;
-                            }
-                            try {
-                                PriceTrackingData priceTrackingDataProto =
-                                        PriceTrackingData.parseFrom(metadata.getValue());
-                                parsePriceTrackingDataProto(tab, priceTrackingDataProto, null);
-                                setLastUpdatedMs(System.currentTimeMillis());
-                                mPriceDropMetricsLogger.logPriceDropMetrics(
-                                        METRICS_IDENTIFIER_PREFIX,
-                                        getTimeSinceTabLastOpenedMs(tab));
-                            } catch (InvalidProtocolBufferException e) {
-                                Log.i(TAG,
-                                        String.format(Locale.US,
-                                                "There was a problem "
-                                                        + "parsing "
-                                                        + "PriceTracking"
-                                                        + "DataProto. "
-                                                        + "Details %s.",
-                                                e));
-                            }
-                            if (onCompleteForTesting != null) {
-                                onCompleteForTesting.run();
-                            }
-                        });
+        OptimizationGuideBridge.OptimizationGuideCallback optimizationCallback =
+                (decision, metadata) -> {
+                    if (!tab.isInitialized()) {
+                        if (onCompleteForTesting != null) {
+                            onCompleteForTesting.run();
+                        }
+                        return;
+                    }
+                    if (!tab.getUrl().equals(navigationHandle.getUrl())
+                            || decision != OptimizationGuideDecision.TRUE) {
+                        if (onCompleteForTesting != null) {
+                            onCompleteForTesting.run();
+                        }
+                        mPriceDropMetricsLogger.logPriceDropMetrics(
+                                METRICS_IDENTIFIER_PREFIX, getTimeSinceTabLastOpenedMs(tab));
+                        return;
+                    }
+                    try {
+                        PriceTrackingData priceTrackingDataProto =
+                                PriceTrackingData.parseFrom(metadata.getValue());
+                        parsePriceTrackingDataProto(tab, priceTrackingDataProto, null);
+                        setLastUpdatedMs(System.currentTimeMillis());
+                        mPriceDropMetricsLogger.logPriceDropMetrics(
+                                METRICS_IDENTIFIER_PREFIX, getTimeSinceTabLastOpenedMs(tab));
+                    } catch (InvalidProtocolBufferException e) {
+                        Log.i(TAG, "Problem parsing PriceTrackingDataProto", e);
+                    }
+                    if (onCompleteForTesting != null) {
+                        onCompleteForTesting.run();
+                    }
+                };
+        OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
+                .create()
+                .canApplyOptimization(
+                        navigationHandle.getUrl(),
+                        HintsProto.OptimizationType.PRICE_TRACKING,
+                        optimizationCallback);
     }
 
     /**
@@ -367,8 +362,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         }
 
                         // User navigating to a different page, as detected by a search or typing
-                        // something
-                        // into the address bar.
+                        // something into the address bar.
                         boolean fromAddressBar =
                                 (navigationHandle.pageTransition()
                                                 & PageTransition.FROM_ADDRESS_BAR)
@@ -409,17 +403,18 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * @param tab {@link Tab} for which {@link ShoppingPersistedTabData} is initialized.
      */
     public static void initialize(Tab tab) {
-        Callback<ShoppingPersistedTabData> callback = (res) -> {
-            if (res == null) {
-                // If there is no ShoppingPersistedTabData found from storage, we create
-                // an empty ShoppingPersistedTabDataa so the pricing data can be prefetched
-                // on each new navigation. We gate this with an isDestroyed() check to protect
-                // against the Tab being destroyed in the meantime.
-                if (!tab.isDestroyed()) {
-                    ShoppingPersistedTabData.from(tab);
-                }
-            }
-        };
+        Callback<ShoppingPersistedTabData> callback =
+                (res) -> {
+                    if (res == null) {
+                        // If there is no ShoppingPersistedTabData found from storage, we create
+                        // an empty ShoppingPersistedTabDataa so the pricing data can be prefetched
+                        // on each new navigation. We gate this with an isDestroyed() check to
+                        // protect against the Tab being destroyed in the meantime.
+                        if (!tab.isDestroyed()) {
+                            ShoppingPersistedTabData.from(tab);
+                        }
+                    }
+                };
         if (sDelayedInitFinished) {
             ShoppingPersistedTabData.from(tab, callback);
         } else {
@@ -441,16 +436,23 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public static void from(Tab tab, Callback<ShoppingPersistedTabData> callback) {
         if (tab == null || tab.isDestroyed()) {
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        callback.onResult(null);
+                    });
             return;
         }
         if (sDelayedInitFinished) {
             fromWithoutDelayedInit(tab, callback);
         } else {
-            @DelayedInitMethod
-            int delayedInitMethod = getDelayedInitMethod();
+            @DelayedInitMethod int delayedInitMethod = getDelayedInitMethod();
             if (delayedInitMethod == DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT) {
-                PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
+                PostTask.postTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            callback.onResult(null);
+                        });
             } else if (delayedInitMethod == DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT) {
                 sShoppingDataRequests.add(new ShoppingDataRequest(tab, callback));
             } else {
@@ -464,74 +466,86 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         // Shopping related data is not available for incognito or Custom Tabs. For example,
         // for incognito Tabs it is not possible to call a backend service with the user's URL.
         if (tab.isIncognito() || tab.isCustomTab()) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        callback.onResult(null);
+                    });
             return;
         }
-        PersistedTabData.from(tab,
-                (data, storage, id, factoryCallback)
-                        -> {
-                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                        ShoppingPersistedTabData shoppingPersistedTabData =
-                                tab.isDestroyed() ? null : ShoppingPersistedTabData.from(tab);
-                        PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
-                            if (shoppingPersistedTabData != null) {
-                                shoppingPersistedTabData.deserializeAndLog(data);
-                            }
-                            PostTask.postTask(TaskTraits.UI_DEFAULT,
-                                    () -> { factoryCallback.onResult(shoppingPersistedTabData); });
-                        });
-                    });
+        PersistedTabData.from(
+                tab,
+                (data, storage, id, factoryCallback) -> {
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                ShoppingPersistedTabData shoppingPersistedTabData =
+                                        tab.isDestroyed()
+                                                ? null
+                                                : ShoppingPersistedTabData.from(tab);
+                                PostTask.postTask(
+                                        TaskTraits.USER_BLOCKING_MAY_BLOCK,
+                                        () -> {
+                                            if (shoppingPersistedTabData != null) {
+                                                shoppingPersistedTabData.deserializeAndLog(data);
+                                            }
+                                            PostTask.postTask(
+                                                    TaskTraits.UI_DEFAULT,
+                                                    () -> {
+                                                        factoryCallback.onResult(
+                                                                shoppingPersistedTabData);
+                                                    });
+                                        });
+                            });
                 },
-                (supplierCallback)
-                        -> {
+                (supplierCallback) -> {
                     if (tab.isDestroyed()
                             || getTimeSinceTabLastOpenedMs(tab)
                                     > TimeUnit.SECONDS.toMillis(getStaleTabThresholdSeconds())) {
                         supplierCallback.onResult(null);
                         return;
                     }
-                    PriceDataSnapshot previous = PersistedTabData.from(tab, USER_DATA_KEY) == null
-                            ? null
-                            : new PriceDataSnapshot(PersistedTabData.from(tab, USER_DATA_KEY));
-                    OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory.create()
-                            .canApplyOptimization(tab.getUrl(),
+                    PriceDataSnapshot previous =
+                            PersistedTabData.from(tab, USER_DATA_KEY) == null
+                                    ? null
+                                    : new PriceDataSnapshot(
+                                            PersistedTabData.from(tab, USER_DATA_KEY));
+                    OptimizationGuideBridge.OptimizationGuideCallback optimizationCallback =
+                            (decision, metadata) -> {
+                                if (tab.isDestroyed()) {
+                                    supplierCallback.onResult(null);
+                                    return;
+                                }
+                                if (decision != OptimizationGuideDecision.TRUE) {
+                                    ShoppingPersistedTabData res =
+                                            getEmptyShoppingPersistedTabData(tab);
+                                    res.logPriceDropMetrics(METRICS_IDENTIFIER_PREFIX);
+                                    supplierCallback.onResult(res);
+                                    return;
+                                }
+                                try {
+                                    PriceTrackingData priceTrackingDataProto =
+                                            PriceTrackingData.parseFrom(metadata.getValue());
+                                    ShoppingPersistedTabData sptd =
+                                            ShoppingPersistedTabData.from(tab);
+                                    sptd.parsePriceTrackingDataProto(
+                                            tab, priceTrackingDataProto, previous);
+                                    sptd.logPriceDropMetrics(METRICS_IDENTIFIER_PREFIX);
+                                    supplierCallback.onResult(sptd);
+                                } catch (InvalidProtocolBufferException e) {
+                                    Log.i(TAG, "Problem with PriceTrackingDataProto.Details", e);
+                                    supplierCallback.onResult(null);
+                                }
+                            };
+                    OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
+                            .create()
+                            .canApplyOptimization(
+                                    tab.getUrl(),
                                     HintsProto.OptimizationType.PRICE_TRACKING,
-                                    (decision, metadata) -> {
-                                        if (tab.isDestroyed()) {
-                                            supplierCallback.onResult(null);
-                                            return;
-                                        }
-                                        if (decision != OptimizationGuideDecision.TRUE) {
-                                            ShoppingPersistedTabData res =
-                                                    getEmptyShoppingPersistedTabData(tab);
-                                            res.logPriceDropMetrics(METRICS_IDENTIFIER_PREFIX);
-                                            supplierCallback.onResult(res);
-                                            return;
-                                        }
-                                        try {
-                                            PriceTrackingData priceTrackingDataProto =
-                                                    PriceTrackingData.parseFrom(
-                                                            metadata.getValue());
-                                            ShoppingPersistedTabData sptd =
-                                                    ShoppingPersistedTabData.from(tab);
-                                            sptd.parsePriceTrackingDataProto(
-                                                    tab, priceTrackingDataProto, previous);
-                                            sptd.logPriceDropMetrics(METRICS_IDENTIFIER_PREFIX);
-                                            supplierCallback.onResult(sptd);
-                                        } catch (InvalidProtocolBufferException e) {
-                                            Log.i(TAG,
-                                                    String.format(Locale.US,
-                                                            "There was a problem "
-                                                                    + "parsing "
-                                                                    + "PriceTracking"
-                                                                    + "DataProto. "
-                                                                    + "Details %s.",
-                                                            e));
-                                            supplierCallback.onResult(null);
-                                        }
-                                    });
+                                    optimizationCallback);
                 },
-                ShoppingPersistedTabData.class, callback);
+                ShoppingPersistedTabData.class,
+                callback);
     }
 
     /**
@@ -541,8 +555,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 PersistedTabData.from(tab, USER_DATA_KEY);
         if (shoppingPersistedTabData == null) {
-            shoppingPersistedTabData = tab.getUserDataHost().setUserData(
-                    USER_DATA_KEY, new ShoppingPersistedTabData(tab));
+            shoppingPersistedTabData =
+                    tab.getUserDataHost()
+                            .setUserData(USER_DATA_KEY, new ShoppingPersistedTabData(tab));
         }
         return shoppingPersistedTabData;
     }
@@ -560,11 +575,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return shoppingPersistedTabData.getPriceDrop() != null;
     }
 
-    /**
-     * Whether a BuyableProductAnnotation was found or not
-     */
-    @IntDef({FoundBuyableProduct.NOT_FOUND, FoundBuyableProduct.FOUND,
-            FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE})
+    /** Whether a BuyableProductAnnotation was found or not */
+    @IntDef({
+        FoundBuyableProduct.NOT_FOUND,
+        FoundBuyableProduct.FOUND,
+        FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface FoundBuyableProduct {
         int NOT_FOUND = 0;
@@ -573,8 +589,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         int NUM_ENTRIES = 3;
     }
 
-    @IntDef({FoundBuyableProductAnnotation.NOT_FOUND, FoundBuyableProductAnnotation.FOUND,
-            FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE})
+    @IntDef({
+        FoundBuyableProductAnnotation.NOT_FOUND,
+        FoundBuyableProductAnnotation.FOUND,
+        FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface FoundBuyableProductAnnotation {
         int NOT_FOUND = 0;
@@ -583,8 +602,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         int NUM_ENTRIES = 3;
     }
 
-    @IntDef({DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT,
-            DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT})
+    @IntDef({
+        DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT,
+        DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface DelayedInitMethod {
         /**
@@ -593,6 +614,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
          * called and the Queue<ShoppingDataRequest> being flushed.
          */
         int DELAY_RESPONSES_UNTIL_INIT = 0;
+
         /**
          * Responses from public API ShoppingPersistedTabData.from are returned as empty until
          * {@link ShoppingPersistedTabData} is initialized. This is achieved by onDeferredStartup()
@@ -601,9 +623,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         int EMPTY_RESPONSES_UNTIL_INIT = 1;
     }
 
-    /**
-     * Enable saving of {@link ShoppingPersistedTabData}
-     */
+    /** Enable saving of {@link ShoppingPersistedTabData} */
     protected void enableSaving() {
         mIsTabSaveEnabledSupplier.set(true);
     }
@@ -619,8 +639,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     protected void parsePriceTrackingDataProto(
             Tab tab, PriceTrackingData priceTrackingData, PriceDataSnapshot previousPricingData) {
-        @FoundBuyableProduct
-        int foundBuyableProduct = FoundBuyableProduct.NOT_FOUND;
+        @FoundBuyableProduct int foundBuyableProduct = FoundBuyableProduct.NOT_FOUND;
 
         ProductPriceUpdate productUpdate = priceTrackingData.getProductUpdate();
         BuyableProduct buyableProduct = priceTrackingData.getBuyableProduct();
@@ -642,7 +661,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         }
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Tabs.ShoppingPersistedTabData.FoundBuyableProduct", foundBuyableProduct,
+                "Tabs.ShoppingPersistedTabData.FoundBuyableProduct",
+                foundBuyableProduct,
                 FoundBuyableProduct.NUM_ENTRIES);
         // Only persist this ShoppingPersistedTabData if it was correctly populated from the
         // response
@@ -665,8 +685,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 || !productUpdateProto.getOldPrice().hasCurrencyCode()) {
             return false;
         }
-        if (!productUpdateProto.getNewPrice().getCurrencyCode().equals(
-                    productUpdateProto.getOldPrice().getCurrencyCode())) {
+        if (!productUpdateProto
+                .getNewPrice()
+                .getCurrencyCode()
+                .equals(productUpdateProto.getOldPrice().getCurrencyCode())) {
             return false;
         }
         return true;
@@ -680,9 +702,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             return false;
         }
         if (!priceTrackingDataProto.getBuyableProduct().getCurrentPrice().hasAmountMicros()
-                || !priceTrackingDataProto.getBuyableProduct()
-                            .getCurrentPrice()
-                            .hasCurrencyCode()) {
+                || !priceTrackingDataProto
+                        .getBuyableProduct()
+                        .getCurrentPrice()
+                        .hasCurrencyCode()) {
             return false;
         }
         return true;
@@ -789,7 +812,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public PriceDrop getPriceDropLegacy() {
         assert mPriceDropMethod == PriceDropMethod.LEGACY;
         if (mPriceDropData.priceMicros == NO_PRICE_KNOWN
-                || mPriceDropData.previousPriceMicros == NO_PRICE_KNOWN || !isQualifyingPriceDrop()
+                || mPriceDropData.previousPriceMicros == NO_PRICE_KNOWN
+                || !isQualifyingPriceDrop()
                 || isPriceChangeStale()) {
             return null;
         }
@@ -806,7 +830,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public PriceDrop getPriceDrop() {
         assert mPriceDropMethod == PriceDropMethod.NEW;
-        if (!isValidPriceDropUpdate() || isPriceChangeStale()
+        if (!isValidPriceDropUpdate()
+                || isPriceChangeStale()
                 || !mTab.getUrl().equals(mPriceDropData.gurl)) {
             return null;
         }
@@ -886,7 +911,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private CurrencyFormatter getCurrencyFormatter(String currencyCode) {
         if (mCurrencyFormatterMap.get(currencyCode) == null) {
-            mCurrencyFormatterMap.put(currencyCode,
+            mCurrencyFormatterMap.put(
+                    currencyCode,
                     new CurrencyFormatter(mPriceDropData.currencyCode, Locale.getDefault()));
         }
         return mCurrencyFormatterMap.get(currencyCode);
@@ -952,8 +978,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     GURL.deserialize(shoppingPersistedTabDataProto.getProductImageUrl());
             return true;
         } catch (InvalidProtocolBufferException e) {
-            Log.e(TAG,
-                    String.format(Locale.US,
+            Log.e(
+                    TAG,
+                    String.format(
+                            Locale.US,
                             "There was a problem deserializing "
                                     + "ShoppingPersistedTabData. Details: %s",
                             e.getMessage()));
@@ -970,7 +998,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public long getTimeToLiveMs() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, TIME_TO_LIVE_MS_PARAM,
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    TIME_TO_LIVE_MS_PARAM,
                     (int) ONE_HOUR_MS);
         }
         return (int) ONE_HOUR_MS;
@@ -1013,7 +1042,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public static int getStaleTabThresholdSeconds() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, STALE_TAB_THRESHOLD_SECONDS_PARAM,
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    STALE_TAB_THRESHOLD_SECONDS_PARAM,
                     NINETY_DAYS_SECONDS);
         }
         return NINETY_DAYS_SECONDS;
@@ -1041,7 +1071,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public static boolean isCheckIfPriceDropIsSeenEnabled() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, CHECK_IF_PRICE_DROP_IS_SEEN_PARAM,
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    CHECK_IF_PRICE_DROP_IS_SEEN_PARAM,
                     false);
         }
         return false;
@@ -1051,7 +1082,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (FeatureList.isInitialized()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                        RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM, false)) {
+                        RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM,
+                        false)) {
             return DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT;
         }
         return DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT;
@@ -1082,8 +1114,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (productPriceUpdate.getNewPrice().getAmountMicros() != mPriceDropData.priceMicros) {
             return true;
         }
-        if (!productPriceUpdate.getNewPrice().getCurrencyCode().equals(
-                    mPriceDropData.currencyCode)) {
+        if (!productPriceUpdate
+                .getNewPrice()
+                .getCurrencyCode()
+                .equals(mPriceDropData.currencyCode)) {
             return true;
         }
         return false;
@@ -1109,14 +1143,19 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             // create and associate {@link ShoppingPersistedTabData} with a
             // destroyed {@link Tab}.
             PostTask.postTask(
-                    TaskTraits.UI_DEFAULT, () -> { shoppingDataRequest.callback.onResult(null); });
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        shoppingDataRequest.callback.onResult(null);
+                    });
             processNextItemOnQueue();
             return;
         }
-        ShoppingPersistedTabData.fromWithoutDelayedInit(shoppingDataRequest.tab, (res) -> {
-            shoppingDataRequest.callback.onResult(res);
-            processNextItemOnQueue();
-        });
+        ShoppingPersistedTabData.fromWithoutDelayedInit(
+                shoppingDataRequest.tab,
+                (res) -> {
+                    shoppingDataRequest.callback.onResult(res);
+                    processNextItemOnQueue();
+                });
     }
 
     /**

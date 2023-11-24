@@ -865,8 +865,7 @@ class LocationBarMediator
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Only reset values if the animation is ending because it's completely
-                        // finished
-                        // and not because it was canceled.
+                        // finished and not because it was canceled.
                         if (locationBarTablet.getWidthChangeFraction() == 0.f) {
                             locationBarTablet.finishAnimatingWidthChange();
                             locationBarTablet.resetValuesAfterAnimation();
@@ -939,8 +938,7 @@ class LocationBarMediator
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Only reset values if the animation is ending because it's completely
-                        // finished
-                        // and not because it was canceled.
+                        // finished and not because it was canceled.
                         if (locationBarTablet.getWidthChangeFraction() == 1.f) {
                             locationBarTablet.finishAnimatingWidthChange();
                             locationBarTablet.resetValuesAfterAnimation();
@@ -1250,7 +1248,7 @@ class LocationBarMediator
         }
     }
 
-    // LocationBarData.Observer implementation
+    // LocationBarData.Observer implementation.
     // Using the default empty onSecurityStateChanged.
     // Using the default empty onTitleChanged.
 

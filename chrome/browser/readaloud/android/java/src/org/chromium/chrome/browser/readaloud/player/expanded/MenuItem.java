@@ -138,6 +138,7 @@ public class MenuItem extends FrameLayout {
                     mMenu.onPlayButtonClicked(mId);
                 });
     }
+
     void setItemEnabled(boolean enabled) {
         mLayout.setClickable(enabled);
         mLayout.setFocusable(enabled);

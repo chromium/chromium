@@ -16,9 +16,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * User data for a {@link Tab} managing an ID of an external application that opened it.
- */
+/** User data for a {@link Tab} managing an ID of an external application that opened it. */
 public final class TabAssociatedApp extends TabWebContentsUserData implements ImeEventObserver {
     private static final Class<TabAssociatedApp> USER_DATA_KEY = TabAssociatedApp.class;
 
@@ -38,32 +36,35 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
 
     private TabAssociatedApp(Tab tab) {
         super(tab);
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onInitialized(Tab tab, String appId) {
-                if (appId != null) setAppId(appId);
-            }
+        tab.addObserver(
+                new EmptyTabObserver() {
+                    @Override
+                    public void onInitialized(Tab tab, String appId) {
+                        if (appId != null) setAppId(appId);
+                    }
 
-            @Override
-            public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                // Clear the app association if the user navigated to a different page from the
-                // omnibox.
-                if ((params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR)
-                        == PageTransition.FROM_ADDRESS_BAR) {
-                    mId = null;
-                }
-            }
+                    @Override
+                    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                        // Clear the app association if the user navigated to a different page from
+                        // the omnibox.
+                        if ((params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR)
+                                == PageTransition.FROM_ADDRESS_BAR) {
+                            mId = null;
+                        }
+                    }
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                tab.removeObserver(this);
-            }
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        tab.removeObserver(this);
+                    }
 
-            @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                // Intentionally do nothing to prevent automatic observer removal on detachment.
-            }
-        });
+                    @Override
+                    public void onActivityAttachmentChanged(
+                            Tab tab, @Nullable WindowAndroid window) {
+                        // Intentionally do nothing to prevent automatic observer removal on
+                        // detachment.
+                    }
+                });
     }
 
     private static TabAssociatedApp get(Tab tab) {

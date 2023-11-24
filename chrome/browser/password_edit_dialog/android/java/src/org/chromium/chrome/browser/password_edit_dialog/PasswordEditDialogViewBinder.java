@@ -70,7 +70,8 @@ class PasswordEditDialogViewBinder {
             assert !ChromeFeatureList.isEnabled(
                     ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS);
             ((UsernameSelectionConfirmationView) dialogView)
-                    .setUsernames(model.get(PasswordEditDialogProperties.USERNAMES),
+                    .setUsernames(
+                            model.get(PasswordEditDialogProperties.USERNAMES),
                             model.get(PasswordEditDialogProperties.USERNAME_INDEX));
         }
     }

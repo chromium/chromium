@@ -30,22 +30,26 @@ public class PasswordSettingsUpdaterReceiverBridge {
         return new PasswordSettingsUpdaterReceiverBridge(nativeReceiverBridge);
     }
 
-    void onSettingValueFetched(@PasswordManagerSetting int setting, Optional<Boolean> settingValue,
+    void onSettingValueFetched(
+            @PasswordManagerSetting int setting,
+            Optional<Boolean> settingValue,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(null);
         if (mNativeReceiverBridge == 0) return;
 
         if (settingValue.isPresent()) {
-            PasswordSettingsUpdaterReceiverBridgeJni.get().onSettingValueFetched(
-                    mNativeReceiverBridge, setting, settingValue.get());
+            PasswordSettingsUpdaterReceiverBridgeJni.get()
+                    .onSettingValueFetched(mNativeReceiverBridge, setting, settingValue.get());
             return;
         }
-        PasswordSettingsUpdaterReceiverBridgeJni.get().onSettingValueAbsent(
-                mNativeReceiverBridge, setting);
+        PasswordSettingsUpdaterReceiverBridgeJni.get()
+                .onSettingValueAbsent(mNativeReceiverBridge, setting);
     }
 
-    void handleFetchingException(@PasswordManagerSetting int setting, Exception exception,
+    void handleFetchingException(
+            @PasswordManagerSetting int setting,
+            Exception exception,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(exception);
@@ -55,21 +59,24 @@ public class PasswordSettingsUpdaterReceiverBridge {
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
 
-        PasswordSettingsUpdaterReceiverBridgeJni.get().onSettingFetchingError(
-                mNativeReceiverBridge, setting, error, apiErrorCode);
+        PasswordSettingsUpdaterReceiverBridgeJni.get()
+                .onSettingFetchingError(mNativeReceiverBridge, setting, error, apiErrorCode);
     }
 
-    void onSettingValueSet(@PasswordManagerSetting int setting,
+    void onSettingValueSet(
+            @PasswordManagerSetting int setting,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(null);
         if (mNativeReceiverBridge == 0) return;
 
-        PasswordSettingsUpdaterReceiverBridgeJni.get().onSuccessfulSettingChange(
-                mNativeReceiverBridge, setting);
+        PasswordSettingsUpdaterReceiverBridgeJni.get()
+                .onSuccessfulSettingChange(mNativeReceiverBridge, setting);
     }
 
-    void handleSettingException(@PasswordManagerSetting int setting, Exception exception,
+    void handleSettingException(
+            @PasswordManagerSetting int setting,
+            Exception exception,
             PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         assertOnUiThread();
         metricsRecorder.recordMetrics(exception);
@@ -79,8 +86,8 @@ public class PasswordSettingsUpdaterReceiverBridge {
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
 
-        PasswordSettingsUpdaterReceiverBridgeJni.get().onFailedSettingChange(
-                mNativeReceiverBridge, setting, error, apiErrorCode);
+        PasswordSettingsUpdaterReceiverBridgeJni.get()
+                .onFailedSettingChange(mNativeReceiverBridge, setting, error, apiErrorCode);
     }
 
     void destroyForTesting() {
@@ -95,15 +102,27 @@ public class PasswordSettingsUpdaterReceiverBridge {
 
     @NativeMethods
     interface Natives {
-        void onSettingValueFetched(long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
-                int setting, boolean offerToSavePasswordsEnabled);
+        void onSettingValueFetched(
+                long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
+                int setting,
+                boolean offerToSavePasswordsEnabled);
+
         void onSettingValueAbsent(
                 long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl, int setting);
-        void onSettingFetchingError(long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
-                int setting, int error, int apiErrorCode);
+
+        void onSettingFetchingError(
+                long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
+                int setting,
+                int error,
+                int apiErrorCode);
+
         void onSuccessfulSettingChange(
                 long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl, int setting);
-        void onFailedSettingChange(long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
-                int setting, int error, int apiErrorCode);
+
+        void onFailedSettingChange(
+                long nativePasswordSettingsUpdaterAndroidReceiverBridgeImpl,
+                int setting,
+                int error,
+                int apiErrorCode);
     }
 }

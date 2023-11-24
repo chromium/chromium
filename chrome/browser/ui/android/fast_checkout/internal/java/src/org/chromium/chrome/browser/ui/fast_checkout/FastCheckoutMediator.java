@@ -33,26 +33,31 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
     private BottomSheetController mBottomSheetController;
     private BottomSheetObserver mBottomSheetDismissedObserver;
 
-    void initialize(FastCheckoutComponent.Delegate delegate, PropertyModel model,
+    void initialize(
+            FastCheckoutComponent.Delegate delegate,
+            PropertyModel model,
             BottomSheetController bottomSheetController) {
         mModel = model;
         mDelegate = delegate;
         mBottomSheetController = bottomSheetController;
 
-        mBottomSheetDismissedObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                super.onSheetClosed(reason);
-                dismiss(reason);
-                mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
-            }
-        };
+        mBottomSheetDismissedObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                        super.onSheetClosed(reason);
+                        dismiss(reason);
+                        mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
+                    }
+                };
 
         mModel.set(FastCheckoutProperties.HOME_SCREEN_DELEGATE, createHomeScreenDelegate());
-        mModel.set(FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER, () -> {
-            setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
-            FastCheckoutUserActions.NAVIGATED_BACK_HOME.log();
-        });
+        mModel.set(
+                FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER,
+                () -> {
+                    setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
+                    FastCheckoutUserActions.NAVIGATED_BACK_HOME.log();
+                });
         FastCheckoutUserActions.INITIALIZED.log();
     }
 
@@ -72,7 +77,7 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                 assert profile != null && creditCard != null;
                 mModel.set(FastCheckoutProperties.VISIBLE, false);
                 mDelegate.onOptionsSelected(profile, creditCard);
-            };
+            }
 
             @Override
             public void onShowAddressesList() {
@@ -116,9 +121,7 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
         return true;
     }
 
-    /**
-     * Dismisses the current bottom sheet.
-     */
+    /** Dismisses the current bottom sheet. */
     public void dismiss(@StateChangeReason int reason) {
         if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
             return; // Dismiss only if not dismissed yet.
@@ -150,23 +153,30 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                     && profile.getGUID().equals(previousSelection.getGUID())) {
                 newSelection = profile;
             }
-            PropertyModel model = AutofillProfileItemProperties.create(
-                    /*profile=*/profile, /*isSelected=*/false, /*onClickListener=*/() -> {
-                        setSelectedAutofillProfile(profile);
-                        setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
-                    });
+            PropertyModel model =
+                    AutofillProfileItemProperties.create(
+                            /* profile= */ profile,
+                            /* isSelected= */ false,
+                            /* onClickListener= */ () -> {
+                                setSelectedAutofillProfile(profile);
+                                setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
+                            });
             profileItems.add(new ListItem(DetailItemType.PROFILE, model));
         }
 
         // Add the footer item.
-        profileItems.add(new ListItem(DetailItemType.FOOTER,
-                FooterItemProperties.create(
-                        /*label=*/R.string.fast_checkout_detail_screen_add_autofill_profile_text,
-                        /*onClickHandler=*/() -> {
-                            mDelegate.openAutofillProfileSettings();
-                            FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_FOOTER
-                                    .log();
-                        })));
+        profileItems.add(
+                new ListItem(
+                        DetailItemType.FOOTER,
+                        FooterItemProperties.create(
+                                /* label= */ R.string
+                                        .fast_checkout_detail_screen_add_autofill_profile_text,
+                                /* onClickHandler= */ () -> {
+                                    mDelegate.openAutofillProfileSettings();
+                                    FastCheckoutUserActions
+                                            .NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_FOOTER
+                                            .log();
+                                })));
 
         mModel.set(FastCheckoutProperties.PROFILE_MODEL_LIST, profileItems);
         setSelectedAutofillProfile(newSelection);
@@ -188,8 +198,9 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
             if (item.type != DetailItemType.PROFILE) {
                 continue;
             }
-            boolean isSelected = selectedProfile.equals(
-                    item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE));
+            boolean isSelected =
+                    selectedProfile.equals(
+                            item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE));
             boolean wasSelected = item.model.get(AutofillProfileItemProperties.IS_SELECTED);
             item.model.set(AutofillProfileItemProperties.IS_SELECTED, isSelected);
             if (isSelected) {
@@ -230,24 +241,31 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
             if (previousSelection != null && card.getGUID().equals(previousSelection.getGUID())) {
                 newSelection = card;
             }
-            PropertyModel model = CreditCardItemProperties.create(
-                    /*creditCard=*/card, /*isSelected=*/false, /*onClickListener=*/() -> {
-                        setSelectedCreditCard(card);
-                        setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
-                    });
+            PropertyModel model =
+                    CreditCardItemProperties.create(
+                            /* creditCard= */ card,
+                            /* isSelected= */ false,
+                            /* onClickListener= */ () -> {
+                                setSelectedCreditCard(card);
+                                setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
+                            });
             ListItem item = new ListItem(DetailItemType.CREDIT_CARD, model);
             cardItems.add(item);
         }
 
         // Add the footer item.
-        cardItems.add(new ListItem(DetailItemType.FOOTER,
-                FooterItemProperties.create(
-                        /*label=*/R.string.fast_checkout_detail_screen_add_credit_card_text,
-                        /*onClickHandler=*/() -> {
-                            mDelegate.openCreditCardSettings();
-                            FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_FOOTER
-                                    .log();
-                        })));
+        cardItems.add(
+                new ListItem(
+                        DetailItemType.FOOTER,
+                        FooterItemProperties.create(
+                                /* label= */ R.string
+                                        .fast_checkout_detail_screen_add_credit_card_text,
+                                /* onClickHandler= */ () -> {
+                                    mDelegate.openCreditCardSettings();
+                                    FastCheckoutUserActions
+                                            .NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_FOOTER
+                                            .log();
+                                })));
 
         mModel.set(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST, cardItems);
         setSelectedCreditCard(newSelection);
@@ -297,30 +315,42 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
      */
     public void setCurrentScreen(int screenType) {
         if (screenType == FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN) {
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_TITLE,
                     R.string.fast_checkout_autofill_profile_sheet_title);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION,
                     R.string.fast_checkout_autofill_profile_sheet_title_description);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_autofill_profile_settings_button_description);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, () -> {
-                mDelegate.openAutofillProfileSettings();
-                FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_ICON.log();
-            });
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
+                    () -> {
+                        mDelegate.openAutofillProfileSettings();
+                        FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_ICON.log();
+                    });
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST));
         } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_TITLE,
                     R.string.fast_checkout_credit_card_sheet_title);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION,
                     R.string.fast_checkout_credit_card_sheet_title_description);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_credit_card_settings_button_description);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, () -> {
-                mDelegate.openCreditCardSettings();
-                FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_ICON.log();
-            });
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
+                    () -> {
+                        mDelegate.openCreditCardSettings();
+                        FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_ICON.log();
+                    });
+            mModel.set(
+                    FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST));
         }
 
@@ -329,9 +359,7 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
         mBottomSheetController.expandSheet();
     }
 
-    /**
-     * Releases the resources used by FastCheckoutMediator.
-     */
+    /** Releases the resources used by FastCheckoutMediator. */
     @MainThread
     public void destroy() {
         FastCheckoutUserActions.DESTROYED.log();

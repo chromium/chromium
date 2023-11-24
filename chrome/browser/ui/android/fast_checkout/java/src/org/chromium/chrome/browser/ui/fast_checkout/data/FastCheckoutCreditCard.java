@@ -17,9 +17,7 @@ import org.chromium.url.GURL;
 
 import java.util.Map;
 
-/**
- * A credit card, similar to the one used by the PersonalDataManager.
- */
+/** A credit card, similar to the one used by the PersonalDataManager. */
 public class FastCheckoutCreditCard {
     // Mappings from name: chrome/browser/ui/autofill/autofill_popup_controller_utils.cc
     // Mappings to resource: chrome/browser/android/resource_id.h
@@ -59,6 +57,7 @@ public class FastCheckoutCreditCard {
         sResourceMap = map;
         sResourceMetadataMap = metadataMap;
     }
+
     private final String mGUID;
     private final String mOrigin;
     private final boolean mIsLocal;
@@ -215,7 +214,7 @@ public class FastCheckoutCreditCard {
     public int getIssuerIconDrawableId() {
         @Icon int issuerIconDrawable = getIssuerIcon();
         if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
             if (sResourceMetadataMap.containsKey(issuerIconDrawable)) {
                 return sResourceMetadataMap.get(issuerIconDrawable);
             }

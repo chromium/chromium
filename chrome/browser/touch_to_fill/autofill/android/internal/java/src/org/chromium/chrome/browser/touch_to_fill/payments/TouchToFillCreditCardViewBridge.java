@@ -17,18 +17,21 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * JNI wrapper for C++ TouchToFillCreditCardViewImpl. Delegates calls from native to Java.
- */
+/** JNI wrapper for C++ TouchToFillCreditCardViewImpl. Delegates calls from native to Java. */
 @JNINamespace("autofill")
 class TouchToFillCreditCardViewBridge {
     private final TouchToFillCreditCardComponent mComponent;
 
-    private TouchToFillCreditCardViewBridge(TouchToFillCreditCardComponent.Delegate delegate,
-            Context context, BottomSheetController bottomSheetController,
+    private TouchToFillCreditCardViewBridge(
+            TouchToFillCreditCardComponent.Delegate delegate,
+            Context context,
+            BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
         mComponent = new TouchToFillCreditCardCoordinator();
-        mComponent.initialize(context, bottomSheetController, delegate,
+        mComponent.initialize(
+                context,
+                bottomSheetController,
+                delegate,
                 new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
     }
 
@@ -62,7 +65,9 @@ class TouchToFillCreditCardViewBridge {
     }
 
     @CalledByNative
-    private static void setCreditCard(PersonalDataManager.CreditCard[] creditCards, int index,
+    private static void setCreditCard(
+            PersonalDataManager.CreditCard[] creditCards,
+            int index,
             PersonalDataManager.CreditCard creditCard) {
         creditCards[index] = creditCard;
     }

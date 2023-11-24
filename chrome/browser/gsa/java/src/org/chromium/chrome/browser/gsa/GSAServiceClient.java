@@ -19,9 +19,7 @@ import android.util.Log;
 
 import org.chromium.base.Callback;
 
-/**
- * A simple client that connects and talks to the GSAService using Messages.
- */
+/** A simple client that connects and talks to the GSAService using Messages. */
 public class GSAServiceClient {
     private static final String TAG = "GSAServiceClient";
 
@@ -30,6 +28,7 @@ public class GSAServiceClient {
      * service side in GSA.
      */
     private static final String GSA_SERVICE = "com.google.android.ssb.action.SSB_SERVICE";
+
     public static final int REQUEST_REGISTER_CLIENT = 2;
     public static final int RESPONSE_UPDATE_SSB = 3;
 
@@ -41,6 +40,7 @@ public class GSAServiceClient {
 
     /** Messenger to handle incoming messages from the service */
     private final Messenger mMessenger;
+
     private final IncomingHandler mHandler;
     private final GSAServiceConnection mConnection;
     private final GSAHelper mGsaHelper;
@@ -50,9 +50,7 @@ public class GSAServiceClient {
     /** Messenger for communicating with service. */
     private Messenger mService;
 
-    /**
-     * Handler of incoming messages from service.
-     */
+    /** Handler of incoming messages from service. */
     @SuppressLint("HandlerLeak")
     private class IncomingHandler extends Handler {
         @Override
@@ -101,9 +99,7 @@ public class GSAServiceClient {
                 intent, mConnection, Context.BIND_AUTO_CREATE | Context.BIND_NOT_FOREGROUND);
     }
 
-    /**
-     * Disconnects from the service and resets the client's state.
-     */
+    /** Disconnects from the service and resets the client's state. */
     void disconnect() {
         if (mService == null) return;
         mContext.unbindService(mConnection);
@@ -141,7 +137,8 @@ public class GSAServiceClient {
                 Bundle b = mGsaHelper.getBundleForRegisteringGSAClient(mContext);
                 if (b == null) b = new Bundle();
                 b.putString(KEY_GSA_PACKAGE_NAME, mContext.getPackageName());
-                b.putBoolean(KEY_GSA_SUPPORTS_BROADCAST,
+                b.putBoolean(
+                        KEY_GSA_SUPPORTS_BROADCAST,
                         GSAAccountChangeListener.holdsAccountUpdatePermission());
                 registerClientMessage.setData(b);
                 mService.send(registerClientMessage);

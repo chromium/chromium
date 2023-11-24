@@ -19,9 +19,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Coordinator for displaying the screenshot share sheet.
- */
+/** Coordinator for displaying the screenshot share sheet. */
 public class ScreenshotShareSheetCoordinator {
     private final ScreenshotShareSheetSaveDelegate mSaveDelegate;
     private final ScreenshotShareSheetMediator mMediator;
@@ -39,9 +37,13 @@ public class ScreenshotShareSheetCoordinator {
      * @param shareSheetCallback The callback to be called on share.
      * @param installCallback The callback to be called on retry.
      */
-    public ScreenshotShareSheetCoordinator(Context context, Bitmap screenshot,
-            Runnable closeDialogRunnable, ScreenshotShareSheetView screenshotShareSheetView,
-            WindowAndroid windowAndroid, String shareUrl,
+    public ScreenshotShareSheetCoordinator(
+            Context context,
+            Bitmap screenshot,
+            Runnable closeDialogRunnable,
+            ScreenshotShareSheetView screenshotShareSheetView,
+            WindowAndroid windowAndroid,
+            String shareUrl,
             ChromeOptionShareCallback shareSheetCallback,
             @Nullable Callback<Runnable> installCallback) {
         ArrayList<PropertyKey> allProperties =
@@ -49,10 +51,19 @@ public class ScreenshotShareSheetCoordinator {
         mModel = new PropertyModel(allProperties);
 
         mModel.set(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP, screenshot);
-        mSaveDelegate = new ScreenshotShareSheetSaveDelegate(
-                context, mModel, closeDialogRunnable, windowAndroid);
-        mMediator = new ScreenshotShareSheetMediator(context, mModel, closeDialogRunnable,
-                mSaveDelegate::save, windowAndroid, shareUrl, shareSheetCallback, installCallback);
+        mSaveDelegate =
+                new ScreenshotShareSheetSaveDelegate(
+                        context, mModel, closeDialogRunnable, windowAndroid);
+        mMediator =
+                new ScreenshotShareSheetMediator(
+                        context,
+                        mModel,
+                        closeDialogRunnable,
+                        mSaveDelegate::save,
+                        windowAndroid,
+                        shareUrl,
+                        shareSheetCallback,
+                        installCallback);
 
         PropertyModelChangeProcessor.create(
                 mModel, screenshotShareSheetView, ScreenshotShareSheetViewBinder::bind);

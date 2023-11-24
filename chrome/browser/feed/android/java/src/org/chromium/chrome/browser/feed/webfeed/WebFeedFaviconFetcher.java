@@ -33,8 +33,10 @@ public class WebFeedFaviconFetcher {
 
     public static WebFeedFaviconFetcher createDefault() {
         Profile profile = Profile.getLastUsedRegularProfile();
-        return new WebFeedFaviconFetcher(new LargeIconBridge(profile),
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+        return new WebFeedFaviconFetcher(
+                new LargeIconBridge(profile),
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                         profile.getProfileKey(),
                         GlobalDiscardableReferencePool.getReferencePool()));
     }
@@ -49,7 +51,11 @@ public class WebFeedFaviconFetcher {
      * `Bitmap` may be null if the URL is empty, or the domain cannot be resolved. See
      * https://crbug.com/987101.
      */
-    public void beginFetch(int iconSizePx, int textSizePx, GURL siteUrl, GURL faviconUrl,
+    public void beginFetch(
+            int iconSizePx,
+            int textSizePx,
+            GURL siteUrl,
+            GURL faviconUrl,
             Callback<Bitmap> callback) {
         Request request = new Request();
         request.iconSizePx = iconSizePx;
@@ -69,8 +75,7 @@ public class WebFeedFaviconFetcher {
 
     private class Request {
         public GURL siteUrl;
-        @Nullable
-        public GURL faviconUrl;
+        @Nullable public GURL faviconUrl;
         public int iconSizePx;
         public int textSizePx;
         public Callback<Bitmap> callback;
@@ -86,8 +91,11 @@ public class WebFeedFaviconFetcher {
         private void fetchImageWithFaviconUrl() {
             assert faviconUrl.isValid();
             mImageFetcher.fetchImage(
-                    ImageFetcher.Params.create(faviconUrl.getSpec(),
-                            ImageFetcher.FEED_UMA_CLIENT_NAME, iconSizePx, iconSizePx),
+                    ImageFetcher.Params.create(
+                            faviconUrl.getSpec(),
+                            ImageFetcher.FEED_UMA_CLIENT_NAME,
+                            iconSizePx,
+                            iconSizePx),
                     this::onFaviconFetchedWithFaviconUrl);
         }
 
@@ -104,8 +112,11 @@ public class WebFeedFaviconFetcher {
             }
         }
 
-        private void onFaviconFetchedWithSiteUrl(@Nullable Bitmap icon, @ColorInt int fallbackColor,
-                boolean isColorDefault, @IconType int iconType) {
+        private void onFaviconFetchedWithSiteUrl(
+                @Nullable Bitmap icon,
+                @ColorInt int fallbackColor,
+                boolean isColorDefault,
+                @IconType int iconType) {
             if (icon == null) {
                 // TODO(crbug/1152592): Update monogram according to specs.
                 RoundedIconGenerator iconGenerator =

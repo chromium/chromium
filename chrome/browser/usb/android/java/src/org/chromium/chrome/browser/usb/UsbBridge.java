@@ -8,9 +8,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Java access point for UsbBridge, allowing for querying USB state.
- */
+/** Java access point for UsbBridge, allowing for querying USB state. */
 public class UsbBridge {
     public static boolean isWebContentsConnectedToUsbDevice(WebContents webContents) {
         if (webContents == null) return false;

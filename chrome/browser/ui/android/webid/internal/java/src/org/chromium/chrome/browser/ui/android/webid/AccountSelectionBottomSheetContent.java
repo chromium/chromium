@@ -25,15 +25,14 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
      * the account picker is displayed.
      */
     private static final float MAX_VISIBLE_ACCOUNTS = 2.5f;
+
     private final View mContentView;
     private final Supplier<Integer> mScrollOffsetSupplier;
     private @Nullable Runnable mBackPressHandler;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
 
-    /**
-     * Constructs the AccountSelection bottom sheet view.
-     */
+    /** Constructs the AccountSelection bottom sheet view. */
     AccountSelectionBottomSheetContent(View contentView, Supplier<Integer> scrollOffsetSupplier) {
         mContentView = contentView;
         mScrollOffsetSupplier = scrollOffsetSupplier;

@@ -16,9 +16,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Dialog to confirm if the user is sure to disable Safe Browsing.
- */
+/** Dialog to confirm if the user is sure to disable Safe Browsing. */
 public class NoProtectionConfirmationDialog {
     private Context mContext;
     private ModalDialogManager mManager;
@@ -41,16 +39,25 @@ public class NoProtectionConfirmationDialog {
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, makeController())
-                        .with(ModalDialogProperties.TITLE, resources,
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                resources,
                                 R.string.safe_browsing_no_protection_confirmation_dialog_title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 resources.getString(
-                                        R.string.safe_browsing_no_protection_confirmation_dialog_message))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                                        R.string
+                                                .safe_browsing_no_protection_confirmation_dialog_message))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.safe_browsing_no_protection_confirmation_dialog_confirm)
-                        .with(ModalDialogProperties.BUTTON_STYLES,
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.cancel);
         mModel = builder.build();
         mManager = new ModalDialogManager(new AppModalPresenter(mContext), ModalDialogType.APP);

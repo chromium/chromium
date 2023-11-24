@@ -48,9 +48,7 @@ public class ImageDescriptionsController {
         return sInstance;
     }
 
-    /**
-     * Private constructor to prevent unwanted construction/initialization
-     */
+    /** Private constructor to prevent unwanted construction/initialization */
     private ImageDescriptionsController() {
         this.mDelegate = defaultDelegate();
     }
@@ -63,20 +61,20 @@ public class ImageDescriptionsController {
         return new ImageDescriptionsControllerDelegate() {
             @Override
             public void enableImageDescriptions(Profile profile) {
-                getPrefService(profile).setBoolean(
-                        Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
+                getPrefService(profile)
+                        .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
             }
 
             @Override
             public void disableImageDescriptions(Profile profile) {
-                getPrefService(profile).setBoolean(
-                        Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
+                getPrefService(profile)
+                        .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
             }
 
             @Override
             public void setOnlyOnWifiRequirement(boolean onlyOnWifi, Profile profile) {
-                getPrefService(profile).setBoolean(
-                        Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, onlyOnWifi);
+                getPrefService(profile)
+                        .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, onlyOnWifi);
             }
 
             @Override
@@ -84,10 +82,12 @@ public class ImageDescriptionsController {
                     boolean dontAskAgain, WebContents webContents) {
                 // User selected "Just Once", update counter and "Don't ask again" preference as
                 // needed.
-                getSharedPrefs().incrementInt(
-                        ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT);
-                getSharedPrefs().writeBoolean(
-                        ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, dontAskAgain);
+                getSharedPrefs()
+                        .incrementInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT);
+                getSharedPrefs()
+                        .writeBoolean(
+                                ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
+                                dontAskAgain);
 
                 ImageDescriptionsControllerJni.get().getImageDescriptionsOnce(webContents);
             }
@@ -127,8 +127,10 @@ public class ImageDescriptionsController {
                     && DeviceConditions.getCurrentNetConnectionType(context)
                             != ConnectionType.CONNECTION_WIFI) {
                 mDelegate.getImageDescriptionsJustOnce(false, webContents);
-                Toast.makeText(context, R.string.image_descriptions_toast_just_once,
-                             Toast.LENGTH_LONG)
+                Toast.makeText(
+                                context,
+                                R.string.image_descriptions_toast_just_once,
+                                Toast.LENGTH_LONG)
                         .show();
             } else {
                 // Otherwise, user has elected to stop descriptions.
@@ -141,21 +143,27 @@ public class ImageDescriptionsController {
             // a "just once" fetch. In all other cases, show the dialog to prompt the user.
             if (dontAskAgainEnabled()) {
                 mDelegate.getImageDescriptionsJustOnce(true, webContents);
-                Toast.makeText(context, R.string.image_descriptions_toast_just_once,
-                             Toast.LENGTH_LONG)
+                Toast.makeText(
+                                context,
+                                R.string.image_descriptions_toast_just_once,
+                                Toast.LENGTH_LONG)
                         .show();
             } else {
                 ImageDescriptionsDialog prompt =
-                        new ImageDescriptionsDialog(context, modalDialogManager, getDelegate(),
-                                shouldShowDontAskAgainOption(), webContents);
+                        new ImageDescriptionsDialog(
+                                context,
+                                modalDialogManager,
+                                getDelegate(),
+                                shouldShowDontAskAgainOption(),
+                                webContents);
                 prompt.show();
             }
         }
     }
 
     protected boolean dontAskAgainEnabled() {
-        return getSharedPrefs().readBoolean(
-                ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
+        return getSharedPrefs()
+                .readBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
     }
 
     protected boolean shouldShowDontAskAgainOption() {

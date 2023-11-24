@@ -67,12 +67,17 @@ public class UmaUtils {
      * @param requiredHeightStretch Required stretch for height.
      * @param filter The filter type of the view being shown.
      */
-    public static void recordImageViewRequiredStretch(float requiredWidthStretch,
-            float requiredHeightStretch, @Filters.FilterType int filter) {
+    public static void recordImageViewRequiredStretch(
+            float requiredWidthStretch,
+            float requiredHeightStretch,
+            @Filters.FilterType int filter) {
         float maxRequiredStretch = Math.max(requiredWidthStretch, requiredHeightStretch);
         RecordHistogram.recordCustomCountHistogram(
                 "Android.DownloadManager.Thumbnail.MaxRequiredStretch."
                         + getSuffixForFilter(filter),
-                (int) (maxRequiredStretch * 100), 10, 1000, 50);
+                (int) (maxRequiredStretch * 100),
+                10,
+                1000,
+                50);
     }
 }

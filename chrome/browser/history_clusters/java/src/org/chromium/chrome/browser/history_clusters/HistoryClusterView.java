@@ -26,8 +26,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 class HistoryClusterView extends SelectableItemView<HistoryCluster> {
-    @IntDef({ClusterViewAccessibilityState.CLICKABLE, ClusterViewAccessibilityState.COLLAPSIBLE,
-            ClusterViewAccessibilityState.EXPANDABLE})
+    @IntDef({
+        ClusterViewAccessibilityState.CLICKABLE,
+        ClusterViewAccessibilityState.COLLAPSIBLE,
+        ClusterViewAccessibilityState.EXPANDABLE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ClusterViewAccessibilityState {
         int CLICKABLE = 0;
@@ -36,11 +39,9 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
     }
 
     private DividerView mDividerView;
-    @ClusterViewAccessibilityState
-    int mAccessibilityState;
-    /**
-     * Constructor for inflating from XML.
-     */
+    @ClusterViewAccessibilityState int mAccessibilityState;
+
+    /** Constructor for inflating from XML. */
     public HistoryClusterView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -55,26 +56,28 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         mEndButtonView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         mEndButtonView.setOnTouchListener(
                 (v, event) -> HistoryClusterView.this.onTouchEvent(event));
-        setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-                info.removeAction(AccessibilityAction.ACTION_CLICK);
-                info.removeAction(AccessibilityAction.ACTION_EXPAND);
-                info.removeAction(AccessibilityAction.ACTION_COLLAPSE);
-                switch (mAccessibilityState) {
-                    case ClusterViewAccessibilityState.CLICKABLE:
-                        info.addAction(AccessibilityAction.ACTION_CLICK);
-                        break;
-                    case ClusterViewAccessibilityState.COLLAPSIBLE:
-                        info.addAction(AccessibilityAction.ACTION_COLLAPSE);
-                        break;
-                    case ClusterViewAccessibilityState.EXPANDABLE:
-                        info.addAction(AccessibilityAction.ACTION_EXPAND);
-                        break;
-                }
-            }
-        });
+        setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.removeAction(AccessibilityAction.ACTION_CLICK);
+                        info.removeAction(AccessibilityAction.ACTION_EXPAND);
+                        info.removeAction(AccessibilityAction.ACTION_COLLAPSE);
+                        switch (mAccessibilityState) {
+                            case ClusterViewAccessibilityState.CLICKABLE:
+                                info.addAction(AccessibilityAction.ACTION_CLICK);
+                                break;
+                            case ClusterViewAccessibilityState.COLLAPSIBLE:
+                                info.addAction(AccessibilityAction.ACTION_COLLAPSE);
+                                break;
+                            case ClusterViewAccessibilityState.EXPANDABLE:
+                                info.addAction(AccessibilityAction.ACTION_EXPAND);
+                                break;
+                        }
+                    }
+                });
     }
 
     @Override

@@ -8,9 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * JNI wrapper for C++ TouchToFillCreditCardViewController. Delegates calls from Java to native.
- */
+/** JNI wrapper for C++ TouchToFillCreditCardViewController. Delegates calls from Java to native. */
 @JNINamespace("autofill")
 class TouchToFillCreditCardControllerBridge implements TouchToFillCreditCardComponent.Delegate {
     private long mNativeTouchToFillCreditCardViewController;
@@ -33,40 +31,44 @@ class TouchToFillCreditCardControllerBridge implements TouchToFillCreditCardComp
     @Override
     public void onDismissed(boolean dismissedByUser) {
         if (mNativeTouchToFillCreditCardViewController != 0) {
-            TouchToFillCreditCardControllerBridgeJni.get().onDismissed(
-                    mNativeTouchToFillCreditCardViewController, dismissedByUser);
+            TouchToFillCreditCardControllerBridgeJni.get()
+                    .onDismissed(mNativeTouchToFillCreditCardViewController, dismissedByUser);
         }
     }
 
     @Override
     public void scanCreditCard() {
         if (mNativeTouchToFillCreditCardViewController != 0) {
-            TouchToFillCreditCardControllerBridgeJni.get().scanCreditCard(
-                    mNativeTouchToFillCreditCardViewController);
+            TouchToFillCreditCardControllerBridgeJni.get()
+                    .scanCreditCard(mNativeTouchToFillCreditCardViewController);
         }
     }
 
     @Override
     public void showCreditCardSettings() {
         if (mNativeTouchToFillCreditCardViewController != 0) {
-            TouchToFillCreditCardControllerBridgeJni.get().showCreditCardSettings(
-                    mNativeTouchToFillCreditCardViewController);
+            TouchToFillCreditCardControllerBridgeJni.get()
+                    .showCreditCardSettings(mNativeTouchToFillCreditCardViewController);
         }
     }
 
     @Override
     public void suggestionSelected(String uniqueId, boolean isVirtual) {
         if (mNativeTouchToFillCreditCardViewController != 0) {
-            TouchToFillCreditCardControllerBridgeJni.get().suggestionSelected(
-                    mNativeTouchToFillCreditCardViewController, uniqueId, isVirtual);
+            TouchToFillCreditCardControllerBridgeJni.get()
+                    .suggestionSelected(
+                            mNativeTouchToFillCreditCardViewController, uniqueId, isVirtual);
         }
     }
 
     @NativeMethods
     interface Natives {
         void onDismissed(long nativeTouchToFillCreditCardViewController, boolean dismissedByUser);
+
         void scanCreditCard(long nativeTouchToFillCreditCardViewController);
+
         void showCreditCardSettings(long nativeTouchToFillCreditCardViewController);
+
         void suggestionSelected(
                 long nativeTouchToFillCreditCardViewController, String uniqueId, boolean isVirtual);
     }

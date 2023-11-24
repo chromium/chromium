@@ -15,23 +15,15 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * surface (bottom sheet) and is meant to be shown while the keyboard is suppressed.
  */
 interface TouchToFillCreditCardComponent {
-    /**
-     * This delegate is called when the TouchToFillCreditCard component is interacted with.
-     */
+    /** This delegate is called when the TouchToFillCreditCard component is interacted with. */
     interface Delegate {
-        /**
-         * Called whenever the sheet is dismissed (by user or native).
-         */
+        /** Called whenever the sheet is dismissed (by user or native). */
         void onDismissed(boolean dismissedByUser);
 
-        /**
-         * Called when user requests to scan a new credit card.
-         */
+        /** Called when user requests to scan a new credit card. */
         void scanCreditCard();
 
-        /**
-         * Causes navigation to the payment methods settings page.
-         */
+        /** Causes navigation to the payment methods settings page. */
         void showCreditCardSettings();
 
         /**
@@ -50,16 +42,15 @@ interface TouchToFillCreditCardComponent {
      * @param bottomSheetFocusHelper that restores the focus to the element that was focused before
      *         the bottom sheet.
      */
-    void initialize(Context context, BottomSheetController sheetController, Delegate delegate,
+    void initialize(
+            Context context,
+            BottomSheetController sheetController,
+            Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper);
 
-    /**
-     * Displays a new bottom sheet.
-     */
+    /** Displays a new bottom sheet. */
     void showSheet(PersonalDataManager.CreditCard[] cards, boolean shouldShowScanCreditCard);
 
-    /**
-     * Hides the bottom sheet if shown.
-     */
+    /** Hides the bottom sheet if shown. */
     void hideSheet();
 }

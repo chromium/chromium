@@ -9,9 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Bridge providing access to native-side Safe Browsing data.
- */
+/** Bridge providing access to native-side Safe Browsing data. */
 // TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 @JNINamespace("safe_browsing")
 public final class SafeBrowsingBridge {
@@ -88,14 +86,22 @@ public final class SafeBrowsingBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         int umaValueForFile(String path);
+
         boolean getSafeBrowsingExtendedReportingEnabled();
+
         void setSafeBrowsingExtendedReportingEnabled(boolean enabled);
+
         boolean getSafeBrowsingExtendedReportingManaged();
+
         @SafeBrowsingState
         int getSafeBrowsingState();
+
         void setSafeBrowsingState(@SafeBrowsingState int state);
+
         boolean isSafeBrowsingManaged();
+
         boolean isUnderAdvancedProtection();
+
         boolean isHashRealTimeLookupEligibleInSession();
     }
 }

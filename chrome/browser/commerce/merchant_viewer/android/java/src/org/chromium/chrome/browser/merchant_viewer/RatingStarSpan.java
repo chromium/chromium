@@ -39,8 +39,9 @@ public class RatingStarSpan extends DynamicDrawableSpan {
 
     @Override
     public Drawable getDrawable() {
-        Drawable drawable = ResourcesCompat.getDrawable(
-                mContext.getResources(), getResourceId(mType), mContext.getTheme());
+        Drawable drawable =
+                ResourcesCompat.getDrawable(
+                        mContext.getResources(), getResourceId(mType), mContext.getTheme());
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         return drawable;
     }

@@ -43,8 +43,12 @@ public class TabSwitcherActionMenuCoordinator {
     private View mContentView;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MenuItemType.DIVIDER, MenuItemType.CLOSE_TAB, MenuItemType.NEW_TAB,
-            MenuItemType.NEW_INCOGNITO_TAB})
+    @IntDef({
+        MenuItemType.DIVIDER,
+        MenuItemType.CLOSE_TAB,
+        MenuItemType.NEW_TAB,
+        MenuItemType.NEW_INCOGNITO_TAB
+    })
     public @interface MenuItemType {
         int DIVIDER = 0;
         int CLOSE_TAB = 1;
@@ -65,12 +69,16 @@ public class TabSwitcherActionMenuCoordinator {
             TabSwitcherActionMenuCoordinator menu, Callback<Integer> onItemClicked) {
         return (view) -> {
             Context context = view.getContext();
-            menu.displayMenu(context, (ListMenuButton) view, menu.buildMenuItems(), (id) -> {
-                // TODO(crbug.com/1317817): Refactor to allow subclasses to record different user
-                // actions and update StartSurfaceTabSwitcherActionMenuCoordinator.
-                recordUserActions(id);
-                onItemClicked.onResult(id);
-            });
+            menu.displayMenu(
+                    context,
+                    (ListMenuButton) view,
+                    menu.buildMenuItems(),
+                    (id) -> {
+                        // TODO(crbug.com/1317817): Refactor to allow subclasses to record different
+                        // user actions and update StartSurfaceTabSwitcherActionMenuCoordinator.
+                        recordUserActions(id);
+                        onItemClicked.onResult(id);
+                    });
             return true;
         };
     }
@@ -94,7 +102,10 @@ public class TabSwitcherActionMenuCoordinator {
      * @param onItemClicked  The clicked listener handling clicks on TabSwitcherActionMenu.
      */
     @VisibleForTesting
-    void displayMenu(final Context context, ListMenuButton anchorView, ModelList listItems,
+    void displayMenu(
+            final Context context,
+            ListMenuButton anchorView,
+            ModelList listItems,
             Callback<Integer> onItemClicked) {
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
         BasicListMenu listMenu =
@@ -106,22 +117,27 @@ public class TabSwitcherActionMenuCoordinator {
                         });
 
         mContentView = listMenu.getContentView();
-        int verticalPadding = context.getResources().getDimensionPixelOffset(
-                R.dimen.tab_switcher_menu_vertical_padding);
+        int verticalPadding =
+                context.getResources()
+                        .getDimensionPixelOffset(R.dimen.tab_switcher_menu_vertical_padding);
         ListView listView = listMenu.getListView();
-        listView.setPaddingRelative(listView.getPaddingStart(), verticalPadding,
-                listView.getPaddingEnd(), verticalPadding);
-        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
-            @Override
-            public ListMenu getListMenu() {
-                return listMenu;
-            }
+        listView.setPaddingRelative(
+                listView.getPaddingStart(),
+                verticalPadding,
+                listView.getPaddingEnd(),
+                verticalPadding);
+        ListMenuButtonDelegate delegate =
+                new ListMenuButtonDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        return listMenu;
+                    }
 
-            @Override
-            public RectProvider getRectProvider(View listMenuButton) {
-                return rectProvider;
-            }
-        };
+                    @Override
+                    public RectProvider getRectProvider(View listMenuButton) {
+                        return rectProvider;
+                    }
+                };
 
         anchorView.setDelegate(delegate, false);
         anchorView.showMenu();
@@ -149,8 +165,10 @@ public class TabSwitcherActionMenuCoordinator {
                 return buildMenuListItem(
                         R.string.menu_new_tab, R.id.new_tab_menu_id, R.drawable.new_tab_icon);
             case MenuItemType.NEW_INCOGNITO_TAB:
-                return buildMenuListItem(R.string.menu_new_incognito_tab,
-                        R.id.new_incognito_tab_menu_id, R.drawable.incognito_simple,
+                return buildMenuListItem(
+                        R.string.menu_new_incognito_tab,
+                        R.id.new_incognito_tab_menu_id,
+                        R.drawable.incognito_simple,
                         IncognitoUtils.isIncognitoModeEnabled());
             case MenuItemType.DIVIDER:
             default:

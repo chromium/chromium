@@ -11,9 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
-/**
- * Settings fragment for privacy sandbox settings.
- */
+/** Settings fragment for privacy sandbox settings. */
 public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBaseFragment {
     public static final String TOPICS_PREF = "topics";
     public static final String FLEDGE_PREF = "fledge";
@@ -61,11 +59,13 @@ public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBase
 
     private void updatePrefDescription() {
         if (!showRestrictedView()) {
-            mTopicsPref.setSummary(TopicsFragmentV4.isTopicsPrefEnabled(getProfile())
+            mTopicsPref.setSummary(
+                    TopicsFragmentV4.isTopicsPrefEnabled(getProfile())
                             ? R.string.ad_privacy_page_topics_link_row_sub_label_enabled
                             : R.string.ad_privacy_page_topics_link_row_sub_label_disabled);
 
-            mFledgePref.setSummary(FledgeFragmentV4.isFledgePrefEnabled(getProfile())
+            mFledgePref.setSummary(
+                    FledgeFragmentV4.isFledgePrefEnabled(getProfile())
                             ? R.string.ad_privacy_page_fledge_link_row_sub_label_enabled
                             : R.string.ad_privacy_page_fledge_link_row_sub_label_disabled);
         }

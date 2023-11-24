@@ -24,9 +24,10 @@ import org.chromium.ui.widget.Toast;
  * TODO(twellington): Replace with TabSwitcherButtonCoordinator so code can be shared with bottom
  *                    toolbar.
  */
-public class ToggleTabStackButton
-        extends ListMenuButton implements TabCountProvider.TabCountObserver, View.OnClickListener,
-                                          View.OnLongClickListener {
+public class ToggleTabStackButton extends ListMenuButton
+        implements TabCountProvider.TabCountObserver,
+                View.OnClickListener,
+                View.OnLongClickListener {
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
     private TabCountProvider mTabCountProvider;
     private OnClickListener mTabSwitcherListener;
@@ -40,16 +41,15 @@ public class ToggleTabStackButton
     public void onFinishInflate() {
         super.onFinishInflate();
 
-        mTabSwitcherButtonDrawable = TabSwitcherDrawable.createTabSwitcherDrawable(
-                getContext(), BrandedColorScheme.APP_DEFAULT);
+        mTabSwitcherButtonDrawable =
+                TabSwitcherDrawable.createTabSwitcherDrawable(
+                        getContext(), BrandedColorScheme.APP_DEFAULT);
         setImageDrawable(mTabSwitcherButtonDrawable);
         setOnClickListener(this);
         setOnLongClickListener(this);
     }
 
-    /**
-     * Called to destroy the tab stack button.
-     */
+    /** Called to destroy the tab stack button. */
     void destroy() {
         if (mTabCountProvider != null) mTabCountProvider.removeObserver(this);
     }

@@ -9,9 +9,7 @@ import org.chromium.components.content_creation.notes.models.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Class used to represent queries used to load fonts.
- */
+/** Class used to represent queries used to load fonts. */
 public class TypefaceRequest {
     private static final String CONDENSED_SUBSTRING = " Condensed";
     private static final int CONDENSED_WIDTH_VALUE = 75;
@@ -40,8 +38,12 @@ public class TypefaceRequest {
             // fonts are simply fonts with a width of 75. For example,
             // "Roboto Condensed" is "Roboto" with a width of 75.
             String actualFontName = this.fontName.substring(0, condensedIndex);
-            return String.format((Locale) null, "name=%s&weight=%d&width=%d", actualFontName,
-                    this.weight, CONDENSED_WIDTH_VALUE);
+            return String.format(
+                    (Locale) null,
+                    "name=%s&weight=%d&width=%d",
+                    actualFontName,
+                    this.weight,
+                    CONDENSED_WIDTH_VALUE);
         }
 
         return String.format((Locale) null, "name=%s&weight=%d", this.fontName, this.weight);

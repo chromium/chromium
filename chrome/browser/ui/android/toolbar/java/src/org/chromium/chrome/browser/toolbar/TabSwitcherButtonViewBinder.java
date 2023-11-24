@@ -14,8 +14,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * received.
  */
 public class TabSwitcherButtonViewBinder
-        implements PropertyModelChangeProcessor
-                           .ViewBinder<PropertyModel, TabSwitcherButtonView, PropertyKey> {
+        implements PropertyModelChangeProcessor.ViewBinder<
+                PropertyModel, TabSwitcherButtonView, PropertyKey> {
     /**
      * Build a binder that handles interaction between the model and the views that make up the
      * tab switcher.

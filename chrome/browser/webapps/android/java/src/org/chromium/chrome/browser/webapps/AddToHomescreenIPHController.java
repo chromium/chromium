@@ -52,8 +52,11 @@ public class AddToHomescreenIPHController {
      * @param modalDialogManager The {@link ModalDialogManager} for showing the dialog.
      * @param messageDispatcher The {@link MessageDispatcher} for displaying messages.
      */
-    public AddToHomescreenIPHController(Activity activity, WindowAndroid windowAndroid,
-            ModalDialogManager modalDialogManager, MessageDispatcher messageDispatcher) {
+    public AddToHomescreenIPHController(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ModalDialogManager modalDialogManager,
+            MessageDispatcher messageDispatcher) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
@@ -76,9 +79,7 @@ public class AddToHomescreenIPHController {
         showMessageIPH(tab);
     }
 
-    /**
-     * Called to notify that the activity is in the process of being destroyed.
-     */
+    /** Called to notify that the activity is in the process of being destroyed. */
     public void destroy() {
         mActivity = null;
     }
@@ -90,8 +91,9 @@ public class AddToHomescreenIPHController {
         if (url.isEmpty() || !url.isValid()) return false;
 
         String urlString = url.getSpec();
-        boolean isChromeScheme = urlString.startsWith(UrlConstants.CHROME_URL_PREFIX)
-                || urlString.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
+        boolean isChromeScheme =
+                urlString.startsWith(UrlConstants.CHROME_URL_PREFIX)
+                        || urlString.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
         boolean isFileScheme = urlString.startsWith(UrlConstants.FILE_URL_PREFIX);
         boolean isContentScheme = urlString.startsWith(UrlConstants.CONTENT_URL_PREFIX);
         boolean urlSchemeSupported = !isChromeScheme && !isFileScheme && !isContentScheme;
@@ -118,22 +120,35 @@ public class AddToHomescreenIPHController {
     private void showMessageIPH(Tab tab) {
         PropertyModel model =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.ADD_TO_HOMESCREEN_IPH)
-                        .with(MessageBannerProperties.ICON,
-                                TraceEventVectorDrawableCompat.create(mActivity.getResources(),
-                                        R.drawable.ic_apps_blue_24dp, mActivity.getTheme()))
-                        .with(MessageBannerProperties.TITLE,
-                                mActivity.getResources().getString(
-                                        R.string.iph_message_add_to_home_screen_title))
-                        .with(MessageBannerProperties.DESCRIPTION,
-                                mActivity.getResources().getString(
-                                        R.string.iph_message_add_to_home_screen_description))
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                                mActivity.getResources().getString(
-                                        R.string.iph_message_add_to_home_screen_action))
+                        .with(
+                                MessageBannerProperties.ICON,
+                                TraceEventVectorDrawableCompat.create(
+                                        mActivity.getResources(),
+                                        R.drawable.ic_apps_blue_24dp,
+                                        mActivity.getTheme()))
+                        .with(
+                                MessageBannerProperties.TITLE,
+                                mActivity
+                                        .getResources()
+                                        .getString(R.string.iph_message_add_to_home_screen_title))
+                        .with(
+                                MessageBannerProperties.DESCRIPTION,
+                                mActivity
+                                        .getResources()
+                                        .getString(
+                                                R.string
+                                                        .iph_message_add_to_home_screen_description))
+                        .with(
+                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                mActivity
+                                        .getResources()
+                                        .getString(R.string.iph_message_add_to_home_screen_action))
                         .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
-                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
                                     onMessageAddButtonClicked(tab);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;

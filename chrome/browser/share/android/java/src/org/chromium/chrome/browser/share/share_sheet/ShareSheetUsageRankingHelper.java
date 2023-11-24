@@ -33,9 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Helper class for ShareSheetCoordinator that hold Usage Ranking functions.
- */
+/** Helper class for ShareSheetCoordinator that hold Usage Ranking functions. */
 public class ShareSheetUsageRankingHelper {
     // Knobs to allow for overriding the layout behavior of the share sheet row,
     // as used for deciding how to rank share targets. These are here to allow
@@ -56,9 +54,10 @@ public class ShareSheetUsageRankingHelper {
     // packages, which are installed on some OEM production builds and claim to
     // handle all share intents, but are actually intended only to be used for
     // testing.
-    private static final Set<String> PACKAGE_BLOCK_LIST = Set.of(
-            // https://crbug.com/1323786
-            "com.android.cts.ctsshim", "com.android.cts.priv.ctsshim");
+    private static final Set<String> PACKAGE_BLOCK_LIST =
+            Set.of(
+                    // https://crbug.com/1323786
+                    "com.android.cts.ctsshim", "com.android.cts.priv.ctsshim");
 
     // Don't log click indexes for usage-ranked items: the ordering is local to this client, so
     // histogramming them would have no value.
@@ -91,10 +90,14 @@ public class ShareSheetUsageRankingHelper {
      * @param propertyModelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param profile The current profile of the User.
      */
-    ShareSheetUsageRankingHelper(BottomSheetController bottomSheetController,
-            ShareSheetBottomSheetContent bottomSheet, long shareStartTime,
-            int linkGenerationStatusForMetrics, LinkToggleMetricsDetails linkToggleMetricsDetails,
-            ShareSheetPropertyModelBuilder propertyModelBuilder, Profile profile) {
+    ShareSheetUsageRankingHelper(
+            BottomSheetController bottomSheetController,
+            ShareSheetBottomSheetContent bottomSheet,
+            long shareStartTime,
+            int linkGenerationStatusForMetrics,
+            LinkToggleMetricsDetails linkToggleMetricsDetails,
+            ShareSheetPropertyModelBuilder propertyModelBuilder,
+            Profile profile) {
         mBottomSheetController = bottomSheetController;
         mPropertyModelBuilder = propertyModelBuilder;
         mProfile = profile;
@@ -109,8 +112,11 @@ public class ShareSheetUsageRankingHelper {
         mTargetsForTesting = targets;
     }
 
-    void createThirdPartyPropertyModelsFromUsageRanking(Activity activity, ShareParams params,
-            Set<Integer> contentTypes, boolean saveLastUsed,
+    void createThirdPartyPropertyModelsFromUsageRanking(
+            Activity activity,
+            ShareParams params,
+            Set<Integer> contentTypes,
+            boolean saveLastUsed,
             Callback<List<PropertyModel>> callback) {
         String type = contentTypesToTypeForRanking(contentTypes);
 
@@ -160,7 +166,13 @@ public class ShareSheetUsageRankingHelper {
         boolean persist = !mProfile.isOffTheRecord() && saveLastUsed;
 
         ShareRankingBridge.rank(
-                mProfile, type, availableActivities, fold, length, persist, ranking -> {
+                mProfile,
+                type,
+                availableActivities,
+                fold,
+                length,
+                persist,
+                ranking -> {
                     onThirdPartyShareTargetsReceived(
                             callback, resolveInfos, activity, params, saveLastUsed, ranking);
                 });
@@ -203,17 +215,23 @@ public class ShareSheetUsageRankingHelper {
     }
 
     private int numberOf3PTilesThatFitOnScreen(Activity activity) {
-        int screenWidth = FORCED_SCREEN_WIDTH_FOR_TEST != 0 ? FORCED_SCREEN_WIDTH_FOR_TEST
-                                                            : ContextUtils.getApplicationContext()
-                                                                      .getResources()
-                                                                      .getDisplayMetrics()
-                                                                      .widthPixels;
-        int tileWidth = FORCED_TILE_WIDTH_FOR_TEST != 0
-                ? FORCED_TILE_WIDTH_FOR_TEST
-                : activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_width);
-        int tileMargin = FORCED_TILE_MARGIN_FOR_TEST != 0
-                ? FORCED_TILE_MARGIN_FOR_TEST
-                : activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_margin);
+        int screenWidth =
+                FORCED_SCREEN_WIDTH_FOR_TEST != 0
+                        ? FORCED_SCREEN_WIDTH_FOR_TEST
+                        : ContextUtils.getApplicationContext()
+                                .getResources()
+                                .getDisplayMetrics()
+                                .widthPixels;
+        int tileWidth =
+                FORCED_TILE_WIDTH_FOR_TEST != 0
+                        ? FORCED_TILE_WIDTH_FOR_TEST
+                        : activity.getResources()
+                                .getDimensionPixelSize(R.dimen.sharing_hub_tile_width);
+        int tileMargin =
+                FORCED_TILE_MARGIN_FOR_TEST != 0
+                        ? FORCED_TILE_MARGIN_FOR_TEST
+                        : activity.getResources()
+                                .getDimensionPixelSize(R.dimen.sharing_hub_tile_margin);
         // In 'fix more' mode, ask for as many tiles as can fit; this will probably end up looking a
         // bit strange since there will likely be an uneven amount of padding on the right edge.
         // When not in that mode, the default is 10 tiles.
@@ -223,9 +241,13 @@ public class ShareSheetUsageRankingHelper {
         return (screenWidth - (2 * tileMargin)) / tileVisualWidth;
     }
 
-    private void onThirdPartyShareTargetsReceived(Callback<List<PropertyModel>> callback,
-            Map<String, ResolveInfo> resolveInfos, Activity activity, ShareParams params,
-            boolean saveLastUsed, List<String> targets) {
+    private void onThirdPartyShareTargetsReceived(
+            Callback<List<PropertyModel>> callback,
+            Map<String, ResolveInfo> resolveInfos,
+            Activity activity,
+            ShareParams params,
+            boolean saveLastUsed,
+            List<String> targets) {
         // Build PropertyModels for all the ResolveInfos that correspond to
         // actual targets, in the order that we're going to show them.
         List<PropertyModel> models = new ArrayList<PropertyModel>();
@@ -234,9 +256,16 @@ public class ShareSheetUsageRankingHelper {
                 models.add(createMorePropertyModel(activity, params, saveLastUsed));
             } else if (!target.equals("")) {
                 assert resolveInfos.get(target) != null;
-                models.add(mPropertyModelBuilder.buildThirdPartyAppModel(mBottomSheet, params,
-                        resolveInfos.get(target), saveLastUsed, mShareStartTime, NO_LOG_INDEX,
-                        mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails));
+                models.add(
+                        mPropertyModelBuilder.buildThirdPartyAppModel(
+                                mBottomSheet,
+                                params,
+                                resolveInfos.get(target),
+                                saveLastUsed,
+                                mShareStartTime,
+                                NO_LOG_INDEX,
+                                mLinkGenerationStatusForMetrics,
+                                mLinkToggleMetricsDetails));
             }
         }
         PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(models));
@@ -247,12 +276,14 @@ public class ShareSheetUsageRankingHelper {
         return ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
                 activity.getResources().getString(R.string.sharing_more_icon_label),
-                /*accessibilityDescription=*/null,
-                (shareParams)
-                        -> {
-                    ShareSheetCoordinator.recordShareMetrics("SharingHubAndroid.MoreSelected",
-                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
-                            mShareStartTime, mProfile);
+                /* accessibilityDescription= */ null,
+                (shareParams) -> {
+                    ShareSheetCoordinator.recordShareMetrics(
+                            "SharingHubAndroid.MoreSelected",
+                            mLinkGenerationStatusForMetrics,
+                            mLinkToggleMetricsDetails,
+                            mShareStartTime,
+                            mProfile);
                     mBottomSheetController.hideContent(mBottomSheet, true);
                     ShareHelper.shareWithSystemShareSheetUi(params, mProfile, saveLastUsed);
                     // Reset callback to prevent cancel() being called when the custom sheet is
@@ -260,7 +291,7 @@ public class ShareSheetUsageRankingHelper {
                     // default share UI.
                     params.setCallback(null);
                 },
-                /*displayNew*/ false);
+                /* showNewBadge= */ false);
     }
 
     static class ResolveInfoPackageNameComparator implements Comparator<ResolveInfo> {
@@ -268,5 +299,5 @@ public class ShareSheetUsageRankingHelper {
         public int compare(ResolveInfo a, ResolveInfo b) {
             return a.activityInfo.packageName.compareTo(b.activityInfo.packageName);
         }
-    };
+    }
 }

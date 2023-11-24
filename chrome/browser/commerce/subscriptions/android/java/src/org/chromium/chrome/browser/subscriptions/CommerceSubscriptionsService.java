@@ -39,7 +39,8 @@ public class CommerceSubscriptionsService implements Destroyable {
     private ShoppingService mShoppingService;
 
     /** Creates a new instance. */
-    CommerceSubscriptionsService(ShoppingService shoppingService,
+    CommerceSubscriptionsService(
+            ShoppingService shoppingService,
             PriceDropNotificationManager priceDropNotificationManager) {
         mShoppingService = shoppingService;
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
@@ -47,18 +48,20 @@ public class CommerceSubscriptionsService implements Destroyable {
     }
 
     /** Performs any deferred startup tasks required by {@link Subscriptions}. */
-    public void initDeferredStartupForActivity(TabModelSelector tabModelSelector,
+    public void initDeferredStartupForActivity(
+            TabModelSelector tabModelSelector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mPauseResumeWithNativeObserver = new PauseResumeWithNativeObserver() {
-            @Override
-            public void onResumeWithNative() {
-                maybeRecordMetricsAndInitializeSubscriptions();
-            }
+        mPauseResumeWithNativeObserver =
+                new PauseResumeWithNativeObserver() {
+                    @Override
+                    public void onResumeWithNative() {
+                        maybeRecordMetricsAndInitializeSubscriptions();
+                    }
 
-            @Override
-            public void onPauseWithNative() {}
-        };
+                    @Override
+                    public void onPauseWithNative() {}
+                };
         mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
 
         if (CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()

@@ -30,19 +30,13 @@ public interface ButtonDataProvider {
         void buttonDataChanged(boolean canShowHint);
     }
 
-    /**
-     * Add an observer that should be notified every time a provider's button data changes.
-     */
+    /** Add an observer that should be notified every time a provider's button data changes. */
     void addObserver(ButtonDataObserver obs);
 
-    /**
-     * Remove the given observer from the list of observers to notify.
-     */
+    /** Remove the given observer from the list of observers to notify. */
     void removeObserver(ButtonDataObserver obs);
 
-    /**
-     * Get the current ButtonData, including any tab-specific adjustments.
-     */
+    /** Get the current ButtonData, including any tab-specific adjustments. */
     ButtonData get(@Nullable Tab tab);
 
     /**

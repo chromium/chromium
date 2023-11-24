@@ -30,8 +30,14 @@ public class Credential {
      * @param lastUsedMsSinceEpoch Elapsed number of milliseconds from the unix epoch when the
      * credential was used the last time.
      */
-    public Credential(String username, String password, String formattedUsername, String originUrl,
-            String displayName, @GetLoginMatchType int matchType, long lastUsedMsSinceEpoch) {
+    public Credential(
+            String username,
+            String password,
+            String formattedUsername,
+            String originUrl,
+            String displayName,
+            @GetLoginMatchType int matchType,
+            long lastUsedMsSinceEpoch) {
         assert originUrl != null : "Credential origin is null! Pass an empty one instead.";
         mUsername = username;
         mPassword = password;

@@ -56,7 +56,7 @@ public class PaneListBuilder {
                     "PaneListBuilder#build() was already invoked. Cannot add a pane for " + paneId);
         }
         assert !mRegisteredPanes.containsKey(paneId)
-            : String.format(Locale.ENGLISH, "a pane for %d was already registered.", paneId);
+                : String.format(Locale.ENGLISH, "a pane for %d was already registered.", paneId);
 
         mRegisteredPanes.put(paneId, paneSupplier);
 
@@ -94,7 +94,8 @@ public class PaneListBuilder {
         }
 
         if (!mRegisteredPanes.isEmpty()) {
-            Log.d(TAG,
+            Log.d(
+                    TAG,
                     "Some registered panes were not used. PaneIds: " + mRegisteredPanes.keySet());
         }
         mRegisteredPanes = null;

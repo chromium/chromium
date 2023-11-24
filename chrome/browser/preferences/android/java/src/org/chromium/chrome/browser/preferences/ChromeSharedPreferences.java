@@ -15,12 +15,12 @@ import org.chromium.build.BuildConfig;
 public class ChromeSharedPreferences {
     public static final PreferenceKeyRegistry REGISTRY =
             (BuildConfig.ENABLE_ASSERTS
-                     ? new PreferenceKeyRegistry(
-                             "chrome",
-                             ChromePreferenceKeys.getKeysInUse(),
-                             LegacyChromePreferenceKeys.getKeysInUse(),
-                             LegacyChromePreferenceKeys.getPrefixesInUse())
-                     : null);
+                    ? new PreferenceKeyRegistry(
+                            "chrome",
+                            ChromePreferenceKeys.getKeysInUse(),
+                            LegacyChromePreferenceKeys.getKeysInUse(),
+                            LegacyChromePreferenceKeys.getPrefixesInUse())
+                    : null);
 
     /**
      * @return The //base SharedPreferencesManager singleton.

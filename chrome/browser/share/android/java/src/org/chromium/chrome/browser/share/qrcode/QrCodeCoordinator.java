@@ -10,9 +10,7 @@ import android.text.TextUtils;
 
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Creates and represents the QrCode main UI.
- */
+/** Creates and represents the QrCode main UI. */
 public class QrCodeCoordinator {
     private final QrCodeDialog mDialog;
     private final FragmentManager mFragmentManager;
@@ -30,16 +28,12 @@ public class QrCodeCoordinator {
         mFragmentManager = activity.getFragmentManager();
     }
 
-    /**
-     * Show the main dialog.
-     */
+    /** Show the main dialog. */
     public void show() {
         mDialog.show(mFragmentManager, null);
     }
 
-    /**
-     * Dismiss the main dialog.
-     */
+    /** Dismiss the main dialog. */
     public void dismiss() {
         mDialog.dismiss();
     }

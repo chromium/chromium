@@ -22,9 +22,7 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.Locale;
 
-/**
- * A drawable for the tab switcher icon.
- */
+/** A drawable for the tab switcher icon. */
 public class TabSwitcherDrawable extends TintedDrawable {
     private final float mSingleDigitTextSize;
     private final float mDoubleDigitTextSize;
@@ -44,8 +42,9 @@ public class TabSwitcherDrawable extends TintedDrawable {
      */
     public static TabSwitcherDrawable createTabSwitcherDrawable(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        Bitmap icon = BitmapFactory.decodeResource(
-                context.getResources(), R.drawable.btn_tabswitcher_modern);
+        Bitmap icon =
+                BitmapFactory.decodeResource(
+                        context.getResources(), R.drawable.btn_tabswitcher_modern);
         return new TabSwitcherDrawable(context, brandedColorScheme, icon);
     }
 
@@ -82,8 +81,10 @@ public class TabSwitcherDrawable extends TintedDrawable {
 
             Rect drawableBounds = getBounds();
             int textX = drawableBounds.width() / 2;
-            int textY = drawableBounds.height() / 2 + (mTextBounds.bottom - mTextBounds.top) / 2
-                    - mTextBounds.bottom;
+            int textY =
+                    drawableBounds.height() / 2
+                            + (mTextBounds.bottom - mTextBounds.top) / 2
+                            - mTextBounds.bottom;
 
             canvas.drawText(textString, textX, textY, mTextPaint);
         }

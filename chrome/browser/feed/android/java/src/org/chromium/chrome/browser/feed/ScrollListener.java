@@ -14,9 +14,7 @@ public interface ScrollListener {
      */
     int UNKNOWN_SCROLL_DELTA = Integer.MIN_VALUE;
 
-    /**
-     * Called when the scroll state changes.
-     */
+    /** Called when the scroll state changes. */
     void onScrollStateChanged(@ScrollState int state);
 
     /**

@@ -35,11 +35,9 @@ import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 
-/**
- * Dialog that is displayed to ask user where they want to download the file.
- */
-public class DownloadLocationCustomView
-        extends ScrollView implements OnCheckedChangeListener, DownloadDirectoryAdapter.Delegate {
+/** Dialog that is displayed to ask user where they want to download the file. */
+public class DownloadLocationCustomView extends ScrollView
+        implements OnCheckedChangeListener, DownloadDirectoryAdapter.Delegate {
     private DownloadDirectoryAdapter mDirectoryAdapter;
 
     private TextView mTitle;
@@ -122,7 +120,7 @@ public class DownloadLocationCustomView
 
     // Helper methods available to DownloadDialogBridge.
     /**
-     * @return  The text that the user inputted as the name of the file.
+     * @return The text that the user inputted as the name of the file.
      */
     @Nullable
     String getFileName() {
@@ -131,7 +129,7 @@ public class DownloadLocationCustomView
     }
 
     /**
-     * @return  The file path based on what the user selected as the location of the file.
+     * @return The file path based on what the user selected as the location of the file.
      */
     @Nullable
     DirectoryOption getDirectoryOption() {
@@ -141,22 +139,23 @@ public class DownloadLocationCustomView
     }
 
     /**
-     * @return  Whether the "don't show again" checkbox is checked.
+     * @return Whether the "don't show again" checkbox is checked.
      */
     boolean getDontShowAgain() {
         return mDontShowAgain != null && mDontShowAgain.isChecked();
     }
 
-    /**
-     * Hide the subtitle and adjust the bottom margin.
-     */
+    /** Hide the subtitle and adjust the bottom margin. */
     void showSubtitle(boolean show) {
         mSubtitleView.setVisibility(show ? View.VISIBLE : View.GONE);
 
         MarginLayoutParams titleMargin = (MarginLayoutParams) mTitle.getLayoutParams();
-        titleMargin.bottomMargin = getResources().getDimensionPixelSize(show
-                        ? R.dimen.download_dialog_title_margin_bottom
-                        : R.dimen.download_dialog_subtitle_margin_bottom);
+        titleMargin.bottomMargin =
+                getResources()
+                        .getDimensionPixelSize(
+                                show
+                                        ? R.dimen.download_dialog_title_margin_bottom
+                                        : R.dimen.download_dialog_subtitle_margin_bottom);
         mTitle.setLayoutParams(titleMargin);
     }
 
@@ -174,11 +173,18 @@ public class DownloadLocationCustomView
 
         // Show not enough space and change color to error.
         if (availableSpace < mTotalBytes) {
-            locationAvailableSpaceText = getContext().getResources().getString(
-                    R.string.download_manager_list_item_description, locationAvailableSpaceText,
-                    getContext().getText(R.string.download_location_not_enough_space));
-            textColor = ColorStateList.valueOf(
-                    ContextCompat.getColor(getContext(), R.color.input_underline_error_color));
+            locationAvailableSpaceText =
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.download_manager_list_item_description,
+                                    locationAvailableSpaceText,
+                                    getContext()
+                                            .getText(R.string.download_location_not_enough_space));
+            textColor =
+                    ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                    getContext(), R.color.input_underline_error_color));
             barColor = ContextCompat.getColor(getContext(), R.color.input_underline_error_color);
 
             DownloadLocationDialogMetrics.recordDownloadLocationSuggestionEvent(
@@ -209,19 +215,21 @@ public class DownloadLocationCustomView
 
         // Show "not enough space" error text the new chosen storage doesn't have enough space.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)) {
-            mFileLocation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(
-                        AdapterView<?> parent, View view, int position, long id) {
-                    DirectoryOption option = (DirectoryOption) mDirectoryAdapter.getItem(position);
-                    setLocationAvailableSpace(option.availableSpace);
-                }
+            mFileLocation.setOnItemSelectedListener(
+                    new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(
+                                AdapterView<?> parent, View view, int position, long id) {
+                            DirectoryOption option =
+                                    (DirectoryOption) mDirectoryAdapter.getItem(position);
+                            setLocationAvailableSpace(option.availableSpace);
+                        }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                    // No callback. Only update listeners when an actual option is selected.
-                }
-            });
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            // No callback. Only update listeners when an actual option is selected.
+                        }
+                    });
         }
     }
 

@@ -34,25 +34,35 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     private final BottomSheetObserver mBottomSheetObserver;
 
     /** Constructor. */
-    public PriceTrackingButtonController(Context context, ObservableSupplier<Tab> tabSupplier,
-            ModalDialogManager modalDialogManager, BottomSheetController bottomSheetController,
-            Drawable buttonDrawable, Supplier<TabBookmarker> tabBookmarkerSupplier) {
-        super(tabSupplier, modalDialogManager, buttonDrawable,
+    public PriceTrackingButtonController(
+            Context context,
+            ObservableSupplier<Tab> tabSupplier,
+            ModalDialogManager modalDialogManager,
+            BottomSheetController bottomSheetController,
+            Drawable buttonDrawable,
+            Supplier<TabBookmarker> tabBookmarkerSupplier) {
+        super(
+                tabSupplier,
+                modalDialogManager,
+                buttonDrawable,
                 context.getString(R.string.enable_price_tracking_menu_item),
                 /* actionChipLabelResId= */ R.string.enable_price_tracking_menu_item,
-                /*supportsTinting=*/true, /*iphCommandBuilder*/ null,
-                AdaptiveToolbarButtonVariant.PRICE_TRACKING, /*tooltipTextResId*/ Resources.ID_NULL,
-                /*showHoverHighlight*/ false);
+                /* supportsTinting= */ true,
+                /* iphCommandBuilder= */ null,
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING,
+                /* tooltipTextResId= */ Resources.ID_NULL,
+                /* showHoverHighlight= */ false);
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mBottomSheetController = bottomSheetController;
 
-        mBottomSheetObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetStateChanged(int newState, int reason) {
-                mButtonData.setEnabled(newState == SheetState.HIDDEN);
-                notifyObservers(mButtonData.canShow());
-            }
-        };
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {
+                        mButtonData.setEnabled(newState == SheetState.HIDDEN);
+                        notifyObservers(mButtonData.canShow());
+                    }
+                };
         mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
@@ -63,10 +73,12 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
 
     @Override
     protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
-        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
-                FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
-                /* stringId = */ R.string.iph_price_tracking_menu_item,
-                /* accessibilityStringId = */ R.string.iph_price_tracking_menu_item);
+        IPHCommandBuilder iphCommandBuilder =
+                new IPHCommandBuilder(
+                        tab.getContext().getResources(),
+                        FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
+                        /* stringId= */ R.string.iph_price_tracking_menu_item,
+                        /* accessibilityStringId= */ R.string.iph_price_tracking_menu_item);
         return iphCommandBuilder;
     }
 }

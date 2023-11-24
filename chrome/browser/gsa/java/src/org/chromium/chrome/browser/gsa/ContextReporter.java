@@ -23,15 +23,11 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Reports context to GSA for search quality.
- */
+/** Reports context to GSA for search quality. */
 public class ContextReporter {
     private static final String TAG = "GSA";
 
-    /**
-     * Interface for a selection context reporter used by contextual search.
-     */
+    /** Interface for a selection context reporter used by contextual search. */
     public interface SelectionReporter {
         /**
          * Enable selection context reporting.
@@ -89,7 +85,8 @@ public class ContextReporter {
      * @param selectionReporter Controller enabling/disabling selection context reporting.
      * @param delegate Delegate used to communicate with GSA.
      */
-    public ContextReporter(@NonNull Supplier<Tab> currentTabSupplier,
+    public ContextReporter(
+            @NonNull Supplier<Tab> currentTabSupplier,
             @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable SelectionReporter selectionReporter,
             @NonNull GSAContextReportDelegate delegate) {
@@ -101,9 +98,7 @@ public class ContextReporter {
         Log.d(TAG, "Created a new ContextReporter");
     }
 
-    /**
-     * Starts reporting context.
-     */
+    /** Starts reporting context. */
     public void enable() {
         reportUsageOfCurrentContextIfPossible(mCurrentTabSupplier.get(), false, null);
 
@@ -111,34 +106,34 @@ public class ContextReporter {
         assert selector != null;
 
         if (mSelectorTabObserver == null) {
-            mSelectorTabObserver = new TabModelSelectorTabObserver(selector) {
-                @Override
-                public void onTitleUpdated(Tab tab) {
-                    // Report usage declaring this as a title change.
-                    reportUsageOfCurrentContextIfPossible(tab, true, null);
-                }
+            mSelectorTabObserver =
+                    new TabModelSelectorTabObserver(selector) {
+                        @Override
+                        public void onTitleUpdated(Tab tab) {
+                            // Report usage declaring this as a title change.
+                            reportUsageOfCurrentContextIfPossible(tab, true, null);
+                        }
 
-                @Override
-                public void onUrlUpdated(Tab tab) {
-                    reportUsageOfCurrentContextIfPossible(tab, false, null);
-                }
-            };
+                        @Override
+                        public void onUrlUpdated(Tab tab) {
+                            reportUsageOfCurrentContextIfPossible(tab, false, null);
+                        }
+                    };
         }
         if (mModelObserver == null) {
             assert !selector.getModels().isEmpty();
-            mModelObserver = new TabModelSelectorTabModelObserver(selector) {
-                @Override
-                public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                    reportUsageOfCurrentContextIfPossible(tab, false, null);
-                }
-            };
+            mModelObserver =
+                    new TabModelSelectorTabModelObserver(selector) {
+                        @Override
+                        public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                            reportUsageOfCurrentContextIfPossible(tab, false, null);
+                        }
+                    };
         }
         if (mSelectionReporter != null) mSelectionReporter.enable(this::reportDisplaySelection);
     }
 
-    /**
-     * Stops reporting context. Called when the app goes to the background.
-     */
+    /** Stops reporting context. Called when the app goes to the background. */
     public void disable() {
         reportUsageEndedIfNecessary();
 

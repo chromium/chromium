@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
-/**
- * The set of operations that inform the C++ side of actions taken.
- */
+/** The set of operations that inform the C++ side of actions taken. */
 public interface PlusAddressCreationDelegate {
     public void onConfirmRequested();
 
     public void onConfirmFinished();
 
     public void onCanceled();
+
     public void onPromptDismissed();
 }

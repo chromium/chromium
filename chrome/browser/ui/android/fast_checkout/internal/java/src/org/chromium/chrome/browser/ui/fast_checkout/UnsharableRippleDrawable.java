@@ -8,9 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 
-/**
- * RippleDrawable that does not allow sharing across views. Returns a constant state of null.
- */
+/** RippleDrawable that does not allow sharing across views. Returns a constant state of null. */
 public class UnsharableRippleDrawable extends RippleDrawable {
     private static final ColorStateList DUMMY_COLOR = ColorStateList.valueOf(0xFFFFFF);
 

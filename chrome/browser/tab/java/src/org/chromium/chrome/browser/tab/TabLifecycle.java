@@ -31,9 +31,7 @@ public interface TabLifecycle {
      */
     void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller);
 
-    /**
-     * Triggers the hiding logic for the view backing the tab.
-     */
+    /** Triggers the hiding logic for the view backing the tab. */
     void hide(@TabHidingType int type);
 
     /**

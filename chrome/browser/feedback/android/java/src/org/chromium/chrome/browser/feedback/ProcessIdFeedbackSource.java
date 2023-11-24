@@ -23,16 +23,16 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
     private static final int PROCESS_TYPE_GPU = 9;
 
     private static final Map<String, Integer> PROCESS_TYPES = new HashMap<>();
+
     static {
         PROCESS_TYPES.put(ContentSwitches.SWITCH_RENDERER_PROCESS, PROCESS_TYPE_RENDERER);
         PROCESS_TYPES.put(ContentSwitches.SWITCH_UTILITY_PROCESS, PROCESS_TYPE_UTILITY);
         PROCESS_TYPES.put(ContentSwitches.SWITCH_GPU_PROCESS, PROCESS_TYPE_GPU);
     }
 
-    /**
-     * A map of process type -> list of PIDs for that type.  Can be {@code null}.
-     */
+    /** A map of process type -> list of PIDs for that type. Can be {@code null}. */
     private Map<String, String> mProcessMap;
+
     private boolean mIsReady;
 
     ProcessIdFeedbackSource() {}
@@ -51,8 +51,10 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
     private void prepareCompleted(long nativeSource) {
         mProcessMap = new HashMap<>();
         for (Map.Entry<String, Integer> entry : PROCESS_TYPES.entrySet()) {
-            long[] pids = ProcessIdFeedbackSourceJni.get().getProcessIdsForType(
-                    nativeSource, ProcessIdFeedbackSource.this, entry.getValue());
+            long[] pids =
+                    ProcessIdFeedbackSourceJni.get()
+                            .getProcessIdsForType(
+                                    nativeSource, ProcessIdFeedbackSource.this, entry.getValue());
             if (pids.length == 0) continue;
             StringBuilder spids = new StringBuilder();
             for (long pid : pids) {
@@ -61,7 +63,8 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
             }
             mProcessMap.put(processTypeToFeedbackKey(entry.getKey()), spids.toString());
         }
-        mProcessMap.put(processTypeToFeedbackKey("browser"),
+        mProcessMap.put(
+                processTypeToFeedbackKey("browser"),
                 Long.toString(ProcessIdFeedbackSourceJni.get().getCurrentPid()));
         mIsReady = true;
     }
@@ -79,8 +82,12 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
     @NativeMethods
     interface Natives {
         long getCurrentPid();
+
         void start(ProcessIdFeedbackSource source);
-        long[] getProcessIdsForType(long nativeProcessIdFeedbackSource,
-                ProcessIdFeedbackSource caller, int processType);
+
+        long[] getProcessIdsForType(
+                long nativeProcessIdFeedbackSource,
+                ProcessIdFeedbackSource caller,
+                int processType);
     }
 }

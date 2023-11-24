@@ -47,17 +47,13 @@ class MandatoryReauthOptInBottomSheetViewBridge {
                 new MandatoryReauthOptInBottomSheetCoordinator(context, controller, delegate));
     }
 
-    /**
-     * Shows the view.
-     */
+    /** Shows the view. */
     @CalledByNative
     boolean show() {
         return mComponent.show();
     }
 
-    /**
-     * Closes the view.
-     */
+    /** Closes the view. */
     @CalledByNative
     void close() {
         mComponent.close(PaymentsBubbleClosedReason.NOT_INTERACTED);

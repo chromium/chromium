@@ -32,7 +32,7 @@ import java.util.Locale;
  * This class manages the AppLanguagePref.
  */
 public class AppLocaleUtils {
-    private AppLocaleUtils(){};
+    private AppLocaleUtils() {}
 
     // Value of AppLocale preference when the system language is used.
     public static final String APP_LOCALE_USE_SYSTEM_LANGUAGE = null;
@@ -66,8 +66,10 @@ public class AppLocaleUtils {
         if (shouldUseSystemManagedLocale()) {
             return getSystemManagedAppLanguage();
         }
-        return ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, APP_LOCALE_USE_SYSTEM_LANGUAGE);
+        return ChromeSharedPreferences.getInstance()
+                .readString(
+                        ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE,
+                        APP_LOCALE_USE_SYSTEM_LANGUAGE);
     }
 
     /**
@@ -79,8 +81,10 @@ public class AppLocaleUtils {
      */
     @SuppressWarnings("DefaultSharedPreferencesCheck")
     static String getAppLanguagePrefStartUp(Context base) {
-        return PreferenceManager.getDefaultSharedPreferences(base).getString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, APP_LOCALE_USE_SYSTEM_LANGUAGE);
+        return PreferenceManager.getDefaultSharedPreferences(base)
+                .getString(
+                        ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE,
+                        APP_LOCALE_USE_SYSTEM_LANGUAGE);
     }
 
     /**
@@ -137,17 +141,20 @@ public class AppLocaleUtils {
     public static void setAppLanguagePref(
             String languageName, LanguageSplitInstaller.InstallListener listener) {
         // Wrap the install listener so that on success the app override preference is set.
-        LanguageSplitInstaller.InstallListener wrappedListener = (success) -> {
-            if (success) {
-                if (shouldUseSystemManagedLocale()) {
-                    setSystemManagedAppLanguage(languageName);
-                } else {
-                    ChromeSharedPreferences.getInstance().writeString(
-                            ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, languageName);
-                }
-            }
-            listener.onComplete(success);
-        };
+        LanguageSplitInstaller.InstallListener wrappedListener =
+                (success) -> {
+                    if (success) {
+                        if (shouldUseSystemManagedLocale()) {
+                            setSystemManagedAppLanguage(languageName);
+                        } else {
+                            ChromeSharedPreferences.getInstance()
+                                    .writeString(
+                                            ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE,
+                                            languageName);
+                        }
+                    }
+                    listener.onComplete(success);
+                };
 
         // If this is not a bundle build or the default system language is being used the language
         // split should not be installed. Instead indicate that the listener completed successfully
@@ -191,8 +198,9 @@ public class AppLocaleUtils {
         // Since null is saved in the SharedPreference if following the system language, a custom
         // token is used for when the preference is not present.
         String unsetToken = "__UNSET__";
-        String sharedPrefAppLanguage = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, unsetToken);
+        String sharedPrefAppLanguage =
+                ChromeSharedPreferences.getInstance()
+                        .readString(ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, unsetToken);
         if (TextUtils.equals(sharedPrefAppLanguage, unsetToken)) return;
 
         // Removed the old shared preference so a migration will not occur again.
@@ -210,8 +218,8 @@ public class AppLocaleUtils {
     }
 
     private static void removeSharedPrefAppLanguage() {
-        ChromeSharedPreferences.getInstance().removeKey(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE);
     }
 
     /**
@@ -252,7 +260,7 @@ public class AppLocaleUtils {
         // The default system language is always an available UI language.
         if (isFollowSystemLanguage(potentialUiLanguage)) return true;
         return Arrays.binarySearch(
-                       ResourceBundle.getAvailableLocales(), potentialUiLanguage, comparator)
+                        ResourceBundle.getAvailableLocales(), potentialUiLanguage, comparator)
                 >= 0;
     }
 
@@ -261,12 +269,13 @@ public class AppLocaleUtils {
      * since they are not needed for locale availability checks.
      * Example: "es-MX" and "es-ES" will evaluate as equal.
      */
-    private static final Comparator<String> BASE_LANGUAGE_COMPARATOR = new Comparator<String>() {
-        @Override
-        public int compare(String a, String b) {
-            String langA = LocaleUtils.toBaseLanguage(a);
-            String langB = LocaleUtils.toBaseLanguage(b);
-            return langA.compareTo(langB);
-        }
-    };
+    private static final Comparator<String> BASE_LANGUAGE_COMPARATOR =
+            new Comparator<String>() {
+                @Override
+                public int compare(String a, String b) {
+                    String langA = LocaleUtils.toBaseLanguage(a);
+                    String langB = LocaleUtils.toBaseLanguage(b);
+                    return langA.compareTo(langB);
+                }
+            };
 }

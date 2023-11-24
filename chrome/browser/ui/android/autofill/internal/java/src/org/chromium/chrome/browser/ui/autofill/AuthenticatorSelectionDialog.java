@@ -31,10 +31,12 @@ import java.util.List;
  */
 public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter.ItemClickListener {
     private static final int ANIMATION_DURATION_MS = 250;
+
     /** Interface for the caller to be notified of user actions. */
     public interface Listener {
         /** Notify that the user selected an authenticator option. */
         void onOptionSelected(String authenticatorOptionIdentifier);
+
         /** Notify that the dialog was dismissed. */
         void onDialogDismissed();
     }
@@ -84,7 +86,8 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
     @Override
     public void onItemClicked(AuthenticatorOption option) {
         mSelectedAuthenticatorOption = option;
-        mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+        mDialogModel.set(
+                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                 getPositiveButtonText(mSelectedAuthenticatorOption.getType()));
     }
 
@@ -93,15 +96,19 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
         switch (authenticatorOptionType) {
             case CardUnmaskChallengeOptionType.SMS_OTP:
             case CardUnmaskChallengeOptionType.EMAIL_OTP:
-                return mContext.getResources().getString(
-                        R.string.autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
+                return mContext.getResources()
+                        .getString(
+                                R.string
+                                        .autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
             case CardUnmaskChallengeOptionType.CVC:
-                return mContext.getResources().getString(
-                        R.string.autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
+                return mContext.getResources()
+                        .getString(
+                                R.string
+                                        .autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
             case CardUnmaskChallengeOptionType.UNKNOWN_TYPE:
                 // This will never happen.
                 assert false
-                    : "Attempted to get positive button text for an authenticator option with Unknown type.";
+                        : "Attempted to get positive button text for an authenticator option with Unknown type.";
         }
         return "";
     }
@@ -114,16 +121,22 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
     public void show(List<AuthenticatorOption> authenticatorOptions) {
         // By default, the first option will be selected.
         mSelectedAuthenticatorOption = authenticatorOptions.get(0);
-        mAuthenticatorSelectionDialogView = LayoutInflater.from(mContext).inflate(
-                R.layout.authenticator_selection_dialog, null);
+        mAuthenticatorSelectionDialogView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.authenticator_selection_dialog, null);
 
-        boolean useCustomTitleView = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
+        boolean useCustomTitleView =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
         int titleIconId =
                 useCustomTitleView ? R.drawable.google_pay : R.drawable.google_pay_with_divider;
-        String title = mContext.getResources().getString(authenticatorOptions.size() > 1
-                        ? R.string.autofill_card_auth_selection_dialog_title_multiple_options
-                        : R.string.autofill_card_unmask_verification_title);
+        String title =
+                mContext.getResources()
+                        .getString(
+                                authenticatorOptions.size() > 1
+                                        ? R.string
+                                                .autofill_card_auth_selection_dialog_title_multiple_options
+                                        : R.string.autofill_card_unmask_verification_title);
 
         if (useCustomTitleView) {
             ViewStub stub =
@@ -131,15 +144,17 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
             stub.setLayoutResource(R.layout.icon_after_title_view);
             stub.inflate();
         }
-        mAuthenticatorSelectionDialogContentsView = mAuthenticatorSelectionDialogView.findViewById(
-                R.id.authenticator_selection_dialog_contents);
+        mAuthenticatorSelectionDialogContentsView =
+                mAuthenticatorSelectionDialogView.findViewById(
+                        R.id.authenticator_selection_dialog_contents);
         mProgressBarOverlayView =
                 mAuthenticatorSelectionDialogView.findViewById(R.id.progress_bar_overlay);
         mProgressBarOverlayView.setVisibility(View.GONE);
         // Set up the recycler view.
         mAuthenticationOptionsRecyclerView =
-                (RecyclerView) mAuthenticatorSelectionDialogView.findViewById(
-                        R.id.authenticator_options_view);
+                (RecyclerView)
+                        mAuthenticatorSelectionDialogView.findViewById(
+                                R.id.authenticator_options_view);
         mAuthenticatorOptionsAdapter =
                 new AuthenticatorOptionsAdapter(mContext, authenticatorOptions, this);
         mAuthenticationOptionsRecyclerView.setAdapter(mAuthenticatorOptionsAdapter);
@@ -148,12 +163,17 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mAuthenticatorSelectionDialogView)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mContext.getResources().getString(
-                                        R.string.autofill_payments_authenticator_selection_dialog_negative_button_label))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mContext.getResources()
+                                        .getString(
+                                                R.string
+                                                        .autofill_payments_authenticator_selection_dialog_negative_button_label))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 getPositiveButtonText(mSelectedAuthenticatorOption.getType()))
-                        .with(ModalDialogProperties.BUTTON_STYLES,
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
         updateTitleView(useCustomTitleView, title, titleIconId, builder);
         mDialogModel = builder.build();
@@ -170,8 +190,11 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
      * @param titleIcon Icon near the title.
      * @param builder The PropertyModel.Builder instance.
      */
-    private void updateTitleView(boolean useCustomTitleView, String title,
-            @DrawableRes int titleIcon, PropertyModel.Builder builder) {
+    private void updateTitleView(
+            boolean useCustomTitleView,
+            String title,
+            @DrawableRes int titleIcon,
+            PropertyModel.Builder builder) {
         if (useCustomTitleView) {
             TextView titleView =
                     (TextView) mAuthenticatorSelectionDialogView.findViewById(R.id.title);
@@ -181,7 +204,8 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
             iconView.setImageResource(titleIcon);
         } else {
             builder.with(ModalDialogProperties.TITLE, title);
-            builder.with(ModalDialogProperties.TITLE_ICON,
+            builder.with(
+                    ModalDialogProperties.TITLE_ICON,
                     ResourcesCompat.getDrawable(
                             mContext.getResources(), titleIcon, mContext.getTheme()));
         }
@@ -200,8 +224,10 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
         mProgressBarOverlayView.setVisibility(View.VISIBLE);
         mProgressBarOverlayView.setAlpha(0f);
         mProgressBarOverlayView.animate().alpha(1f).setDuration(ANIMATION_DURATION_MS);
-        mAuthenticatorSelectionDialogContentsView.animate().alpha(0f).setDuration(
-                ANIMATION_DURATION_MS);
+        mAuthenticatorSelectionDialogContentsView
+                .animate()
+                .alpha(0f)
+                .setDuration(ANIMATION_DURATION_MS);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }
 }

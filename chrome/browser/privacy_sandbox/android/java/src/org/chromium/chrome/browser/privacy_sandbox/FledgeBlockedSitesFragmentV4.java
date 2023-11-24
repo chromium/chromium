@@ -19,11 +19,9 @@ import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
-/**
- * Fragment for the blocked Fledge sites.
- */
-public class FledgeBlockedSitesFragmentV4
-        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
+/** Fragment for the blocked Fledge sites. */
+public class FledgeBlockedSitesFragmentV4 extends PrivacySandboxSettingsBaseFragment
+        implements Preference.OnPreferenceClickListener {
     private static final String BLOCKED_SITES_PREFERENCE = "block_list";
 
     private PreferenceCategory mBlockedSitesCategory;
@@ -70,8 +68,11 @@ public class FledgeBlockedSitesFragmentV4
             mBlockedSitesCategory.removePreference(preference);
             updateBlockedSitesDescription();
 
-            showSnackbar(R.string.settings_fledge_page_add_site_snackbar, null,
-                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_SITE);
+            showSnackbar(
+                    R.string.settings_fledge_page_add_site_snackbar,
+                    null,
+                    Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_SITE);
             RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteAdded");
             return true;
         }
@@ -90,9 +91,10 @@ public class FledgeBlockedSitesFragmentV4
         for (String site : blockedSites) {
             FledgePreference preference =
                     new FledgePreference(getContext(), site, mLargeIconBridge);
-            preference.setImage(R.drawable.ic_add,
-                    getResources().getString(
-                            R.string.settings_fledge_page_allow_site_a11y_label, site));
+            preference.setImage(
+                    R.drawable.ic_add,
+                    getResources()
+                            .getString(R.string.settings_fledge_page_allow_site_a11y_label, site));
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
             mBlockedSitesCategory.addPreference(preference);
@@ -100,7 +102,8 @@ public class FledgeBlockedSitesFragmentV4
     }
 
     private void updateBlockedSitesDescription() {
-        mBlockedSitesCategory.setSummary(mBlockedSitesCategory.getPreferenceCount() == 0
+        mBlockedSitesCategory.setSummary(
+                mBlockedSitesCategory.getPreferenceCount() == 0
                         ? R.string.settings_fledge_page_blocked_sites_description_empty
                         : R.string.settings_fledge_page_blocked_sites_description);
     }

@@ -8,9 +8,7 @@ import androidx.annotation.AnyThread;
 
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * A double-type {@link CachedFieldTrialParameter}.
- */
+/** A double-type {@link CachedFieldTrialParameter}. */
 public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
     private double mDefaultValue;
 
@@ -41,11 +39,13 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
                 return value;
             }
 
-            value = CachedFlagsSafeMode.getInstance().getDoubleFieldTrialParam(
-                    preferenceName, defaultValue);
+            value =
+                    CachedFlagsSafeMode.getInstance()
+                            .getDoubleFieldTrialParam(preferenceName, defaultValue);
             if (value == null) {
-                value = ChromeSharedPreferences.getInstance().readDouble(
-                        preferenceName, defaultValue);
+                value =
+                        ChromeSharedPreferences.getInstance()
+                                .readDouble(preferenceName, defaultValue);
             }
 
             ValuesReturned.sDoubleValues.put(preferenceName, value);
@@ -59,8 +59,9 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
 
     @Override
     void cacheToDisk() {
-        double value = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                getFeatureName(), getParameterName(), getDefaultValue());
+        double value =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                        getFeatureName(), getParameterName(), getDefaultValue());
         ChromeSharedPreferences.getInstance().writeDouble(getSharedPreferenceKey(), value);
     }
 

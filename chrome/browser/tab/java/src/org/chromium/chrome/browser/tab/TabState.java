@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * Object that contains the state of a tab, including its navigation history.
- */
+/** Object that contains the state of a tab, including its navigation history. */
 public class TabState {
     /** Special value for timestamp related attributes. */
     public static final long TIMESTAMP_NOT_SET = -1;
@@ -22,6 +20,7 @@ public class TabState {
 
     /** Navigation history of the WebContents. */
     public WebContentsState contentsState;
+
     public int parentId = Tab.INVALID_TAB_ID;
     public int rootId;
 

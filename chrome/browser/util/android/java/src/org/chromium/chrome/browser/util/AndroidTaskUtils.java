@@ -24,9 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Deals with Document-related API calls.
- */
+/** Deals with Document-related API calls. */
 public class AndroidTaskUtils {
     public static final String TAG = "DocumentUtilities";
 

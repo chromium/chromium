@@ -17,9 +17,7 @@ import org.chromium.base.task.AsyncTask;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-/**
- * Includes helper methods to interact with Android media store.
- */
+/** Includes helper methods to interact with Android media store. */
 public class MediaStoreHelper {
     private static final String TAG = "MediaStoreHelper";
 
@@ -36,21 +34,27 @@ public class MediaStoreHelper {
      */
     public static void addImageToGalleryOnSDCard(String filePath, String mimeType) {
         // TODO(xingliu): Support Android Q when we have available device with SD card slot.
-        if (TextUtils.isEmpty(filePath) || mimeType == null || !mimeType.startsWith("image/")
+        if (TextUtils.isEmpty(filePath)
+                || mimeType == null
+                || !mimeType.startsWith("image/")
                 || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return;
         }
 
-        DownloadDirectoryProvider.getInstance().getAllDirectoriesOptions((dirs) -> {
-            for (DirectoryOption dir : dirs) {
-                // Scan the media file if it is on SD card.
-                if (dir.type == DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL
-                        && filePath.contains(dir.location)) {
-                    addImageOnBlockingThread(filePath);
-                    return;
-                }
-            }
-        });
+        DownloadDirectoryProvider.getInstance()
+                .getAllDirectoriesOptions(
+                        (dirs) -> {
+                            for (DirectoryOption dir : dirs) {
+                                // Scan the media file if it is on SD card.
+                                if (dir.type
+                                                == DirectoryOption.DownloadLocationDirectoryType
+                                                        .ADDITIONAL
+                                        && filePath.contains(dir.location)) {
+                                    addImageOnBlockingThread(filePath);
+                                    return;
+                                }
+                            }
+                        });
     }
 
     /**
@@ -66,8 +70,10 @@ public class MediaStoreHelper {
                     // copy on disk.
                     File file = new File(filePath);
                     MediaStore.Images.Media.insertImage(
-                            ContextUtils.getApplicationContext().getContentResolver(), filePath,
-                            file.getName(), null);
+                            ContextUtils.getApplicationContext().getContentResolver(),
+                            filePath,
+                            file.getName(),
+                            null);
                 } catch (FileNotFoundException e) {
                     Log.e(TAG, "Cannot find image file to add to gallery.", e);
                 }

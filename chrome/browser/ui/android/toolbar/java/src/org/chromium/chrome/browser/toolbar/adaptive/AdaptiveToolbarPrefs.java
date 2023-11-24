@@ -20,8 +20,8 @@ public class AdaptiveToolbarPrefs {
      * enabled.
      */
     public static boolean isCustomizationPreferenceEnabled() {
-        return ChromeSharedPreferences.getInstance().readBoolean(
-                ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, true);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, true);
     }
 
     /**
@@ -29,8 +29,8 @@ public class AdaptiveToolbarPrefs {
      * @param enabled Whether the customization should be enabled.
      */
     public static void saveToolbarSettingsToggleState(boolean enabled) {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, enabled);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, enabled);
     }
 
     /**
@@ -39,8 +39,9 @@ public class AdaptiveToolbarPrefs {
      * @return The current customization setting. See {@link AdaptiveToolbarButtonVariant}.
      */
     public static @AdaptiveToolbarButtonVariant int getCustomizationSetting() {
-        return ChromeSharedPreferences.getInstance().readInt(
-                ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.AUTO);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(
+                        ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.AUTO);
     }
 
     /**
@@ -48,7 +49,7 @@ public class AdaptiveToolbarPrefs {
      * @param settings The {@link AdaptiveToolbarButtonVariant} for this Preference.
      */
     public static void saveToolbarButtonManualOverride(@AdaptiveToolbarButtonVariant int settings) {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, settings);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, settings);
     }
 }

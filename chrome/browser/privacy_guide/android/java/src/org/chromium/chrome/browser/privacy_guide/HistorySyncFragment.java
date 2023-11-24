@@ -20,11 +20,9 @@ import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Set;
 
-/**
- * Controls the behaviour of the History Sync privacy guide page.
- */
-public class HistorySyncFragment
-        extends PrivacyGuideBasePage implements CompoundButton.OnCheckedChangeListener {
+/** Controls the behaviour of the History Sync privacy guide page. */
+public class HistorySyncFragment extends PrivacyGuideBasePage
+        implements CompoundButton.OnCheckedChangeListener {
     private SyncService mSyncService;
     private boolean mInitialKeepEverythingSynced;
 

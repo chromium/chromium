@@ -76,8 +76,12 @@ class TouchToFillMediator {
     private boolean mManagePasskeysHidesPasswords;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
-    void initialize(Context context, TouchToFillComponent.Delegate delegate, PropertyModel model,
-            LargeIconBridge largeIconBridge, @Px int desiredIconSize,
+    void initialize(
+            Context context,
+            TouchToFillComponent.Delegate delegate,
+            PropertyModel model,
+            LargeIconBridge largeIconBridge,
+            @Px int desiredIconSize,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
         mContext = context;
@@ -88,10 +92,15 @@ class TouchToFillMediator {
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
     }
 
-    void showCredentials(GURL url, boolean isOriginSecure,
-            List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials,
-            boolean showMorePasskeys, boolean triggerSubmission,
-            boolean managePasskeysHidesPasswords, boolean showHybridPasskeyOption) {
+    void showCredentials(
+            GURL url,
+            boolean isOriginSecure,
+            List<WebAuthnCredential> webAuthnCredentials,
+            List<Credential> credentials,
+            boolean showMorePasskeys,
+            boolean triggerSubmission,
+            boolean managePasskeysHidesPasswords,
+            boolean showHybridPasskeyOption) {
         assert credentials != null;
 
         mManagePasskeysHidesPasswords = managePasskeysHidesPasswords;
@@ -119,11 +128,14 @@ class TouchToFillMediator {
 
         mWebAuthnCredentials = webAuthnCredentials;
         for (WebAuthnCredential credential : webAuthnCredentials) {
-            final PropertyModel model = createWebAuthnModel(credential,
-                    new FillableItemCollectionInfo(++fillableItemPosition, fillableItemsTotal));
+            final PropertyModel model =
+                    createWebAuthnModel(
+                            credential,
+                            new FillableItemCollectionInfo(
+                                    ++fillableItemPosition, fillableItemsTotal));
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL, model));
             if (shouldCreateConfirmationButton(
-                        credentials, webAuthnCredentials, showMorePasskeys)) {
+                    credentials, webAuthnCredentials, showMorePasskeys)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
             requestWebAuthnIconOrFallbackImage(model, url);
@@ -131,11 +143,15 @@ class TouchToFillMediator {
 
         mCredentials = credentials;
         for (Credential credential : credentials) {
-            final PropertyModel model = createModel(credential, triggerSubmission,
-                    new FillableItemCollectionInfo(++fillableItemPosition, fillableItemsTotal));
+            final PropertyModel model =
+                    createModel(
+                            credential,
+                            triggerSubmission,
+                            new FillableItemCollectionInfo(
+                                    ++fillableItemPosition, fillableItemsTotal));
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
             if (shouldCreateConfirmationButton(
-                        credentials, webAuthnCredentials, showMorePasskeys)) {
+                    credentials, webAuthnCredentials, showMorePasskeys)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
             requestIconOrFallbackImage(model, url);
@@ -157,14 +173,17 @@ class TouchToFillMediator {
                                     .build()));
         }
 
-        sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FOOTER,
-                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
-                        .with(ON_CLICK_MANAGE, this::onManagePasswordSelected)
-                        .with(MANAGE_BUTTON_TEXT,
-                                getManageButtonText(credentials, webAuthnCredentials))
-                        .with(ON_CLICK_HYBRID, this::onHybridSignInSelected)
-                        .with(SHOW_HYBRID, showHybridPasskeyOption)
-                        .build()));
+        sheetItems.add(
+                new ListItem(
+                        TouchToFillProperties.ItemType.FOOTER,
+                        new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                                .with(ON_CLICK_MANAGE, this::onManagePasswordSelected)
+                                .with(
+                                        MANAGE_BUTTON_TEXT,
+                                        getManageButtonText(credentials, webAuthnCredentials))
+                                .with(ON_CLICK_HYBRID, this::onHybridSignInSelected)
+                                .with(SHOW_HYBRID, showHybridPasskeyOption)
+                                .build()));
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
@@ -217,18 +236,27 @@ class TouchToFillMediator {
         Credential credential = credentialModel.get(CREDENTIAL);
         final String iconOrigin = getIconOrigin(credential.getOriginUrl(), url);
 
-        final LargeIconCallback setIcon = (icon, fallbackColor, hasDefaultColor, type) -> {
-            credentialModel.set(FAVICON_OR_FALLBACK,
-                    new FaviconOrFallback(iconOrigin, icon, fallbackColor, hasDefaultColor, type,
-                            mDesiredIconSize));
-        };
-        final LargeIconCallback setIconOrRetry = (icon, fallbackColor, hasDefaultColor, type) -> {
-            if (icon == null && iconOrigin.equals(credential.getOriginUrl())) {
-                mLargeIconBridge.getLargeIconForUrl(url, mDesiredIconSize, setIcon);
-                return; // Unlikely but retry for exact path if there is no icon for the origin.
-            }
-            setIcon.onLargeIconAvailable(icon, fallbackColor, hasDefaultColor, type);
-        };
+        final LargeIconCallback setIcon =
+                (icon, fallbackColor, hasDefaultColor, type) -> {
+                    credentialModel.set(
+                            FAVICON_OR_FALLBACK,
+                            new FaviconOrFallback(
+                                    iconOrigin,
+                                    icon,
+                                    fallbackColor,
+                                    hasDefaultColor,
+                                    type,
+                                    mDesiredIconSize));
+                };
+        final LargeIconCallback setIconOrRetry =
+                (icon, fallbackColor, hasDefaultColor, type) -> {
+                    if (icon == null && iconOrigin.equals(credential.getOriginUrl())) {
+                        mLargeIconBridge.getLargeIconForUrl(url, mDesiredIconSize, setIcon);
+                        return; // Unlikely but retry for exact path if there is no icon for the
+                        // origin.
+                    }
+                    setIcon.onLargeIconAvailable(icon, fallbackColor, hasDefaultColor, type);
+                };
         mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
     }
 
@@ -236,18 +264,27 @@ class TouchToFillMediator {
         // WebAuthn credentials have already been filtered to match the current site's URL.
         final String iconOrigin = url.getSpec();
 
-        final LargeIconCallback setIcon = (icon, fallbackColor, hasDefaultColor, type) -> {
-            credentialModel.set(WEBAUTHN_FAVICON_OR_FALLBACK,
-                    new FaviconOrFallback(iconOrigin, icon, fallbackColor, hasDefaultColor, type,
-                            mDesiredIconSize));
-        };
-        final LargeIconCallback setIconOrRetry = (icon, fallbackColor, hasDefaultColor, type) -> {
-            if (icon == null) {
-                mLargeIconBridge.getLargeIconForUrl(url, mDesiredIconSize, setIcon);
-                return; // Unlikely but retry for exact path if there is no icon for the origin.
-            }
-            setIcon.onLargeIconAvailable(icon, fallbackColor, hasDefaultColor, type);
-        };
+        final LargeIconCallback setIcon =
+                (icon, fallbackColor, hasDefaultColor, type) -> {
+                    credentialModel.set(
+                            WEBAUTHN_FAVICON_OR_FALLBACK,
+                            new FaviconOrFallback(
+                                    iconOrigin,
+                                    icon,
+                                    fallbackColor,
+                                    hasDefaultColor,
+                                    type,
+                                    mDesiredIconSize));
+                };
+        final LargeIconCallback setIconOrRetry =
+                (icon, fallbackColor, hasDefaultColor, type) -> {
+                    if (icon == null) {
+                        mLargeIconBridge.getLargeIconForUrl(url, mDesiredIconSize, setIcon);
+                        return; // Unlikely but retry for exact path if there is no icon for the
+                        // origin.
+                    }
+                    setIcon.onLargeIconAvailable(icon, fallbackColor, hasDefaultColor, type);
+                };
         mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
     }
 
@@ -275,7 +312,8 @@ class TouchToFillMediator {
     private void onSelectedWebAuthnCredential(WebAuthnCredential credential) {
         mModel.set(VISIBLE, false);
         // The index assumes WebAuthn credentials are listed after password credentials.
-        reportCredentialSelection(UserAction.SELECT_WEBAUTHN_CREDENTIAL,
+        reportCredentialSelection(
+                UserAction.SELECT_WEBAUTHN_CREDENTIAL,
                 mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
         mDelegate.onWebAuthnCredentialSelected(credential);
     }
@@ -289,7 +327,9 @@ class TouchToFillMediator {
     public void onDismissed(@StateChangeReason int reason) {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
-        RecordHistogram.recordEnumeratedHistogram(UMA_TOUCH_TO_FILL_DISMISSAL_REASON, reason,
+        RecordHistogram.recordEnumeratedHistogram(
+                UMA_TOUCH_TO_FILL_DISMISSAL_REASON,
+                reason,
                 BottomSheetController.StateChangeReason.MAX_VALUE + 1);
         mDelegate.onDismissed();
     }
@@ -309,13 +349,17 @@ class TouchToFillMediator {
      * @param credentials The available credentials. Show the confirmation for a lone credential.
      * @return True if a confirmation button should be shown at the end of the bottom sheet.
      */
-    private boolean shouldCreateConfirmationButton(List<Credential> credentials,
-            List<WebAuthnCredential> webauthnCredentials, boolean shouldShowMorePasskeys) {
+    private boolean shouldCreateConfirmationButton(
+            List<Credential> credentials,
+            List<WebAuthnCredential> webauthnCredentials,
+            boolean shouldShowMorePasskeys) {
         if (shouldShowMorePasskeys) return false;
         return credentials.size() + webauthnCredentials.size() == 1;
     }
 
-    private PropertyModel createModel(Credential credential, boolean triggerSubmission,
+    private PropertyModel createModel(
+            Credential credential,
+            boolean triggerSubmission,
             FillableItemCollectionInfo itemCollectionInfo) {
         return new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                 .with(CREDENTIAL, credential)

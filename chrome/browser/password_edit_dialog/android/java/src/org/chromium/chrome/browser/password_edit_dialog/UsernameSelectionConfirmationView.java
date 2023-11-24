@@ -16,11 +16,9 @@ import org.chromium.base.Callback;
 
 import java.util.List;
 
-/**
- * The custom view for password edit modal dialog.
- */
-class UsernameSelectionConfirmationView
-        extends PasswordEditDialogView implements OnItemSelectedListener {
+/** The custom view for password edit modal dialog. */
+class UsernameSelectionConfirmationView extends PasswordEditDialogView
+        implements OnItemSelectedListener {
     private Spinner mUsernamesSpinner;
     private Callback<Integer> mUsernameSelectedCallback;
 
@@ -28,9 +26,7 @@ class UsernameSelectionConfirmationView
         super(context, attrs);
     }
 
-    /**
-     * Stores references to the dialog fields after dialog inflation.
-     */
+    /** Stores references to the dialog fields after dialog inflation. */
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();

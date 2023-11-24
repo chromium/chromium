@@ -26,7 +26,8 @@ public interface LayoutManager extends LayoutStateProvider {
      * @param viewBinder This is used to bind the model to the view.
      */
     <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCP(
-            PropertyModel model, V view,
+            PropertyModel model,
+            V view,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder);
 
     /**

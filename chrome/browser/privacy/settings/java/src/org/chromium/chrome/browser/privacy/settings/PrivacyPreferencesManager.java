@@ -14,22 +14,16 @@ import org.chromium.components.minidump_uploader.util.CrashReportingPermissionMa
  * Provides interfaces to observe changes over {@link #isUsageAndCrashReportingPermitted()}.
  */
 public interface PrivacyPreferencesManager extends CrashReportingPermissionManager {
-    /**
-     * Observer for changes in privacy preferences.
-     */
+    /** Observer for changes in privacy preferences. */
     interface Observer {
         void onIsUsageAndCrashReportingPermittedChanged(boolean permitted);
     }
 
-    /**
-     * Adds an {@link Observer}. Must be used on UI thread.
-     */
+    /** Adds an {@link Observer}. Must be used on UI thread. */
     @UiThread
     void addObserver(Observer observer);
 
-    /**
-     * Removes an {@link Observer}.  Must be used on UI thread.
-     */
+    /** Removes an {@link Observer}. Must be used on UI thread. */
     @UiThread
     void removeObserver(Observer observer);
 
@@ -104,9 +98,7 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
      */
     boolean isMetricsReportingEnabled();
 
-    /**
-     * Sets whether the usage and crash reporting pref should be enabled.
-     */
+    /** Sets whether the usage and crash reporting pref should be enabled. */
     void setMetricsReportingEnabled(boolean enabled);
 
     /**

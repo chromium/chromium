@@ -16,14 +16,19 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Util methods for signin metrics logging.
- */
+/** Util methods for signin metrics logging. */
 public class SigninMetricsUtils {
     /** Used to record Signin.AddAccountState histogram. Do not change existing values. */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({State.REQUESTED, State.STARTED, State.SUCCEEDED, State.FAILED, State.CANCELLED,
-            State.NULL_ACCOUNT_NAME, State.NUM_STATES})
+    @IntDef({
+        State.REQUESTED,
+        State.STARTED,
+        State.SUCCEEDED,
+        State.FAILED,
+        State.CANCELLED,
+        State.NULL_ACCOUNT_NAME,
+        State.NUM_STATES
+    })
     public @interface State {
         int REQUESTED = 0;
         int STARTED = 1;
@@ -55,9 +60,7 @@ public class SigninMetricsUtils {
                 "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX);
     }
 
-    /**
-     * Logs signin user action for a given {@link SigninAccessPoint}.
-     */
+    /** Logs signin user action for a given {@link SigninAccessPoint}. */
     public static void logSigninUserActionForAccessPoint(@SigninAccessPoint int accessPoint) {
         // TODO(https://crbug.com/1349700): Remove this check when user action checks are removed
         // from native code.
@@ -76,6 +79,7 @@ public class SigninMetricsUtils {
     @NativeMethods
     public interface Natives {
         void logSigninUserActionForAccessPoint(int accessPoint);
+
         void logAccountConsistencyPromoAction(int promoAction, int accessPoint);
     }
 

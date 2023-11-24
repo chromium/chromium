@@ -87,13 +87,18 @@ class MenuButtonMediator implements AppMenuObserver {
      * @param menuButtonStateSupplier Suplier of {@link MenuButtonState}.
      * @param onMenuButtonClicked Runnable to execute when menu button is clicked.
      */
-    MenuButtonMediator(PropertyModel propertyModel, boolean shouldShowAppUpdateBadge,
-            Supplier<Boolean> isActivityFinishingSupplier, Runnable requestRenderRunnable,
-            ThemeColorProvider themeColorProvider, Supplier<Boolean> isInOverviewModeSupplier,
+    MenuButtonMediator(
+            PropertyModel propertyModel,
+            boolean shouldShowAppUpdateBadge,
+            Supplier<Boolean> isActivityFinishingSupplier,
+            Runnable requestRenderRunnable,
+            ThemeColorProvider themeColorProvider,
+            Supplier<Boolean> isInOverviewModeSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             SetFocusFunction setUrlBarFocusFunction,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
-            WindowAndroid windowAndroid, Supplier<MenuButtonState> menuButtonStateSupplier,
+            WindowAndroid windowAndroid,
+            Supplier<MenuButtonState> menuButtonStateSupplier,
             Runnable onMenuButtonClicked) {
         mPropertyModel = propertyModel;
         mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
@@ -247,10 +252,12 @@ class MenuButtonMediator implements AppMenuObserver {
     private void updateContentDescription(
             boolean isUpdateBadgeVisible, int badgeContentDescription) {
         if (isUpdateBadgeVisible) {
-            mPropertyModel.set(MenuButtonProperties.CONTENT_DESCRIPTION,
+            mPropertyModel.set(
+                    MenuButtonProperties.CONTENT_DESCRIPTION,
                     mResources.getString(badgeContentDescription));
         } else {
-            mPropertyModel.set(MenuButtonProperties.CONTENT_DESCRIPTION,
+            mPropertyModel.set(
+                    MenuButtonProperties.CONTENT_DESCRIPTION,
                     mResources.getString(R.string.accessibility_toolbar_btn_menu));
         }
     }
@@ -268,7 +275,9 @@ class MenuButtonMediator implements AppMenuObserver {
         mAppMenuHandler.addObserver(this);
         mAppMenuButtonHelper = mAppMenuHandler.createAppMenuButtonHelper();
         mAppMenuButtonHelper.setOnAppMenuShownListener(
-                () -> { RecordUserAction.record("MobileToolbarShowMenu"); });
+                () -> {
+                    RecordUserAction.record("MobileToolbarShowMenu");
+                });
         mPropertyModel.set(MenuButtonProperties.APP_MENU_BUTTON_HELPER, mAppMenuButtonHelper);
 
         mAppMenuButtonHelperSupplier.set(mAppMenuButtonHelper);
@@ -299,10 +308,12 @@ class MenuButtonMediator implements AppMenuObserver {
         }
 
         AnimatorSet animatorSet = new AnimatorSet();
-        Animator translationAnimator = PropertyModelAnimatorFactory.ofFloat(
-                mPropertyModel, MenuButtonProperties.TRANSLATION_X, translationX);
-        Animator alphaAnimator = PropertyModelAnimatorFactory.ofFloat(
-                mPropertyModel, MenuButtonProperties.ALPHA, alpha);
+        Animator translationAnimator =
+                PropertyModelAnimatorFactory.ofFloat(
+                        mPropertyModel, MenuButtonProperties.TRANSLATION_X, translationX);
+        Animator alphaAnimator =
+                PropertyModelAnimatorFactory.ofFloat(
+                        mPropertyModel, MenuButtonProperties.ALPHA, alpha);
         animatorSet.playTogether(translationAnimator, alphaAnimator);
         return animatorSet;
     }

@@ -24,16 +24,17 @@ public class MissingDeviceLockMediator {
         mOnContinueWithoutDeviceLock = onContinueWithoutDeviceLock;
         mContext = context;
 
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(REMOVE_ALL_LOCAL_DATA_CHECKED, true)
-                         .with(ON_CREATE_DEVICE_LOCK_CLICKED,
-                                 DeviceLockUtils.isDeviceLockCreationIntentSupported(mContext)
-                                 ? v
-                                 -> createDeviceLockDirectly()
-                                 : v -> createDeviceLockThroughOSSettings())
-                         .with(ON_CONTINUE_CLICKED, v -> continueWithoutDeviceLock())
-                         .with(ON_CHECKBOX_TOGGLED, (v, isChecked) -> onCheckboxToggled(isChecked))
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(REMOVE_ALL_LOCAL_DATA_CHECKED, true)
+                        .with(
+                                ON_CREATE_DEVICE_LOCK_CLICKED,
+                                DeviceLockUtils.isDeviceLockCreationIntentSupported(mContext)
+                                        ? v -> createDeviceLockDirectly()
+                                        : v -> createDeviceLockThroughOSSettings())
+                        .with(ON_CONTINUE_CLICKED, v -> continueWithoutDeviceLock())
+                        .with(ON_CHECKBOX_TOGGLED, (v, isChecked) -> onCheckboxToggled(isChecked))
+                        .build();
     }
 
     PropertyModel getModel() {

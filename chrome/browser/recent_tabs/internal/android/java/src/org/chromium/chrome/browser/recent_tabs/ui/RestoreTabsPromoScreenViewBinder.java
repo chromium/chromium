@@ -57,41 +57,61 @@ public class RestoreTabsPromoScreenViewBinder {
     private static void bindHomeScreen(
             PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == HOME_SCREEN_DELEGATE) {
+            var resources = view.mContentView.getContext().getResources();
             Delegate delegate = model.get(HOME_SCREEN_DELEGATE);
 
             int numDevices = model.get(DEVICE_MODEL_LIST).size();
             if (numDevices != 1) {
-                getExpandIconSelectorView(view).setImageResource(
-                        R.drawable.restore_tabs_expand_more);
+                getExpandIconSelectorView(view)
+                        .setImageResource(R.drawable.restore_tabs_expand_more);
                 getSelectedDeviceView(view).setOnClickListener((v) -> delegate.onShowDeviceList());
-                getSheetSubtitleTextView(view).setText(view.mContentView.getContext().getString(
-                        R.string.restore_tabs_promo_sheet_subtitle_multi_device));
+                getSheetSubtitleTextView(view)
+                        .setText(
+                                resources.getString(
+                                        R.string.restore_tabs_promo_sheet_subtitle_multi_device));
             } else {
                 getExpandIconSelectorView(view).setVisibility(View.GONE);
                 getSelectedDeviceView(view).setOnClickListener(null);
-                getSheetSubtitleTextView(view).setText(view.mContentView.getContext().getString(
-                        R.string.restore_tabs_promo_sheet_subtitle_single_device));
+                getSheetSubtitleTextView(view)
+                        .setText(
+                                resources.getString(
+                                        R.string.restore_tabs_promo_sheet_subtitle_single_device));
             }
 
             int numSelectedTabs =
                     model.get(REVIEW_TABS_MODEL_LIST).size() - model.get(NUM_TABS_DESELECTED);
             getRestoreTabsButton(view).setEnabled(numSelectedTabs != 0);
-            getRestoreTabsButton(view).setText(
-                    view.mContentView.getContext().getResources().getQuantityString(
-                            R.plurals.restore_tabs_open_tabs, numSelectedTabs, numSelectedTabs));
-            getRestoreTabsButton(view).setOnClickListener((v) -> {
-                getRestoreTabsButton(view).announceForAccessibility(
-                        view.mContentView.getContext().getResources().getString(
-                                R.string.restore_tabs_open_tabs_button_clicked_description));
-                delegate.onAllTabsChosen();
-            });
+            getRestoreTabsButton(view)
+                    .setText(
+                            resources.getQuantityString(
+                                    R.plurals.restore_tabs_open_tabs,
+                                    numSelectedTabs,
+                                    numSelectedTabs));
+            getRestoreTabsButton(view)
+                    .setOnClickListener(
+                            (v) -> {
+                                var context = view.mContentView.getContext();
+                                String restoreDescription =
+                                        context.getString(
+                                                R.string
+                                                        .restore_tabs_open_tabs_button_clicked_description);
+                                getRestoreTabsButton(view)
+                                        .announceForAccessibility(restoreDescription);
+                                delegate.onAllTabsChosen();
+                            });
 
-            getReviewTabsButton(view).setOnClickListener((v) -> {
-                getReviewTabsButton(view).announceForAccessibility(
-                        view.mContentView.getContext().getResources().getString(
-                                R.string.restore_tabs_promo_sheet_review_tabs_button_clicked_description));
-                delegate.onReviewTabsChosen();
-            });
+            getReviewTabsButton(view)
+                    .setOnClickListener(
+                            (v) -> {
+                                var context = view.mContentView.getContext();
+                                String reviewDescription =
+                                        context.getString(
+                                                R.string
+                                                        .restore_tabs_promo_sheet_review_tabs_button_clicked_description);
+                                getReviewTabsButton(view)
+                                        .announceForAccessibility(reviewDescription);
+                                delegate.onReviewTabsChosen();
+                            });
         } else if (propertyKey == SELECTED_DEVICE) {
             updateDevice(model, view);
         }
@@ -110,12 +130,18 @@ public class RestoreTabsPromoScreenViewBinder {
         }
 
         getDeviceNameTextView(view).setText(session.name);
-        CharSequence lastModifiedTimeString = DateUtils.getRelativeTimeSpanString(
-                session.modifiedTime, System.currentTimeMillis(), 0);
-        String sessionInfo = view.mContentView.getContext().getResources().getQuantityString(
-                R.plurals.restore_tabs_promo_sheet_device_info,
-                model.get(REVIEW_TABS_MODEL_LIST).size(),
-                Integer.toString(model.get(REVIEW_TABS_MODEL_LIST).size()), lastModifiedTimeString);
+        CharSequence lastModifiedTimeString =
+                DateUtils.getRelativeTimeSpanString(
+                        session.modifiedTime, System.currentTimeMillis(), 0);
+        String sessionInfo =
+                view.mContentView
+                        .getContext()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.restore_tabs_promo_sheet_device_info,
+                                model.get(REVIEW_TABS_MODEL_LIST).size(),
+                                Integer.toString(model.get(REVIEW_TABS_MODEL_LIST).size()),
+                                lastModifiedTimeString);
         getSessionInfoTextView(view).setText(sessionInfo);
     }
 

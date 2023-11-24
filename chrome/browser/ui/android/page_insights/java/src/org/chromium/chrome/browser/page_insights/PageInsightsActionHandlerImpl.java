@@ -56,9 +56,13 @@ class PageInsightsActionHandlerImpl implements PageInsightsActionsHandler {
     @Override
     public void share(String url, String title) {
         mPageInsightsEventLogger.log(PageInsightsEvent.TAP_XSURFACE_VIEW_SHARE);
-        mShareDelegateSupplier.get().share(
-                new ShareParams.Builder(mTabSupplier.get().getWindowAndroid(), title, url).build(),
-                new ChromeShareExtras.Builder().build(), ShareOrigin.PAGE_INSIGHTS);
+        mShareDelegateSupplier
+                .get()
+                .share(
+                        new ShareParams.Builder(mTabSupplier.get().getWindowAndroid(), title, url)
+                                .build(),
+                        new ChromeShareExtras.Builder().build(),
+                        ShareOrigin.PAGE_INSIGHTS);
     }
 
     @Override

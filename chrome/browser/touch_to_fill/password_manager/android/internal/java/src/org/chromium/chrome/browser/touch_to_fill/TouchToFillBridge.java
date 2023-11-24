@@ -28,12 +28,17 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     private long mNativeView;
     private final TouchToFillComponent mTouchToFillComponent;
 
-    private TouchToFillBridge(long nativeView, WindowAndroid windowAndroid,
+    private TouchToFillBridge(
+            long nativeView,
+            WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mTouchToFillComponent = new TouchToFillCoordinator();
-        mTouchToFillComponent.initialize(windowAndroid.getContext().get(), bottomSheetController,
-                this, new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
+        mTouchToFillComponent.initialize(
+                windowAndroid.getContext().get(),
+                bottomSheetController,
+                this,
+                new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
     }
 
     @CalledByNative
@@ -56,11 +61,25 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private static void insertCredential(Credential[] credentials, int index, String username,
-            String password, String formattedUsername, String originUrl, String displayName,
-            @GetLoginMatchType int mMatchType, long lastUsedMsSinceEpoch) {
-        credentials[index] = new Credential(username, password, formattedUsername, originUrl,
-                displayName, mMatchType, lastUsedMsSinceEpoch);
+    private static void insertCredential(
+            Credential[] credentials,
+            int index,
+            String username,
+            String password,
+            String formattedUsername,
+            String originUrl,
+            String displayName,
+            @GetLoginMatchType int mMatchType,
+            long lastUsedMsSinceEpoch) {
+        credentials[index] =
+                new Credential(
+                        username,
+                        password,
+                        formattedUsername,
+                        originUrl,
+                        displayName,
+                        mMatchType,
+                        lastUsedMsSinceEpoch);
     }
 
     @CalledByNative
@@ -69,8 +88,13 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private static void insertWebAuthnCredential(WebAuthnCredential[] credentials, int index,
-            String rpId, byte[] credentialId, byte[] userId, String username) {
+    private static void insertWebAuthnCredential(
+            WebAuthnCredential[] credentials,
+            int index,
+            String rpId,
+            byte[] credentialId,
+            byte[] userId,
+            String username) {
         credentials[index] = new WebAuthnCredential(rpId, credentialId, userId, username);
     }
 
@@ -137,9 +161,12 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     @NativeMethods
     interface Natives {
         void onCredentialSelected(long nativeTouchToFillViewImpl, Credential credential);
+
         void onWebAuthnCredentialSelected(
                 long nativeTouchToFillViewImpl, WebAuthnCredential credential);
+
         void onManagePasswordsSelected(long nativeTouchToFillViewImpl, boolean passkeysShown);
+
         void onHybridSignInSelected(long nativeTouchToFillViewImpl);
 
         void onShowCredManSelected(long nativeTouchToFillViewImpl);

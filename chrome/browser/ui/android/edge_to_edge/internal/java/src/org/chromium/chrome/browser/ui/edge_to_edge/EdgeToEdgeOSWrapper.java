@@ -11,9 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.OnApplyWindowInsetsListener;
 
-/**
- * Wraps calls to the Android OS Edge To Edge APIs so we can easily instrument them.
- */
+/** Wraps calls to the Android OS Edge To Edge APIs so we can easily instrument them. */
 public interface EdgeToEdgeOSWrapper {
     /**
      * Wraps {@code WindowCompat#setDecorFitsSystemWindows}.

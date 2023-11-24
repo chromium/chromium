@@ -208,7 +208,7 @@ public class MiniPlayerLayout extends LinearLayout {
 
     void onPlaybackStateChanged(@PlaybackListener.State int state) {
         switch (state) {
-            // UNKNOWN is currently the "reset" state and can be treated same as buffering.
+                // UNKNOWN is currently the "reset" state and can be treated same as buffering.
             case BUFFERING:
             case UNKNOWN:
                 showOnly(mBufferingLayout);
@@ -260,7 +260,11 @@ public class MiniPlayerLayout extends LinearLayout {
     }
 
     private void setOnClickListener(int id, Runnable handler) {
-        findViewById(id).setOnClickListener((v) -> { handler.run(); });
+        findViewById(id)
+                .setOnClickListener(
+                        (v) -> {
+                            handler.run();
+                        });
     }
 
     private void destroyAnimator() {

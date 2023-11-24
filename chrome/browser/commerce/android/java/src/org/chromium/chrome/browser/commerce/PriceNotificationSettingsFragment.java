@@ -35,11 +35,9 @@ import org.chromium.ui.text.SpanApplier;
 
 /** Preferences for features related to price tracking. */
 public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragment {
-    @VisibleForTesting
-    static final String PREF_MOBILE_NOTIFICATIONS = "mobile_notifications_text";
+    @VisibleForTesting static final String PREF_MOBILE_NOTIFICATIONS = "mobile_notifications_text";
 
-    @VisibleForTesting
-    static final String PREF_EMAIL_NOTIFICATIONS = "send_email_switch";
+    @VisibleForTesting static final String PREF_EMAIL_NOTIFICATIONS = "send_email_switch";
 
     private final PrefChangeRegistrar mPrefChangeRegistrar = new PrefChangeRegistrar();
 
@@ -70,9 +68,10 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         mEmailNotificationsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_EMAIL_NOTIFICATIONS);
         mEmailNotificationsSwitch.setOnPreferenceChangeListener(this::onPreferenceChange);
-        CoreAccountInfo info = IdentityServicesProvider.get()
-                                       .getIdentityManager(getProfile())
-                                       .getPrimaryAccountInfo(ConsentLevel.SYNC);
+        CoreAccountInfo info =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(getProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SYNC);
         if (info != null) {
             String email = info.getEmail();
             mEmailNotificationsSwitch.setSummary(
@@ -121,15 +120,20 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
 
         String settingsFullText;
         if (arePriceTrackingNotificationsEnabled()) {
-            settingsFullText = getString(
-                    R.string.price_notifications_settings_mobile_description_on, linkText);
+            settingsFullText =
+                    getString(
+                            R.string.price_notifications_settings_mobile_description_on, linkText);
         } else {
-            settingsFullText = getString(
-                    R.string.price_notifications_settings_mobile_description_off, linkText);
+            settingsFullText =
+                    getString(
+                            R.string.price_notifications_settings_mobile_description_off, linkText);
         }
 
-        SpanApplier.SpanInfo info = new SpanApplier.SpanInfo("<link>", "</link>",
-                new NoUnderlineClickableSpan(getContext(), (view) -> launchAppSettings()));
+        SpanApplier.SpanInfo info =
+                new SpanApplier.SpanInfo(
+                        "<link>",
+                        "</link>",
+                        new NoUnderlineClickableSpan(getContext(), (view) -> launchAppSettings()));
         SpanApplier.applySpans(settingsFullText, info);
 
         mMobileNotificationsText.setSummary(SpanApplier.applySpans(settingsFullText, info));
@@ -138,9 +142,11 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
     /** @return True if both app-level and price tracking notifications are enabled. */
     private boolean arePriceTrackingNotificationsEnabled() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = mNotificationManagerProxy.getNotificationChannel(
-                    ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
-            if (mNotificationManagerProxy.areNotificationsEnabled() && channel != null
+            NotificationChannel channel =
+                    mNotificationManagerProxy.getNotificationChannel(
+                            ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
+            if (mNotificationManagerProxy.areNotificationsEnabled()
+                    && channel != null
                     && channel.getImportance() != NotificationManager.IMPORTANCE_NONE) {
                 return true;
             }

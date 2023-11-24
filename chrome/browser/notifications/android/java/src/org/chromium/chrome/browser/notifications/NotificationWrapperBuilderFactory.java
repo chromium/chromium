@@ -29,7 +29,7 @@ public class NotificationWrapperBuilderFactory {
      *     ChannelsInitializer#ensureInitialized(String)}.
      */
     public static NotificationWrapperBuilder createNotificationWrapperBuilder(String channelId) {
-        return createNotificationWrapperBuilder(channelId, null /* metadata */);
+        return createNotificationWrapperBuilder(channelId, /* metadata= */ null);
     }
 
     /**

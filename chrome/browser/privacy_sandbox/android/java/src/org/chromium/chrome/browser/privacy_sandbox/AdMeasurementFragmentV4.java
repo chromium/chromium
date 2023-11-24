@@ -19,9 +19,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * Fragment for the Privacy Sandbox -> Ad Measurement preferences.
- */
+/** Fragment for the Privacy Sandbox -> Ad Measurement preferences. */
 public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener {
     public static final String TOGGLE_PREFERENCE = "ad_measurement_toggle";
@@ -57,8 +55,10 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
     public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
         if (preference.getKey().equals(TOGGLE_PREFERENCE)) {
             boolean enabled = (boolean) value;
-            RecordUserAction.record(enabled ? "Settings.PrivacySandbox.AdMeasurement.Enabled"
-                                            : "Settings.PrivacySandbox.AdMeasurement.Disabled");
+            RecordUserAction.record(
+                    enabled
+                            ? "Settings.PrivacySandbox.AdMeasurement.Enabled"
+                            : "Settings.PrivacySandbox.AdMeasurement.Disabled");
             setAdMeasurementPrefEnabled(getProfile(), enabled);
             return true;
         }

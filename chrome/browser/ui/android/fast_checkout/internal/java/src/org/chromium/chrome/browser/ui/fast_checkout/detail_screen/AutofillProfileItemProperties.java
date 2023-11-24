@@ -10,9 +10,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
-/**
- * Model for an {@link FastCheckoutAutofillProfile} entry in the Autofill profile screen sheet.
- */
+/** Model for an {@link FastCheckoutAutofillProfile} entry in the Autofill profile screen sheet. */
 public class AutofillProfileItemProperties {
     /** The profile represented by this entry. */
     public static final ReadableObjectPropertyKey<FastCheckoutAutofillProfile> AUTOFILL_PROFILE =
@@ -25,9 +23,7 @@ public class AutofillProfileItemProperties {
     public static final WritableBooleanPropertyKey IS_SELECTED =
             new WritableBooleanPropertyKey("is_selected");
 
-    /**
-     * The function to run when this profile item is selected by the user.
-     */
+    /** The function to run when this profile item is selected by the user. */
     public static final ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
             new ReadableObjectPropertyKey<>("on_click_listener");
 

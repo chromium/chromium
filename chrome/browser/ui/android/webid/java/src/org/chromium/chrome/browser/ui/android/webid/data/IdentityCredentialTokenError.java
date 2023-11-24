@@ -8,9 +8,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.url.GURL;
 
-/**
- * Holds data used to represent an error for display in the "error" dialog.
- */
+/** Holds data used to represent an error for display in the "error" dialog. */
 public class IdentityCredentialTokenError {
     private final String mCode;
     private final GURL mUrl;

@@ -229,8 +229,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                 this,
                 () -> {
                     // We have now avoided the first draw problem (see the comments above) so we
-                    // want to
-                    // make the URL bar focusable so that touches etc. activate it.
+                    // want to make the URL bar focusable so that touches etc. activate it.
                     setFocusable(mAllowFocus);
                     setFocusableInTouchMode(mAllowFocus);
                 });
@@ -913,8 +912,9 @@ public abstract class UrlBar extends AutocompleteEditText {
             }
         } else {
             // RTL
-            // Clear the visible text hint due to the complexities of Bi-Di text handling. If RTL or
-            // Bi-Di URLs become more prevalant, update this to correctly calculate the hint.
+            // Clear the visible text hint due to the complexities of Bi-Di text handling. If
+            // RTL or Bi-Di URLs become more prevalant, update this to correctly calculate the
+            // hint.
             mVisibleTextPrefixHint = null;
 
             // To handle BiDirectional text, search backward from the two existing offsets to find

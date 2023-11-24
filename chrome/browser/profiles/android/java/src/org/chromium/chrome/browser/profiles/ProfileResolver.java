@@ -30,14 +30,14 @@ public class ProfileResolver implements PartitionResolver {
 
     @Override
     public void resolveBrowserContext(String token, Callback<BrowserContextHandle> callback) {
-        ProfileResolverJni.get().resolveProfile(
-                token, (Profile profile) -> callback.onResult(profile));
+        ProfileResolverJni.get()
+                .resolveProfile(token, (Profile profile) -> callback.onResult(profile));
     }
 
     @Override
     public void resolveSimpleFactoryKey(String token, Callback<SimpleFactoryKeyHandle> callback) {
-        ProfileResolverJni.get().resolveProfileKey(
-                token, (ProfileKey key) -> callback.onResult(key));
+        ProfileResolverJni.get()
+                .resolveProfileKey(token, (ProfileKey key) -> callback.onResult(key));
     }
 
     /**
@@ -65,8 +65,11 @@ public class ProfileResolver implements PartitionResolver {
     @NativeMethods
     interface Natives {
         String tokenizeProfile(Profile profile);
+
         String tokenizeProfileKey(ProfileKey profileKey);
+
         void resolveProfile(String token, Callback<Profile> callback);
+
         void resolveProfileKey(String token, Callback<ProfileKey> callback);
     }
 }

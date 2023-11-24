@@ -65,9 +65,13 @@ class TouchToFillCreditCardViewBinder {
             super.onInitializeAccessibilityNodeInfo(host, info);
 
             assert info.getText() != null;
-            info.setContentDescription(host.getContext().getString(
-                    R.string.autofill_credit_card_a11y_item_collection_info, info.getText(),
-                    mCollectionInfo.getPosition(), mCollectionInfo.getTotal()));
+            info.setContentDescription(
+                    host.getContext()
+                            .getString(
+                                    R.string.autofill_credit_card_a11y_item_collection_info,
+                                    info.getText(),
+                                    mCollectionInfo.getPosition(),
+                                    mCollectionInfo.getTotal()));
         }
     }
 
@@ -111,8 +115,12 @@ class TouchToFillCreditCardViewBinder {
         ImageView icon = view.findViewById(R.id.favicon);
         if (propertyKey == CARD_ICON_ID) {
             icon.setImageDrawable(
-                    getCardIcon(view.getContext(), model.get(CARD_ART_URL), model.get(CARD_ICON_ID),
-                            AutofillUiUtils.CardIconSize.LARGE, /* showCustomIcon= */ true));
+                    getCardIcon(
+                            view.getContext(),
+                            model.get(CARD_ART_URL),
+                            model.get(CARD_ICON_ID),
+                            AutofillUiUtils.CardIconSize.LARGE,
+                            /* showCustomIcon= */ true));
         } else if (propertyKey == CARD_ART_URL) {
             // Skip, because it is already handled in the `CARD_ICON_ID` case.
         } else if (propertyKey == NETWORK_NAME) {
@@ -165,8 +173,9 @@ class TouchToFillCreditCardViewBinder {
     static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == IMAGE_DRAWABLE_ID) {
             ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
-            sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
-                    view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
+            sheetHeaderImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -182,10 +191,14 @@ class TouchToFillCreditCardViewBinder {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
-        } else if (propertyKey == CARD_ICON_ID || propertyKey == CARD_ART_URL
-                || propertyKey == NETWORK_NAME || propertyKey == CARD_NAME
-                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION
-                || propertyKey == VIRTUAL_CARD_LABEL || propertyKey == ITEM_COLLECTION_INFO) {
+        } else if (propertyKey == CARD_ICON_ID
+                || propertyKey == CARD_ART_URL
+                || propertyKey == NETWORK_NAME
+                || propertyKey == CARD_NAME
+                || propertyKey == CARD_NUMBER
+                || propertyKey == CARD_EXPIRATION
+                || propertyKey == VIRTUAL_CARD_LABEL
+                || propertyKey == ITEM_COLLECTION_INFO) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

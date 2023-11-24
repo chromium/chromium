@@ -28,9 +28,7 @@ import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
 
-/**
- * Fragment for the Privacy Sandbox -> Topic preferences.
- */
+/** Fragment for the Privacy Sandbox -> Topic preferences. */
 public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
@@ -80,18 +78,30 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
         mTopicsTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
 
-        mTopicsHeadingPreference.setSummary(SpanApplier.applySpans(
-                getResources().getString(R.string.settings_topics_page_current_topics_description),
-                new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+        mTopicsHeadingPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string.settings_topics_page_current_topics_description),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onLearnMoreClicked))));
 
-        mTopicsPageFooterPreference.setSummary(SpanApplier.applySpans(
-                getResources().getString(R.string.settings_topics_page_footer),
-                new SpanApplier.SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(
-                                getContext(), this::onFledgeSettingsLinkClicked)),
-                new SpanApplier.SpanInfo("<link2>", "</link2>",
-                        new NoUnderlineClickableSpan(getContext(), this::onCookieSettingsLink))));
+        mTopicsPageFooterPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources().getString(R.string.settings_topics_page_footer),
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onFledgeSettingsLinkClicked)),
+                        new SpanApplier.SpanInfo(
+                                "<link2>",
+                                "</link2>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onCookieSettingsLink))));
     }
 
     private void onLearnMoreClicked(View view) {
@@ -126,8 +136,10 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
         if (preference.getKey().equals(TOPICS_TOGGLE_PREFERENCE)) {
             boolean enabled = (boolean) value;
-            RecordUserAction.record(enabled ? "Settings.PrivacySandbox.Topics.Enabled"
-                                            : "Settings.PrivacySandbox.Topics.Disabled");
+            RecordUserAction.record(
+                    enabled
+                            ? "Settings.PrivacySandbox.Topics.Enabled"
+                            : "Settings.PrivacySandbox.Topics.Disabled");
             setTopicsPrefEnabled(getProfile(), enabled);
             updatePreferenceVisibility();
             PrivacySandboxBridge.topicsToggleChanged(enabled);
@@ -144,8 +156,11 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
             mCurrentTopicsCategory.removePreference(preference);
             updatePreferenceVisibility();
 
-            showSnackbar(R.string.settings_topics_page_block_topic_snackbar, null,
-                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST);
+            showSnackbar(
+                    R.string.settings_topics_page_block_topic_snackbar,
+                    null,
+                    Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST);
             RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicRemoved");
             return true;
         }
@@ -158,10 +173,12 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         List<Topic> currentTopics = PrivacySandboxBridge.getCurrentTopTopics();
         for (Topic topic : currentTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
-            preference.setImage(R.drawable.btn_close,
-                    getResources().getString(
-                            R.string.privacy_sandbox_remove_interest_button_description,
-                            topic.getName()));
+            preference.setImage(
+                    R.drawable.btn_close,
+                    getResources()
+                            .getString(
+                                    R.string.privacy_sandbox_remove_interest_button_description,
+                                    topic.getName()));
             preference.setDividerAllowedAbove(false);
             preference.setOnPreferenceClickListener(this);
             mCurrentTopicsCategory.addPreference(preference);

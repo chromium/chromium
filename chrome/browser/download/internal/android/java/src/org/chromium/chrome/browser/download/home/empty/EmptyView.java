@@ -28,8 +28,10 @@ class EmptyView {
     /** Creates a new {@link EmptyView} instance from {@code context}. */
     public EmptyView(Context context) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
-            mView = (ViewGroup) LayoutInflater.from(context).inflate(
-                    R.layout.downloads_empty_state_view, null);
+            mView =
+                    (ViewGroup)
+                            LayoutInflater.from(context)
+                                    .inflate(R.layout.downloads_empty_state_view, null);
 
             mEmptyContainer = mView.findViewById(R.id.empty_state_container);
             mEmptyView = (TextView) mView.findViewById(R.id.empty_state_text_title);
@@ -42,8 +44,10 @@ class EmptyView {
 
             mLoadingView = (LoadingView) mView.findViewById(R.id.empty_state_loading);
         } else {
-            mView = (ViewGroup) LayoutInflater.from(context).inflate(
-                    R.layout.downloads_empty_view, null);
+            mView =
+                    (ViewGroup)
+                            LayoutInflater.from(context)
+                                    .inflate(R.layout.downloads_empty_view, null);
             mEmptyContainer = mView.findViewById(R.id.empty_container);
             mEmptyView = (TextView) mView.findViewById(R.id.empty);
             mLoadingView = (LoadingView) mView.findViewById(R.id.loading);

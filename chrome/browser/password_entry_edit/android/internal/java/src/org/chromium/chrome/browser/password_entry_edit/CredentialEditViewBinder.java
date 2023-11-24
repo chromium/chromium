@@ -38,7 +38,7 @@ class CredentialEditViewBinder {
         } else if (propertyKey == PASSWORD_VISIBLE) {
             fragmentView.changePasswordVisibility(model.get(PASSWORD_VISIBLE));
         } else if (propertyKey == PASSWORD) {
-                fragmentView.setPassword(model.get(PASSWORD));
+            fragmentView.setPassword(model.get(PASSWORD));
         } else if (propertyKey == EMPTY_PASSWORD_ERROR) {
             fragmentView.changePasswordError(model.get(EMPTY_PASSWORD_ERROR));
         } else if (propertyKey == UI_DISMISSED_BY_NATIVE) {

@@ -125,8 +125,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @Nullable private final ObservableSupplier<Boolean> mInMotionSupplier;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
-    @Nullable
-    private PageInsightsSurfaceRenderer mSurfaceRenderer;
+    @Nullable private PageInsightsSurfaceRenderer mSurfaceRenderer;
     @Nullable private PageInsightsMetadata mCurrentMetadata;
     @Nullable private PageInsightsConfig mCurrentConfig;
     @Nullable private View mCurrentFeedView;
@@ -256,12 +255,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (mInMotionSupplier != null) {
             mInMotionSupplier.addObserver(mInMotionCallback);
         }
-        mBottomUiObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetStateChanged(@SheetState int newState, int reason) {
-                onBottomUiStateChanged(newState >= SheetState.PEEK);
-            };
-        };
+        mBottomUiObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(@SheetState int newState, int reason) {
+                        onBottomUiStateChanged(newState >= SheetState.PEEK);
+                    }
+                };
         bottomUiController.addObserver(mBottomUiObserver);
         mIsPageInsightsEnabledSupplier = isPageInsightsEnabledSupplier;
         mPageInsightsConfigProvider = pageInsightsConfigProvider;
@@ -274,9 +274,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                                 shareDelegateSupplier,
                                 this::changeToChildPage,
                                 PageInsightsMediator::logPageInsightsEvent));
-        mAutoTriggerDelayMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
-                DEFAULT_TRIGGER_DELAY_MS);
+        mAutoTriggerDelayMs =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                        PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
+                        DEFAULT_TRIGGER_DELAY_MS);
         mCanAutoTriggerWhileInMotion =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
@@ -304,8 +306,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetContainer = bottomSheetContainer;
         View view = bottomSheetContainer.findViewById(R.id.background);
         mBackgroundDrawable = (GradientDrawable) view.getBackground();
-        mMaxCornerRadiusPx = bottomSheetContainer.getResources().getDimensionPixelSize(
-                R.dimen.bottom_sheet_corner_radius);
+        mMaxCornerRadiusPx =
+                bottomSheetContainer
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_corner_radius);
         setCornerRadiusPx(0);
 
         // Initialize the hidden ratio, otherwise it won't be set until the first offset
@@ -530,7 +534,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                             metadata,
                             /* isPrivacyNoticeRequired= */ mCurrentConfig.getShouldXsurfaceLog(),
                             /* shouldHavePeekState= */ false);
-                    setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded */ 1.0f);
+                    setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded= */ 1.0f);
                     setCornerRadiusPx(mMaxCornerRadiusPx);
                     logPageInsightsEvent(PageInsightsEvent.USER_INVOKES_PIH);
                     // We need to perform this logging here, even though we also do it when the
@@ -551,8 +555,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     private View getXSurfaceView(ByteString elementsOutput) {
-        return getSurfaceRenderer().render(
-                elementsOutput.toByteArray(), mSurfaceRendererContextValues);
+        return getSurfaceRenderer()
+                .render(elementsOutput.toByteArray(), mSurfaceRendererContextValues);
     }
 
     private void changeToChildPage(int id) {
@@ -595,13 +599,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         } else if (newState == SheetState.PEEK) {
             mWillHandleBackPressSupplier.set(false);
             setBottomControlsHeight(mSheetController.getCurrentOffset());
-            setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded */ .0f);
+            setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded= */ .0f);
             logPageInsightsEvent(PageInsightsEvent.STATE_PEEK);
             // We don't log peek state to XSurface here, as its BOTTOM_SHEET_PEEKING event is only
             // intended for when the feature initially auto-peeks.
         } else if (newState == SheetState.FULL) {
             mWillHandleBackPressSupplier.set(true);
-            setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded */ 1.0f);
+            setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded= */ 1.0f);
             logPageInsightsEvent(PageInsightsEvent.STATE_EXPANDED);
             getSurfaceRenderer().onEvent(BOTTOM_SHEET_EXPANDED);
         } else {
@@ -733,8 +737,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             return mSurfaceRenderer;
         }
         PageInsightsSurfaceScope surfaceScope =
-                XSurfaceProcessScopeProvider.getProcessScope().obtainPageInsightsSurfaceScope(
-                        new PageInsightsSurfaceScopeDependencyProviderImpl(mContext));
+                XSurfaceProcessScopeProvider.getProcessScope()
+                        .obtainPageInsightsSurfaceScope(
+                                new PageInsightsSurfaceScopeDependencyProviderImpl(mContext));
         mSurfaceRenderer = surfaceScope.provideSurfaceRenderer();
         return mSurfaceRenderer;
     }

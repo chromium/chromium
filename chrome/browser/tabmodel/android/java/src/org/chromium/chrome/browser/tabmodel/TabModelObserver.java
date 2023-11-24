@@ -72,7 +72,10 @@ public interface TabModelObserver {
      * @param creationState How the tab was created.
      * @param markedForSelection Indicates whether the added tab will be selected.
      */
-    default void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState,
+    default void didAddTab(
+            Tab tab,
+            @TabLaunchType int type,
+            @TabCreationState int creationState,
             boolean markedForSelection) {}
 
     /**
@@ -135,11 +138,9 @@ public interface TabModelObserver {
      * @param allowUndo If undo is allowed on the tab closure.
      * @param tabs being closed.
      */
-    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs){};
+    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {}
 
-    /**
-     * Called when an "all tabs" closure has been committed and can't be undone anymore.
-     */
+    /** Called when an "all tabs" closure has been committed and can't be undone anymore. */
     default void allTabsClosureCommitted(boolean isIncognito) {}
 
     /**

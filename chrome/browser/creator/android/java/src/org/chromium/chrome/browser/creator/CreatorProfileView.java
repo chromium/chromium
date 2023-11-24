@@ -16,9 +16,7 @@ import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.ui.widget.ButtonCompat;
 
-/**
- * View class for the Creator Profile section
- */
+/** View class for the Creator Profile section */
 public class CreatorProfileView extends LinearLayout {
     private static final int FADE_IN_ANIMATION_DURATION_MS = 150;
     private static final int FADE_OUT_ANIMATION_DURATION_MS = 300;
@@ -59,26 +57,28 @@ public class CreatorProfileView extends LinearLayout {
             animate()
                     .alpha(0.0f)
                     .setDuration(FADE_OUT_ANIMATION_DURATION_MS)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            mFollowButton.setEnabled(false);
-                            mFollowingButton.setEnabled(false);
-                        }
-                    })
+                    .setListener(
+                            new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    mFollowButton.setEnabled(false);
+                                    mFollowingButton.setEnabled(false);
+                                }
+                            })
                     .start();
         } else {
             setAlpha(0.0f);
             animate()
                     .alpha(1.0f)
                     .setDuration(FADE_IN_ANIMATION_DURATION_MS)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                            mFollowButton.setEnabled(true);
-                            mFollowingButton.setEnabled(true);
-                        }
-                    })
+                    .setListener(
+                            new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                    mFollowButton.setEnabled(true);
+                                    mFollowingButton.setEnabled(true);
+                                }
+                            })
                     .start();
         }
     }

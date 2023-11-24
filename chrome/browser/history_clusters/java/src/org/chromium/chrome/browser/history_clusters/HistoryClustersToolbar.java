@@ -13,15 +13,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Toolbar for controlling the list of history clusters in the Journeys UI.
- */
+/** Toolbar for controlling the list of history clusters in the Journeys UI. */
 class HistoryClustersToolbar extends SelectableListToolbar<PropertyModel> {
     private EditText mSearchText;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public HistoryClustersToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateMenu(R.menu.history_clusters_menu);

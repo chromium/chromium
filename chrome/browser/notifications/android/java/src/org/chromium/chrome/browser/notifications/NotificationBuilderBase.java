@@ -230,7 +230,7 @@ public abstract class NotificationBuilderBase {
     private static @Nullable Bitmap applyWhiteOverlay(@Nullable Bitmap icon) {
         Bitmap whitened = null;
         if (icon != null) {
-            whitened = icon.copy(icon.getConfig(), true /* isMutable */);
+            whitened = icon.copy(icon.getConfig(), /* isMutable= */ true);
             applyWhiteOverlayToBitmap(whitened);
         }
         return whitened;

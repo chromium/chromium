@@ -13,9 +13,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Creates and represents the QrCode share panel UI.
- */
+/** Creates and represents the QrCode share panel UI. */
 public class QrCodeShareCoordinator implements QrCodeDialogTab {
     private final QrCodeShareView mShareView;
     private final QrCodeShareMediator mMediator;

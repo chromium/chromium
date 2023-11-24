@@ -19,11 +19,9 @@ import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
-/**
- * Fragment to display all the allowed Fledge sites.
- */
-public class FledgeAllSitesFragmentV4
-        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
+/** Fragment to display all the allowed Fledge sites. */
+public class FledgeAllSitesFragmentV4 extends PrivacySandboxSettingsBaseFragment
+        implements Preference.OnPreferenceClickListener {
     private PreferenceScreen mPreferenceScreen;
     private LargeIconBridge mLargeIconBridge;
 
@@ -65,8 +63,11 @@ public class FledgeAllSitesFragmentV4
                     ((FledgePreference) preference).getSite(), false);
             mPreferenceScreen.removePreference(preference);
 
-            showSnackbar(R.string.settings_fledge_page_block_site_snackbar, null,
-                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
+            showSnackbar(
+                    R.string.settings_fledge_page_block_site_snackbar,
+                    null,
+                    Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
             RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteRemoved");
             return true;
         }
@@ -83,9 +84,10 @@ public class FledgeAllSitesFragmentV4
         for (String site : allSites) {
             FledgePreference preference =
                     new FledgePreference(getStyledContext(), site, mLargeIconBridge);
-            preference.setImage(R.drawable.btn_close,
-                    getResources().getString(
-                            R.string.settings_fledge_page_block_site_a11y_label, site));
+            preference.setImage(
+                    R.drawable.btn_close,
+                    getResources()
+                            .getString(R.string.settings_fledge_page_block_site_a11y_label, site));
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
             mPreferenceScreen.addPreference(preference);

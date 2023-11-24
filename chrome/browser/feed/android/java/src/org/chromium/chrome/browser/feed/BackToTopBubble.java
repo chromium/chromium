@@ -21,9 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
-/**
- * UI component that handles showing a callout bubble for "Back to top" prompt.
- */
+/** UI component that handles showing a callout bubble for "Back to top" prompt. */
 public class BackToTopBubble {
     private final Context mContext;
     private final Runnable mClickRunnable;
@@ -62,36 +60,40 @@ public class BackToTopBubble {
         rect.left = windowCoordinates[0];
         rect.top = windowCoordinates[1];
         rect.right = rect.left + toolbarView.getWidth();
-        rect.bottom = rect.top + toolbarView.getHeight()
-                + context.getResources().getDimensionPixelSize(
-                        R.dimen.back_to_top_bubble_offset_below_toolbar);
+        rect.bottom =
+                rect.top
+                        + toolbarView.getHeight()
+                        + context.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.back_to_top_bubble_offset_below_toolbar);
 
-        mPopupWindow = new AnchoredPopupWindow(context, rootView,
-                AppCompatResources.getDrawable(mContext, R.drawable.rounded_corners), mContentView,
-                new RectProvider(rect));
+        mPopupWindow =
+                new AnchoredPopupWindow(
+                        context,
+                        rootView,
+                        AppCompatResources.getDrawable(mContext, R.drawable.rounded_corners),
+                        mContentView,
+                        new RectProvider(rect));
         mPopupWindow.setMargin(
                 context.getResources().getDimensionPixelSize(R.dimen.text_bubble_margin));
         mPopupWindow.setPreferredHorizontalOrientation(
                 AnchoredPopupWindow.HorizontalOrientation.CENTER);
 
         mPopupWindow.setAnimationStyle(R.style.TextBubbleAnimation);
-        mPopupWindow.setTouchInterceptor((View v, MotionEvent event) -> {
-            mClickRunnable.run();
-            return true;
-        });
+        mPopupWindow.setTouchInterceptor(
+                (View v, MotionEvent event) -> {
+                    mClickRunnable.run();
+                    return true;
+                });
     }
 
-    /**
-     * Shows the bubble. Will have no effect if the bubble is already showing.
-     */
+    /** Shows the bubble. Will have no effect if the bubble is already showing. */
     public void show() {
         if (mPopupWindow.isShowing()) return;
         mPopupWindow.show();
     }
 
-    /**
-     * Disposes of the bubble. Will have no effect if the bubble isn't showing.
-     */
+    /** Disposes of the bubble. Will have no effect if the bubble isn't showing. */
     public void dismiss() {
         mPopupWindow.dismiss();
     }

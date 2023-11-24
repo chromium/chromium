@@ -9,8 +9,6 @@ package org.chromium.chrome.browser.content_creation.notes;
  * subcomponents.
  */
 public interface NoteCreationCoordinator {
-    /**
-     * Displays the main dialog for note creation.
-     */
+    /** Displays the main dialog for note creation. */
     void showDialog();
 }

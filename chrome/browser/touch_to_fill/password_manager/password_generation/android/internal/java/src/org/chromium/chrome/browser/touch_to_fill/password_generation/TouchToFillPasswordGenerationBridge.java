@@ -16,9 +16,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * JNI wrapper for C++ TouchToFillPasswordGenerationBridge. Delegates calls from native to Java.
- */
+/** JNI wrapper for C++ TouchToFillPasswordGenerationBridge. Delegates calls from native to Java. */
 class TouchToFillPasswordGenerationBridge
         implements TouchToFillPasswordGenerationCoordinator.Delegate {
     private WindowAndroid mWindowAndroid;
@@ -85,8 +83,8 @@ class TouchToFillPasswordGenerationBridge
     public void onGeneratedPasswordAccepted(String password) {
         if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
 
-        TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordAccepted(
-                mNativeTouchToFillPasswordGenerationBridge, password);
+        TouchToFillPasswordGenerationBridgeJni.get()
+                .onGeneratedPasswordAccepted(mNativeTouchToFillPasswordGenerationBridge, password);
         // No need to reset mNativeTouchToFillPasswordGenerationBridge, onDismissed will do it
         // afterwards.
     }
@@ -95,8 +93,8 @@ class TouchToFillPasswordGenerationBridge
     public void onGeneratedPasswordRejected() {
         if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
 
-        TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordRejected(
-                mNativeTouchToFillPasswordGenerationBridge);
+        TouchToFillPasswordGenerationBridgeJni.get()
+                .onGeneratedPasswordRejected(mNativeTouchToFillPasswordGenerationBridge);
         // No need to reset mNativeTouchToFillPasswordGenerationBridge, onDismissed will do it
         // afterwards.
     }
@@ -107,6 +105,7 @@ class TouchToFillPasswordGenerationBridge
 
         void onGeneratedPasswordAccepted(
                 long nativeTouchToFillPasswordGenerationBridge, String password);
+
         void onGeneratedPasswordRejected(long nativeTouchToFillPasswordGenerationBridge);
     }
 }

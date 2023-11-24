@@ -9,8 +9,12 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({TabHidingType.CHANGED_TABS, TabHidingType.ACTIVITY_HIDDEN, TabHidingType.REPARENTED,
-        TabHidingType.TAB_SWITCHER_SHOWN})
+@IntDef({
+    TabHidingType.CHANGED_TABS,
+    TabHidingType.ACTIVITY_HIDDEN,
+    TabHidingType.REPARENTED,
+    TabHidingType.TAB_SWITCHER_SHOWN
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface TabHidingType {
     /** A tab was hidden due to other tab getting foreground. */

@@ -21,17 +21,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Properties defined here reflect the visible state of the TouchToFill-components.
- */
+/** Properties defined here reflect the visible state of the TouchToFill-components. */
 class TouchToFillProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
-    static final PropertyModel
-            .ReadableObjectPropertyKey<ListModel<MVCListAdapter.ListItem>> SHEET_ITEMS =
-            new PropertyModel.ReadableObjectPropertyKey<>("sheet_items");
+    static final PropertyModel.ReadableObjectPropertyKey<ListModel<MVCListAdapter.ListItem>>
+            SHEET_ITEMS = new PropertyModel.ReadableObjectPropertyKey<>("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
+
     static PropertyModel createDefaultModel(Callback<Integer> handler) {
         return new PropertyModel.Builder(VISIBLE, SHEET_ITEMS, DISMISS_HANDLER)
                 .with(VISIBLE, false)
@@ -48,8 +46,13 @@ class TouchToFillProperties {
         final int mIconType;
         final int mIconSize;
 
-        FaviconOrFallback(String originUrl, @Nullable Bitmap icon, int fallbackColor,
-                boolean isFallbackColorDefault, int iconType, int iconSize) {
+        FaviconOrFallback(
+                String originUrl,
+                @Nullable Bitmap icon,
+                int fallbackColor,
+                boolean isFallbackColorDefault,
+                int iconType,
+                int iconSize) {
             mUrl = originUrl;
             mIcon = icon;
             mFallbackColor = fallbackColor;
@@ -59,53 +62,58 @@ class TouchToFillProperties {
         }
     }
 
-    /**
-     * Properties for a credential entry in TouchToFill sheet.
-     */
+    /** Properties for a credential entry in TouchToFill sheet. */
     static class CredentialProperties {
-        static final PropertyModel
-                .WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
-                new PropertyModel.WritableObjectPropertyKey<>("favicon");
+        static final PropertyModel.WritableObjectPropertyKey<FaviconOrFallback>
+                FAVICON_OR_FALLBACK = new PropertyModel.WritableObjectPropertyKey<>("favicon");
         static final PropertyModel.ReadableObjectPropertyKey<Credential> CREDENTIAL =
                 new PropertyModel.ReadableObjectPropertyKey<>("credential");
         static final PropertyModel.ReadableObjectPropertyKey<String> FORMATTED_ORIGIN =
                 new PropertyModel.ReadableObjectPropertyKey<>("formatted_url");
         static final PropertyModel.ReadableObjectPropertyKey<Boolean> SHOW_SUBMIT_BUTTON =
                 new PropertyModel.ReadableObjectPropertyKey<>("submit_credential");
-        static final PropertyModel
-                .ReadableObjectPropertyKey<Callback<Credential>> ON_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
-        static final PropertyModel
-                .ReadableObjectPropertyKey<FillableItemCollectionInfo> ITEM_COLLECTION_INFO =
-                new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
+        static final PropertyModel.ReadableObjectPropertyKey<Callback<Credential>>
+                ON_CLICK_LISTENER =
+                        new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
+                ITEM_COLLECTION_INFO =
+                        new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
-        static final PropertyKey[] ALL_KEYS = {FAVICON_OR_FALLBACK, CREDENTIAL, FORMATTED_ORIGIN,
-                ON_CLICK_LISTENER, SHOW_SUBMIT_BUTTON, ITEM_COLLECTION_INFO};
+        static final PropertyKey[] ALL_KEYS = {
+            FAVICON_OR_FALLBACK,
+            CREDENTIAL,
+            FORMATTED_ORIGIN,
+            ON_CLICK_LISTENER,
+            SHOW_SUBMIT_BUTTON,
+            ITEM_COLLECTION_INFO
+        };
 
         private CredentialProperties() {}
     }
 
-    /**
-     * Properties for a Web Authentication credential entry in TouchToFill sheet.
-     */
+    /** Properties for a Web Authentication credential entry in TouchToFill sheet. */
     static class WebAuthnCredentialProperties {
-        static final PropertyModel
-                .WritableObjectPropertyKey<FaviconOrFallback> WEBAUTHN_FAVICON_OR_FALLBACK =
-                new PropertyModel.WritableObjectPropertyKey<>("favicon");
-        static final PropertyModel
-                .ReadableObjectPropertyKey<WebAuthnCredential> WEBAUTHN_CREDENTIAL =
-                new PropertyModel.ReadableObjectPropertyKey<>("webauthn_credential");
+        static final PropertyModel.WritableObjectPropertyKey<FaviconOrFallback>
+                WEBAUTHN_FAVICON_OR_FALLBACK =
+                        new PropertyModel.WritableObjectPropertyKey<>("favicon");
+        static final PropertyModel.ReadableObjectPropertyKey<WebAuthnCredential>
+                WEBAUTHN_CREDENTIAL =
+                        new PropertyModel.ReadableObjectPropertyKey<>("webauthn_credential");
         static final PropertyModel.ReadableObjectPropertyKey<Boolean> SHOW_WEBAUTHN_SUBMIT_BUTTON =
                 new PropertyModel.ReadableObjectPropertyKey<>("submit_credential");
         static final PropertyModel.ReadableObjectPropertyKey<Callback<WebAuthnCredential>>
                 ON_WEBAUTHN_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_webauthn_click_listener");
+                        new PropertyModel.ReadableObjectPropertyKey<>("on_webauthn_click_listener");
         static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
                 WEBAUTHN_ITEM_COLLECTION_INFO =
-                new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
-        static final PropertyKey[] ALL_KEYS = {WEBAUTHN_CREDENTIAL, WEBAUTHN_FAVICON_OR_FALLBACK,
-                ON_WEBAUTHN_CLICK_LISTENER, SHOW_WEBAUTHN_SUBMIT_BUTTON,
-                WEBAUTHN_ITEM_COLLECTION_INFO};
+                        new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
+        static final PropertyKey[] ALL_KEYS = {
+            WEBAUTHN_CREDENTIAL,
+            WEBAUTHN_FAVICON_OR_FALLBACK,
+            ON_WEBAUTHN_CLICK_LISTENER,
+            SHOW_WEBAUTHN_SUBMIT_BUTTON,
+            WEBAUTHN_ITEM_COLLECTION_INFO
+        };
 
         private WebAuthnCredentialProperties() {}
     }
@@ -121,9 +129,7 @@ class TouchToFillProperties {
         private MorePasskeysProperties() {}
     }
 
-    /**
-     * Properties defined here reflect the visible state of the header in the TouchToFill sheet.
-     */
+    /** Properties defined here reflect the visible state of the header in the TouchToFill sheet. */
     static class HeaderProperties {
         static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
                 new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
@@ -153,43 +159,38 @@ class TouchToFillProperties {
                 new PropertyModel.WritableBooleanPropertyKey("show_hybrid");
 
         static final PropertyKey[] ALL_KEYS = {
-                ON_CLICK_MANAGE, MANAGE_BUTTON_TEXT, ON_CLICK_HYBRID, SHOW_HYBRID};
+            ON_CLICK_MANAGE, MANAGE_BUTTON_TEXT, ON_CLICK_HYBRID, SHOW_HYBRID
+        };
 
         private FooterProperties() {}
     }
 
-    @IntDef({ItemType.HEADER, ItemType.CREDENTIAL, ItemType.WEBAUTHN_CREDENTIAL,
-            ItemType.MORE_PASSKEYS, ItemType.FILL_BUTTON, ItemType.FOOTER})
+    @IntDef({
+        ItemType.HEADER,
+        ItemType.CREDENTIAL,
+        ItemType.WEBAUTHN_CREDENTIAL,
+        ItemType.MORE_PASSKEYS,
+        ItemType.FILL_BUTTON,
+        ItemType.FOOTER
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
-        /**
-         * The header at the top of the touch to fill sheet.
-         */
+        /** The header at the top of the touch to fill sheet. */
         int HEADER = 1;
 
-        /**
-         * A section containing a user's name and password.
-         */
+        /** A section containing a user's name and password. */
         int CREDENTIAL = 2;
 
-        /**
-         * A section containing information about a WebAuthn credential.
-         */
+        /** A section containing information about a WebAuthn credential. */
         int WEBAUTHN_CREDENTIAL = 3;
 
-        /**
-         * A section that opens Android Credential Manager API.
-         */
+        /** A section that opens Android Credential Manager API. */
         int MORE_PASSKEYS = 4;
 
-        /**
-         * The fill button at the end of the sheet that filling more obvious for one suggestion.
-         */
+        /** The fill button at the end of the sheet that filling more obvious for one suggestion. */
         int FILL_BUTTON = 5;
 
-        /**
-         * A footer section containing additional actions.
-         */
+        /** A footer section containing additional actions. */
         int FOOTER = 6;
     }
 

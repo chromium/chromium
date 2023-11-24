@@ -13,9 +13,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Controller for the dialog shown for the Privacy Sandbox.
- */
+/** Controller for the dialog shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static boolean sDisableAnimations;
@@ -27,15 +25,15 @@ public class PrivacySandboxDialogController {
         if (isIncognito) {
             return false;
         }
-        @PromptType
-        int promptType = PrivacySandboxBridge.getRequiredPromptType();
+        @PromptType int promptType = PrivacySandboxBridge.getRequiredPromptType();
         Dialog dialog = null;
         switch (promptType) {
             case PromptType.NONE:
                 return false;
             case PromptType.M1_CONSENT:
-                dialog = new PrivacySandboxDialogConsentEEAV4(
-                        context, settingsLauncher, sDisableAnimations);
+                dialog =
+                        new PrivacySandboxDialogConsentEEAV4(
+                                context, settingsLauncher, sDisableAnimations);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -59,9 +57,7 @@ public class PrivacySandboxDialogController {
         }
     }
 
-    /**
-     * Shows the NoticeEEA dialog.
-     */
+    /** Shows the NoticeEEA dialog. */
     public static void showNoticeEEA(Context context, SettingsLauncher settingsLauncher) {
         if (!sDisableEEANoticeForTesting) {
             Dialog dialog;

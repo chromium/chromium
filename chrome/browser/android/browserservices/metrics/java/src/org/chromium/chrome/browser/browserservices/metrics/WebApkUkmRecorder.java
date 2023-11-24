@@ -17,10 +17,13 @@ public class WebApkUkmRecorder {
      * Records the duration, in exponentially-bucketed milliseconds, of a WebAPK session (from
      * launch/foreground to background).
      */
-    public static void recordWebApkSessionDuration(String manifestUrl,
-            @WebApkDistributor int distributor, int versionCode, long duration) {
-        WebApkUkmRecorderJni.get().recordSessionDuration(
-                manifestUrl, distributor, versionCode, duration);
+    public static void recordWebApkSessionDuration(
+            String manifestUrl,
+            @WebApkDistributor int distributor,
+            int versionCode,
+            long duration) {
+        WebApkUkmRecorderJni.get()
+                .recordSessionDuration(manifestUrl, distributor, versionCode, duration);
     }
 
     /*
@@ -35,18 +38,29 @@ public class WebApkUkmRecorder {
      * Records how long the WebAPK was installed and how many times the WebAPK has been launched
      * since the last time that the user clearer Chrome's storage.
      */
-    public static void recordWebApkUninstall(String manifestUrl, @WebApkDistributor int distributor,
-            int versionCode, int launchCount, long installedDurationMs) {
-        WebApkUkmRecorderJni.get().recordUninstall(
-                manifestUrl, distributor, versionCode, launchCount, installedDurationMs);
+    public static void recordWebApkUninstall(
+            String manifestUrl,
+            @WebApkDistributor int distributor,
+            int versionCode,
+            int launchCount,
+            long installedDurationMs) {
+        WebApkUkmRecorderJni.get()
+                .recordUninstall(
+                        manifestUrl, distributor, versionCode, launchCount, installedDurationMs);
     }
 
     @NativeMethods
     interface Natives {
         void recordSessionDuration(
                 String manifestUrl, int distributor, int versionCode, long duration);
+
         void recordVisit(String manifestUrl, int distributor, int versionCode, int source);
-        void recordUninstall(String manifestUrl, int distributor, int versionCode, int launchCount,
+
+        void recordUninstall(
+                String manifestUrl,
+                int distributor,
+                int versionCode,
+                int launchCount,
                 long installedDurationMs);
     }
 }

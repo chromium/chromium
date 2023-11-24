@@ -34,14 +34,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Base class for model classes which parse incoming intent for customization data.
- */
+/** Base class for model classes which parse incoming intent for customization data. */
 public abstract class BrowserServicesIntentDataProvider {
     // The type of UI for Custom Tab to use.
-    @IntDef({CustomTabsUiType.DEFAULT, CustomTabsUiType.MEDIA_VIEWER, CustomTabsUiType.INFO_PAGE,
-            CustomTabsUiType.READER_MODE, CustomTabsUiType.MINIMAL_UI_WEBAPP,
-            CustomTabsUiType.OFFLINE_PAGE})
+    @IntDef({
+        CustomTabsUiType.DEFAULT,
+        CustomTabsUiType.MEDIA_VIEWER,
+        CustomTabsUiType.INFO_PAGE,
+        CustomTabsUiType.READER_MODE,
+        CustomTabsUiType.MINIMAL_UI_WEBAPP,
+        CustomTabsUiType.OFFLINE_PAGE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsUiType {
         int DEFAULT = 0;
@@ -54,8 +57,11 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     // The type of Disclosure for TWAs to use.
-    @IntDef({TwaDisclosureUi.DEFAULT, TwaDisclosureUi.V1_INFOBAR,
-            TwaDisclosureUi.V2_NOTIFICATION_OR_SNACKBAR})
+    @IntDef({
+        TwaDisclosureUi.DEFAULT,
+        TwaDisclosureUi.V1_INFOBAR,
+        TwaDisclosureUi.V2_NOTIFICATION_OR_SNACKBAR
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TwaDisclosureUi {
         int DEFAULT = -1;
@@ -63,10 +69,14 @@ public abstract class BrowserServicesIntentDataProvider {
         int V2_NOTIFICATION_OR_SNACKBAR = 1;
     }
 
-    @IntDef({ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT, ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM,
-            ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE})
+    @IntDef({
+        ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+        ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM,
+        ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActivitySideSheetSlideInBehavior {}
+
     /**
      * Side sheet's default slide-in behavior. Same as
      * {@link ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
@@ -263,7 +273,7 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-      @return Titles of menu items that were passed from client app via intent.
+     * @return Titles of menu items that were passed from client app via intent.
      */
     public List<String> getMenuTitles() {
         return Collections.emptyList();
@@ -341,16 +351,12 @@ public abstract class BrowserServicesIntentDataProvider {
         return getActivityType() == ActivityType.WEB_APK;
     }
 
-    /**
-     * Returns {@link TrustedWebActivityDisplayMode} supplied in the intent.
-     */
+    /** Returns {@link TrustedWebActivityDisplayMode} supplied in the intent. */
     public @Nullable TrustedWebActivityDisplayMode getTwaDisplayMode() {
         return null;
     }
 
-    /**
-     * Returns {@link ScreenOrientationLockType} supplied in the intent.
-     */
+    /** Returns {@link ScreenOrientationLockType} supplied in the intent. */
     public int getDefaultOrientation() {
         return ScreenOrientationLockType.DEFAULT;
     }
@@ -402,23 +408,17 @@ public abstract class BrowserServicesIntentDataProvider {
         return null;
     }
 
-    /**
-     * Returns {@link ShareData} if there is data to be shared, and null otherwise.
-     */
+    /** Returns {@link ShareData} if there is data to be shared, and null otherwise. */
     public @Nullable ShareData getShareData() {
         return null;
     }
 
-    /**
-     * Returns {@link WebappExtras} if the intent targets a webapp, and null otherwise.
-     */
+    /** Returns {@link WebappExtras} if the intent targets a webapp, and null otherwise. */
     public @Nullable WebappExtras getWebappExtras() {
         return null;
     }
 
-    /**
-     * Returns {@link WebApkExtras} if the intent targets a WebAPK, and null otherwise.
-     */
+    /** Returns {@link WebApkExtras} if the intent targets a WebAPK, and null otherwise. */
     public @Nullable WebApkExtras getWebApkExtras() {
         return null;
     }
@@ -498,7 +498,6 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return Whether the intent is partial custom tabs side sheet or bottom sheet.
      */
-
     public boolean isPartialCustomTab() {
         return false;
     }
@@ -541,9 +540,7 @@ public abstract class BrowserServicesIntentDataProvider {
         return ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
     }
 
-    /**
-     * Returns the {@link CloseButtonPosition}.
-     */
+    /** Returns the {@link CloseButtonPosition}. */
     public @CloseButtonPosition int getCloseButtonPosition() {
         return CLOSE_BUTTON_POSITION_DEFAULT;
     }
@@ -556,16 +553,12 @@ public abstract class BrowserServicesIntentDataProvider {
         return false;
     }
 
-    /**
-     * Returns the partial custom tab toolbar corner radius.
-     */
+    /** Returns the partial custom tab toolbar corner radius. */
     public @Px int getPartialTabToolbarCornerRadius() {
         return 0;
     }
 
-    /**
-     * Returns false as by default PCCT is resizable.
-     */
+    /** Returns false as by default PCCT is resizable. */
     public boolean isPartialCustomTabFixedHeight() {
         return false;
     }
@@ -574,11 +567,11 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return true, as by default having a PCCT launched still allows interaction with the
      * background application
      */
-    public boolean canInteractWithBackground() { return false; }
+    public boolean canInteractWithBackground() {
+        return false;
+    }
 
-    /**
-     * Return false since by default side panel does not show maximize button.
-     */
+    /** Return false since by default side panel does not show maximize button. */
     public boolean showSideSheetMaximizeButton() {
         return false;
     }

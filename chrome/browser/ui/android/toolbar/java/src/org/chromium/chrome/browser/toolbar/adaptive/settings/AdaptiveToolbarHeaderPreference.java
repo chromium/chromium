@@ -11,9 +11,7 @@ import androidx.preference.Preference;
 
 import org.chromium.chrome.browser.toolbar.R;
 
-/**
- * Fragment that allows the user to configure toolbar shorcut preferences.
- */
+/** Fragment that allows the user to configure toolbar shorcut preferences. */
 public class AdaptiveToolbarHeaderPreference extends Preference {
     public AdaptiveToolbarHeaderPreference(Context context, AttributeSet attrs) {
         super(context, attrs);

@@ -127,7 +127,6 @@ public class PlusAddressCreationViewBridgeTest {
         verify(mCoordinator, times(1)).destroy();
     }
 
-
     @Test
     @SmallTest
     public void testDestroyTwice_destroysCoordinatorOnce() {

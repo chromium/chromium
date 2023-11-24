@@ -87,7 +87,6 @@ public class ScreenshotShareSheetMediatorUnitTest {
             return mGenerateTemporaryUriFromBitmapCalled;
         }
     }
-    ;
 
     private MockScreenshotShareSheetMediator mMediator;
 

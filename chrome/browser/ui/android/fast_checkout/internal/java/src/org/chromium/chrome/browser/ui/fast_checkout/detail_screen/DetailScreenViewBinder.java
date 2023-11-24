@@ -28,9 +28,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/**
- * A ViewHolder and a static bind method for FastCheckout's Autofill profile screen.
- */
+/** A ViewHolder and a static bind method for FastCheckout's Autofill profile screen. */
 public class DetailScreenViewBinder {
     /** A ViewHolder that inflates the toolbar and provides easy item look-up. */
     static class ViewHolder {
@@ -80,27 +78,37 @@ public class DetailScreenViewBinder {
                     view.mContext.getResources().getString(model.get(DETAIL_SCREEN_TITLE));
             view.mToolbarTitleTextView.setText(titleText);
         } else if (propertyKey == DETAIL_SCREEN_TITLE_DESCRIPTION) {
-            String titleContentDescription = view.mContext.getResources().getString(
-                    model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
+            String titleContentDescription =
+                    view.mContext
+                            .getResources()
+                            .getString(model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
             view.mToolbarA11yOverlayView.setContentDescription(titleContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
-            String settingsContentDescription = view.mContext.getResources().getString(
-                    model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
+            String settingsContentDescription =
+                    view.mContext
+                            .getResources()
+                            .getString(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
             view.mToolbarSettingsImageButton.setContentDescription(settingsContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {
             SimpleRecyclerViewAdapter adapter =
                     new SimpleRecyclerViewAdapter(model.get(DETAIL_SCREEN_MODEL_LIST));
-            adapter.registerType(DetailItemType.CREDIT_CARD, CreditCardItemViewBinder::create,
+            adapter.registerType(
+                    DetailItemType.CREDIT_CARD,
+                    CreditCardItemViewBinder::create,
                     CreditCardItemViewBinder::bind);
-            adapter.registerType(DetailItemType.FOOTER, FooterItemViewBinder::create,
+            adapter.registerType(
+                    DetailItemType.FOOTER,
+                    FooterItemViewBinder::create,
                     FooterItemViewBinder::bind);
-            adapter.registerType(DetailItemType.PROFILE, AutofillProfileItemViewBinder::create,
+            adapter.registerType(
+                    DetailItemType.PROFILE,
+                    AutofillProfileItemViewBinder::create,
                     AutofillProfileItemViewBinder::bind);
             view.setAdapter(adapter);
         } else if (propertyKey == CURRENT_SCREEN && model.get(CURRENT_SCREEN) == HOME_SCREEN) {
-            view.mRecyclerView.suppressLayout(/*suppress=*/false);
+            view.mRecyclerView.suppressLayout(/* suppress= */ false);
             ((LinearLayoutManager) view.mRecyclerView.getLayoutManager())
-                    .scrollToPositionWithOffset(/*position=*/0, /*offset=*/0);
+                    .scrollToPositionWithOffset(/* position= */ 0, /* offset= */ 0);
             view.mScrollListener.reset();
         }
     }

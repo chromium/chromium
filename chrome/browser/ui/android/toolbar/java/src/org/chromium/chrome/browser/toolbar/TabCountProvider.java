@@ -86,70 +86,75 @@ public class TabCountProvider {
     void setTabModelSelector(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
 
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                updateTabCount();
-            }
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        updateTabCount();
+                    }
 
-            @Override
-            public void onTabStateInitialized() {
-                updateTabCount();
-            }
-        };
+                    @Override
+                    public void onTabStateInitialized() {
+                        updateTabCount();
+                    }
+                };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        mTabModelFilterObserver = new TabModelObserver() {
-            @Override
-            public void didAddTab(Tab tab, @TabLaunchType int type,
-                    @TabCreationState int creationState, boolean markedForSelection) {
-                updateTabCount();
-            }
+        mTabModelFilterObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        updateTabCount();
+                    }
 
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                updateTabCount();
-            }
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        updateTabCount();
+                    }
 
-            @Override
-            public void onFinishingTabClosure(Tab tab) {
-                updateTabCount();
-            }
+                    @Override
+                    public void onFinishingTabClosure(Tab tab) {
+                        updateTabCount();
+                    }
 
-            @Override
-            public void tabPendingClosure(Tab tab) {
-                updateTabCount();
-            }
+                    @Override
+                    public void tabPendingClosure(Tab tab) {
+                        updateTabCount();
+                    }
 
-            @Override
-            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
-                updateTabCount();
-            }
+                    @Override
+                    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                        updateTabCount();
+                    }
 
-            @Override
-            public void tabRemoved(Tab tab) {
-                updateTabCount();
-            }
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        updateTabCount();
+                    }
 
-            @Override
-            public void restoreCompleted() {
-                updateTabCount();
-            }
-        };
+                    @Override
+                    public void restoreCompleted() {
+                        updateTabCount();
+                    }
+                };
 
-        mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(
-                mTabModelFilterObserver);
+        mTabModelSelector
+                .getTabModelFilterProvider()
+                .addTabModelFilterObserver(mTabModelFilterObserver);
 
         updateTabCount();
     }
 
-    /**
-     * Clean up any state when the TabCountProvider is destroyed.
-     */
+    /** Clean up any state when the TabCountProvider is destroyed. */
     void destroy() {
         if (mTabModelFilterObserver != null) {
-            mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
-                    mTabModelFilterObserver);
+            mTabModelSelector
+                    .getTabModelFilterProvider()
+                    .removeTabModelFilterObserver(mTabModelFilterObserver);
         }
 
         if (mTabModelSelector != null) {
@@ -176,7 +181,8 @@ public class TabCountProvider {
     }
 
     private int getCurrentTotalTabCount() {
-        return mTabModelSelector.getTabModelFilterProvider()
+        return mTabModelSelector
+                .getTabModelFilterProvider()
                 .getCurrentTabModelFilter()
                 .getTotalTabCount();
     }

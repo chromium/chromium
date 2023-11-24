@@ -173,10 +173,17 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
      * @param isMenuIconAtStart     Whether the menu is being shown from a menu icon positioned at
      *                              the start.
      */
-    void show(Context context, final View anchorView, boolean isByPermanentButton,
-            int screenRotation, Rect visibleDisplayFrame, @IdRes int footerResourceId,
-            @IdRes int headerResourceId, @IdRes int groupDividerResourceId,
-            Integer highlightedItemId, @Nullable List<CustomViewBinder> customViewBinders,
+    void show(
+            Context context,
+            final View anchorView,
+            boolean isByPermanentButton,
+            int screenRotation,
+            Rect visibleDisplayFrame,
+            @IdRes int footerResourceId,
+            @IdRes int headerResourceId,
+            @IdRes int groupDividerResourceId,
+            Integer highlightedItemId,
+            @Nullable List<CustomViewBinder> customViewBinders,
             boolean isMenuIconAtStart) {
         mPopup = new PopupWindow(context);
         mPopup.setFocusable(true);
@@ -185,23 +192,24 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // The window layout type affects the z-index of the popup window.
         mPopup.setWindowLayoutType(WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
 
-        mPopup.setOnDismissListener(() -> {
-            recordTimeToTakeActionHistogram();
-            if (anchorView instanceof ImageButton) {
-                ((ImageButton) anchorView).setSelected(false);
-            }
+        mPopup.setOnDismissListener(
+                () -> {
+                    recordTimeToTakeActionHistogram();
+                    if (anchorView instanceof ImageButton) {
+                        ((ImageButton) anchorView).setSelected(false);
+                    }
 
-            if (mMenuItemEnterAnimator != null) mMenuItemEnterAnimator.cancel();
+                    if (mMenuItemEnterAnimator != null) mMenuItemEnterAnimator.cancel();
 
-            mHandler.appMenuDismissed();
-            mHandler.onMenuVisibilityChanged(false);
+                    mHandler.appMenuDismissed();
+                    mHandler.onMenuVisibilityChanged(false);
 
-            mPopup = null;
-            mAdapter = null;
-            mListView = null;
-            mFooterView = null;
-            mMenuItemEnterAnimator = null;
-        });
+                    mPopup = null;
+                    mAdapter = null;
+                    mListView = null;
+                    mFooterView = null;
+                    mMenuItemEnterAnimator = null;
+                });
 
         // Some OEMs don't actually let us change the background... but they still return the
         // padding of the new background, which breaks the menu height.  If we still have a
@@ -285,8 +293,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mListView.setAdapter(mAdapter);
 
         anchorView.getLocationOnScreen(mTempLocation);
-        int anchorViewOffset = Math.min(Math.abs(mTempLocation[1] - visibleDisplayFrame.top),
-                Math.abs(mTempLocation[1] - visibleDisplayFrame.bottom));
+        int anchorViewOffset =
+                Math.min(
+                        Math.abs(mTempLocation[1] - visibleDisplayFrame.top),
+                        Math.abs(mTempLocation[1] - visibleDisplayFrame.bottom));
         setMenuHeight(
                 menuItemIds,
                 heightList,
@@ -311,7 +321,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mPopup.setContentView(contentView);
 
         try {
-            mPopup.showAtLocation(anchorView.getRootView(), Gravity.NO_GRAVITY, popupPosition[0],
+            mPopup.showAtLocation(
+                    anchorView.getRootView(),
+                    Gravity.NO_GRAVITY,
+                    popupPosition[0],
                     popupPosition[1]);
         } catch (WindowManager.BadTokenException e) {
             // Intentionally ignore BadTokenException. This can happen in a real edge case where
@@ -336,14 +349,23 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         // Don't animate the menu items for low end devices.
         if (!SysUtils.isLowEndDevice()) {
-            mListView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    mListView.removeOnLayoutChangeListener(this);
-                    runMenuItemEnterAnimations();
-                }
-            });
+            mListView.addOnLayoutChangeListener(
+                    new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(
+                                View v,
+                                int left,
+                                int top,
+                                int right,
+                                int bottom,
+                                int oldLeft,
+                                int oldTop,
+                                int oldRight,
+                                int oldBottom) {
+                            mListView.removeOnLayoutChangeListener(this);
+                            runMenuItemEnterAnimations();
+                        }
+                    });
         }
     }
 
@@ -414,9 +436,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         mSelectedItemBeforeDismiss = true;
         CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
-        CharSequence message = TextUtils.isEmpty(titleCondensed)
-                ? model.get(AppMenuItemProperties.TITLE)
-                : titleCondensed;
+        CharSequence message =
+                TextUtils.isEmpty(titleCondensed)
+                        ? model.get(AppMenuItemProperties.TITLE)
+                        : titleCondensed;
         return showToastForItem(message, view);
     }
 
@@ -467,9 +490,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mAdapter = adapter;
     }
 
-    /**
-     * Dismisses the app menu and cancels the drag-to-scroll if it is taking place.
-     */
+    /** Dismisses the app menu and cancels the drag-to-scroll if it is taking place. */
     void dismiss() {
         if (isShowing()) {
             mPopup.dismiss();
@@ -531,9 +552,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         return null;
     }
 
-    /**
-     * Invalidate the app menu data. See {@link AppMenuAdapter#notifyDataSetChanged}.
-     */
+    /** Invalidate the app menu data. See {@link AppMenuAdapter#notifyDataSetChanged}. */
     void invalidate() {
         if (mAdapter != null) mAdapter.notifyDataSetChanged();
     }
@@ -550,31 +569,52 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             int anchorViewOffset) {
         int anchorViewImpactHeight = mIsByPermanentButton ? anchorView.getHeight() : 0;
 
-        int availableScreenSpace = appDimensions.height() - anchorViewOffset - padding.bottom
-                - footerHeight - headerHeight - anchorViewImpactHeight;
+        int availableScreenSpace =
+                appDimensions.height()
+                        - anchorViewOffset
+                        - padding.bottom
+                        - footerHeight
+                        - headerHeight
+                        - anchorViewImpactHeight;
 
         if (mIsByPermanentButton) availableScreenSpace -= padding.top;
         if (availableScreenSpace <= 0 && sExceptionReporter != null) {
-            String logMessage = String.format(
-                    "there is no screen space for app menn, mIsByPermanentButton = "
-                    + mIsByPermanentButton + ", anchorViewOffset = " + anchorViewOffset
-                    + ", appDimensions.height() = " + appDimensions.height()
-                    + ", anchorView.getHeight() = " + anchorView.getHeight()
-                    + " padding.top = " + padding.top + ", padding.bottom = " + padding.bottom
-                    + ", footerHeight = " + footerHeight + ", headerHeight = " + headerHeight);
-            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+            String logMessage =
+                    String.format(
+                            "there is no screen space for app menn, mIsByPermanentButton = "
+                                    + mIsByPermanentButton
+                                    + ", anchorViewOffset = "
+                                    + anchorViewOffset
+                                    + ", appDimensions.height() = "
+                                    + appDimensions.height()
+                                    + ", anchorView.getHeight() = "
+                                    + anchorView.getHeight()
+                                    + " padding.top = "
+                                    + padding.top
+                                    + ", padding.bottom = "
+                                    + padding.bottom
+                                    + ", footerHeight = "
+                                    + footerHeight
+                                    + ", headerHeight = "
+                                    + headerHeight);
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
                     () -> sExceptionReporter.onResult(new Throwable(logMessage)));
         }
 
-        int menuHeight = calculateHeightForItems(
-                menuItemIds, heightList, groupDividerResourceId, availableScreenSpace);
+        int menuHeight =
+                calculateHeightForItems(
+                        menuItemIds, heightList, groupDividerResourceId, availableScreenSpace);
         menuHeight += footerHeight + headerHeight + padding.top + padding.bottom;
         mPopup.setHeight(menuHeight);
     }
 
     @VisibleForTesting
-    int calculateHeightForItems(List<Integer> menuItemIds, List<Integer> heightList,
-            @IdRes int groupDividerResourceId, int screenSpaceForItems) {
+    int calculateHeightForItems(
+            List<Integer> menuItemIds,
+            List<Integer> heightList,
+            @IdRes int groupDividerResourceId,
+            int screenSpaceForItems) {
         int availableScreenSpace = screenSpaceForItems > 0 ? screenSpaceForItems : 0;
         int spaceForFullItems = 0;
 
@@ -663,8 +703,9 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     private int inflateHeader(int headerResourceId, View contentView, int menuWidth) {
         if (headerResourceId == 0) return 0;
 
-        View headerView = LayoutInflater.from(contentView.getContext())
-                                  .inflate(headerResourceId, mListView, false);
+        View headerView =
+                LayoutInflater.from(contentView.getContext())
+                        .inflate(headerResourceId, mListView, false);
         mListView.addHeaderView(headerView);
 
         int widthMeasureSpec = MeasureSpec.makeMeasureSpec(menuWidth, MeasureSpec.EXACTLY);
@@ -681,8 +722,9 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     }
 
     private void recordTimeToTakeActionHistogram() {
-        final String histogramName = "Mobile.AppMenu.TimeToTakeAction."
-                + (mSelectedItemBeforeDismiss ? "SelectedItem" : "Abandoned");
+        final String histogramName =
+                "Mobile.AppMenu.TimeToTakeAction."
+                        + (mSelectedItemBeforeDismiss ? "SelectedItem" : "Abandoned");
         final long timeToTakeActionMs = SystemClock.elapsedRealtime() - mMenuShownTimeMs;
         RecordHistogram.recordMediumTimesHistogram(histogramName, timeToTakeActionMs);
     }

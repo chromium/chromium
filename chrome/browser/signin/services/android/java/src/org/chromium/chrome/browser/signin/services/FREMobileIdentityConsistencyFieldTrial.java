@@ -36,9 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
 
-    /**
-     * Used as a seed while selecting the group for the trial.
-     */
+    /** Used as a seed while selecting the group for the trial. */
     private static final int STUDY_RANDOMIZATION_SALT = 0xee9a496f;
 
     /**
@@ -49,14 +47,14 @@ public class FREMobileIdentityConsistencyFieldTrial {
     @VisibleForTesting
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
-            VariationsGroup.DEFAULT,
-            VariationsGroup.WELCOME_TO_CHROME,
-            VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME,
-            VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES,
-            VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES,
-            VariationsGroup.MOST_OUT_OF_CHROME,
-            VariationsGroup.MAKE_CHROME_YOUR_OWN,
-            VariationsGroup.MAX_VALUE,
+        VariationsGroup.DEFAULT,
+        VariationsGroup.WELCOME_TO_CHROME,
+        VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME,
+        VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES,
+        VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES,
+        VariationsGroup.MOST_OUT_OF_CHROME,
+        VariationsGroup.MAKE_CHROME_YOUR_OWN,
+        VariationsGroup.MAX_VALUE,
     })
     public @interface VariationsGroup {
         /**
@@ -66,36 +64,43 @@ public class FREMobileIdentityConsistencyFieldTrial {
          * Subtitle: None
          */
         int DEFAULT = -1;
+
         /**
          * Title: 'Welcome to Chrome'
          * Subtitle: None
          */
         int WELCOME_TO_CHROME = 0;
+
         /**
          * Title: 'Welcome to Chrome'
          * Subtitle: 'Sign in to get the most out of Chrome'
          */
         int WELCOME_TO_CHROME_MOST_OUT_OF_CHROME = 1;
+
         /**
          * Title: 'Welcome to Chrome'
          * Subtitle: 'Sign in for additional features'
          */
         int WELCOME_TO_CHROME_ADDITIONAL_FEATURES = 2;
+
         /**
          * Title: 'Welcome to Chrome'
          * Subtitle: 'Sign in to browse easier across devices'
          */
         int WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES = 3;
+
         /**
          * Title: 'Sign in to get the most out of Chrome'
          * Subtitle: None
          */
         int MOST_OUT_OF_CHROME = 4;
+
         /**
          * Title: 'Sign in to make Chrome your own'
          * Subtitle: None
          */
         int MAKE_CHROME_YOUR_OWN = 5;
+
         /**
          * When adding new groups, increasing this value will automatically cause new groups
          * to receive clients. A different control group will need to be implemented however
@@ -107,17 +112,17 @@ public class FREMobileIdentityConsistencyFieldTrial {
     @AnyThread
     private static @VariationsGroup int getFirstRunTrialGroup() {
         synchronized (LOCK) {
-            return ChromeSharedPreferences.getInstance().readInt(
-                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP,
-                    VariationsGroup.DEFAULT);
+            return ChromeSharedPreferences.getInstance()
+                    .readInt(
+                            ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP,
+                            VariationsGroup.DEFAULT);
         }
     }
 
     @CalledByNative
     @AnyThread
     private static int getFirstRunTrialVariationId(int lowEntropySource, int lowEntropySize) {
-        @VariationsGroup
-        int groupFromPrefs = getFirstRunTrialGroup();
+        @VariationsGroup int groupFromPrefs = getFirstRunTrialGroup();
         final int variationsEmptyID = 0; // This should be identical to variations::EMPTY_ID.
         if (groupFromPrefs == VariationsGroup.DEFAULT) {
             return variationsEmptyID; // Do not send variations ID if the user is the default group.
@@ -276,26 +281,28 @@ public class FREMobileIdentityConsistencyFieldTrial {
             // Don't create a new group if the user was already assigned a group. Can
             // happen when the user dismisses FRE without finishing the flow and starts chrome
             // again.
-            if (ChromeSharedPreferences.getInstance().readInt(
-                        ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, -2)
+            if (ChromeSharedPreferences.getInstance()
+                            .readInt(
+                                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, -2)
                     != -2) {
                 return;
             }
         }
-        int group = generateFirstRunStringVariationsGroup(
-                LowEntropySource.generateLowEntropySourceForFirstRunTrial(),
-                LowEntropySource.MAX_LOW_ENTROPY_SIZE);
+        int group =
+                generateFirstRunStringVariationsGroup(
+                        LowEntropySource.generateLowEntropySourceForFirstRunTrial(),
+                        LowEntropySource.MAX_LOW_ENTROPY_SIZE);
         synchronized (LOCK) {
-            ChromeSharedPreferences.getInstance().writeInt(
-                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
+            ChromeSharedPreferences.getInstance()
+                    .writeInt(ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
         }
     }
 
     @AnyThread
     public static void setFirstRunVariationsTrialGroupForTesting(@VariationsGroup int group) {
         synchronized (LOCK) {
-            ChromeSharedPreferences.getInstance().writeInt(
-                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
+            ChromeSharedPreferences.getInstance()
+                    .writeInt(ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
         }
     }
 }

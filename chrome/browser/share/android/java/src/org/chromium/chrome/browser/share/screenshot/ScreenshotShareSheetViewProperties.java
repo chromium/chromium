@@ -29,6 +29,7 @@ class ScreenshotShareSheetViewProperties {
 
     public static final WritableBooleanPropertyKey SCREENSHOT_EDIT_DISABLED =
             new WritableBooleanPropertyKey();
+
     /**
      * Set of operations that don't require additional arguments. If a callback requires an
      * argument, it should defined separately.
@@ -43,6 +44,8 @@ class ScreenshotShareSheetViewProperties {
         int INSTALL = 4;
     }
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            NO_ARG_OPERATION_LISTENER, SCREENSHOT_BITMAP, SCREENSHOT_EDIT_DISABLED};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                NO_ARG_OPERATION_LISTENER, SCREENSHOT_BITMAP, SCREENSHOT_EDIT_DISABLED
+            };
 }

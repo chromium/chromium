@@ -18,7 +18,8 @@ class DateOrderedListViewAdapter extends RecyclerViewAdapter<ListItemViewHolder,
     private final DecoratedListItemModel mModel;
 
     /** Creates an instance of a {@link DateOrderedListViewAdapter}. */
-    public DateOrderedListViewAdapter(DecoratedListItemModel model,
+    public DateOrderedListViewAdapter(
+            DecoratedListItemModel model,
             Delegate<ListItemViewHolder, Void> delegate,
             ViewHolderFactory<ListItemViewHolder> factory) {
         super(delegate, factory);

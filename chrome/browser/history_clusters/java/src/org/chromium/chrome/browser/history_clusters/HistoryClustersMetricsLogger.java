@@ -28,8 +28,13 @@ class HistoryClustersMetricsLogger {
         int NON_SRP = 1;
     }
 
-    @IntDef({InitialState.UNINITIALIZED, InitialState.DIRECT_NAVIGATION,
-            InitialState.INDIRECT_NAVIGATION, InitialState.SAME_DOCUMENT, InitialState.NUM_ENTRIES})
+    @IntDef({
+        InitialState.UNINITIALIZED,
+        InitialState.DIRECT_NAVIGATION,
+        InitialState.INDIRECT_NAVIGATION,
+        InitialState.SAME_DOCUMENT,
+        InitialState.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface InitialState {
         int UNINITIALIZED = -1;
@@ -86,13 +91,14 @@ class HistoryClustersMetricsLogger {
     }
 
     void recordVisitAction(@VisitAction int visitAction, ClusterVisit clusterVisit) {
-        @VisitType
-        int visitType = getVisitType(clusterVisit.getNormalizedUrl());
+        @VisitType int visitType = getVisitType(clusterVisit.getNormalizedUrl());
         RecordHistogram.recordCount100Histogram(
                 "History.Clusters.UIActions.Visit." + visitActionToString(visitAction),
                 clusterVisit.getIndexInParent());
-        RecordHistogram.recordCount100Histogram("History.Clusters.UIActions."
-                        + visitTypeToString(visitType) + "Visit."
+        RecordHistogram.recordCount100Histogram(
+                "History.Clusters.UIActions."
+                        + visitTypeToString(visitType)
+                        + "Visit."
                         + visitActionToString(visitAction),
                 clusterVisit.getIndexInParent());
         switch (visitAction) {
@@ -139,7 +145,8 @@ class HistoryClustersMetricsLogger {
         RecordHistogram.recordCount100Histogram(
                 "History.Clusters.Actions.FinalState.TogglesToBasicHistory",
                 mTogglesToBasicHistoryCount);
-        RecordHistogram.recordBooleanHistogram("History.Clusters.Actions.FinalState.WasSuccessful",
+        RecordHistogram.recordBooleanHistogram(
+                "History.Clusters.Actions.FinalState.WasSuccessful",
                 isCurrentlySuccessfulHistoryClustersOutcome());
         RecordHistogram.recordBooleanHistogram(
                 "History.Clusters.Actions.DidMakeQuery", mQueryCount > 0);

@@ -66,12 +66,9 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     private ReadAloudReadabilityHooks mReadabilityHooks;
 
-    @Nullable
-    private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
-    @Nullable
-    private ReadAloudPlaybackHooks mPlaybackHooks;
-    @Nullable
-    private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
+    @Nullable private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
+    @Nullable private ReadAloudPlaybackHooks mPlaybackHooks;
+    @Nullable private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
     @Nullable private Highlighter mHighlighter;
     @Nullable private Highlighter.Config mHighlighterConfig;
 
@@ -84,8 +81,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     // Information tied to a playback. When playback is reset it should be set to null together
     //  with the mCurrentlyPlayingTab and mGlobalRenderFrameId
     @Nullable private Playback mPlayback;
-    @Nullable
-    private Tab mCurrentlyPlayingTab;
+    @Nullable private Tab mCurrentlyPlayingTab;
     @Nullable private GlobalRenderFrameHostId mGlobalRenderFrameId;
 
     // Playback for voice previews.
@@ -251,7 +247,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
      *     www.google.com/... is reserved for Search features and content.
      */
     public boolean isURLReadAloudSupported(GURL url) {
-        return url.isValid() && !url.isEmpty()
+        return url.isValid()
+                && !url.isEmpty()
                 && (url.getScheme().equals(UrlConstants.HTTP_SCHEME)
                         || url.getScheme().equals(UrlConstants.HTTPS_SCHEME))
                 && !url.getSpec().startsWith(UrlConstants.GOOGLE_ACCOUNT_HOME_URL)
@@ -267,9 +264,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         return ReadAloudFeatures.isAllowed(mProfileSupplier.get());
     }
 
-    /**
-     * Returns true if the web contents within current Tab is readable.
-     */
+    /** Returns true if the web contents within current Tab is readable. */
     public boolean isReadable(Tab tab) {
         if (isAvailable() && tab.getUrl().isValid()) {
             Boolean isReadable = mReadabilityMap.get(stripUserData(tab.getUrl()).getSpec());
@@ -634,8 +629,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         }
 
         if (mTabToResumeOnCloseVoiceMenu != null) {
-            // TODO restore playback position
-            // Load audio, and then play if audio wasn't paused or stopped last.
+            // TODO restore playback position Load audio, and then play if audio wasn't paused or
+            // stopped last.
             playTab(
                     mTabToResumeOnCloseVoiceMenu,
                     /* playWhenReady= */ mPlaybackState != PlaybackListener.State.PAUSED

@@ -7,13 +7,9 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 
-/**
- * Observes changes to the tab model selector.
- */
+/** Observes changes to the tab model selector. */
 public interface TabModelSelectorObserver {
-    /**
-     * Called whenever the {@link TabModel} has changed.
-     */
+    /** Called whenever the {@link TabModel} has changed. */
     default void onChange() {}
 
     /**

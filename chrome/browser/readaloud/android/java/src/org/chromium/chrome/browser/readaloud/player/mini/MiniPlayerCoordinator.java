@@ -98,9 +98,7 @@ public class MiniPlayerCoordinator {
         mMediator.show(animate);
     }
 
-    /**
-     * Returns the mini player visibility state.
-     */
+    /** Returns the mini player visibility state. */
     public @VisibilityState int getVisibility() {
         return mMediator.getVisibility();
     }

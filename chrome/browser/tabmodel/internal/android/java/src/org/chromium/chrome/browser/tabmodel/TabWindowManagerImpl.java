@@ -35,8 +35,10 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
 
     private Map<Activity, TabModelSelector> mAssignments = new HashMap<>();
 
-    TabWindowManagerImpl(TabModelSelectorFactory selectorFactory,
-            AsyncTabParamsManager asyncTabParamsManager, int maxSelectors) {
+    TabWindowManagerImpl(
+            TabModelSelectorFactory selectorFactory,
+            AsyncTabParamsManager asyncTabParamsManager,
+            int maxSelectors) {
         mSelectorFactory = selectorFactory;
         mAsyncTabParamsManager = asyncTabParamsManager;
         ApplicationStatus.registerStateListenerForAllActivities(this);

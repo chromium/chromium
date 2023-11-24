@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.gsa;
 
-/**
- * Represents a text selection and its context on a page.
- */
+/** Represents a text selection and its context on a page. */
 public class GSAContextDisplaySelection {
     public final String encoding;
     public final String content;

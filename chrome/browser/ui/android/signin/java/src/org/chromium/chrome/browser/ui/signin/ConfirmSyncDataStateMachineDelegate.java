@@ -21,9 +21,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Class to decouple ConfirmSyncDataStateMachine from UI code and dialog management.
- */
+/** Class to decouple ConfirmSyncDataStateMachine from UI code and dialog management. */
 public class ConfirmSyncDataStateMachineDelegate {
     /**
      * Listener to receive events from progress dialog. If the dialog is not dismissed by showing
@@ -31,9 +29,7 @@ public class ConfirmSyncDataStateMachineDelegate {
      * then {@link #onCancel} will be called once.
      */
     interface ProgressDialogListener {
-        /**
-         * This method is called when user cancels the dialog in any way.
-         */
+        /** This method is called when user cancels the dialog in any way. */
         void onCancel();
     }
 
@@ -43,39 +39,37 @@ public class ConfirmSyncDataStateMachineDelegate {
      * then either {@link #onCancel} or {@link #onRetry} will be called once.
      */
     interface TimeoutDialogListener {
-        /**
-         * This method is called when user cancels the dialog in any way.
-         */
+        /** This method is called when user cancels the dialog in any way. */
         void onCancel();
 
-        /**
-         * This method is called when user clicks retry button.
-         */
+        /** This method is called when user clicks retry button. */
         void onRetry();
     }
 
-    /**
-     * A Progress Dialog that is shown while account management policy is being fetched.
-     */
+    /** A Progress Dialog that is shown while account management policy is being fetched. */
     private static final class ProgressDialogCoordinator {
         private final ProgressDialogListener mListener;
         private final PropertyModel mModel;
         private final ModalDialogManager mDialogManager;
 
         @MainThread
-        private ProgressDialogCoordinator(Context context, ModalDialogManager dialogManager,
+        private ProgressDialogCoordinator(
+                Context context,
+                ModalDialogManager dialogManager,
                 ProgressDialogListener listener) {
             final View view =
                     LayoutInflater.from(context).inflate(R.layout.signin_progress_bar_dialog, null);
 
             mListener = listener;
-            mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                             .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                     context.getString(R.string.cancel))
-                             .with(ModalDialogProperties.CUSTOM_VIEW, view)
-                             .with(ModalDialogProperties.CONTROLLER, createController())
-                             .build();
+            mModel =
+                    new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                            .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                            .with(
+                                    ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                    context.getString(R.string.cancel))
+                            .with(ModalDialogProperties.CUSTOM_VIEW, view)
+                            .with(ModalDialogProperties.CONTROLLER, createController())
+                            .build();
             mDialogManager = dialogManager;
             mDialogManager.showDialog(mModel, ModalDialogType.APP);
         }
@@ -106,9 +100,7 @@ public class ConfirmSyncDataStateMachineDelegate {
         }
     }
 
-    /**
-     * A Timeout Dialog that is shown if account management policy fetch times out.
-     */
+    /** A Timeout Dialog that is shown if account management policy fetch times out. */
     private static final class TimeoutDialogCoordinator {
         private final TimeoutDialogListener mListener;
         private final PropertyModel mModel;
@@ -118,18 +110,23 @@ public class ConfirmSyncDataStateMachineDelegate {
         private TimeoutDialogCoordinator(
                 Context context, ModalDialogManager dialogManager, TimeoutDialogListener listener) {
             mListener = listener;
-            mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                             .with(ModalDialogProperties.TITLE,
-                                     context.getString(R.string.sign_in_timeout_title))
-                             .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                     context.getString(R.string.sign_in_timeout_message))
-                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                             .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                     context.getString(R.string.try_again))
-                             .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                     context.getString(R.string.cancel))
-                             .with(ModalDialogProperties.CONTROLLER, createController())
-                             .build();
+            mModel =
+                    new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                            .with(
+                                    ModalDialogProperties.TITLE,
+                                    context.getString(R.string.sign_in_timeout_title))
+                            .with(
+                                    ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                    context.getString(R.string.sign_in_timeout_message))
+                            .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                            .with(
+                                    ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                    context.getString(R.string.try_again))
+                            .with(
+                                    ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                    context.getString(R.string.cancel))
+                            .with(ModalDialogProperties.CONTROLLER, createController())
+                            .build();
             mDialogManager = dialogManager;
             mDialogManager.showDialog(mModel, ModalDialogType.APP);
         }
@@ -173,7 +170,9 @@ public class ConfirmSyncDataStateMachineDelegate {
     private @Nullable ConfirmManagedSyncDataDialogCoordinator
             mConfirmManagedSyncDataDialogCoordinator;
 
-    public ConfirmSyncDataStateMachineDelegate(Context context, FragmentManager fragmentManager,
+    public ConfirmSyncDataStateMachineDelegate(
+            Context context,
+            FragmentManager fragmentManager,
             ModalDialogManager modalDialogManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -212,11 +211,14 @@ public class ConfirmSyncDataStateMachineDelegate {
      * @param oldAccountName  The previous sync account name.
      * @param newAccountName  The potential next sync account name.
      */
-    void showConfirmImportSyncDataDialog(ConfirmImportSyncDataDialogCoordinator.Listener listener,
-            String oldAccountName, String newAccountName) {
+    void showConfirmImportSyncDataDialog(
+            ConfirmImportSyncDataDialogCoordinator.Listener listener,
+            String oldAccountName,
+            String newAccountName) {
         dismissAllDialogs();
-        mConfirmImportSyncDataDialogCoordinator = new ConfirmImportSyncDataDialogCoordinator(
-                mContext, mModalDialogManager, listener, oldAccountName, newAccountName);
+        mConfirmImportSyncDataDialogCoordinator =
+                new ConfirmImportSyncDataDialogCoordinator(
+                        mContext, mModalDialogManager, listener, oldAccountName, newAccountName);
     }
 
     /**
@@ -228,13 +230,12 @@ public class ConfirmSyncDataStateMachineDelegate {
     void showSignInToManagedAccountDialog(
             ConfirmManagedSyncDataDialogCoordinator.Listener listener, String domain) {
         dismissAllDialogs();
-        mConfirmManagedSyncDataDialogCoordinator = new ConfirmManagedSyncDataDialogCoordinator(
-                mContext, mModalDialogManager, listener, domain);
+        mConfirmManagedSyncDataDialogCoordinator =
+                new ConfirmManagedSyncDataDialogCoordinator(
+                        mContext, mModalDialogManager, listener, domain);
     }
 
-    /**
-     * Dismisses all dialogs.
-     */
+    /** Dismisses all dialogs. */
     void dismissAllDialogs() {
         if (mProgressDialogCoordinator != null) {
             mProgressDialogCoordinator.dismissDialog();
@@ -255,7 +256,9 @@ public class ConfirmSyncDataStateMachineDelegate {
     }
 
     ProgressBar getProgressBarViewForTesting() {
-        return mProgressDialogCoordinator.mModel.get(ModalDialogProperties.CUSTOM_VIEW)
+        return mProgressDialogCoordinator
+                .mModel
+                .get(ModalDialogProperties.CUSTOM_VIEW)
                 .findViewById(R.id.progress_bar);
     }
 }

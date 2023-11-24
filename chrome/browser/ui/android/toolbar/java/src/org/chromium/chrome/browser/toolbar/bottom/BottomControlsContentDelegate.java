@@ -27,7 +27,8 @@ public interface BottomControlsContentDelegate extends BackPressHandler {
      * @param visibilityController Bottom controls visibility controller.
      * @param onModelTokenChange Callback to notify when a new capture is needed.
      */
-    void initializeWithNative(Activity activity,
+    void initializeWithNative(
+            Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             Callback<Object> onModelTokenChange);
 

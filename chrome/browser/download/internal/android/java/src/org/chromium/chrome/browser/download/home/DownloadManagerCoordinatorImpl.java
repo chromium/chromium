@@ -58,29 +58,52 @@ class DownloadManagerCoordinatorImpl
     private boolean mMuteFilterChanges;
 
     /** Builds a {@link DownloadManagerCoordinatorImpl} instance. */
-    public DownloadManagerCoordinatorImpl(Activity activity, DownloadManagerUiConfig config,
+    public DownloadManagerCoordinatorImpl(
+            Activity activity,
+            DownloadManagerUiConfig config,
             Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
-            Callback<Context> settingsLauncher, SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager, Tracker tracker, FaviconProvider faviconProvider,
-            OfflineContentProvider provider, DiscardableReferencePool discardableReferencePool) {
+            Callback<Context> settingsLauncher,
+            SnackbarManager snackbarManager,
+            ModalDialogManager modalDialogManager,
+            Tracker tracker,
+            FaviconProvider faviconProvider,
+            OfflineContentProvider provider,
+            DiscardableReferencePool discardableReferencePool) {
         mActivity = activity;
         mSettingsLauncher = settingsLauncher;
         mDeleteCoordinator = new DeleteUndoCoordinator(snackbarManager);
         mSelectionDelegate = new SelectionDelegate<ListItem>();
-        mListCoordinator = new DateOrderedListCoordinator(mActivity, config,
-                exploreOfflineTabVisibilitySupplier, provider, mDeleteCoordinator::showSnackbar,
-                mSelectionDelegate, this::notifyFilterChanged, createDateOrderedListObserver(),
-                modalDialogManager, faviconProvider, discardableReferencePool);
-        mToolbarCoordinator = new ToolbarCoordinator(mActivity, this, mListCoordinator,
-                mSelectionDelegate, config.isSeparateActivity, tracker);
+        mListCoordinator =
+                new DateOrderedListCoordinator(
+                        mActivity,
+                        config,
+                        exploreOfflineTabVisibilitySupplier,
+                        provider,
+                        mDeleteCoordinator::showSnackbar,
+                        mSelectionDelegate,
+                        this::notifyFilterChanged,
+                        createDateOrderedListObserver(),
+                        modalDialogManager,
+                        faviconProvider,
+                        discardableReferencePool);
+        mToolbarCoordinator =
+                new ToolbarCoordinator(
+                        mActivity,
+                        this,
+                        mListCoordinator,
+                        mSelectionDelegate,
+                        config.isSeparateActivity,
+                        tracker);
 
         initializeView();
         if (config.startWithPrefetchedContent) {
             updateForUrl(Filters.toUrl(Filters.FilterType.PREFETCHED));
         }
         RecordUserAction.record("Android.DownloadManager.Open");
-        mBackPressHandlers = new BackPressHandler[] {
-                mListCoordinator.getBackPressHandler(), mToolbarCoordinator};
+        mBackPressHandlers =
+                new BackPressHandler[] {
+                    mListCoordinator.getBackPressHandler(), mToolbarCoordinator
+                };
     }
 
     /**
@@ -91,16 +114,23 @@ class DownloadManagerCoordinatorImpl
         mMainView = new FrameLayout(mActivity);
         mMainView.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
 
-        FrameLayout.LayoutParams listParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        listParams.setMargins(0,
-                mActivity.getResources().getDimensionPixelOffset(
-                        R.dimen.selectable_list_toolbar_height),
-                0, 0);
+        FrameLayout.LayoutParams listParams =
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT);
+        listParams.setMargins(
+                0,
+                mActivity
+                        .getResources()
+                        .getDimensionPixelOffset(R.dimen.selectable_list_toolbar_height),
+                0,
+                0);
         mMainView.addView(mListCoordinator.getView(), listParams);
 
-        FrameLayout.LayoutParams toolbarParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams toolbarParams =
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT);
         toolbarParams.gravity = Gravity.TOP;
         mMainView.addView(mToolbarCoordinator.getView(), toolbarParams);
     }
@@ -155,7 +185,8 @@ class DownloadManagerCoordinatorImpl
     @Override
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
-        PostTask.postTask(TaskTraits.UI_DEFAULT,
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
                 () -> observer.onUrlChanged(Filters.toUrl(mListCoordinator.getSelectedFilter())));
     }
 

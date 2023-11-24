@@ -20,8 +20,9 @@ public class ScoreComparator implements Comparator<OfflineItem> {
         int comparison = compareItemByScore(lhs, rhs);
         if (comparison != 0) return comparison;
 
-        comparison = ListUtils.compareFilterTypesTo(
-                Filters.fromOfflineItem(lhs), Filters.fromOfflineItem(rhs));
+        comparison =
+                ListUtils.compareFilterTypesTo(
+                        Filters.fromOfflineItem(lhs), Filters.fromOfflineItem(rhs));
         if (comparison != 0) return comparison;
 
         comparison = ListUtils.compareItemByTimestamp(lhs, rhs);

@@ -24,11 +24,10 @@ import org.chromium.ui.util.TokenHolder;
  * Determines the desired visibility of the browser controls based on the current state of the
  * running activity.
  */
-public class BrowserStateBrowserControlsVisibilityDelegate
-        extends BrowserControlsVisibilityDelegate implements Destroyable {
+public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate
+        implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
-    @VisibleForTesting
-    static final long MINIMUM_SHOW_DURATION_MS = 3000;
+    @VisibleForTesting static final long MINIMUM_SHOW_DURATION_MS = 3000;
 
     private static boolean sDisableOverridesForTesting;
 
@@ -67,14 +66,12 @@ public class BrowserStateBrowserControlsVisibilityDelegate
         if (currentShowingTime >= MINIMUM_SHOW_DURATION_MS) return;
 
         final int temporaryToken = mTokenHolder.acquireToken();
-        mHandler.postDelayed(()
-                                     -> mTokenHolder.releaseToken(temporaryToken),
+        mHandler.postDelayed(
+                () -> mTokenHolder.releaseToken(temporaryToken),
                 MINIMUM_SHOW_DURATION_MS - currentShowingTime);
     }
 
-    /**
-     * Trigger a temporary showing of the browser controls.
-     */
+    /** Trigger a temporary showing of the browser controls. */
     public void showControlsTransient() {
         if (!mTokenHolder.hasTokens()) mCurrentShowingStartTime = SystemClock.uptimeMillis();
         ensureControlsVisibleForMinDuration();
@@ -118,8 +115,10 @@ public class BrowserStateBrowserControlsVisibilityDelegate
             // there wasn't any significant change to the screen. They should unlock as soon as the
             // capture logic thinks it's safe to do so. Long term this can probably be removed for
             // all.
-            boolean useSuppression = (FeatureList.isInitialized()
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
+            boolean useSuppression =
+                    (FeatureList.isInitialized()
+                            && ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
             if (!useSuppression) {
                 ensureControlsVisibleForMinDuration();
             }
@@ -143,16 +142,12 @@ public class BrowserStateBrowserControlsVisibilityDelegate
         set(calculateVisibilityConstraints());
     }
 
-    /**
-     * Disable any browser visibility overrides for testing.
-     */
+    /** Disable any browser visibility overrides for testing. */
     public static void disableForTesting() {
         sDisableOverridesForTesting = true;
     }
 
-    /**
-     * Performs clean-up.
-     */
+    /** Performs clean-up. */
     @Override
     public void destroy() {
         mHandler.removeCallbacksAndMessages(null);

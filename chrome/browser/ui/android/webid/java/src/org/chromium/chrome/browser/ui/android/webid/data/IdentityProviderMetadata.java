@@ -11,9 +11,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
-/**
- * Holds data used to represent identity provider for display in the "account chooser" dialog.
- */
+/** Holds data used to represent identity provider for display in the "account chooser" dialog. */
 public class IdentityProviderMetadata {
     private final Integer mBrandTextColor;
     private final Integer mBrandBackgroundColor;
@@ -31,9 +29,10 @@ public class IdentityProviderMetadata {
         // Parameters are longs because ColorUtils.INVALID_COLOR does not fit in an int.
         mBrandTextColor =
                 (brandTextColor == ColorUtils.INVALID_COLOR) ? null : (int) brandTextColor;
-        mBrandBackgroundColor = (brandBackgroundColor == ColorUtils.INVALID_COLOR)
-                ? null
-                : (int) brandBackgroundColor;
+        mBrandBackgroundColor =
+                (brandBackgroundColor == ColorUtils.INVALID_COLOR)
+                        ? null
+                        : (int) brandBackgroundColor;
         mBrandIconUrl = brandIconUrl;
         mConfigUrl = configUrl;
         mLoginUrl = loginUrl;

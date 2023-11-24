@@ -38,44 +38,47 @@ class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
         super(context, attrs);
     }
 
-    /**
-     * Stores references to the dialog fields after dialog inflation.
-     */
+    /** Stores references to the dialog fields after dialog inflation. */
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         mUsernameView = findViewById(R.id.username_view);
         mUsernameInputLayout = findViewById(R.id.username_input_layout);
         mUsernameInputLayout.setEndIconOnClickListener(view -> mUsernameView.showDropDown());
-        mUsernameView.addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (mUsernameChangedCallback == null) return;
-                mUsernameChangedCallback.onResult(charSequence.toString());
-            }
+        mUsernameView.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        if (mUsernameChangedCallback == null) return;
+                        mUsernameChangedCallback.onResult(charSequence.toString());
+                    }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-                setDropDownVisibility(editable.toString());
-            }
-        });
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        setDropDownVisibility(editable.toString());
+                    }
+                });
 
         mPasswordField = findViewById(R.id.password);
-        mPasswordField.setInputType(InputType.TYPE_CLASS_TEXT
-                | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        mPasswordField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+        mPasswordField.setInputType(
+                InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_VARIATION_PASSWORD
+                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        mPasswordField.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence charSequence, int i, int i1, int i2) {}
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (mPasswordChangedCallback == null) return;
-                mPasswordChangedCallback.onResult(charSequence.toString());
-            }
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        if (mPasswordChangedCallback == null) return;
+                        mPasswordChangedCallback.onResult(charSequence.toString());
+                    }
 
-            @Override
-            public void afterTextChanged(Editable editable) {}
-        });
+                    @Override
+                    public void afterTextChanged(Editable editable) {}
+                });
         mPasswordInputLayout = findViewById(R.id.password_text_input_layout);
     }
 
@@ -98,8 +101,9 @@ class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     /** Sets usernames list in the AutoCompleteTextView */
     public void setUsernames(List<String> usernames) {
         mUsernames = usernames;
-        ArrayAdapter<String> usernamesAdapter = new NoFilterArrayAdapter<>(
-                getContext(), R.layout.password_edit_dialog_dropdown_item, usernames);
+        ArrayAdapter<String> usernamesAdapter =
+                new NoFilterArrayAdapter<>(
+                        getContext(), R.layout.password_edit_dialog_dropdown_item, usernames);
         mUsernameView.setAdapter(usernamesAdapter);
         setDropDownVisibility(mUsernameView.getText().toString());
     }

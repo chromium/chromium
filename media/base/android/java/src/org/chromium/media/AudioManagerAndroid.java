@@ -389,7 +389,7 @@ class AudioManagerAndroid {
                                         .get()
                                         .invoke(mAudioManager, AudioManager.STREAM_MUSIC);
             } catch (Exception e) {
-                ;
+                // Ignore.
             }
         }
 

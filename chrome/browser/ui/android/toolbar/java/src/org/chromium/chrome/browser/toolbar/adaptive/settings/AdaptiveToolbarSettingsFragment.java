@@ -24,9 +24,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Fragment that allows the user to configure toolbar shorcut preferences.
- */
+/** Fragment that allows the user to configure toolbar shorcut preferences. */
 public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
     /** The key for the switch taggle on the setting page. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -47,13 +45,15 @@ public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
         mToolbarShortcutSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_TOOLBAR_SHORTCUT_SWITCH);
         mToolbarShortcutSwitch.setChecked(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
-        mToolbarShortcutSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            onSettingsToggleStateChanged((boolean) newValue);
-            return true;
-        });
+        mToolbarShortcutSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    onSettingsToggleStateChanged((boolean) newValue);
+                    return true;
+                });
 
-        mRadioButtonGroup = (RadioButtonGroupAdaptiveToolbarPreference) findPreference(
-                PREF_ADAPTIVE_RADIO_GROUP);
+        mRadioButtonGroup =
+                (RadioButtonGroupAdaptiveToolbarPreference)
+                        findPreference(PREF_ADAPTIVE_RADIO_GROUP);
         mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
         mRadioButtonGroup.setCanUseTranslate(
                 AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled());
@@ -61,12 +61,14 @@ public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
                 AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled());
         mRadioButtonGroup.setCanUseReadAloud(
                 AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled());
-        mRadioButtonGroup.setStatePredictor(new AdaptiveToolbarStatePredictor(
-                new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
-        mRadioButtonGroup.setOnPreferenceChangeListener((preference, newValue) -> {
-            AdaptiveToolbarPrefs.saveToolbarButtonManualOverride((int) newValue);
-            return true;
-        });
+        mRadioButtonGroup.setStatePredictor(
+                new AdaptiveToolbarStatePredictor(
+                        new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
+        mRadioButtonGroup.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    AdaptiveToolbarPrefs.saveToolbarButtonManualOverride((int) newValue);
+                    return true;
+                });
         mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
         AdaptiveToolbarStats.recordToolbarShortcutToggleState(/* onStartup= */ true);
     }

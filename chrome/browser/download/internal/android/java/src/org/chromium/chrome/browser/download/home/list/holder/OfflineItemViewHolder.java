@@ -32,9 +32,7 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Helper that supports all typical actions for OfflineItems.
- */
+/** Helper that supports all typical actions for OfflineItems. */
 class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButtonDelegate {
     /** The {@link View} that visually represents the selected state of this list item. */
     protected final SelectionView mSelectionView;
@@ -53,9 +51,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
     private boolean mCanRename;
     private boolean mCanShare;
 
-    /**
-     * Creates a new instance of a {@link OfflineItemViewHolder}.
-     */
+    /** Creates a new instance of a {@link OfflineItemViewHolder}. */
     public OfflineItemViewHolder(View view) {
         super(view);
         mSelectionView = itemView.findViewById(R.id.selection);
@@ -81,7 +77,8 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
 
         // Push 'selection' state.
         if (shouldPushSelection(properties, item)) {
-            mSelectionView.setSelectionState(item.selected,
+            mSelectionView.setSelectionState(
+                    item.selected,
                     properties.get(ListProperties.SELECTION_MODE_ACTIVE),
                     item.showSelectedAnimation);
         }
@@ -95,29 +92,38 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
                 mThumbnail.setVisibility(View.VISIBLE);
                 mThumbnail.setImageResizer(
                         new BitmapResizer(mThumbnail, Filters.fromOfflineItem(offlineItem)));
-                mThumbnail.setAsyncImageDrawable((consumer, width, height) -> {
-                    return properties.get(ListProperties.PROVIDER_VISUALS)
-                            .getVisuals(offlineItem, width, height, (id, visuals) -> {
-                                consumer.onResult(onThumbnailRetrieved(visuals));
-                            });
-                }, offlineItem.id);
+                mThumbnail.setAsyncImageDrawable(
+                        (consumer, width, height) -> {
+                            return properties
+                                    .get(ListProperties.PROVIDER_VISUALS)
+                                    .getVisuals(
+                                            offlineItem,
+                                            width,
+                                            height,
+                                            (id, visuals) -> {
+                                                consumer.onResult(onThumbnailRetrieved(visuals));
+                                            });
+                        },
+                        offlineItem.id);
             }
         }
     }
 
     private void bindOnClick(PropertyModel properties, ListItem item, OfflineItem offlineItem) {
-        itemView.setOnClickListener(v -> {
-            if (mSelectionView != null && mSelectionView.isInSelectionMode()) {
-                properties.get(ListProperties.CALLBACK_SELECTION).onResult(item);
-            } else {
-                properties.get(ListProperties.CALLBACK_OPEN).onResult(offlineItem);
-            }
-        });
+        itemView.setOnClickListener(
+                v -> {
+                    if (mSelectionView != null && mSelectionView.isInSelectionMode()) {
+                        properties.get(ListProperties.CALLBACK_SELECTION).onResult(item);
+                    } else {
+                        properties.get(ListProperties.CALLBACK_OPEN).onResult(offlineItem);
+                    }
+                });
 
-        itemView.setOnLongClickListener(v -> {
-            properties.get(ListProperties.CALLBACK_SELECTION).onResult(item);
-            return true;
-        });
+        itemView.setOnLongClickListener(
+                v -> {
+                    properties.get(ListProperties.CALLBACK_SELECTION).onResult(item);
+                    return true;
+                });
     }
 
     private void bindMenuButtonCallbacks(PropertyModel properties, OfflineItem offlineItem) {
@@ -154,16 +160,17 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
         if (mCanRename) listItems.add(buildMenuListItem(R.string.rename, 0, 0));
 
         listItems.add(buildMenuListItem(R.string.delete, 0, 0));
-        ListMenu.Delegate delegate = (model) -> {
-            int textId = model.get(ListMenuItemProperties.TITLE_ID);
-            if (textId == R.string.share) {
-                if (mShareCallback != null) mShareCallback.run();
-            } else if (textId == R.string.delete) {
-                if (mDeleteCallback != null) mDeleteCallback.run();
-            } else if (textId == R.string.rename) {
-                if (mRenameCallback != null) mRenameCallback.run();
-            }
-        };
+        ListMenu.Delegate delegate =
+                (model) -> {
+                    int textId = model.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId == R.string.share) {
+                        if (mShareCallback != null) mShareCallback.run();
+                    } else if (textId == R.string.delete) {
+                        if (mDeleteCallback != null) mDeleteCallback.run();
+                    } else if (textId == R.string.rename) {
+                        if (mRenameCallback != null) mRenameCallback.run();
+                    }
+                };
         return BrowserUiListMenuUtils.getBasicListMenu(mMore.getContext(), listItems, delegate);
     }
 
@@ -186,7 +193,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
 
         return mSelectionView.isSelected() != item.selected
                 || mSelectionView.isInSelectionMode()
-                != properties.get(ListProperties.SELECTION_MODE_ACTIVE);
+                        != properties.get(ListProperties.SELECTION_MODE_ACTIVE);
     }
 
     /**

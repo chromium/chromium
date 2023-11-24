@@ -16,6 +16,7 @@ public class DeviceLockProperties {
             new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey DEVICE_SUPPORTS_PIN_CREATION_INTENT =
             new WritableBooleanPropertyKey();
+
     /**
      * UI enabled is true when first showing the dialog, but also if the user backtracks to the
      * dialog (ex: clicking create profile lock and then clicking the back button).

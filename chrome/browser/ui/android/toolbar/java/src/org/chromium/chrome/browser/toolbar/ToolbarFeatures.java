@@ -22,8 +22,7 @@ public final class ToolbarFeatures {
 
     private static final MutableFlagWithSafeDefault sSuppressionFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, false);
-    @VisibleForTesting
-    public static final String BLOCK_FOR_FULLSCREEN = "block_for_fullscreen";
+    @VisibleForTesting public static final String BLOCK_FOR_FULLSCREEN = "block_for_fullscreen";
 
     private static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             new MutableFlagWithSafeDefault(ChromeFeatureList.RECORD_SUPPRESSION_METRICS, true);

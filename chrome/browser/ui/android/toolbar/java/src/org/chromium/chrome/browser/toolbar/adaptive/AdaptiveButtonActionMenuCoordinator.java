@@ -25,9 +25,7 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
 
-/**
- * Coordinator for the Adaptive Button action menu, responsible for creating a popup menu.
- */
+/** Coordinator for the Adaptive Button action menu, responsible for creating a popup menu. */
 public class AdaptiveButtonActionMenuCoordinator {
     // For test.
     private BasicListMenu mListMenu;
@@ -42,7 +40,10 @@ public class AdaptiveButtonActionMenuCoordinator {
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return null;
 
         return view -> {
-            displayMenu(view.getContext(), (ListMenuButton) view, buildMenuItems(),
+            displayMenu(
+                    view.getContext(),
+                    (ListMenuButton) view,
+                    buildMenuItems(),
                     id -> onItemClicked.onResult(id));
             return true;
         };
@@ -57,7 +58,10 @@ public class AdaptiveButtonActionMenuCoordinator {
      * @param onItemClicked  The clicked listener handling clicks on TabSwitcherActionMenu.
      */
     @VisibleForTesting
-    public void displayMenu(final Context context, ListMenuButton anchorView, ModelList listItems,
+    public void displayMenu(
+            final Context context,
+            ListMenuButton anchorView,
+            ModelList listItems,
             Callback<Integer> onItemClicked) {
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
         mListMenu =
@@ -68,22 +72,27 @@ public class AdaptiveButtonActionMenuCoordinator {
                             onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
                         });
 
-        int verticalPadding = context.getResources().getDimensionPixelOffset(
-                R.dimen.adaptive_button_menu_vertical_padding);
+        int verticalPadding =
+                context.getResources()
+                        .getDimensionPixelOffset(R.dimen.adaptive_button_menu_vertical_padding);
         ListView listView = mListMenu.getListView();
-        listView.setPaddingRelative(listView.getPaddingStart(), verticalPadding,
-                listView.getPaddingEnd(), verticalPadding);
-        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
-            @Override
-            public ListMenu getListMenu() {
-                return mListMenu;
-            }
+        listView.setPaddingRelative(
+                listView.getPaddingStart(),
+                verticalPadding,
+                listView.getPaddingEnd(),
+                verticalPadding);
+        ListMenuButtonDelegate delegate =
+                new ListMenuButtonDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        return mListMenu;
+                    }
 
-            @Override
-            public RectProvider getRectProvider(View listMenuButton) {
-                return rectProvider;
-            }
-        };
+                    @Override
+                    public RectProvider getRectProvider(View listMenuButton) {
+                        return rectProvider;
+                    }
+                };
 
         anchorView.setDelegate(delegate, /* overrideOnClickListener= */ false);
         anchorView.showMenu();

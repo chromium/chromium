@@ -34,8 +34,9 @@ public class PrivacySandboxDialogUtils {
      */
     public static Drawable createExpandDrawable(Context context) {
         StateListDrawableBuilder builder = new StateListDrawableBuilder(context);
-        StateListDrawableBuilder.State checked = builder.addState(
-                R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
+        StateListDrawableBuilder.State checked =
+                builder.addState(
+                        R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
         StateListDrawableBuilder.State unchecked =
                 builder.addState(R.drawable.ic_expand_more_black_24dp);
         builder.addTransition(
@@ -44,7 +45,8 @@ public class PrivacySandboxDialogUtils {
                 unchecked, checked, R.drawable.transition_expand_more_expand_less_black_24dp);
 
         Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
-        DrawableCompat.setTintList(tintableDrawable,
+        DrawableCompat.setTintList(
+                tintableDrawable,
                 AppCompatResources.getColorStateList(
                         context, R.color.default_icon_color_tint_list));
         return tintableDrawable;
@@ -59,17 +61,26 @@ public class PrivacySandboxDialogUtils {
      * @param isDropdownExpanded boolean indicating if the dropdown status is expanded/collapses
      * @param stringRes Dropdown text resource.
      */
-    public static void updateDropdownControlContentDescription(Context context,
-            View dropdownElement, boolean isDropdownExpanded, @StringRes int stringRes) {
+    public static void updateDropdownControlContentDescription(
+            Context context,
+            View dropdownElement,
+            boolean isDropdownExpanded,
+            @StringRes int stringRes) {
         String dropdownButtonText = context.getResources().getString(stringRes);
 
-        String collapseOrExpandedText = context.getResources().getString(isDropdownExpanded
-                        ? R.string.accessibility_expanded_group
-                        : R.string.accessibility_collapsed_group);
+        String collapseOrExpandedText =
+                context.getResources()
+                        .getString(
+                                isDropdownExpanded
+                                        ? R.string.accessibility_expanded_group
+                                        : R.string.accessibility_collapsed_group);
 
         String description =
-                context.getResources().getString(R.string.concat_two_strings_with_periods,
-                        dropdownButtonText, collapseOrExpandedText);
+                context.getResources()
+                        .getString(
+                                R.string.concat_two_strings_with_periods,
+                                dropdownButtonText,
+                                collapseOrExpandedText);
         dropdownElement.setContentDescription(description);
     }
 
@@ -98,13 +109,20 @@ public class PrivacySandboxDialogUtils {
      * @param bulletViewId The bullet viewId.
      * @param stringRes The string resource from where the text is retrieved.
      */
-    public static void setBulletTextWithBoldContent(Context context, ViewGroup targetLayout,
-            @IdRes int bulletViewId, @StringRes int stringRes) {
+    public static void setBulletTextWithBoldContent(
+            Context context,
+            ViewGroup targetLayout,
+            @IdRes int bulletViewId,
+            @StringRes int stringRes) {
         TextView view = targetLayout.findViewById(bulletViewId);
         SpannableString spannableString =
-                SpanApplier.applySpans(context.getResources().getString(stringRes),
-                        new SpanApplier.SpanInfo("<b>", "</b>",
-                                new TextAppearanceSpan(context,
+                SpanApplier.applySpans(
+                        context.getResources().getString(stringRes),
+                        new SpanApplier.SpanInfo(
+                                "<b>",
+                                "</b>",
+                                new TextAppearanceSpan(
+                                        context,
                                         R.style.TextAppearance_TextMediumThick_Secondary)));
         spannableString.setSpan(new ChromeBulletSpan(context), 0, spannableString.length(), 0);
         view.setText(spannableString);

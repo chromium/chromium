@@ -10,17 +10,13 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Java representation of a scene layer.
- */
+/** Java representation of a scene layer. */
 @JNINamespace("android")
 public class SceneLayer {
     public static final int INVALID_RESOURCE_ID = -1;
     private long mNativePtr;
 
-    /**
-     * Builds an instance of a {@link SceneLayer}.
-     */
+    /** Builds an instance of a {@link SceneLayer}. */
     public SceneLayer() {
         initializeNative();
     }
@@ -42,9 +38,7 @@ public class SceneLayer {
         SceneLayerJni.get().removeFromParent(mNativePtr, SceneLayer.this);
     }
 
-    /**
-     * Destroys this object and the corresponding native component.
-     */
+    /** Destroys this object and the corresponding native component. */
     public void destroy() {
         assert mNativePtr != 0;
         SceneLayerJni.get().destroy(mNativePtr, SceneLayer.this);
@@ -67,7 +61,9 @@ public class SceneLayer {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long init(SceneLayer caller);
+
         void removeFromParent(long nativeSceneLayer, SceneLayer caller);
+
         void destroy(long nativeSceneLayer, SceneLayer caller);
     }
 }

@@ -24,12 +24,15 @@ class NoPasskeysBottomSheetBridge implements NoPasskeysBottomSheetCoordinator.Na
 
     @CalledByNative
     NoPasskeysBottomSheetBridge(long nativeNoPasskeysBottomSheetBridge, WindowAndroid window) {
-        this(nativeNoPasskeysBottomSheetBridge, window.getContext(),
+        this(
+                nativeNoPasskeysBottomSheetBridge,
+                window.getContext(),
                 new WeakReference<>(BottomSheetControllerProvider.from(window)));
     }
 
     @VisibleForTesting
-    NoPasskeysBottomSheetBridge(long nativeNoPasskeysBottomSheetBridge,
+    NoPasskeysBottomSheetBridge(
+            long nativeNoPasskeysBottomSheetBridge,
             WeakReference<Context> context,
             WeakReference<BottomSheetController> bottomSheetController) {
         mNativeBridge = nativeNoPasskeysBottomSheetBridge;

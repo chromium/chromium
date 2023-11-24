@@ -15,9 +15,7 @@ import org.chromium.net.SecureDnsMode;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Reads and writes preferences related to Secure DNS.
- */
+/** Reads and writes preferences related to Secure DNS. */
 class SecureDnsBridge {
     /**
      * An Entry represents the subset of a net::DohProviderEntry that is relevant
@@ -141,14 +139,22 @@ class SecureDnsBridge {
     interface Natives {
         @SecureDnsMode
         int getMode();
+
         void setMode(@SecureDnsMode int mode);
+
         boolean isModeManaged();
+
         String[][] getProviders();
+
         String getConfig();
+
         boolean setConfig(String config);
+
         @SecureDnsManagementMode
         int getManagementMode();
+
         void updateValidationHistogram(boolean valid);
+
         boolean probeConfig(String dohConfig);
     }
 }

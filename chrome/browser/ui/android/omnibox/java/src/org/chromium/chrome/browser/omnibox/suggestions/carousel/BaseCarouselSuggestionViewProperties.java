@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;

@@ -11,9 +11,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Mediator class for the no passkeys bottom sheet.
- */
+/** Mediator class for the no passkeys bottom sheet. */
 class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Delegate {
     private final WeakReference<BottomSheetController> mBottomSheetController;
 

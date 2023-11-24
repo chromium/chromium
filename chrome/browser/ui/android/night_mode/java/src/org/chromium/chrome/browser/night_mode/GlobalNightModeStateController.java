@@ -19,12 +19,11 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * Maintains and provides the night mode state for the entire application.
- */
-class GlobalNightModeStateController implements NightModeStateProvider,
-                                                SystemNightModeMonitor.Observer,
-                                                ApplicationStatus.ApplicationStateListener {
+/** Maintains and provides the night mode state for the entire application. */
+class GlobalNightModeStateController
+        implements NightModeStateProvider,
+                SystemNightModeMonitor.Observer,
+                ApplicationStatus.ApplicationStateListener {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final SystemNightModeMonitor mSystemNightModeMonitor;
     private final SharedPreferencesManager mSharedPreferencesManager;
@@ -37,6 +36,7 @@ class GlobalNightModeStateController implements NightModeStateProvider,
      * initialized yet.
      */
     private Boolean mNightModeOn;
+
     private SharedPreferences.OnSharedPreferenceChangeListener mPreferenceListener;
 
     /** Whether this class has started listening to relevant states for night mode. */
@@ -52,16 +52,18 @@ class GlobalNightModeStateController implements NightModeStateProvider,
      * @param sharedPreferencesManager The {@link ChromeSharedPreferences} that maintains shared
      *                                preferences.
      */
-    GlobalNightModeStateController(@NonNull SystemNightModeMonitor systemNightModeMonitor,
+    GlobalNightModeStateController(
+            @NonNull SystemNightModeMonitor systemNightModeMonitor,
             @NonNull PowerSavingModeMonitor powerSaveModeMonitor,
             @NonNull SharedPreferencesManager sharedPreferencesManager) {
         mSystemNightModeMonitor = systemNightModeMonitor;
         mSharedPreferencesManager = sharedPreferencesManager;
         mPowerSaveModeMonitor = powerSaveModeMonitor;
 
-        mPreferenceListener = (prefs, key) -> {
-            if (TextUtils.equals(key, UI_THEME_SETTING)) updateNightMode();
-        };
+        mPreferenceListener =
+                (prefs, key) -> {
+                    if (TextUtils.equals(key, UI_THEME_SETTING)) updateNightMode();
+                };
 
         updateNightMode();
 
@@ -117,8 +119,8 @@ class GlobalNightModeStateController implements NightModeStateProvider,
 
         mSystemNightModeMonitor.addObserver(this);
         mPowerSaveModeMonitor.addObserver(mPowerSaveModeObserver);
-        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(
-                mPreferenceListener);
+        ContextUtils.getAppSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(mPreferenceListener);
         updateNightMode();
     }
 
@@ -132,16 +134,18 @@ class GlobalNightModeStateController implements NightModeStateProvider,
 
         mSystemNightModeMonitor.removeObserver(this);
         mPowerSaveModeMonitor.removeObserver(mPowerSaveModeObserver);
-        ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(
-                mPreferenceListener);
+        ContextUtils.getAppSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
     }
 
     private void updateNightMode() {
         boolean powerSaveModeOn = mPowerSaveModeMonitor.powerSavingIsOn();
         final int theme = NightModeUtils.getThemeSetting();
-        final boolean newNightModeOn = theme == ThemeType.SYSTEM_DEFAULT
-                        && (powerSaveModeOn || mSystemNightModeMonitor.isSystemNightModeOn())
-                || theme == ThemeType.DARK;
+        final boolean newNightModeOn =
+                theme == ThemeType.SYSTEM_DEFAULT
+                                && (powerSaveModeOn
+                                        || mSystemNightModeMonitor.isSystemNightModeOn())
+                        || theme == ThemeType.DARK;
         if (mNightModeOn != null && newNightModeOn == mNightModeOn) return;
 
         mNightModeOn = newNightModeOn;

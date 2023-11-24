@@ -56,9 +56,7 @@ import org.chromium.components.commerce.core.SubscriptionType;
 
 import java.util.Locale;
 
-/**
- * Manage price drop notifications.
- */
+/** Manage price drop notifications. */
 public class PriceDropNotificationManagerImpl implements PriceDropNotificationManager {
     private static final String TAG = "PriceDropNotif";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
@@ -87,9 +85,11 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     @VisibleForTesting
     public static final String NOTIFICATION_ENABLED_HISTOGRAM =
             "Commerce.PriceDrop.SystemNotificationEnabled";
+
     @VisibleForTesting
     public static final String NOTIFICATION_CHROME_MANAGED_COUNT_HISTOGRAM =
             "Commerce.PriceDrops.ChromeManaged.NotificationCount";
+
     @VisibleForTesting
     public static final String NOTIFICATION_USER_MANAGED_COUNT_HISTOGRAM =
             "Commerce.PriceDrops.UserManaged.NotificationCount";
@@ -97,9 +97,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     private static NotificationManagerProxy sNotificationManagerForTesting;
     private static BookmarkModel sBookmarkModelForTesting;
 
-    /**
-     * Used to host click logic for "turn off alert" action intent.
-     */
+    /** Used to host click logic for "turn off alert" action intent. */
     public static class TrampolineActivity extends Activity {
         @Override
         protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,22 +118,27 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             }
 
             // Handles "turn off alert" action button click.
-            ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(() -> {
-                PriceDropNotificationManager priceDropNotificationManager =
-                        PriceDropNotificationManagerFactory.create();
-                assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
-                    : "Currently only turn off alert action uses this activity.";
-                priceDropNotificationManager.onNotificationActionClicked(
-                        actionId, destinationUrl, offerId, clusterId, /*recordMetrics=*/false);
-                // Finish immediately. Could be better to have a callback from shopping backend.
-                finish();
-            });
+            ChromeBrowserInitializer.getInstance()
+                    .runNowOrAfterFullBrowserStarted(
+                            () -> {
+                                PriceDropNotificationManager priceDropNotificationManager =
+                                        PriceDropNotificationManagerFactory.create();
+                                assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
+                                        : "Currently, only turn off alert action uses this.";
+                                priceDropNotificationManager.onNotificationActionClicked(
+                                        actionId,
+                                        destinationUrl,
+                                        offerId,
+                                        clusterId,
+                                        /* recordMetrics= */ false);
+                                // Finish immediately. Could be better to have a callback from
+                                // shopping backend.
+                                finish();
+                            });
         }
     }
 
-    /**
-     * Used to dismiss the notification after content click or "visit site" action click.
-     */
+    /** Used to dismiss the notification after content click or "visit site" action click. */
     public static class DismissNotificationChromeActivity extends ChromeLauncherActivity {
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -210,15 +213,18 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public void onNotificationPosted(@Nullable Notification notification) {
-        NotificationUmaTracker.getInstance().onNotificationShown(
-                NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS, notification);
+        NotificationUmaTracker.getInstance()
+                .onNotificationShown(
+                        NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
+                        notification);
     }
 
     @Override
     public void onNotificationClicked(String url) {
-        NotificationUmaTracker.getInstance().onNotificationContentClick(
-                NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
-                NotificationIntentInterceptor.INVALID_CREATE_TIME);
+        NotificationUmaTracker.getInstance()
+                .onNotificationContentClick(
+                        NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
+                        NotificationIntentInterceptor.INVALID_CREATE_TIME);
     }
 
     @Override
@@ -228,21 +234,27 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     }
 
     @Override
-    public void onNotificationActionClicked(String actionId, String url, @Nullable String offerId,
-            @Nullable String clusterId, boolean recordMetrics) {
+    public void onNotificationActionClicked(
+            String actionId,
+            String url,
+            @Nullable String offerId,
+            @Nullable String clusterId,
+            boolean recordMetrics) {
         if (actionId.equals(ACTION_ID_VISIT_SITE) && recordMetrics) {
-            NotificationUmaTracker.getInstance().onNotificationActionClick(
-                    NotificationUmaTracker.ActionType.PRICE_DROP_VISIT_SITE,
-                    NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
-                    NotificationIntentInterceptor.INVALID_CREATE_TIME);
+            NotificationUmaTracker.getInstance()
+                    .onNotificationActionClick(
+                            NotificationUmaTracker.ActionType.PRICE_DROP_VISIT_SITE,
+                            NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
+                            NotificationIntentInterceptor.INVALID_CREATE_TIME);
         } else if (actionId.equals(ACTION_ID_TURN_OFF_ALERT)) {
             if (offerId == null && clusterId == null) return;
             ShoppingService shoppingService =
                     ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
-            Callback<Boolean> callback = (status) -> {
-                assert status : "Failed to remove subscriptions.";
-                Log.e(TAG, "Failed to remove subscriptions.");
-            };
+            Callback<Boolean> callback =
+                    (status) -> {
+                        assert status : "Failed to remove subscriptions.";
+                        Log.e(TAG, "Failed to remove subscriptions.");
+                    };
             final BookmarkModel bookmarkModel;
             if (sBookmarkModelForTesting != null) {
                 bookmarkModel = sBookmarkModelForTesting;
@@ -250,44 +262,53 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
                 bookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
             }
 
-            Runnable unsubscribeRunnable = () -> {
-                if (offerId != null) {
-                    shoppingService.unsubscribe(
-                            new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                                    IdentifierType.OFFER_ID, offerId, ManagementType.CHROME_MANAGED,
-                                    null),
-                            callback);
-                }
-                if (clusterId != null) {
-                    shoppingService.unsubscribe(
-                            new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                                    IdentifierType.PRODUCT_CLUSTER_ID, clusterId,
-                                    ManagementType.USER_MANAGED, null),
-                            callback);
-                }
-            };
+            Runnable unsubscribeRunnable =
+                    () -> {
+                        if (offerId != null) {
+                            shoppingService.unsubscribe(
+                                    new CommerceSubscription(
+                                            SubscriptionType.PRICE_TRACK,
+                                            IdentifierType.OFFER_ID,
+                                            offerId,
+                                            ManagementType.CHROME_MANAGED,
+                                            null),
+                                    callback);
+                        }
+                        if (clusterId != null) {
+                            shoppingService.unsubscribe(
+                                    new CommerceSubscription(
+                                            SubscriptionType.PRICE_TRACK,
+                                            IdentifierType.PRODUCT_CLUSTER_ID,
+                                            clusterId,
+                                            ManagementType.USER_MANAGED,
+                                            null),
+                                    callback);
+                        }
+                    };
 
             // Only attempt to unsubscribe once the corresponding bookmarks can also be updated.
             if (bookmarkModel.isBookmarkModelLoaded()) {
                 unsubscribeRunnable.run();
             } else {
-                bookmarkModel.addObserver(new BookmarkModelObserver() {
-                    @Override
-                    public void bookmarkModelLoaded() {
-                        unsubscribeRunnable.run();
-                        bookmarkModel.removeObserver(this);
-                    }
+                bookmarkModel.addObserver(
+                        new BookmarkModelObserver() {
+                            @Override
+                            public void bookmarkModelLoaded() {
+                                unsubscribeRunnable.run();
+                                bookmarkModel.removeObserver(this);
+                            }
 
-                    @Override
-                    public void bookmarkModelChanged() {}
-                });
+                            @Override
+                            public void bookmarkModelChanged() {}
+                        });
             }
 
             if (recordMetrics) {
-                NotificationUmaTracker.getInstance().onNotificationActionClick(
-                        NotificationUmaTracker.ActionType.PRICE_DROP_TURN_OFF_ALERT,
-                        NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
-                        NotificationIntentInterceptor.INVALID_CREATE_TIME);
+                NotificationUmaTracker.getInstance()
+                        .onNotificationActionClick(
+                                NotificationUmaTracker.ActionType.PRICE_DROP_TURN_OFF_ALERT,
+                                NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
+                                NotificationIntentInterceptor.INVALID_CREATE_TIME);
             }
         }
     }
@@ -358,8 +379,10 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     public void createNotificationChannel() {
         NotificationChannel channel = getNotificationChannel();
         if (channel != null) return;
-        new ChannelsInitializer(mNotificationManager, ChromeChannelDefinitions.getInstance(),
-                mContext.getResources())
+        new ChannelsInitializer(
+                        mNotificationManager,
+                        ChromeChannelDefinitions.getInstance(),
+                        mContext.getResources())
                 .ensureInitialized(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
     }
 
@@ -383,7 +406,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             if (areAppNotificationsEnabled()) {
                 intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
                 intent.putExtra(Settings.EXTRA_APP_PACKAGE, mContext.getPackageName());
-                intent.putExtra(Settings.EXTRA_CHANNEL_ID,
+                intent.putExtra(
+                        Settings.EXTRA_CHANNEL_ID,
                         ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
             } else {
                 intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
@@ -427,9 +451,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         ResettersForTesting.register(() -> sBookmarkModelForTesting = null);
     }
 
-    /**
-     * Delete price drop notification channel for testing.
-     */
+    /** Delete price drop notification channel for testing. */
     @Override
     @RequiresApi(Build.VERSION_CODES.O)
     public void deleteChannelForTesting() {
@@ -439,22 +461,27 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public void recordMetricsForNotificationCounts() {
-        RecordHistogram.recordCount100Histogram(NOTIFICATION_CHROME_MANAGED_COUNT_HISTOGRAM,
+        RecordHistogram.recordCount100Histogram(
+                NOTIFICATION_CHROME_MANAGED_COUNT_HISTOGRAM,
                 updateNotificationTimestamps(
                         SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED, false));
-        RecordHistogram.recordCount100Histogram(NOTIFICATION_USER_MANAGED_COUNT_HISTOGRAM,
+        RecordHistogram.recordCount100Histogram(
+                NOTIFICATION_USER_MANAGED_COUNT_HISTOGRAM,
                 updateNotificationTimestamps(
                         SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED, false));
     }
 
     @Override
     public boolean hasReachedMaxAllowedNotificationNumber(@SystemNotificationType int type) {
-        boolean hasReached = updateNotificationTimestamps(type, false)
-                >= PriceTrackingNotificationConfig.getMaxAllowedNotificationNumber(type);
+        boolean hasReached =
+                updateNotificationTimestamps(type, false)
+                        >= PriceTrackingNotificationConfig.getMaxAllowedNotificationNumber(type);
         String managementType = notificationTypeToManagementType(type);
         if (managementType != null) {
             RecordHistogram.recordBooleanHistogram(
-                    String.format(Locale.US, "Commerce.PriceDrops.%s.NotificationReachedCap",
+                    String.format(
+                            Locale.US,
+                            "Commerce.PriceDrops.%s.NotificationReachedCap",
                             managementType),
                     hasReached);
         }
@@ -471,15 +498,19 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             JSONArray oldTimestamps = new JSONArray(oldSerializedTimestamps);
             for (int i = 0; i < oldTimestamps.length(); i++) {
                 long timestamp = oldTimestamps.getLong(i);
-                if (currentTime - timestamp > PriceTrackingNotificationConfig
-                                                      .getNotificationTimestampsStoreWindowMs()) {
+                if (currentTime - timestamp
+                        > PriceTrackingNotificationConfig
+                                .getNotificationTimestampsStoreWindowMs()) {
                     continue;
                 }
                 newTimestamps.put(timestamp);
             }
         } catch (JSONException e) {
-            Log.e(TAG,
-                    String.format(Locale.US, "Failed to parse notification timestamps. Details: %s",
+            Log.e(
+                    TAG,
+                    String.format(
+                            Locale.US,
+                            "Failed to parse notification timestamps. Details: %s",
                             e.getMessage()));
             // If one parse fails, we discard all data and reset the stored timestamps.
             newTimestamps = new JSONArray();

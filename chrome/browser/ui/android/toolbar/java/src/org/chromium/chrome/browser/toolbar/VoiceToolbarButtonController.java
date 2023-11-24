@@ -36,18 +36,14 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
 
     private final VoiceSearchDelegate mVoiceSearchDelegate;
 
-    /**
-     * Delegate interface for interacting with voice search.
-     */
+    /** Delegate interface for interacting with voice search. */
     public interface VoiceSearchDelegate {
         /**
          * @return True if voice search is enabled for the current session.
          */
         boolean isVoiceSearchEnabled();
 
-        /**
-         * Starts a voice search interaction.
-         */
+        /** Starts a voice search interaction. */
         void startVoiceRecognition();
     }
 
@@ -61,13 +57,21 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
      * @param modalDialogManager Dispatcher for modal lifecycle events
      * @param voiceSearchDelegate Provides interaction with voice search.
      */
-    public VoiceToolbarButtonController(Context context, Drawable buttonDrawable,
-            Supplier<Tab> activeTabSupplier, Supplier<Tracker> trackerSupplier,
-            ModalDialogManager modalDialogManager, VoiceSearchDelegate voiceSearchDelegate) {
-        super(activeTabSupplier, modalDialogManager, buttonDrawable,
+    public VoiceToolbarButtonController(
+            Context context,
+            Drawable buttonDrawable,
+            Supplier<Tab> activeTabSupplier,
+            Supplier<Tracker> trackerSupplier,
+            ModalDialogManager modalDialogManager,
+            VoiceSearchDelegate voiceSearchDelegate) {
+        super(
+                activeTabSupplier,
+                modalDialogManager,
+                buttonDrawable,
                 context.getString(R.string.accessibility_toolbar_btn_mic),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true, /* iphCommandBuilder= */ null,
+                /* supportsTinting= */ true,
+                /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.VOICE,
                 /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_voice_search,
                 /* showHoverHighlight= */ true);
@@ -81,8 +85,9 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
         mVoiceSearchDelegate.startVoiceRecognition();
 
         if (mTrackerSupplier.hasValue()) {
-            mTrackerSupplier.get().notifyEvent(
-                    EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);
+            mTrackerSupplier
+                    .get()
+                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);
         }
     }
 
@@ -101,11 +106,15 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
     protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
-                FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
-                /* stringId = */ R.string.adaptive_toolbar_button_voice_search_iph,
-                /* accessibilityStringId = */ R.string.adaptive_toolbar_button_voice_search_iph)
-                                                      .setHighlightParams(params);
+        IPHCommandBuilder iphCommandBuilder =
+                new IPHCommandBuilder(
+                                tab.getContext().getResources(),
+                                FeatureConstants
+                                        .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
+                                /* stringId= */ R.string.adaptive_toolbar_button_voice_search_iph,
+                                /* accessibilityStringId= */ R.string
+                                        .adaptive_toolbar_button_voice_search_iph)
+                        .setHighlightParams(params);
 
         return iphCommandBuilder;
     }

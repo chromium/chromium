@@ -36,8 +36,13 @@ public class DefaultBrowserPromoDeps {
     static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
 
     // TODO(crbug.com/1090103): move to some util class for reuse.
-    static final String[] CHROME_PACKAGE_NAMES = {CHROME_STABLE_PACKAGE_NAME, "org.chromium.chrome",
-            "com.chrome.canary", "com.chrome.beta", "com.chrome.dev"};
+    static final String[] CHROME_PACKAGE_NAMES = {
+        CHROME_STABLE_PACKAGE_NAME,
+        "org.chromium.chrome",
+        "com.chrome.canary",
+        "com.chrome.beta",
+        "com.chrome.dev"
+    };
     private static DefaultBrowserPromoDeps sInstance;
 
     private DefaultBrowserPromoDeps() {}
@@ -52,13 +57,13 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getPromoCount() {
-        return ChromeSharedPreferences.getInstance().readInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT, 0);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT, 0);
     }
 
     void incrementPromoCount() {
-        ChromeSharedPreferences.getInstance().incrementInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT);
+        ChromeSharedPreferences.getInstance()
+                .incrementInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT);
     }
 
     int getMaxPromoCount() {
@@ -66,14 +71,15 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getSessionCount() {
-        return ChromeSharedPreferences.getInstance().readInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT, 0);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT, 0);
     }
 
     void recordPromoTime() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
-                (int) TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()));
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
+                        (int) TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()));
     }
 
     int getMinSessionCount() {
@@ -81,11 +87,12 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getLastPromoInterval() {
-        int lastPromoTime = ChromeSharedPreferences.getInstance().readInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME, -1);
+        int lastPromoTime =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME, -1);
         if (lastPromoTime != -1) {
-            return (int) (TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis())
-                    - lastPromoTime);
+            return (int)
+                    (TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()) - lastPromoTime);
         }
         return Integer.MAX_VALUE;
     }
@@ -110,22 +117,25 @@ public class DefaultBrowserPromoDeps {
     @DefaultBrowserState
     int getCurrentDefaultBrowserState(ResolveInfo info) {
         if (info == null || info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
-        if (TextUtils.equals(ContextUtils.getApplicationContext().getPackageName(),
-                    info.activityInfo.packageName)) {
+        if (TextUtils.equals(
+                ContextUtils.getApplicationContext().getPackageName(),
+                info.activityInfo.packageName)) {
             return DefaultBrowserState.CHROME_DEFAULT; // Already default
         }
         return DefaultBrowserState.OTHER_DEFAULT;
     }
 
     boolean doesManageDefaultAppsSettingsActivityExist() {
-        ResolveInfo info = PackageManagerUtils.resolveActivity(
-                new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS), 0);
+        ResolveInfo info =
+                PackageManagerUtils.resolveActivity(
+                        new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS), 0);
         return info != null && info.match != 0;
     }
 
     boolean isChromeStable() {
-        return ContextUtils.getApplicationContext().getPackageName().equals(
-                CHROME_STABLE_PACKAGE_NAME);
+        return ContextUtils.getApplicationContext()
+                .getPackageName()
+                .equals(CHROME_STABLE_PACKAGE_NAME);
     }
 
     boolean isChromePreStableInstalled() {

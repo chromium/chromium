@@ -20,9 +20,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.LinkedHashSet;
 
-/**
- * Helper methods for supporting night mode.
- */
+/** Helper methods for supporting night mode. */
 public class NightModeUtils {
     private static Boolean sNightModeSupportedForTest;
 
@@ -46,8 +44,11 @@ public class NightModeUtils {
      *                  {@link Activity#onConfigurationChanged(Configuration)}.
      * @param themeResIds An ordered set of {@link StyleRes} of the themes applied to the activity.
      */
-    public static void updateConfigurationForNightMode(Activity activity, boolean inNightMode,
-            Configuration newConfig, LinkedHashSet<Integer> themeResIds) {
+    public static void updateConfigurationForNightMode(
+            Activity activity,
+            boolean inNightMode,
+            Configuration newConfig,
+            LinkedHashSet<Integer> themeResIds) {
         final int uiNightMode =
                 inNightMode ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
 
@@ -81,8 +82,10 @@ public class NightModeUtils {
         // Override uiMode so that UIs created by the DecorView (e.g. context menu, floating
         // action bar) get the correct theme. May check if this is needed on newer version
         // of support library. See https://crbug.com/935731.
-        final int nightMode = provider.isInNightMode() ? Configuration.UI_MODE_NIGHT_YES
-                                                       : Configuration.UI_MODE_NIGHT_NO;
+        final int nightMode =
+                provider.isInNightMode()
+                        ? Configuration.UI_MODE_NIGHT_YES
+                        : Configuration.UI_MODE_NIGHT_NO;
         config.uiMode = nightMode | (config.uiMode & ~Configuration.UI_MODE_NIGHT_MASK);
         return true;
     }

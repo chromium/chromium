@@ -10,9 +10,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
-/**
- * A factory interface for building a {@link TabModelSelector} instance.
- */
+/** A factory interface for building a {@link TabModelSelector} instance. */
 public interface TabModelSelectorFactory {
     /**
      * Builds a {@link TabModelSelector}.

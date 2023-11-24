@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.management;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * View updater based on properties for ManagementPage.
- */
+/** View updater based on properties for ManagementPage. */
 class ManagementViewBinder {
     /**
      * Listens to changes in MVC model.

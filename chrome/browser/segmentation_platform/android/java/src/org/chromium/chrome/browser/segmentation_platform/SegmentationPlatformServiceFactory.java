@@ -12,9 +12,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 
-/**
- * This factory creates SegmentationPlatformService for the given {@link Profile}.
- */
+/** This factory creates SegmentationPlatformService for the given {@link Profile}. */
 public final class SegmentationPlatformServiceFactory {
     private static SegmentationPlatformService sSegmentationPlatformServiceForTesting;
 

@@ -12,9 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.url.GURL;
 
-/**
- * Properties defined here reflect the visible state of the TouchToFillCreditCard component.
- */
+/** Properties defined here reflect the visible state of the TouchToFillCreditCard component. */
 class TouchToFillCreditCardProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
@@ -39,9 +37,7 @@ class TouchToFillCreditCardProperties {
         int FOOTER = 3;
     }
 
-    /**
-     * Properties for a credit card entry in the TouchToFill sheet for payments.
-     */
+    /** Properties for a credit card entry in the TouchToFill sheet for payments. */
     static class CreditCardProperties {
         static final PropertyModel.ReadableIntPropertyKey CARD_ICON_ID =
                 new PropertyModel.ReadableIntPropertyKey("card_icon_id");
@@ -59,13 +55,21 @@ class TouchToFillCreditCardProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("virtual_card_label");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_action");
-        static final PropertyModel
-                .ReadableObjectPropertyKey<FillableItemCollectionInfo> ITEM_COLLECTION_INFO =
-                new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
+        static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
+                ITEM_COLLECTION_INFO =
+                        new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
-        static final PropertyKey[] ALL_KEYS = {CARD_ICON_ID, CARD_ART_URL, NETWORK_NAME, CARD_NAME,
-                CARD_NUMBER, CARD_EXPIRATION, VIRTUAL_CARD_LABEL, ON_CLICK_ACTION,
-                ITEM_COLLECTION_INFO};
+        static final PropertyKey[] ALL_KEYS = {
+            CARD_ICON_ID,
+            CARD_ART_URL,
+            NETWORK_NAME,
+            CARD_NAME,
+            CARD_NUMBER,
+            CARD_EXPIRATION,
+            VIRTUAL_CARD_LABEL,
+            ON_CLICK_ACTION,
+            ITEM_COLLECTION_INFO
+        };
 
         private CreditCardProperties() {}
     }
@@ -92,12 +96,15 @@ class TouchToFillCreditCardProperties {
                 new PropertyModel.WritableBooleanPropertyKey("should_show_scan_credit_card");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
                 new ReadableObjectPropertyKey<>("scan_credit_card_callback");
-        static final PropertyModel
-                .ReadableObjectPropertyKey<Runnable> SHOW_CREDIT_CARD_SETTINGS_CALLBACK =
-                new ReadableObjectPropertyKey<>("show_credit_card_settings_callback");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable>
+                SHOW_CREDIT_CARD_SETTINGS_CALLBACK =
+                        new ReadableObjectPropertyKey<>("show_credit_card_settings_callback");
 
-        static final PropertyKey[] ALL_KEYS = {SHOULD_SHOW_SCAN_CREDIT_CARD,
-                SCAN_CREDIT_CARD_CALLBACK, SHOW_CREDIT_CARD_SETTINGS_CALLBACK};
+        static final PropertyKey[] ALL_KEYS = {
+            SHOULD_SHOW_SCAN_CREDIT_CARD,
+            SCAN_CREDIT_CARD_CALLBACK,
+            SHOW_CREDIT_CARD_SETTINGS_CALLBACK
+        };
 
         private FooterProperties() {}
     }

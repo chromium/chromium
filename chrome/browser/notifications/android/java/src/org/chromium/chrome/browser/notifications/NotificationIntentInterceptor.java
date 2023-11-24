@@ -137,7 +137,7 @@ public class NotificationIntentInterceptor {
             NotificationMetadata metadata,
             @Nullable PendingIntentProvider pendingIntentProvider) {
         PendingIntent pendingIntent = null;
-        int flags = IntentUtils.getPendingIntentMutabilityFlag(false /* mutable */);
+        int flags = IntentUtils.getPendingIntentMutabilityFlag(/* mutable= */ false);
         if (pendingIntentProvider != null) {
             pendingIntent = pendingIntentProvider.getPendingIntent();
             flags = pendingIntentProvider.getFlags();

@@ -9,9 +9,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 
-/**
- * Handles common dependencies for pages of the Privacy Guide.
- */
+/** Handles common dependencies for pages of the Privacy Guide. */
 public abstract class PrivacyGuideBasePage extends Fragment implements ProfileDependentSetting {
     private Profile mProfile;
 

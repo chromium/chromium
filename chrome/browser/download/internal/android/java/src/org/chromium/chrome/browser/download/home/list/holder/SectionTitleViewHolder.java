@@ -17,16 +17,15 @@ import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A {@link ViewHolder} specifically meant to display a section header.
- */
+/** A {@link ViewHolder} specifically meant to display a section header. */
 public class SectionTitleViewHolder extends ListItemViewHolder {
     private final TextView mTitle;
 
     /** Create a new {@link SectionTitleViewHolder} instance. */
     public static SectionTitleViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_section_header, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_section_header, null);
         return new SectionTitleViewHolder(view);
     }
 

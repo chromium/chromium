@@ -47,19 +47,13 @@ public class DownloadFileProvider extends FileProvider {
     private static final String[] COLUMNS = new String[] {"_display_name", "_size"};
     private static final String URI_AUTHORITY_SUFFIX = ".DownloadFileProvider";
 
-    /**
-     * The URI path for downloads on primary storage.
-     */
+    /** The URI path for downloads on primary storage. */
     private static final String URI_PATH = "download";
 
-    /**
-     * The URI path for downloads on external storage before Android R.
-     */
+    /** The URI path for downloads on external storage before Android R. */
     private static final String URI_EXTERNAL_PATH_LEGACY = "download_external";
 
-    /**
-     * The URI path for downloads on external storage from Android R.
-     */
+    /** The URI path for downloads on external storage from Android R. */
     private static final String URI_EXTERNAL_PATH = "external_volume";
 
     private static final String URI_QUERY_FILE = "file";
@@ -101,7 +95,8 @@ public class DownloadFileProvider extends FileProvider {
             for (File file : info.directories) {
                 if (file == null) continue;
                 if (filePath.startsWith(file.getAbsolutePath())) {
-                    return buildUri(URI_EXTERNAL_PATH,
+                    return buildUri(
+                            URI_EXTERNAL_PATH,
                             filePath.substring(file.getAbsolutePath().length() + 1));
                 }
             }
@@ -112,7 +107,8 @@ public class DownloadFileProvider extends FileProvider {
         for (File file : info.directoriesPreR) {
             if (file == null) continue;
             if (filePath.startsWith(file.getAbsolutePath())) {
-                return buildUri(URI_EXTERNAL_PATH_LEGACY,
+                return buildUri(
+                        URI_EXTERNAL_PATH_LEGACY,
                         filePath.substring(file.getAbsolutePath().length() + 1));
             }
         }
@@ -120,13 +116,15 @@ public class DownloadFileProvider extends FileProvider {
     }
 
     private static Uri buildUri(String path, String query) {
-        Uri uri = new Uri.Builder()
-                          .scheme(UrlConstants.CONTENT_SCHEME)
-                          .authority(ContextUtils.getApplicationContext().getPackageName()
-                                  + URI_AUTHORITY_SUFFIX)
-                          .path(path)
-                          .appendQueryParameter(URI_QUERY_FILE, query)
-                          .build();
+        Uri uri =
+                new Uri.Builder()
+                        .scheme(UrlConstants.CONTENT_SCHEME)
+                        .authority(
+                                ContextUtils.getApplicationContext().getPackageName()
+                                        + URI_AUTHORITY_SUFFIX)
+                        .path(path)
+                        .appendQueryParameter(URI_QUERY_FILE, query)
+                        .build();
         return uri;
     }
 
@@ -147,8 +145,9 @@ public class DownloadFileProvider extends FileProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        String filePath = getFilePathFromUri(
-                uri, new DownloadDirectoryProvider.DownloadDirectoryProviderDelegate());
+        String filePath =
+                getFilePathFromUri(
+                        uri, new DownloadDirectoryProvider.DownloadDirectoryProviderDelegate());
         if (filePath == null) throw new FileNotFoundException();
 
         int fileMode = modeToMode(mode);
@@ -157,16 +156,21 @@ public class DownloadFileProvider extends FileProvider {
     }
 
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
-            @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(
+            @NonNull Uri uri,
+            @Nullable String[] projection,
+            @Nullable String selection,
+            @Nullable String[] selectionArgs,
+            @Nullable String sortOrder) {
         if (projection == null) {
             projection = COLUMNS;
         }
         String[] cols = new String[projection.length];
         Object[] values = new Object[projection.length];
 
-        String filePath = getFilePathFromUri(
-                uri, new DownloadDirectoryProvider.DownloadDirectoryProviderDelegate());
+        String filePath =
+                getFilePathFromUri(
+                        uri, new DownloadDirectoryProvider.DownloadDirectoryProviderDelegate());
         if (TextUtils.isEmpty(filePath)) return new MatrixCursor(cols, 1);
 
         File file = new File(filePath);
@@ -222,27 +226,21 @@ public class DownloadFileProvider extends FileProvider {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
 
-    /**
-     * Copy from {@link FileProvider}.
-     */
+    /** Copy from {@link FileProvider}. */
     private static String[] copyOf(String[] original, int newLength) {
         String[] result = new String[newLength];
         System.arraycopy(original, 0, result, 0, newLength);
         return result;
     }
 
-    /**
-     * Copy from {@link FileProvider}.
-     */
+    /** Copy from {@link FileProvider}. */
     private static Object[] copyOf(Object[] original, int newLength) {
         Object[] result = new Object[newLength];
         System.arraycopy(original, 0, result, 0, newLength);
         return result;
     }
 
-    /**
-     * Copy from {@link FileProvider}.
-     */
+    /** Copy from {@link FileProvider}. */
     private static int modeToMode(String mode) {
         int modeBits;
         if ("r".equals(mode)) {

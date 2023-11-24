@@ -18,14 +18,11 @@ import java.util.Map;
 
 /** Feedback Source around relevant user and UI settings for auto dark mode. */
 public class AutoDarkFeedbackSource implements FeedbackSource {
-    @VisibleForTesting
-    static final String AUTO_DARK_FEEDBACK_KEY = "auto_dark_web_content_enabled";
-    @VisibleForTesting
-    static final String ENABLED_VALUE = "Enabled";
+    @VisibleForTesting static final String AUTO_DARK_FEEDBACK_KEY = "auto_dark_web_content_enabled";
+    @VisibleForTesting static final String ENABLED_VALUE = "Enabled";
 
     /** Feature flag for auto dark is disabled. */
-    @VisibleForTesting
-    static final String DISABLED_VALUE = "Disabled";
+    @VisibleForTesting static final String DISABLED_VALUE = "Disabled";
 
     private final HashMap<String, String> mMap;
 
@@ -36,7 +33,7 @@ public class AutoDarkFeedbackSource implements FeedbackSource {
         if (profile.isOffTheRecord()) return;
 
         if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
+                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
             mMap.put(AUTO_DARK_FEEDBACK_KEY, DISABLED_VALUE);
         } else {
             boolean enabledState =

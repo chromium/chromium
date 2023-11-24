@@ -6,23 +6,15 @@ package org.chromium.chrome.browser.feed;
 
 import org.chromium.components.feature_engagement.Tracker;
 
-/**
- * Delegate to provide necessary checks for bubble (IPH or Back-to-top) triggering in feeds.
- */
+/** Delegate to provide necessary checks for bubble (IPH or Back-to-top) triggering in feeds. */
 public interface FeedBubbleDelegate {
-    /**
-     * Gets the feature engagement tracker.
-     */
+    /** Gets the feature engagement tracker. */
     Tracker getFeatureEngagementTracker();
 
-    /**
-     * Determines whether the feed is expanded (turned on).
-     */
+    /** Determines whether the feed is expanded (turned on). */
     boolean isFeedExpanded();
 
-    /**
-     * Determines whether the user is signed in.
-     */
+    /** Determines whether the user is signed in. */
     boolean isSignedIn();
 
     /**
@@ -31,43 +23,27 @@ public interface FeedBubbleDelegate {
      */
     boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction);
 
-    /**
-     * Returns the current time in milliseconds.
-     */
+    /** Returns the current time in milliseconds. */
     long getCurrentTimeMs();
 
-    /**
-     * Returns the time of last feed content fetch in milliseconds.
-     */
+    /** Returns the time of last feed content fetch in milliseconds. */
     long getLastFetchTimeMs();
 
-    /**
-     * Returns true if the user can scroll up the page.
-     */
+    /** Returns true if the user can scroll up the page. */
     boolean canScrollUp();
 
-    /**
-     * Returns true if the "Back to top" bubble is shown.
-     */
+    /** Returns true if the "Back to top" bubble is shown. */
     boolean isShowingBackToTopBubble();
 
-    /**
-     * Returns the number of header items.
-     */
+    /** Returns the number of header items. */
     int getHeaderCount();
 
-    /**
-     * Returns the number of items, including both headers and feed items.
-     */
+    /** Returns the number of items, including both headers and feed items. */
     int getItemCount();
 
-    /**
-     * Returns the position of the first visible position.
-     */
+    /** Returns the position of the first visible position. */
     int getFirstVisiblePosition();
 
-    /**
-     * Returns the position of the last visible position.
-     */
+    /** Returns the position of the last visible position. */
     int getLastVisiblePosition();
 }

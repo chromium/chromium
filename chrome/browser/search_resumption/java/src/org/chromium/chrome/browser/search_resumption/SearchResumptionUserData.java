@@ -15,9 +15,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Helper class for the search suggestion module which shows search suggestions on NTP.
- */
+/** Helper class for the search suggestion module which shows search suggestions on NTP. */
 public class SearchResumptionUserData implements UserData {
     // The cached search suggestion results.
     static class SuggestionResult {
@@ -43,12 +41,15 @@ public class SearchResumptionUserData implements UserData {
         GURL getLastUrlToTrack() {
             return mLastUrlToTrack;
         }
+
         String[] getSuggestionTexts() {
             return mSuggestionTexts;
         }
+
         GURL[] getSuggestionUrls() {
             return mSuggestionUrls;
         }
+
         List<AutocompleteMatch> getSuggestions() {
             return mSuggestions;
         }
@@ -61,9 +62,7 @@ public class SearchResumptionUserData implements UserData {
 
     private static SearchResumptionUserData sInstance = new SearchResumptionUserData();
 
-    /**
-     * Gets the singleton instance for the SearchResumptionUserData.
-     */
+    /** Gets the singleton instance for the SearchResumptionUserData. */
     public static SearchResumptionUserData getInstance() {
         return sInstance;
     }
@@ -113,13 +112,12 @@ public class SearchResumptionUserData implements UserData {
         tab.getUserDataHost().setUserData(USER_DATA_KEY, searchResumptionUserData);
     }
 
-    /**
-     * Returns the last cached search suggestions, null if the UserData isn't set or expired.
-     */
+    /** Returns the last cached search suggestions, null if the UserData isn't set or expired. */
     public SuggestionResult getCachedSuggestions(Tab tab) {
         SearchResumptionUserData searchResumptionUserData = get(tab);
-        return searchResumptionUserData == null ? null
-                                                : searchResumptionUserData.mCachedSuggestions;
+        return searchResumptionUserData == null
+                ? null
+                : searchResumptionUserData.mCachedSuggestions;
     }
 
     /**

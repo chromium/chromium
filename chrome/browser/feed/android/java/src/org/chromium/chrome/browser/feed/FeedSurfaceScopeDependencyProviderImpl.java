@@ -24,13 +24,11 @@ import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher;
 import org.chromium.url.GURL;
 
-/**
- * Provides activity, darkmode and logging context for a single surface.
- */
+/** Provides activity, darkmode and logging context for a single surface. */
 @JNINamespace("feed::android")
 public class FeedSurfaceScopeDependencyProviderImpl
         implements org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider,
-                   ScrollListener {
+                ScrollListener {
     public static class NetworkResponse {
         public boolean success;
         public int statusCode;
@@ -38,7 +36,10 @@ public class FeedSurfaceScopeDependencyProviderImpl
         public @Nullable byte[] rawData;
 
         @CalledByNative("NetworkResponse")
-        public NetworkResponse(boolean success, int statusCode, String[] headerNameAndValues,
+        public NetworkResponse(
+                boolean success,
+                int statusCode,
+                String[] headerNameAndValues,
                 @Nullable byte[] rawData) {
             this.success = success;
             this.statusCode = statusCode;
@@ -112,8 +113,10 @@ public class FeedSurfaceScopeDependencyProviderImpl
 
     @Override
     public void processViewAction(byte[] data, LoggingParameters loggingParameters) {
-        FeedProcessScopeDependencyProviderJni.get().processViewAction(
-                data, FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
+        FeedProcessScopeDependencyProviderJni.get()
+                .processViewAction(
+                        data,
+                        FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
     }
 
     @Override
@@ -129,7 +132,11 @@ public class FeedSurfaceScopeDependencyProviderImpl
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        void fetchResource(GURL url, String method, String[] headerNameAndValues, byte[] postData,
+        void fetchResource(
+                GURL url,
+                String method,
+                String[] headerNameAndValues,
+                byte[] postData,
                 Callback<NetworkResponse> callback);
     }
 }

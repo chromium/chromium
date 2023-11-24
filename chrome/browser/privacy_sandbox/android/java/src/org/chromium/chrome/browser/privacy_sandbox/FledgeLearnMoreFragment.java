@@ -16,26 +16,27 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
-/**
- * Settings fragment for privacy sandbox settings.
- */
+/** Settings fragment for privacy sandbox settings. */
 public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment {
     private static final String FLEDGE_LEARN_MORE_BULLET_3_PREFERENCE =
             "fledge_learn_more_bullet_3";
 
     private TextMessagePreference mFledgeLearnMoreBullet3Preference;
-    /**
-     * Initializes all the objects related to the preferences page.
-     */
+
+    /** Initializes all the objects related to the preferences page. */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         getActivity().setTitle(R.string.settings_fledge_page_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_learn_more_preference);
         mFledgeLearnMoreBullet3Preference = findPreference(FLEDGE_LEARN_MORE_BULLET_3_PREFERENCE);
-        mFledgeLearnMoreBullet3Preference.setSummary(SpanApplier.applySpans(
-                getResources().getString(R.string.settings_fledge_page_learn_more_bullet_3),
-                new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+        mFledgeLearnMoreBullet3Preference.setSummary(
+                SpanApplier.applySpans(
+                        getResources().getString(R.string.settings_fledge_page_learn_more_bullet_3),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onLearnMoreClicked))));
         // Enable the options menu to be able to clear it.
         setHasOptionsMenu(true);
     }

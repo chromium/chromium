@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
-/**
- * The properties of a footer item on one of the FastCheckout detail screens.
- */
+/** The properties of a footer item on one of the FastCheckout detail screens. */
 public class FooterItemProperties {
     /** The resource id of the string to be shown on the footer label. */
     public static final ReadableIntPropertyKey LABEL = new ReadableIntPropertyKey("label");

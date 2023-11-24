@@ -17,9 +17,7 @@ import androidx.annotation.DrawableRes;
 
 import org.chromium.ui.widget.ButtonCompat;
 
-/**
- * Container view for personalized signin promos.
- */
+/** Container view for personalized signin promos. */
 public class PersonalizedSigninPromoView extends FrameLayout {
     private ImageView mImage;
     private ImageButton mDismissButton;
@@ -87,9 +85,7 @@ public class PersonalizedSigninPromoView extends FrameLayout {
         return mSecondaryButton;
     }
 
-    /**
-     * Sets the card's background for R.id.signin_promo_view_wrapper.
-     */
+    /** Sets the card's background for R.id.signin_promo_view_wrapper. */
     public void setCardBackgroundResource(@DrawableRes int resId) {
         findViewById(R.id.signin_promo_view_wrapper).setBackgroundResource(resId);
     }

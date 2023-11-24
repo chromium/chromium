@@ -10,9 +10,7 @@ import org.chromium.base.Callback;
 
 import java.util.Optional;
 
-/**
- * Fake {@link PasswordCheckupClientHelper} to be used in integration tests.
- */
+/** Fake {@link PasswordCheckupClientHelper} to be used in integration tests. */
 public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHelper {
     private PendingIntent mPendingIntent;
     private Integer mBreachedCredentialsCount;
@@ -31,8 +29,10 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     }
 
     @Override
-    public void getPasswordCheckupIntent(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<PendingIntent> successCallback,
+    public void getPasswordCheckupIntent(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<PendingIntent> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {
             failureCallback.onResult(mError);
@@ -42,8 +42,10 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     }
 
     @Override
-    public void runPasswordCheckupInBackground(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<Void> successCallback,
+    public void runPasswordCheckupInBackground(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<Void> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {
             failureCallback.onResult(mError);
@@ -53,8 +55,10 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     }
 
     @Override
-    public void getBreachedCredentialsCount(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<Integer> successCallback,
+    public void getBreachedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         if (mError != null) {
             failureCallback.onResult(mError);

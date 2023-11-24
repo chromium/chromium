@@ -42,10 +42,14 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final Runnable mOnSigninSuccessCallback;
     private final AccountPickerBottomSheetStrings mBottomSheetStrings;
 
-    public SigninBottomSheetCoordinator(WindowAndroid windowAndroid,
-            DeviceLockActivityLauncher deviceLockActivityLauncher, BottomSheetController controller,
-            Profile profile, @Nullable AccountPickerBottomSheetStrings bottomSheetStrings,
-            @Nullable Runnable onSigninSuccessCallback, @SigninAccessPoint int signinAccessPoint) {
+    public SigninBottomSheetCoordinator(
+            WindowAndroid windowAndroid,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            BottomSheetController controller,
+            Profile profile,
+            @Nullable AccountPickerBottomSheetStrings bottomSheetStrings,
+            @Nullable Runnable onSigninSuccessCallback,
+            @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mController = controller;
@@ -65,40 +69,45 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     public void signIn(
             String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
         Account account = AccountUtils.createAccountFromName(accountEmail);
-        SigninManager.SignInCallback callback = new SigninManager.SignInCallback() {
-            @Override
-            public void onSignInComplete() {
-                RecordHistogram.recordBooleanHistogram(
-                        "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", true);
-                mController.hideContent(mController.getCurrentSheetContent(), true);
-                if (mOnSigninSuccessCallback != null) {
-                    mOnSigninSuccessCallback.run();
-                }
-            }
+        SigninManager.SignInCallback callback =
+                new SigninManager.SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        RecordHistogram.recordBooleanHistogram(
+                                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful",
+                                true);
+                        mController.hideContent(mController.getCurrentSheetContent(), true);
+                        if (mOnSigninSuccessCallback != null) {
+                            mOnSigninSuccessCallback.run();
+                        }
+                    }
 
-            @Override
-            public void onSignInAborted() {
-                RecordHistogram.recordBooleanHistogram(
-                        "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", false);
-                // onSignInErrorCallback is called by the WebSigninBridge which is
-                // not implemented in this signin flow as we do not need to wait for
-                // cookies to propagate before proceeding with the Feed refresh.
-                // Instead of calling
-                // AccountPickerBottomSheetMediator.onSigninFailed() from the signin
-                // bridge we directly perform the creation of the "try again" bottom
-                // sheet view:
-                mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
-            }
-        };
+                    @Override
+                    public void onSignInAborted() {
+                        RecordHistogram.recordBooleanHistogram(
+                                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful",
+                                false);
+                        // onSignInErrorCallback is called by the WebSigninBridge which is
+                        // not implemented in this signin flow as we do not need to wait for
+                        // cookies to propagate before proceeding with the Feed refresh.
+                        // Instead of calling AccountPickerBottomSheetMediator.onSigninFailed()
+                        // from the signin bridge we directly perform the creation of the "try
+                        // again" bottom sheet view:
+                        mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
+                    }
+                };
 
-        AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
-            if (mSigninManager.isSigninAllowed()) {
-                mSigninManager.signin(account, mSigninAccessPoint, callback);
-            } else {
-                makeSigninNotAllowedToast();
-                mController.hideContent(mController.getCurrentSheetContent(), true);
-            }
-        });
+        AccountInfoServiceProvider.get()
+                .getAccountInfoByEmail(accountEmail)
+                .then(
+                        accountInfo -> {
+                            if (mSigninManager.isSigninAllowed()) {
+                                mSigninManager.signin(account, mSigninAccessPoint, callback);
+                            } else {
+                                makeSigninNotAllowedToast();
+                                mController.hideContent(mController.getCurrentSheetContent(), true);
+                            }
+                        });
     }
 
     @Override
@@ -108,16 +117,24 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
 
     public void show() {
         mAccountPickerBottomSheetCoordinator =
-                new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController, this,
-                        mBottomSheetStrings, mDeviceLockActivityLauncher);
+                new AccountPickerBottomSheetCoordinator(
+                        mWindowAndroid,
+                        mController,
+                        this,
+                        mBottomSheetStrings,
+                        mDeviceLockActivityLauncher);
     }
 
     private void makeSigninNotAllowedToast() {
-        RecordHistogram.recordEnumeratedHistogram("Signin.SigninDisabledNotificationShown",
-                mSigninAccessPoint, SigninAccessPoint.MAX);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.SigninDisabledNotificationShown",
+                mSigninAccessPoint,
+                SigninAccessPoint.MAX);
         if (mSetTestToast) return;
-        Toast.makeText(mWindowAndroid.getActivity().get(),
-                     R.string.sign_in_to_chrome_disabled_by_user_summary, Toast.LENGTH_SHORT)
+        Toast.makeText(
+                        mWindowAndroid.getActivity().get(),
+                        R.string.sign_in_to_chrome_disabled_by_user_summary,
+                        Toast.LENGTH_SHORT)
                 .show();
     }
 

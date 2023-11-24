@@ -70,8 +70,8 @@ public class UrlBarDataTest {
         // crbug.com/414990
         String testUrl =
                 "https://disneyworld.disney.go.com/special-offers/"
-                    + "?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
-                    + "&keyword_id=s6JyxRifG_dm|walt%20disney%20world|37174067873|e|1540wwa14043";
+                        + "?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
+                        + "&keyword_id=s6JyxRifG_dm|walt%20disney%20world|37174067873|e|1540wwa14043";
         verifyOriginSpan(
                 "https://disneyworld.disney.go.com",
                 "/special-offers/?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"

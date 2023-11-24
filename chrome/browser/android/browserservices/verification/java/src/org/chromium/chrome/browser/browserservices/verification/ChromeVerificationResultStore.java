@@ -38,16 +38,17 @@ public class ChromeVerificationResultStore extends VerificationResultStore {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             // From the official docs, modifying the result of a SharedPreferences.getStringSet can
             // cause bad things to happen including exceptions or ruining the data.
-            return new HashSet<>(ChromeSharedPreferences.getInstance().readStringSet(
-                    ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS));
+            return new HashSet<>(
+                    ChromeSharedPreferences.getInstance()
+                            .readStringSet(ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS));
         }
     }
 
     @Override
     @VisibleForTesting
     public void setRelationships(Set<String> relationships) {
-        ChromeSharedPreferences.getInstance().writeStringSet(
-                ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS, relationships);
+        ChromeSharedPreferences.getInstance()
+                .writeStringSet(ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS, relationships);
     }
 
     public static ChromeVerificationResultStore getInstanceForTesting() {

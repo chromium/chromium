@@ -19,30 +19,46 @@ import java.lang.annotation.RetentionPolicy;
 class SafetyCheckProperties {
     /** State of the passwords check, one of the {@link PasswordsState} values. */
     static final WritableIntPropertyKey PASSWORDS_STATE = new WritableIntPropertyKey();
+
     /** Number of compromised passwords; only used when PASSWORDS_STATE is COMPROMISED_EXIST. */
     static final WritableIntPropertyKey COMPROMISED_PASSWORDS = new WritableIntPropertyKey();
+
     /** State of the Safe Browsing check, one of the {@link SafeBrowsingState} values. */
     static final WritableIntPropertyKey SAFE_BROWSING_STATE = new WritableIntPropertyKey();
+
     /** State of the updates check, one of the {@link UpdatesState} values. */
     static final WritableIntPropertyKey UPDATES_STATE = new WritableIntPropertyKey();
+
     /** Listener for the passwords element click events. */
     static final WritableObjectPropertyKey PASSWORDS_CLICK_LISTENER =
             new WritableObjectPropertyKey();
+
     /** Listener for the Safe Browsing element click events. */
     static final WritableObjectPropertyKey SAFE_BROWSING_CLICK_LISTENER =
             new WritableObjectPropertyKey();
+
     /** Listener for the updates element click events. */
     static final WritableObjectPropertyKey UPDATES_CLICK_LISTENER = new WritableObjectPropertyKey();
+
     /** Listener for Safety check button click events. */
     static final WritableObjectPropertyKey SAFETY_CHECK_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey();
+
     /** Timestamp of the last run, a Long object. */
     static final WritableLongPropertyKey LAST_RUN_TIMESTAMP = new WritableLongPropertyKey();
 
-    @IntDef({PasswordsState.UNCHECKED, PasswordsState.CHECKING, PasswordsState.SAFE,
-            PasswordsState.COMPROMISED_EXIST, PasswordsState.OFFLINE, PasswordsState.NO_PASSWORDS,
-            PasswordsState.SIGNED_OUT, PasswordsState.QUOTA_LIMIT, PasswordsState.ERROR,
-            PasswordsState.BACKEND_VERSION_NOT_SUPPORTED})
+    @IntDef({
+        PasswordsState.UNCHECKED,
+        PasswordsState.CHECKING,
+        PasswordsState.SAFE,
+        PasswordsState.COMPROMISED_EXIST,
+        PasswordsState.OFFLINE,
+        PasswordsState.NO_PASSWORDS,
+        PasswordsState.SIGNED_OUT,
+        PasswordsState.QUOTA_LIMIT,
+        PasswordsState.ERROR,
+        PasswordsState.BACKEND_VERSION_NOT_SUPPORTED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordsState {
         int UNCHECKED = 0;
@@ -87,7 +103,7 @@ class SafetyCheckProperties {
             case PasswordsState.BACKEND_VERSION_NOT_SUPPORTED:
                 // This is not used.
                 assert false
-                    : "PasswordsState.BACKEND_VERSION_NOT_SUPPORTED has no native equivalent.";
+                        : "PasswordsState.BACKEND_VERSION_NOT_SUPPORTED has no native equivalent.";
                 return PasswordsStatus.ERROR;
             case PasswordsState.CHECKING:
                 return PasswordsStatus.CHECKING;
@@ -111,10 +127,15 @@ class SafetyCheckProperties {
         }
     }
 
-    @IntDef({SafeBrowsingState.UNCHECKED, SafeBrowsingState.CHECKING,
-            SafeBrowsingState.ENABLED_STANDARD, SafeBrowsingState.ENABLED_ENHANCED,
-            SafeBrowsingState.DISABLED, SafeBrowsingState.DISABLED_BY_ADMIN,
-            SafeBrowsingState.ERROR})
+    @IntDef({
+        SafeBrowsingState.UNCHECKED,
+        SafeBrowsingState.CHECKING,
+        SafeBrowsingState.ENABLED_STANDARD,
+        SafeBrowsingState.ENABLED_ENHANCED,
+        SafeBrowsingState.DISABLED,
+        SafeBrowsingState.DISABLED_BY_ADMIN,
+        SafeBrowsingState.ERROR
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SafeBrowsingState {
         int UNCHECKED = 0;
@@ -150,8 +171,14 @@ class SafetyCheckProperties {
         return SafeBrowsingState.UNCHECKED;
     }
 
-    @IntDef({UpdatesState.UNCHECKED, UpdatesState.CHECKING, UpdatesState.UPDATED,
-            UpdatesState.OUTDATED, UpdatesState.OFFLINE, UpdatesState.ERROR})
+    @IntDef({
+        UpdatesState.UNCHECKED,
+        UpdatesState.CHECKING,
+        UpdatesState.UPDATED,
+        UpdatesState.OUTDATED,
+        UpdatesState.OFFLINE,
+        UpdatesState.ERROR
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UpdatesState {
         int UNCHECKED = 0;
@@ -185,9 +212,17 @@ class SafetyCheckProperties {
     }
 
     static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {PASSWORDS_STATE, COMPROMISED_PASSWORDS, SAFE_BROWSING_STATE,
-                    UPDATES_STATE, PASSWORDS_CLICK_LISTENER, SAFE_BROWSING_CLICK_LISTENER,
-                    UPDATES_CLICK_LISTENER, SAFETY_CHECK_BUTTON_CLICK_LISTENER, LAST_RUN_TIMESTAMP};
+            new PropertyKey[] {
+                PASSWORDS_STATE,
+                COMPROMISED_PASSWORDS,
+                SAFE_BROWSING_STATE,
+                UPDATES_STATE,
+                PASSWORDS_CLICK_LISTENER,
+                SAFE_BROWSING_CLICK_LISTENER,
+                UPDATES_CLICK_LISTENER,
+                SAFETY_CHECK_BUTTON_CLICK_LISTENER,
+                LAST_RUN_TIMESTAMP
+            };
 
     static PropertyModel createSafetyCheckModel() {
         return new PropertyModel.Builder(ALL_KEYS)

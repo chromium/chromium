@@ -9,9 +9,7 @@ import android.text.SpannableString;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Associated properties for ManagementPage's view.
- */
+/** Associated properties for ManagementPage's view. */
 class ManagementProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> BROWSER_MANAGER_NAME =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -23,5 +21,6 @@ class ManagementProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-            BROWSER_MANAGER_NAME, BROWSER_IS_MANAGED, LEARN_MORE_TEXT};
+        BROWSER_MANAGER_NAME, BROWSER_IS_MANAGED, LEARN_MORE_TEXT
+    };
 }

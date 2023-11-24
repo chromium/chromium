@@ -52,9 +52,7 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     private int mCountOfAddingOrClosingTabs;
     private boolean mActive;
 
-    /**
-     * Constructor for IncognitoTabModel.
-     */
+    /** Constructor for IncognitoTabModel. */
     IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
         mDelegate = tabModelCreator;
         mDelegateModel = EmptyTabModel.getInstance(true);
@@ -63,9 +61,7 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
         mTabCountSupplier.set(0);
     }
 
-    /**
-     * Ensures that the real TabModel has been created.
-     */
+    /** Ensures that the real TabModel has been created. */
     protected void ensureTabModelImpl() {
         ThreadUtils.assertOnUiThread();
         if (!(mDelegateModel instanceof EmptyTabModel)) return;
@@ -86,7 +82,8 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
      */
     protected void destroyIncognitoIfNecessary() {
         ThreadUtils.assertOnUiThread();
-        if (!isEmpty() || mDelegateModel instanceof EmptyTabModel
+        if (!isEmpty()
+                || mDelegateModel instanceof EmptyTabModel
                 || mCountOfAddingOrClosingTabs != 0) {
             return;
         }

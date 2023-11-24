@@ -19,12 +19,14 @@ import java.util.Set;
  * A field trial parameter in the variations framework that is cached to disk be used before native.
  */
 public abstract class CachedFieldTrialParameter {
-    /**
-     * Data types of field trial parameters.
-     */
-    @IntDef({FieldTrialParameterType.STRING, FieldTrialParameterType.BOOLEAN,
-            FieldTrialParameterType.INT, FieldTrialParameterType.DOUBLE,
-            FieldTrialParameterType.ALL})
+    /** Data types of field trial parameters. */
+    @IntDef({
+        FieldTrialParameterType.STRING,
+        FieldTrialParameterType.BOOLEAN,
+        FieldTrialParameterType.INT,
+        FieldTrialParameterType.DOUBLE,
+        FieldTrialParameterType.ALL
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FieldTrialParameterType {
         int STRING = 0;

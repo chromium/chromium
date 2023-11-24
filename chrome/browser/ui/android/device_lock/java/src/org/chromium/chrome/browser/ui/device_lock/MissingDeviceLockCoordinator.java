@@ -26,12 +26,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * The coordinator handles the creation, update, and interaction of the missing device lock UI.
- */
+/** The coordinator handles the creation, update, and interaction of the missing device lock UI. */
 public class MissingDeviceLockCoordinator {
     /** The {@link ModalDialogManager} which launches the Missing Device Lock dialog. */
     private final @NonNull ModalDialogManager mModalDialogManager;
+
     /**The {@link PropertyModel} of the underlying dialog where the view would be shown.*/
     private final PropertyModel mModalDialogPropertyModel;
 
@@ -62,6 +61,7 @@ public class MissingDeviceLockCoordinator {
             new ModalDialogProperties.Controller() {
                 @Override
                 public void onClick(PropertyModel model, int buttonType) {}
+
                 @Override
                 public void onDismiss(PropertyModel model, int dismissalCause) {}
             };
@@ -73,17 +73,21 @@ public class MissingDeviceLockCoordinator {
      *                                    recreating a device lock.
      * @param context The context hosting this page.
      */
-    public MissingDeviceLockCoordinator(Callback<Boolean> onContinueWithoutDeviceLock,
-            Context context, ModalDialogManager modalDialogManager) {
+    public MissingDeviceLockCoordinator(
+            Callback<Boolean> onContinueWithoutDeviceLock,
+            Context context,
+            ModalDialogManager modalDialogManager) {
         mView = MissingDeviceLockView.create(LayoutInflater.from(context));
 
-        mMediator = new MissingDeviceLockMediator(
-                (wipeAllData)
-                        -> continueWithoutDeviceLock(wipeAllData, onContinueWithoutDeviceLock),
-                context);
+        mMediator =
+                new MissingDeviceLockMediator(
+                        (wipeAllData) ->
+                                continueWithoutDeviceLock(wipeAllData, onContinueWithoutDeviceLock),
+                        context);
 
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mMediator.getModel(), mView, MissingDeviceLockViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mMediator.getModel(), mView, MissingDeviceLockViewBinder::bind);
         mModalDialogManager = modalDialogManager;
 
         mModalDialogPropertyModel =
@@ -91,7 +95,8 @@ public class MissingDeviceLockCoordinator {
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mView)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                        .with(ModalDialogProperties.DIALOG_STYLES,
+                        .with(
+                                ModalDialogProperties.DIALOG_STYLES,
                                 ModalDialogProperties.DialogStyles.NORMAL)
                         .build();
     }
@@ -108,32 +113,25 @@ public class MissingDeviceLockCoordinator {
                 MissingDeviceLockDialogEvent.COUNT);
     }
 
-    /**
-     * Releases the resources used by the coordinator.
-     */
+    /** Releases the resources used by the coordinator. */
     public void destroy() {
         mPropertyModelChangeProcessor.destroy();
     }
 
-    /**
-     * Show the Missing Device Lock UI in a modal dialog.
-     */
+    /** Show the Missing Device Lock UI in a modal dialog. */
     public void showDialog() {
         showMissingDeviceLockDialog();
     }
 
-    /**
-     * Dismiss the dialog showing the Missing Device Lock UI.
-     */
+    /** Dismiss the dialog showing the Missing Device Lock UI. */
     public void hideDialog(@DialogDismissalCause int dismissalCause) {
         dismissMissingDeviceLockDialog(dismissalCause);
     }
 
-    /**
-     * Method to show the Missing Device Lock dialog.
-     */
+    /** Method to show the Missing Device Lock dialog. */
     private void showMissingDeviceLockDialog() {
-        mModalDialogManager.showDialog(mModalDialogPropertyModel,
+        mModalDialogManager.showDialog(
+                mModalDialogPropertyModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
         RecordHistogram.recordEnumeratedHistogram(

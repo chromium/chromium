@@ -21,18 +21,12 @@ import org.chromium.url.GURL;
 public class WebsiteApprovalCoordinator {
     private final WebsiteApprovalMediator mMediator;
 
-    /**
-     * Callback to notify completion of the flow.
-     */
+    /** Callback to notify completion of the flow. */
     public interface CompletionCallback {
-        /**
-         * Called when the parent clicks to approve the website.
-         */
+        /** Called when the parent clicks to approve the website. */
         void onWebsiteApproved();
 
-        /**
-         * Called when the parent explicitly clicks to not approve the website.
-         */
+        /** Called when the parent explicitly clicks to not approve the website. */
         void onWebsiteDenied();
     }
 
@@ -48,10 +42,11 @@ public class WebsiteApprovalCoordinator {
             CompletionCallback completionCallback,
             Bitmap favicon,
             Profile profile) {
-        PropertyModel model = new PropertyModel.Builder(WebsiteApprovalProperties.ALL_KEYS)
-                                      .with(WebsiteApprovalProperties.URL, url)
-                                      .with(WebsiteApprovalProperties.FAVICON, favicon)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(WebsiteApprovalProperties.ALL_KEYS)
+                        .with(WebsiteApprovalProperties.URL, url)
+                        .with(WebsiteApprovalProperties.FAVICON, favicon)
+                        .build();
 
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);

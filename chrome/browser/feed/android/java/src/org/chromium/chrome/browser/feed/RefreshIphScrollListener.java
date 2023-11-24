@@ -22,18 +22,17 @@ import org.chromium.components.feature_engagement.TriggerState;
  * 3) The user has scrolled up to the top.
  */
 public class RefreshIphScrollListener implements ScrollListener {
-    @VisibleForTesting
-    static final long FETCH_TIME_AGE_THREASHOLD_MS = 5 * 60 * 1000; // 5 minutes.
+    @VisibleForTesting static final long FETCH_TIME_AGE_THREASHOLD_MS = 5 * 60 * 1000; // 5 minutes.
 
     private final FeedBubbleDelegate mDelegate;
     private final ScrollableContainerDelegate mScrollableContainerDelegate;
     private final Runnable mShowIPHRunnable;
 
-    /**
-     * Constructor for IPH triggering.
-     */
-    RefreshIphScrollListener(FeedBubbleDelegate delegate,
-            ScrollableContainerDelegate scrollableContainerDelegate, Runnable showIPHRunnable) {
+    /** Constructor for IPH triggering. */
+    RefreshIphScrollListener(
+            FeedBubbleDelegate delegate,
+            ScrollableContainerDelegate scrollableContainerDelegate,
+            Runnable showIPHRunnable) {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;
         mShowIPHRunnable = showIPHRunnable;

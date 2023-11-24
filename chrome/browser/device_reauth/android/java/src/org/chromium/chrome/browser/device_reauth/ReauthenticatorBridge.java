@@ -30,8 +30,8 @@ public class ReauthenticatorBridge {
      * @return Whether authentication can be used.
      */
     public boolean canUseAuthenticationWithBiometric() {
-        return ReauthenticatorBridgeJni.get().canUseAuthenticationWithBiometric(
-                mNativeReauthenticatorBridge);
+        return ReauthenticatorBridgeJni.get()
+                .canUseAuthenticationWithBiometric(mNativeReauthenticatorBridge);
     }
 
     /**
@@ -40,8 +40,8 @@ public class ReauthenticatorBridge {
      * @return Whether authentication can be used.
      */
     public boolean canUseAuthenticationWithBiometricOrScreenLock() {
-        return ReauthenticatorBridgeJni.get().canUseAuthenticationWithBiometricOrScreenLock(
-                mNativeReauthenticatorBridge);
+        return ReauthenticatorBridgeJni.get()
+                .canUseAuthenticationWithBiometricOrScreenLock(mNativeReauthenticatorBridge);
     }
 
     /**
@@ -85,8 +85,11 @@ public class ReauthenticatorBridge {
     @NativeMethods
     interface Natives {
         long create(ReauthenticatorBridge reauthenticatorBridge, int source);
+
         boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
+
         boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
+
         void reauthenticate(long nativeReauthenticatorBridge);
     }
 }

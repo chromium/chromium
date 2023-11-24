@@ -25,8 +25,10 @@ public class ChromeNightModeTestUtils {
      * @param nightModeEnabled Whether night mode should be enabled.
      */
     public static void setUpNightModeForChromeActivity(boolean nightModeEnabled) {
-        ChromeSharedPreferences.getInstance().writeInt(ChromePreferenceKeys.UI_THEME_SETTING,
-                nightModeEnabled ? ThemeType.DARK : ThemeType.LIGHT);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.UI_THEME_SETTING,
+                        nightModeEnabled ? ThemeType.DARK : ThemeType.LIGHT);
     }
 
     /**

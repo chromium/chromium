@@ -14,9 +14,7 @@ import org.chromium.components.content_creation.notes.NoteService;
  * attached natively to the given {@link Profile}.
  */
 public class NoteServiceFactory {
-    /**
-     * Used to get access to the note service backend.
-     */
+    /** Used to get access to the note service backend. */
     public static NoteService getForProfile(Profile profile) {
         return NoteServiceFactoryJni.get().getForProfile(profile);
     }

@@ -14,13 +14,14 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeProvidedSharingOption
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Responsible for recording metrics related to note creation.
- */
+/** Responsible for recording metrics related to note creation. */
 public final class NoteCreationMetrics {
     // Constants used to log the Note Creation Funnel enum histogram.
-    @IntDef({NoteCreationFunnel.NOTE_CREATION_SELECTED, NoteCreationFunnel.TEMPLATE_SELECTED,
-            NoteCreationFunnel.NOTE_SHARED})
+    @IntDef({
+        NoteCreationFunnel.NOTE_CREATION_SELECTED,
+        NoteCreationFunnel.TEMPLATE_SELECTED,
+        NoteCreationFunnel.NOTE_SHARED
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface NoteCreationFunnel {
         int NOTE_CREATION_SELECTED = 0;
@@ -58,9 +59,7 @@ public final class NoteCreationMetrics {
 
     // Max expected number of dynamically loaded templates.
 
-    /**
-     * Records metrics related to the user starting the creation flow.
-     */
+    /** Records metrics related to the user starting the creation flow. */
     public static void recordNoteCreationSelected() {
         recordNoteCreationFunnel(NoteCreationFunnel.NOTE_CREATION_SELECTED);
     }
@@ -76,7 +75,7 @@ public final class NoteCreationMetrics {
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.SelectTemplate", duration);
 
         recordNoteCreationFunnel(NoteCreationFunnel.TEMPLATE_SELECTED);
-        recordNoteCreated(/*created=*/true);
+        recordNoteCreated(/* created= */ true);
         recordNbTemplateChanges(nbChanges);
         recordSelectedTemplateId(selectedTemplateId);
     }
@@ -91,7 +90,7 @@ public final class NoteCreationMetrics {
         RecordHistogram.recordMediumTimesHistogram(
                 "NoteCreation.TimeTo.DismissCreationDialog", duration);
 
-        recordNoteCreated(/*created=*/false);
+        recordNoteCreated(/* created= */ false);
         recordNbTemplateChanges(nbChanges);
     }
 
@@ -105,12 +104,14 @@ public final class NoteCreationMetrics {
     public static void recordNoteShared(long duration, ComponentName chosenComponent) {
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.ShareCreation", duration);
 
-        recordNoteShared(/*shared=*/true);
+        recordNoteShared(/* shared= */ true);
         recordNoteCreationFunnel(NoteCreationFunnel.NOTE_SHARED);
 
-        RecordHistogram.recordEnumeratedHistogram("NoteCreation.ShareDestination",
+        RecordHistogram.recordEnumeratedHistogram(
+                "NoteCreation.ShareDestination",
                 chosenComponent.equals(
-                        ChromeProvidedSharingOptionsProvider.CHROME_PROVIDED_FEATURE_COMPONENT_NAME)
+                                ChromeProvidedSharingOptionsProvider
+                                        .CHROME_PROVIDED_FEATURE_COMPONENT_NAME)
                         ? NoteShareDestination.FIRST_PARTY
                         : NoteShareDestination.THIRD_PARTY,
                 NoteShareDestination.NUM_ENTRIES);
@@ -125,7 +126,7 @@ public final class NoteCreationMetrics {
     public static void recordNoteNotShared(long duration) {
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.DismissShare", duration);
 
-        recordNoteShared(/*shared=*/false);
+        recordNoteShared(/* shared= */ false);
     }
 
     /**

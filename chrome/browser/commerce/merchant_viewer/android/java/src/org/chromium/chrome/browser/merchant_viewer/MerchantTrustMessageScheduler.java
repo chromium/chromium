@@ -29,8 +29,10 @@ public class MerchantTrustMessageScheduler {
     private Handler mEnqueueMessageTimer;
     private Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
 
-    public MerchantTrustMessageScheduler(MessageDispatcher messageDispatcher,
-            MerchantTrustMetrics metrics, ObservableSupplier<Tab> tabSupplier) {
+    public MerchantTrustMessageScheduler(
+            MessageDispatcher messageDispatcher,
+            MerchantTrustMetrics metrics,
+            ObservableSupplier<Tab> tabSupplier) {
         mEnqueueMessageTimer = new Handler(ThreadUtils.getUiThreadLooper());
         mMessageDispatcher = messageDispatcher;
         mMetrics = metrics;
@@ -49,47 +51,64 @@ public class MerchantTrustMessageScheduler {
 
     // TODO(crbug.com/1298610): Clean up this api in tests.
     @Deprecated
-    void schedule(PropertyModel model, MerchantTrustMessageContext messageContext,
-            long delayInMillis, Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
+    void schedule(
+            PropertyModel model,
+            MerchantTrustMessageContext messageContext,
+            long delayInMillis,
+            Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
         schedule(model, 4.0, messageContext, delayInMillis, messageEnqueuedCallback);
     }
 
     /** Adds a message to the underlying {@link MessageDispatcher} queue. */
-    void schedule(PropertyModel model, double starRating,
-            MerchantTrustMessageContext messageContext, long delayInMillis,
+    void schedule(
+            PropertyModel model,
+            double starRating,
+            MerchantTrustMessageContext messageContext,
+            long delayInMillis,
             Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
         setScheduledMessage(
                 new Pair<MerchantTrustMessageContext, PropertyModel>(messageContext, model));
         mMetrics.recordMetricsForMessagePrepared();
-        mEnqueueMessageTimer.postDelayed(() -> {
-            if (messageContext.isValid() && mTabSupplier.hasValue()
-                    && messageContext.getWebContents().equals(
-                            mTabSupplier.get().getWebContents())) {
-                mMetrics.startRecordingMessageImpact(messageContext.getHostName(), starRating);
-                if (MerchantViewerConfig.isTrustSignalsMessageDisabledForImpactStudy()) {
-                    messageEnqueuedCallback.onResult(messageContext);
-                    // TODO(crbug.com/1298610): Use a new message clear reason.
-                    clearScheduledMessage(MessageClearReason.UNKNOWN);
-                } else {
-                    mMessageDispatcher.enqueueMessage(model, messageContext.getWebContents(),
-                            MessageScopeType.NAVIGATION, false);
-                    mMetrics.recordMetricsForMessageShown();
-                    messageEnqueuedCallback.onResult(messageContext);
-                    setScheduledMessage(null);
-                }
-            } else {
-                messageEnqueuedCallback.onResult(null);
-                if (!messageContext.isValid()) {
-                    clearScheduledMessage(MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID);
-                } else if (mTabSupplier.hasValue()
-                        && !messageContext.getWebContents().equals(
-                                mTabSupplier.get().getWebContents())) {
-                    clearScheduledMessage(MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS);
-                } else {
-                    clearScheduledMessage(MessageClearReason.UNKNOWN);
-                }
-            }
-        }, delayInMillis);
+        mEnqueueMessageTimer.postDelayed(
+                () -> {
+                    if (messageContext.isValid()
+                            && mTabSupplier.hasValue()
+                            && messageContext
+                                    .getWebContents()
+                                    .equals(mTabSupplier.get().getWebContents())) {
+                        mMetrics.startRecordingMessageImpact(
+                                messageContext.getHostName(), starRating);
+                        if (MerchantViewerConfig.isTrustSignalsMessageDisabledForImpactStudy()) {
+                            messageEnqueuedCallback.onResult(messageContext);
+                            // TODO(crbug.com/1298610): Use a new message clear reason.
+                            clearScheduledMessage(MessageClearReason.UNKNOWN);
+                        } else {
+                            mMessageDispatcher.enqueueMessage(
+                                    model,
+                                    messageContext.getWebContents(),
+                                    MessageScopeType.NAVIGATION,
+                                    false);
+                            mMetrics.recordMetricsForMessageShown();
+                            messageEnqueuedCallback.onResult(messageContext);
+                            setScheduledMessage(null);
+                        }
+                    } else {
+                        messageEnqueuedCallback.onResult(null);
+                        if (!messageContext.isValid()) {
+                            clearScheduledMessage(
+                                    MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID);
+                        } else if (mTabSupplier.hasValue()
+                                && !messageContext
+                                        .getWebContents()
+                                        .equals(mTabSupplier.get().getWebContents())) {
+                            clearScheduledMessage(
+                                    MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS);
+                        } else {
+                            clearScheduledMessage(MessageClearReason.UNKNOWN);
+                        }
+                    }
+                },
+                delayInMillis);
     }
 
     /** Returns the currently scheduled message. */

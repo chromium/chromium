@@ -52,13 +52,14 @@ public class TabSwitcherButtonCoordinator {
 
     public void setThemeColorProvider(ThemeColorProvider themeColorProvider) {
         mThemeColorProvider = themeColorProvider;
-        mTintObserver = new TintObserver() {
-            @Override
-            public void onTintChanged(
-                    ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-                mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.TINT, tint);
-            }
-        };
+        mTintObserver =
+                new TintObserver() {
+                    @Override
+                    public void onTintChanged(
+                            ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
+                        mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.TINT, tint);
+                    }
+                };
         mThemeColorProvider.addTintObserver(mTintObserver);
         mTabSwitcherButtonModel.set(
                 TabSwitcherButtonProperties.TINT, mThemeColorProvider.getTint());
@@ -67,12 +68,14 @@ public class TabSwitcherButtonCoordinator {
     public void setTabCountProvider(TabCountProvider tabCountProvider) {
         mTabCountProvider = tabCountProvider;
         mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.IS_ENABLED, true);
-        mTabCountObserver = new TabCountObserver() {
-            @Override
-            public void onTabCountChanged(int tabCount, boolean isIncognito) {
-                mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.NUMBER_OF_TABS, tabCount);
-            }
-        };
+        mTabCountObserver =
+                new TabCountObserver() {
+                    @Override
+                    public void onTabCountChanged(int tabCount, boolean isIncognito) {
+                        mTabSwitcherButtonModel.set(
+                                TabSwitcherButtonProperties.NUMBER_OF_TABS, tabCount);
+                    }
+                };
         mTabCountProvider.addObserverAndTrigger(mTabCountObserver);
     }
 

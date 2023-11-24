@@ -19,11 +19,9 @@ import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
-/**
- * Dialog in the form of a consent shown for the Privacy Sandbox.
- */
-public class PrivacySandboxDialogConsentEEAV4
-        extends ChromeDialog implements View.OnClickListener, DialogInterface.OnShowListener {
+/** Dialog in the form of a consent shown for the Privacy Sandbox. */
+public class PrivacySandboxDialogConsentEEAV4 extends ChromeDialog
+        implements View.OnClickListener, DialogInterface.OnShowListener {
     private static final int SPINNER_DURATION_MS = 1500;
     private static final int BACKGROUND_TRANSITION_DURATION_MS = 300;
 
@@ -41,8 +39,10 @@ public class PrivacySandboxDialogConsentEEAV4
     private boolean mAreAnimationsDisabled;
     private SettingsLauncher mSettingsLauncher;
 
-    public PrivacySandboxDialogConsentEEAV4(Context context,
-            @NonNull SettingsLauncher settingsLauncher, boolean disableAnimations) {
+    public PrivacySandboxDialogConsentEEAV4(
+            Context context,
+            @NonNull SettingsLauncher settingsLauncher,
+            boolean disableAnimations) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mSettingsLauncher = settingsLauncher;
         mAreAnimationsDisabled = disableAnimations;
@@ -73,13 +73,19 @@ public class PrivacySandboxDialogConsentEEAV4
         setOnShowListener(this);
         setCancelable(false);
 
-        mScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            if (!mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
-                mMoreButton.setVisibility(View.GONE);
-                mActionButtons.setVisibility(View.VISIBLE);
-                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
-            }
-        });
+        mScrollView
+                .getViewTreeObserver()
+                .addOnScrollChangedListener(
+                        () -> {
+                            if (!mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+                                mMoreButton.setVisibility(View.GONE);
+                                mActionButtons.setVisibility(View.VISIBLE);
+                                mScrollView.post(
+                                        () -> {
+                                            mScrollView.pageScroll(ScrollView.FOCUS_DOWN);
+                                        });
+                            }
+                        });
     }
 
     @Override
@@ -101,45 +107,70 @@ public class PrivacySandboxDialogConsentEEAV4
         } else if (id == R.id.more_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_BUTTON_CLICKED);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
-                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+                mScrollView.post(
+                        () -> {
+                            mScrollView.pageScroll(ScrollView.FOCUS_DOWN);
+                        });
             } else {
                 mMoreButton.setVisibility(View.GONE);
                 mActionButtons.setVisibility(View.VISIBLE);
-                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+                mScrollView.post(
+                        () -> {
+                            mScrollView.pageScroll(ScrollView.FOCUS_DOWN);
+                        });
             }
         } else if (id == R.id.dropdown_element) {
             if (isDropdownExpanded()) {
                 PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
-                mScrollView.post(() -> { mScrollView.fullScroll(ScrollView.FOCUS_DOWN); });
+                mScrollView.post(
+                        () -> {
+                            mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                        });
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
                 PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_OPENED);
                 LayoutInflater.from(getContext())
-                        .inflate(R.layout.privacy_sandbox_consent_eea_dropdown_v4,
+                        .inflate(
+                                R.layout.privacy_sandbox_consent_eea_dropdown_v4,
                                 mDropdownContainer);
 
-                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(getContext(),
-                        mDropdownContainer, R.id.privacy_sandbox_m1_consent_learn_more_bullet_one,
+                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(
+                        getContext(),
+                        mDropdownContainer,
+                        R.id.privacy_sandbox_m1_consent_learn_more_bullet_one,
                         R.string.privacy_sandbox_m1_consent_learn_more_bullet_1);
-                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(getContext(),
-                        mDropdownContainer, R.id.privacy_sandbox_m1_consent_learn_more_bullet_two,
+                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(
+                        getContext(),
+                        mDropdownContainer,
+                        R.id.privacy_sandbox_m1_consent_learn_more_bullet_two,
                         R.string.privacy_sandbox_m1_consent_learn_more_bullet_2);
-                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(getContext(),
-                        mDropdownContainer, R.id.privacy_sandbox_m1_consent_learn_more_bullet_three,
+                PrivacySandboxDialogUtils.setBulletTextWithBoldContent(
+                        getContext(),
+                        mDropdownContainer,
+                        R.id.privacy_sandbox_m1_consent_learn_more_bullet_three,
                         R.string.privacy_sandbox_m1_consent_learn_more_bullet_3);
 
-                mScrollView.post(() -> { mScrollView.scrollTo(0, mDropdownElement.getTop()); });
+                mScrollView.post(
+                        () -> {
+                            mScrollView.scrollTo(0, mDropdownElement.getTop());
+                        });
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
-            PrivacySandboxDialogUtils.updateDropdownControlContentDescription(getContext(), view,
+            PrivacySandboxDialogUtils.updateDropdownControlContentDescription(
+                    getContext(),
+                    view,
                     isDropdownExpanded(),
                     R.string.privacy_sandbox_m1_consent_learn_more_expand_label);
-            view.announceForAccessibility(getContext().getResources().getString(isDropdownExpanded()
-                            ? R.string.accessibility_expanded_group
-                            : R.string.accessibility_collapsed_group));
+            view.announceForAccessibility(
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    isDropdownExpanded()
+                                            ? R.string.accessibility_expanded_group
+                                            : R.string.accessibility_collapsed_group));
         }
     }
 
@@ -175,6 +206,7 @@ public class PrivacySandboxDialogConsentEEAV4
     private long getDismissTimeout() {
         return mAreAnimationsDisabled ? 0 : SPINNER_DURATION_MS + BACKGROUND_TRANSITION_DURATION_MS;
     }
+
     private long getSpinnerTimeout() {
         return mAreAnimationsDisabled ? 0 : SPINNER_DURATION_MS;
     }

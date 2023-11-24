@@ -10,9 +10,7 @@ import org.chromium.base.ResettersForTesting;
 
 import java.util.UUID;
 
-/**
- * Allows access to cloud management functionalities implemented downstream.
- */
+/** Allows access to cloud management functionalities implemented downstream. */
 public class CloudManagementAndroidConnection {
     private static class LazyHolder {
         private static final CloudManagementAndroidConnection INSTANCE =

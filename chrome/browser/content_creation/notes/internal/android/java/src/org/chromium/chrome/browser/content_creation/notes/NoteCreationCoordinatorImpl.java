@@ -36,9 +36,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Responsible for notes main UI and its subcomponents.
- */
+/** Responsible for notes main UI and its subcomponents. */
 public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, TopBarDelegate {
     private static final String PNG_MIME_TYPE = "image/PNG";
 
@@ -55,9 +53,14 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
     private TopBarCoordinator mTopBarCoordinator;
 
-    public NoteCreationCoordinatorImpl(Activity activity, WindowAndroid windowAndroid,
-            NoteService noteService, ChromeOptionShareCallback chromeOptionShareCallback,
-            String shareUrl, String title, String selectedText) {
+    public NoteCreationCoordinatorImpl(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            NoteService noteService,
+            ChromeOptionShareCallback chromeOptionShareCallback,
+            String shareUrl,
+            String title,
+            String selectedText) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mChromeOptionShareCallback = chromeOptionShareCallback;
@@ -68,13 +71,20 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
         mListModel = new ModelList();
 
-        ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(
-                ImageFetcherConfig.DISK_CACHE_ONLY, ProfileKey.getLastUsedRegularProfileKey());
-        mMediator = new NoteCreationMediator(mListModel, new GoogleFontService(mActivity),
-                noteService, new ImageService(imageFetcher));
+        ImageFetcher imageFetcher =
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.DISK_CACHE_ONLY,
+                        ProfileKey.getLastUsedRegularProfileKey());
+        mMediator =
+                new NoteCreationMediator(
+                        mListModel,
+                        new GoogleFontService(mActivity),
+                        noteService,
+                        new ImageService(imageFetcher));
 
-        String urlDomain = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-                new GURL(mShareUrl));
+        String urlDomain =
+                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                        new GURL(mShareUrl));
         mDialog = new NoteCreationDialog();
         mDialog.initDialog(
                 this::onViewCreated, urlDomain, title, selectedText, this::executeAction);
@@ -89,9 +99,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
     }
 
-    /**
-     * Dismiss the main dialog from top bar.
-     */
+    /** Dismiss the main dialog from top bar. */
     @Override
     public void dismiss() {
         NoteCreationMetrics.recordNoteCreationDismissed(
@@ -99,15 +107,14 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         mDialog.dismiss();
     }
 
-    /**
-     * Share the currently selected note.
-     */
+    /** Share the currently selected note. */
     @Override
     public void executeAction() {
         // Top bar may be loaded before notes.
         if (mListModel.size() == 0) return;
         int selectedNoteIndex = mDialog.getSelectedItemIndex();
-        NoteCreationMetrics.recordNoteTemplateSelected(getTimeElapsedSinceCreationStart(),
+        NoteCreationMetrics.recordNoteTemplateSelected(
+                getTimeElapsedSinceCreationStart(),
                 mDialog.getNbTemplateSwitches(),
                 mListModel.get(selectedNoteIndex).model.get(NoteProperties.TEMPLATE).id,
                 selectedNoteIndex);
@@ -116,33 +123,37 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
         assert noteView != null;
 
-        Bitmap bitmap = Bitmap.createBitmap(
-                noteView.getWidth(), noteView.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        noteView.getWidth(), noteView.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         noteView.draw(canvas);
 
         ShareImageFileUtils.generateTemporaryUriFromBitmap(
-                getNoteFilenamePrefix(), bitmap, (imageUri) -> {
+                getNoteFilenamePrefix(),
+                bitmap,
+                (imageUri) -> {
                     final String sheetTitle = getShareSheetTitle();
+                    var callback =
+                            new ShareParams.TargetChosenCallback() {
+                                @Override
+                                public void onTargetChosen(ComponentName chosenComponent) {
+                                    NoteCreationMetrics.recordNoteShared(
+                                            getTimeElapsedSinceCreationStart(), chosenComponent);
+                                }
+
+                                @Override
+                                public void onCancel() {
+                                    NoteCreationMetrics.recordNoteNotShared(
+                                            getTimeElapsedSinceCreationStart());
+                                }
+                            };
                     ShareParams params =
                             new ShareParams.Builder(mWindowAndroid, sheetTitle, mShareUrl)
                                     .setSingleImageUri(imageUri)
                                     .setImageAltText(mSelectedText)
                                     .setFileContentType(PNG_MIME_TYPE)
-                                    .setCallback(new ShareParams.TargetChosenCallback() {
-                                        @Override
-                                        public void onTargetChosen(ComponentName chosenComponent) {
-                                            NoteCreationMetrics.recordNoteShared(
-                                                    getTimeElapsedSinceCreationStart(),
-                                                    chosenComponent);
-                                        }
-
-                                        @Override
-                                        public void onCancel() {
-                                            NoteCreationMetrics.recordNoteNotShared(
-                                                    getTimeElapsedSinceCreationStart());
-                                        }
-                                    })
+                                    .setCallback(callback)
                                     .build();
 
                     long shareStartTime = System.currentTimeMillis();
@@ -188,9 +199,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                 R.string.content_creation_note_title_for_share, currentDateString);
     }
 
-    /**
-     * Retrieves the user's preferred locale from the app's configurations.
-     */
+    /** Retrieves the user's preferred locale from the app's configurations. */
     private Locale getPreferredLocale() {
         return mActivity.getResources().getConfiguration().getLocales().get(0);
     }
@@ -205,9 +214,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                 .toString();
     }
 
-    /**
-     * Returns the time elapsed since the creation was started.
-     */
+    /** Returns the time elapsed since the creation was started. */
     private long getTimeElapsedSinceCreationStart() {
         return System.currentTimeMillis() - mCreationStartTime;
     }

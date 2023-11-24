@@ -36,7 +36,10 @@ class PermissionFeedbackSource implements FeedbackSource {
             }
         }
 
-        return Map.of("Granted Permissions", grantedPermissions,
-                "Not Granted or Requested Permissions", notGrantedPermission);
+        return Map.of(
+                "Granted Permissions",
+                grantedPermissions,
+                "Not Granted or Requested Permissions",
+                notGrantedPermission);
     }
 }

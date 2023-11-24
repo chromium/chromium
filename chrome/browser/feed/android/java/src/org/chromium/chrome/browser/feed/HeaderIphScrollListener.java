@@ -36,8 +36,10 @@ public class HeaderIphScrollListener implements ScrollListener {
     private float mMinScrollFraction;
     private float mHeaderMaxPosFraction;
 
-    HeaderIphScrollListener(FeedBubbleDelegate delegate,
-            ScrollableContainerDelegate scrollableContainerDelegate, Runnable showIPHRunnable) {
+    HeaderIphScrollListener(
+            FeedBubbleDelegate delegate,
+            ScrollableContainerDelegate scrollableContainerDelegate,
+            Runnable showIPHRunnable) {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;
         mShowIPHRunnable = showIPHRunnable;

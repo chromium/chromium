@@ -15,9 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Helps to show a confirmation.
- */
+/** Helps to show a confirmation. */
 public class ConfirmationDialogHelper implements DialogInterface.OnClickListener {
     private final WeakReference<Context> mContext;
     private AlertDialog mConfirmationDialog;
@@ -33,16 +31,12 @@ public class ConfirmationDialogHelper implements DialogInterface.OnClickListener
         mConfirmedCallback.run();
     }
 
-    /**
-     * Hides the dialog.
-     */
+    /** Hides the dialog. */
     public void dismiss() {
         if (mConfirmationDialog != null) mConfirmationDialog.dismiss();
     }
 
-    /**
-     * Returns the resources associated with the context used to launch the dialog.
-     */
+    /** Returns the resources associated with the context used to launch the dialog. */
     public Resources getResources() {
         if (mContext.get() == null) return null;
         return mContext.get().getResources();
@@ -70,10 +64,11 @@ public class ConfirmationDialogHelper implements DialogInterface.OnClickListener
         titleView.setText(title);
         TextView messageView = body.findViewById(R.id.confirmation_dialog_message);
         messageView.setText(message);
-        mConfirmationDialog = builder.setView(body)
-                                      .setNegativeButton(R.string.cancel, null)
-                                      .setPositiveButton(confirmButtonTextId, this)
-                                      .create();
+        mConfirmationDialog =
+                builder.setView(body)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(confirmButtonTextId, this)
+                        .create();
         mConfirmationDialog.show();
     }
 }

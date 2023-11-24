@@ -24,8 +24,13 @@ class HistoryCluster {
     private final List<String> mRelatedSearches;
     private final String mRawLabel;
 
-    public HistoryCluster(List<ClusterVisit> visits, String label, String rawLabel,
-            List<MatchPosition> matchPositions, long timestamp, List<String> relatedSearches) {
+    public HistoryCluster(
+            List<ClusterVisit> visits,
+            String label,
+            String rawLabel,
+            List<MatchPosition> matchPositions,
+            long timestamp,
+            List<String> relatedSearches) {
         mVisits = visits;
         mLabel = label;
         mRawLabel = rawLabel;

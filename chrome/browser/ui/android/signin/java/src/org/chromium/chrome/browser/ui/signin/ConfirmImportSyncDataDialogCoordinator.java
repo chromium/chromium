@@ -45,9 +45,7 @@ public class ConfirmImportSyncDataDialogCoordinator {
          */
         void onConfirm(boolean wipeData);
 
-        /**
-         * The user dismisses the dialog through any means other than the positive button.
-         */
+        /** The user dismisses the dialog through any means other than the positive button. */
         void onCancel();
     }
 
@@ -61,9 +59,18 @@ public class ConfirmImportSyncDataDialogCoordinator {
     private final ModalDialogManager mDialogManager;
     private final Predicate<String> mCheckIfDisplayableEmailAddress;
 
-    public ConfirmImportSyncDataDialogCoordinator(Context context, ModalDialogManager dialogManager,
-            Listener listener, String currentAccountName, String newAccountName) {
-        this(context, dialogManager, listener, currentAccountName, newAccountName,
+    public ConfirmImportSyncDataDialogCoordinator(
+            Context context,
+            ModalDialogManager dialogManager,
+            Listener listener,
+            String currentAccountName,
+            String newAccountName) {
+        this(
+                context,
+                dialogManager,
+                listener,
+                currentAccountName,
+                newAccountName,
                 AccountEmailDomainDisplayability::checkIfDisplayableEmailAddress);
     }
 
@@ -80,8 +87,12 @@ public class ConfirmImportSyncDataDialogCoordinator {
      * @param checkIfDisplayableEmailAddress    Predicate testing if an email is displayable.
      */
     @MainThread
-    public ConfirmImportSyncDataDialogCoordinator(Context context, ModalDialogManager dialogManager,
-            Listener listener, String currentAccountName, String newAccountName,
+    public ConfirmImportSyncDataDialogCoordinator(
+            Context context,
+            ModalDialogManager dialogManager,
+            Listener listener,
+            String currentAccountName,
+            String newAccountName,
             Predicate<String> checkIfDisplayableEmailAddress) {
         mCheckIfDisplayableEmailAddress = checkIfDisplayableEmailAddress;
 
@@ -95,22 +106,26 @@ public class ConfirmImportSyncDataDialogCoordinator {
 
         boolean isCurrentAccountManaged =
                 IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .getManagementDomain()
-                != null;
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                 context.getString(R.string.continue_button))
-                         // For non-managed accounts, the confirmation button starts out disabled,
-                         // since none of the options are chosen by default.
-                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
-                                 !isCurrentAccountManaged)
-                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                 context.getString(R.string.cancel))
-                         .with(ModalDialogProperties.CUSTOM_VIEW, mConfirmImportSyncDataView)
-                         .with(ModalDialogProperties.CONTROLLER, createController())
-                         .build();
+                                .getSigninManager(Profile.getLastUsedRegularProfile())
+                                .getManagementDomain()
+                        != null;
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getString(R.string.continue_button))
+                        // For non-managed accounts, the confirmation button starts out disabled,
+                        // since none of the options are chosen by default.
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
+                                !isCurrentAccountManaged)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getString(R.string.cancel))
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mConfirmImportSyncDataView)
+                        .with(ModalDialogProperties.CONTROLLER, createController())
+                        .build();
         mDialogManager = dialogManager;
 
         setUpConfirmImportSyncDataView(
@@ -118,9 +133,7 @@ public class ConfirmImportSyncDataDialogCoordinator {
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
-    /**
-     * Dismisses the confirm import sync data dialog.
-     */
+    /** Dismisses the confirm import sync data dialog. */
     @MainThread
     public void dismissDialog() {
         mDialogManager.dismissDialog(mModel, DialogDismissalCause.UNKNOWN);
@@ -133,7 +146,8 @@ public class ConfirmImportSyncDataDialogCoordinator {
                 if (buttonType == ButtonType.POSITIVE) {
                     assert mConfirmImportOption.isChecked() ^ mKeepSeparateOption.isChecked();
 
-                    RecordUserAction.record(mKeepSeparateOption.isChecked()
+                    RecordUserAction.record(
+                            mKeepSeparateOption.isChecked()
                                     ? "Signin_ImportDataPrompt_DontImport"
                                     : "Signin_ImportDataPrompt_ImportData");
                     mListener.onConfirm(mKeepSeparateOption.isChecked());
@@ -156,8 +170,11 @@ public class ConfirmImportSyncDataDialogCoordinator {
         };
     }
 
-    private void setUpConfirmImportSyncDataView(Context context, String currentAccountName,
-            String newAccountName, boolean isCurrentAccountManaged) {
+    private void setUpConfirmImportSyncDataView(
+            Context context,
+            String currentAccountName,
+            String newAccountName,
+            boolean isCurrentAccountManaged) {
         TextView prompt = mConfirmImportSyncDataView.findViewById(R.id.sync_import_data_prompt);
 
         if (!mCheckIfDisplayableEmailAddress.test(currentAccountName)) {
@@ -186,10 +203,12 @@ public class ConfirmImportSyncDataDialogCoordinator {
         } else {
             // The confirmation button gets enabled as soon as either of the radio button options
             // was selected.
-            mKeepSeparateOption.setOnCheckedChangeListener(radioButton
-                    -> mModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false));
-            mConfirmImportOption.setOnCheckedChangeListener(radioButton
-                    -> mModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false));
+            mKeepSeparateOption.setOnCheckedChangeListener(
+                    radioButton ->
+                            mModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false));
+            mConfirmImportOption.setOnCheckedChangeListener(
+                    radioButton ->
+                            mModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false));
         }
     }
 }

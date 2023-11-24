@@ -24,15 +24,16 @@ public class LayoutTestUtils {
     public static void waitForLayout(LayoutManager layoutManager, @LayoutType int type) {
         Assert.assertNotNull(layoutManager);
         CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
-        LayoutStateObserver observer = new LayoutStateObserver() {
-            @Override
-            public void onFinishedShowing(int layoutType) {
-                // Ensure the layout is the one we're actually looking for.
-                if (type != layoutType) return;
+        LayoutStateObserver observer =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        // Ensure the layout is the one we're actually looking for.
+                        if (type != layoutType) return;
 
-                finishedShowingCallbackHelper.notifyCalled();
-            }
-        };
+                        finishedShowingCallbackHelper.notifyCalled();
+                    }
+                };
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Only trigger immediately if the layout visible and not mid-transition.

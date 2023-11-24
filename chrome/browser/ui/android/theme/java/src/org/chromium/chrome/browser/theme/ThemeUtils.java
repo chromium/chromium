@@ -25,9 +25,7 @@ import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * Utility methods for theme colors.
- */
+/** Utility methods for theme colors. */
 public class ThemeUtils {
     private static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 0.2f;
 
@@ -59,11 +57,13 @@ public class ThemeUtils {
             Context context, @Nullable Tab tab, @ColorInt int backgroundColor) {
         boolean isIncognito = tab != null && tab.isIncognito();
         @ColorInt
-        int defaultColor = getTextBoxColorForToolbarBackgroundInNonNativePage(
-                context, backgroundColor, isIncognito);
+        int defaultColor =
+                getTextBoxColorForToolbarBackgroundInNonNativePage(
+                        context, backgroundColor, isIncognito);
         NativePage nativePage = tab != null ? tab.getNativePage() : null;
-        return nativePage != null ? nativePage.getToolbarTextBoxBackgroundColor(defaultColor)
-                                  : defaultColor;
+        return nativePage != null
+                ? nativePage.getToolbarTextBoxBackgroundColor(defaultColor)
+                : defaultColor;
     }
 
     /**
@@ -88,9 +88,11 @@ public class ThemeUtils {
         // Text box color on default toolbar background in standard mode is a pre-defined
         // color instead of a calculated color.
         if (ThemeUtils.isUsingDefaultToolbarColor(context, false, color)) {
-            float tabElevation = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                    ? context.getResources().getDimension(R.dimen.default_elevation_4)
-                    : context.getResources().getDimension(R.dimen.toolbar_text_box_elevation);
+            float tabElevation =
+                    ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                            ? context.getResources().getDimension(R.dimen.default_elevation_4)
+                            : context.getResources()
+                                    .getDimension(R.dimen.toolbar_text_box_elevation);
             return ChromeColors.getSurfaceColor(context, tabElevation);
         }
 
@@ -121,8 +123,9 @@ public class ThemeUtils {
     public static @ColorRes int getThemedToolbarIconTintRes(boolean useLight) {
         // Light toolbar theme colors may be used in night mode, so use toolbar_icon_tint_dark which
         // is not overridden in night- resources.
-        return useLight ? R.color.default_icon_color_light_tint_list
-                        : R.color.default_icon_color_dark_tint_list;
+        return useLight
+                ? R.color.default_icon_color_light_tint_list
+                : R.color.default_icon_color_dark_tint_list;
     }
 
     /**
@@ -146,8 +149,7 @@ public class ThemeUtils {
      */
     public static @ColorRes int getThemedToolbarIconTintRes(
             @BrandedColorScheme int brandedColorScheme) {
-        @ColorRes
-        int colorId = R.color.default_icon_color_tint_list;
+        @ColorRes int colorId = R.color.default_icon_color_tint_list;
         if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
             colorId = R.color.default_icon_color_light_tint_list;
         } else if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
@@ -181,8 +183,9 @@ public class ThemeUtils {
             Context context, @ColorInt int toolbarColor, boolean isIncognito) {
         final Resources res = context.getResources();
         if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
-            return isIncognito ? res.getColor(R.color.divider_line_bg_color_light)
-                               : SemanticColorUtils.getDividerLineBgColor(context);
+            return isIncognito
+                    ? res.getColor(R.color.divider_line_bg_color_light)
+                    : SemanticColorUtils.getDividerLineBgColor(context);
         }
 
         final float alpha = ResourcesCompat.getFloat(res, R.dimen.toolbar_hairline_overlay_alpha);

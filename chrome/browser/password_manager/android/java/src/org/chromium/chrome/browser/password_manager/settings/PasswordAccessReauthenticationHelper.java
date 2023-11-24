@@ -37,19 +37,13 @@ public class PasswordAccessReauthenticationHelper {
     @IntDef({ReauthReason.VIEW_PASSWORD, ReauthReason.EDIT_PASSWORD, ReauthReason.COPY_PASSWORD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ReauthReason {
-        /**
-         * A reauthentication is required for viewing a password.
-         */
+        /** A reauthentication is required for viewing a password. */
         int VIEW_PASSWORD = 0;
 
-        /**
-         * A reauthentication is required for editing a password.
-         */
+        /** A reauthentication is required for editing a password. */
         int EDIT_PASSWORD = 1;
 
-        /**
-         * Reauthentication is required in order to copy a password.
-         */
+        /** Reauthentication is required in order to copy a password. */
         int COPY_PASSWORD = 2;
     }
 
@@ -78,8 +72,10 @@ public class PasswordAccessReauthenticationHelper {
 
         // Invoke the handler immediately if an authentication is still valid.
         if (ReauthenticationManager.authenticationStillValid(ReauthScope.ONE_AT_A_TIME)) {
-            RecordHistogram.recordEnumeratedHistogram(SETTINGS_REAUTHENTICATION_HISTOGRAM,
-                    ReauthResult.SKIPPED, ReauthResult.MAX_VALUE + 1);
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_REAUTHENTICATION_HISTOGRAM,
+                    ReauthResult.SKIPPED,
+                    ReauthResult.MAX_VALUE + 1);
 
             callback.onResult(true);
             return;
@@ -90,17 +86,23 @@ public class PasswordAccessReauthenticationHelper {
         switch (reason) {
             case ReauthReason.VIEW_PASSWORD:
                 ReauthenticationManager.displayReauthenticationFragment(
-                        R.string.lockscreen_description_view, View.NO_ID, mFragmentManager,
+                        R.string.lockscreen_description_view,
+                        View.NO_ID,
+                        mFragmentManager,
                         ReauthScope.ONE_AT_A_TIME);
                 break;
             case ReauthReason.EDIT_PASSWORD:
                 ReauthenticationManager.displayReauthenticationFragment(
-                        R.string.lockscreen_description_edit, View.NO_ID, mFragmentManager,
+                        R.string.lockscreen_description_edit,
+                        View.NO_ID,
+                        mFragmentManager,
                         ReauthScope.ONE_AT_A_TIME);
                 break;
             case ReauthReason.COPY_PASSWORD:
                 ReauthenticationManager.displayReauthenticationFragment(
-                        R.string.lockscreen_description_copy, View.NO_ID, mFragmentManager,
+                        R.string.lockscreen_description_copy,
+                        View.NO_ID,
+                        mFragmentManager,
                         ReauthScope.ONE_AT_A_TIME);
                 break;
         }
@@ -113,7 +115,9 @@ public class PasswordAccessReauthenticationHelper {
     public void showScreenLockToast(@ReauthReason int reason) {
         if (reason == ReauthReason.COPY_PASSWORD) {
             Toast.makeText(
-                         mContext, R.string.password_entry_copy_set_screen_lock, Toast.LENGTH_LONG)
+                            mContext,
+                            R.string.password_entry_copy_set_screen_lock,
+                            Toast.LENGTH_LONG)
                     .show();
             return;
         }

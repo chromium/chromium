@@ -118,13 +118,17 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
                                 PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
                                 DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO);
         mLayoutView = layoutView;
-        mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
-            R.layout.page_insights_sheet_toolbar, null);
+        mToolbarView =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.page_insights_sheet_toolbar, null);
         mToolbarView
                 .findViewById(R.id.page_insights_back_button)
                 .setOnClickListener((view) -> onBackPressHandler.handle());
-        mSheetContentView = (ViewGroup) LayoutInflater.from(context).inflate(
-                R.layout.page_insights_sheet_content, null);
+        mSheetContentView =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.page_insights_sheet_content, null);
 
         // TODO(b/306377148): Remove this once a solution is built into bottom sheet infra.
         TapInterceptingLinearLayout contentContainer =
@@ -456,7 +460,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     }
 
     private void preparePrivacyNoticeView() {
-        mSheetContentView.findViewById(R.id.page_insights_privacy_notice_close_button)
+        mSheetContentView
+                .findViewById(R.id.page_insights_privacy_notice_close_button)
                 .setOnClickListener((view) -> onPrivacyNoticeClosed());
         TextView privacyNoticeMessage =
                 mSheetContentView.findViewById(R.id.page_insights_privacy_notice_message);

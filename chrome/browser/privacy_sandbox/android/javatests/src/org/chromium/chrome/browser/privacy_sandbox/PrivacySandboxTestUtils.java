@@ -25,9 +25,7 @@ import org.hamcrest.Matcher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
-/**
- * Test utilities for various privacy_sandbox tests.
- */
+/** Test utilities for various privacy_sandbox tests. */
 public final class PrivacySandboxTestUtils {
     /**
      * Click an ImageButton located next to a View that contains the given text.

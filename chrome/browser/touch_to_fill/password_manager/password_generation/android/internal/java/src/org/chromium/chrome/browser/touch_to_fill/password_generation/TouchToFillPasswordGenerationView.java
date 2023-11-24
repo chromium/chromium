@@ -32,18 +32,23 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         mContent = content;
 
         ImageView sheetHeaderImage = mContent.findViewById(R.id.touch_to_fill_sheet_header_image);
-        sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
-                context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
+        sheetHeaderImage.setImageDrawable(
+                AppCompatResources.getDrawable(
+                        context,
+                        PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
         mPasswordView = mContent.findViewById(R.id.password);
     }
 
     void setSheetSubtitle(String accountEmail) {
         TextView sheetSubtitleView = mContent.findViewById(R.id.touch_to_fill_sheet_subtitle);
-        String sheetSubtitle = accountEmail.isEmpty()
-                ? mContext.getString(R.string.password_generation_bottom_sheet_subtitle_no_account)
-                : String.format(
-                        mContext.getString(R.string.password_generation_bottom_sheet_subtitle),
-                        accountEmail);
+        String sheetSubtitle =
+                accountEmail.isEmpty()
+                        ? mContext.getString(
+                                R.string.password_generation_bottom_sheet_subtitle_no_account)
+                        : String.format(
+                                mContext.getString(
+                                        R.string.password_generation_bottom_sheet_subtitle),
+                                accountEmail);
         sheetSubtitleView.setText(sheetSubtitle);
     }
 

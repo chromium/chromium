@@ -125,13 +125,11 @@ public class SearchEngineUtilsUnitTest {
     public void recordEvent() {
         UmaRecorderHolder.resetForTesting();
 
-        mSearchEngineUtils.recordEvent(
-                SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
+        mSearchEngineUtils.recordEvent(SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        EVENTS_HISTOGRAM,
-                        SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
+                        EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
 
         mSearchEngineUtils.recordEvent(SearchEngineUtils.Events.FETCH_SUCCESS_CACHE_HIT);
         assertEquals(
@@ -149,8 +147,7 @@ public class SearchEngineUtilsUnitTest {
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        EVENTS_HISTOGRAM,
-                        SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
+                        EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -225,8 +222,7 @@ public class SearchEngineUtilsUnitTest {
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        EVENTS_HISTOGRAM,
-                        SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
+                        EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -250,8 +246,7 @@ public class SearchEngineUtilsUnitTest {
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        EVENTS_HISTOGRAM,
-                        SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
+                        EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -274,8 +269,7 @@ public class SearchEngineUtilsUnitTest {
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        EVENTS_HISTOGRAM,
-                        SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
+                        EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(

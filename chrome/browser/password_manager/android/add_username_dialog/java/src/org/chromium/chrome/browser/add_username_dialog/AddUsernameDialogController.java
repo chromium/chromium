@@ -29,9 +29,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * to add the username for the saved password.
  */
 public class AddUsernameDialogController implements ModalDialogProperties.Controller {
-    /**
-     * A delegate interface to receive the results of the dialog interaction.
-     */
+    /** A delegate interface to receive the results of the dialog interaction. */
     interface Delegate {
         /**
          * Called when the user taps the dialog positive button.
@@ -40,9 +38,7 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
          */
         void onDialogAccepted(String username);
 
-        /**
-         * Called when the dialog is dismissed.
-         */
+        /** Called when the dialog is dismissed. */
         void onDialogDismissed();
     }
 
@@ -134,9 +130,11 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
             mDelegate.onDialogAccepted(
                     mContentViewModel.get(AddUsernameDialogContentProperties.USERNAME));
         }
-        mModalDialogManager.dismissDialog(model,
-                buttonType == ButtonType.POSITIVE ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                                  : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        mModalDialogManager.dismissDialog(
+                model,
+                buttonType == ButtonType.POSITIVE
+                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     @Override

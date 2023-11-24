@@ -38,23 +38,32 @@ class WebsiteApprovalMediator {
     }
 
     void show() {
-        mModel.set(WebsiteApprovalProperties.ON_CLICK_APPROVE, v -> {
-            mBottomSheetController.hideContent(mSheetContent, true,
-                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-            mCompletionCallback.onWebsiteApproved();
-        });
-        mModel.set(WebsiteApprovalProperties.ON_CLICK_DENY, v -> {
-            mBottomSheetController.hideContent(mSheetContent, true,
-                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-            mCompletionCallback.onWebsiteDenied();
-        });
+        mModel.set(
+                WebsiteApprovalProperties.ON_CLICK_APPROVE,
+                v -> {
+                    mBottomSheetController.hideContent(
+                            mSheetContent,
+                            true,
+                            BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+                    mCompletionCallback.onWebsiteApproved();
+                });
+        mModel.set(
+                WebsiteApprovalProperties.ON_CLICK_DENY,
+                v -> {
+                    mBottomSheetController.hideContent(
+                            mSheetContent,
+                            true,
+                            BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+                    mCompletionCallback.onWebsiteDenied();
+                });
 
         // Set the child name.  We use the given name if there is one for this account, otherwise we
         // use the full account email address.
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
-        String childEmail = CoreAccountInfo.getEmailFrom(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        String childEmail =
+                CoreAccountInfo.getEmailFrom(
+                        identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         if (childEmail == null) {
             // This is an unexpected window condition: there is no signed in account.
             // TODO(crbug.com/1330900): dismiss the bottom sheet.

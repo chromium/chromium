@@ -25,9 +25,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A delegate for the menu button present inside the Incognito re-auth view full page.
- */
+/** A delegate for the menu button present inside the Incognito re-auth view full page. */
 class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     /**
      * An enum interface denoting the various options (in-order) present in the
@@ -53,7 +51,8 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      *         responsible to opening the {@link SettingsActivity} when the user clicks on
      *         "Settings" option.
      */
-    IncognitoReauthMenuDelegate(@NonNull Context context,
+    IncognitoReauthMenuDelegate(
+            @NonNull Context context,
             @NonNull Runnable closeAllIncognitoTabRunnable,
             @NonNull SettingsLauncher settingsLauncher) {
         mContext = context;
@@ -109,23 +108,24 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
         switch (type) {
             case MenuItemType.CLOSE_INCOGNITO_TABS:
                 return buildMenuListItemWithCustomApperance(
-                        /*titleId=*/R.string.menu_close_all_incognito_tabs,
-                        /*menuId=*/0,
-                        /*startIconId=*/R.drawable.btn_close,
-                        /*enabled=*/true,
-                        /*colorTint=*/R.color.default_icon_color_secondary_light_tint_list,
-                        /*textAppearanceStyle=*/
-                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                        /*textEllipsizedAtEnd=*/true);
+                        /* titleId= */ R.string.menu_close_all_incognito_tabs,
+                        /* menuId= */ 0,
+                        /* startIconId= */ R.drawable.btn_close,
+                        /* enabled= */ true,
+                        /* colorTint= */ R.color.default_icon_color_secondary_light_tint_list,
+                        /* textAppearanceStyle= */ R.style
+                                .TextAppearance_TextLarge_Primary_Baseline_Light,
+                        /* textEllipsizedAtEnd= */ true);
             case MenuItemType.SETTINGS:
-                return buildMenuListItemWithCustomApperance(/*titleId=*/R.string.menu_settings,
-                        /*menuId=*/0,
-                        /*startIconId=*/R.drawable.settings_cog,
-                        /*enabled=*/true,
-                        /*colorTint=*/R.color.default_icon_color_secondary_light_tint_list,
-                        /*textAppearanceStyle=*/
-                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                        /*textEllipsizedAtEnd=*/true);
+                return buildMenuListItemWithCustomApperance(
+                        /* titleId= */ R.string.menu_settings,
+                        /* menuId= */ 0,
+                        /* startIconId= */ R.drawable.settings_cog,
+                        /* enabled= */ true,
+                        /* colorTint= */ R.color.default_icon_color_secondary_light_tint_list,
+                        /* textAppearanceStyle= */ R.style
+                                .TextAppearance_TextLarge_Primary_Baseline_Light,
+                        /* textEllipsizedAtEnd= */ true);
             default:
                 assert false : "Not implemented yet.";
                 return null;
@@ -155,8 +155,13 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      * @return ListItem Representing an item with text or icon.
      */
     private static MVCListAdapter.ListItem buildMenuListItemWithCustomApperance(
-            @StringRes int titleId, @IdRes int menuId, @DrawableRes int startIconId,
-            boolean enabled, int colorTint, int textAppearanceStyle, boolean textEllipsizedAtEnd) {
+            @StringRes int titleId,
+            @IdRes int menuId,
+            @DrawableRes int startIconId,
+            boolean enabled,
+            int colorTint,
+            int textAppearanceStyle,
+            boolean textEllipsizedAtEnd) {
         return new MVCListAdapter.ListItem(
                 BasicListMenu.ListMenuItemType.MENU_ITEM,
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)

@@ -94,7 +94,7 @@ public class GeolocationHeaderUnitTest {
     // VISIBLE_CELL1 connected, VISIBLE_CELL2 not connected.
     private static final String ENCODED_PROTO_VISIBLE_NETWORKS =
             "CAEQDLoBJAoeChExMToxMToxMToxMToxMToxMRD___________8BGAEgCroBJAoeChExMToxMToxMToxMTox"
-                + "MToxMxDi__________8BGAAgHroBEBIKCAMQChgLIAwoDRgBIAq6ARASCggBEBQYFSAWKBcYACAU";
+                    + "MToxMxDi__________8BGAAgHroBEBIKCAMQChgLIAwoDRgBIAq6ARASCggBEBQYFSAWKBcYACAU";
 
     private static int sRefreshVisibleNetworksRequests;
     private static int sRefreshLastKnownLocation;

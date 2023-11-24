@@ -19,21 +19,14 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * Fragment containing standard protection settings.
- */
-public class StandardProtectionSettingsFragment
-        extends SafeBrowsingSettingsFragmentBase implements Preference.OnPreferenceChangeListener {
-    @VisibleForTesting
-    static final String PREF_SUBTITLE = "subtitle";
-    @VisibleForTesting
-    static final String PREF_BULLET_ONE = "bullet_one";
-    @VisibleForTesting
-    static final String PREF_BULLET_TWO = "bullet_two";
-    @VisibleForTesting
-    static final String PREF_EXTENDED_REPORTING = "extended_reporting";
-    @VisibleForTesting
-    static final String PREF_PASSWORD_LEAK_DETECTION = "password_leak_detection";
+/** Fragment containing standard protection settings. */
+public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFragmentBase
+        implements Preference.OnPreferenceChangeListener {
+    @VisibleForTesting static final String PREF_SUBTITLE = "subtitle";
+    @VisibleForTesting static final String PREF_BULLET_ONE = "bullet_one";
+    @VisibleForTesting static final String PREF_BULLET_TWO = "bullet_two";
+    @VisibleForTesting static final String PREF_EXTENDED_REPORTING = "extended_reporting";
+    @VisibleForTesting static final String PREF_PASSWORD_LEAK_DETECTION = "password_leak_detection";
 
     public ChromeSwitchPreference mExtendedReportingPreference;
     public ChromeSwitchPreference mPasswordLeakDetectionPreference;
@@ -70,7 +63,7 @@ public class StandardProtectionSettingsFragment
      */
     private void updateToFriendlierSettings() {
         if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)) {
+                ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)) {
             // Remove the two bullet points
             getPreferenceScreen().removePreference(findPreference(PREF_BULLET_ONE));
             getPreferenceScreen().removePreference(findPreference(PREF_BULLET_TWO));
@@ -79,18 +72,27 @@ public class StandardProtectionSettingsFragment
             // feature flag is enabled. Otherwise, it will use the default strings that are
             // defined in the standard_protection_preferences.xml file.
             findPreference(PREF_SUBTITLE)
-                    .setTitle(getContext().getString(
-                            R.string.safe_browsing_standard_protection_subtitle_updated));
-            mExtendedReportingPreference.setTitle(getContext().getString(
-                    R.string.safe_browsing_standard_protection_extended_reporting_title_updated));
+                    .setTitle(
+                            getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_standard_protection_subtitle_updated));
+            mExtendedReportingPreference.setTitle(
+                    getContext()
+                            .getString(
+                                    R.string
+                                            .safe_browsing_standard_protection_extended_reporting_title_updated));
             mPasswordLeakDetectionPreference.setTitle(
                     getContext().getString(R.string.passwords_leak_detection_switch_title_updated));
             mPasswordLeakDetectionPreference.setSummary(
                     getContext().getString(R.string.passwords_leak_detection_switch_summary));
         } else if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
             findPreference(PREF_BULLET_TWO)
-                    .setSummary(getContext().getString(
-                            R.string.safe_browsing_standard_protection_bullet_two_proxy));
+                    .setSummary(
+                            getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_standard_protection_bullet_two_proxy));
         }
     }
 
@@ -102,16 +104,16 @@ public class StandardProtectionSettingsFragment
      * forced enabled in ENHANCED_PROTECTION mode and forced disabled in NO_SAFE_BROWSING mode.
      */
     private void updateLeakDetectionAndExtendedReportingPreferences() {
-        @SafeBrowsingState
-        int safe_browsing_state = SafeBrowsingBridge.getSafeBrowsingState();
+        @SafeBrowsingState int safe_browsing_state = SafeBrowsingBridge.getSafeBrowsingState();
         boolean is_enhanced_protection =
                 safe_browsing_state == SafeBrowsingState.ENHANCED_PROTECTION;
         boolean is_standard_protection =
                 safe_browsing_state == SafeBrowsingState.STANDARD_PROTECTION;
 
-        boolean extended_reporting_checked = is_enhanced_protection
-                || (is_standard_protection
-                        && SafeBrowsingBridge.isSafeBrowsingExtendedReportingEnabled());
+        boolean extended_reporting_checked =
+                is_enhanced_protection
+                        || (is_standard_protection
+                                && SafeBrowsingBridge.isSafeBrowsingExtendedReportingEnabled());
         boolean extended_reporting_disabled_by_delegate =
                 mManagedPreferenceDelegate.isPreferenceClickDisabled(mExtendedReportingPreference);
         mExtendedReportingPreference.setEnabled(

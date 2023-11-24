@@ -24,8 +24,11 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
         this(contentView, closeBottomSheetCallback, HeightMode.DEFAULT, HeightMode.WRAP_CONTENT);
     }
 
-    PrivacyGuideBottomSheetView(View contentView, Runnable closeBottomSheetCallback,
-            float halfHeight, float fullHeight) {
+    PrivacyGuideBottomSheetView(
+            View contentView,
+            Runnable closeBottomSheetCallback,
+            float halfHeight,
+            float fullHeight) {
         mContentView = contentView;
         mCloseBottomSheetCallback = closeBottomSheetCallback;
         mBackPressStateChangedSupplier.set(true);

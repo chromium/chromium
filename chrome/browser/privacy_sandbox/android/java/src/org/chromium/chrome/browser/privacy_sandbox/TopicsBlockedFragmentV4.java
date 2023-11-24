@@ -18,11 +18,9 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.List;
 
-/**
- * Fragment for the blocked Topic preferences.
- */
-public class TopicsBlockedFragmentV4
-        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
+/** Fragment for the blocked Topic preferences. */
+public class TopicsBlockedFragmentV4 extends PrivacySandboxSettingsBaseFragment
+        implements Preference.OnPreferenceClickListener {
     private static final String BLOCKED_TOPICS_PREFERENCE = "block_list";
 
     private PreferenceCategory mBlockedTopicsCategory;
@@ -58,8 +56,11 @@ public class TopicsBlockedFragmentV4
             mBlockedTopicsCategory.removePreference(preference);
             updateBlockedTopicsDescription();
 
-            showSnackbar(R.string.settings_topics_page_add_topic_snackbar, null,
-                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST);
+            showSnackbar(
+                    R.string.settings_topics_page_add_topic_snackbar,
+                    null,
+                    Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST);
             RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicAdded");
             return true;
         }
@@ -71,10 +72,12 @@ public class TopicsBlockedFragmentV4
         List<Topic> blockedTopics = PrivacySandboxBridge.getBlockedTopics();
         for (Topic topic : blockedTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
-            preference.setImage(R.drawable.ic_add,
-                    getResources().getString(
-                            R.string.privacy_sandbox_add_interest_button_description,
-                            topic.getName()));
+            preference.setImage(
+                    R.drawable.ic_add,
+                    getResources()
+                            .getString(
+                                    R.string.privacy_sandbox_add_interest_button_description,
+                                    topic.getName()));
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
             mBlockedTopicsCategory.addPreference(preference);
@@ -82,7 +85,8 @@ public class TopicsBlockedFragmentV4
     }
 
     private void updateBlockedTopicsDescription() {
-        mBlockedTopicsCategory.setSummary(mBlockedTopicsCategory.getPreferenceCount() == 0
+        mBlockedTopicsCategory.setSummary(
+                mBlockedTopicsCategory.getPreferenceCount() == 0
                         ? R.string.settings_topics_page_blocked_topics_description_empty
                         : R.string.settings_topics_page_blocked_topics_description);
     }

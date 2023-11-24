@@ -18,25 +18,28 @@ public abstract class TabWebContentsUserData implements UserData {
     private WebContents mWebContents;
 
     public TabWebContentsUserData(Tab tab) {
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onContentChanged(Tab tab) {
-                if (mWebContents == tab.getWebContents()) return;
-                if (mWebContents != null) cleanupWebContents(mWebContents);
-                mWebContents = tab.getWebContents();
-                if (mWebContents != null) initWebContents(mWebContents);
-            }
+        tab.addObserver(
+                new EmptyTabObserver() {
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        if (mWebContents == tab.getWebContents()) return;
+                        if (mWebContents != null) cleanupWebContents(mWebContents);
+                        mWebContents = tab.getWebContents();
+                        if (mWebContents != null) initWebContents(mWebContents);
+                    }
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                tab.removeObserver(this);
-            }
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        tab.removeObserver(this);
+                    }
 
-            @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                // Intentionally do nothing to prevent automatic observer removal on detachment.
-            }
-        });
+                    @Override
+                    public void onActivityAttachmentChanged(
+                            Tab tab, @Nullable WindowAndroid window) {
+                        // Intentionally do nothing to prevent automatic observer removal on
+                        // detachment.
+                    }
+                });
     }
 
     @Override
@@ -49,9 +52,7 @@ public abstract class TabWebContentsUserData implements UserData {
         return mWebContents;
     }
 
-    /**
-     * Performs additional tasks upon destruction.
-     */
+    /** Performs additional tasks upon destruction. */
     protected void destroyInternal() {}
 
     /**

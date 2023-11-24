@@ -15,19 +15,16 @@ import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A {@link RecyclerView.ViewHolder} specifically meant to display a video {@code OfflineItem}.
- */
+/** A {@link RecyclerView.ViewHolder} specifically meant to display a video {@code OfflineItem}. */
 public class VideoViewHolder extends OfflineItemViewHolder {
     private final TextView mTitle;
     private final TextView mCaption;
 
-    /**
-     * Creates a new {@link VideoViewHolder} instance.
-     */
+    /** Creates a new {@link VideoViewHolder} instance. */
     public static VideoViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_video_item, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_video_item, null);
 
         return new VideoViewHolder(view);
     }

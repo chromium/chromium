@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Utilities for working with incognito tabs spread across multiple activities.
- */
+/** Utilities for working with incognito tabs spread across multiple activities. */
 public class IncognitoUtils {
     private static Boolean sIsEnabledForTesting;
 
@@ -56,7 +54,8 @@ public class IncognitoUtils {
         Profile incognitoProfile = getNonPrimaryOTRProfileFromWindowAndroid(windowAndroid);
         return (incognitoProfile != null)
                 ? incognitoProfile
-                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true);
+                : Profile.getLastUsedRegularProfile()
+                        .getPrimaryOTRProfile(/* createIfNeeded= */ true);
     }
 
     /**
@@ -91,7 +90,7 @@ public class IncognitoUtils {
         if (otrProfileID == null) return ProfileKey.getLastUsedRegularProfileKey();
 
         return Profile.getLastUsedRegularProfile()
-                .getOffTheRecordProfile(otrProfileID, /*createIfNeeded=*/true)
+                .getOffTheRecordProfile(otrProfileID, /* createIfNeeded= */ true)
                 .getProfileKey();
     }
 
@@ -103,6 +102,7 @@ public class IncognitoUtils {
     @NativeMethods
     interface Natives {
         boolean getIncognitoModeEnabled();
+
         boolean getIncognitoModeManaged();
     }
 }

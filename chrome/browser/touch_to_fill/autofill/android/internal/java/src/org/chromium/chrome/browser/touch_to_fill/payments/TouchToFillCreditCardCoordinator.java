@@ -33,13 +33,16 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
     private PropertyModel mTouchToFillCreditCardModel;
 
     @Override
-    public void initialize(Context context, BottomSheetController sheetController,
+    public void initialize(
+            Context context,
+            BottomSheetController sheetController,
             TouchToFillCreditCardComponent.Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
         mTouchToFillCreditCardModel = createModel(mMediator);
         mMediator.initialize(
                 context, delegate, mTouchToFillCreditCardModel, bottomSheetFocusHelper);
-        setUpModelChangeProcessors(mTouchToFillCreditCardModel,
+        setUpModelChangeProcessors(
+                mTouchToFillCreditCardModel,
                 new TouchToFillCreditCardView(context, sheetController));
     }
 
@@ -66,13 +69,21 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
 
     static void setUpCardItems(PropertyModel model, TouchToFillCreditCardView view) {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(SHEET_ITEMS));
-        adapter.registerType(CREDIT_CARD, TouchToFillCreditCardViewBinder::createCardItemView,
+        adapter.registerType(
+                CREDIT_CARD,
+                TouchToFillCreditCardViewBinder::createCardItemView,
                 TouchToFillCreditCardViewBinder::bindCardItemView);
-        adapter.registerType(HEADER, TouchToFillCreditCardViewBinder::createHeaderItemView,
+        adapter.registerType(
+                HEADER,
+                TouchToFillCreditCardViewBinder::createHeaderItemView,
                 TouchToFillCreditCardViewBinder::bindHeaderView);
-        adapter.registerType(FILL_BUTTON, TouchToFillCreditCardViewBinder::createFillButtonView,
+        adapter.registerType(
+                FILL_BUTTON,
+                TouchToFillCreditCardViewBinder::createFillButtonView,
                 TouchToFillCreditCardViewBinder::bindFillButtonView);
-        adapter.registerType(FOOTER, TouchToFillCreditCardViewBinder::createFooterItemView,
+        adapter.registerType(
+                FOOTER,
+                TouchToFillCreditCardViewBinder::createFooterItemView,
                 TouchToFillCreditCardViewBinder::bindFooterView);
         view.setSheetItemListAdapter(adapter);
     }

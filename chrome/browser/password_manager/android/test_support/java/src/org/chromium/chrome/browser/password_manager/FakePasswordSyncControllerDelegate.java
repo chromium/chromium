@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.Callback;
 
-/**
- * Fake {@link PasswordSyncControllerDelegate} to be used in integration tests.
- */
+/** Fake {@link PasswordSyncControllerDelegate} to be used in integration tests. */
 public class FakePasswordSyncControllerDelegate implements PasswordSyncControllerDelegate {
     @Override
     public void notifyCredentialManagerWhenSyncing(

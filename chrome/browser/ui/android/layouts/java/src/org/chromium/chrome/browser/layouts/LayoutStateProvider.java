@@ -9,9 +9,7 @@ package org.chromium.chrome.browser.layouts;
  * changes.
  */
 public interface LayoutStateProvider {
-    /**
-     * An observer that is notified when the {@link Layout} state changes.
-     */
+    /** An observer that is notified when the {@link Layout} state changes. */
     interface LayoutStateObserver {
         /**
          * Called when Layout starts showing.
@@ -86,9 +84,7 @@ public interface LayoutStateProvider {
      */
     void removeObserver(LayoutStateObserver listener);
 
-    /**
-     * Returns the ID of the next layout to show or {@code LayoutType.NONE} if one isn't set.
-     */
+    /** Returns the ID of the next layout to show or {@code LayoutType.NONE} if one isn't set. */
     @LayoutType
     int getNextLayoutType();
 }

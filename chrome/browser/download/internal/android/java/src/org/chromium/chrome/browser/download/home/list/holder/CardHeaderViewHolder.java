@@ -16,16 +16,13 @@ import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A {@link RecyclerView.ViewHolder} specifically meant to display a card header.
- */
+/** A {@link RecyclerView.ViewHolder} specifically meant to display a card header. */
 public class CardHeaderViewHolder extends ListItemViewHolder {
-    /**
-     * Creates a new {@link CardHeaderViewHolder} instance.
-     */
+    /** Creates a new {@link CardHeaderViewHolder} instance. */
     public static CardHeaderViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_card_header, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_card_header, null);
         return new CardHeaderViewHolder(view);
     }
 
@@ -41,14 +38,20 @@ public class CardHeaderViewHolder extends ListItemViewHolder {
 
         // TODO(shaktisahu): Use AsyncImageView.
         ImageView faviconView = itemView.findViewById(R.id.favicon);
-        int faviconSizePx = itemView.getContext().getResources().getDimensionPixelSize(
-                R.dimen.default_favicon_size);
+        int faviconSizePx =
+                itemView.getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.default_favicon_size);
         if (faviconView != null) {
-            properties.get(ListProperties.PROVIDER_FAVICON)
-                    .getFavicon(headerListItem.faviconUrl, faviconSizePx, (bitmap) -> {
-                        faviconView.setImageDrawable(
-                                new BitmapDrawable(itemView.getResources(), bitmap));
-                    });
+            properties
+                    .get(ListProperties.PROVIDER_FAVICON)
+                    .getFavicon(
+                            headerListItem.faviconUrl,
+                            faviconSizePx,
+                            (bitmap) -> {
+                                faviconView.setImageDrawable(
+                                        new BitmapDrawable(itemView.getResources(), bitmap));
+                            });
         }
     }
 }

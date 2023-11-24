@@ -30,8 +30,8 @@ public abstract class ChromeManagedPreferenceDelegate implements ManagedPreferen
     @Override
     public boolean doesProfileHaveMultipleCustodians() {
         return !UserPrefs.get(mProfile)
-                        .getString(Pref.SUPERVISED_USER_SECOND_CUSTODIAN_NAME)
-                        .isEmpty();
+                .getString(Pref.SUPERVISED_USER_SECOND_CUSTODIAN_NAME)
+                .isEmpty();
     }
 
     @Override

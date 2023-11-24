@@ -18,8 +18,11 @@ class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
     public NoTargetDeviceBottomSheetContent(Context context) {
-        mContentView = (ViewGroup) LayoutInflater.from(context).inflate(
-                R.layout.send_tab_to_self_feature_unavailable_prompt, null);
+        mContentView =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(
+                                        R.layout.send_tab_to_self_feature_unavailable_prompt, null);
         RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
     }
 

@@ -14,20 +14,17 @@ import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A {@link RecyclerView.ViewHolder} specifically meant to display a prefetch article.
- */
+/** A {@link RecyclerView.ViewHolder} specifically meant to display a prefetch article. */
 public class PrefetchArticleViewHolder extends OfflineItemViewHolder {
     private final TextView mTitle;
     private final TextView mCaption;
     private final TextView mTimestamp;
 
-    /**
-     * Creates a new instance of a {@link PrefetchArticleViewHolder}.
-     */
+    /** Creates a new instance of a {@link PrefetchArticleViewHolder}. */
     public static PrefetchArticleViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_prefetch_article, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_prefetch_article, null);
         return new PrefetchArticleViewHolder(view);
     }
 

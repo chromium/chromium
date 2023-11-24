@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-/**
- * A stub AuxiliarySearchHooks implementation. Replace at build time on internal builds.
- */
+/** A stub AuxiliarySearchHooks implementation. Replace at build time on internal builds. */
 public class AuxiliarySearchHooksImpl implements AuxiliarySearchHooks {
     public static AuxiliarySearchHooks getInstance() {
         return new AuxiliarySearchHooksImpl();

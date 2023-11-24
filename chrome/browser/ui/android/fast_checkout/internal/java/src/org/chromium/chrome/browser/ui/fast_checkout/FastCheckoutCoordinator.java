@@ -25,13 +25,17 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
     private BottomSheetController mBottomSheetController;
 
     @Override
-    public void initialize(Context context, BottomSheetController sheetController,
+    public void initialize(
+            Context context,
+            BottomSheetController sheetController,
             FastCheckoutComponent.Delegate delegate) {
         mBottomSheetController = sheetController;
         mMediator.initialize(delegate, mModel, mBottomSheetController);
 
-        LinearLayout rootView = (LinearLayout) LayoutInflater.from(context).inflate(
-                R.layout.fast_checkout_bottom_sheet, null);
+        LinearLayout rootView =
+                (LinearLayout)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.fast_checkout_bottom_sheet, null);
         mContent = new FastCheckoutSheetContent(mMediator, rootView);
 
         View homeScreenView = rootView.findViewById(R.id.fast_checkout_home_screen_sheet);
@@ -41,24 +45,29 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         // The detail screen can display the Autofill profile or the credit
         // card selection.
         View detailScreenView = rootView.findViewById(R.id.fast_checkout_detail_screen_sheet);
-        DetailScreenCoordinator detailScreenCoordinator = new DetailScreenCoordinator(
-                context, detailScreenView, mModel, mBottomSheetController);
+        DetailScreenCoordinator detailScreenCoordinator =
+                new DetailScreenCoordinator(
+                        context, detailScreenView, mModel, mBottomSheetController);
 
         ViewFlipper viewFlipperView =
                 (ViewFlipper) rootView.findViewById(R.id.fast_checkout_bottom_sheet_view_flipper);
-        mModel.addObserver((source, propertyKey) -> {
-            if (FastCheckoutProperties.CURRENT_SCREEN == propertyKey) {
-                viewFlipperView.setDisplayedChild(getScreenIndexForScreenType(
-                        mModel.get(FastCheckoutProperties.CURRENT_SCREEN)));
-            } else if (FastCheckoutProperties.VISIBLE == propertyKey) {
-                // Dismiss the sheet if it can't be immediately shown.
-                boolean visibilityChangeSuccessful =
-                        mMediator.setVisible(mModel.get(FastCheckoutProperties.VISIBLE), mContent);
-                if (!visibilityChangeSuccessful && mModel.get(FastCheckoutProperties.VISIBLE)) {
-                    mMediator.dismiss(BottomSheetController.StateChangeReason.NONE);
-                }
-            }
-        });
+        mModel.addObserver(
+                (source, propertyKey) -> {
+                    if (FastCheckoutProperties.CURRENT_SCREEN == propertyKey) {
+                        viewFlipperView.setDisplayedChild(
+                                getScreenIndexForScreenType(
+                                        mModel.get(FastCheckoutProperties.CURRENT_SCREEN)));
+                    } else if (FastCheckoutProperties.VISIBLE == propertyKey) {
+                        // Dismiss the sheet if it can't be immediately shown.
+                        boolean visibilityChangeSuccessful =
+                                mMediator.setVisible(
+                                        mModel.get(FastCheckoutProperties.VISIBLE), mContent);
+                        if (!visibilityChangeSuccessful
+                                && mModel.get(FastCheckoutProperties.VISIBLE)) {
+                            mMediator.dismiss(BottomSheetController.StateChangeReason.NONE);
+                        }
+                    }
+                });
     }
 
     /**
@@ -69,8 +78,8 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         switch (screenType) {
             case ScreenType.HOME_SCREEN:
                 return 0;
-            // Both the Autofill profile selection and the credit card selection
-            // are displayed on the detail screen.
+                // Both the Autofill profile selection and the credit card selection
+                // are displayed on the detail screen.
             case ScreenType.AUTOFILL_PROFILE_SCREEN:
             case ScreenType.CREDIT_CARD_SCREEN:
                 return 1;

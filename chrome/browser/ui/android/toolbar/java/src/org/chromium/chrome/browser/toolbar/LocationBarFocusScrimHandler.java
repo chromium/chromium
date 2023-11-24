@@ -17,12 +17,11 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * Handles showing and hiding a scrim when url bar focus changes.
- */
+/** Handles showing and hiding a scrim when url bar focus changes. */
 public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     /** The params used to control how the scrim behaves when shown for the omnibox. */
     private PropertyModel mScrimModel;
+
     private final ScrimCoordinator mScrimCoordinator;
 
     /** Whether the scrim was shown on focus. */
@@ -30,6 +29,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
 
     /** The light color to use for the scrim on the NTP. */
     private int mLightScrimColor;
+
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final Runnable mClickDelegate;
     private final Context mContext;
@@ -44,9 +44,12 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
      * @param clickDelegate Click handler for the scrim
      * @param scrimTarget View that the scrim should be anchored to.
      */
-    public LocationBarFocusScrimHandler(ScrimCoordinator scrimCoordinator,
-            Callback<Boolean> visibilityChangeCallback, Context context,
-            LocationBarDataProvider locationBarDataProvider, Runnable clickDelegate,
+    public LocationBarFocusScrimHandler(
+            ScrimCoordinator scrimCoordinator,
+            Callback<Boolean> visibilityChangeCallback,
+            Context context,
+            LocationBarDataProvider locationBarDataProvider,
+            Runnable clickDelegate,
             View scrimTarget) {
         mScrimCoordinator = scrimCoordinator;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -56,23 +59,27 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         Resources resources = context.getResources();
         int topMargin = resources.getDimensionPixelSize(R.dimen.tab_strip_height);
         mLightScrimColor = context.getColor(R.color.omnibox_focused_fading_background_color_light);
-        mScrimModel = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                              .with(ScrimProperties.ANCHOR_VIEW, scrimTarget)
-                              .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
-                              .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                              .with(ScrimProperties.TOP_MARGIN, topMargin)
-                              .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                              .with(ScrimProperties.VISIBILITY_CALLBACK, visibilityChangeCallback)
-                              .with(ScrimProperties.BACKGROUND_COLOR, ScrimProperties.INVALID_COLOR)
-                              .build();
+        mScrimModel =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.ANCHOR_VIEW, scrimTarget)
+                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                        .with(ScrimProperties.TOP_MARGIN, topMargin)
+                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                        .with(ScrimProperties.VISIBILITY_CALLBACK, visibilityChangeCallback)
+                        .with(ScrimProperties.BACKGROUND_COLOR, ScrimProperties.INVALID_COLOR)
+                        .build();
     }
 
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-        boolean useLightColor = !isTablet && !mLocationBarDataProvider.isIncognito()
-                && !ColorUtils.inNightMode(mContext);
-        mScrimModel.set(ScrimProperties.BACKGROUND_COLOR,
+        boolean useLightColor =
+                !isTablet
+                        && !mLocationBarDataProvider.isIncognito()
+                        && !ColorUtils.inNightMode(mContext);
+        mScrimModel.set(
+                ScrimProperties.BACKGROUND_COLOR,
                 useLightColor ? mLightScrimColor : ScrimProperties.INVALID_COLOR);
 
         if (hasFocus && !showScrimAfterAnimationCompletes()) {

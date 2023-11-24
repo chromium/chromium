@@ -199,7 +199,6 @@ public class PageInsightsMediatorTest {
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
     }
 
-
     private void createMediator() {
         createMediator(DEFAULT_TRIGGER_DELAY_MS);
     }

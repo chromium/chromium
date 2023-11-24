@@ -92,10 +92,11 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
             }
         }
 
-        mHandler.post(() -> {
-            if (mObserver != null) mObserver.onItemRemoved(id);
-            mDeleteItemCallback.notifyCalled();
-        });
+        mHandler.post(
+                () -> {
+                    if (mObserver != null) mObserver.onItemRemoved(id);
+                    mDeleteItemCallback.notifyCalled();
+                });
     }
 
     @Override

@@ -11,9 +11,7 @@ import org.jni_zero.NativeMethods;
  *  It's intended only to be used in tests.
  */
 public class PasswordManagerTestUtilsBridge {
-    /**
-     * Disables server predictions to speed up tests
-     */
+    /** Disables server predictions to speed up tests */
     public static void disableServerPredictions() {
         PasswordManagerTestUtilsBridgeJni.get().disableServerPredictions();
     }

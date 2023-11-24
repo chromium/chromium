@@ -10,9 +10,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-/**
- * The content of the PasswordMigrationWarning that needs to be scrollable.
- */
+/** The content of the PasswordMigrationWarning that needs to be scrollable. */
 public class ScrollablePasswordMigrationWarningContent extends RelativeLayout {
     private ScrollView mScrollView;
 

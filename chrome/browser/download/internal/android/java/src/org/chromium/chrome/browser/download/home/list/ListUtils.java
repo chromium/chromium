@@ -26,12 +26,27 @@ import java.util.List;
 /** Utility methods for representing {@link ListItem}s in a {@link RecyclerView} list. */
 public class ListUtils {
     /** The potential types of list items that could be displayed. */
-    @IntDef({ViewType.DATE, ViewType.IN_PROGRESS, ViewType.GENERIC, ViewType.VIDEO, ViewType.AUDIO,
-            ViewType.IMAGE, ViewType.IMAGE_FULL_WIDTH, ViewType.CUSTOM_VIEW,
-            ViewType.SECTION_HEADER, ViewType.IN_PROGRESS_VIDEO, ViewType.IN_PROGRESS_IMAGE,
-            ViewType.PREFETCH_ARTICLE, ViewType.GROUP_CARD_ITEM, ViewType.GROUP_CARD_HEADER,
-            ViewType.GROUP_CARD_FOOTER, ViewType.PAGINATION_HEADER, ViewType.GROUP_CARD_DIVIDER_TOP,
-            ViewType.GROUP_CARD_DIVIDER_MIDDLE, ViewType.GROUP_CARD_DIVIDER_BOTTOM})
+    @IntDef({
+        ViewType.DATE,
+        ViewType.IN_PROGRESS,
+        ViewType.GENERIC,
+        ViewType.VIDEO,
+        ViewType.AUDIO,
+        ViewType.IMAGE,
+        ViewType.IMAGE_FULL_WIDTH,
+        ViewType.CUSTOM_VIEW,
+        ViewType.SECTION_HEADER,
+        ViewType.IN_PROGRESS_VIDEO,
+        ViewType.IN_PROGRESS_IMAGE,
+        ViewType.PREFETCH_ARTICLE,
+        ViewType.GROUP_CARD_ITEM,
+        ViewType.GROUP_CARD_HEADER,
+        ViewType.GROUP_CARD_FOOTER,
+        ViewType.PAGINATION_HEADER,
+        ViewType.GROUP_CARD_DIVIDER_TOP,
+        ViewType.GROUP_CARD_DIVIDER_MIDDLE,
+        ViewType.GROUP_CARD_DIVIDER_BOTTOM
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {
         int DATE = 0;
@@ -63,8 +78,16 @@ public class ListUtils {
      * shown visually and asserts will fire if it does not.
      */
     private static final int[] FILTER_TYPE_ORDER_LIST =
-            new int[] {FilterType.NONE, FilterType.VIDEOS, FilterType.MUSIC, FilterType.IMAGES,
-                    FilterType.SITES, FilterType.OTHER, FilterType.DOCUMENT, FilterType.PREFETCHED};
+            new int[] {
+                FilterType.NONE,
+                FilterType.VIDEOS,
+                FilterType.MUSIC,
+                FilterType.IMAGES,
+                FilterType.SITES,
+                FilterType.OTHER,
+                FilterType.DOCUMENT,
+                FilterType.PREFETCHED
+            };
 
     /** Converts a given list of {@link ListItem}s to a list of {@link OfflineItem}s. */
     public static List<OfflineItem> toOfflineItems(Collection<ListItem> items) {
@@ -111,11 +134,12 @@ public class ListUtils {
             OfflineItemListItem offlineItem = (OfflineItemListItem) item;
             if (offlineItem.isGrouped) return ViewType.GROUP_CARD_ITEM;
 
-            boolean inProgress = offlineItem.item.state == OfflineItemState.IN_PROGRESS
-                    || offlineItem.item.state == OfflineItemState.PAUSED
-                    || offlineItem.item.state == OfflineItemState.INTERRUPTED
-                    || offlineItem.item.state == OfflineItemState.PENDING
-                    || offlineItem.item.state == OfflineItemState.FAILED;
+            boolean inProgress =
+                    offlineItem.item.state == OfflineItemState.IN_PROGRESS
+                            || offlineItem.item.state == OfflineItemState.PAUSED
+                            || offlineItem.item.state == OfflineItemState.INTERRUPTED
+                            || offlineItem.item.state == OfflineItemState.PENDING
+                            || offlineItem.item.state == OfflineItemState.FAILED;
 
             if (config.useGenericViewTypes) {
                 return inProgress ? ViewType.IN_PROGRESS : ViewType.GENERIC;
@@ -133,13 +157,15 @@ public class ListUtils {
                 case OfflineItemFilter.VIDEO:
                     return inProgress ? ViewType.IN_PROGRESS_VIDEO : ViewType.VIDEO;
                 case OfflineItemFilter.IMAGE:
-                    return inProgress ? ViewType.IN_PROGRESS_IMAGE
-                                      : (offlineItem.spanFullWidth ? ViewType.IMAGE_FULL_WIDTH
-                                                                   : ViewType.IMAGE);
-                // case OfflineItemFilter.PAGE:
-                // case OfflineItemFilter.AUDIO:
-                // case OfflineItemFilter.OTHER:
-                // case OfflineItemFilter.DOCUMENT:
+                    return inProgress
+                            ? ViewType.IN_PROGRESS_IMAGE
+                            : (offlineItem.spanFullWidth
+                                    ? ViewType.IMAGE_FULL_WIDTH
+                                    : ViewType.IMAGE);
+                    // case OfflineItemFilter.PAGE:
+                    // case OfflineItemFilter.AUDIO:
+                    // case OfflineItemFilter.OTHER:
+                    // case OfflineItemFilter.DOCUMENT:
                 default:
                     return inProgress ? ViewType.IN_PROGRESS : ViewType.GENERIC;
             }
@@ -228,7 +254,7 @@ public class ListUtils {
         }
 
         assert false
-            : "Unexpected Filters.FilterType (did you forget to update FILTER_TYPE_ORDER_LIST?).";
+                : "Unexpected Filters.FilterType (did you forget to update FILTER_TYPE_ORDER_LIST?).";
         return 0;
     }
 }

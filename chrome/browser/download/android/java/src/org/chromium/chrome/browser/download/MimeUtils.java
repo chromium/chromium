@@ -14,9 +14,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Utility class for MIME type related operations.
- */
+/** Utility class for MIME type related operations. */
 public class MimeUtils {
     // MIME types for OMA downloads.
     public static final String OMA_DOWNLOAD_DESCRIPTOR_MIME = "application/vnd.oma.dd+xml";
@@ -28,16 +26,30 @@ public class MimeUtils {
 
     // Mime types that Android can't handle when tries to open the file. Chrome may deduct a better
     // mime type based on file extension.
-    private static final HashSet<String> GENERIC_MIME_TYPES = new HashSet<String>(Arrays.asList(
-            "text/plain", "application/octet-stream", "binary/octet-stream", "octet/stream",
-            "application/download", "application/force-download", "application/unknown"));
+    private static final HashSet<String> GENERIC_MIME_TYPES =
+            new HashSet<String>(
+                    Arrays.asList(
+                            "text/plain",
+                            "application/octet-stream",
+                            "binary/octet-stream",
+                            "octet/stream",
+                            "application/download",
+                            "application/force-download",
+                            "application/unknown"));
 
     // Set will be more expensive to initialize, so use an ArrayList here.
-    private static final List<String> MIME_TYPES_TO_OPEN = new ArrayList<String>(Arrays.asList(
-            MimeUtils.OMA_DOWNLOAD_DESCRIPTOR_MIME, "application/pdf", "application/x-x509-ca-cert",
-            "application/x-x509-user-cert", "application/x-x509-server-cert",
-            "application/x-pkcs12", "application/application/x-pem-file", "application/pkix-cert",
-            "application/x-wifi-config"));
+    private static final List<String> MIME_TYPES_TO_OPEN =
+            new ArrayList<String>(
+                    Arrays.asList(
+                            MimeUtils.OMA_DOWNLOAD_DESCRIPTOR_MIME,
+                            "application/pdf",
+                            "application/x-x509-ca-cert",
+                            "application/x-x509-user-cert",
+                            "application/x-x509-server-cert",
+                            "application/x-pkcs12",
+                            "application/application/x-pem-file",
+                            "application/pkix-cert",
+                            "application/x-wifi-config"));
 
     /**
      * If the given MIME type is null, or one of the "generic" types (text/plain

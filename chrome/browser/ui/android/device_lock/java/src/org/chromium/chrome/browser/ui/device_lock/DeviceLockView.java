@@ -50,12 +50,14 @@ public class DeviceLockView extends LinearLayout {
         mNoticeText = findViewById(R.id.device_lock_notice);
 
         mDismissButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
-        mDismissButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mDismissButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mContinueButton = DualControlLayout.createButtonForLayout(getContext(), true, "", null);
-        mContinueButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mContinueButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);

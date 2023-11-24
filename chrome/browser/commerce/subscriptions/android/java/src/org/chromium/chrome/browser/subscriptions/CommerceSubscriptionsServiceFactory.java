@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
-/**
- * {@link CommerceSubscriptionsService} cached by {@link Profile}.
- */
+/** {@link CommerceSubscriptionsService} cached by {@link Profile}. */
 public class CommerceSubscriptionsServiceFactory {
     private static ProfileKeyedMap<CommerceSubscriptionsService> sProfileToSubscriptionsService;
     private static CommerceSubscriptionsService sSubscriptionsServiceForTesting;
@@ -36,12 +34,15 @@ public class CommerceSubscriptionsServiceFactory {
     public CommerceSubscriptionsService getForLastUsedProfile() {
         if (sSubscriptionsServiceForTesting != null) return sSubscriptionsServiceForTesting;
         Profile profile = Profile.getLastUsedRegularProfile();
-        return sProfileToSubscriptionsService.getForProfile(profile, () -> {
-            PriceDropNotificationManager priceDropNotificationManager =
-                    PriceDropNotificationManagerFactory.create();
-            return new CommerceSubscriptionsService(
-                    ShoppingServiceFactory.getForProfile(profile), priceDropNotificationManager);
-        });
+        return sProfileToSubscriptionsService.getForProfile(
+                profile,
+                () -> {
+                    PriceDropNotificationManager priceDropNotificationManager =
+                            PriceDropNotificationManagerFactory.create();
+                    return new CommerceSubscriptionsService(
+                            ShoppingServiceFactory.getForProfile(profile),
+                            priceDropNotificationManager);
+                });
     }
 
     /** Sets the CommerceSubscriptionsService for testing. */

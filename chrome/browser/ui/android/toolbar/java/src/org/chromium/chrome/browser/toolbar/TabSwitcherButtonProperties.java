@@ -13,9 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * The properties needed to render the tab switcher button.
- */
+/** The properties needed to render the tab switcher button. */
 public interface TabSwitcherButtonProperties {
     /** The current number of tabs. */
     public static final WritableIntPropertyKey NUMBER_OF_TABS = new WritableIntPropertyKey();
@@ -35,6 +33,8 @@ public interface TabSwitcherButtonProperties {
     /** Whether the button is enabled. */
     public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            NUMBER_OF_TABS, ON_CLICK_LISTENER, ON_LONG_CLICK_LISTENER, TINT, IS_ENABLED};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                NUMBER_OF_TABS, ON_CLICK_LISTENER, ON_LONG_CLICK_LISTENER, TINT, IS_ENABLED
+            };
 }

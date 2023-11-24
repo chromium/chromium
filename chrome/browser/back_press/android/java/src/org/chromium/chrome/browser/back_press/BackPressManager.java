@@ -42,6 +42,7 @@ public class BackPressManager implements Destroyable {
                     ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
+
     static {
         // Max value is 22 - 1 obsolete value +1 for 0 indexing = 21 elements.
         SparseIntArray map = new SparseIntArray(20);
@@ -74,36 +75,37 @@ public class BackPressManager implements Destroyable {
         sMetricsMap = map;
     }
 
-    private final OnBackPressedCallback mCallback = new OnBackPressedCallback(false) {
-        private BackPressHandler mActiveHandler;
+    private final OnBackPressedCallback mCallback =
+            new OnBackPressedCallback(false) {
+                private BackPressHandler mActiveHandler;
 
-        @Override
-        public void handleOnBackPressed() {
-            BackPressManager.this.handleBackPress();
-            mActiveHandler = null;
-        }
+                @Override
+                public void handleOnBackPressed() {
+                    BackPressManager.this.handleBackPress();
+                    mActiveHandler = null;
+                }
 
-        // Following methods are only triggered on API 34+.
-        @Override
-        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
-            mActiveHandler = getEnabledBackPressHandler();
-            assert mActiveHandler != null;
-            mActiveHandler.handleOnBackStarted(backEvent);
-        }
+                // Following methods are only triggered on API 34+.
+                @Override
+                public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+                    mActiveHandler = getEnabledBackPressHandler();
+                    assert mActiveHandler != null;
+                    mActiveHandler.handleOnBackStarted(backEvent);
+                }
 
-        @Override
-        public void handleOnBackCancelled() {
-            if (mActiveHandler == null) return;
-            mActiveHandler.handleOnBackCancelled();
-            mActiveHandler = null;
-        }
+                @Override
+                public void handleOnBackCancelled() {
+                    if (mActiveHandler == null) return;
+                    mActiveHandler.handleOnBackCancelled();
+                    mActiveHandler = null;
+                }
 
-        @Override
-        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
-            if (mActiveHandler == null) return;
-            mActiveHandler.handleOnBackProgressed(backEvent);
-        }
-    };
+                @Override
+                public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+                    if (mActiveHandler == null) return;
+                    mActiveHandler.handleOnBackProgressed(backEvent);
+                }
+            };
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
     static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
@@ -233,6 +235,7 @@ public class BackPressManager implements Destroyable {
     public OnBackPressedCallback getCallback() {
         return mCallback;
     }
+
     /*
      * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press
      *         but no handler succeeds.
@@ -334,7 +337,8 @@ public class BackPressManager implements Destroyable {
         if (failed.isEmpty()) return;
         var msg = String.join(", ", failed);
         assert false
-            : String.format("%s didn't correctly handle back press; handled by %s.", msg, succeed);
+                : String.format(
+                        "%s didn't correctly handle back press; handled by %s.", msg, succeed);
     }
 
     public BackPressHandler[] getHandlersForTesting() {

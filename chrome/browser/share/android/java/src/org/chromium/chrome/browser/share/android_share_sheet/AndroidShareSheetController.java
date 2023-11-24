@@ -42,9 +42,7 @@ import org.chromium.url.GURL;
 
 import java.util.Set;
 
-/**
- * Share sheet controller used to display Android share sheet.
- */
+/** Share sheet controller used to display Android share sheet. */
 public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private static final String TAG = "AndroidShare";
 
@@ -70,13 +68,23 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param printCallback The callback used to trigger print action.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
-    public static void showShareSheet(ShareParams params, ChromeShareExtras chromeShareExtras,
-            BottomSheetController controller, Supplier<Tab> tabProvider,
-            Supplier<TabModelSelector> tabModelSelectorSupplier, Supplier<Profile> profileSupplier,
-            Callback<Tab> printCallback, DeviceLockActivityLauncher deviceLockActivityLauncher) {
+    public static void showShareSheet(
+            ShareParams params,
+            ChromeShareExtras chromeShareExtras,
+            BottomSheetController controller,
+            Supplier<Tab> tabProvider,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<Profile> profileSupplier,
+            Callback<Tab> printCallback,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         var newController =
-                new AndroidShareSheetController(controller, tabProvider, tabModelSelectorSupplier,
-                        profileSupplier, printCallback, deviceLockActivityLauncher);
+                new AndroidShareSheetController(
+                        controller,
+                        tabProvider,
+                        tabModelSelectorSupplier,
+                        profileSupplier,
+                        printCallback,
+                        deviceLockActivityLauncher);
         // If the current share is delegated to, once the link generation is complete, the call will
         // routes back to #showShareSheet eventually.
         if (!newController.processShareWithLinkToText(params, chromeShareExtras)) {
@@ -96,9 +104,13 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     @VisibleForTesting
-    AndroidShareSheetController(BottomSheetController controller, Supplier<Tab> tabProvider,
-            Supplier<TabModelSelector> tabModelSelectorSupplier, Supplier<Profile> profileSupplier,
-            Callback<Tab> printCallback, DeviceLockActivityLauncher deviceLockActivityLauncher) {
+    AndroidShareSheetController(
+            BottomSheetController controller,
+            Supplier<Tab> tabProvider,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<Profile> profileSupplier,
+            Callback<Tab> printCallback,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mController = controller;
         mTabProvider = tabProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -125,14 +137,16 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private void showShareSheetWithCustomAction(
             ShareParams params, ChromeShareExtras chromeShareExtras, boolean showCustomActions) {
         Profile profile = mProfileSupplier.get();
-        boolean isIncognito = mTabModelSelectorSupplier.hasValue()
-                && mTabModelSelectorSupplier.get().isIncognitoSelected();
+        boolean isIncognito =
+                mTabModelSelectorSupplier.hasValue()
+                        && mTabModelSelectorSupplier.get().isIncognitoSelected();
         Activity activity = params.getWindow().getActivity().get();
         ChromeCustomShareAction.Provider provider = null;
 
         String urlToShare = getUrlToShare(params, chromeShareExtras);
         // If an URL is not provided along with the image, use the content URL if it is provided.
-        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()
+        if (chromeShareExtras.isImage()
+                && params.getUrl().isEmpty()
                 && (chromeShareExtras.getDetailedContentType() != DetailedContentType.WEB_SHARE)) {
             params.setUrl(chromeShareExtras.getContentUrl().getSpec());
         }
@@ -140,11 +154,22 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         if (showCustomActions) {
             boolean isInMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
             var actionProvider =
-                    new AndroidCustomActionProvider(params.getWindow().getActivity().get(),
-                            params.getWindow(), mTabProvider, mController, params, mPrintCallback,
-                            isIncognito, this, TrackerFactory.getTrackerForProfile(profile),
-                            urlToShare, profile, chromeShareExtras, isInMultiWindow,
-                            mLinkToTextCoordinator, mDeviceLockActivityLauncher);
+                    new AndroidCustomActionProvider(
+                            params.getWindow().getActivity().get(),
+                            params.getWindow(),
+                            mTabProvider,
+                            mController,
+                            params,
+                            mPrintCallback,
+                            isIncognito,
+                            this,
+                            TrackerFactory.getTrackerForProfile(profile),
+                            urlToShare,
+                            profile,
+                            chromeShareExtras,
+                            isInMultiWindow,
+                            mLinkToTextCoordinator,
+                            mDeviceLockActivityLauncher);
             if (actionProvider.getCustomActions().size() > 0) {
                 provider = actionProvider;
             }
@@ -163,13 +188,18 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
 
         long iconPrepStartTime = SystemClock.elapsedRealtime();
         ChromeCustomShareAction.Provider finalProvider = provider;
-        preparePreviewFavicon(activity, profile, params.getUrl(), (uri) -> {
-            RecordHistogram.recordTimesHistogram("Sharing.PreparePreviewFaviconDuration",
-                    SystemClock.elapsedRealtime() - iconPrepStartTime);
-            params.setPreviewImageUri(uri);
-            ShareHelper.shareWithSystemShareSheetUi(
-                    params, profile, chromeShareExtras.saveLastUsed(), finalProvider);
-        });
+        preparePreviewFavicon(
+                activity,
+                profile,
+                params.getUrl(),
+                (uri) -> {
+                    RecordHistogram.recordTimesHistogram(
+                            "Sharing.PreparePreviewFaviconDuration",
+                            SystemClock.elapsedRealtime() - iconPrepStartTime);
+                    params.setPreviewImageUri(uri);
+                    ShareHelper.shareWithSystemShareSheetUi(
+                            params, profile, chromeShareExtras.saveLastUsed(), finalProvider);
+                });
     }
 
     /**
@@ -194,9 +224,15 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         }
 
         assert mLinkToTextCoordinator == null : "LinkToTextCoordinator is already created!";
-        mLinkToTextCoordinator = new LinkToTextCoordinator(mTabProvider.get(), this,
-                chromeShareExtras, SystemClock.elapsedRealtime(), params.getUrl(), params.getText(),
-                /*includeOriginInTitle=*/true);
+        mLinkToTextCoordinator =
+                new LinkToTextCoordinator(
+                        mTabProvider.get(),
+                        this,
+                        chromeShareExtras,
+                        SystemClock.elapsedRealtime(),
+                        params.getUrl(),
+                        params.getText(),
+                        /* includeOriginInTitle= */ true);
         mLinkToTextCoordinator.shareLinkToText();
         return true;
     }
@@ -206,7 +242,10 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         int size = context.getResources().getDimensionPixelSize(R.dimen.share_preview_favicon_size);
         FaviconHelper faviconHelper = new FaviconHelper();
         faviconHelper.getLocalFaviconImageForURL(
-                profile, new GURL(pageUrl), size, (Bitmap icon, GURL iconUrl) -> {
+                profile,
+                new GURL(pageUrl),
+                size,
+                (Bitmap icon, GURL iconUrl) -> {
                     onFaviconRetrieved(context, icon, size, onUriReady);
                 });
     }
@@ -215,8 +254,9 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Context context, Bitmap bitmap, int size, Callback<Uri> onImageUriAvailable) {
         // If bitmap is not provided, fallback to the globe placeholder icon.
         if (bitmap == null) {
-            bitmap = FaviconUtils.createGenericFaviconBitmap(
-                    context, size, context.getColor(R.color.modern_white));
+            bitmap =
+                    FaviconUtils.createGenericFaviconBitmap(
+                            context, size, context.getColor(R.color.modern_white));
         }
         String fileName = String.valueOf(System.currentTimeMillis());
         ShareImageFileUtils.generateTemporaryUriFromBitmap(fileName, bitmap, onImageUriAvailable);
@@ -232,9 +272,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                 || contents.contains(ContentType.LINK_PAGE_NOT_VISIBLE);
     }
 
-    /**
-     * Get the URL to share either from ShareParams or ChromeShareExtras. 
-     */
+    /** Get the URL to share either from ShareParams or ChromeShareExtras. */
     private static String getUrlToShare(
             ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
         if (!TextUtils.isEmpty(shareParams.getUrl())) {

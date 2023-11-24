@@ -56,10 +56,13 @@ class PartnerCustomizationsUma {
 
     /** When the async customization task started. */
     private long mAsyncCustomizationStartTime;
+
     /** Whether the homepage was already cached at the beginning of the async customization task. */
     private final boolean mWasHomepageCached;
+
     /** Whether the process of customization changed the Homepage. */
     private boolean mWasHomepageUriChanged;
+
     /** Whether the async customization task completed successfully (not just finalized). */
     private boolean mDidCustomizationCompleteSuccessfully;
 
@@ -68,6 +71,7 @@ class PartnerCustomizationsUma {
      * A value of {@code null} indicates that we did not yet create the initial Tab.
      */
     private @Nullable Boolean mDidCreateInitialTabAfterCustomization;
+
     private @Nullable String mHomepageUrlCreated;
     private boolean mIsOverviewPageOrStartSurface;
     private long mCreateInitialTabTime;
@@ -106,12 +110,15 @@ class PartnerCustomizationsUma {
      * @param homepageCharacterizationHelper A supplier for Homepage characterization needs in
      *        {@link PartnerCustomizationsUma}.
      */
-    void onCreateInitialTab(boolean isInitialized, @Nullable String homepageUrlCreated,
-            long createInitialTabTime, boolean isOverviewPageOrStartSurface,
+    void onCreateInitialTab(
+            boolean isInitialized,
+            @Nullable String homepageUrlCreated,
+            long createInitialTabTime,
+            boolean isOverviewPageOrStartSurface,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
         assert (isOverviewPageOrStartSurface || homepageUrlCreated != null)
-            : "Null created Homepage unexpected unless Overview Page!";
+                : "Null created Homepage unexpected unless Overview Page!";
         RecordHistogram.recordBooleanHistogram(
                 "Android.PartnerCustomizationInitializedBeforeInitialTab", isInitialized);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -140,13 +147,12 @@ class PartnerCustomizationsUma {
      * values should never be reused.
      */
     @IntDef({
-            PartnerCustomizationsHomepageEnum.NTP_UNKNOWN,
-            PartnerCustomizationsHomepageEnum.NTP_INCORRECTLY,
-            PartnerCustomizationsHomepageEnum.NTP_CORRECTLY,
-            PartnerCustomizationsHomepageEnum.PARTNER_CUSTOM_HOMEPAGE,
-            PartnerCustomizationsHomepageEnum.OTHER_CUSTOM_HOMEPAGE,
-
-            PartnerCustomizationsHomepageEnum.NUM_ENTRIES,
+        PartnerCustomizationsHomepageEnum.NTP_UNKNOWN,
+        PartnerCustomizationsHomepageEnum.NTP_INCORRECTLY,
+        PartnerCustomizationsHomepageEnum.NTP_CORRECTLY,
+        PartnerCustomizationsHomepageEnum.PARTNER_CUSTOM_HOMEPAGE,
+        PartnerCustomizationsHomepageEnum.OTHER_CUSTOM_HOMEPAGE,
+        PartnerCustomizationsHomepageEnum.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
@@ -183,7 +189,8 @@ class PartnerCustomizationsUma {
      * When both calls have been made we can log the final outcomes.
      */
     private void tryLogInitialTabCustomizationOutcome() {
-        if (!sIsAnyInitializeAsyncFinalized || mDidCreateInitialTabAfterCustomization == null
+        if (!sIsAnyInitializeAsyncFinalized
+                || mDidCreateInitialTabAfterCustomization == null
                 || sInitialTabOutcomeHasBeenLogged) {
             return;
         }
@@ -207,23 +214,30 @@ class PartnerCustomizationsUma {
         // To be safe, we delay until after native initialization and flag guard.
         // Any operations that are risky or not OK before native initialization should be pushed
         // down into this section.
-        onFinishNativeInitializationOrEnabled(activityLifecycleDispatcher, () -> {
-            assert mDidCreateInitialTabAfterCustomization != null;
+        onFinishNativeInitializationOrEnabled(
+                activityLifecycleDispatcher,
+                () -> {
+                    assert mDidCreateInitialTabAfterCustomization != null;
 
-            boolean isInitialTabNtpOrOverview =
-                    mHomepageCharacterizationHelper.get().isUrlNtp(mHomepageUrlCreated)
-                    || mIsOverviewPageOrStartSurface;
-            boolean isHomepagePartner = mHomepageCharacterizationHelper.get().isPartner();
-            boolean isHomepageNtp = mHomepageCharacterizationHelper.get().isNtp();
-            // We can be certain that our Homepage characterization is correct if the Homepage URI
-            // changed, which might have happened before it ran to completion.
-            boolean isCharacterizationCertain =
-                    mDidCustomizationCompleteSuccessfully || mWasHomepageUriChanged;
+                    boolean isInitialTabNtpOrOverview =
+                            mHomepageCharacterizationHelper.get().isUrlNtp(mHomepageUrlCreated)
+                                    || mIsOverviewPageOrStartSurface;
+                    boolean isHomepagePartner = mHomepageCharacterizationHelper.get().isPartner();
+                    boolean isHomepageNtp = mHomepageCharacterizationHelper.get().isNtp();
+                    // We can be certain that our Homepage characterization is correct if the
+                    // Homepage URI changed, which might have happened before it ran to
+                    // completion.
+                    boolean isCharacterizationCertain =
+                            mDidCustomizationCompleteSuccessfully || mWasHomepageUriChanged;
 
-            logInitialTabCustomizationOutcomeDelayed(whichDelegate, isInitialTabNtpOrOverview,
-                    isCharacterizationCertain, isHomepagePartner, isHomepageNtp,
-                    mWasHomepageCached);
-        });
+                    logInitialTabCustomizationOutcomeDelayed(
+                            whichDelegate,
+                            isInitialTabNtpOrOverview,
+                            isCharacterizationCertain,
+                            isHomepagePartner,
+                            isHomepageNtp,
+                            mWasHomepageCached);
+                });
     }
 
     /**
@@ -240,11 +254,13 @@ class PartnerCustomizationsUma {
      */
     @VisibleForTesting
     void logInitialTabCustomizationOutcomeDelayed(
-            @CustomizationProviderDelegateType int whichDelegate, boolean isInitialTabNtpOrOverview,
-            boolean isCharacterizationCertain, boolean isHomepagePartner, boolean isHomepageNtp,
+            @CustomizationProviderDelegateType int whichDelegate,
+            boolean isInitialTabNtpOrOverview,
+            boolean isCharacterizationCertain,
+            boolean isHomepagePartner,
+            boolean isHomepageNtp,
             boolean wasHomepageCached) {
-        @PartnerCustomizationsHomepageEnum
-        int partnerCustomizationHomepageEnum;
+        @PartnerCustomizationsHomepageEnum int partnerCustomizationHomepageEnum;
 
         if (isInitialTabNtpOrOverview) {
             if (!isCharacterizationCertain) {
@@ -267,11 +283,12 @@ class PartnerCustomizationsUma {
         // TODO(https://crbug.com/1456533): merge into HomepageManager.
         var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         return (sharedPreferencesManager.readString(
-                        ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null)
-                       != null)
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null)
+                        != null)
                 || (sharedPreferencesManager.readString(
-                            ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
-                            null)
+                                ChromePreferenceKeys
+                                        .DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
+                                null)
                         != null);
     }
 
@@ -291,11 +308,13 @@ class PartnerCustomizationsUma {
      * These values are recorded as histogram values. Entries should not be renumbered and numeric
      * values should never be reused.
      */
-    @IntDef({CustomizationProviderDelegateType.NONE_VALID,
-            CustomizationProviderDelegateType.PHENOTYPE,
-            CustomizationProviderDelegateType.G_SERVICE,
-            CustomizationProviderDelegateType.PRELOAD_APK,
-            CustomizationProviderDelegateType.NUM_ENTRIES})
+    @IntDef({
+        CustomizationProviderDelegateType.NONE_VALID,
+        CustomizationProviderDelegateType.PHENOTYPE,
+        CustomizationProviderDelegateType.G_SERVICE,
+        CustomizationProviderDelegateType.PRELOAD_APK,
+        CustomizationProviderDelegateType.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface CustomizationProviderDelegateType {
         /**
@@ -304,6 +323,7 @@ class PartnerCustomizationsUma {
          * DelegateUnusedReason cases for PreloadApk.
          */
         int NONE_VALID = 0;
+
         int PHENOTYPE = 1;
         int G_SERVICE = 2;
         int PRELOAD_APK = 3;
@@ -319,8 +339,10 @@ class PartnerCustomizationsUma {
      */
     public static void logPartnerCustomizationDelegate(
             @CustomizationProviderDelegateType int whichDelegate) {
-        RecordHistogram.recordEnumeratedHistogram("Android.PartnerHomepageCustomization.Delegate2",
-                whichDelegate, CustomizationProviderDelegateType.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.PartnerHomepageCustomization.Delegate2",
+                whichDelegate,
+                CustomizationProviderDelegateType.NUM_ENTRIES);
 
         Log.i(TAG, "Partner Customization delegate: %s.", whichDelegate);
         sWhichDelegate = whichDelegate;
@@ -332,8 +354,12 @@ class PartnerCustomizationsUma {
      * These values are recorded as histogram values. Entries should not be renumbered and numeric
      * values should never be reused.
      */
-    @IntDef({CustomizationUsage.HOMEPAGE, CustomizationUsage.BOOKMARKS,
-            CustomizationUsage.INCOGNITO, CustomizationUsage.NUM_ENTRIES})
+    @IntDef({
+        CustomizationUsage.HOMEPAGE,
+        CustomizationUsage.BOOKMARKS,
+        CustomizationUsage.INCOGNITO,
+        CustomizationUsage.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface CustomizationUsage {
         int HOMEPAGE = 0;
@@ -363,9 +389,7 @@ class PartnerCustomizationsUma {
                 "Android.PartnerBrowserCustomizationInitDuration", duration);
     }
 
-    /**
-     * Logs the duration of initialization of the async task, including notifying callbacks.
-     */
+    /** Logs the duration of initialization of the async task, including notifying callbacks. */
     static void logPartnerBrowserCustomizationInitDurationWithCallbacks(
             long startTime, long endTime) {
         // Legacy Histogram, do not modify name or whether written or not.
@@ -384,14 +408,14 @@ class PartnerCustomizationsUma {
      * values should never be reused.
      */
     @IntDef({
-            DelegateUnusedReason.PHENOTYPE_BEFORE_PIE,
-            DelegateUnusedReason.PHENOTYPE_FLAG_CANT_COMMIT,
-            DelegateUnusedReason.PHENOTYPE_FLAG_CONFIG_EMPTY,
-            DelegateUnusedReason.GSERVICES_GET_TIMESTAMP_EXCEPTION,
-            DelegateUnusedReason.GSERVICES_TIMESTAMP_MISSING,
-            DelegateUnusedReason.PRELOAD_APK_CANNOT_RESOLVE_PROVIDER,
-            DelegateUnusedReason.PRELOAD_APK_NOT_SYSTEM_PROVIDER,
-            DelegateUnusedReason.NUM_ENTRIES,
+        DelegateUnusedReason.PHENOTYPE_BEFORE_PIE,
+        DelegateUnusedReason.PHENOTYPE_FLAG_CANT_COMMIT,
+        DelegateUnusedReason.PHENOTYPE_FLAG_CONFIG_EMPTY,
+        DelegateUnusedReason.GSERVICES_GET_TIMESTAMP_EXCEPTION,
+        DelegateUnusedReason.GSERVICES_TIMESTAMP_MISSING,
+        DelegateUnusedReason.PRELOAD_APK_CANNOT_RESOLVE_PROVIDER,
+        DelegateUnusedReason.PRELOAD_APK_NOT_SYSTEM_PROVIDER,
+        DelegateUnusedReason.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface DelegateUnusedReason {
@@ -414,7 +438,8 @@ class PartnerCustomizationsUma {
      */
     static void logDelegateUnusedReason(@DelegateUnusedReason int reasonForDelegateNotUsed) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.PartnerCustomization.DelegateUnusedReason", reasonForDelegateNotUsed,
+                "Android.PartnerCustomization.DelegateUnusedReason",
+                reasonForDelegateNotUsed,
                 DelegateUnusedReason.NUM_ENTRIES);
     }
 
@@ -425,15 +450,20 @@ class PartnerCustomizationsUma {
      * @param startTime The elapsed real time when we started to create it.
      * @param didTryCreateSucceed Whether the create operation did succeed.
      */
-    static void logDelegateTryCreateDuration(@CustomizationProviderDelegateType int delegate,
-            long startTime, boolean didTryCreateSucceed) {
+    static void logDelegateTryCreateDuration(
+            @CustomizationProviderDelegateType int delegate,
+            long startTime,
+            boolean didTryCreateSucceed) {
         final long createdTime = SystemClock.elapsedRealtime();
         logDelegateTryCreateDuration(delegate, startTime, createdTime, didTryCreateSucceed);
     }
 
     @VisibleForTesting
-    static void logDelegateTryCreateDuration(@CustomizationProviderDelegateType int delegate,
-            long startTime, long endTime, boolean didTryCreateSucceed) {
+    static void logDelegateTryCreateDuration(
+            @CustomizationProviderDelegateType int delegate,
+            long startTime,
+            long endTime,
+            boolean didTryCreateSucceed) {
         long duration = endTime - startTime;
         String durationHistogramName;
         if (didTryCreateSucceed) {
@@ -445,9 +475,7 @@ class PartnerCustomizationsUma {
                 durationHistogramName + delegateName(delegate), duration);
     }
 
-    /**
-     * Called when the partner customization Async Init background task is started.
-     */
+    /** Called when the partner customization Async Init background task is started. */
     void logAsyncInitStarted() {
         logAsyncInitStarted(SystemClock.elapsedRealtime());
     }
@@ -459,9 +487,7 @@ class PartnerCustomizationsUma {
         sWhichDelegate = CustomizationProviderDelegateType.NONE_VALID;
     }
 
-    /**
-     * Called when the partner customization Async Init background task completes successfully.
-     */
+    /** Called when the partner customization Async Init background task completes successfully. */
     void logAsyncInitCompleted() {
         logAsyncInitCompleted(SystemClock.elapsedRealtime());
     }
@@ -469,8 +495,7 @@ class PartnerCustomizationsUma {
     @VisibleForTesting
     void logAsyncInitCompleted(long initCompletedTime) {
         mDidCustomizationCompleteSuccessfully = true;
-        @TaskCompletion
-        int taskCompletion = TaskCompletion.NONE_VALID;
+        @TaskCompletion int taskCompletion = TaskCompletion.NONE_VALID;
         if (mAsyncCustomizationStartTime != 0) {
             logLoadDuration(mAsyncCustomizationStartTime, initCompletedTime, sWhichDelegate);
             // Check if we've already tried to create an initial tab.
@@ -533,14 +558,17 @@ class PartnerCustomizationsUma {
      */
     void logPartnerCustomizationHomepage(
             @PartnerCustomizationsHomepageEnum int partnerCustomizationHomepageEnum,
-            @CustomizationProviderDelegateType int whichDelegate, boolean wasHomepageCached) {
+            @CustomizationProviderDelegateType int whichDelegate,
+            boolean wasHomepageCached) {
         String delegateName = delegateName(whichDelegate);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.PartnerCustomization.HomepageCustomizationOutcome",
-                partnerCustomizationHomepageEnum, PartnerCustomizationsHomepageEnum.NUM_ENTRIES);
+                partnerCustomizationHomepageEnum,
+                PartnerCustomizationsHomepageEnum.NUM_ENTRIES);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.PartnerCustomization.HomepageCustomizationOutcome." + delegateName,
-                partnerCustomizationHomepageEnum, PartnerCustomizationsHomepageEnum.NUM_ENTRIES);
+                partnerCustomizationHomepageEnum,
+                PartnerCustomizationsHomepageEnum.NUM_ENTRIES);
         if (!wasHomepageCached) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.PartnerCustomization.HomepageCustomizationOutcomeNotCached."
@@ -552,14 +580,13 @@ class PartnerCustomizationsUma {
 
     /** The different outcomes for the Async Task completion. */
     @IntDef({
-            TaskCompletion.NONE_VALID,
-            TaskCompletion.COMPLETED_IN_TIME,
-            TaskCompletion.COMPLETED_TOO_LATE,
-            TaskCompletion.CANCELLED,
-            TaskCompletion.EXCEPTION,
-            TaskCompletion.TASK_SKIPPED,
-
-            TaskCompletion.NUM_ENTRIES,
+        TaskCompletion.NONE_VALID,
+        TaskCompletion.COMPLETED_IN_TIME,
+        TaskCompletion.COMPLETED_TOO_LATE,
+        TaskCompletion.CANCELLED,
+        TaskCompletion.EXCEPTION,
+        TaskCompletion.TASK_SKIPPED,
+        TaskCompletion.NUM_ENTRIES,
     })
     @VisibleForTesting
     @Retention(RetentionPolicy.SOURCE)
@@ -574,21 +601,25 @@ class PartnerCustomizationsUma {
         int NUM_ENTRIES = 6;
     }
 
-    /**
-     * Logs how the async task completed.
-     */
-    private static void logTaskCompletion(@TaskCompletion int taskCompletionEnum,
-            @CustomizationProviderDelegateType int whichDelegate, boolean wasHomepageCached) {
-        RecordHistogram.recordEnumeratedHistogram("Android.PartnerCustomization.TaskCompletion",
-                taskCompletionEnum, TaskCompletion.NUM_ENTRIES);
+    /** Logs how the async task completed. */
+    private static void logTaskCompletion(
+            @TaskCompletion int taskCompletionEnum,
+            @CustomizationProviderDelegateType int whichDelegate,
+            boolean wasHomepageCached) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.PartnerCustomization.TaskCompletion",
+                taskCompletionEnum,
+                TaskCompletion.NUM_ENTRIES);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.PartnerCustomization.TaskCompletion." + delegateName(whichDelegate),
-                taskCompletionEnum, TaskCompletion.NUM_ENTRIES);
+                taskCompletionEnum,
+                TaskCompletion.NUM_ENTRIES);
         if (!wasHomepageCached) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.PartnerCustomization.TaskCompletionNotCached."
                             + delegateName(whichDelegate),
-                    taskCompletionEnum, TaskCompletion.NUM_ENTRIES);
+                    taskCompletionEnum,
+                    TaskCompletion.NUM_ENTRIES);
         }
     }
 
@@ -596,7 +627,9 @@ class PartnerCustomizationsUma {
      * Logs a duration for loading data from the {@link CustomizationProviderDelegateType} when
      * successful.
      */
-    private static void logLoadDuration(long startTime, long completedTime,
+    private static void logLoadDuration(
+            long startTime,
+            long completedTime,
             @CustomizationProviderDelegateType int whichDelegate) {
         assert startTime > 0;
         assert completedTime > 0;
@@ -630,14 +663,18 @@ class PartnerCustomizationsUma {
      * @param whichDelegate Which delegate was doing the customization.
      * @param wasHomepageCached Whether this is effectively Chrome's first launch.
      */
-    private static void logDurationNeededForAsyncCompletion(long createInitialTabTime,
-            long completedTime, @CustomizationProviderDelegateType int whichDelegate,
+    private static void logDurationNeededForAsyncCompletion(
+            long createInitialTabTime,
+            long completedTime,
+            @CustomizationProviderDelegateType int whichDelegate,
             boolean wasHomepageCached) {
         assert createInitialTabTime > 0;
         assert completedTime > 0;
         long duration = completedTime - createInitialTabTime;
-        assert duration >= 0 : String.format("Completed time %s must be >= start time %s",
-                                       completedTime, createInitialTabTime);
+        assert duration >= 0
+                : String.format(
+                        "Completed time %s must be >= start time %s",
+                        completedTime, createInitialTabTime);
         RecordHistogram.recordTimesHistogram(
                 "Android.PartnerCustomization.DurationNeededForAsyncCompletion", duration);
         RecordHistogram.recordTimesHistogram(
@@ -690,15 +727,16 @@ class PartnerCustomizationsUma {
     void onFinishNativeInitializationOrEnabled(
             ActivityLifecycleDispatcher activityLifecycleDispatcher, Runnable choreWhenEnabled) {
         if (!didExecute(choreWhenEnabled)) {
-            NativeInitObserver nativeInitObserver = new NativeInitObserver() {
-                @Override
-                public void onFinishNativeInitialization() {
-                    activityLifecycleDispatcher.unregister(this);
-                    if (isEnabled()) {
-                        choreWhenEnabled.run();
-                    }
-                }
-            };
+            NativeInitObserver nativeInitObserver =
+                    new NativeInitObserver() {
+                        @Override
+                        public void onFinishNativeInitialization() {
+                            activityLifecycleDispatcher.unregister(this);
+                            if (isEnabled()) {
+                                choreWhenEnabled.run();
+                            }
+                        }
+                    };
             activityLifecycleDispatcher.register(nativeInitObserver);
         }
     }

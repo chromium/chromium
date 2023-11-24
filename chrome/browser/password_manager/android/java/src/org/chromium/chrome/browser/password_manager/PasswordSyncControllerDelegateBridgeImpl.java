@@ -17,7 +17,8 @@ class PasswordSyncControllerDelegateBridgeImpl {
     private final PasswordSyncControllerDelegate mPasswordSyncControllerDelegate;
     private long mNativeDelegateBridgeImpl;
 
-    PasswordSyncControllerDelegateBridgeImpl(long nativePasswordSyncControllerDelegateBridgeImpl,
+    PasswordSyncControllerDelegateBridgeImpl(
+            long nativePasswordSyncControllerDelegateBridgeImpl,
             PasswordSyncControllerDelegate syncDelegate) {
         mNativeDelegateBridgeImpl = nativePasswordSyncControllerDelegateBridgeImpl;
         assert syncDelegate != null;
@@ -33,28 +34,29 @@ class PasswordSyncControllerDelegateBridgeImpl {
                 nativePasswordSyncControllerDelegateBridgeImpl, factory.createDelegate());
     }
 
-    /**
-     * Notifies credential manager of the currently syncing account.
-     */
+    /** Notifies credential manager of the currently syncing account. */
     @CalledByNative
     void notifyCredentialManagerWhenSyncing(String accountEmail) {
-        mPasswordSyncControllerDelegate.notifyCredentialManagerWhenSyncing(accountEmail, () -> {
-            if (mNativeDelegateBridgeImpl == 0) return;
-            PasswordSyncControllerDelegateBridgeImplJni.get().onCredentialManagerNotified(
-                    mNativeDelegateBridgeImpl);
-        }, exception -> handleCredentialManagerException(exception));
+        mPasswordSyncControllerDelegate.notifyCredentialManagerWhenSyncing(
+                accountEmail,
+                () -> {
+                    if (mNativeDelegateBridgeImpl == 0) return;
+                    PasswordSyncControllerDelegateBridgeImplJni.get()
+                            .onCredentialManagerNotified(mNativeDelegateBridgeImpl);
+                },
+                exception -> handleCredentialManagerException(exception));
     }
 
-    /**
-     * Notifies credential manager of a local account, when not syncing.
-     */
+    /** Notifies credential manager of a local account, when not syncing. */
     @CalledByNative
     void notifyCredentialManagerWhenNotSyncing() {
-        mPasswordSyncControllerDelegate.notifyCredentialManagerWhenNotSyncing(() -> {
-            if (mNativeDelegateBridgeImpl == 0) return;
-            PasswordSyncControllerDelegateBridgeImplJni.get().onCredentialManagerNotified(
-                    mNativeDelegateBridgeImpl);
-        }, exception -> handleCredentialManagerException(exception));
+        mPasswordSyncControllerDelegate.notifyCredentialManagerWhenNotSyncing(
+                () -> {
+                    if (mNativeDelegateBridgeImpl == 0) return;
+                    PasswordSyncControllerDelegateBridgeImplJni.get()
+                            .onCredentialManagerNotified(mNativeDelegateBridgeImpl);
+                },
+                exception -> handleCredentialManagerException(exception));
     }
 
     /**
@@ -65,8 +67,7 @@ class PasswordSyncControllerDelegateBridgeImpl {
     private void handleCredentialManagerException(Exception exception) {
         if (mNativeDelegateBridgeImpl == 0) return;
 
-        @AndroidBackendErrorType
-        int error = AndroidBackendErrorType.UNCATEGORIZED;
+        @AndroidBackendErrorType int error = AndroidBackendErrorType.UNCATEGORIZED;
         int apiErrorCode = 0; // '0' means SUCCESS.
 
         if (exception instanceof PasswordStoreAndroidBackend.BackendException) {
@@ -78,17 +79,18 @@ class PasswordSyncControllerDelegateBridgeImpl {
             apiErrorCode = ((ApiException) exception).getStatusCode();
         }
 
-        PasswordSyncControllerDelegateBridgeImplJni.get().onCredentialManagerError(
-                mNativeDelegateBridgeImpl, error, apiErrorCode);
+        PasswordSyncControllerDelegateBridgeImplJni.get()
+                .onCredentialManagerError(mNativeDelegateBridgeImpl, error, apiErrorCode);
     }
 
-    /**
-     * C++ method signatures.
-     */
+    /** C++ method signatures. */
     @NativeMethods
     interface Natives {
         void onCredentialManagerNotified(long nativePasswordSyncControllerDelegateBridgeImpl);
-        void onCredentialManagerError(long nativePasswordSyncControllerDelegateBridgeImpl,
-                int errorType, int apiErrorCode);
+
+        void onCredentialManagerError(
+                long nativePasswordSyncControllerDelegateBridgeImpl,
+                int errorType,
+                int apiErrorCode);
     }
 }

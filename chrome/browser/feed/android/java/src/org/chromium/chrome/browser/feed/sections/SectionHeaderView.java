@@ -107,8 +107,7 @@ public class SectionHeaderView extends LinearLayout {
         // Whether the tab has unread content.
         public boolean hasUnreadContent;
         // Null when unread indicator isn't shown.
-        @Nullable
-        public UnreadIndicator unreadIndicator;
+        @Nullable public UnreadIndicator unreadIndicator;
         // The text to show on the unreadIndicator, if any.
         public String unreadIndicatorText;
         // The tab's displayed text.
@@ -158,22 +157,32 @@ public class SectionHeaderView extends LinearLayout {
         int actionTitleId;
 
         if (isVisible) {
-            optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
-                    getResources(), R.drawable.mtrl_ic_arrow_drop_up, getContext().getTheme()));
+            optionsIndicatorView.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                            getResources(),
+                            R.drawable.mtrl_ic_arrow_drop_up,
+                            getContext().getTheme()));
             actionTitleId = R.string.feed_options_dropdown_description_close;
         } else {
-            optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
-                    getResources(), R.drawable.mtrl_ic_arrow_drop_down, getContext().getTheme()));
+            optionsIndicatorView.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                            getResources(),
+                            R.drawable.mtrl_ic_arrow_drop_down,
+                            getContext().getTheme()));
             actionTitleId = R.string.feed_options_dropdown_description;
         }
 
-        tab.view.setOnLongClickListener(v -> {
-            mTabListener.onTabReselected(tab);
-            return true;
-        });
+        tab.view.setOnLongClickListener(
+                v -> {
+                    mTabListener.onTabReselected(tab);
+                    return true;
+                });
 
-        ViewCompat.replaceAccessibilityAction(tab.view, AccessibilityActionCompat.ACTION_LONG_CLICK,
-                getResources().getString(actionTitleId), (view, arguments) -> {
+        ViewCompat.replaceAccessibilityAction(
+                tab.view,
+                AccessibilityActionCompat.ACTION_LONG_CLICK,
+                getResources().getString(actionTitleId),
+                (view, arguments) -> {
                     mTabListener.onTabReselected(tab);
                     return true;
                 });
@@ -216,15 +225,17 @@ public class SectionHeaderView extends LinearLayout {
                     (MarginLayoutParams) mMenuView.getLayoutParams();
             marginLayoutParams.width =
                     getResources().getDimensionPixelSize(R.dimen.feed_header_menu_width_polished);
-            int tabLayoutLateralMargin = getResources().getDimensionPixelSize(
-                    R.dimen.feed_header_tab_layout_lateral_margin);
+            int tabLayoutLateralMargin =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.feed_header_tab_layout_lateral_margin);
             marginLayoutParams.setMarginStart(
                     marginLayoutParams.getMarginStart() + tabLayoutLateralMargin);
 
             MarginLayoutParams titleViewMarginLayoutParams =
                     (MarginLayoutParams) mTitleView.getLayoutParams();
-            titleViewMarginLayoutParams.setMarginStart(getResources().getDimensionPixelSize(
-                    R.dimen.feed_header_title_view_margin_start));
+            titleViewMarginLayoutParams.setMarginStart(
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.feed_header_title_view_margin_start));
 
             if (mLeadingStatusIndicator != null) {
                 MarginLayoutParams indicatorViewMarginLayoutParams =
@@ -239,8 +250,15 @@ public class SectionHeaderView extends LinearLayout {
         // touch target needs to be adjusted. This is a bit chatty during animations, but it should
         // also be fairly cheap.
         mMenuView.addOnLayoutChangeListener(
-                (View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-                        int oldRight, int oldBottom) -> adjustTouchDelegate(mMenuView));
+                (View v,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom,
+                        int oldLeft,
+                        int oldTop,
+                        int oldRight,
+                        int oldBottom) -> adjustTouchDelegate(mMenuView));
 
         // Ensures that the whole header doesn't get focused for a11y.
         setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -261,15 +279,23 @@ public class SectionHeaderView extends LinearLayout {
             tab.view.setClipToPadding(false);
             tab.view.setClipChildren(false);
             if (mIsSurfacePolishEnabled) {
-                tab.view.setForeground(ResourcesCompat.getDrawable(getResources(),
-                        R.drawable.header_title_tab_selected_ripple, getContext().getTheme()));
+                tab.view.setForeground(
+                        ResourcesCompat.getDrawable(
+                                getResources(),
+                                R.drawable.header_title_tab_selected_ripple,
+                                getContext().getTheme()));
 
-                tab.view.setBackground(ResourcesCompat.getDrawable(getResources(),
-                        R.drawable.header_title_tab_selected_background_polished,
-                        getContext().getTheme()));
+                tab.view.setBackground(
+                        ResourcesCompat.getDrawable(
+                                getResources(),
+                                R.drawable.header_title_tab_selected_background_polished,
+                                getContext().getTheme()));
             } else {
-                tab.view.setBackground(ResourcesCompat.getDrawable(getResources(),
-                        R.drawable.header_title_tab_selected_background, getContext().getTheme()));
+                tab.view.setBackground(
+                        ResourcesCompat.getDrawable(
+                                getResources(),
+                                R.drawable.header_title_tab_selected_background,
+                                getContext().getTheme()));
             }
         }
     }
@@ -298,8 +324,12 @@ public class SectionHeaderView extends LinearLayout {
      * @param shouldAnimate whether we should animate the unread content transition.
      * @param index Index of the tab to set.
      */
-    void setHeaderAt(String text, boolean hasUnreadContent, String unreadContentText,
-            boolean shouldAnimate, int index) {
+    void setHeaderAt(
+            String text,
+            boolean hasUnreadContent,
+            String unreadContentText,
+            boolean shouldAnimate,
+            int index) {
         TabLayout.Tab tab = getTabAt(index);
         if (tab == null) {
             return;
@@ -325,9 +355,11 @@ public class SectionHeaderView extends LinearLayout {
 
         if (visibility == ViewVisibility.GONE) {
             int leftPadding = tab.view.getPaddingLeft();
-            int rightPadding = tab.view.getPaddingRight()
-                    + getResources().getDimensionPixelOffset(
-                            R.dimen.feed_header_tab_extra_margin_right);
+            int rightPadding =
+                    tab.view.getPaddingRight()
+                            + getResources()
+                                    .getDimensionPixelOffset(
+                                            R.dimen.feed_header_tab_extra_margin_right);
             tab.view.setPadding(leftPadding, 0, rightPadding, 0);
         }
         ImageView image = tab.view.findViewById(R.id.options_indicator);
@@ -371,7 +403,10 @@ public class SectionHeaderView extends LinearLayout {
 
     /** Sets the delegate for the gear/settings icon. */
     void setMenuDelegate(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
-        mMenuView.setOnClickListener((v) -> { displayMenu(listItems, listMenuDelegate); });
+        mMenuView.setOnClickListener(
+                (v) -> {
+                    displayMenu(listItems, listMenuDelegate);
+                });
     }
 
     /**
@@ -386,9 +421,7 @@ public class SectionHeaderView extends LinearLayout {
         }
     }
 
-    /**
-     * Sets whether to have logo or a visibility indicator.
-     */
+    /** Sets whether to have logo or a visibility indicator. */
     void setIsLogo(boolean isLogo) {
         if (mLeadingStatusIndicator == null) return;
         if (isLogo) {
@@ -423,9 +456,7 @@ public class SectionHeaderView extends LinearLayout {
      */
     void setStickyHeaderOptionsPanel(View optionsView) {}
 
-    /**
-     * Sets whether the texts on the tab layout or title view is enabled.
-     */
+    /** Sets whether the texts on the tab layout or title view is enabled. */
     void setTextsEnabled(boolean enabled) {
         mTextsEnabled = enabled;
         if (mTabLayout != null) {
@@ -460,40 +491,44 @@ public class SectionHeaderView extends LinearLayout {
 
     /** Shows an IPH on the feed header menu button. */
     public void showMenuIph(UserEducationHelper helper) {
-        final ViewRectProvider rectProvider = new ViewRectProvider(mMenuView) {
-            // ViewTreeObserver.OnPreDrawListener implementation.
-            @Override
-            public boolean onPreDraw() {
-                boolean result = super.onPreDraw();
+        final ViewRectProvider rectProvider =
+                new ViewRectProvider(mMenuView) {
+                    // ViewTreeObserver.OnPreDrawListener implementation.
+                    @Override
+                    public boolean onPreDraw() {
+                        boolean result = super.onPreDraw();
 
-                int minRectBottomPosPx = mToolbarHeight + mMenuView.getHeight() / 2;
-                // Notify that the rectangle is hidden to dismiss the popup if the anchor is
-                // positioned too high.
-                if (getRect().bottom < minRectBottomPosPx) {
-                    notifyRectHidden();
-                }
+                        int minRectBottomPosPx = mToolbarHeight + mMenuView.getHeight() / 2;
+                        // Notify that the rectangle is hidden to dismiss the popup if the anchor is
+                        // positioned too high.
+                        if (getRect().bottom < minRectBottomPosPx) {
+                            notifyRectHidden();
+                        }
 
-                return result;
-            }
-        };
+                        return result;
+                    }
+                };
         int yInsetPx =
                 getResources().getDimensionPixelOffset(R.dimen.iph_text_bubble_menu_anchor_y_inset);
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
-        params.setCircleRadius(new PulseDrawable.Bounds() {
-            @Override
-            public float getMaxRadiusPx(Rect bounds) {
-                return Math.max(bounds.width(), bounds.height()) / 2.f;
-            }
+        params.setCircleRadius(
+                new PulseDrawable.Bounds() {
+                    @Override
+                    public float getMaxRadiusPx(Rect bounds) {
+                        return Math.max(bounds.width(), bounds.height()) / 2.f;
+                    }
 
-            @Override
-            public float getMinRadiusPx(Rect bounds) {
-                return Math.min(bounds.width(), bounds.height()) / 1.5f;
-            }
-        });
+                    @Override
+                    public float getMinRadiusPx(Rect bounds) {
+                        return Math.min(bounds.width(), bounds.height()) / 1.5f;
+                    }
+                });
         helper.requestShowIPH(
-                new IPHCommandBuilder(mMenuView.getContext().getResources(),
-                        FeatureConstants.FEED_HEADER_MENU_FEATURE, R.string.ntp_feed_menu_iph,
-                        R.string.accessibility_ntp_feed_menu_iph)
+                new IPHCommandBuilder(
+                                mMenuView.getContext().getResources(),
+                                FeatureConstants.FEED_HEADER_MENU_FEATURE,
+                                R.string.ntp_feed_menu_iph,
+                                R.string.accessibility_ntp_feed_menu_iph)
                         .setAnchorView(mMenuView)
                         .setDismissOnTouch(false)
                         .setInsetRect(new Rect(0, 0, 0, -yInsetPx))
@@ -501,26 +536,33 @@ public class SectionHeaderView extends LinearLayout {
                         .setViewRectProvider(rectProvider)
                         // Set clipChildren is important to make sure the bubble does not get
                         // clipped. Set back for better performance during layout.
-                        .setOnShowCallback(() -> {
-                            mContent.setClipChildren(false);
-                            mContent.setClipToPadding(false);
-                        })
-                        .setOnDismissCallback(() -> {
-                            mContent.setClipChildren(true);
-                            mContent.setClipToPadding(true);
-                        })
+                        .setOnShowCallback(
+                                () -> {
+                                    mContent.setClipChildren(false);
+                                    mContent.setClipToPadding(false);
+                                })
+                        .setOnDismissCallback(
+                                () -> {
+                                    mContent.setClipChildren(true);
+                                    mContent.setClipToPadding(true);
+                                })
                         .setHighlightParams(params)
                         .build());
     }
 
     /** Shows an IPH on the feed section header title. */
     public void showHeaderIph(UserEducationHelper helper) {
-        helper.requestShowIPH(new IPHCommandBuilder(getContext().getResources(),
-                FeatureConstants.FEATURE_NOTIFICATION_GUIDE_NTP_SUGGESTION_CARD_HELP_BUBBLE_FEATURE,
-                R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card,
-                R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card)
-                                      .setAnchorView(mTitleView)
-                                      .build());
+        helper.requestShowIPH(
+                new IPHCommandBuilder(
+                                getContext().getResources(),
+                                FeatureConstants
+                                        .FEATURE_NOTIFICATION_GUIDE_NTP_SUGGESTION_CARD_HELP_BUBBLE_FEATURE,
+                                R.string
+                                        .feature_notification_guide_tooltip_message_ntp_suggestion_card,
+                                R.string
+                                        .feature_notification_guide_tooltip_message_ntp_suggestion_card)
+                        .setAnchorView(mTitleView)
+                        .build());
     }
 
     /** Shows an IPH on the web feed tab in the section header. */
@@ -530,12 +572,15 @@ public class SectionHeaderView extends LinearLayout {
         // TODO(https://crbug.com/1448368): Request IPH after parent set or something.
         if (getParent() == null) return;
 
-        helper.requestShowIPH(new IPHCommandBuilder(getContext().getResources(),
-                FeatureConstants.WEB_FEED_AWARENESS_FEATURE, R.string.web_feed_awareness,
-                R.string.web_feed_awareness)
-                                      .setAnchorView(getTabAt(tabIndex).view)
-                                      .setOnShowCallback(scroller)
-                                      .build());
+        helper.requestShowIPH(
+                new IPHCommandBuilder(
+                                getContext().getResources(),
+                                FeatureConstants.WEB_FEED_AWARENESS_FEATURE,
+                                R.string.web_feed_awareness,
+                                R.string.web_feed_awareness)
+                        .setAnchorView(getTabAt(tabIndex).view)
+                        .setOnShowCallback(scroller)
+                        .build());
     }
 
     private void adjustTouchDelegate(View view) {
@@ -570,20 +615,21 @@ public class SectionHeaderView extends LinearLayout {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         mMenuView.getContext(), listItems, listMenuDelegate);
 
-        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
-            @Override
-            public ListMenu getListMenu() {
-                return listMenu;
-            }
+        ListMenuButtonDelegate delegate =
+                new ListMenuButtonDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        return listMenu;
+                    }
 
-            @Override
-            public RectProvider getRectProvider(View listMenuButton) {
-                ViewRectProvider rectProvider = new ViewRectProvider(listMenuButton);
-                rectProvider.setIncludePadding(true);
-                rectProvider.setInsetPx(0, 0, 0, 0);
-                return rectProvider;
-            }
-        };
+                    @Override
+                    public RectProvider getRectProvider(View listMenuButton) {
+                        ViewRectProvider rectProvider = new ViewRectProvider(listMenuButton);
+                        rectProvider.setIncludePadding(true);
+                        rectProvider.setInsetPx(0, 0, 0, 0);
+                        return rectProvider;
+                    }
+                };
 
         mMenuView.setDelegate(delegate);
         mMenuView.tryToFitLargestItem(true);
@@ -609,8 +655,11 @@ public class SectionHeaderView extends LinearLayout {
 
         String contentDescription = state.text;
         if (state.hasUnreadContent && mTextsEnabled) {
-            contentDescription = contentDescription + ", "
-                    + getResources().getString(R.string.accessibility_ntp_following_unread_content);
+            contentDescription =
+                    contentDescription
+                            + ", "
+                            + getResources()
+                                    .getString(R.string.accessibility_ntp_following_unread_content);
 
             // The unread indicator is re-created on every update is because the sticky header
             // gets the wrong position when we calculate its position the same as the real header.
@@ -643,9 +692,7 @@ public class SectionHeaderView extends LinearLayout {
      */
     void setStickyHeaderVisible(boolean isVisible) {}
 
-    /**
-     * Adjust the margin of the sticky header.
-     */
+    /** Adjust the margin of the sticky header. */
     void updateStickyHeaderMargin(int marginValue) {}
 
     /**

@@ -43,23 +43,32 @@ public class DangerousDownloadDialogBridge {
      * @param iconId The icon resource for the warning dialog.
      */
     @CalledByNative
-    public void showDialog(WindowAndroid windowAndroid, String guid, String fileName,
-            long totalBytes, int iconId) {
+    public void showDialog(
+            WindowAndroid windowAndroid,
+            String guid,
+            String fileName,
+            long totalBytes,
+            int iconId) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onCancel(guid, windowAndroid);
             return;
         }
 
-        new DangerousDownloadDialog().show(activity,
-                ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                iconId, (accepted) -> {
-                    if (accepted) {
-                        onAccepted(guid);
-                    } else {
-                        onCancel(guid, windowAndroid);
-                    }
-                });
+        new DangerousDownloadDialog()
+                .show(
+                        activity,
+                        ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                        fileName,
+                        totalBytes,
+                        iconId,
+                        (accepted) -> {
+                            if (accepted) {
+                                onAccepted(guid);
+                            } else {
+                                onCancel(guid, windowAndroid);
+                            }
+                        });
     }
 
     @CalledByNative
@@ -72,14 +81,15 @@ public class DangerousDownloadDialogBridge {
     }
 
     private void onCancel(String guid, WindowAndroid windowAndroid) {
-        DangerousDownloadDialogBridgeJni.get().cancelled(
-                mNativeDangerousDownloadDialogBridge, guid);
+        DangerousDownloadDialogBridgeJni.get()
+                .cancelled(mNativeDangerousDownloadDialogBridge, guid);
         NewDownloadTab.closeExistingNewDownloadTab(windowAndroid);
     }
 
     @NativeMethods
     interface Natives {
         void accepted(long nativeDangerousDownloadDialogBridge, String guid);
+
         void cancelled(long nativeDangerousDownloadDialogBridge, String guid);
     }
 }

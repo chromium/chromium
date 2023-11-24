@@ -20,11 +20,9 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.Toast;
 
-/**
- * Button for creating new tabs.
- */
-public class NewTabButton
-        extends ChromeImageButton implements IncognitoStateObserver, View.OnLongClickListener {
+/** Button for creating new tabs. */
+public class NewTabButton extends ChromeImageButton
+        implements IncognitoStateObserver, View.OnLongClickListener {
     private final ColorStateList mLightModeTint;
     private final ColorStateList mDarkModeTint;
     private final boolean mIsTablet;
@@ -32,19 +30,22 @@ public class NewTabButton
     private boolean mIsIncognito;
     private boolean mIsStartSurfaceEnabled;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public NewTabButton(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mIsIncognito = false;
-        mLightModeTint = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_light_tint_list);
-        mDarkModeTint = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_tint_list);
-        setImageDrawable(TraceEventVectorDrawableCompat.create(
-                getContext().getResources(), R.drawable.new_tab_icon, getContext().getTheme()));
+        mLightModeTint =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_light_tint_list);
+        mDarkModeTint =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_tint_list);
+        setImageDrawable(
+                TraceEventVectorDrawableCompat.create(
+                        getContext().getResources(),
+                        R.drawable.new_tab_icon,
+                        getContext().getTheme()));
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         updateDrawableTint();
         setOnLongClickListener(this);
@@ -64,8 +65,12 @@ public class NewTabButton
 
     @Override
     public boolean onLongClick(View v) {
-        CharSequence description = getResources().getString(
-                mIsIncognito ? R.string.button_new_incognito_tab : R.string.button_new_tab);
+        CharSequence description =
+                getResources()
+                        .getString(
+                                mIsIncognito
+                                        ? R.string.button_new_incognito_tab
+                                        : R.string.button_new_tab);
         return Toast.showAnchoredToast(getContext(), v, description);
     }
 
@@ -80,8 +85,10 @@ public class NewTabButton
         mIsIncognito = isIncognito;
 
         @StringRes
-        int resId = mIsIncognito ? R.string.accessibility_toolbar_btn_new_incognito_tab
-                                 : R.string.accessibility_toolbar_btn_new_tab;
+        int resId =
+                mIsIncognito
+                        ? R.string.accessibility_toolbar_btn_new_incognito_tab
+                        : R.string.accessibility_toolbar_btn_new_tab;
         setContentDescription(getResources().getText(resId));
 
         updateDrawableTint();
@@ -99,9 +106,7 @@ public class NewTabButton
         ImageViewCompat.setImageTintList(this, shouldUseLightMode ? mLightModeTint : mDarkModeTint);
     }
 
-    /**
-     * Clean up any state when the new tab button is destroyed.
-     */
+    /** Clean up any state when the new tab button is destroyed. */
     public void destroy() {
         if (mIncognitoStateProvider != null) {
             mIncognitoStateProvider.removeObserver(this);

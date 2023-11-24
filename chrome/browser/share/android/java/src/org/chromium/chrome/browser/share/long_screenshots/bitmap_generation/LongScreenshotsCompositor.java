@@ -42,20 +42,27 @@ public class LongScreenshotsCompositor {
      * @param directoryKey The key for the directory storing the data.
      * @param nativeCaptureResultPtr A pointer to a native paint_preview::CaptureResult.
      */
-    public LongScreenshotsCompositor(GURL url,
+    public LongScreenshotsCompositor(
+            GURL url,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
-            String directoryKey, long nativeCaptureResultPtr,
+            String directoryKey,
+            long nativeCaptureResultPtr,
             Callback<Integer> compositorCallback) {
         mCompositorCallback = compositorCallback;
 
-        mDelegate = getCompositorDelegateFactory().createForCaptureResult(
-                nativePaintPreviewServiceProvider, nativeCaptureResultPtr, url, directoryKey, true,
-                this::onCompositorReady, this::onCompositorError);
+        mDelegate =
+                getCompositorDelegateFactory()
+                        .createForCaptureResult(
+                                nativePaintPreviewServiceProvider,
+                                nativeCaptureResultPtr,
+                                url,
+                                directoryKey,
+                                true,
+                                this::onCompositorReady,
+                                this::onCompositorError);
     }
 
-    /**
-     * Called when the compositor cannot be successfully initialized.
-     */
+    /** Called when the compositor cannot be successfully initialized. */
     @VisibleForTesting
     protected void onCompositorError(@CompositorStatus int status) {
         mCompositorCallback.onResult(status);
@@ -67,9 +74,15 @@ public class LongScreenshotsCompositor {
      * {@link #mHostView}.
      */
     @VisibleForTesting
-    protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
-            int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, float pageScaleFactor,
+    protected void onCompositorReady(
+            UnguessableToken rootFrameGuid,
+            UnguessableToken[] frameGuids,
+            int[] frameContentSize,
+            int[] scrollOffsets,
+            int[] subFramesCount,
+            UnguessableToken[] subFrameGuids,
+            int[] subFrameClipRects,
+            float pageScaleFactor,
             long nativeAxTree) {
         mContentSize = getMainFrameValues(frameContentSize);
         Size offsetSize = getMainFrameValues(scrollOffsets);
@@ -107,22 +120,40 @@ public class LongScreenshotsCompositor {
 
     static class CompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
         @Override
-        public PlayerCompositorDelegate create(NativePaintPreviewServiceProvider service,
-                @NonNull GURL url, String directoryKey, boolean mainFrameMode,
+        public PlayerCompositorDelegate create(
+                NativePaintPreviewServiceProvider service,
+                @NonNull GURL url,
+                String directoryKey,
+                boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            return new PlayerCompositorDelegateImpl(service, 0, url, directoryKey, mainFrameMode,
-                    compositorListener, compositorErrorCallback);
+            return new PlayerCompositorDelegateImpl(
+                    service,
+                    0,
+                    url,
+                    directoryKey,
+                    mainFrameMode,
+                    compositorListener,
+                    compositorErrorCallback);
         }
 
         @Override
         public PlayerCompositorDelegate createForCaptureResult(
-                NativePaintPreviewServiceProvider service, long nativeCaptureResultPtr,
-                @NonNull GURL url, String directoryKey, boolean mainFrameMode,
+                NativePaintPreviewServiceProvider service,
+                long nativeCaptureResultPtr,
+                @NonNull GURL url,
+                String directoryKey,
+                boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            return new PlayerCompositorDelegateImpl(service, nativeCaptureResultPtr, url,
-                    directoryKey, mainFrameMode, compositorListener, compositorErrorCallback);
+            return new PlayerCompositorDelegateImpl(
+                    service,
+                    nativeCaptureResultPtr,
+                    url,
+                    directoryKey,
+                    mainFrameMode,
+                    compositorListener,
+                    compositorErrorCallback);
         }
     }
 

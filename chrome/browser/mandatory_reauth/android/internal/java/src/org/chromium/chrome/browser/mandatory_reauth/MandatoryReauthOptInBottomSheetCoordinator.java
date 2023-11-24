@@ -21,31 +21,34 @@ class MandatoryReauthOptInBottomSheetCoordinator
     private final BottomSheetController mController;
     private final MandatoryReauthOptInBottomSheetComponent.Delegate mDelegate;
     private final MandatoryReauthOptInBottomSheet mView;
-    private final BottomSheetObserver mObserver = new EmptyBottomSheetObserver() {
-        @Override
-        public void onSheetClosed(@StateChangeReason int reason) {
-            switch (reason) {
-                case StateChangeReason.BACK_PRESS: // Intentional fallthrough.
-                case StateChangeReason.SWIPE: // Intentional fallthrough.
-                case StateChangeReason.TAP_SCRIM:
-                    mDelegate.onClosed(PaymentsBubbleClosedReason.CLOSED);
-                    break;
-                case StateChangeReason.NAVIGATION: // Intentional fallthrough.
-                case StateChangeReason.COMPOSITED_UI: // Intentional fallthrough.
-                case StateChangeReason.VR: // Intentional fallthrough.
-                case StateChangeReason.PROMOTE_TAB: // Intentional fallthrough.
-                case StateChangeReason.OMNIBOX_FOCUS: // Intentional fallthrough.
-                case StateChangeReason.NONE:
-                    mDelegate.onClosed(PaymentsBubbleClosedReason.NOT_INTERACTED);
-                    break;
-                case StateChangeReason.INTERACTION_COMPLETE:
-                    break;
-            }
-            mController.removeObserver(this);
-        }
-    };
+    private final BottomSheetObserver mObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetClosed(@StateChangeReason int reason) {
+                    switch (reason) {
+                        case StateChangeReason.BACK_PRESS: // Intentional fallthrough.
+                        case StateChangeReason.SWIPE: // Intentional fallthrough.
+                        case StateChangeReason.TAP_SCRIM:
+                            mDelegate.onClosed(PaymentsBubbleClosedReason.CLOSED);
+                            break;
+                        case StateChangeReason.NAVIGATION: // Intentional fallthrough.
+                        case StateChangeReason.COMPOSITED_UI: // Intentional fallthrough.
+                        case StateChangeReason.VR: // Intentional fallthrough.
+                        case StateChangeReason.PROMOTE_TAB: // Intentional fallthrough.
+                        case StateChangeReason.OMNIBOX_FOCUS: // Intentional fallthrough.
+                        case StateChangeReason.NONE:
+                            mDelegate.onClosed(PaymentsBubbleClosedReason.NOT_INTERACTED);
+                            break;
+                        case StateChangeReason.INTERACTION_COMPLETE:
+                            break;
+                    }
+                    mController.removeObserver(this);
+                }
+            };
 
-    MandatoryReauthOptInBottomSheetCoordinator(Context context, BottomSheetController controller,
+    MandatoryReauthOptInBottomSheetCoordinator(
+            Context context,
+            BottomSheetController controller,
             MandatoryReauthOptInBottomSheetComponent.Delegate delegate) {
         mController = controller;
         mDelegate = delegate;

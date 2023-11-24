@@ -22,24 +22,21 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Attributes related to {@link TabState}
- */
+/** Attributes related to {@link TabState} */
 public class TabStateAttributes extends TabWebContentsUserData {
     private static final Class<TabStateAttributes> USER_DATA_KEY = TabStateAttributes.class;
-    @VisibleForTesting
-    static final long DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS = 30 * 1000L;
+    @VisibleForTesting static final long DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS = 30 * 1000L;
 
-    /**
-     * Defines the dirtiness states of the tab attributes.
-     */
+    /** Defines the dirtiness states of the tab attributes. */
     @IntDef({DirtinessState.CLEAN, DirtinessState.UNTIDY, DirtinessState.DIRTY})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface DirtinessState {
         /** The state of the tab has no meaningful changes. */
         int CLEAN = 0;
+
         /** The state of the tab has slight changes. */
         int UNTIDY = 1;
+
         /** The state of the tab has significant changes. */
         int DIRTY = 2;
     }
@@ -49,12 +46,11 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
     /** Whether or not the TabState has changed. */
     private @DirtinessState int mDirtinessState = DirtinessState.CLEAN;
+
     private WebContentsObserver mWebContentsObserver;
     private boolean mPendingLowPrioritySave;
 
-    /**
-     * Allows observing changes for Tab state dirtiness updates.
-     */
+    /** Allows observing changes for Tab state dirtiness updates. */
     public interface Observer {
         /**
          * Triggered when the tab state dirtiness has changed.
@@ -95,88 +91,95 @@ public class TabStateAttributes extends TabWebContentsUserData {
         }
         // TODO(crbug/1374456): Should this also handle mTab.getPendingLoadParams(), and ignore
         //                      URL updates when the URL matches the pending load?
-        mTab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onHidden(Tab tab, int reason) {
-                if (!mTab.isClosing() && mDirtinessState == DirtinessState.UNTIDY) {
-                    updateIsDirty(DirtinessState.DIRTY);
-                }
-            }
-
-            @Override
-            public void onClosingStateChanged(Tab tab, boolean closing) {
-                if (!closing && mDirtinessState == DirtinessState.UNTIDY) {
-                    updateIsDirty(DirtinessState.DIRTY);
-                }
-            }
-
-            @Override
-            public void onNavigationEntriesDeleted(Tab tab) {
-                updateIsDirty(DirtinessState.DIRTY);
-            }
-
-            @Override
-            public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                if (mDirtinessState != DirtinessState.UNTIDY) return;
-
-                if (toDifferentDocument) {
-                    updateIsDirty(DirtinessState.DIRTY);
-                } else {
-                    if (mPendingLowPrioritySave) return;
-                    mPendingLowPrioritySave = true;
-                    PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
-                        assert mPendingLowPrioritySave;
-                        if (mDirtinessState == DirtinessState.UNTIDY) {
+        mTab.addObserver(
+                new EmptyTabObserver() {
+                    @Override
+                    public void onHidden(Tab tab, int reason) {
+                        if (!mTab.isClosing() && mDirtinessState == DirtinessState.UNTIDY) {
                             updateIsDirty(DirtinessState.DIRTY);
                         }
-                        mPendingLowPrioritySave = false;
-                    }, DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS);
-                }
-            }
+                    }
 
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                // TODO(crbug/1374456): Reconcile the overlapping calls of
-                //                      didFinishNavigationInPrimaryMainFrame, onPageLoadFinished,
-                //                      and onLoadStopped.
-                updateIsDirty(DirtinessState.UNTIDY);
-            }
+                    @Override
+                    public void onClosingStateChanged(Tab tab, boolean closing) {
+                        if (!closing && mDirtinessState == DirtinessState.UNTIDY) {
+                            updateIsDirty(DirtinessState.DIRTY);
+                        }
+                    }
 
-            @Override
-            public void onTitleUpdated(Tab tab) {
-                // TODO(crbug/1374456): Is the title of a page normally received before
-                //                      onLoadStopped? If not, this will get marked as untidy
-                //                      soon after the initial page load.
-                updateIsDirty(DirtinessState.UNTIDY);
-            }
+                    @Override
+                    public void onNavigationEntriesDeleted(Tab tab) {
+                        updateIsDirty(DirtinessState.DIRTY);
+                    }
 
-            @Override
-            public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
-                if (window == null) return;
-                updateIsDirty(DirtinessState.UNTIDY);
-            }
+                    @Override
+                    public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+                        if (mDirtinessState != DirtinessState.UNTIDY) return;
 
-            @Override
-            public void onRootIdChanged(Tab tab, int newRootId) {
-                if (!tab.isInitialized()) return;
-                updateIsDirty(DirtinessState.DIRTY);
-            }
-        });
+                        if (toDifferentDocument) {
+                            updateIsDirty(DirtinessState.DIRTY);
+                        } else {
+                            if (mPendingLowPrioritySave) return;
+                            mPendingLowPrioritySave = true;
+                            PostTask.postDelayedTask(
+                                    TaskTraits.UI_DEFAULT,
+                                    () -> {
+                                        assert mPendingLowPrioritySave;
+                                        if (mDirtinessState == DirtinessState.UNTIDY) {
+                                            updateIsDirty(DirtinessState.DIRTY);
+                                        }
+                                        mPendingLowPrioritySave = false;
+                                    },
+                                    DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS);
+                        }
+                    }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        // TODO(crbug/1374456): Reconcile the overlapping calls of
+                        //                      didFinishNavigationInPrimaryMainFrame,
+                        // onPageLoadFinished,
+                        //                      and onLoadStopped.
+                        updateIsDirty(DirtinessState.UNTIDY);
+                    }
+
+                    @Override
+                    public void onTitleUpdated(Tab tab) {
+                        // TODO(crbug/1374456): Is the title of a page normally received before
+                        //                      onLoadStopped? If not, this will get marked as
+                        // untidy
+                        //                      soon after the initial page load.
+                        updateIsDirty(DirtinessState.UNTIDY);
+                    }
+
+                    @Override
+                    public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
+                        if (window == null) return;
+                        updateIsDirty(DirtinessState.UNTIDY);
+                    }
+
+                    @Override
+                    public void onRootIdChanged(Tab tab, int newRootId) {
+                        if (!tab.isInitialized()) return;
+                        updateIsDirty(DirtinessState.DIRTY);
+                    }
+                });
     }
 
     @Override
     public void initWebContents(WebContents webContents) {
-        mWebContentsObserver = new WebContentsObserver(webContents) {
-            @Override
-            public void navigationEntriesChanged() {
-                updateIsDirty(DirtinessState.UNTIDY);
-            }
+        mWebContentsObserver =
+                new WebContentsObserver(webContents) {
+                    @Override
+                    public void navigationEntriesChanged() {
+                        updateIsDirty(DirtinessState.UNTIDY);
+                    }
 
-            @Override
-            public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                updateIsDirty(DirtinessState.UNTIDY);
-            }
-        };
+                    @Override
+                    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        updateIsDirty(DirtinessState.UNTIDY);
+                    }
+                };
     }
 
     @Override
@@ -194,9 +197,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
         return mDirtinessState;
     }
 
-    /**
-     * Signals that the tab state is no longer dirty (e.g. has been successfully persisted).
-     */
+    /** Signals that the tab state is no longer dirty (e.g. has been successfully persisted). */
     public void clearTabStateDirtiness() {
         updateIsDirty(DirtinessState.CLEAN);
     }

@@ -46,8 +46,12 @@ public class OptimizationGuidePushNotificationManager {
     // Should be in sync with the enum "OptimizationGuideReadCacheResult" in
     // tools/metrics/histograms/enums.xml.
     @SuppressWarnings("unused")
-    @IntDef({ReadCacheResult.UNKNOWN, ReadCacheResult.SUCCESS, ReadCacheResult.INVALID_PROTO_ERROR,
-            ReadCacheResult.BASE64_ERROR})
+    @IntDef({
+        ReadCacheResult.UNKNOWN,
+        ReadCacheResult.SUCCESS,
+        ReadCacheResult.INVALID_PROTO_ERROR,
+        ReadCacheResult.BASE64_ERROR
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ReadCacheResult {
         int UNKNOWN = 0;
@@ -133,18 +137,25 @@ public class OptimizationGuidePushNotificationManager {
         List<HintNotificationPayload> notifications = new ArrayList<HintNotificationPayload>();
         for (int i = 0; i < cache.size(); i++) {
             try {
-                HintNotificationPayload payload = HintNotificationPayload.parseFrom(
-                        Base64.decode(cache_iter.next(), Base64.DEFAULT));
+                HintNotificationPayload payload =
+                        HintNotificationPayload.parseFrom(
+                                Base64.decode(cache_iter.next(), Base64.DEFAULT));
                 notifications.add(payload);
-                RecordHistogram.recordEnumeratedHistogram(READ_CACHE_RESULT_HISTOGRAM,
-                        ReadCacheResult.SUCCESS, ReadCacheResult.NUM_ENTRIES);
+                RecordHistogram.recordEnumeratedHistogram(
+                        READ_CACHE_RESULT_HISTOGRAM,
+                        ReadCacheResult.SUCCESS,
+                        ReadCacheResult.NUM_ENTRIES);
             } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-                RecordHistogram.recordEnumeratedHistogram(READ_CACHE_RESULT_HISTOGRAM,
-                        ReadCacheResult.INVALID_PROTO_ERROR, ReadCacheResult.NUM_ENTRIES);
+                RecordHistogram.recordEnumeratedHistogram(
+                        READ_CACHE_RESULT_HISTOGRAM,
+                        ReadCacheResult.INVALID_PROTO_ERROR,
+                        ReadCacheResult.NUM_ENTRIES);
                 Log.e(TAG, Log.getStackTraceString(e));
             } catch (IllegalArgumentException e) {
-                RecordHistogram.recordEnumeratedHistogram(READ_CACHE_RESULT_HISTOGRAM,
-                        ReadCacheResult.BASE64_ERROR, ReadCacheResult.NUM_ENTRIES);
+                RecordHistogram.recordEnumeratedHistogram(
+                        READ_CACHE_RESULT_HISTOGRAM,
+                        ReadCacheResult.BASE64_ERROR,
+                        ReadCacheResult.NUM_ENTRIES);
                 Log.e(TAG, Log.getStackTraceString(e));
             }
         }
@@ -221,16 +232,17 @@ public class OptimizationGuidePushNotificationManager {
 
         // Check if we would overflow the cache by writing the new element.
         if (cache.size() >= MAX_CACHE_SIZE.getValue() - 1) {
-            ChromeSharedPreferences.getInstance().writeStringSet(
-                    cacheKey(payload.getOptimizationType()), OVERFLOW_SENTINEL_SET);
+            ChromeSharedPreferences.getInstance()
+                    .writeStringSet(cacheKey(payload.getOptimizationType()), OVERFLOW_SENTINEL_SET);
             return;
         }
 
         // The notification's payload isn't used so it can be stripped to preserve memory space.
         HintNotificationPayload slim_payload =
                 HintNotificationPayload.newBuilder(payload).clearPayload().build();
-        ChromeSharedPreferences.getInstance().addToStringSet(
-                cacheKey(slim_payload.getOptimizationType()),
-                Base64.encodeToString(slim_payload.toByteArray(), Base64.DEFAULT));
+        ChromeSharedPreferences.getInstance()
+                .addToStringSet(
+                        cacheKey(slim_payload.getOptimizationType()),
+                        Base64.encodeToString(slim_payload.toByteArray(), Base64.DEFAULT));
     }
 }

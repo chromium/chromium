@@ -12,9 +12,7 @@ import org.chromium.components.payments.CurrencyFormatter;
 
 import java.util.Locale;
 
-/**
- * Utilities to format price strings for UI.
- */
+/** Utilities to format price strings for UI. */
 public class PriceUtils {
     private static final int FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS = 2;
     private static final int FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS = 0;
@@ -34,14 +32,22 @@ public class PriceUtils {
         // 2 fractional digits below 10 units.
         if (priceMicros < TEN_UNITS) {
             currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS);
-            formattedPrice = String.format(
-                    Locale.getDefault(), "%.2f", (100 * priceMicros / MICROS_TO_UNITS) / 100.0);
+            formattedPrice =
+                    String.format(
+                            Locale.getDefault(),
+                            "%.2f",
+                            (100 * priceMicros / MICROS_TO_UNITS) / 100.0);
         } else {
             // Round up when greater than 10 units, 0 fractional digits.
             currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS);
-            formattedPrice = String.format(Locale.getDefault(), "%d",
-                    (long) Math.floor(
-                            (double) (priceMicros + MICROS_TO_UNITS / 2) / MICROS_TO_UNITS));
+            formattedPrice =
+                    String.format(
+                            Locale.getDefault(),
+                            "%d",
+                            (long)
+                                    Math.floor(
+                                            (double) (priceMicros + MICROS_TO_UNITS / 2)
+                                                    / MICROS_TO_UNITS));
         }
         return currencyFormatter.format(formattedPrice);
     }

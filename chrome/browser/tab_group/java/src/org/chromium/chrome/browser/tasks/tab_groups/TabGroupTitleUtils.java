@@ -12,9 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.tab.Tab;
 
-/**
- * Helper class to handle tab group title related utilities.
- */
+/** Helper class to handle tab group title related utilities. */
 public class TabGroupTitleUtils {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
@@ -51,7 +49,7 @@ public class TabGroupTitleUtils {
     }
 
     private static SharedPreferences getSharedPreferences() {
-        return ContextUtils.getApplicationContext().getSharedPreferences(
-                TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
     }
 }

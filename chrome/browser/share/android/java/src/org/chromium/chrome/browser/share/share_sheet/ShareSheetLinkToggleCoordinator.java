@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.url.GURL;
 
-/**
- * Coordinates toggling link-sharing on and off on the share sheet.
- */
+/** Coordinates toggling link-sharing on and off on the share sheet. */
 public class ShareSheetLinkToggleCoordinator {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -42,32 +40,31 @@ public class ShareSheetLinkToggleCoordinator {
      * @param chromeShareExtras The {@link ChromeShareExtras} for the current share.
      * @param linkToTextCoordinator The {@link LinkToTextCoordinator} to share highlighted text.
      */
-    ShareSheetLinkToggleCoordinator(ShareParams shareParams, ChromeShareExtras chromeShareExtras,
+    ShareSheetLinkToggleCoordinator(
+            ShareParams shareParams,
+            ChromeShareExtras chromeShareExtras,
             LinkToTextCoordinator linkToTextCoordinator) {
         mLinkToTextCoordinator = linkToTextCoordinator;
         setShareParamsAndExtras(shareParams, chromeShareExtras);
     }
 
-    /**
-     * Sets the {@link ShareParams} and {@link ChromeShareExtras}.
-     */
+    /** Sets the {@link ShareParams} and {@link ChromeShareExtras}. */
     void setShareParamsAndExtras(ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
         mShareParams = shareParams;
         mChromeShareExtras = chromeShareExtras;
         mUrl = chromeShareExtras.getContentUrl();
         mShouldEnableLinkToTextToggle =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                && mLinkToTextCoordinator != null
-                && chromeShareExtras.getDetailedContentType()
-                        == DetailedContentType.HIGHLIGHTED_TEXT;
+                        && mLinkToTextCoordinator != null
+                        && chromeShareExtras.getDetailedContentType()
+                                == DetailedContentType.HIGHLIGHTED_TEXT;
         mShouldEnableGenericToggle =
                 mChromeShareExtras.getDetailedContentType() != DetailedContentType.NOT_SPECIFIED
-                && mUrl != null && !mUrl.isEmpty();
+                        && mUrl != null
+                        && !mUrl.isEmpty();
     }
 
-    /**
-     * Returns the {@link ShareParams} associated with the {@link LinkToggleState}.
-     */
+    /** Returns the {@link ShareParams} associated with the {@link LinkToggleState}. */
     ShareParams getShareParams(@LinkToggleState int linkToggleState) {
         if (mShouldEnableLinkToTextToggle) {
             return mLinkToTextCoordinator.getShareParams(linkToggleState);
@@ -82,9 +79,7 @@ public class ShareSheetLinkToggleCoordinator {
         return mShareParams;
     }
 
-    /**
-     * Returns the {@link ShareParams} associated with the default toggle status.
-     */
+    /** Returns the {@link ShareParams} associated with the default toggle status. */
     ShareParams getDefaultShareParams() {
         return getShareParams(
                 shouldEnableToggleByDefault() ? LinkToggleState.LINK : LinkToggleState.NO_LINK);

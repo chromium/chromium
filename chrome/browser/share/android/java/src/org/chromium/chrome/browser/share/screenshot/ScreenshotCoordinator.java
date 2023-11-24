@@ -18,13 +18,10 @@ import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Handles the screenshot action in the Sharing Hub and launches the screenshot editor.
- */
+/** Handles the screenshot action in the Sharing Hub and launches the screenshot editor. */
 public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
     // Maximum number of attempts to install the DFM per session.
-    @VisibleForTesting
-    static final int MAX_INSTALL_ATTEMPTS = 5;
+    @VisibleForTesting static final int MAX_INSTALL_ATTEMPTS = 5;
     private static int sInstallAttempts;
 
     private final WindowAndroid mWindowAndroid;
@@ -41,7 +38,10 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
      */
-    public ScreenshotCoordinator(Activity activity, WindowAndroid windowAndroid, String shareUrl,
+    public ScreenshotCoordinator(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
@@ -64,8 +64,12 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
      */
     @VisibleForTesting
-    ScreenshotCoordinator(Activity activity, WindowAndroid windowAndroid, String shareUrl,
-            EditorScreenshotSource screenshotSource, ScreenshotShareSheetDialog dialog,
+    ScreenshotCoordinator(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            String shareUrl,
+            EditorScreenshotSource screenshotSource,
+            ScreenshotShareSheetDialog dialog,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
@@ -100,9 +104,7 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
         }
     }
 
-    /**
-     * Launches the screenshot image editor.
-     */
+    /** Launches the screenshot image editor. */
     private void launchEditor() {
         assert mImageEditorModuleProvider != null;
         ImageEditorDialogCoordinator editor =
@@ -112,13 +114,16 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
         mScreenshot = null;
     }
 
-    /**
-     * Opens the screenshot sharesheet.
-     */
+    /** Opens the screenshot sharesheet. */
     protected void launchSharesheet() {
         ScreenshotShareSheetDialogCoordinator shareSheet =
-                new ScreenshotShareSheetDialogCoordinator(mActivity, mDialog, mScreenshot,
-                        mWindowAndroid, mShareUrl, mChromeOptionShareCallback,
+                new ScreenshotShareSheetDialogCoordinator(
+                        mActivity,
+                        mDialog,
+                        mScreenshot,
+                        mWindowAndroid,
+                        mShareUrl,
+                        mChromeOptionShareCallback,
                         mImageEditorModuleProvider == null ? null : this::retryInstallEditor);
         shareSheet.showShareSheet();
         mScreenshot = null;
@@ -145,42 +150,47 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      */
     private void installEditor(boolean showFallback, Runnable onSuccessRunnable) {
         assert mImageEditorModuleProvider != null;
-        ModuleInstallUi.Delegate moduleInstallUiDelegate = new ModuleInstallUi.Delegate() {
-            @Override
-            public WindowAndroid getWindowAndroid() {
-                return mWindowAndroid;
-            }
-
-            @Override
-            public Context getContext() {
-                return mWindowAndroid != null ? mWindowAndroid.getActivity().get() : null;
-            }
-        };
-        final ModuleInstallUi ui = new ModuleInstallUi(moduleInstallUiDelegate,
-                R.string.image_editor_module_title, new ModuleInstallUi.FailureUiListener() {
+        ModuleInstallUi.Delegate moduleInstallUiDelegate =
+                new ModuleInstallUi.Delegate() {
                     @Override
-                    public void onFailureUiResponse(boolean retry) {
-                        if (retry) {
-                            // User initiated retries are not counted toward the maximum number
-                            // of install attempts per session.
-                            installEditor(showFallback, onSuccessRunnable);
-                        } else if (showFallback) {
-                            launchSharesheet();
-                        }
+                    public WindowAndroid getWindowAndroid() {
+                        return mWindowAndroid;
                     }
-                });
+
+                    @Override
+                    public Context getContext() {
+                        return mWindowAndroid != null ? mWindowAndroid.getActivity().get() : null;
+                    }
+                };
+        final ModuleInstallUi ui =
+                new ModuleInstallUi(
+                        moduleInstallUiDelegate,
+                        R.string.image_editor_module_title,
+                        new ModuleInstallUi.FailureUiListener() {
+                            @Override
+                            public void onFailureUiResponse(boolean retry) {
+                                if (retry) {
+                                    // User initiated retries are not counted toward the maximum
+                                    // number of install attempts per session.
+                                    installEditor(showFallback, onSuccessRunnable);
+                                } else if (showFallback) {
+                                    launchSharesheet();
+                                }
+                            }
+                        });
         ui.showInstallStartUi();
 
-        mImageEditorModuleProvider.maybeInstallModule((success) -> {
-            if (success) {
-                ui.showInstallSuccessUi();
-                if (onSuccessRunnable != null) {
-                    onSuccessRunnable.run();
-                }
-                launchEditor();
-            } else if (showFallback) {
-                launchSharesheet();
-            }
-        });
+        mImageEditorModuleProvider.maybeInstallModule(
+                (success) -> {
+                    if (success) {
+                        ui.showInstallSuccessUi();
+                        if (onSuccessRunnable != null) {
+                            onSuccessRunnable.run();
+                        }
+                        launchEditor();
+                    } else if (showFallback) {
+                        launchSharesheet();
+                    }
+                });
     }
 }

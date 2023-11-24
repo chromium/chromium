@@ -222,7 +222,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
         thrown.expect(Matchers.instanceOf(AssertionError.class));
         thrown.expectMessage(
-                "Should be disabled when there is no valid tab and back press will be consumed.");
+                "Should be disabled when there is no valid tab and back press is consumed.");
 
         mHandler.handleBackPress();
 

@@ -26,9 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-/**
- * Fake {@link PasswordStoreAndroidBackend} to be used in integration tests.
- */
+/** Fake {@link PasswordStoreAndroidBackend} to be used in integration tests. */
 public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBackend {
     private final Map<Account, List<PasswordWithLocalData>> mSavedPasswords = new HashMap<>();
     private SequencedTaskRunner mTaskRunner =
@@ -45,117 +43,160 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
     }
 
     @Override
-    public void getAllLogins(Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
+    public void getAllLogins(
+            Optional<Account> syncingAccount,
+            Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(() -> {
-            Account account = getAccountOrFail(syncingAccount, failureCallback);
-            if (account == null) return;
-            ListPasswordsResult allLogins =
-                    ListPasswordsResult.newBuilder()
-                            .addAllPasswordData(mSavedPasswords.get(account))
-                            .build();
-            loginsReply.onResult(allLogins.toByteArray());
-        });
+        mTaskRunner.postTask(
+                () -> {
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    ListPasswordsResult allLogins =
+                            ListPasswordsResult.newBuilder()
+                                    .addAllPasswordData(mSavedPasswords.get(account))
+                                    .build();
+                    loginsReply.onResult(allLogins.toByteArray());
+                });
     }
 
     @Override
-    public void getAllLoginsBetween(Date createdAfter, Date createdBefore,
-            Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
+    public void getAllLoginsBetween(
+            Date createdAfter,
+            Date createdBefore,
+            Optional<Account> syncingAccount,
+            Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(() -> {
-            Account account = getAccountOrFail(syncingAccount, failureCallback);
-            if (account == null) return;
-            ListPasswordsResult allLogins =
-                    ListPasswordsResult.newBuilder()
-                            .addAllPasswordData(filterPasswords(mSavedPasswords.get(account),
-                                    pwd -> hasDateBetween(pwd, createdAfter, createdBefore)))
-                            .build();
-            loginsReply.onResult(allLogins.toByteArray());
-        });
-    };
-
-    @Override
-    public void getAutofillableLogins(Optional<Account> syncingAccount,
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(() -> {
-            Account account = getAccountOrFail(syncingAccount, failureCallback);
-            if (account == null) return;
-            ListPasswordsResult allLogins =
-                    ListPasswordsResult.newBuilder()
-                            .addAllPasswordData(filterPasswords(mSavedPasswords.get(account),
-                                    pwd -> !pwd.getPasswordSpecificsData().getBlacklisted()))
-                            .build();
-            loginsReply.onResult(allLogins.toByteArray());
-        });
+        mTaskRunner.postTask(
+                () -> {
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    ListPasswordsResult allLogins =
+                            ListPasswordsResult.newBuilder()
+                                    .addAllPasswordData(
+                                            filterPasswords(
+                                                    mSavedPasswords.get(account),
+                                                    pwd ->
+                                                            hasDateBetween(
+                                                                    pwd,
+                                                                    createdAfter,
+                                                                    createdBefore)))
+                                    .build();
+                    loginsReply.onResult(allLogins.toByteArray());
+                });
     }
 
     @Override
-    public void getLoginsForSignonRealm(String signonRealm, Optional<Account> syncingAccount,
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(() -> {
-            Account account = getAccountOrFail(syncingAccount, failureCallback);
-            if (account == null) return;
-            ListPasswordsResult allLogins =
-                    ListPasswordsResult.newBuilder()
-                            .addAllPasswordData(filterPasswords(mSavedPasswords.get(account),
-                                    pwd -> hasSignonRealm(pwd, signonRealm)))
-                            .build();
-            loginsReply.onResult(allLogins.toByteArray());
-        });
+    public void getAutofillableLogins(
+            Optional<Account> syncingAccount,
+            Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback) {
+        mTaskRunner.postTask(
+                () -> {
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    ListPasswordsResult allLogins =
+                            ListPasswordsResult.newBuilder()
+                                    .addAllPasswordData(
+                                            filterPasswords(
+                                                    mSavedPasswords.get(account),
+                                                    pwd ->
+                                                            !pwd.getPasswordSpecificsData()
+                                                                    .getBlacklisted()))
+                                    .build();
+                    loginsReply.onResult(allLogins.toByteArray());
+                });
     }
 
     @Override
-    public void addLogin(byte[] pwdWithLocalData, Optional<Account> syncingAccount,
-            Runnable successCallback, Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(() -> {
-            Account account = getAccountOrFail(syncingAccount, failureCallback);
-            if (account == null) return;
-            PasswordWithLocalData parsedPassword =
-                    parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
-            if (parsedPassword == null) return;
-            assert parsedPassword.getPasswordSpecificsData().hasSignonRealm();
-            assert !containsPasswordWithSameUniqueKey(mSavedPasswords.get(account), parsedPassword)
-                : "Trying to add password with the same unique key,"
-                  + " updateLogin() should be called.";
-            mSavedPasswords.get(account).add(parsedPassword);
-            successCallback.run();
-        });
+    public void getLoginsForSignonRealm(
+            String signonRealm,
+            Optional<Account> syncingAccount,
+            Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback) {
+        mTaskRunner.postTask(
+                () -> {
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    ListPasswordsResult allLogins =
+                            ListPasswordsResult.newBuilder()
+                                    .addAllPasswordData(
+                                            filterPasswords(
+                                                    mSavedPasswords.get(account),
+                                                    pwd -> hasSignonRealm(pwd, signonRealm)))
+                                    .build();
+                    loginsReply.onResult(allLogins.toByteArray());
+                });
     }
 
     @Override
-    public void updateLogin(byte[] pwdWithLocalData, Optional<Account> syncingAccount,
-            Runnable successCallback, Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(() -> {
-            PasswordWithLocalData parsedPassword =
-                    parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
-            if (parsedPassword == null) return;
-            Account account = getAccountOrFail(syncingAccount, failureCallback);
-            if (account == null) return;
-            assert parsedPassword.getPasswordSpecificsData().hasSignonRealm();
-            List<PasswordWithLocalData> accountPasswords = mSavedPasswords.get(account);
-            List<PasswordWithLocalData> loginsWithSameUsrAndOrigin =
-                    filterPasswords(accountPasswords, pwd -> hasSameUniqueKey(pwd, parsedPassword));
-            accountPasswords.removeAll(loginsWithSameUsrAndOrigin);
-            assert !containsPasswordWithSameUniqueKey(mSavedPasswords.get(account), parsedPassword);
-            accountPasswords.add(parsedPassword);
-            successCallback.run();
-        });
+    public void addLogin(
+            byte[] pwdWithLocalData,
+            Optional<Account> syncingAccount,
+            Runnable successCallback,
+            Callback<Exception> failureCallback) {
+        mTaskRunner.postTask(
+                () -> {
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    PasswordWithLocalData parsedPassword =
+                            parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
+                    if (parsedPassword == null) return;
+                    assert parsedPassword.getPasswordSpecificsData().hasSignonRealm();
+                    assert !containsPasswordWithSameUniqueKey(
+                                    mSavedPasswords.get(account), parsedPassword)
+                            : "Trying to add password with the same unique key,"
+                                    + " updateLogin() should be called.";
+                    mSavedPasswords.get(account).add(parsedPassword);
+                    successCallback.run();
+                });
     }
 
     @Override
-    public void removeLogin(byte[] pwdSpecificsData, Optional<Account> syncingAccount,
-            Runnable successCallback, Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(() -> {
-            PasswordSpecificsData parsedPassword =
-                    parsePwdSpecificDataOrFail(pwdSpecificsData, failureCallback);
-            if (parsedPassword == null) return;
-            Account account = getAccountOrFail(syncingAccount, failureCallback);
-            if (account == null) return;
-            List<PasswordWithLocalData> pwdsToRemove = filterPasswords(mSavedPasswords.get(account),
-                    p -> parsedPassword.equals(p.getPasswordSpecificsData()));
-            mSavedPasswords.get(account).removeAll(pwdsToRemove);
-            successCallback.run();
-        });
+    public void updateLogin(
+            byte[] pwdWithLocalData,
+            Optional<Account> syncingAccount,
+            Runnable successCallback,
+            Callback<Exception> failureCallback) {
+        mTaskRunner.postTask(
+                () -> {
+                    PasswordWithLocalData parsedPassword =
+                            parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
+                    if (parsedPassword == null) return;
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    assert parsedPassword.getPasswordSpecificsData().hasSignonRealm();
+                    List<PasswordWithLocalData> accountPasswords = mSavedPasswords.get(account);
+                    List<PasswordWithLocalData> loginsWithSameUsrAndOrigin =
+                            filterPasswords(
+                                    accountPasswords, pwd -> hasSameUniqueKey(pwd, parsedPassword));
+                    accountPasswords.removeAll(loginsWithSameUsrAndOrigin);
+                    assert !containsPasswordWithSameUniqueKey(
+                            mSavedPasswords.get(account), parsedPassword);
+                    accountPasswords.add(parsedPassword);
+                    successCallback.run();
+                });
+    }
+
+    @Override
+    public void removeLogin(
+            byte[] pwdSpecificsData,
+            Optional<Account> syncingAccount,
+            Runnable successCallback,
+            Callback<Exception> failureCallback) {
+        mTaskRunner.postTask(
+                () -> {
+                    PasswordSpecificsData parsedPassword =
+                            parsePwdSpecificDataOrFail(pwdSpecificsData, failureCallback);
+                    if (parsedPassword == null) return;
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    List<PasswordWithLocalData> pwdsToRemove =
+                            filterPasswords(
+                                    mSavedPasswords.get(account),
+                                    p -> parsedPassword.equals(p.getPasswordSpecificsData()));
+                    mSavedPasswords.get(account).removeAll(pwdsToRemove);
+                    successCallback.run();
+                });
     }
 
     @VisibleForTesting
@@ -176,8 +217,10 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount, Callback<Exception> failureCallback) {
         Account account = syncingAccount.isPresent() ? syncingAccount.get() : sLocalDefaultAccount;
         if (!mSavedPasswords.containsKey(account)) {
-            failureCallback.onResult(new BackendException(
-                    "Account " + account + " not found.", AndroidBackendErrorType.NO_ACCOUNT));
+            failureCallback.onResult(
+                    new BackendException(
+                            "Account " + account + " not found.",
+                            AndroidBackendErrorType.NO_ACCOUNT));
             return null;
         }
         return account;

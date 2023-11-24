@@ -19,9 +19,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Helper methods covering more complex Feed related feature checks and states.
- */
+/** Helper methods covering more complex Feed related feature checks and states. */
 public final class FeedFeatures {
     // Finch param constants for controlling the feed tab stickiness logic to use.
     private static final String FEED_TAB_STICKYNESS_LOGIC_PARAM = "feed_tab_stickiness_logic";
@@ -79,25 +77,24 @@ public final class FeedFeatures {
     }
 
     public static boolean shouldUseWebFeedAwarenessIPH() {
-        String awarenessStyleParam = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style");
+        String awarenessStyleParam =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style");
         return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
                 && (awarenessStyleParam.equals("IPH") || awarenessStyleParam.isEmpty());
     }
 
     public static boolean shouldUseNewIndicator() {
         // Return true if we are not rate limited.
-        if (ChromeFeatureList
-                        .getFieldTrialParamByFeature(
-                                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
-                        .equals("new_animation_no_limit")) {
+        if (ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
+                .equals("new_animation_no_limit")) {
             return true;
         }
         // Otherwise, the rate limit is:
         // 1. We have never seen the web feed.
         // 2. It's been > 1 day since we last seen the new indicator.
-        if (ChromeFeatureList
-                        .getFieldTrialParamByFeature(
+        if (ChromeFeatureList.getFieldTrialParamByFeature(
                                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
                         .equals("new_animation")
                 && !getPrefService().getBoolean(Pref.HAS_SEEN_WEB_FEED)) {
@@ -115,16 +112,12 @@ public final class FeedFeatures {
         return false;
     }
 
-    /**
-     * Updates the timestamp for the last time the new indicator was seen to now.
-     */
+    /** Updates the timestamp for the last time the new indicator was seen to now. */
     public static void updateNewIndicatorTimestamp() {
         getPrefService().setString(Pref.LAST_BADGE_ANIMATION_TIME, "" + System.currentTimeMillis());
     }
 
-    /**
-     * Updates that the following feed has been seen.
-     */
+    /** Updates that the following feed has been seen. */
     public static void updateFollowingFeedSeen() {
         getPrefService().setBoolean(Pref.HAS_SEEN_WEB_FEED, true);
     }
@@ -160,8 +153,9 @@ public final class FeedFeatures {
      * - reset_upon_chrome_restart: tab choice is reset upon Chrome relaunch.
      */
     public static @StreamTabId int getFeedTabIdToRestore() {
-        String stickinessLogic = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.WEB_FEED, FEED_TAB_STICKYNESS_LOGIC_PARAM);
+        String stickinessLogic =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED, FEED_TAB_STICKYNESS_LOGIC_PARAM);
 
         if (RESET_UPON_CHROME_RESTART.equals(stickinessLogic)) {
             if (sIsFirstFeedTabStickinessCheckSinceLaunch) {

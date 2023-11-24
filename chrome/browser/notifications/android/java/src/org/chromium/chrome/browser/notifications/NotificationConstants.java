@@ -23,8 +23,7 @@ public class NotificationConstants {
      * and owned by Chromium.
      */
     // When adding a new extra, as well as setting it on the intent in NotificationPlatformBridge,
-    // it *must* also be set in {@link
-    // NotificationJobService#getJobExtrasFromIntent(Intent)}.
+    // it *must* also be set in {@link NotificationJobService#getJobExtrasFromIntent(Intent)}.
     public static final String EXTRA_NOTIFICATION_ID = "notification_id";
 
     static final String EXTRA_NOTIFICATION_TYPE = "notification_type";

@@ -21,12 +21,13 @@ public class MissingDeviceLockProperties {
     static final ReadableObjectPropertyKey<CompoundButton.OnCheckedChangeListener>
             ON_CHECKBOX_TOGGLED = new ReadableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            REMOVE_ALL_LOCAL_DATA_CHECKED,
-            ON_CONTINUE_CLICKED,
-            ON_CREATE_DEVICE_LOCK_CLICKED,
-            ON_CHECKBOX_TOGGLED,
-    };
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                REMOVE_ALL_LOCAL_DATA_CHECKED,
+                ON_CONTINUE_CLICKED,
+                ON_CREATE_DEVICE_LOCK_CLICKED,
+                ON_CHECKBOX_TOGGLED,
+            };
 
     private MissingDeviceLockProperties() {}
 }

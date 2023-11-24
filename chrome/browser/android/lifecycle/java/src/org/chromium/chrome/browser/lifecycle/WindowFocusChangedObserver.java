@@ -9,8 +9,6 @@ package org.chromium.chrome.browser.lifecycle;
  * onWindowFocusChange events.
  */
 public interface WindowFocusChangedObserver extends LifecycleObserver {
-    /**
-     * Called when the current Window of the activity gains or loses focus.
-     */
+    /** Called when the current Window of the activity gains or loses focus. */
     void onWindowFocusChanged(boolean hasFocus);
 }

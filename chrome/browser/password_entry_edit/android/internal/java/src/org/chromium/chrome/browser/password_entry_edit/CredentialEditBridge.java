@@ -42,8 +42,11 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
     }
 
     @CalledByNative
-    void initAndLaunchUi(long nativeCredentialEditBridge, Context context,
-            SettingsLauncher settingsLauncher, boolean isBlockedCredential,
+    void initAndLaunchUi(
+            long nativeCredentialEditBridge,
+            Context context,
+            SettingsLauncher settingsLauncher,
+            boolean isBlockedCredential,
             boolean isFederatedCredential) {
         mNativeCredentialEditBridge = nativeCredentialEditBridge;
         if (isBlockedCredential) {
@@ -67,9 +70,17 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
     }
 
     @CalledByNative
-    void setCredential(String displayUrlOrAppName, String username, String password,
-            String displayFederationOrigin, boolean isInsecureCredential) {
-        mCoordinator.setCredential(displayUrlOrAppName, username, password, displayFederationOrigin,
+    void setCredential(
+            String displayUrlOrAppName,
+            String username,
+            String password,
+            String displayFederationOrigin,
+            boolean isInsecureCredential) {
+        mCoordinator.setCredential(
+                displayUrlOrAppName,
+                username,
+                password,
+                displayFederationOrigin,
                 isInsecureCredential);
     }
 
@@ -110,9 +121,13 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
     @NativeMethods
     interface Natives {
         void getCredential(long nativeCredentialEditBridge);
+
         void getExistingUsernames(long nativeCredentialEditBridge);
+
         void saveChanges(long nativeCredentialEditBridge, String username, String password);
+
         void deleteCredential(long nativeCredentialEditBridge);
+
         void onUIDismissed(long nativeCredentialEditBridge);
     }
 }

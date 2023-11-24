@@ -22,9 +22,7 @@ import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-/**
- * Content View of dialog in Download Home that allows users to rename a downloaded file.
- */
+/** Content View of dialog in Download Home that allows users to rename a downloaded file. */
 public class RenameDialogCustomView extends ScrollView {
     private TextView mErrorMessageView;
     private AlertDialogEditText mFileName;
@@ -40,13 +38,14 @@ public class RenameDialogCustomView extends ScrollView {
         super.onFinishInflate();
         mErrorMessageView = findViewById(R.id.error_message);
         mFileName = findViewById(R.id.file_name);
-        mFileName.addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (mEmptyFileNameObserver == null) return;
-                mEmptyFileNameObserver.onResult(getTargetName().isEmpty());
-            }
-        });
+        mFileName.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (mEmptyFileNameObserver == null) return;
+                        mEmptyFileNameObserver.onResult(getTargetName().isEmpty());
+                    }
+                });
     }
 
     /**
@@ -112,19 +111,21 @@ public class RenameDialogCustomView extends ScrollView {
      * Select renamable title portion, require focus and acquire the soft keyboard.
      */
     private void highlightEditText(int startIndex, int endIndex) {
-        mFileName.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) return;
+        mFileName.setOnFocusChangeListener(
+                new OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (!hasFocus) return;
 
-                if (endIndex <= 0 || startIndex > endIndex
-                        || endIndex >= getTargetName().length() - 1) {
-                    mFileName.selectAll();
-                } else {
-                    mFileName.setSelection(startIndex, endIndex);
-                }
-            }
-        });
+                        if (endIndex <= 0
+                                || startIndex > endIndex
+                                || endIndex >= getTargetName().length() - 1) {
+                            mFileName.selectAll();
+                        } else {
+                            mFileName.setSelection(startIndex, endIndex);
+                        }
+                    }
+                });
 
         post(this::showSoftInput);
     }
@@ -132,8 +133,8 @@ public class RenameDialogCustomView extends ScrollView {
     private void showSoftInput() {
         if (mFileName.requestFocus()) {
             InputMethodManager inputMethodManager =
-                    (InputMethodManager) mFileName.getContext().getSystemService(
-                            INPUT_METHOD_SERVICE);
+                    (InputMethodManager)
+                            mFileName.getContext().getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.showSoftInput(mFileName, InputMethodManager.SHOW_FORCED);
         }
     }
@@ -154,8 +155,10 @@ public class RenameDialogCustomView extends ScrollView {
     private void setEditTextStyle(boolean hasError) {
         if (hasError) {
             // Change the edit text box underline tint color.
-            mFileName.getBackground().setColorFilter(
-                    getContext().getColor(R.color.default_red), PorterDuff.Mode.SRC_IN);
+            mFileName
+                    .getBackground()
+                    .setColorFilter(
+                            getContext().getColor(R.color.default_red), PorterDuff.Mode.SRC_IN);
         } else {
             mFileName.getBackground().clearColorFilter();
         }

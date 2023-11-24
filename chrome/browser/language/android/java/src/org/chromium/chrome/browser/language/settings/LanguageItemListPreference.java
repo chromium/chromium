@@ -17,8 +17,8 @@ import java.util.ArrayList;
  * Chrome Preference that is used to launch a {@link LanguageItemListFragment}. The preference
  * summary is updated to refelect the first elements of the list.
  */
-public class LanguageItemListPreference
-        extends ChromeBasePreference implements PrefChangeRegistrar.PrefObserver {
+public class LanguageItemListPreference extends ChromeBasePreference
+        implements PrefChangeRegistrar.PrefObserver {
     // Default number of items to list in a collection preference summary.
     private static final int COLLECTION_SUMMARY_ITEM_LIMIT = 3;
 

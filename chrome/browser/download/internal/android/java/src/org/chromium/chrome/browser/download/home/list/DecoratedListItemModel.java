@@ -20,8 +20,8 @@ import java.util.List;
  * A wrapper class that adds decoration {@link ListItem}s to a {@link ListItemModel}.
  * TODO(bauerb): Replace this with InnerNode (once it has been migrated to the UI architecture)
  */
-class DecoratedListItemModel
-        extends ListObservableImpl<Void> implements ListObserver<Void>, SimpleList<ListItem> {
+class DecoratedListItemModel extends ListObservableImpl<Void>
+        implements ListObserver<Void>, SimpleList<ListItem> {
     private final ListItemModel mModel;
 
     private final List<ViewListItem> mHeaderItems = new ArrayList<>();

@@ -71,9 +71,11 @@ class TouchToFillViewBinder {
             }
         } else if (propertyKey == SHEET_ITEMS) {
             view.setSheetItemListAdapter(
-                    new RecyclerViewAdapter<>(new SimpleRecyclerViewMcp<>(model.get(SHEET_ITEMS),
-                                                      TouchToFillProperties::getItemType,
-                                                      TouchToFillViewBinder::connectPropertyModel),
+                    new RecyclerViewAdapter<>(
+                            new SimpleRecyclerViewMcp<>(
+                                    model.get(SHEET_ITEMS),
+                                    TouchToFillProperties::getItemType,
+                                    TouchToFillViewBinder::connectPropertyModel),
                             TouchToFillViewBinder::createViewHolder));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
@@ -89,22 +91,34 @@ class TouchToFillViewBinder {
             ViewGroup parent, @ItemType int itemType) {
         switch (itemType) {
             case ItemType.HEADER:
-                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_header_item,
+                return new TouchToFillViewHolder(
+                        parent,
+                        R.layout.touch_to_fill_header_item,
                         TouchToFillViewBinder::bindHeaderView);
             case ItemType.CREDENTIAL:
-                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_list_item,
+                return new TouchToFillViewHolder(
+                        parent,
+                        R.layout.touch_to_fill_list_item,
                         TouchToFillViewBinder::bindCredentialView);
             case ItemType.WEBAUTHN_CREDENTIAL:
-                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_list_item,
+                return new TouchToFillViewHolder(
+                        parent,
+                        R.layout.touch_to_fill_list_item,
                         TouchToFillViewBinder::bindWebAuthnCredentialView);
             case ItemType.MORE_PASSKEYS:
-                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_more_passkeys_item,
+                return new TouchToFillViewHolder(
+                        parent,
+                        R.layout.touch_to_fill_more_passkeys_item,
                         TouchToFillViewBinder::bindMorePasskeysView);
             case ItemType.FILL_BUTTON:
-                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_fill_button,
+                return new TouchToFillViewHolder(
+                        parent,
+                        R.layout.touch_to_fill_fill_button,
                         TouchToFillViewBinder::bindFillButtonView);
             case ItemType.FOOTER:
-                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_footer_item,
+                return new TouchToFillViewHolder(
+                        parent,
+                        R.layout.touch_to_fill_footer_item,
                         TouchToFillViewBinder::bindFooterView);
         }
         assert false : "Cannot create view for ItemType: " + itemType;
@@ -135,10 +149,14 @@ class TouchToFillViewBinder {
         if (propertyKey == FAVICON_OR_FALLBACK) {
             ImageView imageView = view.findViewById(R.id.favicon);
             FaviconOrFallback data = model.get(FAVICON_OR_FALLBACK);
-            imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
-                    data.mUrl, data.mFallbackColor,
-                    FaviconUtils.createCircularIconGenerator(view.getContext()),
-                    view.getResources(), data.mIconSize));
+            imageView.setImageDrawable(
+                    FaviconUtils.getIconDrawableWithoutFilter(
+                            data.mIcon,
+                            data.mUrl,
+                            data.mFallbackColor,
+                            FaviconUtils.createCircularIconGenerator(view.getContext()),
+                            view.getResources(),
+                            data.mIconSize));
         } else if (propertyKey == ON_CLICK_LISTENER) {
             view.setOnClickListener(
                     clickedView -> model.get(ON_CLICK_LISTENER).onResult(credential));
@@ -158,14 +176,22 @@ class TouchToFillViewBinder {
             passwordText.setText(credential.getPassword());
             passwordText.setTransformationMethod(new PasswordTransformationMethod());
 
-            String label = view.getContext().getString(
-                    R.string.touch_to_fill_password_credential_accessibility_description,
-                    credential.getFormattedUsername());
+            String label =
+                    view.getContext()
+                            .getString(
+                                    R.string
+                                            .touch_to_fill_password_credential_accessibility_description,
+                                    credential.getFormattedUsername());
             FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
-            String contentDescription = collectionInfo == null
-                    ? label
-                    : view.getContext().getString(R.string.touch_to_fill_a11y_item_collection_info,
-                            label, collectionInfo.getPosition(), collectionInfo.getTotal());
+            String contentDescription =
+                    collectionInfo == null
+                            ? label
+                            : view.getContext()
+                                    .getString(
+                                            R.string.touch_to_fill_a11y_item_collection_info,
+                                            label,
+                                            collectionInfo.getPosition(),
+                                            collectionInfo.getTotal());
             view.setContentDescription(contentDescription);
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             // Whether Touch To Fill should auto-submit a form doesn't affect the credentials list.
@@ -190,10 +216,14 @@ class TouchToFillViewBinder {
         } else if (propertyKey == WEBAUTHN_FAVICON_OR_FALLBACK) {
             ImageView imageView = view.findViewById(R.id.favicon);
             FaviconOrFallback data = model.get(WEBAUTHN_FAVICON_OR_FALLBACK);
-            imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
-                    data.mUrl, data.mFallbackColor,
-                    FaviconUtils.createCircularIconGenerator(view.getContext()),
-                    view.getResources(), data.mIconSize));
+            imageView.setImageDrawable(
+                    FaviconUtils.getIconDrawableWithoutFilter(
+                            data.mIcon,
+                            data.mUrl,
+                            data.mFallbackColor,
+                            FaviconUtils.createCircularIconGenerator(view.getContext()),
+                            view.getResources(),
+                            data.mIconSize));
         } else if (propertyKey == WEBAUTHN_CREDENTIAL
                 || propertyKey == WEBAUTHN_ITEM_COLLECTION_INFO) {
             TextView usernameText = view.findViewById(R.id.username);
@@ -201,14 +231,22 @@ class TouchToFillViewBinder {
             TextView descriptionText = view.findViewById(R.id.password_or_context);
             descriptionText.setText(R.string.touch_to_fill_sheet_webauthn_credential_context);
 
-            String label = view.getContext().getString(
-                    R.string.touch_to_fill_passkey_credential_accessibility_description,
-                    credential.getUsername());
+            String label =
+                    view.getContext()
+                            .getString(
+                                    R.string
+                                            .touch_to_fill_passkey_credential_accessibility_description,
+                                    credential.getUsername());
             FillableItemCollectionInfo collectionInfo = model.get(WEBAUTHN_ITEM_COLLECTION_INFO);
-            String contentDescription = collectionInfo == null
-                    ? label
-                    : view.getContext().getString(R.string.touch_to_fill_a11y_item_collection_info,
-                            label, collectionInfo.getPosition(), collectionInfo.getTotal());
+            String contentDescription =
+                    collectionInfo == null
+                            ? label
+                            : view.getContext()
+                                    .getString(
+                                            R.string.touch_to_fill_a11y_item_collection_info,
+                                            label,
+                                            collectionInfo.getPosition(),
+                                            collectionInfo.getTotal());
             view.setContentDescription(contentDescription);
         } else if (propertyKey == SHOW_WEBAUTHN_SUBMIT_BUTTON) {
             // Ignore.
@@ -247,24 +285,35 @@ class TouchToFillViewBinder {
         if (propertyKey == ON_CLICK_LISTENER) {
             Credential credential = model.get(CREDENTIAL);
             view.setOnClickListener(
-                    clickedView -> { model.get(ON_CLICK_LISTENER).onResult(credential); });
+                    clickedView -> {
+                        model.get(ON_CLICK_LISTENER).onResult(credential);
+                    });
         } else if (propertyKey == ON_WEBAUTHN_CLICK_LISTENER) {
             WebAuthnCredential webauthn_credential = model.get(WEBAUTHN_CREDENTIAL);
-            view.setOnClickListener(clickedView -> {
-                model.get(ON_WEBAUTHN_CLICK_LISTENER).onResult(webauthn_credential);
-            });
+            view.setOnClickListener(
+                    clickedView -> {
+                        model.get(ON_WEBAUTHN_CLICK_LISTENER).onResult(webauthn_credential);
+                    });
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(view.getContext().getString(model.get(SHOW_SUBMIT_BUTTON)
-                            ? R.string.touch_to_fill_signin
-                            : R.string.touch_to_fill_continue));
+            buttonTitleText.setText(
+                    view.getContext()
+                            .getString(
+                                    model.get(SHOW_SUBMIT_BUTTON)
+                                            ? R.string.touch_to_fill_signin
+                                            : R.string.touch_to_fill_continue));
         } else if (propertyKey == SHOW_WEBAUTHN_SUBMIT_BUTTON) {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(view.getContext().getString(
-                    model.get(SHOW_WEBAUTHN_SUBMIT_BUTTON) ? R.string.touch_to_fill_signin
-                                                           : R.string.touch_to_fill_continue));
-        } else if (propertyKey == FAVICON_OR_FALLBACK || propertyKey == FORMATTED_ORIGIN
-                || propertyKey == CREDENTIAL || propertyKey == WEBAUTHN_CREDENTIAL
+            buttonTitleText.setText(
+                    view.getContext()
+                            .getString(
+                                    model.get(SHOW_WEBAUTHN_SUBMIT_BUTTON)
+                                            ? R.string.touch_to_fill_signin
+                                            : R.string.touch_to_fill_continue));
+        } else if (propertyKey == FAVICON_OR_FALLBACK
+                || propertyKey == FORMATTED_ORIGIN
+                || propertyKey == CREDENTIAL
+                || propertyKey == WEBAUTHN_CREDENTIAL
                 || propertyKey == WEBAUTHN_FAVICON_OR_FALLBACK
                 || propertyKey == ITEM_COLLECTION_INFO
                 || propertyKey == WEBAUTHN_ITEM_COLLECTION_INFO) {
@@ -289,8 +338,9 @@ class TouchToFillViewBinder {
             sheetSubtitleText.setText(model.get(SUBTITLE));
 
             ImageView sheetHeaderImage = view.findViewById(R.id.touch_to_fill_sheet_header_image);
-            sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
-                    view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
+            sheetHeaderImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
         } else {
             assert false : "Unhandled update to property:" + key;
         }

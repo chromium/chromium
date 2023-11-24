@@ -8,20 +8,25 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * Deals with multiple parts of browser UI code calls.
- */
+/** Deals with multiple parts of browser UI code calls. */
 public class BrowserUiUtils {
     /**
      * ModuleTypeOnStartAndNTP defined in tools/metrics/histograms/enums.xml.
      *
      * Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
-    @IntDef({ModuleTypeOnStartAndNTP.MOST_VISITED_TILES, ModuleTypeOnStartAndNTP.OMNIBOX,
-            ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD, ModuleTypeOnStartAndNTP.FEED,
-            ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON, ModuleTypeOnStartAndNTP.HOME_BUTTON,
-            ModuleTypeOnStartAndNTP.PROFILE_BUTTON, ModuleTypeOnStartAndNTP.DOODLE,
-            ModuleTypeOnStartAndNTP.MENU_BUTTON, ModuleTypeOnStartAndNTP.NUM_ENTRIES})
+    @IntDef({
+        ModuleTypeOnStartAndNTP.MOST_VISITED_TILES,
+        ModuleTypeOnStartAndNTP.OMNIBOX,
+        ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD,
+        ModuleTypeOnStartAndNTP.FEED,
+        ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON,
+        ModuleTypeOnStartAndNTP.HOME_BUTTON,
+        ModuleTypeOnStartAndNTP.PROFILE_BUTTON,
+        ModuleTypeOnStartAndNTP.DOODLE,
+        ModuleTypeOnStartAndNTP.MENU_BUTTON,
+        ModuleTypeOnStartAndNTP.NUM_ENTRIES
+    })
     public @interface ModuleTypeOnStartAndNTP {
         int MOST_VISITED_TILES = 0;
         int OMNIBOX = 1;
@@ -37,11 +42,13 @@ public class BrowserUiUtils {
         int NUM_ENTRIES = 9;
     }
 
-    /**
-     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
-     */
-    @IntDef({HostSurface.NOT_SET, HostSurface.NEW_TAB_PAGE, HostSurface.START_SURFACE,
-            HostSurface.NUM_ENTRIES})
+    /** Do not reorder or remove items, only add new items before NUM_ENTRIES. */
+    @IntDef({
+        HostSurface.NOT_SET,
+        HostSurface.NEW_TAB_PAGE,
+        HostSurface.START_SURFACE,
+        HostSurface.NUM_ENTRIES
+    })
     public @interface HostSurface {
         int NOT_SET = 0;
         int NEW_TAB_PAGE = 1;
@@ -78,8 +85,10 @@ public class BrowserUiUtils {
      */
     public static void recordModuleClickHistogram(
             @HostSurface int hostSurface, @ModuleTypeOnStartAndNTP int sample) {
-        RecordHistogram.recordEnumeratedHistogram(getHostName(hostSurface) + ".Module.Click",
-                sample, ModuleTypeOnStartAndNTP.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                getHostName(hostSurface) + ".Module.Click",
+                sample,
+                ModuleTypeOnStartAndNTP.NUM_ENTRIES);
     }
 
     /**
@@ -90,8 +99,10 @@ public class BrowserUiUtils {
      */
     public static void recordModuleLongClickHistogram(
             @HostSurface int hostSurface, @ModuleTypeOnStartAndNTP int sample) {
-        RecordHistogram.recordEnumeratedHistogram(getHostName(hostSurface) + ".Module.LongClick",
-                sample, ModuleTypeOnStartAndNTP.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                getHostName(hostSurface) + ".Module.LongClick",
+                sample,
+                ModuleTypeOnStartAndNTP.NUM_ENTRIES);
     }
 
     /**

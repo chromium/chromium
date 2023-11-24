@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A class responsible for providing logic around filtered tabs.
- */
+/** A class responsible for providing logic around filtered tabs. */
 class QuickDeleteTabsFilter {
     static final long FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000;
     static final long ONE_HOUR_IN_MS = FIFTEEN_MINUTES_IN_MS * 4;
@@ -85,7 +83,7 @@ class QuickDeleteTabsFilter {
      */
     void closeTabsFilteredForQuickDelete(@TimePeriod int timePeriod) {
         List<Tab> mTabs = getListOfTabsToBeClosed(timePeriod);
-        mTabModel.closeMultipleTabs(mTabs, /*canUndo=*/false);
+        mTabModel.closeMultipleTabs(mTabs, /* canUndo= */ false);
     }
 
     List<Tab> getListOfTabsToBeClosed(@TimePeriod int timePeriod) {

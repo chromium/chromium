@@ -51,8 +51,10 @@ import java.util.List;
 
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class SigninFirstRunMediator
-        implements AccountsChangeObserver, ProfileDataCache.Observer,
-                   AccountPickerCoordinator.Listener, FreUMADialogCoordinator.Listener {
+        implements AccountsChangeObserver,
+                ProfileDataCache.Observer,
+                AccountPickerCoordinator.Listener,
+                FreUMADialogCoordinator.Listener {
     private static final String TAG = "SigninFRMediator";
 
     /**
@@ -60,8 +62,12 @@ public class SigninFirstRunMediator
      * See {@code LoadPoint} in tools/metrics/histograms/enums.xml.
      */
     @VisibleForTesting
-    @IntDef({LoadPoint.NATIVE_INITIALIZATION, LoadPoint.POLICY_LOAD, LoadPoint.CHILD_STATUS_LOAD,
-            LoadPoint.MAX})
+    @IntDef({
+        LoadPoint.NATIVE_INITIALIZATION,
+        LoadPoint.POLICY_LOAD,
+        LoadPoint.CHILD_STATUS_LOAD,
+        LoadPoint.MAX
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LoadPoint {
         int NATIVE_INITIALIZATION = 0;
@@ -80,6 +86,7 @@ public class SigninFirstRunMediator
     private boolean mDestroyed;
 
     private @LoadPoint int mSlowestLoadPoint;
+
     /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
     private boolean mInitialLoadCompleted;
 
@@ -90,28 +97,42 @@ public class SigninFirstRunMediator
     private @Nullable String mDefaultAccountEmail;
     private boolean mAllowMetricsAndCrashUploading;
 
-    SigninFirstRunMediator(Context context, ModalDialogManager modalDialogManager,
-            Delegate delegate, PrivacyPreferencesManager privacyPreferencesManager) {
+    SigninFirstRunMediator(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Delegate delegate,
+            PrivacyPreferencesManager privacyPreferencesManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDelegate = delegate;
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
-        mModel = SigninFirstRunProperties.createModel(this::onSelectedAccountClicked,
-                this::onContinueAsClicked, this::onDismissClicked,
-                ExternalAuthUtils.getInstance().canUseGooglePlayServices(), getFooterString(false));
+        mModel =
+                SigninFirstRunProperties.createModel(
+                        this::onSelectedAccountClicked,
+                        this::onContinueAsClicked,
+                        this::onDismissClicked,
+                        ExternalAuthUtils.getInstance().canUseGooglePlayServices(),
+                        getFooterString(false));
 
-        mDelegate.getNativeInitializationPromise().then(result -> { onNativeLoaded(); });
+        mDelegate
+                .getNativeInitializationPromise()
+                .then(
+                        result -> {
+                            onNativeLoaded();
+                        });
         mDelegate.getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
-        mDelegate.getChildAccountStatusSupplier().onAvailable(
-                ignored -> onChildAccountStatusAvailable());
+        mDelegate
+                .getChildAccountStatusSupplier()
+                .onAvailable(ignored -> onChildAccountStatusAvailable());
 
         mProfileDataCache.addObserver(this);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
-        updateAccounts(AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                mAccountManagerFacade.getCoreAccountInfos()));
+        updateAccounts(
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        mAccountManagerFacade.getCoreAccountInfos()));
     }
 
     PropertyModel getModel() {
@@ -165,7 +186,8 @@ public class SigninFirstRunMediator
         if (!mDelegate.getNativeInitializationPromise().isFulfilled()) return;
 
         if (mDelegate.getChildAccountStatusSupplier().get() != null
-                && mDelegate.getPolicyLoadListener().get() != null && !mInitialLoadCompleted) {
+                && mDelegate.getPolicyLoadListener().get() != null
+                && !mInitialLoadCompleted) {
             mInitialLoadCompleted = true;
             onInitialLoadCompleted(mDelegate.getPolicyLoadListener().get());
             // TODO(https://crbug.com/1353330): Rename this method and the corresponding histogram.
@@ -199,7 +221,8 @@ public class SigninFirstRunMediator
                             .getSigninManager(
                                     mDelegate.getProfileSupplier().get().getOriginalProfile())
                             .isSigninDisabledByPolicy();
-            Log.i(TAG,
+            Log.i(
+                    TAG,
                     "#onInitialLoadCompleted() isSigninDisabledByPolicy:"
                             + isSigninDisabledByPolicy);
             isMetricsReportingDisabledByPolicy =
@@ -210,12 +233,14 @@ public class SigninFirstRunMediator
             mModel.set(SigninFirstRunProperties.FRE_POLICY, frePolicy);
         }
 
-        mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED,
+        mModel.set(
+                SigninFirstRunProperties.IS_SIGNIN_SUPPORTED,
                 ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                         && !isSigninDisabledByPolicy);
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
 
-        mModel.set(SigninFirstRunProperties.FOOTER_STRING,
+        mModel.set(
+                SigninFirstRunProperties.FOOTER_STRING,
                 getFooterString(isMetricsReportingDisabledByPolicy));
     }
 
@@ -225,9 +250,7 @@ public class SigninFirstRunMediator
         updateSelectedAccountData(accountEmail);
     }
 
-    /**
-     * Implements {@link AccountsChangeObserver}.
-     */
+    /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
         // TODO(crbug.com/1450614): Replace onAccountsChanged() with this method.
@@ -265,14 +288,12 @@ public class SigninFirstRunMediator
                 new AccountPickerDialogCoordinator(mContext, this, mModalDialogManager);
     }
 
-    /**
-     * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_CONTINUE_AS_CLICKED}.
-     */
+    /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_CONTINUE_AS_CLICKED}. */
     private void onContinueAsClicked() {
         assert mDelegate.getNativeInitializationPromise().isFulfilled();
         if (isContinueOrDismissClicked()) return;
         assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
-            : "The continue button shouldn't be visible while the load spinner is shown!";
+                : "The continue button shouldn't be visible while the load spinner is shown!";
 
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
             mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
@@ -291,9 +312,7 @@ public class SigninFirstRunMediator
         proceedWithSignIn();
     }
 
-    /**
-     * Accepts ToS and completes the account sign-in with the selected account.
-     */
+    /** Accepts ToS and completes the account sign-in with the selected account. */
     void proceedWithSignIn() {
         // This is needed to get metrics/crash reports from the sign-in flow itself.
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
@@ -324,7 +343,9 @@ public class SigninFirstRunMediator
                         .getSigninManager(
                                 mDelegate.getProfileSupplier().get().getOriginalProfile());
         signinManager.signin(
-                getSelectedAccount(), SigninAccessPoint.START_PAGE, new SignInCallback() {
+                getSelectedAccount(),
+                SigninAccessPoint.START_PAGE,
+                new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         if (mDestroyed) {
@@ -339,29 +360,26 @@ public class SigninFirstRunMediator
                         // TODO(crbug/1248090): For now we enable the buttons again to not block the
                         // users from continuing to the next page. Should show a dialog with the
                         // signin error.
-                        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
+                        mModel.set(
+                                SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
                                 false);
                         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                     }
                 });
     }
 
-    /**
-     * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}.
-     */
+    /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}. */
     private void onDismissClicked() {
         if (isContinueOrDismissClicked()) return;
         assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
-            : "The dismiss button shouldn't be visible while the load spinner is shown!";
+                : "The dismiss button shouldn't be visible while the load spinner is shown!";
 
         assert mDelegate.getNativeInitializationPromise().isFulfilled();
 
         dismiss();
     }
 
-    /**
-     * Dismisses the sign-in page and continues without a signed-in account.
-     */
+    /** Dismisses the sign-in page and continues without a signed-in account. */
     void dismiss() {
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
@@ -370,14 +388,16 @@ public class SigninFirstRunMediator
                 .getIdentityManager(mDelegate.getProfileSupplier().get().getOriginalProfile())
                 .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
-            SignOutCallback signOutCallback = () -> {
-                if (mDestroyed) {
-                    // FirstRunActivity was destroyed while we were waiting for the sign-out.
-                    return;
-                }
+            SignOutCallback signOutCallback =
+                    () -> {
+                        if (mDestroyed) {
+                            // FirstRunActivity was destroyed while we were waiting for the
+                            // sign-out.
+                            return;
+                        }
 
-                mDelegate.advanceToNextPage();
-            };
+                        mDelegate.advanceToNextPage();
+                    };
             IdentityServicesProvider.get()
                     .getSigninManager(mDelegate.getProfileSupplier().get().getOriginalProfile())
                     .signOut(
@@ -407,7 +427,8 @@ public class SigninFirstRunMediator
 
     private void updateSelectedAccountData(String accountEmail) {
         if (TextUtils.equals(mSelectedAccountEmail, accountEmail)) {
-            mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA,
+            mModel.set(
+                    SigninFirstRunProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(accountEmail));
         }
     }
@@ -424,7 +445,7 @@ public class SigninFirstRunMediator
             mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
             if (mSelectedAccountEmail == null
                     || AccountUtils.findCoreAccountInfoByEmail(
-                               coreAccountInfos, mSelectedAccountEmail)
+                                    coreAccountInfos, mSelectedAccountEmail)
                             == null) {
                 setSelectedAccountEmail(mDefaultAccountEmail);
             }
@@ -451,11 +472,13 @@ public class SigninFirstRunMediator
         ArrayList<SpanApplier.SpanInfo> spans = new ArrayList<>();
         // Terms of Service SpanInfo.
         final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
-                new NoUnderlineClickableSpan(mContext,
-                        view
-                        -> mDelegate.showInfoPage(ColorUtils.inNightMode(mContext)
-                                        ? R.string.google_terms_of_service_dark_mode_url
-                                        : R.string.google_terms_of_service_url));
+                new NoUnderlineClickableSpan(
+                        mContext,
+                        view ->
+                                mDelegate.showInfoPage(
+                                        ColorUtils.inNightMode(mContext)
+                                                ? R.string.google_terms_of_service_dark_mode_url
+                                                : R.string.google_terms_of_service_url));
         spans.add(
                 new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan));
 

@@ -14,9 +14,7 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.De
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Stateless Device Lock page view binder.
- */
+/** Stateless Device Lock page view binder. */
 public class DeviceLockViewBinder {
     public static void bind(PropertyModel model, DeviceLockView view, PropertyKey propertyKey) {
         if (propertyKey == DeviceLockProperties.PREEXISTING_DEVICE_LOCK) {
@@ -40,8 +38,8 @@ public class DeviceLockViewBinder {
             }
             DeviceLockViewBinder.setUiStyle(model, view);
         } else if (propertyKey == DeviceLockProperties.ON_DISMISS_CLICKED) {
-            view.getDismissButton().setOnClickListener(
-                    model.get(DeviceLockProperties.ON_DISMISS_CLICKED));
+            view.getDismissButton()
+                    .setOnClickListener(model.get(DeviceLockProperties.ON_DISMISS_CLICKED));
         }
     }
 
@@ -72,17 +70,20 @@ public class DeviceLockViewBinder {
     private static void setContinueButton(PropertyModel model, DeviceLockView view) {
         if (model.get(DeviceLockProperties.PREEXISTING_DEVICE_LOCK)) {
             view.getContinueButton().setText(R.string.got_it);
-            view.getContinueButton().setOnClickListener(
-                    model.get(DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED));
+            view.getContinueButton()
+                    .setOnClickListener(
+                            model.get(DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED));
             return;
         }
         view.getContinueButton().setText(R.string.device_lock_create_lock_button);
         if (model.get(DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT)) {
-            view.getContinueButton().setOnClickListener(
-                    model.get(DeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED));
+            view.getContinueButton()
+                    .setOnClickListener(
+                            model.get(DeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED));
         } else {
-            view.getContinueButton().setOnClickListener(
-                    model.get(DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED));
+            view.getContinueButton()
+                    .setOnClickListener(
+                            model.get(DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED));
         }
     }
 

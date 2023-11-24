@@ -15,9 +15,7 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A {@link TabObserver} that also handles screenshot related events.
- */
+/** A {@link TabObserver} that also handles screenshot related events. */
 public class ScreenshotTabObserver extends EmptyTabObserver implements UserData {
     // Enum for logging Screenshot UMA. These match the TabScreenshotAction enum in enums.xml, and
     // must not be changed.  New ones can be added if we also add them in enums.xml.
@@ -41,8 +39,9 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
         // observer and put it into the UserData for the tab.
         ScreenshotTabObserver observer = get(tab);
         if (observer == null) {
-            observer = tab.getUserDataHost().setUserData(
-                    USER_DATA_KEY, new ScreenshotTabObserver(tab));
+            observer =
+                    tab.getUserDataHost()
+                            .setUserData(USER_DATA_KEY, new ScreenshotTabObserver(tab));
             tab.addObserver(observer);
         }
         return observer;
@@ -59,8 +58,10 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
 
     /** Number of screenshots taken of the tab while on the same page */
     private int mScreenshotsTaken;
+
     /** Actions performed after a screenshot was taken. */
     private int mScreenshotAction;
+
     private Tab mTab;
 
     public ScreenshotTabObserver(Tab tab) {
@@ -115,8 +116,8 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
             // taken.
             WebContents webContents = tab.getWebContents();
             if (webContents != null) {
-                new UkmRecorder.Bridge().recordEventWithBooleanMetric(
-                        webContents, "Tab.Screenshot", "HasOccurred");
+                new UkmRecorder.Bridge()
+                        .recordEventWithBooleanMetric(webContents, "Tab.Screenshot", "HasOccurred");
             }
         }
 

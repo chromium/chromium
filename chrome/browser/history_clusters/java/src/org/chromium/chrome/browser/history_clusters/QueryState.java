@@ -57,7 +57,8 @@ public class QueryState {
         if (!(obj instanceof QueryState)) return false;
         QueryState other = (QueryState) obj;
 
-        return other.mIsSearching == mIsSearching && TextUtils.equals(mQuery, other.mQuery)
+        return other.mIsSearching == mIsSearching
+                && TextUtils.equals(mQuery, other.mQuery)
                 && TextUtils.equals(mSearchEmptyString, other.mSearchEmptyString);
     }
 }

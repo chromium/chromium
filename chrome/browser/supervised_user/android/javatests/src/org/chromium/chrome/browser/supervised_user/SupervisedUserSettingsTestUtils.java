@@ -22,6 +22,7 @@ class SupervisedUserSettingsTestUtils {
     public static void setSafeSearchResponseForTesting(Profile profile, boolean isAllowed) {
         SupervisedUserSettingsTestBridge.setSafeSearchResponseForTesting(profile, isAllowed);
     }
+
     /**
      * This method sets up the TestUrlLoaderFactoryHelper which is used to keep the instance of
      * TestUrlLoaderFactory within scope throughout the test
@@ -29,9 +30,8 @@ class SupervisedUserSettingsTestUtils {
     public static void setUpTestUrlLoaderFactoryHelper() {
         SupervisedUserSettingsTestBridge.setUpTestUrlLoaderFactoryHelper();
     }
-    /**
-     * This method is used to tear down the TestUrlLoaderFactoryHelper
-     */
+
+    /** This method is used to tear down the TestUrlLoaderFactoryHelper */
     public static void tearDownTestUrlLoaderFactoryHelper() {
         SupervisedUserSettingsTestBridge.tearDownTestUrlLoaderFactoryHelper();
     }

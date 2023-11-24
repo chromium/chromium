@@ -20,7 +20,9 @@ class SigninFirstRunProperties {
      * When forced sign-in will be supported, we could use an enum field in this class
      * instead of the boolean property.
      */
-    static class FrePolicy { public boolean metricsReportingDisabledByPolicy; }
+    static class FrePolicy {
+        public boolean metricsReportingDisabledByPolicy;
+    }
 
     static final ReadableObjectPropertyKey<OnClickListener> ON_SELECTED_ACCOUNT_CLICKED =
             new ReadableObjectPropertyKey<>("on_selected_account_clicked");
@@ -59,25 +61,27 @@ class SigninFirstRunProperties {
     static final WritableObjectPropertyKey<CharSequence> FOOTER_STRING =
             new WritableObjectPropertyKey<>("footer_string");
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            ON_SELECTED_ACCOUNT_CLICKED,
-            SELECTED_ACCOUNT_DATA,
-            IS_SELECTED_ACCOUNT_SUPERVISED,
-            ON_CONTINUE_AS_CLICKED,
-            ON_DISMISS_CLICKED,
-            SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
-            SHOW_SIGNIN_PROGRESS_SPINNER,
-            SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
-            FRE_POLICY,
-            IS_SIGNIN_SUPPORTED,
-            FOOTER_STRING,
-    };
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                ON_SELECTED_ACCOUNT_CLICKED,
+                SELECTED_ACCOUNT_DATA,
+                IS_SELECTED_ACCOUNT_SUPERVISED,
+                ON_CONTINUE_AS_CLICKED,
+                ON_DISMISS_CLICKED,
+                SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
+                SHOW_SIGNIN_PROGRESS_SPINNER,
+                SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
+                FRE_POLICY,
+                IS_SIGNIN_SUPPORTED,
+                FOOTER_STRING,
+            };
 
-    /**
-     * Creates a default model for FRE bottom group.
-     */
-    static PropertyModel createModel(Runnable onSelectedAccountClicked,
-            Runnable onContinueAsClicked, Runnable onDismissClicked, boolean isSigninSupported,
+    /** Creates a default model for FRE bottom group. */
+    static PropertyModel createModel(
+            Runnable onSelectedAccountClicked,
+            Runnable onContinueAsClicked,
+            Runnable onDismissClicked,
+            boolean isSigninSupported,
             SpannableString footerString) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())

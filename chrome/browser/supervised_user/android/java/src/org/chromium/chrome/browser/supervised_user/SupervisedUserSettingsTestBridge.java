@@ -33,19 +33,16 @@ class SupervisedUserSettingsTestBridge {
 
     /** Sets response to the safe sites API */
     static void setSafeSearchResponseForTesting(Profile profile, boolean isAllowed) {
-        SupervisedUserSettingsTestBridgeJni.get().setSafeSearchResponseForTesting(profile, isAllowed);
+        SupervisedUserSettingsTestBridgeJni.get()
+                .setSafeSearchResponseForTesting(profile, isAllowed);
     }
 
-    /**
-     * Sets up the TestUrlLoaderFactoryHelper, to be used in tests
-     */
+    /** Sets up the TestUrlLoaderFactoryHelper, to be used in tests */
     static void setUpTestUrlLoaderFactoryHelper() {
         SupervisedUserSettingsTestBridgeJni.get().setUpTestUrlLoaderFactoryHelper();
     }
 
-    /**
-     * Tears down up the TestUrlLoaderFactoryHelper, to be used in tests
-     */
+    /** Tears down up the TestUrlLoaderFactoryHelper, to be used in tests */
     static void tearDownTestUrlLoaderFactoryHelper() {
         SupervisedUserSettingsTestBridgeJni.get().tearDownTestUrlLoaderFactoryHelper();
     }
@@ -53,12 +50,15 @@ class SupervisedUserSettingsTestBridge {
     @NativeMethods
     interface Natives {
         void setFilteringBehavior(Profile profile, int setting);
+
         void setManualFilterForHost(Profile profile, String host, boolean allowlist);
 
         void setKidsManagementResponseForTesting(Profile profile, boolean siteIsAllowed); // IN-TEST
 
         void setSafeSearchResponseForTesting(Profile profile, boolean siteIsAllowed); // IN-TEST
+
         void setUpTestUrlLoaderFactoryHelper();
+
         void tearDownTestUrlLoaderFactoryHelper();
     }
 }

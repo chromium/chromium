@@ -20,9 +20,7 @@ import java.util.List;
  * be using.
  */
 public interface TabModelSelector {
-    /**
-     * Should be called when the app starts showing a view with multiple tabs.
-     */
+    /** Should be called when the app starts showing a view with multiple tabs. */
     void onTabsViewShown();
 
     /**
@@ -111,9 +109,7 @@ public interface TabModelSelector {
      */
     boolean closeTab(Tab tab);
 
-    /**
-     * Close all tabs across all tab models
-     */
+    /** Close all tabs across all tab models */
     void closeAllTabs();
 
     /**
@@ -123,9 +119,7 @@ public interface TabModelSelector {
      */
     void closeAllTabs(boolean uponExit);
 
-    /**
-     * Get total tab count across all tab models
-     */
+    /** Get total tab count across all tab models */
     int getTotalTabCount();
 
     /**
@@ -177,9 +171,7 @@ public interface TabModelSelector {
      */
     void addIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver);
 
-    /**
-     * Unsubscribe from {@link IncognitoTabModelObserver}.
-     */
+    /** Unsubscribe from {@link IncognitoTabModelObserver}. */
     void removeIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver);
 
     /**
@@ -193,8 +185,6 @@ public interface TabModelSelector {
     void setIncognitoReauthDialogDelegate(
             IncognitoTabModelObserver.IncognitoReauthDialogDelegate incognitoReauthDialogDelegate);
 
-    /**
-     * Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector.
-     */
+    /** Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector. */
     void destroy();
 }

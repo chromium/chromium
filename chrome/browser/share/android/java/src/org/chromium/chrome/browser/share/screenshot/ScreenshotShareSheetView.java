@@ -17,9 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetViewProperties.NoArgOperation;
 import org.chromium.ui.widget.ChromeImageView;
 
-/**
- * Manages the Android View representing the Screenshot share panel.
- */
+/** Manages the Android View representing the Screenshot share panel. */
 class ScreenshotShareSheetView extends FrameLayout {
     /** Constructor for use from XML. */
     public ScreenshotShareSheetView(Context context, AttributeSet attrs) {
@@ -49,7 +47,10 @@ class ScreenshotShareSheetView extends FrameLayout {
     private void setNoArgOperationListener(
             Integer operation, int viewId, Callback<Integer> noArgOperationCallback) {
         View button = findViewById(viewId);
-        button.setOnClickListener(v -> { noArgOperationCallback.onResult(operation); });
+        button.setOnClickListener(
+                v -> {
+                    noArgOperationCallback.onResult(operation);
+                });
     }
 
     /**

@@ -74,8 +74,11 @@ public abstract class TabCreator {
      * @param url         URL to show in the Tab. (Needed only for asynchronous tab creation.)
      * @return            Whether a Tab was created successfully.
      */
-    public abstract boolean createTabWithWebContents(@Nullable Tab parent, WebContents webContents,
-            @TabLaunchType int type, @NonNull GURL url);
+    public abstract boolean createTabWithWebContents(
+            @Nullable Tab parent,
+            WebContents webContents,
+            @TabLaunchType int type,
+            @NonNull GURL url);
 
     /**
      * Creates a tab around the native web contents pointer.
@@ -89,16 +92,12 @@ public abstract class TabCreator {
         return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
     }
 
-    /**
-     * Creates a new tab and loads the NTP.
-     */
+    /** Creates a new tab and loads the NTP. */
     public final void launchNTP() {
         launchNTP(TabLaunchType.FROM_CHROME_UI);
     }
 
-    /**
-     * Creates a new tab and loads the NTP.
-     */
+    /** Creates a new tab and loads the NTP. */
     public final void launchNTP(@TabLaunchType int type) {
         try {
             TraceEvent.begin("TabCreator.launchNTP");

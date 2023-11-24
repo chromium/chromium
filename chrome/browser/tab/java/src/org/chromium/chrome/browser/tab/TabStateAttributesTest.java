@@ -69,7 +69,6 @@ public class TabStateAttributesTest {
                     public WebContents getWebContents() {
                         return mWebContents;
                     }
-                    ;
 
                     @Override
                     public boolean isInitialized() {

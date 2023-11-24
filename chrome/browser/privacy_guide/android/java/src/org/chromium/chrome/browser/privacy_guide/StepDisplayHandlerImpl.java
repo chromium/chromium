@@ -14,9 +14,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.sync.SyncService;
 
-/**
- * Computes for each privacy guide step whether it should be displayed or not.
- */
+/** Computes for each privacy guide step whether it should be displayed or not. */
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     private final Profile mProfile;
 

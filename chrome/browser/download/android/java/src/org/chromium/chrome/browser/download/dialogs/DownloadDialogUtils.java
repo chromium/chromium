@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
 import java.util.ArrayList;
 
-/**
- * Utility functions used in download dialogs.
- */
+/** Utility functions used in download dialogs. */
 public class DownloadDialogUtils {
     // The threshold to determine if a location suggestion is triggered.
     private static final double LOCATION_SUGGESTION_THRESHOLD = 0.05;

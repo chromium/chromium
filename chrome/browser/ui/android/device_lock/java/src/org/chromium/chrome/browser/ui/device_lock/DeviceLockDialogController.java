@@ -20,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class DeviceLockDialogController implements DeviceLockCoordinator.Delegate {
     /** The {@link ModalDialogManager} which launches the Missing Device Lock dialog. */
     private final @NonNull ModalDialogManager mModalDialogManager;
+
     /**The {@link PropertyModel} of the underlying dialog where the view would be shown.*/
     private PropertyModel mModalDialogPropertyModel;
 
@@ -36,6 +37,7 @@ public class DeviceLockDialogController implements DeviceLockCoordinator.Delegat
             new ModalDialogProperties.Controller() {
                 @Override
                 public void onClick(PropertyModel model, int buttonType) {}
+
                 @Override
                 public void onDismiss(PropertyModel model, int dismissalCause) {}
             };
@@ -75,16 +77,20 @@ public class DeviceLockDialogController implements DeviceLockCoordinator.Delegat
             mDeviceLockCoordinator =
                     new DeviceLockCoordinator(this, windowAndroid, activity, account);
         } else {
-            mDeviceLockCoordinator = new DeviceLockCoordinator(this, windowAndroid,
-                    /* deviceLockAuthenticatorBridge */ null, activity, account);
+            mDeviceLockCoordinator =
+                    new DeviceLockCoordinator(
+                            this,
+                            windowAndroid,
+                            /* deviceLockAuthenticatorBridge= */ null,
+                            activity,
+                            account);
         }
     }
 
-    /**
-     * Show the Device Lock UI in a modal dialog.
-     */
+    /** Show the Device Lock UI in a modal dialog. */
     public void showDialog() {
-        mModalDialogManager.showDialog(mModalDialogPropertyModel,
+        mModalDialogManager.showDialog(
+                mModalDialogPropertyModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.HIGH);
     }
@@ -106,7 +112,8 @@ public class DeviceLockDialogController implements DeviceLockCoordinator.Delegat
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
-                        .with(ModalDialogProperties.DIALOG_STYLES,
+                        .with(
+                                ModalDialogProperties.DIALOG_STYLES,
                                 ModalDialogProperties.DialogStyles.NORMAL)
                         .build();
     }

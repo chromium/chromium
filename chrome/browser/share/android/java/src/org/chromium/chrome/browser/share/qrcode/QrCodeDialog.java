@@ -25,9 +25,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 
-/**
- * QrCodeDialog is the main view for QR code sharing and scanning.
- */
+/** QrCodeDialog is the main view for QR code sharing and scanning. */
 public class QrCodeDialog extends DialogFragment {
     // Used to pass the URL in the bundle.
     public static String URL_KEY = "url_key";
@@ -91,6 +89,7 @@ public class QrCodeDialog extends DialogFragment {
             onDestroyView();
         }
     }
+
     /**
      * Setter for the current WindowAndroid.
      * @param windowAndroid The windowAndroid to set.
@@ -135,8 +134,9 @@ public class QrCodeDialog extends DialogFragment {
     private void initTabs() {
         Context context = getActivity();
 
-        QrCodeShareCoordinator shareCoordinator = new QrCodeShareCoordinator(
-                context, this::dismiss, getArguments().getString(URL_KEY), mWindowAndroid);
+        QrCodeShareCoordinator shareCoordinator =
+                new QrCodeShareCoordinator(
+                        context, this::dismiss, getArguments().getString(URL_KEY), mWindowAndroid);
 
         mTabs = new ArrayList<>();
         mTabs.add(shareCoordinator);

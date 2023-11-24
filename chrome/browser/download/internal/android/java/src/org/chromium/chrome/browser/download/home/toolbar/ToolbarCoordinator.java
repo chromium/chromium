@@ -24,13 +24,9 @@ import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.List;
 
-/**
- * A top level class to handle various toolbar related functionalities in download home.
- */
+/** A top level class to handle various toolbar related functionalities in download home. */
 public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPressHandler {
-    /**
-     * A delegate to handle various actions taken by user that relate to list items.
-     */
+    /** A delegate to handle various actions taken by user that relate to list items. */
     public interface ToolbarListActionDelegate {
         /**
          * Invoked when user taps on the delete button to delete the currently selected items.
@@ -56,9 +52,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
      * toolbar.
      */
     public interface ToolbarActionDelegate {
-        /**
-         * Invoked when user taps on close button to close download home.
-         */
+        /** Invoked when user taps on close button to close download home. */
         void close();
 
         /**
@@ -92,20 +86,28 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
                 }
             };
 
-    public ToolbarCoordinator(Context context, ToolbarActionDelegate delegate,
+    public ToolbarCoordinator(
+            Context context,
+            ToolbarActionDelegate delegate,
             ToolbarListActionDelegate listActionDelegate,
-            SelectionDelegate<ListItem> selectionDelegate, boolean hasCloseButton,
+            SelectionDelegate<ListItem> selectionDelegate,
+            boolean hasCloseButton,
             Tracker tracker) {
         mDelegate = delegate;
         mListActionDelegate = listActionDelegate;
 
-        mView = (ViewGroup) LayoutInflater.from(context).inflate(
-                R.layout.download_home_toolbar, null);
+        mView =
+                (ViewGroup)
+                        LayoutInflater.from(context).inflate(R.layout.download_home_toolbar, null);
         mToolbar = mView.findViewById(R.id.download_toolbar);
         mShadow = mView.findViewById(R.id.shadow);
 
-        mToolbar.initialize(selectionDelegate, R.string.menu_downloads, R.id.normal_menu_group,
-                R.id.selection_mode_menu_group, hasCloseButton);
+        mToolbar.initialize(
+                selectionDelegate,
+                R.string.menu_downloads,
+                R.id.normal_menu_group,
+                R.id.selection_mode_menu_group,
+                hasCloseButton);
         mToolbar.setOnMenuItemClickListener(this::onMenuItemClick);
 
         // TODO(crbug.com/881037): Pass the visible group to the toolbar during initialization.
@@ -121,9 +123,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
         mToolbar.isSearchingSupplier().addObserver(mBackPressStateSupplier::set);
     }
 
-    /**
-     * Called when the activity/native page is destroyed.
-     */
+    /** Called when the activity/native page is destroyed. */
     public void destroy() {
         mToolbar.destroy();
     }

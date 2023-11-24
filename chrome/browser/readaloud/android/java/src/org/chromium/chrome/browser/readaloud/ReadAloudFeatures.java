@@ -32,8 +32,9 @@ public final class ReadAloudFeatures {
     /** Returns the API key override feature param if present, or null otherwise. */
     @Nullable
     public static String getApiKeyOverride() {
-        String apiKeyOverride = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.READALOUD, API_KEY_OVERRIDE_PARAM_NAME);
+        String apiKeyOverride =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.READALOUD, API_KEY_OVERRIDE_PARAM_NAME);
         return apiKeyOverride.isEmpty() ? null : apiKeyOverride;
     }
 

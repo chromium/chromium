@@ -25,7 +25,9 @@ public class BlockedCredentialFragmentView extends CredentialEntryFragmentViewBa
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         return inflater.inflate(R.layout.blocked_credential_view, container, false);

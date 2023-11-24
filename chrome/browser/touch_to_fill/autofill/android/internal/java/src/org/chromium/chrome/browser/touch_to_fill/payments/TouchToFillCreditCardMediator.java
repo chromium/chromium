@@ -52,9 +52,13 @@ class TouchToFillCreditCardMediator {
      * Entries should not be renumbered and numeric values should never be reused. Needs to stay
      * in sync with TouchToFill.CreditCard.Outcome in enums.xml.
      */
-    @IntDef({TouchToFillCreditCardOutcome.CREDIT_CARD, TouchToFillCreditCardOutcome.VIRTUAL_CARD,
-            TouchToFillCreditCardOutcome.MANAGE_PAYMENTS,
-            TouchToFillCreditCardOutcome.SCAN_NEW_CARD, TouchToFillCreditCardOutcome.DISMISS})
+    @IntDef({
+        TouchToFillCreditCardOutcome.CREDIT_CARD,
+        TouchToFillCreditCardOutcome.VIRTUAL_CARD,
+        TouchToFillCreditCardOutcome.MANAGE_PAYMENTS,
+        TouchToFillCreditCardOutcome.SCAN_NEW_CARD,
+        TouchToFillCreditCardOutcome.DISMISS
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface TouchToFillCreditCardOutcome {
         int CREDIT_CARD = 0;
@@ -64,14 +68,18 @@ class TouchToFillCreditCardMediator {
         int DISMISS = 4;
         int MAX_VALUE = DISMISS;
     }
+
     @VisibleForTesting
     static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM = "Autofill.TouchToFill.CreditCard.Outcome";
+
     @VisibleForTesting
     static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED =
             "Autofill.TouchToFill.CreditCard.Outcome2";
+
     @VisibleForTesting
     static final String TOUCH_TO_FILL_INDEX_SELECTED =
             "Autofill.TouchToFill.CreditCard.SelectedIndex";
+
     @VisibleForTesting
     static final String TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN =
             "Autofill.TouchToFill.CreditCard.NumberOfCardsShown";
@@ -85,8 +93,11 @@ class TouchToFillCreditCardMediator {
 
     private InputProtector mInputProtector = new InputProtector();
 
-    void initialize(Context context, TouchToFillCreditCardComponent.Delegate delegate,
-            PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
+    void initialize(
+            Context context,
+            TouchToFillCreditCardComponent.Delegate delegate,
+            PropertyModel model,
+            BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
         mContext = context;
         mDelegate = delegate;
@@ -132,18 +143,22 @@ class TouchToFillCreditCardMediator {
     public void onDismissed(@StateChangeReason int reason) {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
-        boolean dismissedByUser = reason == StateChangeReason.SWIPE
-                || reason == StateChangeReason.BACK_PRESS || reason == StateChangeReason.TAP_SCRIM;
+        boolean dismissedByUser =
+                reason == StateChangeReason.SWIPE
+                        || reason == StateChangeReason.BACK_PRESS
+                        || reason == StateChangeReason.TAP_SCRIM;
         mDelegate.onDismissed(dismissedByUser);
         // TODO (crbug.com/1247698) Record the old histogram as before to not mix the old and the
         // new metrics. Remove after M114 is launched.
         if (reason == StateChangeReason.SWIPE || reason == StateChangeReason.BACK_PRESS) {
-            RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+            RecordHistogram.recordEnumeratedHistogram(
+                    TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
                     TouchToFillCreditCardOutcome.DISMISS,
                     TouchToFillCreditCardOutcome.MAX_VALUE + 1);
         }
         if (dismissedByUser) {
-            RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
+            RecordHistogram.recordEnumeratedHistogram(
+                    TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
                     TouchToFillCreditCardOutcome.DISMISS,
                     TouchToFillCreditCardOutcome.MAX_VALUE + 1);
         }
@@ -162,7 +177,8 @@ class TouchToFillCreditCardMediator {
     public void onSelectedCreditCard(CreditCard card) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.suggestionSelected(card.getGUID(), card.getIsVirtual());
-        recordTouchToFillOutcomeHistogram(card.getIsVirtual()
+        recordTouchToFillOutcomeHistogram(
+                card.getIsVirtual()
                         ? TouchToFillCreditCardOutcome.VIRTUAL_CARD
                         : TouchToFillCreditCardOutcome.CREDIT_CARD);
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_INDEX_SELECTED, mCards.indexOf(card));
@@ -171,27 +187,31 @@ class TouchToFillCreditCardMediator {
     private PropertyModel createCardModel(
             CreditCard card, FillableItemCollectionInfo itemCollectionInfo) {
         PropertyModel.Builder creditCardModelBuilder =
-                new PropertyModel
-                        .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
-                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
+                new PropertyModel.Builder(
+                                TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
+                        .with(
+                                TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
                                 card.getIssuerIconDrawableId())
-                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL,
+                        .with(
+                                TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL,
                                 AutofillUiUtils.shouldShowCustomIcon(
-                                        card.getCardArtUrl(), card.getIsVirtual())
+                                                card.getCardArtUrl(), card.getIsVirtual())
                                         ? card.getCardArtUrl()
                                         : new GURL(""))
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME, "")
-                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
+                        .with(
+                                TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())
-                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
+                        .with(
+                                TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
                                 card.getObfuscatedLastFourDigits())
                         .with(ON_CLICK_ACTION, () -> this.onSelectedCreditCard(card))
                         .with(ITEM_COLLECTION_INFO, itemCollectionInfo);
 
         // If a card has a nickname, the network name should also be announced, otherwise the name
         // of the card will be the network name and it will be announced.
-        if (!card.getBasicCardIssuerNetwork().equals(
-                    card.getCardNameForAutofillDisplay().toLowerCase(Locale.getDefault()))) {
+        if (!card.getBasicCardIssuerNetwork()
+                .equals(card.getCardNameForAutofillDisplay().toLowerCase(Locale.getDefault()))) {
             creditCardModelBuilder.with(
                     TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME,
                     card.getBasicCardIssuerNetwork());
@@ -212,16 +232,20 @@ class TouchToFillCreditCardMediator {
     }
 
     private ListItem buildHeader(boolean hasOnlyLocalCards) {
-        return new ListItem(TouchToFillCreditCardProperties.ItemType.HEADER,
+        return new ListItem(
+                TouchToFillCreditCardProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(IMAGE_DRAWABLE_ID,
-                                hasOnlyLocalCards ? R.drawable.fre_product_logo
-                                                  : R.drawable.google_pay)
+                        .with(
+                                IMAGE_DRAWABLE_ID,
+                                hasOnlyLocalCards
+                                        ? R.drawable.fre_product_logo
+                                        : R.drawable.google_pay)
                         .build());
     }
 
     private ListItem buildFooter(boolean hasScanCardButton) {
-        return new ListItem(TouchToFillCreditCardProperties.ItemType.FOOTER,
+        return new ListItem(
+                TouchToFillCreditCardProperties.ItemType.FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(SHOULD_SHOW_SCAN_CREDIT_CARD, hasScanCardButton)
                         .with(SCAN_CREDIT_CARD_CALLBACK, this::scanCreditCard)
@@ -238,9 +262,13 @@ class TouchToFillCreditCardMediator {
 
     private static void recordTouchToFillOutcomeHistogram(
             @TouchToFillCreditCardOutcome int outcome) {
-        RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM, outcome,
+        RecordHistogram.recordEnumeratedHistogram(
+                TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+                outcome,
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
-        RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED, outcome,
+        RecordHistogram.recordEnumeratedHistogram(
+                TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
+                outcome,
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }
 

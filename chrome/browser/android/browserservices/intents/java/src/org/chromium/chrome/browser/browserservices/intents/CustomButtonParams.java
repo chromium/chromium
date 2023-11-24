@@ -15,13 +15,9 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
 
-/**
- * Container for all parameters related to creating a customizable button.
- */
+/** Container for all parameters related to creating a customizable button. */
 public interface CustomButtonParams {
-    /**
-     * Replaces the current icon and description with new ones.
-     */
+    /** Replaces the current icon and description with new ones. */
     void update(@NonNull Bitmap icon, @NonNull String description);
 
     /**

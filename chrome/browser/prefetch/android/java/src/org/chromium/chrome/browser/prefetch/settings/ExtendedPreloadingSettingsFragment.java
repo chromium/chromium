@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.prefetch.settings;
 
-/**
- * Fragment containing extended preloading settings.
- */
+/** Fragment containing extended preloading settings. */
 public class ExtendedPreloadingSettingsFragment extends PreloadPagesSettingsFragmentBase {
     @Override
     protected int getPreferenceResource() {

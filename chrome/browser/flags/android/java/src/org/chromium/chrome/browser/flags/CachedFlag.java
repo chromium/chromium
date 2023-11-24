@@ -69,8 +69,9 @@ public class CachedFlag extends Flag {
                 return flag;
             }
 
-            flag = CachedFlagsSafeMode.getInstance().isEnabled(
-                    mFeatureName, preferenceName, mDefaultValue);
+            flag =
+                    CachedFlagsSafeMode.getInstance()
+                            .isEnabled(mFeatureName, preferenceName, mDefaultValue);
             if (flag == null) {
                 SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                 if (prefs.contains(preferenceName)) {
@@ -115,9 +116,7 @@ public class CachedFlag extends Flag {
         }
     }
 
-    /**
-     * Caches the value of the feature from {@link ChromeFeatureList} to SharedPrefs.
-     */
+    /** Caches the value of the feature from {@link ChromeFeatureList} to SharedPrefs. */
     void cacheFeature() {
         boolean isEnabledInNative = ChromeFeatureList.isEnabled(mFeatureName);
 
@@ -146,13 +145,11 @@ public class CachedFlag extends Flag {
     }
 
     public static void resetDiskForTesting() {
-        ChromeSharedPreferences.getInstance().removeKeysWithPrefix(
-                ChromePreferenceKeys.FLAGS_CACHED);
+        ChromeSharedPreferences.getInstance()
+                .removeKeysWithPrefix(ChromePreferenceKeys.FLAGS_CACHED);
     }
 
-    /**
-     * Create a Map of feature names -> {@link CachedFlag} from multiple lists of CachedFlags.
-     */
+    /** Create a Map of feature names -> {@link CachedFlag} from multiple lists of CachedFlags. */
     public static Map<String, CachedFlag> createCachedFlagMap(
             List<List<CachedFlag>> allCachedFlagsLists) {
         HashMap<String, CachedFlag> cachedFlagMap = new HashMap<>();

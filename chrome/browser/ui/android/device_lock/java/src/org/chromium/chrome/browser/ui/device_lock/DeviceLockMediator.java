@@ -56,17 +56,27 @@ public class DeviceLockMediator {
     private final @Nullable ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
     private final AccountReauthenticationUtils mAccountReauthenticationUtils;
 
-    public DeviceLockMediator(DeviceLockCoordinator.Delegate delegate, WindowAndroid windowAndroid,
-            @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge, Activity activity,
-            @Nullable Account account) {
-        this(delegate, windowAndroid, deviceLockAuthenticatorBridge,
-                new AccountReauthenticationUtils(), activity, account);
-    }
-
-    protected DeviceLockMediator(DeviceLockCoordinator.Delegate delegate,
+    public DeviceLockMediator(
+            DeviceLockCoordinator.Delegate delegate,
             WindowAndroid windowAndroid,
             @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge,
-            AccountReauthenticationUtils accountReauthenticationUtils, Activity activity,
+            Activity activity,
+            @Nullable Account account) {
+        this(
+                delegate,
+                windowAndroid,
+                deviceLockAuthenticatorBridge,
+                new AccountReauthenticationUtils(),
+                activity,
+                account);
+    }
+
+    protected DeviceLockMediator(
+            DeviceLockCoordinator.Delegate delegate,
+            WindowAndroid windowAndroid,
+            @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge,
+            AccountReauthenticationUtils accountReauthenticationUtils,
+            Activity activity,
             @Nullable Account account) {
         mDelegate = delegate;
         mActivity = activity;
@@ -110,7 +120,8 @@ public class DeviceLockMediator {
         DeviceLockDialogMetrics.recordDeviceLockDialogAction(
                 DeviceLockDialogAction.CREATE_DEVICE_LOCK_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
-        navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockDirectlyIntent(),
+        navigateToDeviceLockCreation(
+                DeviceLockUtils.createDeviceLockDirectlyIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
@@ -118,7 +129,8 @@ public class DeviceLockMediator {
         DeviceLockDialogMetrics.recordDeviceLockDialogAction(
                 DeviceLockDialogAction.GO_TO_OS_SETTINGS_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
-        navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockThroughOSSettingsIntent(),
+        navigateToDeviceLockCreation(
+                DeviceLockUtils.createDeviceLockThroughOSSettingsIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
@@ -192,7 +204,8 @@ public class DeviceLockMediator {
         int accountReauthenticationRecentTimeWindowMinutes =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
-                        ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM, 10);
+                        ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM,
+                        10);
         mAccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
                 getAccountManager(),
                 mAccount,

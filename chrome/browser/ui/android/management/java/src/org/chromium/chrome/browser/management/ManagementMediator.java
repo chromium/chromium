@@ -15,9 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
-/**
- * A mediator for the {@link ManagementCoordinator} responsible for handling business logic.
- */
+/** A mediator for the {@link ManagementCoordinator} responsible for handling business logic. */
 public class ManagementMediator {
     private static final String LEARN_MORE_URL =
             "https://support.google.com/chrome/?p=is_chrome_managed";
@@ -27,13 +25,16 @@ public class ManagementMediator {
 
     public ManagementMediator(NativePageHost host, Profile profile) {
         mHost = host;
-        mModel = new PropertyModel.Builder(ManagementProperties.ALL_KEYS)
-                         .with(ManagementProperties.BROWSER_IS_MANAGED,
-                                 ManagedBrowserUtils.isBrowserManaged(profile))
-                         .with(ManagementProperties.BROWSER_MANAGER_NAME,
-                                 ManagedBrowserUtils.getBrowserManagerName(profile))
-                         .with(ManagementProperties.LEARN_MORE_TEXT, getLearnMoreClickableText())
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ManagementProperties.ALL_KEYS)
+                        .with(
+                                ManagementProperties.BROWSER_IS_MANAGED,
+                                ManagedBrowserUtils.isBrowserManaged(profile))
+                        .with(
+                                ManagementProperties.BROWSER_MANAGER_NAME,
+                                ManagedBrowserUtils.getBrowserManagerName(profile))
+                        .with(ManagementProperties.LEARN_MORE_TEXT, getLearnMoreClickableText())
+                        .build();
     }
 
     public PropertyModel getModel() {
@@ -43,12 +44,17 @@ public class ManagementMediator {
     private SpannableString getLearnMoreClickableText() {
         final Context context = mHost.getContext();
         final NoUnderlineClickableSpan clickableLearnMoreSpan =
-                new NoUnderlineClickableSpan(context, (v) -> { showHelpCenterArticle(); });
-        return SpanApplier.applySpans(context.getString(R.string.management_learn_more),
+                new NoUnderlineClickableSpan(
+                        context,
+                        (v) -> {
+                            showHelpCenterArticle();
+                        });
+        return SpanApplier.applySpans(
+                context.getString(R.string.management_learn_more),
                 new SpanApplier.SpanInfo("<LINK>", "</LINK>", clickableLearnMoreSpan));
     }
 
     private void showHelpCenterArticle() {
-        mHost.loadUrl(new LoadUrlParams(LEARN_MORE_URL), /*incognito=*/false);
+        mHost.loadUrl(new LoadUrlParams(LEARN_MORE_URL), /* incognito= */ false);
     }
 }

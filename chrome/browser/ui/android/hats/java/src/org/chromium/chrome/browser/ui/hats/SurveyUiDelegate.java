@@ -18,7 +18,9 @@ public interface SurveyUiDelegate {
      * @param onSurveyDeclined Callback to run when survey invitation is declined.
      * @param onSurveyPresentationFailed Callback to run when survey invitation failed to show.
      */
-    void showSurveyInvitation(Runnable onSurveyAccepted, Runnable onSurveyDeclined,
+    void showSurveyInvitation(
+            Runnable onSurveyAccepted,
+            Runnable onSurveyDeclined,
             Runnable onSurveyPresentationFailed);
 
     /**

@@ -33,14 +33,23 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
      * @param controllerSupplier Supplier for the ReadAloud feature controller.
      * @param trackerSupplier    Supplier for the IPH.
      */
-    public ReadAloudToolbarButtonController(Context context, Supplier<Tab> activeTabSupplier,
-            Drawable buttonDrawable, Supplier<ReadAloudController> controllerSupplier,
+    public ReadAloudToolbarButtonController(
+            Context context,
+            Supplier<Tab> activeTabSupplier,
+            Drawable buttonDrawable,
+            Supplier<ReadAloudController> controllerSupplier,
             Supplier<Tracker> trackerSupplier) {
-        super(activeTabSupplier, /* modalDialogManager = */ null, buttonDrawable,
-                context.getString(R.string.menu_listen_to_this_page), Resources.ID_NULL,
-                /* supportsTinting = */ true,
-                /* iphCommandBuilder= */ null, AdaptiveToolbarButtonVariant.READ_ALOUD,
-                /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/ true);
+        super(
+                activeTabSupplier,
+                /* modalDialogManager= */ null,
+                buttonDrawable,
+                context.getString(R.string.menu_listen_to_this_page),
+                Resources.ID_NULL,
+                /* supportsTinting= */ true,
+                /* iphCommandBuilder= */ null,
+                AdaptiveToolbarButtonVariant.READ_ALOUD,
+                /* tooltipTextResId= */ Resources.ID_NULL,
+                /* showHoverHighlight= */ true);
         mControllerSupplier = controllerSupplier;
         mTrackerSupplier = trackerSupplier;
     }
@@ -52,8 +61,9 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
         }
 
         if (mTrackerSupplier.hasValue()) {
-            mTrackerSupplier.get().notifyEvent(
-                    EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_READ_ALOUD_CLICKED);
+            mTrackerSupplier
+                    .get()
+                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_READ_ALOUD_CLICKED);
         }
 
         RecordUserAction.record("MobileTopToolbarReadAloudButton");
@@ -62,11 +72,11 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
 
     @Override
     protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
-        return new IPHCommandBuilder(tab.getContext().getResources(),
+        return new IPHCommandBuilder(
+                tab.getContext().getResources(),
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE,
-                /* stringId = */ R.string.adaptive_toolbar_button_read_aloud_iph,
-                /* accessibilityStringId = */
-                R.string.adaptive_toolbar_button_read_aloud_iph);
+                /* stringId= */ R.string.adaptive_toolbar_button_read_aloud_iph,
+                /* accessibilityStringId= */ R.string.adaptive_toolbar_button_read_aloud_iph);
     }
 
     @Override

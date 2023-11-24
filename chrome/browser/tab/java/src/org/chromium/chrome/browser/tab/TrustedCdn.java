@@ -19,12 +19,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-/**
- * Provides a trusted CDN publisher URL for the current web contents in a Tab.
- */
+/** Provides a trusted CDN publisher URL for the current web contents in a Tab. */
 public class TrustedCdn extends TabWebContentsUserData {
-    @VisibleForTesting
-    public static final Class<TrustedCdn> USER_DATA_KEY = TrustedCdn.class;
+    @VisibleForTesting public static final Class<TrustedCdn> USER_DATA_KEY = TrustedCdn.class;
 
     private final Tab mTab;
     private final long mNativeTrustedCdn;
@@ -74,7 +71,7 @@ public class TrustedCdn extends TabWebContentsUserData {
     }
 
     /**
-     *  @return The publisher URL if the current page is hosted on a trusted CDN, or null otherwise
+     * @return The publisher URL if the current page is hosted on a trusted CDN, or null otherwise
      */
     public static @Nullable GURL getPublisherUrl(@Nullable Tab tab) {
         TrustedCdn cdn = get(tab);
@@ -156,9 +153,13 @@ public class TrustedCdn extends TabWebContentsUserData {
     @NativeMethods
     public interface Natives {
         long init(TrustedCdn caller);
+
         void onDestroyed(long nativeTrustedCdn, TrustedCdn caller);
+
         void setWebContents(long nativeTrustedCdn, TrustedCdn caller, WebContents webContents);
+
         void resetWebContents(long nativeTrustedCdn, TrustedCdn caller);
+
         GURL getPublisherUrl(long nativeTrustedCdn);
     }
 }

@@ -13,23 +13,22 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Stateless Missing Device Lock page view binder.
- */
+/** Stateless Missing Device Lock page view binder. */
 public class MissingDeviceLockViewBinder {
     public static void bind(
             PropertyModel model, MissingDeviceLockView view, PropertyKey propertyKey) {
         if (propertyKey == ON_CREATE_DEVICE_LOCK_CLICKED) {
-            view.getCreateDeviceLockButton().setOnClickListener(
-                    model.get(ON_CREATE_DEVICE_LOCK_CLICKED));
+            view.getCreateDeviceLockButton()
+                    .setOnClickListener(model.get(ON_CREATE_DEVICE_LOCK_CLICKED));
         } else if (propertyKey == ON_CONTINUE_CLICKED) {
             view.getContinueButton().setOnClickListener(model.get(ON_CONTINUE_CLICKED));
         } else if (propertyKey == ON_CHECKBOX_TOGGLED) {
             view.getCheckbox().setOnCheckedChangeListener(model.get(ON_CHECKBOX_TOGGLED));
         } else if (propertyKey == REMOVE_ALL_LOCAL_DATA_CHECKED) {
-            ThreadUtils.runOnUiThread(() -> {
-                view.getCheckbox().setChecked(model.get(REMOVE_ALL_LOCAL_DATA_CHECKED));
-            });
+            ThreadUtils.runOnUiThread(
+                    () -> {
+                        view.getCheckbox().setChecked(model.get(REMOVE_ALL_LOCAL_DATA_CHECKED));
+                    });
         }
     }
 }

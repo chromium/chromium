@@ -68,9 +68,10 @@ class TouchToFillView extends TouchToFillViewBase {
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      */
     TouchToFillView(Context context, BottomSheetController bottomSheetController) {
-        super(bottomSheetController,
-                (RelativeLayout) LayoutInflater.from(context).inflate(
-                        R.layout.touch_to_fill_sheet, null),
+        super(
+                bottomSheetController,
+                (RelativeLayout)
+                        LayoutInflater.from(context).inflate(R.layout.touch_to_fill_sheet, null),
                 true);
 
         getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
@@ -108,19 +109,22 @@ class TouchToFillView extends TouchToFillViewBase {
 
     @Override
     protected @Px int getConclusiveMarginHeightPx() {
-        return getContentView().getResources().getDimensionPixelSize(
-                R.dimen.touch_to_fill_sheet_bottom_padding_button);
+        return getContentView()
+                .getResources()
+                .getDimensionPixelSize(R.dimen.touch_to_fill_sheet_bottom_padding_button);
     }
 
     @Override
     protected @Px int getSideMarginPx() {
-        return getContentView().getResources().getDimensionPixelSize(
-                R.dimen.touch_to_fill_sheet_margin);
+        return getContentView()
+                .getResources()
+                .getDimensionPixelSize(R.dimen.touch_to_fill_sheet_margin);
     }
 
     @Override
     protected Set<Integer> listedItemTypes() {
-        return Set.of(TouchToFillProperties.ItemType.CREDENTIAL,
+        return Set.of(
+                TouchToFillProperties.ItemType.CREDENTIAL,
                 TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL,
                 TouchToFillProperties.ItemType.MORE_PASSKEYS);
     }

@@ -22,13 +22,9 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A radio button group toggling the opt-in status for Third Party support.
- */
+/** A radio button group toggling the opt-in status for Third Party support. */
 public final class RadioButtonGroupThirdPartyPreference extends Preference {
-    /**
-     * Enums that represent the status of radio buttons inside this Preference.
-     */
+    /** Enums that represent the status of radio buttons inside this Preference. */
     @IntDef({ThirdPartyOption.DEFAULT, ThirdPartyOption.USE_OTHER_PROVIDER})
     @Retention(RetentionPolicy.SOURCE)
     @interface ThirdPartyOption {
@@ -82,13 +78,15 @@ public final class RadioButtonGroupThirdPartyPreference extends Preference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        mDefaultOption = (RadioButtonWithDescription) holder.findViewById(
-                R.id.autofill_third_party_filling_default);
-        mOptInOption = (RadioButtonWithDescription) holder.findViewById(
-                R.id.autofill_third_party_filling_opt_in);
+        mDefaultOption =
+                (RadioButtonWithDescription)
+                        holder.findViewById(R.id.autofill_third_party_filling_default);
+        mOptInOption =
+                (RadioButtonWithDescription)
+                        holder.findViewById(R.id.autofill_third_party_filling_opt_in);
         RadioButtonWithDescriptionLayout group =
-                (RadioButtonWithDescriptionLayout) holder.findViewById(
-                        R.id.autofill_third_party_radio_group);
+                (RadioButtonWithDescriptionLayout)
+                        holder.findViewById(R.id.autofill_third_party_radio_group);
 
         group.setOnCheckedChangeListener(this::onCheckedChanged);
         setSelectedOption(mSelectedOption); // Update UI according to internal state.

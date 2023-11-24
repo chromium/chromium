@@ -24,6 +24,11 @@ class TouchToFillPasswordGenerationProperties {
     public static final ReadableObjectPropertyKey<Runnable> PASSWORD_REJECTED_CALLBACK =
             new ReadableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ACCOUNT_EMAIL,
-            GENERATED_PASSWORD, PASSWORD_ACCEPTED_CALLBACK, PASSWORD_REJECTED_CALLBACK};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                ACCOUNT_EMAIL,
+                GENERATED_PASSWORD,
+                PASSWORD_ACCEPTED_CALLBACK,
+                PASSWORD_REJECTED_CALLBACK
+            };
 }

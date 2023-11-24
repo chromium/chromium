@@ -128,16 +128,18 @@ public class ConsentTextTracker {
         TextViewMetadata metadata = mTextViewToMetadataMap.get(view);
 
         // Ensure that setText() was used to assign this text.
-        assert metadata
-                != null : "The text '" + view.getText().toString() + "' was not assigned "
-                          + "by setText() or setTextNonRecordable().";
+        assert metadata != null
+                : "The text '"
+                        + view.getText().toString()
+                        + "' was not assigned "
+                        + "by setText() or setTextNonRecordable().";
 
         // Ensure that the text hasn't changed since the assignment.
         assert view.getText().toString().equals(metadata.getString())
-            : "The text '"
-                + view.getText().toString()
-                + "' has been modified after it was assigned by setText() "
-                + "or setTextNonRecordable().";
+                : "The text '"
+                        + view.getText().toString()
+                        + "' has been modified after it was assigned by setText() "
+                        + "or setTextNonRecordable().";
         return metadata.getId();
     }
 
@@ -163,8 +165,11 @@ public class ConsentTextTracker {
      * @param confirmationView The view that the user clicked when consenting
      * @param consentViews View hierarchies that implement the consent screen
      */
-    public void recordConsent(CoreAccountId accountId, @ConsentAuditorFeature int feature,
-            TextView confirmationView, View... consentViews) {
+    public void recordConsent(
+            CoreAccountId accountId,
+            @ConsentAuditorFeature int feature,
+            TextView confirmationView,
+            View... consentViews) {
         int consentConfirmation = getConsentStringResource(confirmationView);
 
         ArrayList<Integer> consentDescription = new ArrayList<>();
@@ -175,13 +180,12 @@ public class ConsentTextTracker {
 
         for (View view : visibleViews) {
             if (!(view instanceof TextView)) continue; // This element doesn't hold any text.
-            @StringRes
-            int id = getConsentStringResource((TextView) view);
+            @StringRes int id = getConsentStringResource((TextView) view);
             if (id == 0) continue; // This text is not relevant for consent recording.
             consentDescription.add(id);
         }
 
-        ConsentAuditorBridge.getInstance().recordConsent(
-                accountId, feature, consentDescription, consentConfirmation);
+        ConsentAuditorBridge.getInstance()
+                .recordConsent(accountId, feature, consentDescription, consentConfirmation);
     }
 }

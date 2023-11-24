@@ -36,18 +36,20 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A {@link LinearLayout} that shows loading placeholder for Feed cards.
- */
+/** A {@link LinearLayout} that shows loading placeholder for Feed cards. */
 public class FeedPlaceholderLayout extends LinearLayout {
     private static final String TAG = "FeedPlaceholder";
+
     /** Command line flag to allow rendering tests to disable animation. */
     public static final String DISABLE_ANIMATION_SWITCH = "disable-feed-placeholder-animation";
+
     public static final String ENABLE_INSTANT_START_ANIMATION_PARAM =
             "enable-animation-on-instant-start";
     public static final BooleanCachedFieldTrialParameter ENABLE_INSTANT_START_ANIMATION =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.FEED_LOADING_PLACEHOLDER,
-                    ENABLE_INSTANT_START_ANIMATION_PARAM, false);
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.FEED_LOADING_PLACEHOLDER,
+                    ENABLE_INSTANT_START_ANIMATION_PARAM,
+                    false);
 
     private static final int CARD_MARGIN_DP = 12;
     private static final int CARD_TOP_PADDING_DP = 15;
@@ -120,14 +122,14 @@ public class FeedPlaceholderLayout extends LinearLayout {
     protected void onDetachedFromWindow() {
         // isAttachedToWindow() doesn't turn false during onDetachedFromWindow(), so we pass the new
         // attachment state into updateAnimationState() here explicitly.
-        updateAnimationState(/*isAttached=*/false);
+        updateAnimationState(/* isAttached= */ false);
         super.onDetachedFromWindow();
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        updateAnimationState(/*isAttached=*/true);
+        updateAnimationState(/* isAttached= */ true);
     }
 
     private void updateAnimationState(boolean isAttached) {
@@ -166,14 +168,16 @@ public class FeedPlaceholderLayout extends LinearLayout {
         LinearLayout cardsParentView = findViewById(R.id.placeholders_layout);
         cardsParentView.removeAllViews();
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.bottomMargin = dpToPx(CARD_MARGIN_DP);
 
         // Set the First placeholder container - an image-right card. If it's in landscape mode, the
         // placeholder should always show in dense mode.
-        mIsFirstCardDense = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
+        mIsFirstCardDense =
+                getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
 
         // The start delays of views' opacity animations are staggered. fadeStartDelayMs keeps track
         // of what the next view's opacity animation start delay should be.
@@ -195,7 +199,10 @@ public class FeedPlaceholderLayout extends LinearLayout {
         }
     }
 
-    private int setPlaceholders(LinearLayout parent, boolean isSmallCard, ViewGroup.LayoutParams lp,
+    private int setPlaceholders(
+            LinearLayout parent,
+            boolean isSmallCard,
+            ViewGroup.LayoutParams lp,
             int fadeStartDelayMs) {
         LinearLayout container = new LinearLayout(mContext);
         container.setLayoutParams(lp);
@@ -203,11 +210,15 @@ public class FeedPlaceholderLayout extends LinearLayout {
         ImageView imagePlaceholder = getImagePlaceholder(isSmallCard);
         ImageView textPlaceholder = getTextPlaceholder(isSmallCard);
 
-        container.addView(isSmallCard ? animate(textPlaceholder, fadeStartDelayMs)
-                                      : animate(imagePlaceholder, fadeStartDelayMs));
+        container.addView(
+                isSmallCard
+                        ? animate(textPlaceholder, fadeStartDelayMs)
+                        : animate(imagePlaceholder, fadeStartDelayMs));
         fadeStartDelayMs += FADE_STAGGER_MS;
-        container.addView(isSmallCard ? animate(imagePlaceholder, fadeStartDelayMs)
-                                      : animate(textPlaceholder, fadeStartDelayMs));
+        container.addView(
+                isSmallCard
+                        ? animate(imagePlaceholder, fadeStartDelayMs)
+                        : animate(textPlaceholder, fadeStartDelayMs));
         fadeStartDelayMs += FADE_STAGGER_MS;
 
         parent.addView(container);
@@ -248,8 +259,9 @@ public class FeedPlaceholderLayout extends LinearLayout {
     }
 
     private ImageView getImagePlaceholder(boolean isSmallCard) {
-        LinearLayout.LayoutParams imagePlaceholderLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams imagePlaceholderLp =
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         ImageView imagePlaceholder = new AppCompatImageView(mContext);
         imagePlaceholder.setImageDrawable(
                 isSmallCard ? getSmallImageDrawable() : getLargeImageDrawable());
@@ -263,9 +275,14 @@ public class FeedPlaceholderLayout extends LinearLayout {
         int top = dpToPx(CARD_TOP_PADDING_DP);
         GradientDrawable[] placeholder = getRectangles(1, imageSize, imageSize);
         LayerDrawable layerDrawable = new LayerDrawable(placeholder);
-        layerDrawable.setLayerInset(0, 0, top, 0,
-                mIsFirstCardDense ? dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DENSE_DP)
-                                  : dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DP));
+        layerDrawable.setLayerInset(
+                0,
+                0,
+                top,
+                0,
+                mIsFirstCardDense
+                        ? dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DENSE_DP)
+                        : dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DP));
         return layerDrawable;
     }
 
@@ -282,14 +299,17 @@ public class FeedPlaceholderLayout extends LinearLayout {
         int width = dpToPx(mScreenWidthDp);
         int contentHeight = dpToPx(TEXT_CONTENT_HEIGHT_DP);
 
-        LinearLayout.LayoutParams textPlaceholderLp = isSmallCard
-                ? new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1)
-                : new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams textPlaceholderLp =
+                isSmallCard
+                        ? new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1)
+                        : new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        LayerDrawable layerDrawable = isSmallCard
-                ? getSmallTextDrawable(top, width, height, contentHeight)
-                : getLargeTextDrawable(top, left, width, height, contentHeight + 2 * top);
+        LayerDrawable layerDrawable =
+                isSmallCard
+                        ? getSmallTextDrawable(top, width, height, contentHeight)
+                        : getLargeTextDrawable(top, left, width, height, contentHeight + 2 * top);
 
         ImageView textPlaceholder = new AppCompatImageView(mContext);
         textPlaceholder.setImageDrawable(layerDrawable);
@@ -300,14 +320,21 @@ public class FeedPlaceholderLayout extends LinearLayout {
 
     private LayerDrawable getSmallTextDrawable(int top, int width, int height, int contentHeight) {
         GradientDrawable[] placeholders = getRectangles(4, width, height);
-        int cardHeight = dpToPx(IMAGE_PLACEHOLDER_SIZE_DP) + dpToPx(CARD_TOP_PADDING_DP)
-                + (mIsFirstCardDense ? dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DENSE_DP)
-                                     : dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DP));
+        int cardHeight =
+                dpToPx(IMAGE_PLACEHOLDER_SIZE_DP)
+                        + dpToPx(CARD_TOP_PADDING_DP)
+                        + (mIsFirstCardDense
+                                ? dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DENSE_DP)
+                                : dpToPx(IMAGE_PLACEHOLDER_BOTTOM_PADDING_DP));
         LayerDrawable layerDrawable = new LayerDrawable(placeholders);
         // Title Placeholder
         layerDrawable.setLayerInset(0, 0, top, top, cardHeight - top - height);
         // Content Placeholder
-        layerDrawable.setLayerInset(1, 0, (contentHeight - height) / 2 + top, top,
+        layerDrawable.setLayerInset(
+                1,
+                0,
+                (contentHeight - height) / 2 + top,
+                top,
                 cardHeight - top - (height + contentHeight) / 2);
         layerDrawable.setLayerInset(
                 2, 0, top + contentHeight - height, top, cardHeight - top - contentHeight);
@@ -344,8 +371,9 @@ public class FeedPlaceholderLayout extends LinearLayout {
     }
 
     private int dpToPx(int dp) {
-        return (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+        return (int)
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
     /**

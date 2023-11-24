@@ -51,14 +51,17 @@ class ChoiceScreenMediator {
 
         List<MVCListAdapter.ListItem> itemModels =
                 IntStream.range(0, mDelegate.getSearchEngines().size())
-                        .mapToObj((index)
-                                          -> ChoiceScreenProperties.Item.createPropertyModel(
-                                                  mDelegate.getSearchEngines()
-                                                          .get(index)
-                                                          .getShortName(),
-                                                  () -> onItemClicked(index)))
-                        .map((model)
-                                        -> new MVCListAdapter.ListItem(
+                        .mapToObj(
+                                (index) ->
+                                        ChoiceScreenProperties.Item.createPropertyModel(
+                                                mDelegate
+                                                        .getSearchEngines()
+                                                        .get(index)
+                                                        .getShortName(),
+                                                () -> onItemClicked(index)))
+                        .map(
+                                (model) ->
+                                        new MVCListAdapter.ListItem(
                                                 ChoiceScreenProperties.DEFAULT_TYPE, model))
                         .collect(Collectors.toList());
         mPropertyModel.get(ChoiceScreenProperties.ITEM_MODELS).set(itemModels);
@@ -99,8 +102,7 @@ class ChoiceScreenMediator {
     }
 
     private void setButtonListenersEnabled(boolean enabled) {
-        @Nullable
-        Runnable onButtonClicked = enabled ? this::onConfirmClicked : null;
+        @Nullable Runnable onButtonClicked = enabled ? this::onConfirmClicked : null;
         mPropertyModel.set(ChoiceScreenProperties.ON_PRIMARY_CLICKED, onButtonClicked);
     }
 

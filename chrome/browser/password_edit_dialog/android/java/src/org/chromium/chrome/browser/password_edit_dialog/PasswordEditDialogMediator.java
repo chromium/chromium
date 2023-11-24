@@ -30,14 +30,18 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     private final Resources mResources;
     private final PasswordEditDialogCoordinator.Delegate mDialogInteractions;
 
-    PasswordEditDialogMediator(ModalDialogManager modalDialogManager, Resources resources,
+    PasswordEditDialogMediator(
+            ModalDialogManager modalDialogManager,
+            Resources resources,
             PasswordEditDialogCoordinator.Delegate dialogInteractions) {
         mModalDialogManager = modalDialogManager;
         mResources = resources;
         mDialogInteractions = dialogInteractions;
     }
 
-    void initialize(PropertyModel dialogViewModel, PropertyModel modalDialogModel,
+    void initialize(
+            PropertyModel dialogViewModel,
+            PropertyModel modalDialogModel,
             List<String> savedUsernames) {
         mDialogViewModel = dialogViewModel;
         mModalDialogModel = modalDialogModel;
@@ -51,15 +55,14 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
      */
     void handleUsernameChanged(String username) {
         mDialogViewModel.set(PasswordEditDialogProperties.USERNAME, username);
-        mModalDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+        mModalDialogModel.set(
+                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                 isUpdate(mSavedUsernames, username)
                         ? mResources.getString(R.string.password_manager_update_button)
                         : mResources.getString(R.string.password_manager_save_button));
     }
 
-    /**
-     * Updates model's selected username index when it's changed in UI.
-     */
+    /** Updates model's selected username index when it's changed in UI. */
     void handleUsernameSelected(int selectedIndex) {
         mDialogViewModel.set(PasswordEditDialogProperties.USERNAME_INDEX, selectedIndex);
     }
@@ -72,7 +75,8 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     void handlePasswordChanged(String password) {
         mDialogViewModel.set(PasswordEditDialogProperties.PASSWORD, password);
         boolean isPasswordInvalid = password.isEmpty();
-        mDialogViewModel.set(PasswordEditDialogProperties.PASSWORD_ERROR,
+        mDialogViewModel.set(
+                PasswordEditDialogProperties.PASSWORD_ERROR,
                 isPasswordInvalid
                         ? mResources.getString(R.string.password_entry_edit_empty_password_error)
                         : null);
@@ -92,9 +96,11 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
                         mDialogViewModel.get(PasswordEditDialogProperties.USERNAME_INDEX));
             }
         }
-        mModalDialogManager.dismissDialog(model,
-                buttonType == ButtonType.POSITIVE ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                                  : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        mModalDialogManager.dismissDialog(
+                model,
+                buttonType == ButtonType.POSITIVE
+                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     @Override
@@ -119,8 +125,9 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
             // Otherwise, they are just asked if they want to update the password.
             // TODO(crbug.com/1378591): Take care that confirm username dialog should
             // not be navigated through the cog button.
-            return displayUsernames.size() < 2 ? R.string.password_update_dialog_title
-                                               : R.string.confirm_username_dialog_title;
+            return displayUsernames.size() < 2
+                    ? R.string.password_update_dialog_title
+                    : R.string.confirm_username_dialog_title;
         }
         return R.string.save_password;
     }

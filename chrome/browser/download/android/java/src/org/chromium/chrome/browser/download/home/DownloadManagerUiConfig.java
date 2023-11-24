@@ -25,9 +25,7 @@ public class DownloadManagerUiConfig {
     /** Whether showing full width images should be supported. */
     public final boolean supportFullWidthImages;
 
-    /**
-     * The in-memory thumbnail size in bytes.
-     */
+    /** The in-memory thumbnail size in bytes. */
     public final int inMemoryThumbnailCacheSizeBytes;
 
     /**
@@ -86,8 +84,9 @@ public class DownloadManagerUiConfig {
         private boolean mStartWithPrefetchedContent;
 
         public Builder() {
-            mSupportFullWidthImages = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                    ContextUtils.getApplicationContext());
+            mSupportFullWidthImages =
+                    !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                            ContextUtils.getApplicationContext());
             mUseGenericViewTypes = SysUtils.isLowEndDevice();
         }
 

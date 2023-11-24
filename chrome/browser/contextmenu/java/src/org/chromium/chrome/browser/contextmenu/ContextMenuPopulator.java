@@ -34,14 +34,10 @@ public interface ContextMenuPopulator {
      */
     boolean onItemSelected(int itemId);
 
-    /**
-     * Called when the context menu is closed.
-     */
+    /** Called when the context menu is closed. */
     void onMenuClosed();
 
-    /**
-     * Determines whether the the containing browser is switched to incognito mode.
-     */
+    /** Determines whether the the containing browser is switched to incognito mode. */
     boolean isIncognito();
 
     /**

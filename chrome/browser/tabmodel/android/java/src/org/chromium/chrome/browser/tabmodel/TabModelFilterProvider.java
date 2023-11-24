@@ -16,8 +16,7 @@ import java.util.List;
  * and one for incognito {@link TabModel}.
  */
 public class TabModelFilterProvider implements TabModelSelectorObserver {
-    @VisibleForTesting
-    public List<TabModelFilter> mTabModelFilterList = Collections.emptyList();
+    @VisibleForTesting public List<TabModelFilter> mTabModelFilterList = Collections.emptyList();
     private final List<TabModelObserver> mPendingTabModelObserver = new ArrayList<>();
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -102,9 +101,7 @@ public class TabModelFilterProvider implements TabModelSelectorObserver {
         return null;
     }
 
-    /**
-     * This method destroys all owned {@link TabModelFilter}.
-     */
+    /** This method destroys all owned {@link TabModelFilter}. */
     public void destroy() {
         for (int i = 0; i < mTabModelFilterList.size(); i++) {
             mTabModelFilterList.get(i).destroy();
@@ -124,9 +121,7 @@ public class TabModelFilterProvider implements TabModelSelectorObserver {
         markTabStateInitialized();
     }
 
-    /**
-     * Reset the internal filter list to allow initialization again.
-     */
+    /** Reset the internal filter list to allow initialization again. */
     public void resetTabModelFilterListForTesting() {
         mTabModelFilterList = Collections.emptyList();
     }

@@ -40,42 +40,41 @@ import java.util.List;
 
 /** Handles validation and display of one field from the {@link EditorProperties.ItemType}. */
 // TODO(b/173103628): Re-enable this
-//@VisibleForTesting
+// @VisibleForTesting
 class TextFieldView extends FrameLayout implements FieldView {
     // TODO(crbug.com/1300201): Replace with EditorDialog field once migrated.
     /** The indicator for input fields that are required. */
     public static final String REQUIRED_FIELD_INDICATOR = "*";
 
-    @Nullable
-    private static EditorObserverForTest sObserverForTest;
+    @Nullable private static EditorObserverForTest sObserverForTest;
 
-    @Nullable
-    private Runnable mDoneRunnable;
+    @Nullable private Runnable mDoneRunnable;
+
     @SuppressWarnings("WrongConstant") // https://crbug.com/1038784
-    private final OnEditorActionListener mEditorActionListener = (view, actionId, event) -> {
-        if (actionId == EditorInfo.IME_ACTION_DONE && mDoneRunnable != null) {
-            mDoneRunnable.run();
-            return true;
-        } else if (actionId != EditorInfo.IME_ACTION_NEXT) {
-            return false;
-        }
-        View next = view.focusSearch(View.FOCUS_FORWARD);
-        if (next == null) {
-            return false;
-        }
-        next.requestFocus();
-        return true;
-    };
+    private final OnEditorActionListener mEditorActionListener =
+            (view, actionId, event) -> {
+                if (actionId == EditorInfo.IME_ACTION_DONE && mDoneRunnable != null) {
+                    mDoneRunnable.run();
+                    return true;
+                } else if (actionId != EditorInfo.IME_ACTION_NEXT) {
+                    return false;
+                }
+                View next = view.focusSearch(View.FOCUS_FORWARD);
+                if (next == null) {
+                    return false;
+                }
+                next.requestFocus();
+                return true;
+            };
+
     private PropertyModel mEditorFieldModel;
     private TextInputLayout mInputLayout;
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
     private ImageView mActionIcon;
     private boolean mShowRequiredIndicator;
-    @Nullable
-    private EditorFieldValidator mValidator;
-    @Nullable
-    private TextWatcher mTextFormatter;
+    @Nullable private EditorFieldValidator mValidator;
+    @Nullable private TextWatcher mTextFormatter;
     private boolean mInFocusChange;
     private boolean mInValueChange;
 
@@ -90,70 +89,87 @@ class TextFieldView extends FrameLayout implements FieldView {
         mInput.setOnEditorActionListener(mEditorActionListener);
         // AutoCompleteTextView requires and explicit onKeyListener to show the OSK upon receiving
         // a KEYCODE_DPAD_CENTER.
-        mInput.setOnKeyListener((v, keyCode, event) -> {
-            if (!(keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-                        && event.getAction() == KeyEvent.ACTION_UP)) {
-                return false;
-            }
-            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
-            imm.viewClicked(v);
-            imm.showSoftInput(v, 0);
-            return true;
-        });
+        mInput.setOnKeyListener(
+                (v, keyCode, event) -> {
+                    if (!(keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+                            && event.getAction() == KeyEvent.ACTION_UP)) {
+                        return false;
+                    }
+                    InputMethodManager imm =
+                            (InputMethodManager)
+                                    v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.viewClicked(v);
+                    imm.showSoftInput(v, 0);
+                    return true;
+                });
 
-        setShowRequiredIndicator(/*showRequiredIndicator=*/false);
+        setShowRequiredIndicator(/* showRequiredIndicator= */ false);
 
         mIconsLayer = findViewById(R.id.icons_layer);
-        mIconsLayer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                // Padding at the end of mInput to preserve space for mIconsLayer.
-                ViewCompat.setPaddingRelative(mInput, ViewCompat.getPaddingStart(mInput),
-                        mInput.getPaddingTop(), mIconsLayer.getWidth(), mInput.getPaddingBottom());
-            }
-        });
+        mIconsLayer.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        // Padding at the end of mInput to preserve space for mIconsLayer.
+                        ViewCompat.setPaddingRelative(
+                                mInput,
+                                ViewCompat.getPaddingStart(mInput),
+                                mInput.getPaddingTop(),
+                                mIconsLayer.getWidth(),
+                                mInput.getPaddingBottom());
+                    }
+                });
 
-        mInput.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                mInFocusChange = true;
-                mEditorFieldModel.set(FOCUSED, hasFocus);
-                mInFocusChange = false;
+        mInput.setOnFocusChangeListener(
+                new OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        mInFocusChange = true;
+                        mEditorFieldModel.set(FOCUSED, hasFocus);
+                        mInFocusChange = false;
 
-                if (!hasFocus && mValidator != null) {
-                    // Validate the field when the user de-focuses it.
-                    // We do not validate the form initially when all of the fields are empty to
-                    // avoid showing error messages in all of the fields.
-                    mValidator.validate(mEditorFieldModel);
-                }
-            }
-        });
+                        if (!hasFocus && mValidator != null) {
+                            // Validate the field when the user de-focuses it.
+                            // We do not validate the form initially when all of the fields are
+                            // empty to avoid showing error messages in all of the fields.
+                            mValidator.validate(mEditorFieldModel);
+                        }
+                    }
+                });
 
         // Update the model as the user edits the field.
-        mInput.addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                fieldModel.set(VALUE, s.toString());
-                if (sObserverForTest != null) {
-                    sObserverForTest.onEditorTextUpdate();
-                }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mInput.hasFocus() && !mInValueChange) {
-                    if (mValidator != null) {
-                        mValidator.onUserEditedField();
+        mInput.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        fieldModel.set(VALUE, s.toString());
+                        if (sObserverForTest != null) {
+                            sObserverForTest.onEditorTextUpdate();
+                        }
                     }
 
-                    // Hide the error message and wait till the user finishes editing the field
-                    // to re-show the error label.
-                    mEditorFieldModel.set(ERROR_MESSAGE, null);
-                }
-            }
-        });
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        if (mInput.hasFocus() && !mInValueChange) {
+                            if (mValidator != null) {
+                                mValidator.onUserEditedField();
+                            }
+
+                            // Hide the error message and wait till the user finishes editing the
+                            // field to re-show the error label.
+                            mEditorFieldModel.set(ERROR_MESSAGE, null);
+                        }
+                    }
+                });
     }
 
     void setLabel(String label, boolean isRequired) {
@@ -199,8 +215,11 @@ class TextFieldView extends FrameLayout implements FieldView {
     void setTextSuggestions(@Nullable List<String> suggestions) {
         // Display any autofill suggestions.
         if (suggestions != null && !suggestions.isEmpty()) {
-            mInput.setAdapter(new ArrayAdapter<>(
-                    getContext(), android.R.layout.simple_spinner_dropdown_item, suggestions));
+            mInput.setAdapter(
+                    new ArrayAdapter<>(
+                            getContext(),
+                            android.R.layout.simple_spinner_dropdown_item,
+                            suggestions));
             mInput.setThreshold(0);
         }
     }
@@ -236,8 +255,12 @@ class TextFieldView extends FrameLayout implements FieldView {
             // other inside mInputLayout since mInputLayout must contain an instance of EditText
             // child view.
             // Note three: mInputLayout's bottom changes when displaying error.
-            float offset = mInputLayout.getY() + mInput.getY() + (float) mInput.getHeight()
-                    - (float) mIconsLayer.getHeight() - mIconsLayer.getTop();
+            float offset =
+                    mInputLayout.getY()
+                            + mInput.getY()
+                            + (float) mInput.getHeight()
+                            - (float) mIconsLayer.getHeight()
+                            - mIconsLayer.getTop();
             mIconsLayer.setTranslationY(offset);
         }
     }

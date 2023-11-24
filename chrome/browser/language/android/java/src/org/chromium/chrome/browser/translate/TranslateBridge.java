@@ -16,9 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Bridge class that lets Android code access native code to execute translate on a tab.
- */
+/** Bridge class that lets Android code access native code to execute translate on a tab. */
 // TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 public class TranslateBridge {
     /**
@@ -44,9 +42,7 @@ public class TranslateBridge {
         return TranslateBridgeJni.get().canManuallyTranslate(webContents, menuLogging);
     }
 
-    /**
-     * Returns true iff we're in a state where the manual translate IPH could be shown.
-     */
+    /** Returns true iff we're in a state where the manual translate IPH could be shown. */
     public static boolean shouldShowManualTranslateIPH(Tab tab) {
         return TranslateBridgeJni.get().shouldShowManualTranslateIPH(tab.getWebContents());
     }
@@ -60,8 +56,9 @@ public class TranslateBridge {
      */
     public static void setPredefinedTargetLanguage(
             Tab tab, String targetLanguage, boolean shouldAutoTranslate) {
-        TranslateBridgeJni.get().setPredefinedTargetLanguage(
-                tab.getWebContents(), targetLanguage, shouldAutoTranslate);
+        TranslateBridgeJni.get()
+                .setPredefinedTargetLanguage(
+                        tab.getWebContents(), targetLanguage, shouldAutoTranslate);
     }
 
     /**
@@ -90,8 +87,12 @@ public class TranslateBridge {
     }
 
     @CalledByNative
-    private static void addNewLanguageItemToList(List<LanguageItem> list, String code,
-            String displayName, String nativeDisplayName, boolean supportTranslate) {
+    private static void addNewLanguageItemToList(
+            List<LanguageItem> list,
+            String code,
+            String displayName,
+            String nativeDisplayName,
+            boolean supportTranslate) {
         list.add(new LanguageItem(code, displayName, nativeDisplayName, supportTranslate));
     }
 
@@ -189,9 +190,7 @@ public class TranslateBridge {
         return TranslateBridgeJni.get().getAppLanguagePromptShown();
     }
 
-    /**
-     * Set the pref indicating the app language prompt has been shown to the user.
-     */
+    /** Set the pref indicating the app language prompt has been shown to the user. */
     public static void setAppLanguagePromptShown() {
         TranslateBridgeJni.get().setAppLanguagePromptShown();
     }
@@ -223,25 +222,44 @@ public class TranslateBridge {
     @NativeMethods
     public interface Natives {
         void manualTranslateWhenReady(WebContents webContents);
+
         boolean canManuallyTranslate(WebContents webContents, boolean menuLogging);
+
         boolean shouldShowManualTranslateIPH(WebContents webContents);
+
         void setPredefinedTargetLanguage(
                 WebContents webContents, String targetLanguage, boolean shouldAutoTranslate);
+
         String getTargetLanguage();
+
         void setDefaultTargetLanguage(String targetLanguage);
+
         void resetAcceptLanguages(String defaultLocale);
+
         void getChromeAcceptLanguages(List<LanguageItem> list);
+
         String[] getUserAcceptLanguages();
+
         String[] getAlwaysTranslateLanguages();
+
         String[] getNeverTranslateLanguages();
+
         void setLanguageAlwaysTranslateState(String language, boolean alwaysTranslate);
+
         void updateUserAcceptLanguages(String language, boolean add);
+
         void moveAcceptLanguage(String language, int offset);
+
         void setLanguageOrder(String[] codes);
+
         boolean isBlockedLanguage(String language);
+
         void setLanguageBlockedState(String language, boolean blocked);
+
         boolean getAppLanguagePromptShown();
+
         void setAppLanguagePromptShown();
+
         void setIgnoreMissingKeyForTesting(boolean ignore);
 
         String getCurrentLanguage(WebContents webContents);

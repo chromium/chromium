@@ -42,9 +42,10 @@ import java.util.List;
  */
 public class IncognitoReauthControllerImpl
         implements IncognitoReauthController,
-                   IncognitoTabModelObserver.IncognitoReauthDialogDelegate,
-                   StartStopWithNativeObserver, SaveInstanceStateObserver,
-                   ApplicationStatus.TaskVisibilityListener {
+                IncognitoTabModelObserver.IncognitoReauthDialogDelegate,
+                StartStopWithNativeObserver,
+                SaveInstanceStateObserver,
+                ApplicationStatus.TaskVisibilityListener {
     // A key that would be persisted in saved instance that would be true if there were
     // incognito tabs present before Chrome went to background.
     public static final String KEY_IS_INCOGNITO_REAUTH_PENDING = "incognitoReauthPending";
@@ -131,18 +132,20 @@ public class IncognitoReauthControllerImpl
     // accessing {@link UserPrefs} in showDialogIfRequired. A null {@link Profile} would result in a
     // crash when accessing the pref. Therefore this callback is fired when the Profile is ready
     // which sets the |mProfile| and shows the re-auth dialog if required.
-    private final Callback<Profile> mProfileSupplierCallback = new Callback<Profile>() {
-        @Override
-        public void onResult(@NonNull Profile profile) {
-            mProfile = profile;
-            showDialogIfRequired();
-            if (!mIsStartupMetricsRecorded) {
-                RecordHistogram.recordBooleanHistogram("Android.IncognitoReauth.ToggleOnOrOff",
-                        IncognitoReauthManager.isIncognitoReauthEnabled(mProfile));
-                mIsStartupMetricsRecorded = true;
-            }
-        }
-    };
+    private final Callback<Profile> mProfileSupplierCallback =
+            new Callback<Profile>() {
+                @Override
+                public void onResult(@NonNull Profile profile) {
+                    mProfile = profile;
+                    showDialogIfRequired();
+                    if (!mIsStartupMetricsRecorded) {
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.IncognitoReauth.ToggleOnOrOff",
+                                IncognitoReauthManager.isIncognitoReauthEnabled(mProfile));
+                        mIsStartupMetricsRecorded = true;
+                    }
+                }
+            };
 
     // The {@link CallbackController} to populate the |mLayoutStateProvider| when it becomes
     // available.
@@ -172,11 +175,13 @@ public class IncognitoReauthControllerImpl
                     mBackPressInReauthFullScreenRunnable.run();
                 }
             };
+
     /**
      * {@link Runnable} which would be called when back press is triggered when we are showing the
      * fullscreen re-auth. Back presses done from tab switcher re-auth screen, is handled elsewhere.
      */
     private final @NonNull Runnable mBackPressInReauthFullScreenRunnable;
+
     /**
      * A supplier to indicate if the re-auth was pending in the previous Chrome session before it
      * was destroyed.
@@ -206,12 +211,14 @@ public class IncognitoReauthControllerImpl
      * saved instance state.
      * @param taskId The task Id of the {@link ChromeActivity} associated with this controller.
      */
-    public IncognitoReauthControllerImpl(@NonNull TabModelSelector tabModelSelector,
+    public IncognitoReauthControllerImpl(
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher dispatcher,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory,
-            @NonNull Supplier<Boolean> incognitoReauthPendingOnRestoreSupplier, int taskId) {
+            @NonNull Supplier<Boolean> incognitoReauthPendingOnRestoreSupplier,
+            int taskId) {
         mTabModelSelector = tabModelSelector;
         mActivityLifecycleDispatcher = dispatcher;
         mProfileObservableSupplier = profileSupplier;
@@ -224,11 +231,12 @@ public class IncognitoReauthControllerImpl
         mIsIncognitoReauthPendingOnRestoreSupplier = incognitoReauthPendingOnRestoreSupplier;
 
         layoutStateProviderOneshotSupplier.onAvailable(
-                mLayoutStateProviderCallbackController.makeCancelable(layoutStateProvider -> {
-                    mLayoutStateProvider = layoutStateProvider;
-                    mLayoutStateProvider.addObserver(mLayoutStateObserver);
-                    showDialogIfRequired();
-                }));
+                mLayoutStateProviderCallbackController.makeCancelable(
+                        layoutStateProvider -> {
+                            mLayoutStateProvider = layoutStateProvider;
+                            mLayoutStateProvider.addObserver(mLayoutStateObserver);
+                            showDialogIfRequired();
+                        }));
 
         mTabModelSelector.setIncognitoReauthDialogDelegate(this);
         mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);
@@ -272,26 +280,20 @@ public class IncognitoReauthControllerImpl
         }
     }
 
-    /**
-     * Override from {@link IncognitoReauthController}.
-     */
+    /** Override from {@link IncognitoReauthController}. */
     @Override
     public boolean isReauthPageShowing() {
         return mIncognitoReauthCoordinator != null;
     }
 
-    /**
-     * Override from {@link IncognitoReauthController}.
-     */
+    /** Override from {@link IncognitoReauthController}. */
     @Override
     public boolean isIncognitoReauthPending() {
         // A re-authentication is pending only in the context when the re-auth setting is always on.
         return mIncognitoReauthPending && IncognitoReauthManager.isIncognitoReauthEnabled(mProfile);
     }
 
-    /**
-     * Override from {@link IncognitoReauthController}.
-     */
+    /** Override from {@link IncognitoReauthController}. */
     @Override
     public void addIncognitoReauthCallback(
             @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback) {
@@ -300,9 +302,7 @@ public class IncognitoReauthControllerImpl
         }
     }
 
-    /**
-     * Override from {@link IncognitoReauthController}.
-     */
+    /** Override from {@link IncognitoReauthController}. */
     @Override
     public void removeIncognitoReauthCallback(
             @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback) {
@@ -328,36 +328,29 @@ public class IncognitoReauthControllerImpl
         outState.putBoolean(KEY_IS_INCOGNITO_REAUTH_PENDING, mIncognitoReauthPending);
     }
 
-    /**
-     * Override from {@link StartStopWithNativeObserver}.
-     */
+    /** Override from {@link StartStopWithNativeObserver}. */
     @Override
     public void onStopWithNative() {}
 
-    /**
-     * Override from {@link IncognitoReauthDialogDelegate}.
-     */
+    /** Override from {@link IncognitoReauthDialogDelegate}. */
     @Override
     public void onAfterRegularTabModelChanged() {
         hideDialogIfShowing(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED);
     }
 
-    /**
-     * Override from {@link IncognitoReauthDialogDelegate}.
-     */
+    /** Override from {@link IncognitoReauthDialogDelegate}. */
     @Override
     public void onBeforeIncognitoTabModelSelected() {
         showDialogIfRequired();
     }
 
-    /**
-     * Override from {@link TaskVisibility.TaskVisibilityObserver}
-     */
+    /** Override from {@link TaskVisibility.TaskVisibilityObserver} */
     @Override
     public void onTaskVisibilityChanged(int taskId, boolean isVisible) {
         if (taskId != mTaskId) return;
         if (!isVisible) {
-            mIncognitoReauthPending = mTabModelSelector.getModel(/*incognito=*/true).getCount() > 0;
+            mIncognitoReauthPending =
+                    mTabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
         }
     }
 
@@ -379,11 +372,13 @@ public class IncognitoReauthControllerImpl
         if (mProfile == null) return;
         if (!IncognitoReauthManager.isIncognitoReauthEnabled(mProfile)) return;
 
-        boolean showFullScreen = !mIsTabbedActivity
-                || !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
+        boolean showFullScreen =
+                !mIsTabbedActivity
+                        || !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
         mIncognitoReauthCoordinator =
                 mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                        mIncognitoReauthCallback, showFullScreen,
+                        mIncognitoReauthCallback,
+                        showFullScreen,
                         mOnBackPressedInFullScreenReauthCallback);
         mIncognitoReauthCoordinator.show();
         mOnBackPressedInFullScreenReauthCallback.setEnabled(showFullScreen);
@@ -400,8 +395,9 @@ public class IncognitoReauthControllerImpl
     // Tab state initialized is called when creating tabs from launcher shortcut or restore. Re-auth
     // dialogs should be shown iff any Incognito tabs were restored.
     private void onTabStateInitializedForReauth() {
-        mIncognitoReauthPending = mTabModelSelector.getModel(/*incognito=*/true).getCount() > 0
-                && mIsIncognitoReauthPendingOnRestoreSupplier.get();
+        mIncognitoReauthPending =
+                mTabModelSelector.getModel(/* incognito= */ true).getCount() > 0
+                        && mIsIncognitoReauthPendingOnRestoreSupplier.get();
         showDialogIfRequired();
     }
 }

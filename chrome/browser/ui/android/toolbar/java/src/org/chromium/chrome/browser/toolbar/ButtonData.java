@@ -39,31 +39,30 @@ public interface ButtonData {
     /** A set of button properties which are not expected to change values often. */
     final class ButtonSpec {
         public static final int INVALID_TOOLTIP_TEXT_ID = 0;
-        @NonNull
-        private final Drawable mDrawable;
+        @NonNull private final Drawable mDrawable;
         // TODO(crbug.com/1185382): make mOnClickListener @NonNull
-        @Nullable
-        private final View.OnClickListener mOnClickListener;
-        @Nullable
-        private final View.OnLongClickListener mOnLongClickListener;
+        @Nullable private final View.OnClickListener mOnClickListener;
+        @Nullable private final View.OnLongClickListener mOnLongClickListener;
         private final String mContentDescription;
         private final boolean mSupportsTinting;
-        @Nullable
-        private final IPHCommandBuilder mIPHCommandBuilder;
-        @AdaptiveToolbarButtonVariant
-        private final int mButtonVariant;
+        @Nullable private final IPHCommandBuilder mIPHCommandBuilder;
+        @AdaptiveToolbarButtonVariant private final int mButtonVariant;
         private final boolean mIsDynamicAction;
-        @StringRes
-        private final int mActionChipLabelResId;
+        @StringRes private final int mActionChipLabelResId;
         private final boolean mShowHoverHighlight;
-        @StringRes
-        private final int mTooltipTextResId;
+        @StringRes private final int mTooltipTextResId;
 
-        public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
-                @Nullable View.OnLongClickListener onLongClickListener, String contentDescription,
-                boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
-                @AdaptiveToolbarButtonVariant int buttonVariant, int actionChipLabelResId,
-                int tooltipTextResId, boolean showHoverHighlight) {
+        public ButtonSpec(
+                @NonNull Drawable drawable,
+                @NonNull View.OnClickListener onClickListener,
+                @Nullable View.OnLongClickListener onLongClickListener,
+                String contentDescription,
+                boolean supportsTinting,
+                @Nullable IPHCommandBuilder iphCommandBuilder,
+                @AdaptiveToolbarButtonVariant int buttonVariant,
+                int actionChipLabelResId,
+                int tooltipTextResId,
+                boolean showHoverHighlight) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
@@ -166,9 +165,16 @@ public interface ButtonData {
 
         @Override
         public int hashCode() {
-            return Objects.hash(mDrawable, mOnClickListener, mOnLongClickListener,
-                    mContentDescription, mSupportsTinting, mIPHCommandBuilder, mButtonVariant,
-                    mIsDynamicAction, mActionChipLabelResId);
+            return Objects.hash(
+                    mDrawable,
+                    mOnClickListener,
+                    mOnLongClickListener,
+                    mContentDescription,
+                    mSupportsTinting,
+                    mIPHCommandBuilder,
+                    mButtonVariant,
+                    mIsDynamicAction,
+                    mActionChipLabelResId);
         }
     }
 }

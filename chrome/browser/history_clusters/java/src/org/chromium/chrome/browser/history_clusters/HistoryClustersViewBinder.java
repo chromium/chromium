@@ -139,9 +139,10 @@ class HistoryClustersViewBinder {
         MoreProgressButton button = (MoreProgressButton) view;
         if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
             button.setOnClickRunnable(
-                    ()
-                            -> propertyModel.get(HistoryClustersItemProperties.CLICK_HANDLER)
-                                       .onClick(null));
+                    () ->
+                            propertyModel
+                                    .get(HistoryClustersItemProperties.CLICK_HANDLER)
+                                    .onClick(null));
         } else if (key == HistoryClustersItemProperties.PROGRESS_BUTTON_STATE) {
             button.setState(propertyModel.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE));
         } else if (key == HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED) {

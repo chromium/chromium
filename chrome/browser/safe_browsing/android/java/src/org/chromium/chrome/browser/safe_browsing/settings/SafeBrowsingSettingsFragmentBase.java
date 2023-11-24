@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
-/**
- * The base fragment class for Safe Browsing settings fragments.
- */
+/** The base fragment class for Safe Browsing settings fragments. */
 public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSettingsFragment {
     private SafeBrowsingSettingsFragmentHelper.CustomTabIntentHelper mCustomTabHelper;
 
@@ -46,13 +44,14 @@ public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSetting
 
     protected void openUrlInCct(String url) {
         assert (mCustomTabHelper != null)
-            : "CCT helpers must be set on SafeBrowsingSettingsFragmentBase before opening a "
-              + "link.";
+                : "CCT helpers must be set on SafeBrowsingSettingsFragmentBase before opening a "
+                        + "link.";
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
         customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
-                getContext(), customTabIntent.intent);
+        Intent intent =
+                mCustomTabHelper.createCustomTabActivityIntent(
+                        getContext(), customTabIntent.intent);
         intent.setPackage(getContext().getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
@@ -64,8 +63,9 @@ public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSetting
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(TraceEventVectorDrawableCompat.create(
-                getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
+        help.setIcon(
+                TraceEventVectorDrawableCompat.create(
+                        getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
     }
 
     @Override
@@ -73,8 +73,8 @@ public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSetting
         if (item.getItemId() != R.id.menu_id_targeted_help) {
             return false;
         }
-        getHelpAndFeedbackLauncher().show(
-                getActivity(), getString(R.string.help_context_safe_browsing), null);
+        getHelpAndFeedbackLauncher()
+                .show(getActivity(), getString(R.string.help_context_safe_browsing), null);
         return true;
     }
 

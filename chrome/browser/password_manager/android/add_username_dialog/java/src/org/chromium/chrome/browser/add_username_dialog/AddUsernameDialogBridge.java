@@ -59,6 +59,7 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
     @NativeMethods
     interface Natives {
         void onDialogAccepted(long nativeAddUsernameDialogBridge, String username);
+
         void onDialogDismissed(long nativeAddUsernameDialogBridge);
     }
 }

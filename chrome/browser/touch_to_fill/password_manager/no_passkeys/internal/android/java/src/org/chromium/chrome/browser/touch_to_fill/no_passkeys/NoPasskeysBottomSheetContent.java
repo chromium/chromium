@@ -76,7 +76,10 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
 
         SpannableString spannable = new SpannableString(subtitleString);
         int startIndex = subtitleString.indexOf(mOrigin);
-        spannable.setSpan(new StyleSpan(Typeface.BOLD), startIndex, startIndex + mOrigin.length(),
+        spannable.setSpan(
+                new StyleSpan(Typeface.BOLD),
+                startIndex,
+                startIndex + mOrigin.length(),
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 
         TextView subtitle = contentView.findViewById(R.id.no_passkeys_sheet_subtitle);

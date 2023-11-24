@@ -14,8 +14,8 @@ import androidx.preference.Preference;
  * A radio button group used for Metrics settings. Currently, it has 3 options: Extended metrics,
  * Basic metrics, and No metrics.
  */
-public class RadioButtonGroupMetricsPreference
-        extends Preference implements RadioGroup.OnCheckedChangeListener {
+public class RadioButtonGroupMetricsPreference extends Preference
+        implements RadioGroup.OnCheckedChangeListener {
     public RadioButtonGroupMetricsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.radio_button_group_metrics_preference);

@@ -11,9 +11,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 
-/**
- * Implementation of xsurface's ImageFetchClient. Calls through to the native network stack.
- */
+/** Implementation of xsurface's ImageFetchClient. Calls through to the native network stack. */
 @JNINamespace("feed")
 public class FeedImageFetchClient implements ImageFetchClient {
     private static class HttpResponseImpl implements ImageFetchClient.HttpResponse {
@@ -63,6 +61,7 @@ public class FeedImageFetchClient implements ImageFetchClient {
     @NativeMethods
     interface Natives {
         int sendRequest(String url, ImageFetchClient.HttpResponseConsumer responseConsumer);
+
         void cancel(int requestId);
     }
 }

@@ -33,8 +33,11 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
 
     /** Called when PasswordEditDialogWithDetails feature flag is enabled */
     @CalledByNative
-    void showPasswordEditDialog(@NonNull String[] savedUsernames, @NonNull String username,
-            @NonNull String password, @Nullable String account) {
+    void showPasswordEditDialog(
+            @NonNull String[] savedUsernames,
+            @NonNull String username,
+            @NonNull String password,
+            @Nullable String account) {
         mDialogCoordinator.showPasswordEditDialog(savedUsernames, username, password, account);
     }
 
@@ -74,7 +77,9 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     interface Natives {
         void onDialogAccepted(
                 long nativePasswordEditDialogBridge, String username, String password);
+
         void onLegacyDialogAccepted(long nativePasswordEditDialogBridge, int usernameIndex);
+
         void onDialogDismissed(long nativePasswordEditDialogBridge, boolean dialogAccepted);
     }
 }

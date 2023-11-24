@@ -27,9 +27,7 @@ import org.chromium.components.sync.SyncService;
 
 import java.util.List;
 
-/**
- * This class regroups sign-in checks when chrome starts up and when accounts change on device
- */
+/** This class regroups sign-in checks when chrome starts up and when accounts change on device */
 public class SigninChecker implements AccountTrackerService.Observer {
     private static final String TAG = "SigninChecker";
     private final SigninManager mSigninManager;
@@ -43,7 +41,9 @@ public class SigninChecker implements AccountTrackerService.Observer {
      * Please use {@link SigninCheckerProvider} to get {@link SigninChecker} instance instead of
      * creating it manually.
      */
-    public SigninChecker(SigninManager signinManager, AccountTrackerService accountTrackerService,
+    public SigninChecker(
+            SigninManager signinManager,
+            AccountTrackerService accountTrackerService,
             SyncService syncService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
@@ -76,26 +76,25 @@ public class SigninChecker implements AccountTrackerService.Observer {
     @Override
     public void legacyOnAccountsSeeded(
             List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
-        mSigninManager.runAfterOperationInProgress(() -> {
-            validatePrimaryAccountExists(coreAccountInfos, accountsChanged);
-            checkChildAccount(coreAccountInfos);
-        });
+        mSigninManager.runAfterOperationInProgress(
+                () -> {
+                    validatePrimaryAccountExists(coreAccountInfos, accountsChanged);
+                    checkChildAccount(coreAccountInfos);
+                });
     }
 
     public int getNumOfChildAccountChecksDoneForTests() {
         return mNumOfChildAccountChecksDone;
     }
 
-    /**
-     * Validates that the primary account exists on device.
-     */
+    /** Validates that the primary account exists on device. */
     private void validatePrimaryAccountExists(
             List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
         final CoreAccountInfo oldAccount =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         boolean oldSyncConsent =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC)
-                != null;
+                        != null;
         if (oldAccount == null) {
             // Do nothing if user is not signed in
             return;
@@ -111,40 +110,49 @@ public class SigninChecker implements AccountTrackerService.Observer {
         // Check whether the primary account is renamed to another account when it is not on device
         AccountRenameChecker.get()
                 .getNewNameOfRenamedAccountAsync(oldAccount.getEmail(), coreAccountInfos)
-                .then(newAccountName -> {
-                    if (newAccountName != null) {
-                        // Sign in to the new account if the current primary account is renamed to
-                        // a new account.
-                        resigninAfterAccountRename(newAccountName, oldSyncConsent);
-                    } else {
-                        // Sign out if the current primary account is not renamed
-                        mSigninManager.runAfterOperationInProgress(() -> {
-                            mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
+                .then(
+                        newAccountName -> {
+                            if (newAccountName != null) {
+                                // Sign in to the new account if the current primary account is
+                                // renamed to a new account.
+                                resigninAfterAccountRename(newAccountName, oldSyncConsent);
+                            } else {
+                                // Sign out if the current primary account is not renamed
+                                mSigninManager.runAfterOperationInProgress(
+                                        () -> {
+                                            mSigninManager.signOut(
+                                                    SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
+                                        });
+                            }
                         });
-                    }
-                });
     }
 
     private void resigninAfterAccountRename(String newAccountName, boolean shouldEnableSync) {
-        mSigninManager.signOut(SignoutReason.ACCOUNT_EMAIL_UPDATED, () -> {
-            if (shouldEnableSync) {
-                mSigninManager.signinAndEnableSync(
-                        AccountUtils.createAccountFromName(newAccountName),
-                        SigninAccessPoint.ACCOUNT_RENAMED, new SignInCallback() {
-                            @Override
-                            public void onSignInComplete() {
-                                mSyncService.setInitialSyncFeatureSetupComplete(
-                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            }
+        mSigninManager.signOut(
+                SignoutReason.ACCOUNT_EMAIL_UPDATED,
+                () -> {
+                    if (shouldEnableSync) {
+                        mSigninManager.signinAndEnableSync(
+                                AccountUtils.createAccountFromName(newAccountName),
+                                SigninAccessPoint.ACCOUNT_RENAMED,
+                                new SignInCallback() {
+                                    @Override
+                                    public void onSignInComplete() {
+                                        mSyncService.setInitialSyncFeatureSetupComplete(
+                                                SyncFirstSetupCompleteSource.BASIC_FLOW);
+                                    }
 
-                            @Override
-                            public void onSignInAborted() {}
-                        });
-            } else {
-                mSigninManager.signin(AccountUtils.createAccountFromName(newAccountName),
-                        SigninAccessPoint.ACCOUNT_RENAMED, null);
-            }
-        }, false);
+                                    @Override
+                                    public void onSignInAborted() {}
+                                });
+                    } else {
+                        mSigninManager.signin(
+                                AccountUtils.createAccountFromName(newAccountName),
+                                SigninAccessPoint.ACCOUNT_RENAMED,
+                                null);
+                    }
+                },
+                false);
     }
 
     private void checkChildAccount(List<CoreAccountInfo> coreAccountInfos) {
@@ -155,27 +163,34 @@ public class SigninChecker implements AccountTrackerService.Observer {
     private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
         if (isChild) {
             assert childAccount != null;
-            mSigninManager.runAfterOperationInProgress(() -> {
-                if (mSigninManager.isSigninAllowed()) {
-                    Log.d(TAG, "The child account sign-in starts.");
+            mSigninManager.runAfterOperationInProgress(
+                    () -> {
+                        if (mSigninManager.isSigninAllowed()) {
+                            Log.d(TAG, "The child account sign-in starts.");
 
-                    final SignInCallback signInCallback = new SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            ++mNumOfChildAccountChecksDone;
+                            final SignInCallback signInCallback =
+                                    new SignInCallback() {
+                                        @Override
+                                        public void onSignInComplete() {
+                                            ++mNumOfChildAccountChecksDone;
+                                        }
+
+                                        @Override
+                                        public void onSignInAborted() {}
+                                    };
+                            mSigninManager.wipeSyncUserData(
+                                    () -> {
+                                        RecordUserAction.record(
+                                                "Signin_Signin_WipeDataOnChildAccountSignin2");
+                                        mSigninManager.signin(
+                                                childAccount,
+                                                SigninAccessPoint.FORCED_SIGNIN,
+                                                signInCallback);
+                                    },
+                                    DataWipeOption.WIPE_SYNC_DATA);
+                            return;
                         }
-
-                        @Override
-                        public void onSignInAborted() {}
-                    };
-                    mSigninManager.wipeSyncUserData(() -> {
-                        RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
-                        mSigninManager.signin(
-                                childAccount, SigninAccessPoint.FORCED_SIGNIN, signInCallback);
-                    }, DataWipeOption.WIPE_SYNC_DATA);
-                    return;
-                }
-            });
+                    });
         }
         ++mNumOfChildAccountChecksDone;
     }

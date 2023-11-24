@@ -18,8 +18,8 @@ public class DownloadStartupUtils {
      */
     public static void ensureDownloadSystemInitialized(
             boolean isFullBrowserStarted, boolean isOffTheRecord) {
-        DownloadStartupUtilsJni.get().ensureDownloadSystemInitialized(
-                isFullBrowserStarted, isOffTheRecord);
+        DownloadStartupUtilsJni.get()
+                .ensureDownloadSystemInitialized(isFullBrowserStarted, isOffTheRecord);
     }
 
     @NativeMethods

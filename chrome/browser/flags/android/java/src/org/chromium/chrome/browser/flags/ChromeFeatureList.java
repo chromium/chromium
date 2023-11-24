@@ -55,8 +55,8 @@ public abstract class ChromeFeatureList {
      */
     public static boolean getFieldTrialParamByFeatureAsBoolean(
             String featureName, String paramName, boolean defaultValue) {
-        return ChromeFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
-                featureName, paramName, defaultValue);
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsBoolean(featureName, paramName, defaultValue);
     }
 
     /**
@@ -68,8 +68,8 @@ public abstract class ChromeFeatureList {
      */
     public static int getFieldTrialParamByFeatureAsInt(
             String featureName, String paramName, int defaultValue) {
-        return ChromeFeatureMap.getInstance().getFieldTrialParamByFeatureAsInt(
-                featureName, paramName, defaultValue);
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsInt(featureName, paramName, defaultValue);
     }
 
     /**
@@ -81,8 +81,8 @@ public abstract class ChromeFeatureList {
      */
     public static double getFieldTrialParamByFeatureAsDouble(
             String featureName, String paramName, double defaultValue) {
-        return ChromeFeatureMap.getInstance().getFieldTrialParamByFeatureAsDouble(
-                featureName, paramName, defaultValue);
+        return ChromeFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsDouble(featureName, paramName, defaultValue);
     }
 
     /**
@@ -730,6 +730,10 @@ public abstract class ChromeFeatureList {
     public static final List<CachedFlag> sTestCachedFlags =
             List.of(sTestDefaultDisabled, sTestDefaultEnabled);
 
-    public static final Map<String, CachedFlag> sAllCachedFlags = CachedFlag.createCachedFlagMap(
-            List.of(sFlagsCachedFullBrowser, sFlagsCachedInMinimalBrowser, sTestCachedFlags));
+    public static final Map<String, CachedFlag> sAllCachedFlags =
+            CachedFlag.createCachedFlagMap(
+                    List.of(
+                            sFlagsCachedFullBrowser,
+                            sFlagsCachedInMinimalBrowser,
+                            sTestCachedFlags));
 }

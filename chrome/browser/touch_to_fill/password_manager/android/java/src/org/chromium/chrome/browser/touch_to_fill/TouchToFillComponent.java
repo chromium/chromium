@@ -31,8 +31,14 @@ public interface TouchToFillComponent {
      * UserAction in touch_to_fill_controller.h.
      * TODO(crbug.com/1013134): Deduplicate the Java and C++ enum.
      */
-    @IntDef({UserAction.SELECT_CREDENTIAL, UserAction.DISMISS, UserAction.SELECT_MANAGE_PASSWORDS,
-            UserAction.SELECT_WEBAUTHN_CREDENTIAL, UserAction.SELECT_HYBRID, UserAction.MAX_VALUE})
+    @IntDef({
+        UserAction.SELECT_CREDENTIAL,
+        UserAction.DISMISS,
+        UserAction.SELECT_MANAGE_PASSWORDS,
+        UserAction.SELECT_WEBAUTHN_CREDENTIAL,
+        UserAction.SELECT_HYBRID,
+        UserAction.MAX_VALUE
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface UserAction {
         int SELECT_CREDENTIAL = 0;
@@ -73,14 +79,10 @@ public interface TouchToFillComponent {
          */
         void onManagePasswordsSelected(boolean passkeysShown);
 
-        /**
-         * Called when the user selects 'Use a Passkey on a Different Device'.
-         */
+        /** Called when the user selects 'Use a Passkey on a Different Device'. */
         void onHybridSignInSelected();
 
-        /**
-         * Called when the users selects 'More passkeys'.
-         */
+        /** Called when the users selects 'More passkeys'. */
         void onShowMorePasskeysSelected();
     }
 
@@ -92,7 +94,10 @@ public interface TouchToFillComponent {
      * @param bottomSheetFocusHelper A {@link BottomSheetFocusHelper} used to restore accessibility
      *         focus after the BottomSheet closes.
      */
-    void initialize(Context context, BottomSheetController sheetController, Delegate delegate,
+    void initialize(
+            Context context,
+            BottomSheetController sheetController,
+            Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper);
 
     /**

@@ -36,6 +36,7 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
 
     /** Snapshot tokens used to be more restrictive about when to allow captures. */
     private @Nullable Object mCurrentSnapshotToken;
+
     private @Nullable Object mLastCaptureSnapshotToken;
 
     private @Nullable ConstraintsChecker mConstraintsChecker;
@@ -73,10 +74,13 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                     return super.isDirty();
                 }
             }
+
             @Override
             public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
-                RecordHistogram.recordEnumeratedHistogram("Android.Toolbar.BitmapCapture",
-                        ToolbarCaptureType.BOTTOM, ToolbarCaptureType.NUM_ENTRIES);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.Toolbar.BitmapCapture",
+                        ToolbarCaptureType.BOTTOM,
+                        ToolbarCaptureType.NUM_ENTRIES);
 
                 mCachedRect.set(dirtyRect);
                 if (mCachedRect.intersect(0, 0, getWidth(), mTopShadowHeightPx)) {
@@ -120,7 +124,8 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
      */
     public void setConstraintsSupplier(ObservableSupplier<Integer> constraintsSupplier) {
         assert mConstraintsChecker == null;
-        mConstraintsChecker = new ConstraintsChecker(
-                getResourceAdapter(), constraintsSupplier, Looper.getMainLooper());
+        mConstraintsChecker =
+                new ConstraintsChecker(
+                        getResourceAdapter(), constraintsSupplier, Looper.getMainLooper());
     }
 }

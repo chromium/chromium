@@ -18,9 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-/**
- * Bridge class for native code to access ULP data for a profile.
- */
+/** Bridge class for native code to access ULP data for a profile. */
 public class LanguageBridge {
     /**
      * Returns the TopULPMatchType for |language| and the top ULP language. Only language bases are
@@ -61,9 +59,7 @@ public class LanguageBridge {
         return new LinkedHashSet<>(Arrays.asList(LanguageBridgeJni.get().getULPFromPreference()));
     }
 
-    /**
-     * Blocking call used by native ULPLanguageModel to get device ULP languages.
-     */
+    /** Blocking call used by native ULPLanguageModel to get device ULP languages. */
     @CalledByNative
     public static String[] getULPLanguagesFromDevice(String accountName) {
         LanguageProfileDelegateImpl delegate = new LanguageProfileDelegateImpl();

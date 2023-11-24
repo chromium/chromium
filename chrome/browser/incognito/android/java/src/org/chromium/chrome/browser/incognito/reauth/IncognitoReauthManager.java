@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * This class is responsible for managing the Incognito re-authentication flow.
- */
+/** This class is responsible for managing the Incognito re-authentication flow. */
 public class IncognitoReauthManager {
     private static Boolean sIsIncognitoReauthFeatureAvailableForTesting;
     private ReauthenticatorBridge mReauthenticatorBridge;
@@ -31,8 +29,10 @@ public class IncognitoReauthManager {
         // This is invoked when either the Incognito re-authentication feature is not available or
         // the device screen lock is not setup or there's an authentication already in progress.
         void onIncognitoReauthNotPossible();
+
         // This is invoked when the Incognito re-authentication resulted in success.
         void onIncognitoReauthSuccess();
+
         // This is invoked when the Incognito re-authentication resulted in failure.
         void onIncognitoReauthFailure();
     }
@@ -60,14 +60,16 @@ public class IncognitoReauthManager {
             return;
         }
 
-        mReauthenticatorBridge.reauthenticate(success -> {
-            if (success) {
-                incognitoReauthCallback.onIncognitoReauthSuccess();
-            } else {
-                incognitoReauthCallback.onIncognitoReauthFailure();
-            }
-        });
+        mReauthenticatorBridge.reauthenticate(
+                success -> {
+                    if (success) {
+                        incognitoReauthCallback.onIncognitoReauthSuccess();
+                    } else {
+                        incognitoReauthCallback.onIncognitoReauthFailure();
+                    }
+                });
     }
+
     /**
      * @return A boolean indicating whether the platform version supports reauth and the
      *         corresponding Chrome feature flag is on;

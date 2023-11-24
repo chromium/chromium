@@ -64,7 +64,10 @@ class PasswordCheckupClientMetricsRecorder {
     }
 
     private String getHistogramName(String metric) {
-        return PASSWORD_CHECKUP_HISTOGRAM_BASE + "." + getSuffixForOperation(mOperation) + "."
+        return PASSWORD_CHECKUP_HISTOGRAM_BASE
+                + "."
+                + getSuffixForOperation(mOperation)
+                + "."
                 + metric;
     }
 

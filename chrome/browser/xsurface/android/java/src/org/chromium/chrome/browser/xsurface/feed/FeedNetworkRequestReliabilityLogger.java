@@ -38,9 +38,7 @@ public interface FeedNetworkRequestReliabilityLogger {
      */
     default void logSingleWebFeedRequestStart() {}
 
-    /**
-     * Log after the request has been sent.
-     */
+    /** Log after the request has been sent. */
     default void logRequestSent() {}
 
     /**
@@ -48,8 +46,7 @@ public interface FeedNetworkRequestReliabilityLogger {
      * @param serverRecvTimestamp Server-reported time (nanoseconds) at which the request arrived.
      * @param serverSendTimestamp Server-reported time (nanoseconds) at which the response was sent.
      */
-    default void logResponseReceived(
-            long serverRecvTimestamp, long serverSendTimestamp) {}
+    default void logResponseReceived(long serverRecvTimestamp, long serverSendTimestamp) {}
 
     /**
      * Log after logResponseReceived() if there's a network error, or after parsing the response

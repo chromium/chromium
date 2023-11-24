@@ -107,9 +107,7 @@ public class PageInsightsCoordinator {
                         pageInsightsConfigProvider);
     }
 
-    /**
-     * Launch PageInsights hub in bottom sheet container and fetch the data to show.
-     */
+    /** Launch PageInsights hub in bottom sheet container and fetch the data to show. */
     public void launch() {
         mMediator.launch();
     }

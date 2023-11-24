@@ -95,9 +95,7 @@ public class DeviceClassManager {
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    /**
-     * Reset the instance for testing.
-     */
+    /** Reset the instance for testing. */
     public static void resetForTesting() {
         sInstance = null;
     }

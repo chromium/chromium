@@ -9,18 +9,14 @@ import android.app.Activity;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 
-/**
- * Monitors changes to driving restrictions and applies required optimizations.
- */
+/** Monitors changes to driving restrictions and applies required optimizations. */
 public class DrivingRestrictionsManager {
     private static DrivingRestrictionsManager sInstance;
 
     private DrivingRestrictionsDelegateImpl mDelegate;
     private boolean mMonitoring;
 
-    /**
-     * Initializes DrivingRestrictionsManager if it has not yet been initialized.
-     */
+    /** Initializes DrivingRestrictionsManager if it has not yet been initialized. */
     public static void initialize() {
         if (sInstance == null) sInstance = new DrivingRestrictionsManager();
     }

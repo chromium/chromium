@@ -77,12 +77,13 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         mEdgeToEdgeOSWrapper =
                 edgeToEdgeOSWrapper == null ? new EdgeToEdgeOSWrapperImpl() : edgeToEdgeOSWrapper;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
-        mTabSupplierObserver = new TabSupplierObserver(tabObservableSupplier) {
-            @Override
-            protected void onObservingDifferentTab(Tab tab) {
-                onTabSwitched(tab);
-            }
-        };
+        mTabSupplierObserver =
+                new TabSupplierObserver(tabObservableSupplier) {
+                    @Override
+                    protected void onObservingDifferentTab(Tab tab) {
+                        onTabSwitched(tab);
+                    }
+                };
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -213,8 +214,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // underneath.
         // TODO(donnd): Use an appropriate background color when not transparent.
         //     For the web we may need to call Blink or some system background color API.
-        @ColorInt
-        int navBarColor = toEdge ? Color.TRANSPARENT : Color.BLACK;
+        @ColorInt int navBarColor = toEdge ? Color.TRANSPARENT : Color.BLACK;
         mEdgeToEdgeOSWrapper.setNavigationBarColor(mActivity.getWindow(), navBarColor);
 
         if (webContents != null) pushInsetsToBlink(toEdge, webContents);

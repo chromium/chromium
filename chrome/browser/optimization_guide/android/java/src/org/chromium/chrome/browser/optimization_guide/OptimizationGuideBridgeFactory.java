@@ -11,17 +11,13 @@ import org.chromium.components.optimization_guide.proto.HintsProto;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * OptimizationGuideBridge cached by profile.
- */
+/** OptimizationGuideBridge cached by profile. */
 public class OptimizationGuideBridgeFactory {
     private final ProfileKeyedMap<OptimizationGuideBridge> mProfileToOptimizationGuideBridgeMap =
             ProfileKeyedMap.createMapOfDestroyables();
     private final List<HintsProto.OptimizationType> mOptimizationTypes;
 
-    /**
-     * Creates an instance of this class with no optimization types to be called per navigation.
-     */
+    /** Creates an instance of this class with no optimization types to be called per navigation. */
     public OptimizationGuideBridgeFactory() {
         this(new ArrayList<HintsProto.OptimizationType>());
     }
@@ -39,12 +35,14 @@ public class OptimizationGuideBridgeFactory {
      */
     public OptimizationGuideBridge create() {
         Profile profile = Profile.getLastUsedRegularProfile();
-        return mProfileToOptimizationGuideBridgeMap.getForProfile(profile, () -> {
-            OptimizationGuideBridge optimizationGuideBridge = new OptimizationGuideBridge();
-            if (mOptimizationTypes.size() > 0) {
-                optimizationGuideBridge.registerOptimizationTypes(mOptimizationTypes);
-            }
-            return optimizationGuideBridge;
-        });
+        return mProfileToOptimizationGuideBridgeMap.getForProfile(
+                profile,
+                () -> {
+                    OptimizationGuideBridge optimizationGuideBridge = new OptimizationGuideBridge();
+                    if (mOptimizationTypes.size() > 0) {
+                        optimizationGuideBridge.registerOptimizationTypes(mOptimizationTypes);
+                    }
+                    return optimizationGuideBridge;
+                });
     }
 }

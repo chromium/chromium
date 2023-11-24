@@ -13,9 +13,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Coordinator for the load progress bar. Owns all progress bar sub-components.
- */
+/** Coordinator for the load progress bar. Owns all progress bar sub-components. */
 public class LoadProgressCoordinator {
     private final PropertyModel mModel;
     private final LoadProgressMediator mMediator;
@@ -29,20 +27,21 @@ public class LoadProgressCoordinator {
      * @param progressBarView Toolbar progress bar view.
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      */
-    public LoadProgressCoordinator(@NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull ToolbarProgressBar progressBarView, boolean isStartSurfaceEnabled) {
+    public LoadProgressCoordinator(
+            @NonNull ObservableSupplier<Tab> tabSupplier,
+            @NonNull ToolbarProgressBar progressBarView,
+            boolean isStartSurfaceEnabled) {
         mProgressBarView = progressBarView;
         mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
         mMediator = new LoadProgressMediator(tabSupplier, mModel, isStartSurfaceEnabled);
         mLoadProgressViewBinder = new LoadProgressViewBinder();
 
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mProgressBarView, mLoadProgressViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mProgressBarView, mLoadProgressViewBinder::bind);
     }
 
-    /**
-     * Simulates progressbar being filled over a short time.
-     */
+    /** Simulates progressbar being filled over a short time. */
     public void simulateLoadProgressCompletion() {
         mMediator.simulateLoadProgressCompletion();
     }

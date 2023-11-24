@@ -52,8 +52,9 @@ class CreditCardItemViewBinder {
             hideIfEmpty(expirationDateViewView);
 
             try {
-                icon.setImageDrawable(AppCompatResources.getDrawable(
-                        icon.getContext(), card.getIssuerIconDrawableId()));
+                icon.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                                icon.getContext(), card.getIssuerIconDrawableId()));
             } catch (Resources.NotFoundException e) {
                 icon.setImageDrawable(null);
             }
@@ -73,13 +74,20 @@ class CreditCardItemViewBinder {
         builder.append(getIfNotEmpty(card.getName()));
         String expiryDateString = card.getFormattedExpirationDate(view.getContext());
         if (!expiryDateString.isEmpty()) {
-            builder.append(view.getContext().getResources().getString(
-                    R.string.fast_checkout_credit_card_item_expire_description));
+            builder.append(
+                    view.getContext()
+                            .getResources()
+                            .getString(R.string.fast_checkout_credit_card_item_expire_description));
             builder.append(getIfNotEmpty(" " + expiryDateString));
         }
-        builder.append(view.getContext().getResources().getString(isSelected
-                        ? R.string.fast_checkout_detail_screen_selected_description
-                        : R.string.fast_checkout_detail_screen_non_selected_description));
+        builder.append(
+                view.getContext()
+                        .getResources()
+                        .getString(
+                                isSelected
+                                        ? R.string.fast_checkout_detail_screen_selected_description
+                                        : R.string
+                                                .fast_checkout_detail_screen_non_selected_description));
         view.setContentDescription(builder.toString());
     }
 

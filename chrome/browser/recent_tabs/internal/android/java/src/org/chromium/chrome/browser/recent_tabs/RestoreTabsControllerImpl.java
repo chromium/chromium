@@ -13,16 +13,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
 
-/**
- * Controller for accessing helper functions for the singleton factory instance.
- */
+/** Controller for accessing helper functions for the singleton factory instance. */
 public class RestoreTabsControllerImpl implements RestoreTabsController {
     private RestoreTabsCoordinator mRestoreTabsCoordinator;
 
-    public RestoreTabsControllerImpl(Context context, Profile profile,
-            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
-        mRestoreTabsCoordinator = new RestoreTabsCoordinator(
-                context, profile, tabCreatorManager, bottomSheetController);
+    public RestoreTabsControllerImpl(
+            Context context,
+            Profile profile,
+            TabCreatorManager tabCreatorManager,
+            BottomSheetController bottomSheetController) {
+        mRestoreTabsCoordinator =
+                new RestoreTabsCoordinator(
+                        context, profile, tabCreatorManager, bottomSheetController);
     }
 
     @Override
@@ -32,8 +34,10 @@ public class RestoreTabsControllerImpl implements RestoreTabsController {
     }
 
     @Override
-    public void showHomeScreen(ForeignSessionHelper foreignSessionHelper,
-            List<ForeignSession> sessions, RestoreTabsControllerDelegate delegate) {
+    public void showHomeScreen(
+            ForeignSessionHelper foreignSessionHelper,
+            List<ForeignSession> sessions,
+            RestoreTabsControllerDelegate delegate) {
         mRestoreTabsCoordinator.showHomeScreen(foreignSessionHelper, sessions, delegate);
     }
 }

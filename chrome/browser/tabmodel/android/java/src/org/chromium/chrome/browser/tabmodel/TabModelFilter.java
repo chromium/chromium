@@ -182,14 +182,10 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
      */
     protected abstract void selectTab(Tab tab);
 
-    /**
-     * Concrete class requires to define the ordering of each Tab within the filter.
-     */
+    /** Concrete class requires to define the ordering of each Tab within the filter. */
     protected abstract void reorder();
 
-    /**
-     * Concrete class requires to define what to clean up.
-     */
+    /** Concrete class requires to define what to clean up. */
     protected abstract void resetFilterStateInternal();
 
     /**
@@ -274,7 +270,10 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState,
+    public void didAddTab(
+            Tab tab,
+            @TabLaunchType int type,
+            @TabCreationState int creationState,
             boolean markedForSelection) {
         addTab(tab);
         for (TabModelObserver observer : mFilteredObservers) {

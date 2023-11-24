@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Data properties for the WebFeed modal dialog.
- */
+/** Data properties for the WebFeed modal dialog. */
 final class WebFeedDialogProperties {
     // Illustration drawable resource id for the WebFeed dialog.
     static final PropertyModel.ReadableIntPropertyKey ILLUSTRATION =

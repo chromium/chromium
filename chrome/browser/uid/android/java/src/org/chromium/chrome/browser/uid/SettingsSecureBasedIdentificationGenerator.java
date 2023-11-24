@@ -37,7 +37,8 @@ public class SettingsSecureBasedIdentificationGenerator implements UniqueIdentif
     @SuppressLint("HardwareIds")
     @VisibleForTesting
     String getAndroidId() {
-        return Settings.Secure.getString(ContextUtils.getApplicationContext().getContentResolver(),
+        return Settings.Secure.getString(
+                ContextUtils.getApplicationContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
     }
 }

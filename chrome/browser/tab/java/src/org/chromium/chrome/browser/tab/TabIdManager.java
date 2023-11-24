@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TabIdManager {
     private static final Object INSTANCE_LOCK = new Object();
+
     @SuppressLint("StaticFieldLeak")
     private static TabIdManager sInstance;
 

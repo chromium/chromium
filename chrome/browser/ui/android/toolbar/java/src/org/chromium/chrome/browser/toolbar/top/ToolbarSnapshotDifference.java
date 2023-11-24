@@ -15,17 +15,29 @@ import java.lang.annotation.RetentionPolicy;
  * it in sync with ToolbarSnapshotDifference in enums.xml, as well as the proto in
  * chrome_track_event.proto.
  **/
-@IntDef({ToolbarSnapshotDifference.NONE, ToolbarSnapshotDifference.NULL,
-        ToolbarSnapshotDifference.TINT, ToolbarSnapshotDifference.TAB_COUNT,
-        ToolbarSnapshotDifference.OPTIONAL_BUTTON, ToolbarSnapshotDifference.VISUAL_STATE,
-        ToolbarSnapshotDifference.SECURITY_ICON, ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
-        ToolbarSnapshotDifference.PAINT_PREVIEW, ToolbarSnapshotDifference.PROGRESS,
-        ToolbarSnapshotDifference.LOCATION_BAR_WIDTH, ToolbarSnapshotDifference.URL_TEXT,
-        ToolbarSnapshotDifference.HOME_BUTTON, ToolbarSnapshotDifference.TITLE_TEXT,
-        ToolbarSnapshotDifference.CCT_ANIMATION, ToolbarSnapshotDifference.BOOKMARK_BUTTON,
-        ToolbarSnapshotDifference.HOME_BUTTON, ToolbarSnapshotDifference.BACK_BUTTON,
-        ToolbarSnapshotDifference.FORWARD_BUTTON, ToolbarSnapshotDifference.RELOAD_BUTTON,
-        ToolbarSnapshotDifference.NUM_ENTRIES})
+@IntDef({
+    ToolbarSnapshotDifference.NONE,
+    ToolbarSnapshotDifference.NULL,
+    ToolbarSnapshotDifference.TINT,
+    ToolbarSnapshotDifference.TAB_COUNT,
+    ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+    ToolbarSnapshotDifference.VISUAL_STATE,
+    ToolbarSnapshotDifference.SECURITY_ICON,
+    ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
+    ToolbarSnapshotDifference.PAINT_PREVIEW,
+    ToolbarSnapshotDifference.PROGRESS,
+    ToolbarSnapshotDifference.LOCATION_BAR_WIDTH,
+    ToolbarSnapshotDifference.URL_TEXT,
+    ToolbarSnapshotDifference.HOME_BUTTON,
+    ToolbarSnapshotDifference.TITLE_TEXT,
+    ToolbarSnapshotDifference.CCT_ANIMATION,
+    ToolbarSnapshotDifference.BOOKMARK_BUTTON,
+    ToolbarSnapshotDifference.HOME_BUTTON,
+    ToolbarSnapshotDifference.BACK_BUTTON,
+    ToolbarSnapshotDifference.FORWARD_BUTTON,
+    ToolbarSnapshotDifference.RELOAD_BUTTON,
+    ToolbarSnapshotDifference.NUM_ENTRIES
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ToolbarSnapshotDifference {
     int NONE = 0;

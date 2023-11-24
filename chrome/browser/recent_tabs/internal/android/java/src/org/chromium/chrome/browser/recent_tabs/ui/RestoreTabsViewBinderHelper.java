@@ -9,9 +9,7 @@ import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ALL_
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A helper class to rebind all keys on a screen change for the restore tabs workflow.
- */
+/** A helper class to rebind all keys on a screen change for the restore tabs workflow. */
 public class RestoreTabsViewBinderHelper {
     /**
      * A functional interface to perform a callback and run screen specific bind logic.

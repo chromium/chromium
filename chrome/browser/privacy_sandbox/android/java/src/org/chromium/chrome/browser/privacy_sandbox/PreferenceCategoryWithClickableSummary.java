@@ -15,9 +15,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/**
- * Like a regular PreferenceCategory but with a summary text that can contain link.
- */
+/** Like a regular PreferenceCategory but with a summary text that can contain link. */
 public class PreferenceCategoryWithClickableSummary extends PreferenceCategory {
     public PreferenceCategoryWithClickableSummary(
             @NonNull Context context, @Nullable AttributeSet attrs) {

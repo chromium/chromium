@@ -39,10 +39,16 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      */
-    public BaseScreenshotCoordinator(Activity activity, String shareUrl,
+    public BaseScreenshotCoordinator(
+            Activity activity,
+            String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController) {
-        this(activity, shareUrl, chromeOptionShareCallback, sheetController,
+        this(
+                activity,
+                shareUrl,
+                chromeOptionShareCallback,
+                sheetController,
                 new EditorScreenshotTask(activity, sheetController));
     }
 
@@ -56,9 +62,12 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
      * @param screenshotSource The Source interface to use to take a screenshot.
      */
     @VisibleForTesting
-    protected BaseScreenshotCoordinator(Activity activity, String shareUrl,
+    protected BaseScreenshotCoordinator(
+            Activity activity,
+            String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            BottomSheetController sheetController, EditorScreenshotSource screenshotSource) {
+            BottomSheetController sheetController,
+            EditorScreenshotSource screenshotSource) {
         mActivity = activity;
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
@@ -66,24 +75,19 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
         mScreenshotSource = screenshotSource;
     }
 
-    /**
-     * Takes a screenshot of the current tab and invokes the handler method.
-     */
+    /** Takes a screenshot of the current tab and invokes the handler method. */
     public void captureScreenshot() {
-        mScreenshotSource.capture(() -> {
-            mScreenshot = mScreenshotSource.getScreenshot();
-            handleScreenshot();
-        });
+        mScreenshotSource.capture(
+                () -> {
+                    mScreenshot = mScreenshotSource.getScreenshot();
+                    handleScreenshot();
+                });
     }
 
-    /**
-     * Invoked when the screenshot data is received. To be overridden by subclasses.
-     */
+    /** Invoked when the screenshot data is received. To be overridden by subclasses. */
     protected abstract void handleScreenshot();
 
-    /**
-     * BottomSheetObserver implementation.
-     */
+    /** BottomSheetObserver implementation. */
     @Override
     public void onSheetOpened(int reason) {}
 

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-
 import android.graphics.Rect;
 import android.view.View;
 

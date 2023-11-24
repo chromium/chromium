@@ -165,6 +165,7 @@ public class PlusAddressCreationViewBridge {
 
         void onCanceled(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+
         void promptDismissed(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
     }

@@ -41,10 +41,11 @@ public class TabSupplierObserver extends EmptyTabObserver implements Destroyable
      */
     public TabSupplierObserver(ObservableSupplier<Tab> tabSupplier, boolean shouldTrigger) {
         mTabSupplier = tabSupplier;
-        mTabObserver = (tab) -> {
-            updateObservedTab(tab);
-            onObservingDifferentTab(tab);
-        };
+        mTabObserver =
+                (tab) -> {
+                    updateObservedTab(tab);
+                    onObservingDifferentTab(tab);
+                };
 
         addObserverToTabSupplier();
         if (shouldTrigger) onObservingDifferentTab(tabSupplier.get());
@@ -68,9 +69,7 @@ public class TabSupplierObserver extends EmptyTabObserver implements Destroyable
      */
     protected void onObservingDifferentTab(Tab tab) {}
 
-    /**
-     * Clean up any state held by this observer.
-     */
+    /** Clean up any state held by this observer. */
     @Override
     @CallSuper
     public void destroy() {

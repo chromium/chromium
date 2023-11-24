@@ -60,13 +60,13 @@ class ChoiceScreenViewBinder {
             MVCListAdapter.ModelList modelList = model.get(ChoiceScreenProperties.ITEM_MODELS);
             assert modelList != null;
             SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(modelList);
-            adapter.registerType(ChoiceScreenProperties.DEFAULT_TYPE,
+            adapter.registerType(
+                    ChoiceScreenProperties.DEFAULT_TYPE,
                     new LayoutViewBuilder<>(R.layout.search_engine_choice_item),
                     ChoiceScreenViewBinder::bindItem);
             mainView.setItemsAdapter(adapter);
         } else if (ChoiceScreenProperties.ON_PRIMARY_CLICKED == propertyKey) {
-            @Nullable
-            Runnable callback = model.get(ChoiceScreenProperties.ON_PRIMARY_CLICKED);
+            @Nullable Runnable callback = model.get(ChoiceScreenProperties.ON_PRIMARY_CLICKED);
             ButtonCompat button = mainView.findViewById(R.id.choice_screen_primary_button);
             button.setOnClickListener(callback != null ? view -> callback.run() : null);
             button.setEnabled(callback != null);

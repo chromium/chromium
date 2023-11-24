@@ -13,20 +13,21 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 
-/**
- * Implementation of xsurface's PersistentKeyValueCache.
- */
+/** Implementation of xsurface's PersistentKeyValueCache. */
 @JNINamespace("feed")
 public class FeedPersistentKeyValueCache implements PersistentKeyValueCache {
     @Override
     public void lookup(byte[] key, ValueConsumer consumer) {
         assert ThreadUtils.runningOnUiThread();
-        FeedPersistentKeyValueCacheJni.get().lookup(key, new Callback<byte[]>() {
-            @Override
-            public void onResult(byte[] result) {
-                consumer.run(result);
-            }
-        });
+        FeedPersistentKeyValueCacheJni.get()
+                .lookup(
+                        key,
+                        new Callback<byte[]>() {
+                            @Override
+                            public void onResult(byte[] result) {
+                                consumer.run(result);
+                            }
+                        });
     }
 
     @Override
@@ -44,7 +45,9 @@ public class FeedPersistentKeyValueCache implements PersistentKeyValueCache {
     @NativeMethods
     interface Natives {
         void lookup(byte[] key, Object consumer);
+
         void put(byte[] key, byte[] value, Runnable onComplete);
+
         void evict(byte[] key, Runnable onComplete);
     }
 }
