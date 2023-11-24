@@ -31,7 +31,7 @@ ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetKeyword(JNIEnv* env,
   return base::android::ConvertUTF16ToJavaString(env, template_url->keyword());
 }
 
-jboolean JNI_TemplateUrl_IsPrepopulatedOrCreatedByPolicy(
+jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);

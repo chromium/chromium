@@ -752,7 +752,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 }
 
 - (BOOL)isPrepopulatedOrDefaultSearchEngine:(const TemplateURL*)templateURL {
-  return _templateURLService->IsPrepopulatedOrCreatedByPolicy(templateURL) ||
+  return _templateURLService->IsPrepopulatedOrDefaultProviderByPolicy(
+             templateURL) ||
          templateURL == _templateURLService->GetDefaultSearchProvider();
 }
 

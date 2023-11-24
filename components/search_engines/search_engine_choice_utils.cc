@@ -246,7 +246,7 @@ SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
   const TemplateURL* default_search_engine =
       template_url_service.GetDefaultSearchProvider();
   if (default_search_engine &&
-      !template_url_service.IsPrepopulatedOrCreatedByPolicy(
+      !template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
           default_search_engine)) {
     return SearchEngineChoiceScreenConditions::kHasCustomSearchEngine;
   }

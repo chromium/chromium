@@ -144,8 +144,9 @@ class TemplateURLService : public WebDataServiceConsumer,
                                   const GURL& url);
 
   // Returns whether the engine is a "pre-existing" engine, either from the
-  // prepopulate list or created by DefaultSearchProvider* policy.
-  bool IsPrepopulatedOrCreatedByPolicy(const TemplateURL* template_url) const;
+  // prepopulate list or created by DefaultSearchProvider* policies.
+  bool IsPrepopulatedOrDefaultProviderByPolicy(
+      const TemplateURL* template_url) const;
 
   // Returns whether |template_url| should be shown in the list of engines
   // most likely to be selected as a default engine. This is meant to highlight
@@ -686,12 +687,13 @@ class TemplateURLService : public WebDataServiceConsumer,
   TemplateURL* Add(std::unique_ptr<TemplateURL> template_url,
                    bool newly_adding);
 
-  // Updates |template_urls| so that the only "created by policy" entry is
-  // |default_from_prefs|. |default_from_prefs| may be NULL if there is no
-  // policy-defined DSE in effect.
-  void UpdateProvidersCreatedByPolicy(OwnedTemplateURLVector* template_urls,
-                                      const TemplateURLData* default_from_prefs,
-                                      bool is_mandatory);
+  // Updates |template_urls| so that the only entry corresponding to default
+  // provider set by policy is |default_from_prefs|. |default_from_prefs| may be
+  // NULL if there is no policy-defined DSE in effect.
+  void UpdateDefaultProvidersCreatedByPolicy(
+      OwnedTemplateURLVector* template_urls,
+      const TemplateURLData* default_from_prefs,
+      bool is_mandatory);
 
   // Resets the sync GUID of the specified TemplateURL and persists the change
   // to the database. This does not notify observers.

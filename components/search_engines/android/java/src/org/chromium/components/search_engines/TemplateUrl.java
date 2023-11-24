@@ -32,7 +32,7 @@ public class TemplateUrl {
 
     /**
      * @return The prepopulated id of the search engine. For predefined engines, this field is a
-     *         non-zero, for custom search engines, it will return 0.
+     *     non-zero, for custom search engines, it will return 0.
      */
     public int getPrepopulatedId() {
         return TemplateUrlJni.get().getPrepopulatedId(mTemplateUrlPtr);
@@ -40,7 +40,7 @@ public class TemplateUrl {
 
     /** @return Whether a search engine is prepopulated or created by policy. */
     public boolean getIsPrepopulated() {
-        return TemplateUrlJni.get().isPrepopulatedOrCreatedByPolicy(mTemplateUrlPtr);
+        return TemplateUrlJni.get().isPrepopulatedOrDefaultProviderByPolicy(mTemplateUrlPtr);
     }
 
     /** @return The keyword of the search engine. */
@@ -50,7 +50,7 @@ public class TemplateUrl {
 
     /**
      * @return The last time used this search engine. If a search engine hasn't been used, it will
-     *         return 0.
+     *     return 0.
      */
     public long getLastVisitedTime() {
         return TemplateUrlJni.get().getLastVisitedTime(mTemplateUrlPtr);
@@ -58,7 +58,7 @@ public class TemplateUrl {
 
     /**
      * @return The template URL of the search engine. The format can be looked up in
-     *         prepopulated_engines.json.
+     *     prepopulated_engines.json.
      */
     public String getURL() {
         return TemplateUrlJni.get().getURL(mTemplateUrlPtr);
@@ -66,7 +66,7 @@ public class TemplateUrl {
 
     /**
      * @return The new Tab URL of the search engine. The format can be looked up in
-     *         prepopulated_engines.json.
+     *     prepopulated_engines.json.
      */
     public String getNewTabURL() {
         return TemplateUrlJni.get().getNewTabURL(mTemplateUrlPtr);
@@ -99,7 +99,7 @@ public class TemplateUrl {
 
         String getKeyword(long templateUrlPtr);
 
-        boolean isPrepopulatedOrCreatedByPolicy(long templateUrlPtr);
+        boolean isPrepopulatedOrDefaultProviderByPolicy(long templateUrlPtr);
 
         long getLastVisitedTime(long templateUrlPtr);
 
