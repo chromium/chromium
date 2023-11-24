@@ -42,10 +42,19 @@ class AudioTrackOutputStream {
     // Provide dependency injection points for unit tests.
     interface Callback {
         int getMinBufferSize(int sampleRateInHz, int channelConfig, int audioFormat);
-        AudioTrack createAudioTrack(int streamType, int sampleRateInHz, int channelConfig,
-                int audioFormat, int bufferSizeInBytes, int mode);
+
+        AudioTrack createAudioTrack(
+                int streamType,
+                int sampleRateInHz,
+                int channelConfig,
+                int audioFormat,
+                int bufferSizeInBytes,
+                int mode);
+
         AudioBufferInfo onMoreData(ByteBuffer audioData, long delayInFrames);
+
         long getAddress(ByteBuffer byteBuffer);
+
         void onError();
     }
 
@@ -109,37 +118,58 @@ class AudioTrackOutputStream {
         mCallback = callback;
         if (mCallback != null) return;
 
-        mCallback = new Callback() {
-            @Override
-            public int getMinBufferSize(int sampleRateInHz, int channelConfig, int audioFormat) {
-                return AudioTrack.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat);
-            }
+        mCallback =
+                new Callback() {
+                    @Override
+                    public int getMinBufferSize(
+                            int sampleRateInHz, int channelConfig, int audioFormat) {
+                        return AudioTrack.getMinBufferSize(
+                                sampleRateInHz, channelConfig, audioFormat);
+                    }
 
-            @Override
-            public AudioTrack createAudioTrack(int streamType, int sampleRateInHz,
-                    int channelConfig, int audioFormat, int bufferSizeInBytes, int mode) {
-                return new AudioTrack(streamType, sampleRateInHz, channelConfig, audioFormat,
-                        bufferSizeInBytes, mode);
-            }
+                    @Override
+                    public AudioTrack createAudioTrack(
+                            int streamType,
+                            int sampleRateInHz,
+                            int channelConfig,
+                            int audioFormat,
+                            int bufferSizeInBytes,
+                            int mode) {
+                        return new AudioTrack(
+                                streamType,
+                                sampleRateInHz,
+                                channelConfig,
+                                audioFormat,
+                                bufferSizeInBytes,
+                                mode);
+                    }
 
-            @Override
-            public AudioBufferInfo onMoreData(ByteBuffer audioData, long delayInFrames) {
-                return AudioTrackOutputStreamJni.get().onMoreData(mNativeAudioTrackOutputStream,
-                        AudioTrackOutputStream.this, audioData, delayInFrames);
-            }
+                    @Override
+                    public AudioBufferInfo onMoreData(ByteBuffer audioData, long delayInFrames) {
+                        return AudioTrackOutputStreamJni.get()
+                                .onMoreData(
+                                        mNativeAudioTrackOutputStream,
+                                        AudioTrackOutputStream.this,
+                                        audioData,
+                                        delayInFrames);
+                    }
 
-            @Override
-            public long getAddress(ByteBuffer byteBuffer) {
-                return AudioTrackOutputStreamJni.get().getAddress(
-                        mNativeAudioTrackOutputStream, AudioTrackOutputStream.this, byteBuffer);
-            }
+                    @Override
+                    public long getAddress(ByteBuffer byteBuffer) {
+                        return AudioTrackOutputStreamJni.get()
+                                .getAddress(
+                                        mNativeAudioTrackOutputStream,
+                                        AudioTrackOutputStream.this,
+                                        byteBuffer);
+                    }
 
-            @Override
-            public void onError() {
-                AudioTrackOutputStreamJni.get().onError(
-                        mNativeAudioTrackOutputStream, AudioTrackOutputStream.this);
-            }
-        };
+                    @Override
+                    public void onError() {
+                        AudioTrackOutputStreamJni.get()
+                                .onError(
+                                        mNativeAudioTrackOutputStream, AudioTrackOutputStream.this);
+                    }
+                };
     }
 
     @SuppressWarnings("deprecation")
@@ -170,11 +200,21 @@ class AudioTrackOutputStream {
                 3 * mCallback.getMinBufferSize(sampleRate, channelConfig, sampleFormat);
 
         try {
-            Log.d(TAG, "Crate AudioTrack with sample rate:%d, channel:%d, format:%d ", sampleRate,
-                    channelConfig, sampleFormat);
+            Log.d(
+                    TAG,
+                    "Crate AudioTrack with sample rate:%d, channel:%d, format:%d ",
+                    sampleRate,
+                    channelConfig,
+                    sampleFormat);
 
-            mAudioTrack = mCallback.createAudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
-                    channelConfig, sampleFormat, mBufferSizeInBytes, AudioTrack.MODE_STREAM);
+            mAudioTrack =
+                    mCallback.createAudioTrack(
+                            AudioManager.STREAM_MUSIC,
+                            sampleRate,
+                            channelConfig,
+                            sampleFormat,
+                            mBufferSizeInBytes,
+                            AudioTrack.MODE_STREAM);
             assert mAudioTrack != null;
         } catch (IllegalArgumentException ile) {
             Log.e(TAG, "Exception creating AudioTrack for playback: ", ile);
@@ -316,10 +356,17 @@ class AudioTrackOutputStream {
 
     @NativeMethods
     interface Natives {
-        AudioBufferInfo onMoreData(long nativeAudioTrackOutputStream, AudioTrackOutputStream caller,
-                ByteBuffer audioData, long delayInFrames);
+        AudioBufferInfo onMoreData(
+                long nativeAudioTrackOutputStream,
+                AudioTrackOutputStream caller,
+                ByteBuffer audioData,
+                long delayInFrames);
+
         void onError(long nativeAudioTrackOutputStream, AudioTrackOutputStream caller);
-        long getAddress(long nativeAudioTrackOutputStream, AudioTrackOutputStream caller,
+
+        long getAddress(
+                long nativeAudioTrackOutputStream,
+                AudioTrackOutputStream caller,
                 ByteBuffer byteBuffer);
     }
 }

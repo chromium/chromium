@@ -41,5 +41,4 @@ public interface UntypedHandle extends Handle {
      * representation.
      */
     public SharedBufferHandle toSharedBufferHandle();
-
 }

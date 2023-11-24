@@ -29,9 +29,7 @@ import java.util.List;
  **/
 @JNINamespace("media")
 public abstract class VideoCapture {
-    /**
-     * Common class for storing a framerate range. Values should be multiplied by 1000.
-     */
+    /** Common class for storing a framerate range. Values should be multiplied by 1000. */
     protected static class FramerateRange {
         public int min;
         public int max;
@@ -107,11 +105,25 @@ public abstract class VideoCapture {
      * @param torch Torch setting, true meaning on.
      */
     @CalledByNative
-    public abstract void setPhotoOptions(double zoom, int focusMode, double focusDistance,
-            int exposureMode, double width, double height, double[] pointsOfInterest2D,
-            boolean hasExposureCompensation, double exposureCompensation, double exposureTime,
-            int whiteBalanceMode, double iso, boolean hasRedEyeReduction, boolean redEyeReduction,
-            int fillLightMode, boolean hasTorch, boolean torch, double colorTemperature);
+    public abstract void setPhotoOptions(
+            double zoom,
+            int focusMode,
+            double focusDistance,
+            int exposureMode,
+            double width,
+            double height,
+            double[] pointsOfInterest2D,
+            boolean hasExposureCompensation,
+            double exposureCompensation,
+            double exposureTime,
+            int whiteBalanceMode,
+            double iso,
+            boolean hasRedEyeReduction,
+            boolean redEyeReduction,
+            int fillLightMode,
+            boolean hasTorch,
+            boolean torch,
+            double colorTemperature);
 
     // Replies by calling VideoCaptureJni.get().onPhotoTaken().
     @CalledByNative
@@ -124,6 +136,7 @@ public abstract class VideoCapture {
         }
         deallocateInternal();
     }
+
     public abstract void deallocateInternal();
 
     @CalledByNative
@@ -162,15 +175,19 @@ public abstract class VideoCapture {
     }
 
     protected final int getCameraRotation() {
-        int rotation = mInvertDeviceOrientationReadings ? (360 - getDeviceRotation())
-                                                        : getDeviceRotation();
+        int rotation =
+                mInvertDeviceOrientationReadings
+                        ? (360 - getDeviceRotation())
+                        : getDeviceRotation();
         return (mCameraNativeOrientation + rotation) % 360;
     }
 
     protected final int getDeviceRotation() {
         final int orientation;
-        DisplayManager dm = (DisplayManager) ContextUtils.getApplicationContext().getSystemService(
-                Context.DISPLAY_SERVICE);
+        DisplayManager dm =
+                (DisplayManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.DISPLAY_SERVICE);
         switch (dm.getDisplay(Display.DEFAULT_DISPLAY).getRotation()) {
             case Surface.ROTATION_90:
                 orientation = 90;
@@ -194,8 +211,12 @@ public abstract class VideoCapture {
     protected void notifyTakePhotoError(long callbackId) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().onPhotoTaken(
-                        mNativeVideoCaptureDeviceAndroid, VideoCapture.this, callbackId, null);
+                VideoCaptureJni.get()
+                        .onPhotoTaken(
+                                mNativeVideoCaptureDeviceAndroid,
+                                VideoCapture.this,
+                                callbackId,
+                                null);
             }
         }
     }
@@ -211,39 +232,51 @@ public abstract class VideoCapture {
      */
     protected static FramerateRange getClosestFramerateRange(
             final List<FramerateRange> framerateRanges, final int targetFramerate) {
-        return Collections.min(framerateRanges, new Comparator<FramerateRange>() {
-            // Threshold and penalty weights if the upper bound is further away than
-            // |MAX_FPS_DIFF_THRESHOLD| from requested.
-            private static final int MAX_FPS_DIFF_THRESHOLD = 5000;
-            private static final int MAX_FPS_LOW_DIFF_WEIGHT = 1;
-            private static final int MAX_FPS_HIGH_DIFF_WEIGHT = 3;
+        return Collections.min(
+                framerateRanges,
+                new Comparator<FramerateRange>() {
+                    // Threshold and penalty weights if the upper bound is further away than
+                    // |MAX_FPS_DIFF_THRESHOLD| from requested.
+                    private static final int MAX_FPS_DIFF_THRESHOLD = 5000;
+                    private static final int MAX_FPS_LOW_DIFF_WEIGHT = 1;
+                    private static final int MAX_FPS_HIGH_DIFF_WEIGHT = 3;
 
-            // Threshold and penalty weights if the lower bound is bigger than |MIN_FPS_THRESHOLD|.
-            private static final int MIN_FPS_THRESHOLD = 8000;
-            private static final int MIN_FPS_LOW_VALUE_WEIGHT = 1;
-            private static final int MIN_FPS_HIGH_VALUE_WEIGHT = 4;
+                    // Threshold and penalty weights if the lower bound is bigger than
+                    // |MIN_FPS_THRESHOLD|.
+                    private static final int MIN_FPS_THRESHOLD = 8000;
+                    private static final int MIN_FPS_LOW_VALUE_WEIGHT = 1;
+                    private static final int MIN_FPS_HIGH_VALUE_WEIGHT = 4;
 
-            // Use one weight for small |value| less than |threshold|, and another weight above.
-            private int progressivePenalty(
-                    int value, int threshold, int lowWeight, int highWeight) {
-                return (value < threshold)
-                        ? value * lowWeight
-                        : threshold * lowWeight + (value - threshold) * highWeight;
-            }
+                    // Use one weight for small |value| less than |threshold|, and another weight
+                    // above.
+                    private int progressivePenalty(
+                            int value, int threshold, int lowWeight, int highWeight) {
+                        return (value < threshold)
+                                ? value * lowWeight
+                                : threshold * lowWeight + (value - threshold) * highWeight;
+                    }
 
-            int diff(FramerateRange range) {
-                final int minFpsError = progressivePenalty(range.min, MIN_FPS_THRESHOLD,
-                        MIN_FPS_LOW_VALUE_WEIGHT, MIN_FPS_HIGH_VALUE_WEIGHT);
-                final int maxFpsError = progressivePenalty(Math.abs(targetFramerate - range.max),
-                        MAX_FPS_DIFF_THRESHOLD, MAX_FPS_LOW_DIFF_WEIGHT, MAX_FPS_HIGH_DIFF_WEIGHT);
-                return minFpsError + maxFpsError;
-            }
+                    int diff(FramerateRange range) {
+                        final int minFpsError =
+                                progressivePenalty(
+                                        range.min,
+                                        MIN_FPS_THRESHOLD,
+                                        MIN_FPS_LOW_VALUE_WEIGHT,
+                                        MIN_FPS_HIGH_VALUE_WEIGHT);
+                        final int maxFpsError =
+                                progressivePenalty(
+                                        Math.abs(targetFramerate - range.max),
+                                        MAX_FPS_DIFF_THRESHOLD,
+                                        MAX_FPS_LOW_DIFF_WEIGHT,
+                                        MAX_FPS_HIGH_DIFF_WEIGHT);
+                        return minFpsError + maxFpsError;
+                    }
 
-            @Override
-            public int compare(FramerateRange range1, FramerateRange range2) {
-                return diff(range1) - diff(range2);
-            }
-        });
+                    @Override
+                    public int compare(FramerateRange range1, FramerateRange range2) {
+                        return diff(range1) - diff(range2);
+                    }
+                });
     }
 
     protected static int[] integerArrayListToArray(ArrayList<Integer> intArrayList) {
@@ -258,20 +291,41 @@ public abstract class VideoCapture {
     protected void onFrameAvailable(VideoCapture caller, byte[] data, int length, int rotation) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().onFrameAvailable(
-                        mNativeVideoCaptureDeviceAndroid, caller, data, length, rotation);
+                VideoCaptureJni.get()
+                        .onFrameAvailable(
+                                mNativeVideoCaptureDeviceAndroid, caller, data, length, rotation);
             }
         }
     }
 
-    protected void onI420FrameAvailable(VideoCapture caller, ByteBuffer yBuffer, int yStride,
-            ByteBuffer uBuffer, ByteBuffer vBuffer, int uvRowStride, int uvPixelStride, int width,
-            int height, int rotation, long timestamp) {
+    protected void onI420FrameAvailable(
+            VideoCapture caller,
+            ByteBuffer yBuffer,
+            int yStride,
+            ByteBuffer uBuffer,
+            ByteBuffer vBuffer,
+            int uvRowStride,
+            int uvPixelStride,
+            int width,
+            int height,
+            int rotation,
+            long timestamp) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().onI420FrameAvailable(mNativeVideoCaptureDeviceAndroid, caller,
-                        yBuffer, yStride, uBuffer, vBuffer, uvRowStride, uvPixelStride, width,
-                        height, rotation, timestamp);
+                VideoCaptureJni.get()
+                        .onI420FrameAvailable(
+                                mNativeVideoCaptureDeviceAndroid,
+                                caller,
+                                yBuffer,
+                                yStride,
+                                uBuffer,
+                                vBuffer,
+                                uvRowStride,
+                                uvPixelStride,
+                                width,
+                                height,
+                                rotation,
+                                timestamp);
             }
         }
     }
@@ -279,8 +333,12 @@ public abstract class VideoCapture {
     protected void onError(VideoCapture caller, int androidVideoCaptureError, String message) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().onError(mNativeVideoCaptureDeviceAndroid, caller,
-                        androidVideoCaptureError, message);
+                VideoCaptureJni.get()
+                        .onError(
+                                mNativeVideoCaptureDeviceAndroid,
+                                caller,
+                                androidVideoCaptureError,
+                                message);
             }
         }
     }
@@ -289,8 +347,11 @@ public abstract class VideoCapture {
     protected void onFrameDropped(VideoCapture caller, int androidVideoCaptureFrameDropReason) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().onFrameDropped(mNativeVideoCaptureDeviceAndroid, caller,
-                        androidVideoCaptureFrameDropReason);
+                VideoCaptureJni.get()
+                        .onFrameDropped(
+                                mNativeVideoCaptureDeviceAndroid,
+                                caller,
+                                androidVideoCaptureFrameDropReason);
             }
         }
     }
@@ -299,8 +360,9 @@ public abstract class VideoCapture {
             VideoCapture caller, long callbackId, PhotoCapabilities result) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().onGetPhotoCapabilitiesReply(
-                        mNativeVideoCaptureDeviceAndroid, caller, callbackId, result);
+                VideoCaptureJni.get()
+                        .onGetPhotoCapabilitiesReply(
+                                mNativeVideoCaptureDeviceAndroid, caller, callbackId, result);
             }
         }
     }
@@ -308,8 +370,8 @@ public abstract class VideoCapture {
     protected void onPhotoTaken(VideoCapture caller, long callbackId, byte[] data) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().onPhotoTaken(
-                        mNativeVideoCaptureDeviceAndroid, caller, callbackId, data);
+                VideoCaptureJni.get()
+                        .onPhotoTaken(mNativeVideoCaptureDeviceAndroid, caller, callbackId, data);
             }
         }
     }
@@ -325,8 +387,9 @@ public abstract class VideoCapture {
     protected void dCheckCurrentlyOnIncomingTaskRunner(VideoCapture caller) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get().dCheckCurrentlyOnIncomingTaskRunner(
-                        mNativeVideoCaptureDeviceAndroid, caller);
+                VideoCaptureJni.get()
+                        .dCheckCurrentlyOnIncomingTaskRunner(
+                                mNativeVideoCaptureDeviceAndroid, caller);
             }
         }
     }
@@ -334,27 +397,53 @@ public abstract class VideoCapture {
     @NativeMethods
     interface Natives {
         // Method for VideoCapture implementations to call back native code.
-        void onFrameAvailable(long nativeVideoCaptureDeviceAndroid, VideoCapture caller,
-                byte[] data, int length, int rotation);
+        void onFrameAvailable(
+                long nativeVideoCaptureDeviceAndroid,
+                VideoCapture caller,
+                byte[] data,
+                int length,
+                int rotation);
 
-        void onI420FrameAvailable(long nativeVideoCaptureDeviceAndroid, VideoCapture caller,
-                ByteBuffer yBuffer, int yStride, ByteBuffer uBuffer, ByteBuffer vBuffer,
-                int uvRowStride, int uvPixelStride, int width, int height, int rotation,
+        void onI420FrameAvailable(
+                long nativeVideoCaptureDeviceAndroid,
+                VideoCapture caller,
+                ByteBuffer yBuffer,
+                int yStride,
+                ByteBuffer uBuffer,
+                ByteBuffer vBuffer,
+                int uvRowStride,
+                int uvPixelStride,
+                int width,
+                int height,
+                int rotation,
                 long timestamp);
+
         // Method for VideoCapture implementations to signal an asynchronous error.
-        void onError(long nativeVideoCaptureDeviceAndroid, VideoCapture caller,
-                int androidVideoCaptureError, String message);
+        void onError(
+                long nativeVideoCaptureDeviceAndroid,
+                VideoCapture caller,
+                int androidVideoCaptureError,
+                String message);
 
         // Method for VideoCapture implementations to signal that a frame was dropped.
-        void onFrameDropped(long nativeVideoCaptureDeviceAndroid, VideoCapture caller,
+        void onFrameDropped(
+                long nativeVideoCaptureDeviceAndroid,
+                VideoCapture caller,
                 int androidVideoCaptureFrameDropReason);
 
-        void onGetPhotoCapabilitiesReply(long nativeVideoCaptureDeviceAndroid, VideoCapture caller,
-                long callbackId, PhotoCapabilities result);
+        void onGetPhotoCapabilitiesReply(
+                long nativeVideoCaptureDeviceAndroid,
+                VideoCapture caller,
+                long callbackId,
+                PhotoCapabilities result);
+
         // Callback for calls to takePhoto(). This can indicate both success and
         // failure. Failure is indicated by |data| being null.
-        void onPhotoTaken(long nativeVideoCaptureDeviceAndroid, VideoCapture caller,
-                long callbackId, byte[] data);
+        void onPhotoTaken(
+                long nativeVideoCaptureDeviceAndroid,
+                VideoCapture caller,
+                long callbackId,
+                byte[] data);
 
         // Method for VideoCapture implementations to report device started event.
         void onStarted(long nativeVideoCaptureDeviceAndroid, VideoCapture caller);

@@ -33,12 +33,9 @@ public final class JunitTestMain {
     private static final Pattern COLON = Pattern.compile(":");
     private static final Pattern FORWARD_SLASH = Pattern.compile("/");
 
-    private JunitTestMain() {
-    }
+    private JunitTestMain() {}
 
-    /**
-     *  Finds all test classes on the class path annotated with RunWith.
-     */
+    /** Finds all test classes on the class path annotated with RunWith. */
     public static Class[] findClassesFromClasspath() {
         String[] jarPaths = COLON.split(System.getProperty("java.class.path"));
         List<Class> classes = new ArrayList<Class>();
@@ -49,7 +46,7 @@ public final class JunitTestMain {
             }
             try {
                 JarFile jf = new JarFile(jp);
-                for (Enumeration<JarEntry> eje = jf.entries(); eje.hasMoreElements();) {
+                for (Enumeration<JarEntry> eje = jf.entries(); eje.hasMoreElements(); ) {
                     JarEntry je = eje.nextElement();
                     String cn = je.getName();
                     // Skip classes in common libraries.
@@ -82,7 +79,7 @@ public final class JunitTestMain {
             // Do not initialize classes (clinit) yet, Android methods are all
             // stubs until robolectric loads the real implementations.
             return Class.forName(
-                    className, /*initialize*/ false, JunitTestMain.class.getClassLoader());
+                    className, /* initialize= */ false, JunitTestMain.class.getClassLoader());
         } catch (ClassNotFoundException e) {
             System.err.println("Class not found: " + className);
         } catch (NoClassDefFoundError e) {

@@ -86,8 +86,11 @@ public interface PrintingController {
      * @param renderFrameId renderProcessId and renderFrameId are a pair of integers used to figure
      *                      out which frame is going to be printed in native side.
      */
-    void setPendingPrint(final Printable printable, final PrintManagerDelegate printManager,
-            final int renderProcessId, final int renderFrameId);
+    void setPendingPrint(
+            final Printable printable,
+            final PrintManagerDelegate printManager,
+            final int renderProcessId,
+            final int renderFrameId);
 
     /**
      * Starts printing, provided that the current object already has sufficient data to start the

@@ -9,9 +9,7 @@ import android.content.Context;
 
 import org.chromium.base.CommandLine;
 
-/**
- * Application class to be used by native_test apks.
- */
+/** Application class to be used by native_test apks. */
 public class NativeTestApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {

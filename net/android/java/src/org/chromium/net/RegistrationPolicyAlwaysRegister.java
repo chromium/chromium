@@ -4,9 +4,7 @@
 
 package org.chromium.net;
 
-/**
- * Registration policy which make sure that the listener is always registered.
- */
+/** Registration policy which make sure that the listener is always registered. */
 public class RegistrationPolicyAlwaysRegister
         extends NetworkChangeNotifierAutoDetect.RegistrationPolicy {
     @Override

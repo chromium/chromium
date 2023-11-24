@@ -7,9 +7,7 @@ package org.chromium.testing.local;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- *  Parses command line arguments for JunitTestMain.
- */
+/** Parses command line arguments for JunitTestMain. */
 public class JunitTestArgParser {
     final Set<String> mPackageFilters = new HashSet<>();
     final Set<Class<?>> mRunnerFilters = new HashSet<>();

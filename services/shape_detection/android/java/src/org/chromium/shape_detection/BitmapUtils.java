@@ -12,9 +12,7 @@ import org.chromium.mojo_base.BigBufferUtil;
 
 import java.nio.ByteBuffer;
 
-/**
- * Utility class to convert a Bitmap to a GMS core YUV Frame.
- */
+/** Utility class to convert a Bitmap to a GMS core YUV Frame. */
 public class BitmapUtils {
     public static Bitmap convertToBitmap(org.chromium.skia.mojom.BitmapN32 bitmapData) {
         // A null BitmapN32 has null pixelData. Otherwise, BitmapN32 always has

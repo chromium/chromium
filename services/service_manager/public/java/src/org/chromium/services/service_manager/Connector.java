@@ -12,9 +12,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.service_manager.mojom.Identity;
 import org.chromium.service_manager.mojom.ServiceFilter;
 
-/**
- * This class exposes the ability to bind interfaces from other services in the system.
- */
+/** This class exposes the ability to bind interfaces from other services in the system. */
 public class Connector implements ConnectionErrorHandler {
     private org.chromium.service_manager.mojom.Connector.Proxy mConnector;
 
@@ -43,8 +41,12 @@ public class Connector implements ConnectionErrorHandler {
 
         org.chromium.service_manager.mojom.Connector.BindInterface_Response callback =
                 new ConnectorBindInterfaceResponseImpl();
-        mConnector.bindInterface(filter, interfaceName, request.passHandle(),
-                org.chromium.service_manager.mojom.BindInterfacePriority.IMPORTANT, callback);
+        mConnector.bindInterface(
+                filter,
+                interfaceName,
+                request.passHandle(),
+                org.chromium.service_manager.mojom.BindInterfacePriority.IMPORTANT,
+                callback);
     }
 
     @Override

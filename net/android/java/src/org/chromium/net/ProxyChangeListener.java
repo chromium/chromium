@@ -84,7 +84,9 @@ public class ProxyChangeListener {
             }
             final String host = proxyInfo.getHost();
             final Uri pacFileUrl = proxyInfo.getPacFileUrl();
-            return new ProxyConfig(host == null ? "" : host, proxyInfo.getPort(),
+            return new ProxyConfig(
+                    host == null ? "" : host,
+                    proxyInfo.getPort(),
                     Uri.EMPTY.equals(pacFileUrl) ? null : pacFileUrl.toString(),
                     proxyInfo.getExclusionList());
         }
@@ -93,8 +95,12 @@ public class ProxyChangeListener {
         public String toString() {
             String possiblyRedactedHost =
                     mHost.equals("localhost") || mHost.isEmpty() ? mHost : "<redacted>";
-            return String.format(Locale.US, "ProxyConfig [mHost=\"%s\", mPort=%d, mPacUrl=%s]",
-                    possiblyRedactedHost, mPort, mPacUrl == null ? "null" : "\"<redacted>\"");
+            return String.format(
+                    Locale.US,
+                    "ProxyConfig [mHost=\"%s\", mPort=%d, mPacUrl=%s]",
+                    possiblyRedactedHost,
+                    mPort,
+                    mPacUrl == null ? "null" : "\"<redacted>\"");
         }
 
         public final String mHost;
@@ -105,10 +111,10 @@ public class ProxyChangeListener {
         public static final ProxyConfig DIRECT = new ProxyConfig("", 0, "", new String[0]);
     }
 
-    /**
-     * The delegate for ProxyChangeListener. Use for testing.
-     */
-    public interface Delegate { public void proxySettingsChanged(); }
+    /** The delegate for ProxyChangeListener. Use for testing. */
+    public interface Delegate {
+        public void proxySettingsChanged();
+    }
 
     private ProxyChangeListener() {
         mLooper = Looper.myLooper();
@@ -210,8 +216,11 @@ public class ProxyChangeListener {
                 }
             }
             return new ProxyConfig(host, port, null, exclusionList);
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
-                | InvocationTargetException | NullPointerException ex) {
+        } catch (ClassNotFoundException
+                | NoSuchMethodException
+                | IllegalAccessException
+                | InvocationTargetException
+                | NullPointerException ex) {
             Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
             return null;
         }
@@ -232,9 +241,14 @@ public class ProxyChangeListener {
         }
 
         if (cfg != null) {
-            ProxyChangeListenerJni.get().proxySettingsChangedTo(mNativePtr,
-                    ProxyChangeListener.this, cfg.mHost, cfg.mPort, cfg.mPacUrl,
-                    cfg.mExclusionList);
+            ProxyChangeListenerJni.get()
+                    .proxySettingsChangedTo(
+                            mNativePtr,
+                            ProxyChangeListener.this,
+                            cfg.mHost,
+                            cfg.mPort,
+                            cfg.mPacUrl,
+                            cfg.mExclusionList);
         } else {
             ProxyChangeListenerJni.get().proxySettingsChanged(mNativePtr, ProxyChangeListener.this);
         }
@@ -243,8 +257,9 @@ public class ProxyChangeListener {
     @RequiresApi(Build.VERSION_CODES.M)
     private ProxyConfig getProxyConfig(Intent intent) {
         ConnectivityManager connectivityManager =
-                (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.CONNECTIVITY_SERVICE);
         ProxyConfig configFromConnectivityManager =
                 ProxyConfig.fromProxyInfo(connectivityManager.getDefaultProxy());
 
@@ -254,8 +269,11 @@ public class ProxyChangeListener {
                 && configFromConnectivityManager.mHost.equals("localhost")
                 && configFromConnectivityManager.mPort == -1) {
             ProxyConfig configFromIntent = extractNewProxy(intent);
-            Log.i(TAG, "configFromConnectivityManager = %s, configFromIntent = %s",
-                    configFromConnectivityManager, configFromIntent);
+            Log.i(
+                    TAG,
+                    "configFromConnectivityManager = %s, configFromIntent = %s",
+                    configFromConnectivityManager,
+                    configFromIntent);
 
             // There's a bug in Android Q+ PAC support. If ConnectivityManager returns localhost:-1
             // then use the intent from the PROXY_CHANGE_ACTION broadcast to extract the
@@ -266,7 +284,10 @@ public class ProxyChangeListener {
             if (configFromIntent == null) return null;
             String correctHost = configFromIntent.mHost;
             int correctPort = configFromIntent.mPort;
-            return new ProxyConfig(correctHost, correctPort, configFromConnectivityManager.mPacUrl,
+            return new ProxyConfig(
+                    correctHost,
+                    correctPort,
+                    configFromConnectivityManager.mPacUrl,
                     configFromConnectivityManager.mExclusionList);
         }
         return configFromConnectivityManager;
@@ -340,15 +361,17 @@ public class ProxyChangeListener {
         }
     }
 
-    /**
-     * See net/proxy_resolution/proxy_config_service_android.cc
-     */
-
+    /** See net/proxy_resolution/proxy_config_service_android.cc */
     @NativeMethods
     interface Natives {
         @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
-        void proxySettingsChangedTo(long nativePtr, ProxyChangeListener caller, String host,
-                int port, String pacUrl, String[] exclusionList);
+        void proxySettingsChangedTo(
+                long nativePtr,
+                ProxyChangeListener caller,
+                String host,
+                int port,
+                String pacUrl,
+                String[] exclusionList);
 
         @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
         void proxySettingsChanged(long nativePtr, ProxyChangeListener caller);

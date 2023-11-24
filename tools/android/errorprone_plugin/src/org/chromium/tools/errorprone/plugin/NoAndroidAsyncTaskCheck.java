@@ -13,24 +13,25 @@ import com.google.errorprone.util.ASTHelpers;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.tools.javac.code.Symbol;
 
-/**
- * Triggers an error for any occurrence of android.os.AsyncTask.
- */
+/** Triggers an error for any occurrence of android.os.AsyncTask. */
 @AutoService(BugChecker.class)
-@BugPattern(name = "NoAndroidAsyncTaskCheck",
+@BugPattern(
+        name = "NoAndroidAsyncTaskCheck",
         summary = "Do not use android.os.AsyncTask - use org.chromium.base.task.AsyncTask instead",
-        severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
+        severity = BugPattern.SeverityLevel.ERROR,
+        linkType = BugPattern.LinkType.CUSTOM,
         link = "https://bugs.chromium.org/p/chromium/issues/detail?id=843745")
-public class NoAndroidAsyncTaskCheck
-        extends BugChecker implements BugChecker.MemberSelectTreeMatcher {
+public class NoAndroidAsyncTaskCheck extends BugChecker
+        implements BugChecker.MemberSelectTreeMatcher {
     @Override
     public Description matchMemberSelect(MemberSelectTree tree, VisitorState state) {
         if (tree.getIdentifier().contentEquals("AsyncTask")) {
             Symbol symbol = ASTHelpers.getSymbol(tree.getExpression());
             if (symbol.getQualifiedName().contentEquals("android.os")) {
                 return buildDescription(tree)
-                        .setMessage("Do not use android.os.AsyncTask - "
-                                + "use org.chromium.base.task.AsyncTask instead")
+                        .setMessage(
+                                "Do not use android.os.AsyncTask - "
+                                        + "use org.chromium.base.task.AsyncTask instead")
                         .build();
             }
         }

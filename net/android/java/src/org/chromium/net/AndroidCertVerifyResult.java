@@ -13,30 +13,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * The result of a certification verification.
- */
+/** The result of a certification verification. */
 @JNINamespace("net::android")
 public class AndroidCertVerifyResult {
 
-    /**
-     * The verification status. One of the values in CertVerifyStatusAndroid.
-     */
+    /** The verification status. One of the values in CertVerifyStatusAndroid. */
     private final int mStatus;
 
-    /**
-     * True if the root CA in the chain is in the system store.
-     */
+    /** True if the root CA in the chain is in the system store. */
     private final boolean mIsIssuedByKnownRoot;
 
-    /**
-     * The properly ordered certificate chain used for verification.
-     */
+    /** The properly ordered certificate chain used for verification. */
     private final List<X509Certificate> mCertificateChain;
 
-    public AndroidCertVerifyResult(int status,
-                                   boolean isIssuedByKnownRoot,
-                                   List<X509Certificate> certificateChain) {
+    public AndroidCertVerifyResult(
+            int status, boolean isIssuedByKnownRoot, List<X509Certificate> certificateChain) {
         mStatus = status;
         mIsIssuedByKnownRoot = isIssuedByKnownRoot;
         mCertificateChain = new ArrayList<X509Certificate>(certificateChain);

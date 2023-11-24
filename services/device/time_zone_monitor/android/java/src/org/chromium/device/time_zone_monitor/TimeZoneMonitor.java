@@ -16,25 +16,25 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
-/**
- * Android implementation details for device::TimeZoneMonitorAndroid.
- */
+/** Android implementation details for device::TimeZoneMonitorAndroid. */
 @JNINamespace("device")
 class TimeZoneMonitor {
     private static final String TAG = "TimeZoneMonitor";
 
     private final IntentFilter mFilter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
-    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (!intent.getAction().equals(Intent.ACTION_TIMEZONE_CHANGED)) {
-                Log.e(TAG, "unexpected intent");
-                return;
-            }
+    private final BroadcastReceiver mBroadcastReceiver =
+            new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (!intent.getAction().equals(Intent.ACTION_TIMEZONE_CHANGED)) {
+                        Log.e(TAG, "unexpected intent");
+                        return;
+                    }
 
-            TimeZoneMonitorJni.get().timeZoneChangedFromJava(mNativePtr, TimeZoneMonitor.this);
-        }
-    };
+                    TimeZoneMonitorJni.get()
+                            .timeZoneChangedFromJava(mNativePtr, TimeZoneMonitor.this);
+                }
+            };
 
     private long mNativePtr;
 
@@ -53,9 +53,7 @@ class TimeZoneMonitor {
         return new TimeZoneMonitor(nativePtr);
     }
 
-    /**
-     * Stop listening for intents.
-     */
+    /** Stop listening for intents. */
     @CalledByNative
     void stop() {
         ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);

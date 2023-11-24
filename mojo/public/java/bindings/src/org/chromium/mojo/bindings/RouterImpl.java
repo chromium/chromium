@@ -14,15 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-/**
- * Implementation of {@link Router}.
- */
-@SuppressLint("UseSparseArrays")  // https://crbug.com/600699
+/** Implementation of {@link Router}. */
+@SuppressLint("UseSparseArrays") // https://crbug.com/600699
 public class RouterImpl implements Router {
 
-    /**
-     * {@link MessageReceiver} used as the {@link Connector} callback.
-     */
+    /** {@link MessageReceiver} used as the {@link Connector} callback. */
     private class HandleIncomingMessageThunk implements MessageReceiver {
 
         /**
@@ -40,7 +36,6 @@ public class RouterImpl implements Router {
         public void close() {
             handleConnectorClose();
         }
-
     }
 
     /**
@@ -80,9 +75,7 @@ public class RouterImpl implements Router {
         }
     }
 
-    /**
-     * The {@link Connector} which is connected to the handle.
-     */
+    /** The {@link Connector} which is connected to the handle. */
     private final Connector mConnector;
 
     /**
@@ -91,14 +84,10 @@ public class RouterImpl implements Router {
      */
     private MessageReceiverWithResponder mIncomingMessageReceiver;
 
-    /**
-     * The next id to use for a request id which needs a response. It is auto-incremented.
-     */
+    /** The next id to use for a request id which needs a response. It is auto-incremented. */
     private long mNextRequestId = 1;
 
-    /**
-     * The map from request ids to {@link MessageReceiver} of request currently in flight.
-     */
+    /** The map from request ids to {@link MessageReceiver} of request currently in flight. */
     private Map<Long, MessageReceiver> mResponders = new HashMap<Long, MessageReceiver>();
 
     /**
@@ -212,9 +201,7 @@ public class RouterImpl implements Router {
         mConnector.setErrorHandler(errorHandler);
     }
 
-    /**
-     * Receive a message from the connector. Returns |true| if the message has been handled.
-     */
+    /** Receive a message from the connector. Returns |true| if the message has been handled. */
     private boolean handleIncomingMessage(Message message) {
         MessageHeader header = message.asServiceMessage().getHeader();
         if (header.hasFlag(MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG)) {
@@ -255,13 +242,14 @@ public class RouterImpl implements Router {
      */
     private void closeOnHandleThread() {
         if (mExecutor != null) {
-            mExecutor.execute(new Runnable() {
+            mExecutor.execute(
+                    new Runnable() {
 
-                @Override
-                public void run() {
-                    close();
-                }
-            });
+                        @Override
+                        public void run() {
+                            close();
+                        }
+                    });
         }
     }
 }

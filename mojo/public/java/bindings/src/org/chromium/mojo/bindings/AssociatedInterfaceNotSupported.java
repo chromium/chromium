@@ -4,8 +4,5 @@
 
 package org.chromium.mojo.bindings;
 
-/**
- * Associated interface is not supported yet.
- */
-public class AssociatedInterfaceNotSupported {
-}
+/** Associated interface is not supported yet. */
+public class AssociatedInterfaceNotSupported {}

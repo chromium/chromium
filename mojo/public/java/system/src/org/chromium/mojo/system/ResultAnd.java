@@ -18,16 +18,12 @@ public class ResultAnd<A> {
         this.mValue = value;
     }
 
-    /**
-     * Returns the mojo result.
-     */
+    /** Returns the mojo result. */
     public int getMojoResult() {
         return mMojoResult;
     }
 
-    /**
-     * Returns the value.
-     */
+    /** Returns the value. */
     public A getValue() {
         return mValue;
     }

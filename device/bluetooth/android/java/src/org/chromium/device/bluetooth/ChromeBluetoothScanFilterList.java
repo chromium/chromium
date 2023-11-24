@@ -11,16 +11,12 @@ import org.jni_zero.JNINamespace;
 
 import java.util.ArrayList;
 
-/**
- * Allows for the creation of a Java ArrayList of the ScanFilter object.
- */
+/** Allows for the creation of a Java ArrayList of the ScanFilter object. */
 @JNINamespace("device")
 final class ChromeBluetoothScanFilterList {
     ArrayList<ScanFilter> mFilters;
 
-    /**
-     * Constructs a ChromeBluetoothScanFilterList
-     */
+    /** Constructs a ChromeBluetoothScanFilterList */
     public ChromeBluetoothScanFilterList() {
         mFilters = new ArrayList<>();
     }

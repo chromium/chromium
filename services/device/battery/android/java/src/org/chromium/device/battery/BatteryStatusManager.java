@@ -32,12 +32,13 @@ class BatteryStatusManager {
 
     private final BatteryStatusCallback mCallback;
     private final IntentFilter mFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            BatteryStatusManager.this.onReceive(intent);
-        }
-    };
+    private final BroadcastReceiver mReceiver =
+            new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    BatteryStatusManager.this.onReceive(intent);
+                }
+            };
     private AndroidBatteryManagerWrapper mAndroidBatteryManager;
     private boolean mEnabled;
 
@@ -61,10 +62,12 @@ class BatteryStatusManager {
     }
 
     BatteryStatusManager(BatteryStatusCallback callback) {
-        this(callback,
+        this(
+                callback,
                 new AndroidBatteryManagerWrapper(
-                        (BatteryManager) ContextUtils.getApplicationContext().getSystemService(
-                                Context.BATTERY_SERVICE)));
+                        (BatteryManager)
+                                ContextUtils.getApplicationContext()
+                                        .getSystemService(Context.BATTERY_SERVICE)));
     }
 
     /**
@@ -83,7 +86,7 @@ class BatteryStatusManager {
     boolean start() {
         if (!mEnabled
                 && ContextUtils.registerProtectedBroadcastReceiver(
-                           ContextUtils.getApplicationContext(), mReceiver, mFilter)
+                                ContextUtils.getApplicationContext(), mReceiver, mFilter)
                         != null) {
             // success
             mEnabled = true;
@@ -91,9 +94,7 @@ class BatteryStatusManager {
         return mEnabled;
     }
 
-    /**
-     * Stops listening to intents.
-     */
+    /** Stops listening to intents. */
     void stop() {
         if (mEnabled) {
             ContextUtils.getApplicationContext().unregisterReceiver(mReceiver);
@@ -150,6 +151,7 @@ class BatteryStatusManager {
                     updateBatteryStatus(batteryStatus);
                     return batteryStatus;
                 }
+
                 @Override
                 protected void onPostExecute(BatteryStatus batteryStatus) {
                     mCallback.onBatteryStatusChanged(batteryStatus);
@@ -163,11 +165,13 @@ class BatteryStatusManager {
     private void updateBatteryStatus(BatteryStatus batteryStatus) {
         double remainingCapacityRatio =
                 mAndroidBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-                / 100.0;
-        double batteryCapacityMicroAh = mAndroidBatteryManager.getIntProperty(
-                BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
-        double averageCurrentMicroA = mAndroidBatteryManager.getIntProperty(
-                BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE);
+                        / 100.0;
+        double batteryCapacityMicroAh =
+                mAndroidBatteryManager.getIntProperty(
+                        BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+        double averageCurrentMicroA =
+                mAndroidBatteryManager.getIntProperty(
+                        BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE);
 
         if (batteryStatus.charging) {
             if (batteryStatus.chargingTime == Double.POSITIVE_INFINITY

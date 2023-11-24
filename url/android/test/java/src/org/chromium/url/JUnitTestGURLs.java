@@ -4,9 +4,7 @@
 
 package org.chromium.url;
 
-/**
- * A collection of test GURLs.
- */
+/** A collection of test GURLs. */
 public class JUnitTestGURLs {
     public static final GURL EXAMPLE_URL = new GURL("https://www.example.com/");
     public static final GURL HTTP_URL = new GURL("http://www.example.com/");

@@ -42,17 +42,25 @@ public class TestWebServer extends WebServer {
         final boolean mForWebSocket;
         final boolean mIsEmptyResponse;
 
-        Response(byte[] responseData, List<Pair<String, String>> responseHeaders,
-                boolean isRedirect, boolean isNotFound, boolean isNoContent, boolean forWebSocket,
-                boolean isEmptyResponse, Runnable responseAction) {
+        Response(
+                byte[] responseData,
+                List<Pair<String, String>> responseHeaders,
+                boolean isRedirect,
+                boolean isNotFound,
+                boolean isNoContent,
+                boolean forWebSocket,
+                boolean isEmptyResponse,
+                Runnable responseAction) {
             mIsRedirect = isRedirect;
             mIsNotFound = isNotFound;
             mIsNoContent = isNoContent;
             mForWebSocket = forWebSocket;
             mIsEmptyResponse = isEmptyResponse;
             mResponseData = responseData;
-            mResponseHeaders = responseHeaders == null ? new ArrayList<Pair<String, String>>()
-                                                       : responseHeaders;
+            mResponseHeaders =
+                    responseHeaders == null
+                            ? new ArrayList<Pair<String, String>>()
+                            : responseHeaders;
             mResponseAction = responseAction;
         }
     }
@@ -102,9 +110,7 @@ public class TestWebServer extends WebServer {
         return new TestWebServer(port, false, false);
     }
 
-    /**
-     * Same as start(int) but chooses a free port.
-     */
+    /** Same as start(int) but chooses a free port. */
     public static TestWebServer start() throws Exception {
         return start(0);
     }
@@ -121,9 +127,7 @@ public class TestWebServer extends WebServer {
         return new TestWebServer(port, false, true);
     }
 
-    /**
-     * Same as startAdditional(int) but chooses a free port.
-     */
+    /** Same as startAdditional(int) but chooses a free port. */
     public static TestWebServer startAdditional() throws Exception {
         return startAdditional(0);
     }
@@ -139,9 +143,7 @@ public class TestWebServer extends WebServer {
         return new TestWebServer(port, true, false);
     }
 
-    /**
-     * Same as startSsl(int) but chooses a free port.
-     */
+    /** Same as startSsl(int) but chooses a free port. */
     public static TestWebServer startSsl() throws Exception {
         return startSsl(0);
     }
@@ -158,9 +160,7 @@ public class TestWebServer extends WebServer {
         return new TestWebServer(port, true, true);
     }
 
-    /**
-     * Same as startAdditionalSsl(int) but chooses a free port.
-     */
+    /** Same as startAdditionalSsl(int) but chooses a free port. */
     public static TestWebServer startAdditionalSsl() throws Exception {
         return startAdditionalSsl(0);
     }
@@ -172,8 +172,12 @@ public class TestWebServer extends WebServer {
     private static final int RESPONSE_STATUS_FOR_WEBSOCKET = 4;
     private static final int RESPONSE_STATUS_EMPTY_RESPONSE = 5;
 
-    private String setResponseInternal(String requestPath, byte[] responseData,
-            List<Pair<String, String>> responseHeaders, Runnable responseAction, int status) {
+    private String setResponseInternal(
+            String requestPath,
+            byte[] responseData,
+            List<Pair<String, String>> responseHeaders,
+            Runnable responseAction,
+            int status) {
         final boolean isRedirect = (status == RESPONSE_STATUS_MOVED_TEMPORARILY);
         final boolean isNotFound = (status == RESPONSE_STATUS_NOT_FOUND);
         final boolean isNoContent = (status == RESPONSE_STATUS_NO_CONTENT);
@@ -181,9 +185,17 @@ public class TestWebServer extends WebServer {
         final boolean isEmptyResponse = (status == RESPONSE_STATUS_EMPTY_RESPONSE);
 
         synchronized (mLock) {
-            mResponseMap.put(requestPath,
-                    new Response(responseData, responseHeaders, isRedirect, isNotFound, isNoContent,
-                            forWebSocket, isEmptyResponse, responseAction));
+            mResponseMap.put(
+                    requestPath,
+                    new Response(
+                            responseData,
+                            responseHeaders,
+                            isRedirect,
+                            isNotFound,
+                            isNoContent,
+                            forWebSocket,
+                            isEmptyResponse,
+                            responseAction));
             mResponseCountMap.put(requestPath, Integer.valueOf(0));
             mLastRequestMap.put(requestPath, null);
         }
@@ -212,8 +224,12 @@ public class TestWebServer extends WebServer {
      */
     public String setResponseWithNotFoundStatus(
             String requestPath, List<Pair<String, String>> responseHeaders) {
-        return setResponseInternal(requestPath, ApiCompatibilityUtils.getBytesUtf8(""),
-                responseHeaders, null, RESPONSE_STATUS_NOT_FOUND);
+        return setResponseInternal(
+                requestPath,
+                ApiCompatibilityUtils.getBytesUtf8(""),
+                responseHeaders,
+                null,
+                RESPONSE_STATUS_NOT_FOUND);
     }
 
     /**
@@ -224,7 +240,11 @@ public class TestWebServer extends WebServer {
      *         response.
      */
     public String setResponseWithNoContentStatus(String requestPath) {
-        return setResponseInternal(requestPath, ApiCompatibilityUtils.getBytesUtf8(""), null, null,
+        return setResponseInternal(
+                requestPath,
+                ApiCompatibilityUtils.getBytesUtf8(""),
+                null,
+                null,
                 RESPONSE_STATUS_NO_CONTENT);
     }
 
@@ -236,7 +256,11 @@ public class TestWebServer extends WebServer {
      *         response.
      */
     public String setEmptyResponse(String requestPath) {
-        return setResponseInternal(requestPath, ApiCompatibilityUtils.getBytesUtf8(""), null, null,
+        return setResponseInternal(
+                requestPath,
+                ApiCompatibilityUtils.getBytesUtf8(""),
+                null,
+                null,
                 RESPONSE_STATUS_EMPTY_RESPONSE);
     }
 
@@ -253,8 +277,12 @@ public class TestWebServer extends WebServer {
      */
     public String setResponse(
             String requestPath, String responseString, List<Pair<String, String>> responseHeaders) {
-        return setResponseInternal(requestPath, ApiCompatibilityUtils.getBytesUtf8(responseString),
-                responseHeaders, null, RESPONSE_STATUS_NORMAL);
+        return setResponseInternal(
+                requestPath,
+                ApiCompatibilityUtils.getBytesUtf8(responseString),
+                responseHeaders,
+                null,
+                RESPONSE_STATUS_NORMAL);
     }
 
     /**
@@ -272,10 +300,17 @@ public class TestWebServer extends WebServer {
      * @return The full URL including the path that should be requested to get the expected
      *         response.
      */
-    public String setResponseWithRunnableAction(String requestPath, String responseString,
-            List<Pair<String, String>> responseHeaders, Runnable responseAction) {
-        return setResponseInternal(requestPath, ApiCompatibilityUtils.getBytesUtf8(responseString),
-                responseHeaders, responseAction, RESPONSE_STATUS_NORMAL);
+    public String setResponseWithRunnableAction(
+            String requestPath,
+            String responseString,
+            List<Pair<String, String>> responseHeaders,
+            Runnable responseAction) {
+        return setResponseInternal(
+                requestPath,
+                ApiCompatibilityUtils.getBytesUtf8(responseString),
+                responseHeaders,
+                responseAction,
+                RESPONSE_STATUS_NORMAL);
     }
 
     /**
@@ -304,8 +339,12 @@ public class TestWebServer extends WebServer {
             String requestPath, String targetLocation, List<Pair<String, String>> responseHeaders) {
         responseHeaders.add(Pair.create("Location", targetLocation));
 
-        return setResponseInternal(requestPath, ApiCompatibilityUtils.getBytesUtf8(targetLocation),
-                responseHeaders, null, RESPONSE_STATUS_MOVED_TEMPORARILY);
+        return setResponseInternal(
+                requestPath,
+                ApiCompatibilityUtils.getBytesUtf8(targetLocation),
+                responseHeaders,
+                null,
+                RESPONSE_STATUS_MOVED_TEMPORARILY);
     }
 
     /**
@@ -320,10 +359,15 @@ public class TestWebServer extends WebServer {
      * @return The full URL including the path that should be requested to get the expected
      *         response.
      */
-    public String setResponseBase64(String requestPath, String base64EncodedResponse,
+    public String setResponseBase64(
+            String requestPath,
+            String base64EncodedResponse,
             List<Pair<String, String>> responseHeaders) {
-        return setResponseInternal(requestPath,
-                Base64.decode(base64EncodedResponse, Base64.DEFAULT), responseHeaders, null,
+        return setResponseInternal(
+                requestPath,
+                Base64.decode(base64EncodedResponse, Base64.DEFAULT),
+                responseHeaders,
+                null,
                 RESPONSE_STATUS_NORMAL);
     }
 
@@ -345,13 +389,15 @@ public class TestWebServer extends WebServer {
         }
         responseHeaders.add(Pair.create("Connection", "Upgrade"));
         responseHeaders.add(Pair.create("Upgrade", "websocket"));
-        return setResponseInternal(requestPath, ApiCompatibilityUtils.getBytesUtf8(""),
-                responseHeaders, null, RESPONSE_STATUS_FOR_WEBSOCKET);
+        return setResponseInternal(
+                requestPath,
+                ApiCompatibilityUtils.getBytesUtf8(""),
+                responseHeaders,
+                null,
+                RESPONSE_STATUS_FOR_WEBSOCKET);
     }
 
-    /**
-     * Get the number of requests was made at this path since it was last set.
-     */
+    /** Get the number of requests was made at this path since it was last set. */
     public int getRequestCount(String requestPath) {
         Integer count = null;
         synchronized (mLock) {
@@ -361,9 +407,7 @@ public class TestWebServer extends WebServer {
         return count.intValue();
     }
 
-    /**
-     * Returns the last HttpRequest at this path. Can return null if it is never requested.
-     */
+    /** Returns the last HttpRequest at this path. Can return null if it is never requested. */
     public HTTPRequest getLastRequest(String requestPath) {
         synchronized (mLock) {
             if (!mLastRequestMap.containsKey(requestPath)) {
@@ -400,8 +444,8 @@ public class TestWebServer extends WebServer {
         // Don't dump headers to decrease log.
         Log.w(TAG, request.requestLine());
 
-        final String bodyTemplate = "<html><head><title>%s</title></head>"
-                + "<body>%s</body></html>";
+        final String bodyTemplate =
+                "<html><head><title>%s</title></head>" + "<body>%s</body></html>";
 
         boolean copyHeadersToResponse = true;
         boolean copyBinaryBodyToResponse = false;
@@ -457,7 +501,8 @@ public class TestWebServer extends WebServer {
                 }
             }
             synchronized (mLock) {
-                mResponseCountMap.put(requestURI,
+                mResponseCountMap.put(
+                        requestURI,
                         Integer.valueOf(mResponseCountMap.get(requestURI).intValue() + 1));
                 mLastRequestMap.put(requestURI, request);
             }
@@ -496,9 +541,7 @@ public class TestWebServer extends WebServer {
         }
     }
 
-    /**
-     * Return a response for WebSocket handshake challenge.
-     */
+    /** Return a response for WebSocket handshake challenge. */
     private static String computeWebSocketAccept(String keyString) throws NoSuchAlgorithmException {
         byte[] key = keyString.getBytes(Charset.forName("US-ASCII"));
         byte[] guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(Charset.forName("US-ASCII"));

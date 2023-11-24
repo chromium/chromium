@@ -12,14 +12,10 @@ import android.os.ParcelFileDescriptor;
  */
 public interface Core {
 
-    /**
-     * Used to indicate an infinite deadline (timeout).
-     */
+    /** Used to indicate an infinite deadline (timeout). */
     public static final long DEADLINE_INFINITE = -1;
 
-    /**
-     * Signals for the wait operations on handles.
-     */
+    /** Signals for the wait operations on handles. */
     public static class HandleSignals extends Flags<HandleSignals> {
         /**
          * Constructor.
@@ -35,10 +31,9 @@ public interface Core {
         private static final int FLAG_WRITABLE = 1 << 1;
         private static final int FLAG_PEER_CLOSED = 1 << 2;
 
-        /**
-         * Immutable signals.
-         */
+        /** Immutable signals. */
         public static final HandleSignals NONE = HandleSignals.none().immutable();
+
         public static final HandleSignals READABLE =
                 HandleSignals.none().setReadable(true).immutable();
         public static final HandleSignals WRITABLE =
@@ -74,13 +69,10 @@ public interface Core {
             return setFlag(FLAG_PEER_CLOSED, peerClosed);
         }
 
-        /**
-         * Returns a signal with no bit set.
-         */
+        /** Returns a signal with no bit set. */
         public static HandleSignals none() {
             return new HandleSignals(FLAG_NONE);
         }
-
     }
 
     /**
@@ -88,13 +80,9 @@ public interface Core {
      */
     public long getTimeTicksNow();
 
-    /**
-     * Returned by wait functions to indicate the signaling state of handles.
-     */
+    /** Returned by wait functions to indicate the signaling state of handles. */
     public static class HandleSignalsState {
-        /**
-         * Signals that were satisfied at some time // before the call returned.
-         */
+        /** Signals that were satisfied at some time // before the call returned. */
         private final HandleSignals mSatisfiedSignals;
 
         /**
@@ -104,25 +92,19 @@ public interface Core {
          */
         private final HandleSignals mSatisfiableSignals;
 
-        /**
-         * Constructor.
-         */
+        /** Constructor. */
         public HandleSignalsState(
                 HandleSignals satisfiedSignals, HandleSignals satisfiableSignals) {
             mSatisfiedSignals = satisfiedSignals;
             mSatisfiableSignals = satisfiableSignals;
         }
 
-        /**
-         * Returns the satisfiedSignals.
-         */
+        /** Returns the satisfiedSignals. */
         public HandleSignals getSatisfiedSignals() {
             return mSatisfiedSignals;
         }
 
-        /**
-         * Returns the satisfiableSignals.
-         */
+        /** Returns the satisfiableSignals. */
         public HandleSignals getSatisfiableSignals() {
             return mSatisfiableSignals;
         }
@@ -157,8 +139,8 @@ public interface Core {
      *
      * @return the new |SharedBufferHandle|.
      */
-    public SharedBufferHandle createSharedBuffer(SharedBufferHandle.CreateOptions options,
-            long numBytes);
+    public SharedBufferHandle createSharedBuffer(
+            SharedBufferHandle.CreateOptions options, long numBytes);
 
     /**
      * Acquires a handle from the native side. The handle will be owned by the returned object and
@@ -177,18 +159,12 @@ public interface Core {
      */
     public UntypedHandle wrapFileDescriptor(ParcelFileDescriptor fd);
 
-    /**
-     * Returns an implementation of {@link Watcher}.
-     */
+    /** Returns an implementation of {@link Watcher}. */
     public Watcher getWatcher();
 
-    /**
-     * Returns a new run loop.
-     */
+    /** Returns a new run loop. */
     public RunLoop createDefaultRunLoop();
 
-    /**
-     * Returns the current run loop if it exists.
-     */
+    /** Returns the current run loop if it exists. */
     public RunLoop getCurrentRunLoop();
 }

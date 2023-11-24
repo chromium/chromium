@@ -16,9 +16,7 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Base class to test mojo. Setup the environment.
- */
+/** Base class to test mojo. Setup the environment. */
 @JNINamespace("mojo::android")
 public class MojoTestRule extends ExternalResource {
     @IntDef({MojoCore.SKIP_INITIALIZATION, MojoCore.INITIALIZE})
@@ -80,9 +78,7 @@ public class MojoTestRule extends ExternalResource {
         runLoop(-1);
     }
 
-    /**
-     * Runs the run loop until no handle or task are immediately available.
-     */
+    /** Runs the run loop until no handle or task are immediately available. */
     public void runLoopUntilIdle() {
         runLoop(0);
     }
@@ -90,7 +86,9 @@ public class MojoTestRule extends ExternalResource {
     @NativeMethods
     interface Natives {
         void init();
+
         long setupTestEnvironment();
+
         void tearDownTestEnvironment(long testEnvironment);
 
         void quitLoop(long testEnvironment);

@@ -24,17 +24,13 @@ import java.util.List;
  */
 @JNINamespace("media_session")
 public final class MediaImage {
-    @NonNull
-    private GURL mSrc;
+    @NonNull private GURL mSrc;
 
     private String mType;
 
-    @NonNull
-    private List<Rect> mSizes = new ArrayList<Rect>();
+    @NonNull private List<Rect> mSizes = new ArrayList<Rect>();
 
-    /**
-     * Creates a new MediaImage.
-     */
+    /** Creates a new MediaImage. */
     public MediaImage(@NonNull GURL src, @NonNull String type, @NonNull List<Rect> sizes) {
         mSrc = src;
         mType = type;
@@ -63,23 +59,17 @@ public final class MediaImage {
         return mSizes;
     }
 
-    /**
-     * Sets the URL of this MediaImage.
-     */
+    /** Sets the URL of this MediaImage. */
     public void setSrc(@NonNull GURL src) {
         mSrc = src;
     }
 
-    /**
-     * Sets the MIME type of this MediaImage.
-     */
+    /** Sets the MIME type of this MediaImage. */
     public void setType(@NonNull String type) {
         mType = type;
     }
 
-    /**
-     * Sets the sizes of this MediaImage.
-     */
+    /** Sets the sizes of this MediaImage. */
     public void setSizes(@NonNull List<Rect> sizes) {
         mSizes = sizes;
     }
@@ -90,7 +80,8 @@ public final class MediaImage {
         if (!(obj instanceof MediaImage)) return false;
 
         MediaImage other = (MediaImage) obj;
-        return mSrc.equals(other.mSrc) && TextUtils.equals(mType, other.mType)
+        return mSrc.equals(other.mSrc)
+                && TextUtils.equals(mType, other.mType)
                 && mSizes.equals(other.mSizes);
     }
 
@@ -117,9 +108,7 @@ public final class MediaImage {
         return new MediaImage(src, type, Arrays.asList(sizes));
     }
 
-    /**
-     * Create a new {@link Rect} from the C++ code.
-     */
+    /** Create a new {@link Rect} from the C++ code. */
     @CalledByNative
     private static Rect createRect(int width, int height) {
         return new Rect(0, 0, width, height);

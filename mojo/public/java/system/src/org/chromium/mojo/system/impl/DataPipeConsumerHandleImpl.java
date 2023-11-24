@@ -10,9 +10,7 @@ import org.chromium.mojo.system.ResultAnd;
 
 import java.nio.ByteBuffer;
 
-/**
- * Implementation of {@link ConsumerHandle}.
- */
+/** Implementation of {@link ConsumerHandle}. */
 class DataPipeConsumerHandleImpl extends HandleBase implements ConsumerHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

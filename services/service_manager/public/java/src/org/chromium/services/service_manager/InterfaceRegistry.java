@@ -60,7 +60,8 @@ public class InterfaceRegistry implements InterfaceProvider {
         private Interface.Manager<I, ? extends Interface.Proxy> mManager;
         private InterfaceFactory<I> mFactory;
 
-        public InterfaceBinder(Interface.Manager<I, ? extends Interface.Proxy> manager,
+        public InterfaceBinder(
+                Interface.Manager<I, ? extends Interface.Proxy> manager,
                 InterfaceFactory<I> factory) {
             mManager = manager;
             mFactory = factory;

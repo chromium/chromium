@@ -6,15 +6,12 @@ package org.chromium.net;
 
 import org.jni_zero.CalledByNativeForTesting;
 
-/**
- * Utility functions for testing features implemented in AndroidNetworkLibrary.
- */
+/** Utility functions for testing features implemented in AndroidNetworkLibrary. */
 public class AndroidNetworkLibraryTestUtil {
     private static int sPerHostCleartextCheckCount;
     private static int sDefaultCleartextCheckCount;
-    /**
-     * Helper for tests that simulates an app controlling cleartext traffic on M and newer.
-     */
+
+    /** Helper for tests that simulates an app controlling cleartext traffic on M and newer. */
     @CalledByNativeForTesting
     public static void setUpSecurityPolicyForTesting(boolean cleartextPermitted) {
         sDefaultCleartextCheckCount = 0;
@@ -29,6 +26,7 @@ public class AndroidNetworkLibraryTestUtil {
                         }
                         return cleartextPermitted;
                     }
+
                     @Override
                     public boolean isCleartextTrafficPermitted() {
                         ++sDefaultCleartextCheckCount;

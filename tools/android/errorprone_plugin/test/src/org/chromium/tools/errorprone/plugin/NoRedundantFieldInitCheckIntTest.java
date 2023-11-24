@@ -4,9 +4,7 @@
 
 package org.chromium.tools.errorprone.plugin;
 
-/**
- * |mBar| initialization should cause 'NoRedundantFieldInitCheck' errorprone warning.
- */
+/** |mBar| initialization should cause 'NoRedundantFieldInitCheck' errorprone warning. */
 public class NoRedundantFieldInitCheckIntTest {
     private int mBar = 0;
 

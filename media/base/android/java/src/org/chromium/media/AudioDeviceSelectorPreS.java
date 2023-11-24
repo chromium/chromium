@@ -113,37 +113,45 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
 
         /** BroadcastReceiver implementation which handles changes in BT SCO. */
-        mBluetoothScoReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                int state = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE,
-                        AudioManager.SCO_AUDIO_STATE_DISCONNECTED);
-                if (DEBUG) {
-                    logd("BroadcastReceiver.onReceive: a=" + intent.getAction() + ", s=" + state
-                            + ", sb=" + isInitialStickyBroadcast());
-                }
-
-                switch (state) {
-                    case AudioManager.SCO_AUDIO_STATE_CONNECTED:
-                        mBluetoothScoState = STATE_BLUETOOTH_SCO_ON;
-                        break;
-                    case AudioManager.SCO_AUDIO_STATE_DISCONNECTED:
-                        if (mBluetoothScoState != STATE_BLUETOOTH_SCO_TURNING_OFF) {
-                            // Bluetooth is probably powered off during the call.
-                            // Update the existing device selection, but only if a specific
-                            // device has already been selected explicitly.
-                            maybeUpdateSelectedDevice();
+        mBluetoothScoReceiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        int state =
+                                intent.getIntExtra(
+                                        AudioManager.EXTRA_SCO_AUDIO_STATE,
+                                        AudioManager.SCO_AUDIO_STATE_DISCONNECTED);
+                        if (DEBUG) {
+                            logd(
+                                    "BroadcastReceiver.onReceive: a="
+                                            + intent.getAction()
+                                            + ", s="
+                                            + state
+                                            + ", sb="
+                                            + isInitialStickyBroadcast());
                         }
-                        mBluetoothScoState = STATE_BLUETOOTH_SCO_OFF;
-                        break;
-                    case AudioManager.SCO_AUDIO_STATE_CONNECTING:
-                        // do nothing
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
+
+                        switch (state) {
+                            case AudioManager.SCO_AUDIO_STATE_CONNECTED:
+                                mBluetoothScoState = STATE_BLUETOOTH_SCO_ON;
+                                break;
+                            case AudioManager.SCO_AUDIO_STATE_DISCONNECTED:
+                                if (mBluetoothScoState != STATE_BLUETOOTH_SCO_TURNING_OFF) {
+                                    // Bluetooth is probably powered off during the call.
+                                    // Update the existing device selection, but only if a specific
+                                    // device has already been selected explicitly.
+                                    maybeUpdateSelectedDevice();
+                                }
+                                mBluetoothScoState = STATE_BLUETOOTH_SCO_OFF;
+                                break;
+                            case AudioManager.SCO_AUDIO_STATE_CONNECTING:
+                                // do nothing
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                };
 
         ContextUtils.registerProtectedBroadcastReceiver(
                 ContextUtils.getApplicationContext(), mBluetoothScoReceiver, filter);

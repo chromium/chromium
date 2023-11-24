@@ -9,9 +9,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 
-/**
- * Should cause 'TestClassNameCheck' errorprone warning.
- */
+/** Should cause 'TestClassNameCheck' errorprone warning. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TestClassNameCheckTesting {
     @Test

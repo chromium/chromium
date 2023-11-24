@@ -16,9 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Filters tests to only those listed in the JSON config.
- */
+/** Filters tests to only those listed in the JSON config. */
 class ConfigFilter extends Filter {
     private final Map<String, Set<String>> mTestsByClass;
 

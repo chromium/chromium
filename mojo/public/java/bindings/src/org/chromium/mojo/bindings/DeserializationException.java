@@ -4,23 +4,16 @@
 
 package org.chromium.mojo.bindings;
 
-/**
- * Error when deserializing a mojo message.
- */
+/** Error when deserializing a mojo message. */
 public class DeserializationException extends RuntimeException {
 
-    /**
-     * Constructs a new deserialization exception with the specified detail message.
-     */
+    /** Constructs a new deserialization exception with the specified detail message. */
     public DeserializationException(String message) {
         super(message);
     }
 
-    /**
-     * Constructs a new deserialization exception with the specified cause.
-     */
+    /** Constructs a new deserialization exception with the specified cause. */
     public DeserializationException(Exception cause) {
         super(cause);
     }
-
 }

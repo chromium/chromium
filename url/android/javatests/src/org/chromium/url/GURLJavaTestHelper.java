@@ -8,9 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Helpers for GURLJavaTest that need to call into native code.
- */
+/** Helpers for GURLJavaTest that need to call into native code. */
 @JNINamespace("url")
 public class GURLJavaTestHelper {
     @CalledByNative
@@ -29,6 +27,7 @@ public class GURLJavaTestHelper {
     @NativeMethods
     interface Natives {
         void initializeICU();
+
         void testGURLEquivalence();
     }
 }

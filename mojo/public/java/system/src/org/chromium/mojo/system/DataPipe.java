@@ -13,15 +13,11 @@ import java.nio.ByteBuffer;
  */
 public interface DataPipe {
 
-    /**
-     * Flags for the data pipe creation operation.
-     */
+    /** Flags for the data pipe creation operation. */
     public static class CreateFlags extends Flags<CreateFlags> {
         private static final int FLAG_NONE = 0;
 
-        /**
-         * Immutable flag with not bit set.
-         */
+        /** Immutable flag with not bit set. */
         public static final CreateFlags NONE = CreateFlags.none().immutable();
 
         /**
@@ -39,23 +35,20 @@ public interface DataPipe {
         public static CreateFlags none() {
             return new CreateFlags(FLAG_NONE);
         }
-
     }
 
-    /**
-     * Used to specify creation parameters for a data pipe to |Core.createDataPipe()|.
-     */
+    /** Used to specify creation parameters for a data pipe to |Core.createDataPipe()|. */
     public static class CreateOptions {
 
-        /**
-         * Used to specify different modes of operation, see |DataPipe.CreateFlags|.
-         */
+        /** Used to specify different modes of operation, see |DataPipe.CreateFlags|. */
         private CreateFlags mFlags = CreateFlags.none();
+
         /**
          * The size of an element, in bytes. All transactions and buffers will consist of an
          * integral number of elements. Must be nonzero.
          */
         private int mElementNumBytes;
+
         /**
          * The capacity of the data pipe, in number of bytes; must be a multiple of
          * |element_num_bytes|. The data pipe will always be able to queue AT LEAST this much data.
@@ -98,19 +91,14 @@ public interface DataPipe {
         public void setCapacityNumBytes(int capacityNumBytes) {
             mCapacityNumBytes = capacityNumBytes;
         }
-
     }
 
-    /**
-     * Flags for the write operations on MessagePipeHandle .
-     */
+    /** Flags for the write operations on MessagePipeHandle . */
     public static class WriteFlags extends Flags<WriteFlags> {
         private static final int FLAG_NONE = 0;
         private static final int FLAG_ALL_OR_NONE = 1 << 0;
 
-        /**
-         * Immutable flag with not bit set.
-         */
+        /** Immutable flag with not bit set. */
         public static final WriteFlags NONE = WriteFlags.none().immutable();
 
         /**
@@ -141,18 +129,14 @@ public interface DataPipe {
         }
     }
 
-    /**
-     * Flags for the read operations on MessagePipeHandle.
-     */
+    /** Flags for the read operations on MessagePipeHandle. */
     public static class ReadFlags extends Flags<ReadFlags> {
         private static final int FLAG_NONE = 0;
         private static final int FLAG_ALL_OR_NONE = 1 << 0;
         private static final int FLAG_QUERY = 1 << 2;
         private static final int FLAG_PEEK = 1 << 3;
 
-        /**
-         * Immutable flag with not bit set.
-         */
+        /** Immutable flag with not bit set. */
         public static final ReadFlags NONE = ReadFlags.none().immutable();
 
         /**
@@ -204,12 +188,9 @@ public interface DataPipe {
         public static ReadFlags none() {
             return new ReadFlags(FLAG_NONE);
         }
-
     }
 
-    /**
-     * Handle for the producer part of a data pipe.
-     */
+    /** Handle for the producer part of a data pipe. */
     public static interface ProducerHandle extends Handle {
 
         /**
@@ -272,9 +253,7 @@ public interface DataPipe {
         public void endWriteData(int numBytesWritten);
     }
 
-    /**
-     * Handle for the consumer part of a data pipe.
-     */
+    /** Handle for the consumer part of a data pipe. */
     public static interface ConsumerHandle extends Handle {
         /**
          * @see org.chromium.mojo.system.Handle#pass()
@@ -282,7 +261,7 @@ public interface DataPipe {
         @Override
         public ConsumerHandle pass();
 
-       /**
+        /**
          * Discards data on the data pie consumer. This method discards up to |numBytes| (which
          * again be a multiple of the element size) bytes of data, returning the amount actually
          * discarded. if |flags| has |allOrNone|, it will either discard exactly |numBytes| bytes of
@@ -330,5 +309,4 @@ public interface DataPipe {
          */
         public void endReadData(int numBytesRead);
     }
-
 }

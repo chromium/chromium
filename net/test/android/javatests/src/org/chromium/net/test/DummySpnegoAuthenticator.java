@@ -48,8 +48,12 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public Bundle addAccount(AccountAuthenticatorResponse arg0, String accountType, String arg2,
-            String[] arg3, Bundle arg4) {
+    public Bundle addAccount(
+            AccountAuthenticatorResponse arg0,
+            String accountType,
+            String arg2,
+            String[] arg3,
+            Bundle arg4) {
         Bundle result = new Bundle();
         result.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_BAD_REQUEST);
         result.putString(AccountManager.KEY_ERROR_MESSAGE, "Can't add new SPNEGO accounts");
@@ -69,8 +73,11 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
-            String authTokenType, Bundle options) {
+    public Bundle getAuthToken(
+            AccountAuthenticatorResponse response,
+            Account account,
+            String authTokenType,
+            Bundle options) {
         long nativeQuery =
                 DummySpnegoAuthenticatorJni.get().getNextQuery(sNativeDummySpnegoAuthenticator);
         String incomingToken = options.getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN);
@@ -78,9 +85,11 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
         Bundle result = new Bundle();
         result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
         result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-        result.putString(AccountManager.KEY_AUTHTOKEN,
+        result.putString(
+                AccountManager.KEY_AUTHTOKEN,
                 DummySpnegoAuthenticatorJni.get().getTokenToReturn(nativeQuery));
-        result.putInt(HttpNegotiateConstants.KEY_SPNEGO_RESULT,
+        result.putInt(
+                HttpNegotiateConstants.KEY_SPNEGO_RESULT,
                 decodeResult(DummySpnegoAuthenticatorJni.get().getResult(nativeQuery)));
         return result;
     }
@@ -129,9 +138,7 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
         return result;
     }
 
-    /**
-     * Called from tests, sets up the test account, if it doesn't already exist
-     */
+    /** Called from tests, sets up the test account, if it doesn't already exist */
     @CalledByNative
     private static void ensureTestAccountExists() {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
@@ -140,9 +147,7 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
         am.addAccountExplicitly(account, null, null);
     }
 
-    /**
-     * Called from tests to tidy up test accounts.
-     */
+    /** Called from tests to tidy up test accounts. */
     @SuppressWarnings("deprecation")
     @CalledByNative
     private static void removeTestAccounts() {

@@ -17,7 +17,6 @@ public interface PrintManagerDelegate {
      * Same as {@link android.print.PrintManager#print}, except this doesn't return a
      * {@link android.print.PrintJob} since the clients don't need it.
      */
-    void print(String printJobName,
-               PrintDocumentAdapter documentAdapter,
-               PrintAttributes attributes);
+    void print(
+            String printJobName, PrintDocumentAdapter documentAdapter, PrintAttributes attributes);
 }

@@ -17,11 +17,9 @@ import android.util.Log;
 public class OnDeviceInstrumentationBroker extends Activity {
 
     public static final String EXTRA_INSTRUMENTATION_PACKAGE =
-            "org.chromium.test.broker.OnDeviceInstrumentationBroker."
-                    + "InstrumentationPackage";
+            "org.chromium.test.broker.OnDeviceInstrumentationBroker." + "InstrumentationPackage";
     public static final String EXTRA_INSTRUMENTATION_CLASS =
-            "org.chromium.test.broker.OnDeviceInstrumentationBroker."
-                    + "InstrumentationClass";
+            "org.chromium.test.broker.OnDeviceInstrumentationBroker." + "InstrumentationClass";
     public static final String EXTRA_TARGET_ARGS =
             "org.chromium.test.broker.OnDeviceInstrumentationBroker.TargetArgs";
     public static final String EXTRA_TEST =
@@ -61,4 +59,3 @@ public class OnDeviceInstrumentationBroker extends Activity {
         finish();
     }
 }
-

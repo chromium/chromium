@@ -113,8 +113,8 @@ public class PrintingContext {
 
     private void askUserForSettingsReply(boolean success) {
         assert mNativeObject != 0;
-        PrintingContextJni.get().askUserForSettingsReply(
-                mNativeObject, PrintingContext.this, success);
+        PrintingContextJni.get()
+                .askUserForSettingsReply(mNativeObject, PrintingContext.this, success);
     }
 
     private void showSystemDialogDone() {
@@ -126,6 +126,7 @@ public class PrintingContext {
     interface Natives {
         void askUserForSettingsReply(
                 long nativePrintingContextAndroid, PrintingContext caller, boolean success);
+
         void showSystemDialogDone(long nativePrintingContextAndroid, PrintingContext caller);
     }
 }

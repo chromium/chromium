@@ -19,9 +19,7 @@ import org.jni_zero.JNINamespace;
 final class ChromeBluetoothScanFilterBuilder {
     private ScanFilter.Builder mBuilder;
 
-    /**
-     * Constructs a ChromeBluetoothScanFilter
-     */
+    /** Constructs a ChromeBluetoothScanFilter */
     public ChromeBluetoothScanFilterBuilder() {
         mBuilder = new ScanFilter.Builder();
     }

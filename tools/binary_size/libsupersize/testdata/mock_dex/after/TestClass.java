@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Test class for SuperSize.
- */
+/** Test class for SuperSize. */
 public class TestClass {
     static final int REPEAT = 3;
 

@@ -23,9 +23,7 @@ public final class MediaPosition {
 
     private Long mLastUpdatedTime;
 
-    /**
-     * Creates a new MediaPosition.
-     */
+    /** Creates a new MediaPosition. */
     public MediaPosition(long duration, long position, float playbackRate, long lastUpdatedTime) {
         mDuration = duration;
         mPosition = position;
@@ -68,7 +66,8 @@ public final class MediaPosition {
         if (!(obj instanceof MediaPosition)) return false;
 
         MediaPosition other = (MediaPosition) obj;
-        return mDuration == other.getDuration() && mPosition == other.getPosition()
+        return mDuration == other.getDuration()
+                && mPosition == other.getPosition()
                 && mPlaybackRate == other.getPlaybackRate()
                 && mLastUpdatedTime == other.getLastUpdatedTime();
     }
@@ -84,8 +83,14 @@ public final class MediaPosition {
 
     @Override
     public String toString() {
-        return "duration=" + mDuration + ", position=" + mPosition + ", rate=" + mPlaybackRate
-                + ", updated=" + mLastUpdatedTime;
+        return "duration="
+                + mDuration
+                + ", position="
+                + mPosition
+                + ", rate="
+                + mPlaybackRate
+                + ", updated="
+                + mLastUpdatedTime;
     }
 
     /**

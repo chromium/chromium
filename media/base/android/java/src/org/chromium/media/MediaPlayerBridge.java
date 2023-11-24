@@ -33,9 +33,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 /**
-* A wrapper around android.media.MediaPlayer that allows the native code to use it.
-* See media/base/android/media_player_bridge.cc for the corresponding native code.
-*/
+ * A wrapper around android.media.MediaPlayer that allows the native code to use it.
+ * See media/base/android/media_player_bridge.cc for the corresponding native code.
+ */
 @JNINamespace("media")
 public class MediaPlayerBridge {
     private static final String TAG = "media";
@@ -55,8 +55,7 @@ public class MediaPlayerBridge {
         mNativeMediaPlayerBridge = nativeMediaPlayerBridge;
     }
 
-    protected MediaPlayerBridge() {
-    }
+    protected MediaPlayerBridge() {}
 
     @CalledByNative
     protected void destroy() {
@@ -244,8 +243,9 @@ public class MediaPlayerBridge {
 
             if (result) {
                 try {
-                    getLocalPlayer().setDataSource(
-                            ContextUtils.getApplicationContext(), Uri.fromFile(mTempFile));
+                    getLocalPlayer()
+                            .setDataSource(
+                                    ContextUtils.getApplicationContext(), Uri.fromFile(mTempFile));
                 } catch (IOException e) {
                     result = false;
                 }
@@ -253,8 +253,9 @@ public class MediaPlayerBridge {
 
             deleteFile();
             assert (mNativeMediaPlayerBridge != 0);
-            MediaPlayerBridgeJni.get().onDidSetDataUriDataSource(
-                    mNativeMediaPlayerBridge, MediaPlayerBridge.this, result);
+            MediaPlayerBridgeJni.get()
+                    .onDidSetDataUriDataSource(
+                            mNativeMediaPlayerBridge, MediaPlayerBridge.this, result);
         }
 
         private void deleteFile() {
@@ -314,8 +315,9 @@ public class MediaPlayerBridge {
         boolean canSeekBackward = true;
         try {
             @SuppressLint({"DiscouragedPrivateApi", "PrivateApi"})
-            Method getMetadata = player.getClass().getDeclaredMethod(
-                    "getMetadata", boolean.class, boolean.class);
+            Method getMetadata =
+                    player.getClass()
+                            .getDeclaredMethod("getMetadata", boolean.class, boolean.class);
             getMetadata.setAccessible(true);
             Object data = getMetadata.invoke(player, false, false);
             if (data != null) {
@@ -329,10 +331,12 @@ public class MediaPlayerBridge {
                         (Integer) metadataClass.getField("SEEK_BACKWARD_AVAILABLE").get(null);
                 hasMethod.setAccessible(true);
                 getBooleanMethod.setAccessible(true);
-                canSeekForward = !((Boolean) hasMethod.invoke(data, seekForward))
-                        || ((Boolean) getBooleanMethod.invoke(data, seekForward));
-                canSeekBackward = !((Boolean) hasMethod.invoke(data, seekBackward))
-                        || ((Boolean) getBooleanMethod.invoke(data, seekBackward));
+                canSeekForward =
+                        !((Boolean) hasMethod.invoke(data, seekForward))
+                                || ((Boolean) getBooleanMethod.invoke(data, seekForward));
+                canSeekBackward =
+                        !((Boolean) hasMethod.invoke(data, seekBackward))
+                                || ((Boolean) getBooleanMethod.invoke(data, seekBackward));
             }
         } catch (NoSuchMethodException e) {
             Log.e(TAG, "Cannot find getMetadata() method: " + e);

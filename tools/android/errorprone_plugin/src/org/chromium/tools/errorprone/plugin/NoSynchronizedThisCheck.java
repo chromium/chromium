@@ -17,16 +17,16 @@ import com.sun.tools.javac.tree.TreeInfo;
 
 import javax.lang.model.element.Modifier;
 
-/**
- * This class detects the synchronized method.
- */
+/** This class detects the synchronized method. */
 @AutoService(BugChecker.class)
-@BugPattern(name = "NoSynchronizedThisCheck",
+@BugPattern(
+        name = "NoSynchronizedThisCheck",
         summary = "Do not synchronized on 'this' in public classes",
-        severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
+        severity = BugPattern.SeverityLevel.ERROR,
+        linkType = BugPattern.LinkType.CUSTOM,
         link = "https://stackoverflow.com/questions/442564/avoid-synchronizedthis-in-java")
-public class NoSynchronizedThisCheck
-        extends BugChecker implements BugChecker.SynchronizedTreeMatcher {
+public class NoSynchronizedThisCheck extends BugChecker
+        implements BugChecker.SynchronizedTreeMatcher {
     @Override
     public Description matchSynchronized(SynchronizedTree tree, VisitorState visitorState) {
         Symbol lock = ASTHelpers.getSymbol(TreeInfo.skipParens((JCTree) tree.getExpression()));

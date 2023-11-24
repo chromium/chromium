@@ -10,9 +10,7 @@ import android.os.Process;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * This class interacts with TrafficStats API provided by Android.
- */
+/** This class interacts with TrafficStats API provided by Android. */
 @JNINamespace("net::android::traffic_stats")
 public class AndroidTrafficStats {
     private AndroidTrafficStats() {}

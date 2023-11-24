@@ -4,12 +4,11 @@
 
 // This file provides samples for testing the extractor.py script.
 
-/**
- * Example class that contains a NetworkTrafficAnnotationTag definition.
- */
+/** Example class that contains a NetworkTrafficAnnotationTag definition. */
 public class ValidFile {
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
-            NetworkTrafficAnnotationTag.createComplete("id1",
+            NetworkTrafficAnnotationTag.createComplete(
+                    "id1",
                     "semantics {"
                             + "sender: 'sender1'"
                             + "description: 'desc1'"
@@ -29,7 +28,8 @@ public class ValidFile {
                             + "comments: 'comment1'");
 
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION_2 =
-            NetworkTrafficAnnotationTag.createComplete("id2",
+            NetworkTrafficAnnotationTag.createComplete(
+                    "id2",
                     "semantics {"
                             + "sender: \"sender1\""
                             + "description: \"desc1\""

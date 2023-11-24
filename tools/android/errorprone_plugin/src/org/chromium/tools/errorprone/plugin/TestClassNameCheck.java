@@ -20,17 +20,17 @@ import com.sun.source.tree.AnnotationTree;
  * This works for both JUnit and Instrumentation tests.
  */
 @AutoService(BugChecker.class)
-@BugPattern(name = "TestClassNameCheck",
+@BugPattern(
+        name = "TestClassNameCheck",
         summary = "Class names of classes with tests in them should end with \"Test\".",
-        severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
+        severity = BugPattern.SeverityLevel.ERROR,
+        linkType = BugPattern.LinkType.CUSTOM,
         link = "http://crbug.com/1029370")
 public class TestClassNameCheck extends BugChecker implements BugChecker.AnnotationTreeMatcher {
     static final Matcher<AnnotationTree> TEST_ANNOTATION =
             Matchers.anyOf(Matchers.isType("org.junit.runner.RunWith"));
 
-    /**
-     * Match if nullable annotation is of type org.junit.runner.RunWith.
-     */
+    /** Match if nullable annotation is of type org.junit.runner.RunWith. */
     @Override
     public Description matchAnnotation(AnnotationTree annotationTree, VisitorState visitorState) {
         String filePath = visitorState.getPath().getCompilationUnit().getSourceFile().getName();
